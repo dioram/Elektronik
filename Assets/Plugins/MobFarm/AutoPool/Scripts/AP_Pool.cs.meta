@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 6b92af29f025148109c26acd69c9401b
+labels:
+- ObjectPool
+- Pool
+- Pooling
+- Script
+- Stack
+timeCreated: 1485581990
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
