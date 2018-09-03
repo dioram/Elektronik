@@ -1,0 +1,429 @@
+-debug
+-target:library
+-nowarn:0169
+-langversion:4
+-out:Temp/UniRx.dll
+-nostdlib
+-r:Library/ScriptAssemblies/UniRx.Async.dll
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.AIModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.ARModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.AccessibilityModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.AnimationModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.AssetBundleModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.AudioModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.BaselibModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.ClothModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.CloudWebServicesModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.ClusterInputModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.ClusterRendererModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.CoreModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.CrashReportingModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.DirectorModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.FacebookModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.GameCenterModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.GridModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.HotReloadModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.IMGUIModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.ImageConversionModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.InputModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.JSONSerializeModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.ParticleSystemModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.ParticlesLegacyModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.PerformanceReportingModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.PhysicsModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.Physics2DModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.ScreenCaptureModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.SharedInternalsModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.SpatialTrackingModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.SpriteMaskModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.SpriteShapeModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.StyleSheetsModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.SubstanceModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.TLSModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.TerrainModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.TerrainPhysicsModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.TextRenderingModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.TilemapModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.TimelineModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UIModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UIElementsModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UNETModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UmbraModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UnityAnalyticsModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UnityConnectModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UnityWebRequestModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UnityWebRequestAssetBundleModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UnityWebRequestAudioModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UnityWebRequestTextureModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.UnityWebRequestWWWModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.VRModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.VehiclesModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.VideoModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.WebModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.WindModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.XRModule.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/UnityEditor.dll"
+-r:"D:\Program Files\Unity\Editor\Data\Managed/Unity.Locator.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Timeline/RuntimeEditor/UnityEngine.Timeline.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Timeline/Editor/UnityEditor.Timeline.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TreeEditor/Editor/UnityEditor.TreeEditor.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UIAutomation/UnityEngine.UIAutomation.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UIAutomation/Editor/UnityEditor.UIAutomation.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityGoogleAudioSpatializer/Editor/UnityEditor.GoogleAudioSpatializer.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityGoogleAudioSpatializer/RuntimeEditor/UnityEngine.GoogleAudioSpatializer.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/Editor/UnityEditor.HoloLens.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/Editor/UnityEditor.SpatialTracking.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll"
+-r:"D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/Editor/UnityEditor.VR.dll"
+-r:"D:/Program Files/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll"
+-r:"D:/Program Files/Unity/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.WSA.Extensions.dll"
+-r:"D:/Program Files/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll"
+-r:D:/Users/kozin/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.ads@2.0.7/Editor/UnityEditor.Advertisements.dll
+-r:D:/Users/kozin/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll
+-r:D:/Users/kozin/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/Editor/UnityEditor.Analytics.dll
+-r:D:/Users/kozin/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.purchasing@2.0.1/UnityEngine.Purchasing.dll
+-r:D:/Users/kozin/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.purchasing@2.0.1/Editor/UnityEditor.Purchasing.dll
+-r:D:/Users/kozin/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll
+-r:"C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll"
+-r:"D:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\unity\mscorlib.dll"
+-r:"D:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\unity\System.dll"
+-r:"D:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\unity\System.Core.dll"
+-r:"D:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\unity\System.Runtime.Serialization.dll"
+-r:"D:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\unity\System.Xml.dll"
+-r:"D:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\unity\System.Xml.Linq.dll"
+-r:"D:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\unity\UnityScript.dll"
+-r:"D:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\unity\UnityScript.Lang.dll"
+-r:"D:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\unity\Boo.Lang.dll"
+-define:UNITY_5_3_OR_NEWER
+-define:UNITY_5_4_OR_NEWER
+-define:UNITY_5_5_OR_NEWER
+-define:UNITY_5_6_OR_NEWER
+-define:UNITY_2017_1_OR_NEWER
+-define:UNITY_2017_2_OR_NEWER
+-define:UNITY_2017_3_OR_NEWER
+-define:UNITY_2018_1_OR_NEWER
+-define:UNITY_2018_1_1
+-define:UNITY_2018_1
+-define:UNITY_2018
+-define:PLATFORM_ARCH_64
+-define:UNITY_64
+-define:UNITY_ANALYTICS
+-define:ENABLE_AUDIO
+-define:ENABLE_CACHING
+-define:ENABLE_CLOTH
+-define:ENABLE_DUCK_TYPING
+-define:ENABLE_MICROPHONE
+-define:ENABLE_MULTIPLE_DISPLAYS
+-define:ENABLE_PHYSICS
+-define:ENABLE_SPRITERENDERER_FLIPPING
+-define:ENABLE_SPRITES
+-define:ENABLE_GRID
+-define:ENABLE_TILEMAP
+-define:ENABLE_TERRAIN
+-define:ENABLE_RAKNET
+-define:ENABLE_DIRECTOR
+-define:ENABLE_UNET
+-define:ENABLE_LZMA
+-define:ENABLE_UNITYEVENTS
+-define:ENABLE_WEBCAM
+-define:ENABLE_WWW
+-define:ENABLE_CLOUD_SERVICES_COLLAB
+-define:ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS
+-define:ENABLE_CLOUD_SERVICES_ADS
+-define:ENABLE_CLOUD_HUB
+-define:ENABLE_CLOUD_PROJECT_ID
+-define:ENABLE_CLOUD_SERVICES_USE_WEBREQUEST
+-define:ENABLE_CLOUD_SERVICES_UNET
+-define:ENABLE_CLOUD_SERVICES_BUILD
+-define:ENABLE_CLOUD_LICENSE
+-define:ENABLE_EDITOR_HUB
+-define:ENABLE_EDITOR_HUB_LICENSE
+-define:ENABLE_WEBSOCKET_CLIENT
+-define:ENABLE_DIRECTOR_AUDIO
+-define:ENABLE_DIRECTOR_TEXTURE
+-define:ENABLE_TIMELINE
+-define:ENABLE_EDITOR_METRICS
+-define:ENABLE_EDITOR_METRICS_CACHING
+-define:ENABLE_MANAGED_JOBS
+-define:ENABLE_MANAGED_TRANSFORM_JOBS
+-define:INCLUDE_DYNAMIC_GI
+-define:INCLUDE_GI
+-define:ENABLE_MONO_BDWGC
+-define:PLATFORM_SUPPORTS_MONO
+-define:RENDER_SOFTWARE_CURSOR
+-define:INCLUDE_PUBNUB
+-define:ENABLE_PLAYMODE_TESTS_RUNNER
+-define:ENABLE_VIDEO
+-define:ENABLE_PACKMAN
+-define:ENABLE_CUSTOM_RENDER_TEXTURE
+-define:ENABLE_LOCALIZATION
+-define:PLATFORM_STANDALONE_WIN
+-define:PLATFORM_STANDALONE
+-define:UNITY_STANDALONE_WIN
+-define:UNITY_STANDALONE
+-define:ENABLE_SUBSTANCE
+-define:ENABLE_RUNTIME_GI
+-define:ENABLE_MOVIES
+-define:ENABLE_NETWORK
+-define:ENABLE_CRUNCH_TEXTURE_COMPRESSION
+-define:ENABLE_UNITYWEBREQUEST
+-define:ENABLE_CLOUD_SERVICES
+-define:ENABLE_CLOUD_SERVICES_ANALYTICS
+-define:ENABLE_CLOUD_SERVICES_PURCHASING
+-define:ENABLE_CLOUD_SERVICES_CRASH_REPORTING
+-define:ENABLE_OUT_OF_PROCESS_CRASH_HANDLER
+-define:ENABLE_EVENT_QUEUE
+-define:ENABLE_CLUSTERINPUT
+-define:ENABLE_VR
+-define:ENABLE_AR
+-define:ENABLE_WEBSOCKET_HOST
+-define:ENABLE_MONO
+-define:NET_2_0_SUBSET
+-define:ENABLE_PROFILER
+-define:DEBUG
+-define:TRACE
+-define:UNITY_ASSERTIONS
+-define:UNITY_EDITOR
+-define:UNITY_EDITOR_64
+-define:UNITY_EDITOR_WIN
+-define:ENABLE_UNITY_COLLECTIONS_CHECKS
+-define:UNITY_TEAM_LICENSE
+-define:ENABLE_VSTU
+-define:UNITY_POST_PROCESSING_STACK_V2
+-define:VRTK_VERSION_3_2_1
+-define:VRTK_VERSION_3_2_1_OR_NEWER
+-define:VRTK_VERSION_3_1_0_OR_NEWER
+-define:VRTK_VERSION_3_2_0_OR_NEWER
+Assets/Plugins/UniRx/Scripts/Asynchronous/WebRequestExtensions.cs
+Assets/Plugins/UniRx/Scripts/Disposables/BooleanDisposable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/CancellationDisposable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/CompositeDisposable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/DictionaryDisposable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/Disposable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/DisposableExtensions.cs
+Assets/Plugins/UniRx/Scripts/Disposables/ICancelable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/MultipleAssignmentDisposable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/RefCountDisposable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/ScheduledDisposable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/SerialDisposable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/SingleAssignmentDisposable.cs
+Assets/Plugins/UniRx/Scripts/Disposables/StableCompositeDisposable.cs
+Assets/Plugins/UniRx/Scripts/EventPattern.cs
+Assets/Plugins/UniRx/Scripts/InternalUtil/AscynLock.cs
+Assets/Plugins/UniRx/Scripts/InternalUtil/ExceptionExtensions.cs
+Assets/Plugins/UniRx/Scripts/InternalUtil/ImmutableList.cs
+Assets/Plugins/UniRx/Scripts/InternalUtil/ListObserver.cs
+Assets/Plugins/UniRx/Scripts/InternalUtil/MicroCoroutine.cs
+Assets/Plugins/UniRx/Scripts/InternalUtil/PriorityQueue.cs
+Assets/Plugins/UniRx/Scripts/InternalUtil/ScheduledItem.cs
+Assets/Plugins/UniRx/Scripts/InternalUtil/ThreadSafeQueueWorker.cs
+Assets/Plugins/UniRx/Scripts/Notification.cs
+Assets/Plugins/UniRx/Scripts/Notifiers/BooleanNotifier.cs
+Assets/Plugins/UniRx/Scripts/Notifiers/CountNotifier.cs
+Assets/Plugins/UniRx/Scripts/Notifiers/MessageBroker.cs
+Assets/Plugins/UniRx/Scripts/Notifiers/ScheduledNotifier.cs
+Assets/Plugins/UniRx/Scripts/Observable.Aggregate.cs
+Assets/Plugins/UniRx/Scripts/Observable.Awaiter.cs
+Assets/Plugins/UniRx/Scripts/Observable.Binding.cs
+Assets/Plugins/UniRx/Scripts/Observable.Blocking.cs
+Assets/Plugins/UniRx/Scripts/Observable.Concatenate.cs
+Assets/Plugins/UniRx/Scripts/Observable.Concurrency.cs
+Assets/Plugins/UniRx/Scripts/Observable.Conversions.cs
+Assets/Plugins/UniRx/Scripts/Observable.Creation.cs
+Assets/Plugins/UniRx/Scripts/Observable.cs
+Assets/Plugins/UniRx/Scripts/Observable.ErrorHandling.cs
+Assets/Plugins/UniRx/Scripts/Observable.Events.cs
+Assets/Plugins/UniRx/Scripts/Observable.FromAsync.cs
+Assets/Plugins/UniRx/Scripts/Observable.Joins.cs
+Assets/Plugins/UniRx/Scripts/Observable.Paging.cs
+Assets/Plugins/UniRx/Scripts/Observable.Time.cs
+Assets/Plugins/UniRx/Scripts/Observer.cs
+Assets/Plugins/UniRx/Scripts/Operators/Aggregate.cs
+Assets/Plugins/UniRx/Scripts/Operators/Amb.cs
+Assets/Plugins/UniRx/Scripts/Operators/AsObservable.cs
+Assets/Plugins/UniRx/Scripts/Operators/AsSingleUnitObservable.cs
+Assets/Plugins/UniRx/Scripts/Operators/AsUnitObservable.cs
+Assets/Plugins/UniRx/Scripts/Operators/Buffer.cs
+Assets/Plugins/UniRx/Scripts/Operators/Cast.cs
+Assets/Plugins/UniRx/Scripts/Operators/Catch.cs
+Assets/Plugins/UniRx/Scripts/Operators/CombineLatest.cs
+Assets/Plugins/UniRx/Scripts/Operators/Concat.cs
+Assets/Plugins/UniRx/Scripts/Operators/ContinueWith.cs
+Assets/Plugins/UniRx/Scripts/Operators/Create.cs
+Assets/Plugins/UniRx/Scripts/Operators/DefaultIfEmpty.cs
+Assets/Plugins/UniRx/Scripts/Operators/Defer.cs
+Assets/Plugins/UniRx/Scripts/Operators/Delay.cs
+Assets/Plugins/UniRx/Scripts/Operators/DelaySubscription.cs
+Assets/Plugins/UniRx/Scripts/Operators/Dematerialize.cs
+Assets/Plugins/UniRx/Scripts/Operators/Distinct.cs
+Assets/Plugins/UniRx/Scripts/Operators/DistinctUntilChanged.cs
+Assets/Plugins/UniRx/Scripts/Operators/Do.cs
+Assets/Plugins/UniRx/Scripts/Operators/Empty.cs
+Assets/Plugins/UniRx/Scripts/Operators/Finally.cs
+Assets/Plugins/UniRx/Scripts/Operators/First.cs
+Assets/Plugins/UniRx/Scripts/Operators/ForEachAsync.cs
+Assets/Plugins/UniRx/Scripts/Operators/FromEvent.cs
+Assets/Plugins/UniRx/Scripts/Operators/GroupBy.cs
+Assets/Plugins/UniRx/Scripts/Operators/IgnoreElements.cs
+Assets/Plugins/UniRx/Scripts/Operators/Last.cs
+Assets/Plugins/UniRx/Scripts/Operators/Materialize.cs
+Assets/Plugins/UniRx/Scripts/Operators/Merge.cs
+Assets/Plugins/UniRx/Scripts/Operators/Never.cs
+Assets/Plugins/UniRx/Scripts/Operators/ObserveOn.cs
+Assets/Plugins/UniRx/Scripts/Operators/OfType.cs
+Assets/Plugins/UniRx/Scripts/Operators/OperatorObservableBase.cs
+Assets/Plugins/UniRx/Scripts/Operators/OperatorObserverBase.cs
+Assets/Plugins/UniRx/Scripts/Operators/PairWise.cs
+Assets/Plugins/UniRx/Scripts/Operators/Range.cs
+Assets/Plugins/UniRx/Scripts/Operators/RefCount.cs
+Assets/Plugins/UniRx/Scripts/Operators/Repeat.cs
+Assets/Plugins/UniRx/Scripts/Operators/RepeatSafe.cs
+Assets/Plugins/UniRx/Scripts/Operators/Return.cs
+Assets/Plugins/UniRx/Scripts/Operators/Sample.cs
+Assets/Plugins/UniRx/Scripts/Operators/Scan.cs
+Assets/Plugins/UniRx/Scripts/Operators/Select.cs
+Assets/Plugins/UniRx/Scripts/Operators/SelectMany.cs
+Assets/Plugins/UniRx/Scripts/Operators/SelectWhere.cs
+Assets/Plugins/UniRx/Scripts/Operators/Single.cs
+Assets/Plugins/UniRx/Scripts/Operators/Skip.cs
+Assets/Plugins/UniRx/Scripts/Operators/SkipUntil.cs
+Assets/Plugins/UniRx/Scripts/Operators/SkipWhile.cs
+Assets/Plugins/UniRx/Scripts/Operators/Start.cs
+Assets/Plugins/UniRx/Scripts/Operators/StartWith.cs
+Assets/Plugins/UniRx/Scripts/Operators/SubscribeOn.cs
+Assets/Plugins/UniRx/Scripts/Operators/Switch.cs
+Assets/Plugins/UniRx/Scripts/Operators/Synchronize.cs
+Assets/Plugins/UniRx/Scripts/Operators/SynchronizedObserver.cs
+Assets/Plugins/UniRx/Scripts/Operators/Take.cs
+Assets/Plugins/UniRx/Scripts/Operators/TakeLast.cs
+Assets/Plugins/UniRx/Scripts/Operators/TakeUntil.cs
+Assets/Plugins/UniRx/Scripts/Operators/TakeWhile.cs
+Assets/Plugins/UniRx/Scripts/Operators/Throttle.cs
+Assets/Plugins/UniRx/Scripts/Operators/ThrottleFirst.cs
+Assets/Plugins/UniRx/Scripts/Operators/Throw.cs
+Assets/Plugins/UniRx/Scripts/Operators/TimeInterval.cs
+Assets/Plugins/UniRx/Scripts/Operators/Timeout.cs
+Assets/Plugins/UniRx/Scripts/Operators/Timer.cs
+Assets/Plugins/UniRx/Scripts/Operators/Timestamp.cs
+Assets/Plugins/UniRx/Scripts/Operators/ToArray.cs
+Assets/Plugins/UniRx/Scripts/Operators/ToList.cs
+Assets/Plugins/UniRx/Scripts/Operators/ToObservable.cs
+Assets/Plugins/UniRx/Scripts/Operators/Wait.cs
+Assets/Plugins/UniRx/Scripts/Operators/WhenAll.cs
+Assets/Plugins/UniRx/Scripts/Operators/Where.cs
+Assets/Plugins/UniRx/Scripts/Operators/WhereSelect.cs
+Assets/Plugins/UniRx/Scripts/Operators/WithLatestFrom.cs
+Assets/Plugins/UniRx/Scripts/Operators/Zip.cs
+Assets/Plugins/UniRx/Scripts/Operators/ZipLatest.cs
+Assets/Plugins/UniRx/Scripts/Pair.cs
+Assets/Plugins/UniRx/Scripts/Schedulers/CurrentThreadScheduler.cs
+Assets/Plugins/UniRx/Scripts/Schedulers/ImmediateScheduler.cs
+Assets/Plugins/UniRx/Scripts/Schedulers/IScheduler.cs
+Assets/Plugins/UniRx/Scripts/Schedulers/Scheduler.cs
+Assets/Plugins/UniRx/Scripts/Schedulers/ThreadPoolScheduler.cs
+Assets/Plugins/UniRx/Scripts/Subjects/AsyncSubject.cs
+Assets/Plugins/UniRx/Scripts/Subjects/BehaviorSubject.cs
+Assets/Plugins/UniRx/Scripts/Subjects/ConnectableObservable.cs
+Assets/Plugins/UniRx/Scripts/Subjects/ISubject.cs
+Assets/Plugins/UniRx/Scripts/Subjects/ReplaySubject.cs
+Assets/Plugins/UniRx/Scripts/Subjects/Subject.cs
+Assets/Plugins/UniRx/Scripts/Subjects/SubjectExtensions.cs
+Assets/Plugins/UniRx/Scripts/System/IObservable.cs
+Assets/Plugins/UniRx/Scripts/System/IObserver.cs
+Assets/Plugins/UniRx/Scripts/System/IOptimizedObservable.cs
+Assets/Plugins/UniRx/Scripts/System/IProgress.cs
+Assets/Plugins/UniRx/Scripts/System/Tuple.cs
+Assets/Plugins/UniRx/Scripts/System/Unit.cs
+Assets/Plugins/UniRx/Scripts/Tasks/TaskObservableExtensions.cs
+Assets/Plugins/UniRx/Scripts/Tasks/UniTaskObservableExtensions.cs
+Assets/Plugins/UniRx/Scripts/TimeInterval.cs
+Assets/Plugins/UniRx/Scripts/Timestamped.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/AsyncOperationExtensions.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/CancellationToken.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/CoroutineAsyncBridge.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Diagnostics/LogEntry.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Diagnostics/LogEntryExtensions.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Diagnostics/Logger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Diagnostics/ObservableDebugExtensions.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Diagnostics/ObservableLogger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Diagnostics/UnityDebugSink.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/FrameInterval.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/InspectableReactiveProperty.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/InspectorDisplayDrawer.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/LifetimeDisposableExtensions.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/MainThreadDispatcher.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/MainThreadScheduler.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Observable.Unity.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/ObservableWWW.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/ObserveExtensions.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/BatchFrame.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/DelayFrame.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/DelayFrameSubscription.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/FrameInterval.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/FrameTimeInterval.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/FromCoroutine.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/RepeatUntil.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/SampleFrame.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/SubscribeOnMainThread.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/ThrottleFirstFrame.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/ThrottleFrame.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Operators/TimeoutFrame.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/ReactiveCollection.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/ReactiveCommand.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/ReactiveDictionary.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/ReactiveProperty.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/ReactivePropertyReusablePromise.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/ScenePlaybackDetector.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Toolkit/ObjectPool.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableAnimatorTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableBeginDragTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableCancelTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableCanvasGroupChangedTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableCollision2DTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableCollisionTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableDeselectTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableDestroyTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableDragTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableDropTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableEnableTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableEndDragTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableEventTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableFixedUpdateTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableInitializePotentialDragTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableJointTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableLateUpdateTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableMouseTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableMoveTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableParticleTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservablePointerClickTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservablePointerDownTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservablePointerEnterTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservablePointerExitTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservablePointerUpTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableRectTransformTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableScrollTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableSelectTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableStateMachineTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableSubmitTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableTransformChangedTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableTrigger2DTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableTriggerBase.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableTriggerExtensions.Component.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableTriggerExtensions.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableTriggerTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableUpdateSelectedTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableUpdateTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/Triggers/ObservableVisibleTrigger.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/UnityEventExtensions.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/UnityGraphicExtensions.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/UnityUIComponentExtensions.cs
+Assets/Plugins/UniRx/Scripts/UnityEngineBridge/YieldInstructionCache.cs
+Assets/Plugins/UniRx/Scripts/UnityWinRTBridge/Thread.cs
+Assets/Plugins/UniRx/Scripts/UnityWinRTBridge/ThreadPoolScheduler_UnityWinRT.cs
+-lib:"D:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\unity"
