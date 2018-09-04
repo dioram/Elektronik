@@ -63,15 +63,23 @@
     <Compile Include="Assets\Scripts\Common\InputWithBrowse.cs" />
     <Compile Include="Assets\Scripts\Common\ListViewItem.cs" />
     <Compile Include="Assets\Scripts\Common\SceneList.cs" />
-    <Compile Include="Assets\Scripts\Offline\EventFileReader.cs" />
-    <Compile Include="Assets\Scripts\Offline\ISlamEvent.cs" />
+    <Compile Include="Assets\Scripts\Offline\EventFilePlayer.cs" />
+    <Compile Include="Assets\Scripts\Offline\EventReader.cs" />
+    <Compile Include="Assets\Scripts\Offline\Events\LMLBAEvent.cs" />
+    <Compile Include="Assets\Scripts\Offline\Events\LMObservationRemovalEvent.cs" />
+    <Compile Include="Assets\Scripts\Offline\Events\LMPointsFusionEvent.cs" />
+    <Compile Include="Assets\Scripts\Offline\Events\LMPointsRemovalEvent.cs" />
+    <Compile Include="Assets\Scripts\Offline\GState.cs" />
+    <Compile Include="Assets\Scripts\Offline\Events\ISLAMEvent.cs" />
+    <Compile Include="Assets\Scripts\Offline\Events\MainThreadEvent.cs" />
     <Compile Include="Assets\Scripts\Offline\SettingsMenu.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventType.cs" />
+    <Compile Include="Assets\Scripts\Offline\Events\SlamEventType.cs" />
+    <Compile Include="Assets\Scripts\Offline\SlamPoint.cs" />
     <Reference Include="UnityEditor.StandardEvents">
-      <HintPath>D:/Projects/Repos/Elektronik tools 2.0/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+      <HintPath>D:/Работа/Elektronik tools 2.0/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>D:/Projects/Repos/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+      <HintPath>D:/Работа/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>D:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
