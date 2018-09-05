@@ -11,16 +11,5 @@ namespace Elektronik.Offline
         public Vector3 Position { get; set; }
         public Color Color { get; set; }
         public bool IsRemoved { get; set; }
-
-        public SlamPoint(Vector3 position, Color color)
-        {
-            Position = position;
-            Color = color;
-        }
-
-        public SlamPoint(Vector3 position, Color color, bool isRemoved) : this(position, color)
-        {
-            IsRemoved = isRemoved;
-        }
     }
 }

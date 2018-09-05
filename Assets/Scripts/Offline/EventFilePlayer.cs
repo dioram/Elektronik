@@ -1,51 +1,125 @@
-﻿using System;
+﻿using Elektronik.Offline.Events;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
 namespace Elektronik.Offline
 {
-    class EventFilePlayer
+    public class EventFilePlayer
     {
-        GState[] m_timeline;
-        uint m_currentFrame;
+        private GState m_state;
+        private ISlamEvent[] m_events;
 
         public GState NextEvent()
         {
-            return m_timeline[m_currentFrame++];
+            if (!EndOfFile)
+            {
+                m_state.Update(m_events[++Position]);
+            }
+            return m_state;
+        }
+
+        public GState PrevEvent()
+        {
+            if (!StartOfFile)
+            {
+                m_state.Update(m_events[--Position]);
+            }
+            return m_state;
         }
 
         public GState NextKeyEvent()
         {
-            GState nextEvent = null;
-            for (uint i = m_currentFrame + 1; i < m_timeline.Length; ++i)
+            int idxOfNextKeyEvent = -1;
+            for (int i = Position + 1; i < Length; ++i)
             {
-                if (m_timeline[i].IsKeyEvent)
+                if (m_events[i].IsKeyEvent)
                 {
-                    nextEvent = m_timeline[i];
+                    idxOfNextKeyEvent = i;
                     break;
                 }
             }
-            return nextEvent;
+            if (idxOfNextKeyEvent != -1)
+            {
+                while (Position != idxOfNextKeyEvent)
+                {
+                    NextEvent();
+                }
+            }
+            return m_state;
         }
 
         public GState PrevKeyEvent()
         {
-            GState prevEvent = null;
-            for (uint i = m_currentFrame - 1; i >= 0; --i)
+            int idxOfNextKeyEvent = -1;
+            for (int i = Position - 1; i >= 0; --i)
             {
-                if (m_timeline[i].IsKeyEvent)
+                if (m_events[i].IsKeyEvent)
                 {
-                    prevEvent = m_timeline[i];
+                    idxOfNextKeyEvent = i;
                     break;
                 }
             }
-            return prevEvent;
+            if (idxOfNextKeyEvent != -1)
+            {
+                while (Position != idxOfNextKeyEvent)
+                {
+                    PrevEvent();
+                }
+            }
+            return m_state;
         }
 
-        public uint Position { get; set; }
+        public GState SetPosition(uint position)
+        {
+            Debug.Assert(position < Length && position >= 0);
+            uint countOfIterations = (uint)Math.Abs(position - Position);
+            if (position < Position)
+            {
+                for (int i = 0; i < countOfIterations; ++i)
+                {
+                    PrevEvent();
+                }
+            }
+            else if (position > Position)
+            {
+                for (int i = 0; i < countOfIterations; ++i)
+                {
+                    NextEvent();
+                }
+            }
+            return m_state;
+        }
 
-        public uint Length { get; private set; }
+        public bool EndOfFile { get; private set; }
+        public bool StartOfFile { get; private set; }
+
+        private int m_position;
+        public int Position
+        {
+            get {
+                return m_position;
+            }
+            private set
+            {
+                m_position = value;
+                EndOfFile = m_position == Length;
+                StartOfFile = m_position == 0;
+            }
+        }
+
+        public EventFilePlayer(ISlamEvent[] events)
+        {
+            m_events = events;
+            Length = m_events.Length;
+            LengthInTime = TimeSpan.FromMilliseconds(m_events.Last().Timestamp) - TimeSpan.FromMilliseconds(m_events.First().Timestamp);
+        }
+
+        public TimeSpan CurrentTimestamp { get { return TimeSpan.FromMilliseconds(m_state.Timestamp); } }
+
+        public int Length { get; private set; }
 
         public TimeSpan LengthInTime { get; private set; }
     }

@@ -9,9 +9,9 @@ namespace Elektronik.Offline
 {
     public static class EventReader
     {
-        public static GState[] AnalyzeFile(string path)
+        public static ISlamEvent[] AnalyzeFile(string path)
         {
-            GState[] result = null;
+            ISlamEvent[] result = null;
             using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
             {
                 if (br.ReadUInt32() != 0xDEADBEEF)
@@ -22,26 +22,60 @@ namespace Elektronik.Offline
                 if (br.ReadUInt32() != 0xDEADBEEF)
                     throw new FileLoadException("broken file (2nd magic number)");
                 int eventsCount = br.ReadInt32();
-                result = new GState[eventsCount];
-                GState lastFrame = new GState();
+                result = new ISlamEvent[eventsCount];
                 int[] offsetTable = Enumerable.Range(0, eventsCount).Select(_ => br.ReadInt32()).ToArray();
                 for (int i = 0; i < eventsCount; ++i)
                 {
                     SlamEventType slamEventType = (SlamEventType)br.ReadByte();
-                    switch (slamEventType)
-                    {
-                        case SlamEventType.MainThreadEvent:
-                            {
-                                lastFrame = lastFrame.CloneUpdate(MainThreadEvent.Parse(br));
-                                break;
-                            }
-                        default:
-                            break;
-                    }
-                    result[i] = lastFrame;
+                    result[i] = ParseEventByType(slamEventType, br);
                 }
             }
             return result;
+        }
+
+        private static ISlamEvent ParseEventByType(SlamEventType type, BinaryReader stream)
+        {
+            switch (type)
+            {
+                case SlamEventType.MainThreadEvent:
+                    {
+                        return MainThreadEvent.Parse(stream);
+                    }
+                case SlamEventType.LMPointsRemoval:
+                    {
+                        return RemovalEvent.Parse(stream, SlamEventType.LMPointsRemoval);
+                    }
+                case SlamEventType.LMPointsFusion:
+                    {
+                        return PointsFusionEvent.Parse(stream, SlamEventType.LMPointsFusion);
+                    }
+                case SlamEventType.LMObservationRemoval:
+                    {
+                        return RemovalEvent.Parse(stream, SlamEventType.LMObservationRemoval);
+                    }
+                case SlamEventType.LMLBA:
+                    {
+                        return MapModificationEvent.Parse(stream, SlamEventType.LMLBA);
+                    }
+                case SlamEventType.LCPointsFusion:
+                    {
+                        return PointsFusionEvent.Parse(stream, SlamEventType.LCPointsFusion);
+                    }
+                case SlamEventType.LCOptimizeEssentialGraph:
+                    {
+                        return MapModificationEvent.Parse(stream, SlamEventType.LCOptimizeEssentialGraph);
+                    }
+                case SlamEventType.LCGBA:
+                    {
+                        return MapModificationEvent.Parse(stream, SlamEventType.LCGBA);
+                    }
+                case SlamEventType.LCLoopClosingTry:
+                    {
+                        return LoopClosingTryEvent.Parse(stream);
+                    }
+                default:
+                    return null;
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Elektronik.Offline.Events
 {
-    public class LMLBAEvent : ISlamEvent
+    public class MapModificationEvent : ISlamEvent
     {
         public SlamEventType EventType { get; private set; }
 
@@ -19,14 +19,15 @@ namespace Elektronik.Offline.Events
         public int[] MovedObservationsIds { get; private set; }
         public Pose[] RelativeOffsetsOfMovedObservations { get; private set; }
 
-        public LMLBAEvent()
+        public MapModificationEvent(SlamEventType type)
         {
-            EventType = SlamEventType.LMLBA;
+            Debug.Assert(type == SlamEventType.LMLBA || type == SlamEventType.LCGBA || type == SlamEventType.LCOptimizeEssentialGraph);
+            EventType = type;
         }
 
-        public static LMLBAEvent Parse(BinaryReader stream)
+        public static MapModificationEvent Parse(BinaryReader stream, SlamEventType type)
         {
-            LMLBAEvent parsed = new LMLBAEvent();
+            MapModificationEvent parsed = new MapModificationEvent(type);
             parsed.Timestamp = stream.ReadInt32();
             parsed.MovedPtsCount = stream.ReadInt32();
             parsed.MovedPtsIds = new int[parsed.MovedPtsCount];

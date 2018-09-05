@@ -9,5 +9,7 @@ namespace Elektronik.Offline.Events
     public interface ISlamEvent
     {
         SlamEventType EventType { get; }
+        int Timestamp { get; }
+        bool IsKeyEvent { get; }
     }
 }

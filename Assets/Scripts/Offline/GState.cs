@@ -12,7 +12,14 @@ namespace Elektronik.Offline
         public Pose Pose { get; private set; }
         public uint Timestamp { get; private set; }
         public SortedDictionary<int, SlamPoint> PointCloud { get; private set; }
+        public SortedDictionary<int, SlamObservation> Observations { get; private set; }
         public ISlamEvent LastEvent { get; private set; }
+
+        public GState()
+        {
+            PointCloud = new SortedDictionary<int, SlamPoint>();
+            Observations = new SortedDictionary<int, SlamObservation>();
+        }
 
         public GState CloneUpdate(ISlamEvent slamEvent)
         {
@@ -37,22 +44,27 @@ namespace Elektronik.Offline
                     }
                 case SlamEventType.LMPointsRemoval:
                     {
-                        Update(slamEvent as LMPointsRemovalEvent, isInversed);
+                        Update(slamEvent as RemovalEvent, isInversed);
                         break;
                     }
                 case SlamEventType.LMPointsFusion:
                     {
-                        Update(slamEvent as LMPointsFusionEvent);
+                        Update(slamEvent as PointsFusionEvent);
                         break;
                     }
                 case SlamEventType.LMObservationRemoval:
                     {
-                        Update(slamEvent as LMObservationRemovalEvent);
+                        Update(slamEvent as RemovalEvent, isInversed);
                         break;
                     }
                 case SlamEventType.LMLBA:
                     {
-                        Update(slamEvent as LMLBAEvent);
+                        Update(slamEvent as MapModificationEvent, isInversed);
+                        break;
+                    }
+                case SlamEventType.LCLoopClosingTry:
+                    {
+                        Update(slamEvent as LoopClosingTryEvent);
                         break;
                     }
                 default:
@@ -64,7 +76,13 @@ namespace Elektronik.Offline
         {
             for (int i = 0; i < mainThreadEvent.NewPointsCount; ++i)
             {
-                PointCloud.Add(mainThreadEvent.NewPointsIds[i], new SlamPoint(mainThreadEvent.NewPointsCoordinates[i], Color.gray));
+                SlamPoint newPoint = new SlamPoint()
+                {
+                    Position = mainThreadEvent.NewPointsCoordinates[i],
+                    Color = Color.gray,
+                    IsRemoved = false,
+                };
+                PointCloud.Add(mainThreadEvent.NewPointsIds[i], newPoint);
             }
             for (int i = 0; i < mainThreadEvent.RecalcPointsCount; ++i)
             {
@@ -76,7 +94,7 @@ namespace Elektronik.Offline
             }
         }
 
-        public void Update(LMPointsRemovalEvent lMPointsRemovalEvent, bool isInversed = false)
+        public void Update(RemovalEvent lMPointsRemovalEvent, bool isInversed = false)
         {
             for (int i = 0; i < lMPointsRemovalEvent.RemovedMapPointsNumber; ++i)
             {
@@ -91,8 +109,9 @@ namespace Elektronik.Offline
             }
         }
 
-        public void Update(LMPointsFusionEvent lMPointsFusionEvent)
+        public void Update(PointsFusionEvent lMPointsFusionEvent)
         {
+            // TODO: учесть тип события
             for (int i = 0; i < lMPointsFusionEvent.FusedMapPointsCount; ++i)
             {
                 PointCloud[lMPointsFusionEvent.ReplacedMapPointsIds[i]].Color = Color.blue;
@@ -100,38 +119,61 @@ namespace Elektronik.Offline
             }
         }
 
-        public void Update(LMObservationRemovalEvent lMObservationRemovalEvent)
+        public void Update(MapModificationEvent mapModificationEvent, bool isInverted)
         {
-            // TODO: спросить что это за штука и как она должна отображаться в сцене
-            throw new NotImplementedException();
-        }
-
-        public void Update(LMLBAEvent lMLBAEvent, bool isInverted)
-        {
-            for (int i = 0; i < lMLBAEvent.MovedPtsCount; ++i)
+            // TODO: учесть тип события
+            for (int i = 0; i < mapModificationEvent.MovedPtsCount; ++i)
             {
                 if (!isInverted)
                 {
-                    PointCloud[lMLBAEvent.MovedPtsIds[i]].Position += lMLBAEvent.RelativeOffsetsOfMovedPts[i];
+                    PointCloud[mapModificationEvent.MovedPtsIds[i]].Position += mapModificationEvent.RelativeOffsetsOfMovedPts[i];
                 }
                 else
                 {
-                    PointCloud[lMLBAEvent.MovedPtsIds[i]].Position -= lMLBAEvent.RelativeOffsetsOfMovedPts[i];
+                    PointCloud[mapModificationEvent.MovedPtsIds[i]].Position -= mapModificationEvent.RelativeOffsetsOfMovedPts[i];
                 }
             }
-            for (int i = 0; i < lMLBAEvent.MovedObservationsCount; ++i)
+            for (int i = 0; i < mapModificationEvent.MovedObservationsCount; ++i)
             {
-                // TODO: спросить что это за штука и как она должна отображаться в сцене
-                throw new NotImplementedException();
+                SlamObservation observation = Observations[mapModificationEvent.MovedObservationsIds[i]];
+                Matrix4x4 currentObservationHomography = Matrix4x4.TRS(observation.Position, observation.Orientation, Vector3.one);
+                Matrix4x4 relativeObservationHomography = Matrix4x4.TRS(
+                    mapModificationEvent.RelativeOffsetsOfMovedObservations[i].position,
+                    mapModificationEvent.RelativeOffsetsOfMovedObservations[i].rotation, 
+                    Vector3.one);
+                Matrix4x4 resultHomography;
+                if (!isInverted)
+                {
+                    resultHomography = currentObservationHomography * relativeObservationHomography;
+                }
+                else
+                {
+                    resultHomography = currentObservationHomography * relativeObservationHomography.inverse;
+                }
+                observation.Position = resultHomography.GetColumn(3);
+                observation.Orientation = Quaternion.LookRotation(resultHomography.GetColumn(2), resultHomography.GetColumn(1));
+            }
+        }
+
+        public void Update(LoopClosingTryEvent loopClosingTryEvent)
+        {
+            for (int i = 0; i < loopClosingTryEvent.CandidatesCount; ++i)
+            {
+                Observations[loopClosingTryEvent.CandidatesIds[i]].Statistics1 = loopClosingTryEvent.LoopClosingAttempts[i, 0];
+                Observations[loopClosingTryEvent.CandidatesIds[i]].Statistics2 = loopClosingTryEvent.LoopClosingAttempts[i, 1];
+                Observations[loopClosingTryEvent.CandidatesIds[i]].Statistics3 = loopClosingTryEvent.LoopClosingAttempts[i, 2];
+                Observations[loopClosingTryEvent.CandidatesIds[i]].Statistics4 = loopClosingTryEvent.LoopClosingAttempts[i, 3];
             }
         }
 
         public object Clone()
         {
-            GState clone = new GState();
-            clone.Pose = Pose;
-            clone.Timestamp = Timestamp;
-            clone.PointCloud = new SortedDictionary<int, SlamPoint>(PointCloud);
+            GState clone = new GState
+            {
+                Pose = Pose,
+                Timestamp = Timestamp,
+                PointCloud = new SortedDictionary<int, SlamPoint>(PointCloud),
+            };
             return clone;
         }
     }
