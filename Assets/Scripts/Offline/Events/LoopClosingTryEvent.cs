@@ -9,8 +9,9 @@ namespace Elektronik.Offline.Events
     public class LoopClosingTryEvent : ISlamEvent
     {
         public SlamEventType EventType { get; private set; }
-
         public int Timestamp { get; private set; }
+        public bool IsKeyEvent { get; private set; }
+
         public byte CandidatesCount { get; private set; }
         public int[] CandidatesIds { get; private set; }
         public byte[,] LoopClosingAttempts { get; private set; }
@@ -18,6 +19,7 @@ namespace Elektronik.Offline.Events
         public LoopClosingTryEvent()
         {
             EventType = SlamEventType.LCLoopClosingTry;
+            IsKeyEvent = true;
         }
 
         public static LoopClosingTryEvent Parse(BinaryReader stream)

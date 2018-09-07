@@ -8,8 +8,9 @@ namespace Elektronik.Offline.Events
     public class MainThreadEvent : ISlamEvent
     {
         public SlamEventType EventType { get; private set; }
-        
-        public uint Timestamp { get; private set; }
+        public int Timestamp { get; private set; }
+        public bool IsKeyEvent { get; private set; }
+
         public uint NewPointsCount { get; private set; }
         public int[] NewPointsIds { get; private set; }
         public Vector3[] NewPointsCoordinates { get; private set; }
@@ -20,7 +21,7 @@ namespace Elektronik.Offline.Events
         public int LocalPointsCount { get; private set; }
         public int[] LocalPointsIds { get; private set; }
         public int NewKeyObservationId { get; private set; }
-        public Pose FramePose { get; private set; }
+        public Pose ObservationPose { get; private set; }
         public byte CovisibleObservationsCount { get; private set; }
         public int[] CovisibleObservationsIds { get; private set; }
         public int[] CovisibleObservationsOfCommonPointsCount { get; private set; }
@@ -28,13 +29,14 @@ namespace Elektronik.Offline.Events
         public MainThreadEvent()
         {
             EventType = SlamEventType.MainThreadEvent;
+            IsKeyEvent = false;
         }
 
         public static MainThreadEvent Parse(BinaryReader stream)
         {
             MainThreadEvent parsed = new MainThreadEvent();
 
-            parsed.Timestamp = stream.ReadUInt32();
+            parsed.Timestamp = (int)stream.ReadUInt32();
 
             parsed.NewPointsCount = stream.ReadUInt32();
             parsed.NewPointsIds = new int[parsed.NewPointsCount];
@@ -45,9 +47,9 @@ namespace Elektronik.Offline.Events
             }
             for (int i = 0; i < parsed.NewPointsCount; ++i)
             {
-                parsed.NewPointsCoordinates[i * 3].x = stream.ReadSingle();
-                parsed.NewPointsCoordinates[i * 3 + 1].y = stream.ReadSingle();
-                parsed.NewPointsCoordinates[i * 3 + 2].z = stream.ReadSingle();
+                parsed.NewPointsCoordinates[i].x = stream.ReadSingle();
+                parsed.NewPointsCoordinates[i].y = stream.ReadSingle();
+                parsed.NewPointsCoordinates[i].z = stream.ReadSingle();
             }
                 
             parsed.RecognizedPointsCount = stream.ReadInt32();
@@ -75,7 +77,7 @@ namespace Elektronik.Offline.Events
 
             float x = stream.ReadSingle(), y = stream.ReadSingle(), z = stream.ReadSingle();
             float qw = stream.ReadSingle(), qx = stream.ReadSingle(), qy = stream.ReadSingle(), qz = stream.ReadSingle();
-            parsed.FramePose = new Pose(new Vector3(x, y, z), new Quaternion(qx, qy, qz, qw));
+            parsed.ObservationPose = new Pose(new Vector3(x, y, z), new Quaternion(qx, qy, qz, qw));
 
             parsed.CovisibleObservationsCount = stream.ReadByte();
             parsed.CovisibleObservationsIds = new int[parsed.CovisibleObservationsCount];

@@ -7,6 +7,7 @@ using SimpleFileBrowser;
 using UnityEditor;
 using System.Linq;
 using Elektronik.Common;
+using System.IO;
 
 namespace Elektronik.Offline
 {
@@ -28,6 +29,8 @@ namespace Elektronik.Offline
 
         void AttachBehavior2FileInput()
         {
+            var inputField = goFileInput.GetComponentInChildren<InputField>();
+            inputField.ObserveEveryValueChanged(o => o.text).Do(t => buLoad.enabled = File.Exists(t)).Subscribe();
         }
 
         void AttachBehavior2RecentFiles()
@@ -42,7 +45,11 @@ namespace Elektronik.Offline
 
         void AttachBehavior2Load()
         {
-            buLoad.OnClickAsObservable().Subscribe(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Empty", UnityEngine.SceneManagement.LoadSceneMode.Single));
+            var inputField = GameObject.Find("Path field").GetComponent<InputField>();
+            buLoad.OnClickAsObservable()
+                .Do(_ => FileModeSettings.Path = inputField.text)
+                .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Empty", UnityEngine.SceneManagement.LoadSceneMode.Single))
+                .Subscribe();
         }
     }
 }

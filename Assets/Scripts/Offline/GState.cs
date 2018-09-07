@@ -7,13 +7,13 @@ using Elektronik.Offline.Events;
 
 namespace Elektronik.Offline
 {
-    public class GState : ICloneable
+    public class GState
     {
         public Pose Pose { get; private set; }
         public uint Timestamp { get; private set; }
         public SortedDictionary<int, SlamPoint> PointCloud { get; private set; }
         public SortedDictionary<int, SlamObservation> Observations { get; private set; }
-        public ISlamEvent LastEvent { get; private set; }
+        public ISlamEvent CurrentEvent { get; private set; }
 
         public GState()
         {
@@ -21,16 +21,9 @@ namespace Elektronik.Offline
             Observations = new SortedDictionary<int, SlamObservation>();
         }
 
-        public GState CloneUpdate(ISlamEvent slamEvent)
-        {
-            GState clone = Clone() as GState;
-            clone.Update(slamEvent);
-            return clone;
-        }
-
         public void Update(ISlamEvent slamEvent, bool isInversed = false)
         {
-            LastEvent = slamEvent;
+            CurrentEvent = slamEvent;
             foreach (var point in PointCloud)
             {
                 point.Value.Color = Color.black;
@@ -39,7 +32,7 @@ namespace Elektronik.Offline
             {
                 case SlamEventType.MainThreadEvent:
                     {
-                        Update(slamEvent as MainThreadEvent);
+                        Update(slamEvent as MainThreadEvent, isInversed);
                         break;
                     }
                 case SlamEventType.LMPointsRemoval:
@@ -72,8 +65,9 @@ namespace Elektronik.Offline
             }
         }
 
-        public void Update(MainThreadEvent mainThreadEvent)
+        public void Update(MainThreadEvent mainThreadEvent, bool isInversed)
         {
+            // TODO: учесть обратное действие
             for (int i = 0; i < mainThreadEvent.NewPointsCount; ++i)
             {
                 SlamPoint newPoint = new SlamPoint()
@@ -92,19 +86,30 @@ namespace Elektronik.Offline
             {
                 PointCloud[mainThreadEvent.RecognizedPointsIds[i]].Color = Color.green;
             }
+            if (mainThreadEvent.NewKeyObservationId > -1)
+            {
+                SlamObservation observation = new SlamObservation()
+                {
+                    Orientation = mainThreadEvent.ObservationPose.rotation,
+                    Position = mainThreadEvent.ObservationPose.position,
+                    Color = Color.gray,
+                    IsRemoved = false,
+                };
+                Observations.Add(mainThreadEvent.NewKeyObservationId, observation);
+            }
         }
 
-        public void Update(RemovalEvent lMPointsRemovalEvent, bool isInversed = false)
+        public void Update(RemovalEvent removalEvent, bool isInversed = false)
         {
-            for (int i = 0; i < lMPointsRemovalEvent.RemovedMapPointsNumber; ++i)
+            for (int i = 0; i < removalEvent.RemovedCount; ++i)
             {
-                if (isInversed)
+                if (removalEvent.EventType == SlamEventType.LMPointsRemoval)
                 {
-                    PointCloud[lMPointsRemovalEvent.RemovedMapPointsIds[i]].IsRemoved = true;
+                    PointCloud[removalEvent.RemovedIds[i]].IsRemoved = isInversed;
                 }
-                else
+                else if (removalEvent.EventType == SlamEventType.LMObservationRemoval)
                 {
-                    PointCloud[lMPointsRemovalEvent.RemovedMapPointsIds[i]].IsRemoved = false;
+                    Observations[removalEvent.RemovedIds[i]].IsRemoved = isInversed;
                 }
             }
         }
@@ -164,17 +169,6 @@ namespace Elektronik.Offline
                 Observations[loopClosingTryEvent.CandidatesIds[i]].Statistics3 = loopClosingTryEvent.LoopClosingAttempts[i, 2];
                 Observations[loopClosingTryEvent.CandidatesIds[i]].Statistics4 = loopClosingTryEvent.LoopClosingAttempts[i, 3];
             }
-        }
-
-        public object Clone()
-        {
-            GState clone = new GState
-            {
-                Pose = Pose,
-                Timestamp = Timestamp,
-                PointCloud = new SortedDictionary<int, SlamPoint>(PointCloud),
-            };
-            return clone;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Elektronik.Offline
             {
                 if (br.ReadUInt32() != 0xDEADBEEF)
                     throw new FileLoadException("broken file (1st magic number)");
-                br.BaseStream.Seek(sizeof(int), SeekOrigin.End);
+                br.BaseStream.Seek(br.BaseStream.Length - sizeof(int), SeekOrigin.Begin);
                 int tableOffset = br.ReadInt32();
                 br.BaseStream.Seek(tableOffset, SeekOrigin.Begin);
                 if (br.ReadUInt32() != 0xDEADBEEF)
@@ -26,15 +26,17 @@ namespace Elektronik.Offline
                 int[] offsetTable = Enumerable.Range(0, eventsCount).Select(_ => br.ReadInt32()).ToArray();
                 for (int i = 0; i < eventsCount; ++i)
                 {
-                    SlamEventType slamEventType = (SlamEventType)br.ReadByte();
-                    result[i] = ParseEventByType(slamEventType, br);
+                    br.BaseStream.Seek(offsetTable[i], SeekOrigin.Begin);
+                    UnityEngine.Debug.Log(String.Format("{0}. offset: {1} (0x{1:X8})", i, offsetTable[i]));
+                    result[i] = ParseEvent(br);
                 }
             }
             return result;
         }
 
-        private static ISlamEvent ParseEventByType(SlamEventType type, BinaryReader stream)
+        private static ISlamEvent ParseEvent(BinaryReader stream)
         {
+            SlamEventType type = (SlamEventType)stream.ReadByte();
             switch (type)
             {
                 case SlamEventType.MainThreadEvent:

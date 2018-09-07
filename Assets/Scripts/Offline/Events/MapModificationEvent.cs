@@ -10,8 +10,9 @@ namespace Elektronik.Offline.Events
     public class MapModificationEvent : ISlamEvent
     {
         public SlamEventType EventType { get; private set; }
-
         public int Timestamp { get; private set; }
+        public bool IsKeyEvent { get; private set; }
+
         public int MovedPtsCount { get; private set; }
         public int[] MovedPtsIds { get; private set; }
         public Vector3[] RelativeOffsetsOfMovedPts { get; private set; }
@@ -23,6 +24,7 @@ namespace Elektronik.Offline.Events
         {
             Debug.Assert(type == SlamEventType.LMLBA || type == SlamEventType.LCGBA || type == SlamEventType.LCOptimizeEssentialGraph);
             EventType = type;
+            IsKeyEvent = true;
         }
 
         public static MapModificationEvent Parse(BinaryReader stream, SlamEventType type)
@@ -36,11 +38,11 @@ namespace Elektronik.Offline.Events
             {
                 parsed.MovedPtsIds[i] = stream.ReadInt32();
             }
-            for (int i = 0; i < parsed.MovedPtsCount; i += 3)
+            for (int i = 0; i < parsed.MovedPtsCount; ++i)
             {
                 parsed.RelativeOffsetsOfMovedPts[i].x = stream.ReadSingle();
-                parsed.RelativeOffsetsOfMovedPts[i + 1].y = stream.ReadSingle();
-                parsed.RelativeOffsetsOfMovedPts[i + 2].z = stream.ReadSingle();
+                parsed.RelativeOffsetsOfMovedPts[i].y = stream.ReadSingle();
+                parsed.RelativeOffsetsOfMovedPts[i].z = stream.ReadSingle();
             }
 
             parsed.MovedObservationsCount = stream.ReadInt32();

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -825,7 +825,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 362418087}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
@@ -1619,6 +1619,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 452729028}
     m_Modifications:
+    - target: {fileID: 114655548340981184, guid: c6f2adf3f0b58214cb22dede433e8273,
+        type: 2}
+      propertyPath: filters.Array.size
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 224736706833828656, guid: c6f2adf3f0b58214cb22dede433e8273,
         type: 2}
       propertyPath: m_LocalPosition.x
@@ -1768,6 +1773,21 @@ Prefab:
         type: 2}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114655548340981184, guid: c6f2adf3f0b58214cb22dede433e8273,
+        type: 2}
+      propertyPath: filters.Array.data[1]
+      value: .bin
+      objectReference: {fileID: 0}
+    - target: {fileID: 114655548340981184, guid: c6f2adf3f0b58214cb22dede433e8273,
+        type: 2}
+      propertyPath: filters.Array.data[0]
+      value: .dat
+      objectReference: {fileID: 0}
+    - target: {fileID: 114655548340981184, guid: c6f2adf3f0b58214cb22dede433e8273,
+        type: 2}
+      propertyPath: initialPath
+      value: D:\Users\kozin\Downloads
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c6f2adf3f0b58214cb22dede433e8273, type: 2}
@@ -2046,7 +2066,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 569623694}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.999911
+  m_Size: 0.8307755
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2355,7 +2375,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00019957403}
+  m_AnchoredPosition: {x: 0, y: 0.5872669}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1889876881

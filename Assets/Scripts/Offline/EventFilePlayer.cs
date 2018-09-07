@@ -14,9 +14,10 @@ namespace Elektronik.Offline
 
         public GState NextEvent()
         {
+            UnityEngine.Debug.Log(Position);
             if (!EndOfFile)
             {
-                m_state.Update(m_events[++Position]);
+                m_state.Update(m_events[Position++]);
             }
             return m_state;
         }
@@ -25,7 +26,7 @@ namespace Elektronik.Offline
         {
             if (!StartOfFile)
             {
-                m_state.Update(m_events[--Position]);
+                m_state.Update(m_events[Position++]);
             }
             return m_state;
         }
@@ -113,8 +114,10 @@ namespace Elektronik.Offline
         public EventFilePlayer(ISlamEvent[] events)
         {
             m_events = events;
+            m_state = new GState();
             Length = m_events.Length;
             LengthInTime = TimeSpan.FromMilliseconds(m_events.Last().Timestamp) - TimeSpan.FromMilliseconds(m_events.First().Timestamp);
+            Position = 0;
         }
 
         public TimeSpan CurrentTimestamp { get { return TimeSpan.FromMilliseconds(m_state.Timestamp); } }

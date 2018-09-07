@@ -11,6 +11,8 @@ namespace Elektronik.Offline.Events
     {
         public SlamEventType EventType { get; private set; }
         public int Timestamp { get; private set; }
+        public bool IsKeyEvent { get; private set; }
+
         public int FusedMapPointsCount { get; private set; }
         public int[] ReplacedMapPointsIds { get; private set; }
         public int[] ReplacingMapPointsIds { get; private set; }
@@ -19,6 +21,7 @@ namespace Elektronik.Offline.Events
         {
             Debug.Assert(type == SlamEventType.LCPointsFusion || type == SlamEventType.LMPointsFusion);
             EventType = type;
+            IsKeyEvent = true;
         }
 
         public static PointsFusionEvent Parse(BinaryReader stream, SlamEventType type)
