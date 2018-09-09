@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Elektronik.Offline.Events
@@ -26,6 +27,24 @@ namespace Elektronik.Offline.Events
         public int[] CovisibleObservationsIds { get; private set; }
         public int[] CovisibleObservationsOfCommonPointsCount { get; private set; }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("MAIN THREAD")
+              .AppendFormat("Timestamp: {0}", TimeSpan.FromMilliseconds(Timestamp).ToString())
+              .AppendLine()
+              .AppendFormat("New points count: {0}", NewPointsCount)
+              .AppendLine()
+              .AppendFormat("Recognized points: {0}", RecognizedPointsCount)
+              .AppendLine()
+              .AppendFormat("Recalculated points: {0}", RecalcPointsCount)
+              .AppendLine()
+              .AppendFormat("Local points count: {0}", LocalPointsCount)
+              .AppendLine()
+              .AppendFormat("New key observation ID: {0}", NewKeyObservationId);
+            return sb.ToString();
+        }
+
         public MainThreadEvent()
         {
             EventType = SlamEventType.MainThreadEvent;
@@ -39,6 +58,8 @@ namespace Elektronik.Offline.Events
             parsed.Timestamp = (int)stream.ReadUInt32();
 
             parsed.NewPointsCount = stream.ReadUInt32();
+            Debug.Log(String.Format("New points count = {0}", parsed.NewPointsCount));
+
             parsed.NewPointsIds = new int[parsed.NewPointsCount];
             parsed.NewPointsCoordinates = new Vector3[parsed.NewPointsCount];
             for (int i = 0; i < parsed.NewPointsCount; ++i)

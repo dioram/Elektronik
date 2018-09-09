@@ -16,6 +16,16 @@ namespace Elektronik.Offline.Events
         public int[] CandidatesIds { get; private set; }
         public byte[,] LoopClosingAttempts { get; private set; }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("LOOP CLOSING")
+              .AppendFormat("Timestamp: {0}", TimeSpan.FromMilliseconds(Timestamp).ToString())
+              .AppendLine()
+              .AppendFormat("Candidates count: {0}", CandidatesCount);
+            return sb.ToString();
+        }
+
         public LoopClosingTryEvent()
         {
             EventType = SlamEventType.LCLoopClosingTry;

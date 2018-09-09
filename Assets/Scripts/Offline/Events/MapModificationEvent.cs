@@ -20,6 +20,19 @@ namespace Elektronik.Offline.Events
         public int[] MovedObservationsIds { get; private set; }
         public Pose[] RelativeOffsetsOfMovedObservations { get; private set; }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("MAP MODIFICATION")
+              .AppendFormat("Timestamp: {0}", TimeSpan.FromMilliseconds(Timestamp).ToString())
+              .AppendLine()
+              .AppendFormat("Modification type: {0}", EventType.ToString())
+              .AppendFormat("Moved points count: {0}", MovedPtsCount)
+              .AppendLine()
+              .AppendFormat("Moved observations count: {0}", MovedObservationsCount);
+            return sb.ToString();
+        }
+
         public MapModificationEvent(SlamEventType type)
         {
             Debug.Assert(type == SlamEventType.LMLBA || type == SlamEventType.LCGBA || type == SlamEventType.LCOptimizeEssentialGraph);

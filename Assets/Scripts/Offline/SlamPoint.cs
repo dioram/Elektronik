@@ -11,5 +11,16 @@ namespace Elektronik.Offline
         public Vector3 Position { get; set; }
         public Color Color { get; set; }
         public bool IsRemoved { get; set; }
+
+        public SlamPoint Clone()
+        {
+            SlamPoint point = new SlamPoint()
+            {
+                Position = Position,
+                Color = Color,
+                IsRemoved = IsRemoved,
+            };
+            return point;
+        }
     }
 }

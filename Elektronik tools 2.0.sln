@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elektronik tools 2.0", "UniRx.csproj", "{23AD7152-EA95-2749-A89C-B3B78B6DA9B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniRx", "UniRx.csproj", "{23AD7152-EA95-2749-A89C-B3B78B6DA9B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elektronik tools 2.0", "Assembly-CSharp-firstpass.csproj", "{B4D204B2-0164-C064-2B6C-FA65CCC177E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{B4D204B2-0164-C064-2B6C-FA65CCC177E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elektronik tools 2.0", "UniRx.Async.csproj", "{513F18CF-A8B1-4E74-B50F-38EAEA61C51D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniRx.Async", "UniRx.Async.csproj", "{513F18CF-A8B1-4E74-B50F-38EAEA61C51D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elektronik tools 2.0", "Assembly-CSharp.csproj", "{4ADB9648-086E-A9E4-5DE1-4EF166435D32}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{4ADB9648-086E-A9E4-5DE1-4EF166435D32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elektronik tools 2.0", "Assembly-CSharp-Editor-firstpass.csproj", "{A7A74EEB-8D91-BAB4-2F00-B1FBD2B84E1C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-firstpass", "Assembly-CSharp-Editor-firstpass.csproj", "{A7A74EEB-8D91-BAB4-2F00-B1FBD2B84E1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elektronik tools 2.0", "UniRx.Async.Editor.csproj", "{34E27FD9-CB88-9A22-08F9-A9A292A94452}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniRx.Async.Editor", "UniRx.Async.Editor.csproj", "{34E27FD9-CB88-9A22-08F9-A9A292A94452}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

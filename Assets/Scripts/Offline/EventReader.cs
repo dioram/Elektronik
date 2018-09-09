@@ -45,31 +45,31 @@ namespace Elektronik.Offline
                     }
                 case SlamEventType.LMPointsRemoval:
                     {
-                        return RemovalEvent.Parse(stream, SlamEventType.LMPointsRemoval);
+                        return RemovalEvent.Parse(stream, type);
                     }
                 case SlamEventType.LMPointsFusion:
                     {
-                        return PointsFusionEvent.Parse(stream, SlamEventType.LMPointsFusion);
+                        return PointsFusionEvent.Parse(stream, type);
                     }
                 case SlamEventType.LMObservationRemoval:
                     {
-                        return RemovalEvent.Parse(stream, SlamEventType.LMObservationRemoval);
+                        return RemovalEvent.Parse(stream, type);
                     }
                 case SlamEventType.LMLBA:
                     {
-                        return MapModificationEvent.Parse(stream, SlamEventType.LMLBA);
+                        return MapModificationEvent.Parse(stream, type);
                     }
                 case SlamEventType.LCPointsFusion:
                     {
-                        return PointsFusionEvent.Parse(stream, SlamEventType.LCPointsFusion);
+                        return PointsFusionEvent.Parse(stream, type);
                     }
                 case SlamEventType.LCOptimizeEssentialGraph:
                     {
-                        return MapModificationEvent.Parse(stream, SlamEventType.LCOptimizeEssentialGraph);
+                        return MapModificationEvent.Parse(stream, type);
                     }
                 case SlamEventType.LCGBA:
                     {
-                        return MapModificationEvent.Parse(stream, SlamEventType.LCGBA);
+                        return MapModificationEvent.Parse(stream, type);
                     }
                 case SlamEventType.LCLoopClosingTry:
                     {

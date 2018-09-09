@@ -17,6 +17,16 @@ namespace Elektronik.Offline.Events
         public int[] ReplacedMapPointsIds { get; private set; }
         public int[] ReplacingMapPointsIds { get; private set; }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("POINTS FUSION")
+              .AppendFormat("Timestamp: {0}", TimeSpan.FromMilliseconds(Timestamp).ToString())
+              .AppendLine()
+              .AppendFormat("Fused map points count: {0}", FusedMapPointsCount);
+            return sb.ToString();
+        }
+
         public PointsFusionEvent(SlamEventType type)
         {
             Debug.Assert(type == SlamEventType.LCPointsFusion || type == SlamEventType.LMPointsFusion);

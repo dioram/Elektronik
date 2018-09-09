@@ -16,10 +16,22 @@ namespace Elektronik.Offline.Events
         public int RemovedCount { get; private set; }
         public int[] RemovedIds { get; private set; }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("REMOVAL")
+              .AppendFormat("Timestamp: {0}", TimeSpan.FromMilliseconds(Timestamp).ToString())
+              .AppendLine()
+              .AppendFormat("Type of removal: {0}", EventType.ToString())
+              .AppendLine()
+              .AppendFormat("Removed count: {0}", RemovedCount);
+            return sb.ToString();
+        }
+
         public RemovalEvent(SlamEventType type)
         {
             Debug.Assert(type == SlamEventType.LMObservationRemoval || type == SlamEventType.LMPointsRemoval);
-            EventType = SlamEventType.LMPointsRemoval;
+            EventType = type;
         }
 
         public static RemovalEvent Parse(BinaryReader stream, SlamEventType type)

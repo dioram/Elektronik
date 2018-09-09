@@ -16,5 +16,21 @@ namespace Elektronik.Offline
         public byte Statistics2 { get; set; }
         public byte Statistics3 { get; set; }
         public byte Statistics4 { get; set; }
+
+        public SlamObservation Clone()
+        {
+            SlamObservation observation = new SlamObservation()
+            {
+                Position = Position,
+                Orientation = Orientation,
+                IsRemoved = IsRemoved,
+                Color = Color,
+                Statistics1 = Statistics1,
+                Statistics2 = Statistics2,
+                Statistics3 = Statistics3,
+                Statistics4 = Statistics4,
+            };
+            return observation;
+        }
     }
 }
