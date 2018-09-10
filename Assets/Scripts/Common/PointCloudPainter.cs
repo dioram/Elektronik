@@ -58,7 +58,6 @@ namespace Elektronik.Common
 
         void FillMesh(int id, int nPoints, int limitPoints, ref Mesh mesh)
         {
-            mesh.Clear();
             Vector3[] myPoints = new Vector3[nPoints];
             int[] indices = new int[nPoints];
             Color[] myColors = new Color[nPoints];

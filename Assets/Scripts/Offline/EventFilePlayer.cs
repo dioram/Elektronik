@@ -9,31 +9,34 @@ namespace Elektronik.Offline
 {
     public class EventFilePlayer
     {
-        private GState m_state;
+        //private GState m_state;
         private ISlamEvent[] m_events;
 
-        public GState NextEvent()
+        public ISlamEvent NextEvent()
         {
             UnityEngine.Debug.Log(Position);
+            ISlamEvent result = m_events[Position];
             if (!EndOfFile)
             {
-                m_state.Update(m_events[Position++]);
+                result = m_events[++Position];
             }
-            return m_state;
+            return result;
         }
 
-        public GState PrevEvent()
+        public ISlamEvent PrevEvent()
         {
+            ISlamEvent result = m_events[Position];
             if (!StartOfFile)
             {
-                m_state.Update(m_events[Position++]);
+                result = m_events[--Position];
             }
-            return m_state;
+            return result;
         }
 
-        public GState NextKeyEvent()
+        public ISlamEvent NextKeyEvent()
         {
             int idxOfNextKeyEvent = -1;
+            ISlamEvent result = m_events[Position];
             for (int i = Position + 1; i < Length; ++i)
             {
                 if (m_events[i].IsKeyEvent)
@@ -46,15 +49,16 @@ namespace Elektronik.Offline
             {
                 while (Position != idxOfNextKeyEvent)
                 {
-                    NextEvent();
+                    result = NextEvent();
                 }
             }
-            return m_state;
+            return result;
         }
 
-        public GState PrevKeyEvent()
+        public ISlamEvent PrevKeyEvent()
         {
             int idxOfNextKeyEvent = -1;
+            ISlamEvent result = m_events[Position];
             for (int i = Position - 1; i >= 0; --i)
             {
                 if (m_events[i].IsKeyEvent)
@@ -67,31 +71,32 @@ namespace Elektronik.Offline
             {
                 while (Position != idxOfNextKeyEvent)
                 {
-                    PrevEvent();
+                    result = PrevEvent();
                 }
             }
-            return m_state;
+            return result;
         }
 
-        public GState SetPosition(uint position)
+        public ISlamEvent SetPosition(uint position)
         {
             Debug.Assert(position < Length && position >= 0);
             uint countOfIterations = (uint)Math.Abs(position - Position);
+            ISlamEvent result = m_events[Position];
             if (position < Position)
             {
                 for (int i = 0; i < countOfIterations; ++i)
                 {
-                    PrevEvent();
+                    result = PrevEvent();
                 }
             }
             else if (position > Position)
             {
                 for (int i = 0; i < countOfIterations; ++i)
                 {
-                    NextEvent();
+                    result = NextEvent();
                 }
             }
-            return m_state;
+            return result;
         }
 
         public bool EndOfFile { get; private set; }
@@ -106,7 +111,7 @@ namespace Elektronik.Offline
             private set
             {
                 m_position = value;
-                EndOfFile = m_position == Length;
+                EndOfFile = m_position == Length - 1;
                 StartOfFile = m_position == 0;
             }
         }
@@ -114,13 +119,13 @@ namespace Elektronik.Offline
         public EventFilePlayer(ISlamEvent[] events)
         {
             m_events = events;
-            m_state = new GState();
+            //m_state = new GState();
             Length = m_events.Length;
             LengthInTime = TimeSpan.FromMilliseconds(m_events.Last().Timestamp) - TimeSpan.FromMilliseconds(m_events.First().Timestamp);
             Position = 0;
         }
 
-        public TimeSpan CurrentTimestamp { get { return TimeSpan.FromMilliseconds(m_state.Timestamp); } }
+        public TimeSpan CurrentTimestamp { get { return TimeSpan.FromMilliseconds(m_events[Position].Timestamp); } }
 
         public int Length { get; private set; }
 

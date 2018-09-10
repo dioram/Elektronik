@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Common\ControlPanel.cs" />
+    <Compile Include="Assets\Scripts\Common\FastPointCloud.cs" />
     <Compile Include="Assets\Scripts\Common\InputWithBrowse.cs" />
     <Compile Include="Assets\Scripts\Common\ListViewItem.cs" />
     <Compile Include="Assets\Scripts\Common\MeshObject.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Assets\Scripts\Offline\SettingsMenu.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamObservation.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamPoint.cs" />
+    <Compile Include="Assets\Scripts\Offline\SlamPointCloudManager.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Работа/Elektronik tools 2.0/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

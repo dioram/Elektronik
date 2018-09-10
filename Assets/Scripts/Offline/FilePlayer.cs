@@ -59,7 +59,7 @@ namespace Elektronik.Offline
 
         private void UpdatePoints()
         {
-            GState gState = m_eventFilePlayer.NextEvent();
+            GState gState = null;
             GameObject listViewItem = Instantiate(listViewItemPrefab);
             Text listViewItemText = listViewItem.transform.GetComponentInChildren<Text>();
             listViewItemText.fontSize = 14;

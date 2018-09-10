@@ -8,10 +8,12 @@ namespace Elektronik.Common
     [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
     public class MeshObject : MonoBehaviour
     {
-        const int MAX_VERTICES_COUNT = 65000;
+        public const int MAX_VERTICES_COUNT = 65000;
 
         MeshRenderer m_renderer;
         MeshFilter m_filter;
+        Mesh m_mesh;
+
         int[] m_indices;
         Vector3[] m_vertices;
         Color[] m_colors;
@@ -24,22 +26,50 @@ namespace Elektronik.Common
             m_indices = Enumerable.Range(0, MAX_VERTICES_COUNT).ToArray();
             m_vertices = new Vector3[MAX_VERTICES_COUNT];
             m_colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
-            m_filter.mesh = new Mesh();
-            m_filter.mesh.vertices = m_vertices;
-            m_filter.mesh.colors = m_colors;
-            m_filter.mesh.SetIndices(m_indices, MeshTopology.Points, 0);
+            m_mesh = new Mesh();
         }
 
-        public void SetPoint(int idx, Vector3 pos, Color color)
+        private void Start()
+        {
+            m_mesh.MarkDynamic();
+            m_mesh.vertices = m_vertices;
+            m_mesh.colors = m_colors;
+            m_mesh.SetIndices(m_indices, MeshTopology.Points, 0);
+            m_mesh.RecalculateBounds();
+            m_filter.mesh = m_mesh;
+        }
+
+        public void GetPoint(int idx, out Vector3 position, out Color color)
         {
             Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT);
-            m_vertices[idx] = pos;
+            position = m_vertices[idx];
+            color = m_colors[idx];
+        }
+
+        public void SetPoint(int idx, Vector3 position, Color color)
+        {
+            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT);
+            m_vertices[idx] = position;
             m_colors[idx] = color;
+        }
+
+        public void SetPointColor(int idx, Color color)
+        {
+            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT);
+            m_colors[idx] = color;
+        }
+
+        public void SetPointPosition(int idx, Vector3 position)
+        {
+            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT);
+            m_vertices[idx] = position;
         }
 
         public void Repaint()
         {
-            m_filter.mesh.RecalculateBounds();
+            m_mesh.vertices = m_vertices;
+            m_mesh.colors = m_colors;
+            m_mesh.RecalculateBounds();
         }
 
         public void Clear()
