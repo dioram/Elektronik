@@ -228,10 +228,10 @@ GameObject:
   m_Component:
   - component: {fileID: 55821239}
   - component: {fileID: 55821242}
-  - component: {fileID: 55821241}
   - component: {fileID: 55821240}
+  - component: {fileID: 55821241}
   m_Layer: 0
-  m_Name: SlamPointCloud
+  m_Name: SlamEventsManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -273,9 +273,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 55821238}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d76b460b511f5e438366462bdc99418, type: 3}
+  m_Script: {fileID: 11500000, guid: c2972549b56816442a8235b985454482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timelineSlider: {fileID: 1375853871}
+  timelineLabel: {fileID: 833832414}
 --- !u!114 &55821242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,7 +289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32a40ad52b8f0f04d8d111ec4a64d50e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scale: 0.5
+  scale: 0.001
   meshObjectPrefab: {fileID: 114956592286009986, guid: 43a6ae1673b6f3b4a8941b12aaca4f9a,
     type: 2}
 --- !u!1 &78384556
@@ -2683,7 +2685,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 55821241}
-        m_MethodName: Back
+        m_MethodName: Backward
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -6,31 +6,19 @@ using UnityEngine;
 
 namespace Elektronik.Offline
 {
-    public class SlamObservation
+    public struct SlamObservation
     {
-        public Vector3 Position { get; set; }
-        public Quaternion Orientation { get; set; }
-        public bool IsRemoved { get; set; }
-        public Color Color { get; set; }
-        public byte Statistics1 { get; set; }
-        public byte Statistics2 { get; set; }
-        public byte Statistics3 { get; set; }
-        public byte Statistics4 { get; set; }
+        public int id;
+        public Vector3 position;
+        public Quaternion orientation;
+        public bool isRemoved;
+        public Color color;
+        public byte statistics1;
+        public byte statistics2;
+        public byte statistics3;
+        public byte statistics4;
 
-        public SlamObservation Clone()
-        {
-            SlamObservation observation = new SlamObservation()
-            {
-                Position = Position,
-                Orientation = Orientation,
-                IsRemoved = IsRemoved,
-                Color = Color,
-                Statistics1 = Statistics1,
-                Statistics2 = Statistics2,
-                Statistics3 = Statistics3,
-                Statistics4 = Statistics4,
-            };
-            return observation;
-        }
+        public int[] covisibleObservationsIds;
+        public int[] covisibleObservationsOfCommonPointsCount;
     }
 }

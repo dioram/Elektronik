@@ -62,13 +62,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Common\ControlPanel.cs" />
+    <Compile Include="Assets\Scripts\Common\FastLinesCloud.cs" />
     <Compile Include="Assets\Scripts\Common\FastPointCloud.cs" />
     <Compile Include="Assets\Scripts\Common\InputWithBrowse.cs" />
+    <Compile Include="Assets\Scripts\Common\LinesMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\ListViewItem.cs" />
-    <Compile Include="Assets\Scripts\Common\MeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\PointCloudPainter.cs" />
+    <Compile Include="Assets\Scripts\Common\PointsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\SceneList.cs" />
-    <Compile Include="Assets\Scripts\Offline\EventFilePlayer.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamObservationsGraph.cs" />
     <Compile Include="Assets\Scripts\Offline\EventReader.cs" />
     <Compile Include="Assets\Scripts\Offline\Events\ISLAMEvent.cs" />
     <Compile Include="Assets\Scripts\Offline\Events\LoopClosingTryEvent.cs" />
@@ -78,12 +80,12 @@
     <Compile Include="Assets\Scripts\Offline\Events\RemovalEvent.cs" />
     <Compile Include="Assets\Scripts\Offline\Events\SlamEventType.cs" />
     <Compile Include="Assets\Scripts\Offline\FileModeSettings.cs" />
-    <Compile Include="Assets\Scripts\Offline\FilePlayer.cs" />
-    <Compile Include="Assets\Scripts\Offline\GState.cs" />
     <Compile Include="Assets\Scripts\Offline\SettingsMenu.cs" />
+    <Compile Include="Assets\Scripts\Offline\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamObservation.cs" />
+    <Compile Include="Assets\Scripts\Offline\SlamObservationNode.cs" />
+    <Compile Include="Assets\Scripts\Offline\SlamObservationsGraph.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamPoint.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamPointCloudManager.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Работа/Elektronik tools 2.0/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

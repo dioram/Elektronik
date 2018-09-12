@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Elektronik.Offline.Events
 {
@@ -13,8 +14,10 @@ namespace Elektronik.Offline.Events
         public int Timestamp { get; private set; }
         public bool IsKeyEvent { get; private set; }
 
+        public SlamPoint[] Points { get; private set; }
+        public SlamObservation[] Observations { get; private set; }
+
         public int RemovedCount { get; private set; }
-        public int[] RemovedIds { get; private set; }
 
         public override string ToString()
         {
@@ -30,7 +33,7 @@ namespace Elektronik.Offline.Events
 
         public RemovalEvent(SlamEventType type)
         {
-            Debug.Assert(type == SlamEventType.LMObservationRemoval || type == SlamEventType.LMPointsRemoval);
+            UnityEngine.Debug.Assert(type == SlamEventType.LMObservationRemoval || type == SlamEventType.LMPointsRemoval);
             EventType = type;
         }
 
@@ -39,11 +42,29 @@ namespace Elektronik.Offline.Events
             RemovalEvent parsed = new RemovalEvent(type);
             parsed.Timestamp = stream.ReadInt32();
             parsed.RemovedCount = stream.ReadInt32();
-            parsed.RemovedIds = new int[parsed.RemovedCount];
-            for (int i = 0; i < parsed.RemovedCount; ++i)
+
+            if (type == SlamEventType.LMPointsRemoval)
             {
-                parsed.RemovedIds[i] = stream.ReadInt32();
+                parsed.Points = new SlamPoint[parsed.RemovedCount];
+                parsed.Observations = null;
+                for (int i = 0; i < parsed.RemovedCount; ++i)
+                {
+                    parsed.Points[i].id = stream.ReadInt32();
+                    parsed.Points[i].color = Color.red;
+                }
             }
+            else
+            {
+                parsed.Observations = new SlamObservation[parsed.RemovedCount];
+                parsed.Points = null;
+                for (int i = 0; i < parsed.RemovedCount; ++i)
+                {
+                    parsed.Observations[i].id = stream.ReadInt32();
+                    parsed.Observations[i].color = Color.red;
+                }
+            }
+
+            
             return parsed;
         }
     }

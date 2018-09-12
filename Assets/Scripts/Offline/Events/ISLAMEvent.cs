@@ -11,5 +11,8 @@ namespace Elektronik.Offline.Events
         SlamEventType EventType { get; }
         int Timestamp { get; }
         bool IsKeyEvent { get; }
+        SlamObservation[] Observations { get; }
+        SlamPoint[] Points { get; }
+
     }
 }

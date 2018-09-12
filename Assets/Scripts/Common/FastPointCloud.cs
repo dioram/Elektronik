@@ -10,22 +10,22 @@ namespace Elektronik.Common
     {
         public float scale = 1;
 
-        public MeshObject meshObjectPrefab;
-        private Dictionary<int, MeshObject> m_meshObjects;
+        public PointsMeshObject meshObjectPrefab;
+        private Dictionary<int, PointsMeshObject> m_meshObjects;
 
         private void Awake()
         {
-            m_meshObjects = new Dictionary<int, MeshObject>();
+            m_meshObjects = new Dictionary<int, PointsMeshObject>();
         }
 
         private void CheckMesh(int srcPointIdx, out int meshIdx, out int pointIdx)
         {
-            meshIdx = srcPointIdx / MeshObject.MAX_VERTICES_COUNT;
+            meshIdx = srcPointIdx / PointsMeshObject.MAX_VERTICES_COUNT;
             if (!m_meshObjects.ContainsKey(meshIdx))
             {
                 AddNewMesh(meshIdx);
             }
-            pointIdx = srcPointIdx % MeshObject.MAX_VERTICES_COUNT;
+            pointIdx = srcPointIdx % PointsMeshObject.MAX_VERTICES_COUNT;
         }
 
         public void GetPoint(int idx, out Vector3 position, out Color color)
@@ -90,7 +90,7 @@ namespace Elektronik.Common
 
         private void AddNewMesh(int idx)
         {
-            MeshObject newMesh = MF_AutoPool.Spawn(meshObjectPrefab.gameObject).GetComponent<MeshObject>();
+            PointsMeshObject newMesh = MF_AutoPool.Spawn(meshObjectPrefab.gameObject).GetComponent<PointsMeshObject>();
             m_meshObjects.Add(idx, newMesh);
         }
     }

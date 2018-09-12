@@ -6,21 +6,11 @@ using UnityEngine;
 
 namespace Elektronik.Offline
 {
-    public class SlamPoint
+    public struct SlamPoint
     {
-        public Vector3 Position { get; set; }
-        public Color Color { get; set; }
-        public bool IsRemoved { get; set; }
-
-        public SlamPoint Clone()
-        {
-            SlamPoint point = new SlamPoint()
-            {
-                Position = Position,
-                Color = Color,
-                IsRemoved = IsRemoved,
-            };
-            return point;
-        }
+        public int id;
+        public Vector3 position;
+        public Color color;
+        public bool isRemoved;
     }
 }

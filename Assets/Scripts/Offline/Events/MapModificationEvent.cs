@@ -14,11 +14,10 @@ namespace Elektronik.Offline.Events
         public bool IsKeyEvent { get; private set; }
 
         public int MovedPtsCount { get; private set; }
-        public int[] MovedPtsIds { get; private set; }
-        public Vector3[] RelativeOffsetsOfMovedPts { get; private set; }
         public int MovedObservationsCount { get; private set; }
-        public int[] MovedObservationsIds { get; private set; }
-        public Pose[] RelativeOffsetsOfMovedObservations { get; private set; }
+
+        public SlamPoint[] Points { get; private set; }
+        public SlamObservation[] Observations { get; private set; }
 
         public override string ToString()
         {
@@ -40,30 +39,44 @@ namespace Elektronik.Offline.Events
             IsKeyEvent = true;
         }
 
-        public static MapModificationEvent Parse(BinaryReader stream, SlamEventType type)
+        public static ISlamEvent Parse(BinaryReader stream, SlamEventType type)
         {
             MapModificationEvent parsed = new MapModificationEvent(type);
             parsed.Timestamp = stream.ReadInt32();
             parsed.MovedPtsCount = stream.ReadInt32();
-            parsed.MovedPtsIds = new int[parsed.MovedPtsCount];
-            parsed.RelativeOffsetsOfMovedPts = new Vector3[parsed.MovedPtsCount];
+
+            parsed.Points = new SlamPoint[parsed.MovedPtsCount];
+            
             for (int i = 0; i < parsed.MovedPtsCount; ++i)
             {
-                parsed.MovedPtsIds[i] = stream.ReadInt32();
+                parsed.Points[i].id = stream.ReadInt32();
+
+                if (type == SlamEventType.LMLBA)
+                {
+                    parsed.Points[i].color = new Color32(0x08, 0x2b, 0x59, 0xff);
+                }
+                else if (type == SlamEventType.LCGBA)
+                {
+                    parsed.Points[i].color = new Color32(0x59, 0x08, 0x08, 0xff);
+                }
+                else
+                {
+                    parsed.Points[i].color = new Color32(0x08, 0x59, 0x4f, 0xff);
+                }
             }
             for (int i = 0; i < parsed.MovedPtsCount; ++i)
             {
-                parsed.RelativeOffsetsOfMovedPts[i].x = stream.ReadSingle();
-                parsed.RelativeOffsetsOfMovedPts[i].y = stream.ReadSingle();
-                parsed.RelativeOffsetsOfMovedPts[i].z = stream.ReadSingle();
+                parsed.Points[i].position.x = stream.ReadSingle();
+                parsed.Points[i].position.y = stream.ReadSingle();
+                parsed.Points[i].position.z = stream.ReadSingle();
             }
 
             parsed.MovedObservationsCount = stream.ReadInt32();
-            parsed.MovedObservationsIds = new int[parsed.MovedObservationsCount];
-            parsed.RelativeOffsetsOfMovedObservations = new Pose[parsed.MovedObservationsCount];
+
+            parsed.Observations = new SlamObservation[parsed.MovedObservationsCount];
             for (int i = 0; i < parsed.MovedObservationsCount; ++i)
             {
-                parsed.MovedObservationsIds[i] = stream.ReadInt32();
+                parsed.Observations[i].id = stream.ReadInt32();
             }
 
             for (int i = 0; i < parsed.MovedObservationsCount; ++i)
@@ -81,7 +94,8 @@ namespace Elektronik.Offline.Events
                     y = stream.ReadSingle(),
                     z = stream.ReadSingle()
                 };
-                parsed.RelativeOffsetsOfMovedObservations[i] = new Pose(position, rotation);
+                parsed.Observations[i].position = position;
+                parsed.Observations[i].orientation = rotation;
             }
             return parsed;
         }
