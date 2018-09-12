@@ -51,6 +51,7 @@ namespace Elektronik.Offline.Events
                 {
                     parsed.Points[i].id = stream.ReadInt32();
                     parsed.Points[i].color = Color.red;
+                    parsed.Points[i].isRemoved = true;
                 }
             }
             else
@@ -61,6 +62,7 @@ namespace Elektronik.Offline.Events
                 {
                     parsed.Observations[i].id = stream.ReadInt32();
                     parsed.Observations[i].color = Color.red;
+                    parsed.Observations[i].isRemoved = true;
                 }
             }
 

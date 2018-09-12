@@ -70,7 +70,6 @@
     <Compile Include="Assets\Scripts\Common\PointCloudPainter.cs" />
     <Compile Include="Assets\Scripts\Common\PointsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\SceneList.cs" />
-    <Compile Include="Assets\Scripts\Common\SlamObservationsGraph.cs" />
     <Compile Include="Assets\Scripts\Offline\EventReader.cs" />
     <Compile Include="Assets\Scripts\Offline\Events\ISLAMEvent.cs" />
     <Compile Include="Assets\Scripts\Offline\Events\LoopClosingTryEvent.cs" />
@@ -86,6 +85,7 @@
     <Compile Include="Assets\Scripts\Offline\SlamObservationNode.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamObservationsGraph.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamPoint.cs" />
+    <None Include="Assets\Models\HorseMask2017\Materials\SFB_StandardHair.shader" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Работа/Elektronik tools 2.0/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

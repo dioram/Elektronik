@@ -17,8 +17,6 @@ namespace Elektronik.Common
         int[] m_indices;
         Vector3[] m_vertices;
         Color[] m_colors;
-        int m_lastLineIdx = 0;
-
 
         void Awake()
         {
@@ -36,11 +34,6 @@ namespace Elektronik.Common
             m_mesh.colors = m_colors;
             m_mesh.SetIndices(m_indices, MeshTopology.Lines, 0);
             m_filter.mesh = m_mesh;
-        }
-
-        public int GetNewLineIdx()
-        {
-            return m_lastLineIdx++;
         }
 
         public void GetLine(int idx, out Vector3 position1, out Vector3 position2, out Color color)
@@ -86,7 +79,6 @@ namespace Elektronik.Common
                 m_vertices[i] = Vector3.zero;
                 m_colors[i] = new Color(0, 0, 0, 0);
             }
-            m_lastLineIdx = 0;
             Repaint();
         }
     }

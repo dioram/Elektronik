@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Elektronik.Offline
 {
-    [RequireComponent(typeof(FastPointCloud))]
+    [RequireComponent(typeof(FastPointCloud), typeof(SlamObservationsGraph))]
     public class SlamEventsManager : MonoBehaviour
     {
         public Slider timelineSlider;
@@ -22,6 +22,7 @@ namespace Elektronik.Offline
         bool m_readyToWork = false;
         bool m_play = false;
 
+        SlamObservationsGraph m_observationsGraph;
         FastPointCloud m_fastPointCloud;
         int m_position = -1;
 
@@ -31,11 +32,11 @@ namespace Elektronik.Offline
             m_backwardEventsPoints = new SlamPoint[m_events.Length][];
             m_backwardEventsObservations = new SlamObservation[m_events.Length][];
             m_fastPointCloud = GetComponent<FastPointCloud>();
+            m_observationsGraph = GetComponent<SlamObservationsGraph>();
             timelineSlider.minValue = 0;
             timelineSlider.maxValue = m_events.Length;
             
             StartCoroutine(ProcessingEventsCoroutine());
-
         }
 
         void UpdateTime()
@@ -113,6 +114,7 @@ namespace Elektronik.Offline
         public void Stop()
         {
             m_play = false;
+            m_observationsGraph.Clear();
             m_fastPointCloud.Clear();
             ResetPosition();
         }
@@ -171,7 +173,36 @@ namespace Elektronik.Offline
                 if (needRepaint)
                     m_fastPointCloud.Repaint();
             }
-            // TODO: добавить граф Observations
+            
+            if (m_events[m_position].Observations != null)
+            {
+                SlamObservation[] observations = m_events[m_position].Observations;
+                for (int i = 0; i < observations.Length; ++i)
+                {
+                    SlamObservation observationUpdate = observations[i];
+                    if (!m_observationsGraph.ObservationExists(observationUpdate.id))
+                    {
+                        m_observationsGraph.AddNewObservation(observationUpdate);
+                    }
+                    else if (observationUpdate.isRemoved == true)
+                    {
+                        m_observationsGraph.RemoveObservation(observationUpdate.id);
+                    }
+                    else
+                    {
+                        SlamObservation currentObservation = m_observationsGraph.GetObservationNode(observationUpdate.id);
+                        Matrix4x4 currentOrientation = Matrix4x4.TRS(currentObservation.position, currentObservation.orientation.normalized, Vector3.one);
+                        Matrix4x4 relativeOrientation = Matrix4x4.TRS(observationUpdate.position, observationUpdate.orientation.normalized, Vector3.one);
+                        Matrix4x4 newOrientation = currentOrientation * relativeOrientation.inverse;
+                        observationUpdate.position = newOrientation.GetColumn(3);
+                        observationUpdate.orientation = Quaternion.LookRotation(newOrientation.GetColumn(2), newOrientation.GetColumn(1));
+                        m_observationsGraph.ReplaceObservation(observationUpdate);
+                    }
+                }
+                if (needRepaint)
+                    m_observationsGraph.RepaintGraph();
+            }
+            Debug.Log(m_events[m_position].ToString());
             return true;
         }
 
@@ -189,7 +220,22 @@ namespace Elektronik.Offline
                 if (needRepaint)
                     m_fastPointCloud.Repaint();
             }
-            // TODO: добавить граф Observations
+            if (m_backwardEventsObservations[m_position] != null)
+            {
+                SlamObservation[] observations = m_backwardEventsObservations[m_position];
+                for (int i = 0; i < observations.Length; ++i)
+                {
+                    SlamObservation observation = observations[i];
+                    if (observation.isRemoved)
+                    {
+                        m_observationsGraph.RemoveObservation(observation.id);
+                    }
+                    else
+                    {
+                        m_observationsGraph.ReplaceObservation(observation);
+                    }
+                }
+            }
             return true;
         }
 
@@ -214,20 +260,36 @@ namespace Elektronik.Offline
                     SlamPoint[] currentPoints = new SlamPoint[nextEventPoints.Length];
                     for (int pointIdx = 0; pointIdx < currentPoints.Length; ++pointIdx)
                     {
+                        if (nextEventPoints[pointIdx].id == -1)
+                            continue;
                         currentPoints[pointIdx].id = nextEventPoints[pointIdx].id;
                         m_fastPointCloud.GetPoint(currentPoints[pointIdx].id, out currentPoints[pointIdx].position, out currentPoints[pointIdx].color);
                     }
                     m_backwardEventsPoints[eventIdx] = currentPoints;
-                    NextEvent(needRepaint: false);
                 }
 
                 if (nextEvent.Observations != null)
                 {
-                    continue; // TODO: добавить граф Observations
+                    SlamObservation[] nextEventObservations = nextEvent.Observations;
+                    SlamObservation[] currentObservations = new SlamObservation[nextEventObservations.Length];
+                    for (int i = 0; i < nextEventObservations.Length; ++i)
+                    {
+                        if (m_observationsGraph.ObservationExists(nextEventObservations[i].id))
+                        {
+                            currentObservations[i] = m_observationsGraph.GetObservationNode(nextEventObservations[i].id);
+                        }
+                        else
+                        {
+                            currentObservations[i] = nextEventObservations[i];
+                            currentObservations[i].isRemoved = true;
+                        }
+                    }
+                    m_backwardEventsObservations[eventIdx] = currentObservations;
                 }
+
+                NextEvent(needRepaint: false);
             }
-            m_fastPointCloud.Clear();
-            ResetPosition();
+            Stop();
             m_readyToWork = true;
             yield return null;
         }

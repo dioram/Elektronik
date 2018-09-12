@@ -11,6 +11,23 @@ namespace Elektronik.Common
 
         public LinesMeshObject meshObjectPrefab;
         private Dictionary<int, LinesMeshObject> m_meshObjects;
+        private int m_lastLineIdx = 0;
+
+        public int[] GetNewLineIdxs(int countOfNewLines)
+        {
+            int[] result = new int[countOfNewLines];
+            for (int i = 0; i < countOfNewLines; ++i)
+            {
+                result[i] = GetNewLineIdx();
+            }
+            return result;
+        }
+
+        public int GetNewLineIdx()
+        {
+            // TODO: разработать более интеллектуальную выдачу ID
+            return m_lastLineIdx++;
+        }
 
         private void Awake()
         {
@@ -40,7 +57,9 @@ namespace Elektronik.Common
             int meshId;
             int lineId;
             CheckMesh(idx, out meshId, out lineId);
-            m_meshObjects[meshId].SetLine(lineId, position1 * scale, position2 * scale, color);
+            position1.Scale(scale * Vector3.one);
+            position2.Scale(scale * Vector3.one);
+            m_meshObjects[meshId].SetLine(lineId, position1, position2, color);
         }
 
         public void SetLineColor(int idx, Color color)
@@ -56,10 +75,12 @@ namespace Elektronik.Common
             int meshId;
             int pointId;
             CheckMesh(idx, out meshId, out pointId);
-            m_meshObjects[meshId].SetLinePositions(pointId, position1 * scale, position2 * scale);
+            position1.Scale(scale * Vector3.one);
+            position2.Scale(scale * Vector3.one);
+            m_meshObjects[meshId].SetLinePositions(pointId, position1, position2);
         }
 
-        public void SetPoints(int[] idxs, Vector3[] positions1, Vector3[] positions2, Color[] colors)
+        public void SetLines(int[] idxs, Vector3[] positions1, Vector3[] positions2, Color[] colors)
         {
             Debug.Assert((idxs.Length == positions1.Length) && (positions1.Length == positions2.Length) && (positions2.Length == colors.Length));
             for (int i = 0; i < idxs.Length; ++i)
@@ -76,6 +97,7 @@ namespace Elektronik.Common
             }
             MF_AutoPool.DespawnPool(meshObjectPrefab.gameObject);
             m_meshObjects.Clear();
+            m_lastLineIdx = 0;
         }
 
         public void Repaint()
