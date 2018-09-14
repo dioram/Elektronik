@@ -116,7 +116,7 @@ namespace Elektronik.Offline
             return m_slamObservationNodes.ContainsKey(observationId);
         }
 
-        public void RepaintGraph()
+        public void Repaint()
         {
             m_fastLinesCloud.Repaint();
         }

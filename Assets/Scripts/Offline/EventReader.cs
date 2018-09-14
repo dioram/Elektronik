@@ -9,7 +9,7 @@ namespace Elektronik.Offline
 {
     public static class EventReader
     {
-        public static ISlamEvent[] AnalyzeFile(string path)
+        public static ISlamEvent[] AnalyzeFile(string path, ISlamEventDataConverter converter)
         {
             ISlamEvent[] result = null;
             using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
@@ -28,7 +28,9 @@ namespace Elektronik.Offline
                 {
                     br.BaseStream.Seek(offsetTable[i], SeekOrigin.Begin);
                     UnityEngine.Debug.Log(String.Format("{0}. offset: {1} (0x{1:X8})", i, offsetTable[i]));
-                    result[i] = ParseEvent(br);
+                    ISlamEvent slamEvent = ParseEvent(br);
+                    converter.Convert(ref slamEvent);
+                    result[i] = slamEvent;
                 }
             }
             return result;

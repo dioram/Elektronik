@@ -280,6 +280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2972549b56816442a8235b985454482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scale: 0.01
   timelineSlider: {fileID: 1375853871}
   timelineLabel: {fileID: 833832414}
 --- !u!114 &55821242
@@ -293,7 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32a40ad52b8f0f04d8d111ec4a64d50e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scale: 0.1
+  scale: 1
   meshObjectPrefab: {fileID: 114956592286009986, guid: 43a6ae1673b6f3b4a8941b12aaca4f9a,
     type: 2}
 --- !u!114 &55821243
@@ -309,7 +310,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   observationPrefab: {fileID: 1473886850496362, guid: a9b29fffc76d0304b8e1578fd9a04f05,
     type: 2}
-  scale: 0.1
 --- !u!114 &55821244
 MonoBehaviour:
   m_ObjectHideFlags: 0

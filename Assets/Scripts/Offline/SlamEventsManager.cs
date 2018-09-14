@@ -12,6 +12,8 @@ namespace Elektronik.Offline
     [RequireComponent(typeof(FastPointCloud), typeof(SlamObservationsGraph))]
     public class SlamEventsManager : MonoBehaviour
     {
+        public float scale;
+
         public Slider timelineSlider;
         public Text timelineLabel;
 
@@ -28,7 +30,8 @@ namespace Elektronik.Offline
 
         void Start()
         {
-            m_events = EventReader.AnalyzeFile(FileModeSettings.Path);
+            ISlamEventDataConverter converter = new Camera2Unity3dSlamEventConverter(Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one * scale));
+            m_events = EventReader.AnalyzeFile(FileModeSettings.Path, converter);
             m_backwardEventsPoints = new SlamPoint[m_events.Length][];
             m_backwardEventsObservations = new SlamObservation[m_events.Length][];
             m_fastPointCloud = GetComponent<FastPointCloud>();
@@ -129,6 +132,7 @@ namespace Elektronik.Offline
                 NextEvent(needRepaint: false);
             }
             m_fastPointCloud.Repaint();
+            m_observationsGraph.Repaint();
             return true;
         }
 
@@ -150,6 +154,7 @@ namespace Elektronik.Offline
                 PrevEvent(needRepaint: false);
             }
             m_fastPointCloud.Repaint();
+            m_observationsGraph.Repaint();
             return true;
         }
 
@@ -160,6 +165,23 @@ namespace Elektronik.Offline
             if (m_position >= m_events.Length)
                 return false;
             Debug.AssertFormat(m_position < m_events.Length, "Position is {0}, but count of events is {1}", m_position, m_events.Length);
+
+            if (m_position > 0 && m_events[m_position - 1].Points != null)
+            {
+                SlamPoint[] validPoints = m_events[m_position - 1].Points.Where(p => p.id != -1).ToArray();
+                for (int i = 0; i < validPoints.Length; ++i)
+                {
+                    if (validPoints[i].isRemoved)
+                    {
+                        m_fastPointCloud.SetPointColor(validPoints[i].id, new Color(0, 0, 0, 0));
+                    }
+                    else
+                    {
+                        m_fastPointCloud.SetPointColor(validPoints[i].id, Color.black);
+                    }
+                }
+            }
+
             if (m_events[m_position].Points != null)
             {
                 SlamPoint[] validPoints = m_events[m_position].Points.Where(p => p.id != -1).ToArray();
@@ -167,28 +189,34 @@ namespace Elektronik.Offline
                 {
                     Vector3 curPointPosition;
                     Color curPointColor;
-                    m_fastPointCloud.GetPoint(i, out curPointPosition, out curPointColor);
+                    m_fastPointCloud.GetPoint(validPoints[i].id, out curPointPosition, out curPointColor);
                     m_fastPointCloud.SetPoint(validPoints[i].id, curPointPosition + validPoints[i].position, validPoints[i].color);
                 }
                 if (needRepaint)
                     m_fastPointCloud.Repaint();
             }
+
             
+
             if (m_events[m_position].Observations != null)
             {
                 SlamObservation[] observations = m_events[m_position].Observations;
                 for (int i = 0; i < observations.Length; ++i)
                 {
                     SlamObservation observationUpdate = observations[i];
-                    if (!m_observationsGraph.ObservationExists(observationUpdate.id))
+                    if (!m_observationsGraph.ObservationExists(observationUpdate.id)) // новый observation
                     {
                         m_observationsGraph.AddNewObservation(observationUpdate);
                     }
-                    else if (observationUpdate.isRemoved == true)
+                    else if (observationUpdate.isRemoved == true) // удалённый observation
                     {
                         m_observationsGraph.RemoveObservation(observationUpdate.id);
                     }
-                    else
+                    else if (observationUpdate.id == -1) // камера
+                    {
+                        m_observationsGraph.ReplaceObservation(observationUpdate);
+                    }
+                    else // перемещение ключевого observation
                     {
                         SlamObservation currentObservation = m_observationsGraph.GetObservationNode(observationUpdate.id);
                         Matrix4x4 currentOrientation = Matrix4x4.TRS(currentObservation.position, currentObservation.orientation.normalized, Vector3.one);
@@ -200,9 +228,9 @@ namespace Elektronik.Offline
                     }
                 }
                 if (needRepaint)
-                    m_observationsGraph.RepaintGraph();
+                    m_observationsGraph.Repaint();
             }
-            Debug.Log(m_events[m_position].ToString());
+            Debug.LogFormat("{0}. {1}", m_position, m_events[m_position]);
             return true;
         }
 
@@ -229,6 +257,10 @@ namespace Elektronik.Offline
                     if (observation.isRemoved)
                     {
                         m_observationsGraph.RemoveObservation(observation.id);
+                    }
+                    else if (!m_observationsGraph.ObservationExists(observation.id))
+                    {
+                        m_observationsGraph.AddNewObservation(observation);
                     }
                     else
                     {

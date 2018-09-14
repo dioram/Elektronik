@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Common\PointCloudPainter.cs" />
     <Compile Include="Assets\Scripts\Common\PointsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\SceneList.cs" />
+    <Compile Include="Assets\Scripts\Offline\Camera2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Offline\EventReader.cs" />
     <Compile Include="Assets\Scripts\Offline\Events\ISLAMEvent.cs" />
     <Compile Include="Assets\Scripts\Offline\Events\LoopClosingTryEvent.cs" />
@@ -79,6 +80,8 @@
     <Compile Include="Assets\Scripts\Offline\Events\RemovalEvent.cs" />
     <Compile Include="Assets\Scripts\Offline\Events\SlamEventType.cs" />
     <Compile Include="Assets\Scripts\Offline\FileModeSettings.cs" />
+    <Compile Include="Assets\Scripts\Offline\ISlamEventDataConverter.cs" />
+    <Compile Include="Assets\Scripts\Offline\Robot2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Offline\SettingsMenu.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamObservation.cs" />
