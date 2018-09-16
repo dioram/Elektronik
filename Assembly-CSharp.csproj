@@ -61,15 +61,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\CameraChanger.cs" />
     <Compile Include="Assets\Scripts\Common\ControlPanel.cs" />
     <Compile Include="Assets\Scripts\Common\FastLinesCloud.cs" />
     <Compile Include="Assets\Scripts\Common\FastPointCloud.cs" />
+    <Compile Include="Assets\Scripts\Common\FreeFlyCameraScript.cs" />
     <Compile Include="Assets\Scripts\Common\InputWithBrowse.cs" />
     <Compile Include="Assets\Scripts\Common\LinesMeshObject.cs" />
+    <Compile Include="Assets\Scripts\Common\ListView.cs" />
     <Compile Include="Assets\Scripts\Common\ListViewItem.cs" />
     <Compile Include="Assets\Scripts\Common\PointCloudPainter.cs" />
     <Compile Include="Assets\Scripts\Common\PointsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\SceneList.cs" />
+    <Compile Include="Assets\Scripts\Common\XYZAxis.cs" />
     <Compile Include="Assets\Scripts\Offline\Camera2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Offline\EventReader.cs" />
     <Compile Include="Assets\Scripts\Offline\Events\ISLAMEvent.cs" />
@@ -81,6 +85,7 @@
     <Compile Include="Assets\Scripts\Offline\Events\SlamEventType.cs" />
     <Compile Include="Assets\Scripts\Offline\FileModeSettings.cs" />
     <Compile Include="Assets\Scripts\Offline\ISlamEventDataConverter.cs" />
+    <Compile Include="Assets\Scripts\Offline\Return2OfflineMenu.cs" />
     <Compile Include="Assets\Scripts\Offline\Robot2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Offline\SettingsMenu.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsManager.cs" />

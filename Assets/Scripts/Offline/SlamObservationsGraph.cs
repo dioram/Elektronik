@@ -18,10 +18,6 @@ namespace Elektronik.Offline
         private void Awake()
         {
             m_slamObservationNodes = new SortedDictionary<int, SlamObservationNode>();
-        }
-
-        private void Start()
-        {
             m_fastLinesCloud = GetComponent<FastLinesCloud>();
         }
 
@@ -67,7 +63,8 @@ namespace Elektronik.Offline
                 covisibleNode.NodeLineIDPair.Remove(observationToRemove);
             }
 
-            MF_AutoPool.Despawn(observationToRemove.ObservationObject);
+            MF_AutoPool.Despawn(observationToRemove.ObservationObject); // выпиливаем со сцены
+            m_slamObservationNodes.Remove(observationId); // выпиливаем из графа
         }
 
         /// <summary>

@@ -30,7 +30,7 @@ namespace Elektronik.Common
                 foreach (var listItem in listItems)
                 {
                     ListViewItem item = listItem.Item.GetComponent<ListViewItem>();
-                    item.FullPath = listItem.Name;
+                    item.SetText(listItem.Name);
                     listItem.Item.transform.SetParent(contentOfScrollView);
                 }
             }

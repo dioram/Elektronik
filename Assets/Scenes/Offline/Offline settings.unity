@@ -1801,7 +1801,7 @@ Prefab:
     - target: {fileID: 114655548340981184, guid: c6f2adf3f0b58214cb22dede433e8273,
         type: 2}
       propertyPath: initialPath
-      value: D:\Users\kozin\Downloads
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c6f2adf3f0b58214cb22dede433e8273, type: 2}
@@ -2225,7 +2225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86720caa84c49f34b97d314e6df087d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  listItemPrefab: {fileID: 1948629708638896, guid: 2bd3a3915ff8853448a78ba5b36c357d,
+  listItemPrefab: {fileID: 1857514415656832, guid: 1739af6a1b3be3c4b9d1cfc5e1f06da3,
     type: 2}
 --- !u!1 &1636903348
 GameObject:

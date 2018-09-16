@@ -16,6 +16,7 @@ namespace Elektronik.Offline
 
         public Slider timelineSlider;
         public Text timelineLabel;
+        public ListView loggerListView;
 
         ISlamEvent[] m_events;
         SlamPoint[][] m_backwardEventsPoints;
@@ -30,16 +31,16 @@ namespace Elektronik.Offline
 
         void Start()
         {
-            ISlamEventDataConverter converter = new Camera2Unity3dSlamEventConverter(Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one * scale));
+            ISlamEventDataConverter converter = new Camera2Unity3dSlamEventConverter(Matrix4x4.Scale(Vector3.one * scale));
             m_events = EventReader.AnalyzeFile(FileModeSettings.Path, converter);
             m_backwardEventsPoints = new SlamPoint[m_events.Length][];
             m_backwardEventsObservations = new SlamObservation[m_events.Length][];
             m_fastPointCloud = GetComponent<FastPointCloud>();
             m_observationsGraph = GetComponent<SlamObservationsGraph>();
             timelineSlider.minValue = 0;
-            timelineSlider.maxValue = m_events.Length;
+            timelineSlider.maxValue = m_events.Length - 1;
             
-            StartCoroutine(ProcessingEventsCoroutine());
+            StartCoroutine(ProcessingEventsCoroutine()); // TODO: реализовать паттерн команда
         }
 
         void UpdateTime()
@@ -119,6 +120,7 @@ namespace Elektronik.Offline
             m_play = false;
             m_observationsGraph.Clear();
             m_fastPointCloud.Clear();
+            loggerListView.Clear();
             ResetPosition();
         }
 
@@ -139,6 +141,8 @@ namespace Elektronik.Offline
         bool PrevKeyEvent()
         {
             int idxOfKeyEvent = -1;
+            if (m_position == m_events.Length)
+                PrevEvent(needRepaint: false);
             for (int i = m_position - 1; i >= 0; --i)
             {
                 if (m_events[i].IsKeyEvent)
@@ -153,6 +157,10 @@ namespace Elektronik.Offline
             {
                 PrevEvent(needRepaint: false);
             }
+
+            // TODO: убрать костыль
+            PrevEvent(needRepaint: false);
+            NextEvent(needRepaint: false);
             m_fastPointCloud.Repaint();
             m_observationsGraph.Repaint();
             return true;
@@ -230,21 +238,34 @@ namespace Elektronik.Offline
                 if (needRepaint)
                     m_observationsGraph.Repaint();
             }
+
+            if (m_events[m_position].IsKeyEvent)
+            {
+                loggerListView.PushItem(m_events[m_position].ToString());
+            }
+
             Debug.LogFormat("{0}. {1}", m_position, m_events[m_position]);
             return true;
         }
 
         bool PrevEvent(bool needRepaint)
         {
-            m_position -= 1;
             if (m_position <= -1)
                 return false;
+            if (m_position == m_events.Length)
+            {
+                m_position -= 1;
+                return true;
+            }
+            Debug.AssertFormat(m_position >= 0, "Position is {0}, but count of events is {1}", m_position, m_events.Length);
             if (m_backwardEventsPoints[m_position] != null)
             {
-                int[] pointIds = m_backwardEventsPoints[m_position].Select(p => p.id).ToArray();
-                Vector3[] pointsPositions = m_backwardEventsPoints[m_position].Select(p => p.position).ToArray();
-                Color[] pointsColors = m_backwardEventsPoints[m_position].Select(p => p.color).ToArray();
-                m_fastPointCloud.SetPoints(pointIds, pointsPositions, pointsColors);
+                SlamPoint[] points = m_backwardEventsPoints[m_position];
+                for (int pointId = 0; pointId < points.Length; ++pointId)
+                {
+                    m_fastPointCloud.SetPoint(points[pointId].id, points[pointId].position, points[pointId].color);
+                }
+                
                 if (needRepaint)
                     m_fastPointCloud.Repaint();
             }
@@ -268,6 +289,16 @@ namespace Elektronik.Offline
                     }
                 }
             }
+
+            if (m_events[m_position].IsKeyEvent)
+            {
+                loggerListView.PopItem();
+            }
+
+            m_position -= 1;
+            Debug.Log(m_position);
+            Debug.LogFormat("{0}. {1}", m_position, m_events[m_position]);
+
             return true;
         }
 
@@ -285,19 +316,18 @@ namespace Elektronik.Offline
                     Debug.Log(String.Format("Processed {0} events...", eventIdx));
                     yield return null;
                 }
+                
                 ISlamEvent nextEvent = m_events[eventIdx];
                 if (nextEvent.Points != null)
                 {
-                    SlamPoint[] nextEventPoints = nextEvent.Points;
-                    SlamPoint[] currentPoints = new SlamPoint[nextEventPoints.Length];
-                    for (int pointIdx = 0; pointIdx < currentPoints.Length; ++pointIdx)
+                    SlamPoint[] nextEventPoints = nextEvent.Points.Where(p => p.id != -1).ToArray();
+                    SlamPoint[] currentPointsFromNextEvent = new SlamPoint[nextEventPoints.Length];
+                    for (int pointIdx = 0; pointIdx < currentPointsFromNextEvent.Length; ++pointIdx)
                     {
-                        if (nextEventPoints[pointIdx].id == -1)
-                            continue;
-                        currentPoints[pointIdx].id = nextEventPoints[pointIdx].id;
-                        m_fastPointCloud.GetPoint(currentPoints[pointIdx].id, out currentPoints[pointIdx].position, out currentPoints[pointIdx].color);
+                        currentPointsFromNextEvent[pointIdx].id = nextEventPoints[pointIdx].id;
+                        m_fastPointCloud.GetPoint(currentPointsFromNextEvent[pointIdx].id, out currentPointsFromNextEvent[pointIdx].position, out currentPointsFromNextEvent[pointIdx].color);
                     }
-                    m_backwardEventsPoints[eventIdx] = currentPoints;
+                    m_backwardEventsPoints[eventIdx] = currentPointsFromNextEvent;
                 }
 
                 if (nextEvent.Observations != null)
@@ -313,12 +343,11 @@ namespace Elektronik.Offline
                         else
                         {
                             currentObservations[i] = nextEventObservations[i];
-                            currentObservations[i].isRemoved = true;
+                            currentObservations[i].isRemoved = !nextEventObservations[i].isRemoved;
                         }
                     }
                     m_backwardEventsObservations[eventIdx] = currentObservations;
                 }
-
                 NextEvent(needRepaint: false);
             }
             Stop();

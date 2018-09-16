@@ -35,6 +35,7 @@ namespace Elektronik.Offline.Events
         {
             UnityEngine.Debug.Assert(type == SlamEventType.LMObservationRemoval || type == SlamEventType.LMPointsRemoval);
             EventType = type;
+            IsKeyEvent = true;
         }
 
         public static RemovalEvent Parse(BinaryReader stream, SlamEventType type)

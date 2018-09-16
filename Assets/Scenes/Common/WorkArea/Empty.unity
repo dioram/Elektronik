@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -141,6 +141,7 @@ Transform:
   - {fileID: 591181632}
   - {fileID: 551640043}
   - {fileID: 821947985}
+  - {fileID: 1143038080}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -283,6 +284,7 @@ MonoBehaviour:
   scale: 0.01
   timelineSlider: {fileID: 1375853871}
   timelineLabel: {fileID: 833832414}
+  loggerListView: {fileID: 1216620478}
 --- !u!114 &55821242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -308,7 +310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd923cd89e774c545b856fc4ec22f3f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  observationPrefab: {fileID: 1473886850496362, guid: a9b29fffc76d0304b8e1578fd9a04f05,
+  observationPrefab: {fileID: 1714931468150460, guid: c322bb4fa097094448bc7bdb6bd013e2,
     type: 2}
 --- !u!114 &55821244
 MonoBehaviour:
@@ -844,7 +846,7 @@ MonoBehaviour:
     emptyBehavior: 0
     maxSize: 5000
     maxEmptyBehavior: 1
-    prefab: {fileID: 1473886850496362, guid: a9b29fffc76d0304b8e1578fd9a04f05, type: 2}
+    prefab: {fileID: 1714931468150460, guid: c322bb4fa097094448bc7bdb6bd013e2, type: 2}
     printLogOnQuit: 0
   masterPool: []
 --- !u!1 &381669427
@@ -1672,7 +1674,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &518801450
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2062,6 +2064,7 @@ GameObject:
   - component: {fileID: 574466114}
   - component: {fileID: 574466113}
   - component: {fileID: 574466112}
+  - component: {fileID: 574466115}
   m_Layer: 0
   m_Name: Camera type
   m_TagString: Untagged
@@ -2134,11 +2137,9 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: Option A
+    - m_Text: VR Camera
       m_Image: {fileID: 0}
-    - m_Text: Option B
-      m_Image: {fileID: 0}
-    - m_Text: Option C
+    - m_Text: Free Fly Camera
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2179,6 +2180,20 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 574466110}
   m_CullTransparentMesh: 0
+--- !u!114 &574466115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 574466110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80052042e51f9b3499ef1e709a9c0975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameras:
+  - {fileID: 1764903020}
+  - {fileID: 1143038079}
 --- !u!1 &588093490
 GameObject:
   m_ObjectHideFlags: 0
@@ -3303,7 +3318,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Option A
+  m_Text: VR Camera
 --- !u!222 &868293088
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3841,7 +3856,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1107998933
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4035,6 +4050,100 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1126800564}
   m_CullTransparentMesh: 0
+--- !u!1 &1143038079
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1143038080}
+  - component: {fileID: 1143038083}
+  - component: {fileID: 1143038082}
+  - component: {fileID: 1143038081}
+  m_Layer: 0
+  m_Name: FreeFlyCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1143038080
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1143038079}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 11294688}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1143038081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1143038079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2a24d93d32615b438529d0f72921d88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraSensitivity: 200
+  climbSpeed: 4
+  normalMoveSpeed: 10
+  slowMoveFactor: 0.25
+  fastMoveFactor: 3
+--- !u!81 &1143038082
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1143038079}
+  m_Enabled: 1
+--- !u!20 &1143038083
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1143038079}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
 --- !u!1 &1155648433
 GameObject:
   m_ObjectHideFlags: 0
@@ -4233,6 +4342,7 @@ GameObject:
   - component: {fileID: 1216620477}
   - component: {fileID: 1216620476}
   - component: {fileID: 1216620475}
+  - component: {fileID: 1216620478}
   m_Layer: 0
   m_Name: Scroll View
   m_TagString: Untagged
@@ -4326,6 +4436,19 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.ScrollRect+ScrollRectEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &1216620478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1216620473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca8f566604406fe45b73cb57f9b3dd36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  listViewItemPrefab: {fileID: 1857514415656832, guid: 1739af6a1b3be3c4b9d1cfc5e1f06da3,
+    type: 2}
 --- !u!1 &1216796736
 GameObject:
   m_ObjectHideFlags: 0
@@ -5920,6 +6043,7 @@ GameObject:
   - component: {fileID: 1676763677}
   - component: {fileID: 1676763676}
   - component: {fileID: 1676763675}
+  - component: {fileID: 1676763678}
   m_Layer: 0
   m_Name: To menu
   m_TagString: Untagged
@@ -6021,6 +6145,17 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1676763673}
   m_CullTransparentMesh: 0
+--- !u!114 &1676763678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1676763673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de688a6e93d293a4fa03f4c4e02ed0bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1708023547
 GameObject:
   m_ObjectHideFlags: 0
@@ -7485,14 +7620,14 @@ Light:
   m_GameObject: {fileID: 2075153213}
   m_Enabled: 1
   serializedVersion: 8
-  m_Type: 1
+  m_Type: 2
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
-  m_Range: 10
+  m_Range: 100
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -7506,7 +7641,7 @@ Light:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_Lightmapping: 4
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -7521,7 +7656,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2075153213}
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 11.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
