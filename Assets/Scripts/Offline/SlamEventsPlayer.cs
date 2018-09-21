@@ -48,6 +48,18 @@ namespace Elektronik.Offline
             }
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.LeftBracket))
+            {
+                PrevKey();
+            }
+            if (Input.GetKeyDown(KeyCode.RightBracket))
+            {
+                NextKey();
+            }
+        }
+
         void FixedUpdate()
         {
             if (m_play)
