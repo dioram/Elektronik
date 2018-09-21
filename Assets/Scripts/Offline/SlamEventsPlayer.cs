@@ -27,21 +27,25 @@ namespace Elektronik.Offline
         private void PushLog()
         {
             ISlamEvent currentEvent = eventsManager.GetCurrentEvent();
-            if (currentEvent.IsKeyEvent)
+            if (currentEvent != null && currentEvent.IsKeyEvent)
                 loggerListView.PushItem(currentEvent.ToString());
         }
 
         private void PopLog()
         {
             ISlamEvent currentEvent = eventsManager.GetCurrentEvent();
-            if (currentEvent.IsKeyEvent)
+            if (currentEvent != null && currentEvent.IsKeyEvent)
                 loggerListView.PopItem();
         }
 
         private void UpdateTime()
         {
-            timelineLabel.text = TimeSpan.FromMilliseconds(eventsManager.GetCurrentEvent().Timestamp).ToString();
-            timelineSlider.value = eventsManager.GetCurrentEventPosition();
+            ISlamEvent currentEvent = eventsManager.GetCurrentEvent();
+            if (currentEvent != null)
+            {
+                timelineLabel.text = TimeSpan.FromMilliseconds(eventsManager.GetCurrentEvent().Timestamp).ToString();
+                timelineSlider.value = eventsManager.GetCurrentEventPosition();
+            }
         }
 
         void FixedUpdate()
@@ -49,7 +53,11 @@ namespace Elektronik.Offline
             if (m_play)
             {
                 m_play = eventsManager.Next();
-                UpdateTime();
+                if (m_play)
+                {
+                    PushLog();
+                    UpdateTime();
+                }
             }
         }
 
@@ -72,15 +80,22 @@ namespace Elektronik.Offline
         public void PrevKey()
         {
             Pause();
-            eventsManager.PrevKeyEvent();
-            UpdateTime();
+            if (eventsManager.PrevKeyEvent())
+            {
+                UpdateTime();
+                PopLog();
+            }
+            
         }
 
         public void NextKey()
         {
             Pause();
-            eventsManager.NextKeyEvent();
-            UpdateTime();
+            if (eventsManager.NextKeyEvent())
+            {
+                UpdateTime();
+                PushLog();
+            }
         }
     }
 }

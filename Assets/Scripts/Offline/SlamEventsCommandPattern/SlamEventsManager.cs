@@ -56,7 +56,14 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
 
         public ISlamEvent GetCurrentEvent()
         {
-            return m_events[m_position / 2]; // делением на 2 пропускаем пост обработку
+            if (m_position % 2 != 0)
+            {
+                return null;
+            }
+            else
+            {
+                return m_events[m_position / 2]; // делением на 2 пропускаем пост обработку
+            }
         }
 
         public bool Next(bool needRepaint = true)
@@ -129,9 +136,9 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
                 return false;
             while (GetCurrentEventPosition() != idxOfKeyEvent)
             {
-                Previous(needRepaint: false); // пропускаем пост обработку
                 Previous(needRepaint: false);
             }
+            Previous(needRepaint: false); // пропускаем пост обработку
             fastPointCloud.Repaint();
             observationsGraph.Repaint();
             return true;

@@ -40,7 +40,7 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
             for (int i = 0; i < dstPoints.Length; ++i)
             {
                 dstPoints[i] = points[i];
-                dstPoints[i].position = Vector3.zero;
+                dstPoints[i].position = Vector3.zero; // передвигать не надо, только раскрасить
 
                 if (dstPoints[i].isRemoved)
                 {

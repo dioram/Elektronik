@@ -42,7 +42,7 @@ namespace Elektronik.Offline
                 newNode.NodeLineIDPair.Add(covisibleObservationNode, linesIds[covisibleIndx]);
 
                 // рисуем грань
-                m_fastLinesCloud.SetLine(linesIds[covisibleIndx], newNode.Position, covisibleObservationNode.Position, Color.red);
+                m_fastLinesCloud.SetLine(linesIds[covisibleIndx], newNode.Position, covisibleObservationNode.Position, Color.gray);
             }
             m_slamObservationNodes.Add(observation.id, newNode);
         }

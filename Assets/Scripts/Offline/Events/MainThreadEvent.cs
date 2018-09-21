@@ -101,6 +101,9 @@ namespace Elektronik.Offline.Events
             SlamObservation observation = new SlamObservation();
 
             observation.id = stream.ReadInt32();
+            if (observation.id != -1)
+                parsed.IsKeyEvent = true;
+
             observation.color = Color.gray;
 
             float x = stream.ReadSingle(), y = stream.ReadSingle(), z = stream.ReadSingle();
