@@ -97,7 +97,6 @@
     <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\RepaintPointsCommand.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\SlamEventCommand.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\SlamEventsManager.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsManager_old.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsPlayer.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamLine.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamObservation.cs" />
