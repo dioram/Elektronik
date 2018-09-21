@@ -8,21 +8,22 @@ namespace Elektronik.Offline.Events
 {
     public class MainThreadEvent : ISlamEvent
     {
-        public SlamEventType EventType { get; private set; }
-        public int Timestamp { get; private set; }
-        public bool IsKeyEvent { get; private set; }
+        public SlamEventType EventType { get; set; }
+        public int Timestamp { get; set; }
+        public bool IsKeyEvent { get; set; }
 
-        public uint NewPointsCount { get; private set; }
-        public int RecognizedPointsCount { get; private set; }
-        public int RecalcPointsCount { get; private set; }
-        public int LocalPointsCount { get; private set; }
-        public int NewKeyObservationId { get; private set; }
-        public Pose ObservationPose { get; private set; }
-        public byte CovisibleObservationsCount { get; private set; }
+        public uint NewPointsCount { get; set; }
+        public int RecognizedPointsCount { get; set; }
+        public int RecalcPointsCount { get; set; }
+        public int LocalPointsCount { get; set; }
+        public int NewKeyObservationId { get; set; }
+        public Pose ObservationPose { get; set; }
+        public byte CovisibleObservationsCount { get; set; }
 
-        public SlamObservation[] Observations { get; private set; }
-
+        public SlamObservation[] Observations { get; set; }
         public SlamPoint[] Points { get; private set; }
+        public SlamLine[] Lines { get; private set; }
+
 
         public override string ToString()
         {
@@ -80,11 +81,11 @@ namespace Elektronik.Offline.Events
             }
 
             parsed.RecalcPointsCount = stream.ReadInt32();
-            SlamPoint[] recalcPoint = new SlamPoint[parsed.RecalcPointsCount];
+            SlamPoint[] recalcPoints = new SlamPoint[parsed.RecalcPointsCount];
             for (int i = 0; i < parsed.RecalcPointsCount; ++i)
             {
-                recalcPoint[i].id = stream.ReadInt32();
-                recalcPoint[i].color = new Color32(0xf4, 0xb3, 0x42, 0xff);
+                recalcPoints[i].id = stream.ReadInt32();
+                recalcPoints[i].color = new Color32(0xf4, 0xb3, 0x42, 0xff);
             }
 
             parsed.LocalPointsCount = stream.ReadInt32();
@@ -95,7 +96,7 @@ namespace Elektronik.Offline.Events
                 localPoints[i].color = Color.green;
             }
 
-            parsed.Points = newPoints.Concat(recognizedPoints).Concat(recalcPoint).Concat(localPoints).ToArray();
+            parsed.Points = newPoints.Concat(recognizedPoints).Concat(recalcPoints).Concat(localPoints).ToArray();
 
             SlamObservation observation = new SlamObservation();
 
@@ -121,7 +122,6 @@ namespace Elektronik.Offline.Events
             {
                 observation.covisibleObservationsOfCommonPointsCount[i] = stream.ReadInt32();
             }
-
             parsed.Observations = new[] { observation };
 
             return parsed;

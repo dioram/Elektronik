@@ -18,6 +18,7 @@ namespace Elektronik.Offline.Events
 
         public SlamPoint[] Points { get; private set; }
         public SlamObservation[] Observations { get; private set; }
+        public SlamLine[] Lines { get; private set; }
 
         public override string ToString()
         {
@@ -53,7 +54,7 @@ namespace Elektronik.Offline.Events
 
                 if (type == SlamEventType.LMLBA)
                 {
-                    parsed.Points[i].color = new Color32(0x08, 0x2b, 0x59, 0xff);
+                    parsed.Points[i].color = new Color32(0x19, 0x7b, 0xfc, 0xff);
                 }
                 else if (type == SlamEventType.LCGBA)
                 {
@@ -61,15 +62,19 @@ namespace Elektronik.Offline.Events
                 }
                 else
                 {
-                    parsed.Points[i].color = new Color32(0x08, 0x59, 0x4f, 0xff);
+                    parsed.Points[i].color = new Color32(0x19, 0x7b, 0xfc, 0xff);
                 }
             }
+
             for (int i = 0; i < parsed.MovedPtsCount; ++i)
             {
                 parsed.Points[i].position.x = stream.ReadSingle();
                 parsed.Points[i].position.y = stream.ReadSingle();
                 parsed.Points[i].position.z = stream.ReadSingle();
             }
+
+            parsed.Points = parsed.Points.Where(p => p.position != Vector3.zero).ToArray();
+            parsed.MovedPtsCount = parsed.Points.Length;
 
             parsed.MovedObservationsCount = stream.ReadInt32();
 
@@ -97,6 +102,7 @@ namespace Elektronik.Offline.Events
                 parsed.Observations[i].position = position;
                 parsed.Observations[i].orientation = rotation;
             }
+
             return parsed;
         }
     }

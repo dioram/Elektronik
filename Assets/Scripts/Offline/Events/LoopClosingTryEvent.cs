@@ -8,15 +8,15 @@ namespace Elektronik.Offline.Events
 {
     public class LoopClosingTryEvent : ISlamEvent
     {
-        public SlamEventType EventType { get; private set; }
-        public int Timestamp { get; private set; }
-        public bool IsKeyEvent { get; private set; }
+        public SlamEventType EventType { get; set; }
+        public int Timestamp { get; set; }
+        public bool IsKeyEvent { get; set; }
 
-        public byte CandidatesCount { get; private set; }
+        public byte CandidatesCount { get; set; }
 
-        public SlamObservation[] Observations { get; private set; }
-
+        public SlamObservation[] Observations { get; set; }
         public SlamPoint[] Points { get; private set; }
+        public SlamLine[] Lines { get; private set; }
 
         public override string ToString()
         {
@@ -53,6 +53,9 @@ namespace Elektronik.Offline.Events
                 parsed.Observations[i].statistics3 = stream.ReadByte();
                 parsed.Observations[i].statistics4 = stream.ReadByte();
             }
+
+            parsed.Observations = parsed.Observations;
+
             return parsed;
         }
     }

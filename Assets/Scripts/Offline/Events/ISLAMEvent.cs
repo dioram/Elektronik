@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using UnityEngine;
 
 namespace Elektronik.Offline.Events
 {
@@ -13,6 +9,6 @@ namespace Elektronik.Offline.Events
         bool IsKeyEvent { get; }
         SlamObservation[] Observations { get; }
         SlamPoint[] Points { get; }
-
+        SlamLine[] Lines { get; }
     }
 }

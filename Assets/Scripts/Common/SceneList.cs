@@ -20,10 +20,7 @@ namespace Elektronik.Common
         void FillScrollView()
         {
             var contentOfScrollView = m_scrollView.content;
-            string[] scenes = UnityEditor.EditorBuildSettings.scenes
-                .Where(s => s.path.Contains(@"Scenes/Common/WorkArea"))
-                .Select(s => s.path)
-                .ToArray();
+            string[] scenes = new[] { @"Scenes/Common/WorkArea/Empty.unity", };
             if (scenes != null && scenes.Length != 0)
             {
                 var listItems = scenes.Select(s => new { Item = Instantiate(listItemPrefab), Name = s });

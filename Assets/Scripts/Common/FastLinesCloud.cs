@@ -94,8 +94,8 @@ namespace Elektronik.Common
             foreach (var meshObject in m_meshObjects)
             {
                 meshObject.Value.Clear();
+                MF_AutoPool.Despawn(meshObject.Value.gameObject);
             }
-            MF_AutoPool.DespawnPool(meshObjectPrefab.gameObject);
             m_meshObjects.Clear();
             m_lastLineIdx = 0;
         }

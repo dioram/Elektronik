@@ -16,8 +16,10 @@ namespace Elektronik.Offline.Events
 
         public SlamPoint[] Points { get; private set; }
         public SlamObservation[] Observations { get; private set; }
+        public SlamLine[] Lines { get; private set; }
 
-        public int FusedMapPointsCount { get; private set; }
+
+        public int FusedMapPointsCount { get; set; }
 
         public override string ToString()
         {
@@ -46,8 +48,6 @@ namespace Elektronik.Offline.Events
             SlamPoint[] replaced = new SlamPoint[parsed.FusedMapPointsCount];
             SlamPoint[] replacing = new SlamPoint[parsed.FusedMapPointsCount];
 
-            
-
             for (int i = 0; i < parsed.FusedMapPointsCount; ++i)
             {
                 replaced[i].id = stream.ReadInt32();
@@ -65,6 +65,21 @@ namespace Elektronik.Offline.Events
                 }
             }
 
+            List<SlamLine> lines = new List<SlamLine>(parsed.FusedMapPointsCount);
+            for (int i = 0; i < parsed.FusedMapPointsCount; ++i)
+            {
+                if (replaced[i].id != -1 && replacing[i].id != -1)
+                {
+                    SlamLine line = new SlamLine()
+                    {
+                        color = replaced[i].color,
+                        pointId1 = replaced[i].id,
+                        pointId2 = replacing[i].id,
+                    };
+                    lines.Add(line);
+                }
+            }
+            parsed.Lines = lines.ToArray();
             parsed.Points = replaced.Concat(replacing).ToArray();
 
             return parsed;

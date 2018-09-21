@@ -16,6 +16,7 @@ namespace Elektronik.Offline.Events
 
         public SlamPoint[] Points { get; private set; }
         public SlamObservation[] Observations { get; private set; }
+        public SlamLine[] Lines { get; private set; }
 
         public int RemovedCount { get; private set; }
 
@@ -54,6 +55,7 @@ namespace Elektronik.Offline.Events
                     parsed.Points[i].color = Color.red;
                     parsed.Points[i].isRemoved = true;
                 }
+                parsed.Points = parsed.Points;
             }
             else
             {
@@ -65,6 +67,7 @@ namespace Elektronik.Offline.Events
                     parsed.Observations[i].color = Color.red;
                     parsed.Observations[i].isRemoved = true;
                 }
+                parsed.Observations = parsed.Observations;
             }
 
             
