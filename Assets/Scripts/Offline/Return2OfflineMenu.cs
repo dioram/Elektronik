@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UniRx;
+using VRTK;
 
 namespace Elektronik.Offline
 {
@@ -13,7 +14,9 @@ namespace Elektronik.Offline
         void Start()
         {
             Button button = GetComponent<Button>();
+            
             button.OnClickAsObservable()
+                .Do(_ => VRTK_SDKManager.instance.UnloadSDKSetup())
                 .Do(_ => SceneManager.LoadScene(@"Assets/Scenes/Offline/Offline settings.unity"))
                 .Subscribe();
         }

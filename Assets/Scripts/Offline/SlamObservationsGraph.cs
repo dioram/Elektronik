@@ -23,6 +23,11 @@ namespace Elektronik.Offline
 
         public void AddNewObservation(SlamObservation observation)
         {
+            if (observation.covisibleObservationsIds == null || observation.covisibleObservationsOfCommonPointsCount == null)
+            {
+                Debug.LogWarningFormat("Wrong observation id {0}", observation.id);
+                return;
+            }
             var newNode = new SlamObservationNode(MF_AutoPool.Spawn(observationPrefab, observation.position, observation.orientation)); // создаём новый узел
             newNode.SlamObservation = observation;
             newNode.Position = observation.position; // присваиваем ему положение

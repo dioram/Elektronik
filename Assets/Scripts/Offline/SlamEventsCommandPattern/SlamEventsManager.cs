@@ -155,6 +155,7 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
                     Debug.LogFormat("{0}. event {1}", i, m_events[i].ToString());
                     yield return null;
                 }
+                Debug.Log(m_events[i].EventType.ToString());
                 m_commands.Add(new SlamEventCommand(fastPointCloud, fastLineCloud, observationsGraph, m_events[i]));
                 Next(false);
                 m_commands.Add(new PostProcessingCommand(fastPointCloud, fastLineCloud, m_events[i]));

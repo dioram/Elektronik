@@ -12,10 +12,11 @@ namespace Elektronik.Common
     {
         public GameObject[] cameras;
         private Dropdown m_dropdown;
-        // Use this for initialization
+
         void Start()
         {
             m_dropdown = GetComponent<Dropdown>();
+            
             m_dropdown.OnValueChangedAsObservable()
                 .Do(_ => Array.ForEach(cameras, c => c.SetActive(false)))
                 .Do(id => cameras[id].SetActive(true))

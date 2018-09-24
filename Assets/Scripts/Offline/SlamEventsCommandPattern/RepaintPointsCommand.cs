@@ -40,8 +40,9 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
             for (int i = 0; i < result.Length; ++i)
             {
                 result[i] = operand[i];
-                result[i].isRemoved = !operand[i].isRemoved;
                 m_pointCloudManager.GetPoint(result[i].id, out result[i].position, out result[i].color);
+                if (result[i].color == new Color(0, 0, 0, 0))
+                    result[i].isRemoved = true;
             }
             return result;
         }

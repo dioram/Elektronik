@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 23058964129612076}
   - component: {fileID: 33678617464425682}
   - component: {fileID: 114956592286009986}
-  - component: {fileID: 114897836477999006}
   m_Layer: 0
   m_Name: Points mesh object
   m_TagString: Untagged
@@ -85,17 +84,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1013427539586658}
   m_Mesh: {fileID: 0}
---- !u!114 &114897836477999006
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1013427539586658}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277f66a0ffcbb5b44b4152f4433d8e8d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114956592286009986
 MonoBehaviour:
   m_ObjectHideFlags: 1

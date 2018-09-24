@@ -12,7 +12,7 @@ namespace Elektronik.Offline.Events
         public int Timestamp { get; set; }
         public bool IsKeyEvent { get; set; }
 
-        public byte CandidatesCount { get; set; }
+        public int CandidatesCount { get; set; }
 
         public SlamObservation[] Observations { get; set; }
         public SlamPoint[] Points { get; private set; }
@@ -38,7 +38,7 @@ namespace Elektronik.Offline.Events
         {
             LoopClosingTryEvent parsed = new LoopClosingTryEvent();
             parsed.Timestamp = stream.ReadInt32();
-            parsed.CandidatesCount = stream.ReadByte();
+            parsed.CandidatesCount = stream.ReadInt32();
             parsed.Points = null;
             parsed.Observations = new SlamObservation[parsed.CandidatesCount];
             for (int i = 0; i < parsed.CandidatesCount; ++i)
@@ -53,8 +53,6 @@ namespace Elektronik.Offline.Events
                 parsed.Observations[i].statistics3 = stream.ReadByte();
                 parsed.Observations[i].statistics4 = stream.ReadByte();
             }
-
-            parsed.Observations = parsed.Observations;
 
             return parsed;
         }

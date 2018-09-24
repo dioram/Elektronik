@@ -12,7 +12,7 @@ namespace Elektronik.Offline.Events
         public int Timestamp { get; set; }
         public bool IsKeyEvent { get; set; }
 
-        public uint NewPointsCount { get; set; }
+        public int NewPointsCount { get; set; }
         public int RecognizedPointsCount { get; set; }
         public int RecalcPointsCount { get; set; }
         public int LocalPointsCount { get; set; }
@@ -39,7 +39,9 @@ namespace Elektronik.Offline.Events
               .AppendLine()
               .AppendFormat("Local points count: {0}", LocalPointsCount)
               .AppendLine()
-              .AppendFormat("New key observation ID: {0}", NewKeyObservationId);
+              .AppendFormat("New key observation ID: {0}", NewKeyObservationId)
+              .AppendLine()
+              .AppendFormat("Covisible Observations Count {0}", CovisibleObservationsCount);
             return sb.ToString();
         }
 
@@ -52,9 +54,9 @@ namespace Elektronik.Offline.Events
         public static MainThreadEvent Parse(BinaryReader stream)
         {
             MainThreadEvent parsed = new MainThreadEvent();
-            parsed.Timestamp = (int)stream.ReadUInt32();
+            parsed.Timestamp = stream.ReadInt32();
 
-            parsed.NewPointsCount = stream.ReadUInt32();
+            parsed.NewPointsCount = stream.ReadInt32();
             Debug.Log(String.Format("New points count = {0}", parsed.NewPointsCount));
 
             SlamPoint[] newPoints = new SlamPoint[parsed.NewPointsCount];
@@ -100,8 +102,9 @@ namespace Elektronik.Offline.Events
 
             SlamObservation observation = new SlamObservation();
 
-            observation.id = stream.ReadInt32();
-            if (observation.id != -1)
+            parsed.NewKeyObservationId = stream.ReadInt32();
+            observation.id = parsed.NewKeyObservationId;
+            if (parsed.NewKeyObservationId != -1)
                 parsed.IsKeyEvent = true;
 
             observation.color = Color.gray;
