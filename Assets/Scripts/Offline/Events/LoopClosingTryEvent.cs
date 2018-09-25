@@ -24,7 +24,18 @@ namespace Elektronik.Offline.Events
             sb.AppendLine("LOOP CLOSING")
               .AppendFormat("Timestamp: {0}", TimeSpan.FromMilliseconds(Timestamp).ToString())
               .AppendLine()
-              .AppendFormat("Candidates count: {0}", CandidatesCount);
+              .AppendFormat("Candidates count: {0}", CandidatesCount)
+              .AppendLine();
+            foreach (var observation in Observations)
+            {
+                sb.AppendFormat("({0}; {1}; {2}; {3})", 
+                    observation.statistics1, 
+                    observation.statistics2, 
+                    observation.statistics3,
+                    observation.statistics4)
+                  .AppendLine();
+
+            }
             return sb.ToString();
         }
 
