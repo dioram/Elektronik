@@ -13,20 +13,9 @@ namespace Elektronik.Common
         private Dictionary<int, LinesMeshObject> m_meshObjects;
         private int m_lastLineIdx = 0;
 
-        public int[] GetNewLineIdxs(int countOfNewLines)
+        public static int GetIdxFor2VertIds(int id1, int id2)
         {
-            int[] result = new int[countOfNewLines];
-            for (int i = 0; i < countOfNewLines; ++i)
-            {
-                result[i] = GetNewLineIdx();
-            }
-            return result;
-        }
-
-        public int GetNewLineIdx()
-        {
-            // TODO: разработать более интеллектуальную выдачу ID
-            return m_lastLineIdx++;
+            return id1 ^ id2;
         }
 
         private void Awake()

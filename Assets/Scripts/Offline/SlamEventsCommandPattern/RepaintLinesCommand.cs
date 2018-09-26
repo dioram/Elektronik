@@ -45,9 +45,10 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
         {
             for (int i = 0; i < operand.Length; ++i)
             {
+                int lineId = FastLinesCloud.GetIdxFor2VertIds(operand[i].pointId1, operand[i].pointId2);
                 if (operand[i].isRemoved)
                 {
-                    m_linesCloud.SetLine(operand[i].lineIdx, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
+                    m_linesCloud.SetLine(lineId, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
                 }
                 else
                 {
@@ -57,7 +58,7 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
                     Color point2col;
                     m_pointCloud.GetPoint(operand[i].pointId1, out point1pos, out point1col);
                     m_pointCloud.GetPoint(operand[i].pointId2, out point2pos, out point2col);
-                    m_linesCloud.SetLine(operand[i].lineIdx, point1pos, point2pos, operand[i].color);
+                    m_linesCloud.SetLine(lineId, point1pos, point2pos, operand[i].color);
                 }
             }
         }

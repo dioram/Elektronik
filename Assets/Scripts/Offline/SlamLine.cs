@@ -8,7 +8,6 @@ namespace Elektronik.Offline.Events
 {
     public struct SlamLine
     {
-        public int lineIdx;
         public int pointId1;
         public int pointId2;
         public Color color;

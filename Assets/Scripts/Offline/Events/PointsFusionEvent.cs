@@ -78,7 +78,6 @@ namespace Elektronik.Offline.Events
                         color = replaced[i].color,
                         pointId1 = replaced[i].id,
                         pointId2 = replacing[i].id,
-                        lineIdx = replacing[i].id,
                     };
                     lines.Add(line);
                 }

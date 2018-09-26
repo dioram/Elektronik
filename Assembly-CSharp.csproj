@@ -88,7 +88,6 @@
     <Compile Include="Assets\Scripts\Offline\Return2OfflineMenu.cs" />
     <Compile Include="Assets\Scripts\Offline\Robot2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Offline\SettingsMenu.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\ClearCommand.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\CloudsManager.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\ISlamEventCommand.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\MacroCommand.cs" />

@@ -21,6 +21,10 @@ namespace Elektronik.Offline
             m_fastLinesCloud = GetComponent<FastLinesCloud>();
         }
 
+        /// <summary>
+        /// Добавить Observation
+        /// </summary>
+        /// <param name="observation"></param>
         public void AddNewObservation(SlamObservation observation)
         {
             if (observation.covisibleObservationsIds == null || observation.covisibleObservationsOfCommonPointsCount == null)
@@ -32,7 +36,6 @@ namespace Elektronik.Offline
             newNode.SlamObservation = observation;
             newNode.Position = observation.position; // присваиваем ему положение
             int countOfCovisibleObservations = observation.covisibleObservationsIds.Length; // определяем, сколько совидимых узлов
-            int[] linesIds = m_fastLinesCloud.GetNewLineIdxs(countOfCovisibleObservations); // для каждого совидимого получаем индекс новой границы
 
             for (int covisibleIndx = 0; covisibleIndx < countOfCovisibleObservations; ++covisibleIndx)
             {
@@ -40,18 +43,24 @@ namespace Elektronik.Offline
                 int covisibleId = observation.covisibleObservationsIds[covisibleIndx]; 
                 SlamObservationNode covisibleObservationNode = m_slamObservationNodes[covisibleId];
 
+                int lineId = FastLinesCloud.GetIdxFor2VertIds(covisibleObservationNode.SlamObservation.id, newNode.SlamObservation.id);
+
                 // совидимому узлу добавляем новый узел и индекс грани соединения с ним
-                covisibleObservationNode.NodeLineIDPair.Add(newNode, linesIds[covisibleIndx]);
+                covisibleObservationNode.NodeLineIDPair.Add(newNode, lineId);
 
                 // новому узлу добавляем совидимый узел и индекс грани соединения с ним
-                newNode.NodeLineIDPair.Add(covisibleObservationNode, linesIds[covisibleIndx]);
+                newNode.NodeLineIDPair.Add(covisibleObservationNode, lineId);
 
                 // рисуем грань
-                m_fastLinesCloud.SetLine(linesIds[covisibleIndx], newNode.Position, covisibleObservationNode.Position, Color.gray);
+                m_fastLinesCloud.SetLine(lineId, newNode.Position, covisibleObservationNode.Position, Color.gray);
             }
             m_slamObservationNodes.Add(observation.id, newNode);
         }
 
+        /// <summary>
+        /// Удалить Observation
+        /// </summary>
+        /// <param name="observationId"></param>
         public void RemoveObservation(int observationId)
         {
             // находим узел, который необходимо удалить
@@ -78,6 +87,8 @@ namespace Elektronik.Offline
         /// <param name="observation">Observation с абсолютными координатами</param>
         public void ReplaceObservation(SlamObservation observation)
         {
+            Debug.AssertFormat(m_slamObservationNodes.ContainsKey(observation.id), "Observation with Id {0} doesn't exist", observation.id);
+            
             // находим узел, который необходимо переместить
             SlamObservationNode nodeToReplace = m_slamObservationNodes[observation.id];
 
@@ -106,6 +117,34 @@ namespace Elektronik.Offline
             nodeToReplace.ObservationObject.transform.rotation = observation.orientation;
 
             nodeToReplace.SlamObservation = observation;
+        }
+
+        /// <summary>
+        /// Полностью обновить информацию об Observation
+        /// </summary>
+        /// <param name="observation"></param>
+        public void UpdateObservation(SlamObservation observation)
+        {
+            Debug.AssertFormat(m_slamObservationNodes.ContainsKey(observation.id), "Observation with Id {0} doesn't exist", observation.id);
+
+            RemoveObservation(observation.id);
+            AddNewObservation(observation);
+        }
+
+        /// <summary>
+        /// Обновить информацию об Observation, либо добавить его, если он не существует в графе
+        /// </summary>
+        /// <param name="observation"></param>
+        public void UpdateOrAddObservation(SlamObservation observation)
+        {
+            if (ObservationExists(observation.id))
+            {
+                UpdateObservation(observation);
+            }
+            else
+            {
+                AddNewObservation(observation);
+            }
         }
 
         public SlamObservation GetObservationNode(int observationId)
