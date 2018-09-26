@@ -8,6 +8,7 @@ namespace Elektronik.Offline
 {
     public struct SlamPoint
     {
+        public bool justColored;
         public int id;
         public Vector3 position;
         public Color color;

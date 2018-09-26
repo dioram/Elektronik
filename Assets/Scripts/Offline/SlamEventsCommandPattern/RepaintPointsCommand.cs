@@ -25,11 +25,17 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
             SlamPoint[] points = new SlamPoint[operand.Length];
             for (int i = 0; i < points.Length; ++i)
             {
-                points[i].id = operand[i].id;
-                points[i].isRemoved = operand[i].isRemoved;
-                m_pointCloudManager.GetPoint(points[i].id, out points[i].position, out points[i].color);
-                points[i].position += operand[i].position;
-                points[i].color = operand[i].color;
+                points[i] = operand[i];
+                if (points[i].justColored)
+                {
+                    Color stub;
+                    m_pointCloudManager.GetPoint(points[i].id, out points[i].position, out stub); // получаем текущую позицию
+                }
+                //points[i].id = operand[i].id;
+                //points[i].isRemoved = operand[i].isRemoved;
+                //m_pointCloudManager.GetPoint(points[i].id, out points[i].position, out points[i].color);
+                //points[i].position += operand[i].position;
+                //points[i].color = operand[i].color;
             }
             return points;
         }

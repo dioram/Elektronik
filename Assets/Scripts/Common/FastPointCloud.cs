@@ -87,6 +87,24 @@ namespace Elektronik.Common
             }
         }
 
+        public void GetAllPoints(out int[] indices, out Vector3[] positions, out Color[] colors)
+        {
+            indices = Enumerable.Repeat(1, PointsMeshObject.MAX_VERTICES_COUNT * m_meshObjects.Count).ToArray();
+            positions = new Vector3[PointsMeshObject.MAX_VERTICES_COUNT * m_meshObjects.Count];
+            colors = new Color[PointsMeshObject.MAX_VERTICES_COUNT * m_meshObjects.Count];
+            KeyValuePair<int, PointsMeshObject>[] allMeshes = m_meshObjects.Select(kv => kv).ToArray();
+            for (int meshNum = 0; meshNum < allMeshes.Length; ++meshNum)
+            {
+                Vector3[] meshObjPositions;
+                Color[] meshObjColors;
+                allMeshes[meshNum].Value.GetAllPoints(out meshObjPositions, out meshObjColors);
+                for (int i = 0; i < PointsMeshObject.MAX_VERTICES_COUNT; ++i)
+                {
+                    positions[PointsMeshObject.MAX_VERTICES_COUNT * allMeshes[meshNum].Key + i] = meshObjPositions[i];
+                    colors[PointsMeshObject.MAX_VERTICES_COUNT * allMeshes[meshNum].Key + i] = meshObjColors[i];
+                }
+            }
+        }
 
         private void AddNewMesh(int idx)
         {

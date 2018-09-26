@@ -68,6 +68,12 @@ namespace Elektronik.Common
             m_mesh.RecalculateBounds();
         }
 
+        public void GetAllPoints(out Vector3[] positions, out Color[] colors)
+        {
+            positions = m_vertices.Clone() as Vector3[];
+            colors = m_colors.Clone() as Color[];
+        }
+
         public void Clear()
         {
             for (int i = 0; i < MAX_VERTICES_COUNT; ++i)

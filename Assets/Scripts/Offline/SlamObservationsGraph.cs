@@ -129,5 +129,10 @@ namespace Elektronik.Offline
             m_fastLinesCloud.Clear();
             MF_AutoPool.DespawnPool(observationPrefab);
         }
+
+        public SlamObservation[] GetAllObservations()
+        {
+            return m_slamObservationNodes.Select(obsNode => obsNode.Value.SlamObservation).ToArray();
+        }
     }
 }

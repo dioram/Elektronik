@@ -45,7 +45,7 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
             for (int i = 0; i < result.Length; ++i)
             {
                 result[i] = new SlamObservation(operand[i]);
-                if (m_graph.ObservationExists(result[i].id) && result[i].id != -1)
+                /*if (m_graph.ObservationExists(result[i].id) && result[i].id != -1)
                 {
                     SlamObservation currentObservation = m_graph.GetObservationNode(result[i].id);
                     Matrix4x4 currentOrientation = Matrix4x4.TRS(currentObservation.position, currentObservation.orientation.normalized, Vector3.one);
@@ -53,7 +53,7 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
                     Matrix4x4 newOrientation = currentOrientation * relativeOrientation.inverse;
                     result[i].position = newOrientation.GetColumn(3);
                     result[i].orientation = Quaternion.LookRotation(newOrientation.GetColumn(2), newOrientation.GetColumn(1));
-                }
+                }*/
             }
             return result;
         }

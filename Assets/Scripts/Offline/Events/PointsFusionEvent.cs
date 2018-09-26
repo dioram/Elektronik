@@ -54,6 +54,8 @@ namespace Elektronik.Offline.Events
                 if (replaced[i].id != -1)
                 {
                     replaced[i].color = new Color32(0xff, 0x00, 0xff, 0xff);
+                    replaced[i].isRemoved = true;
+                    replaced[i].justColored = true;
                 }
             }
             for (int i = 0; i < parsed.FusedMapPointsCount; ++i)
@@ -62,6 +64,7 @@ namespace Elektronik.Offline.Events
                 if (replacing[i].id != -1)
                 {
                     replacing[i].color = new Color32(0xff, 0x00, 0xff, 0xff);
+                    replacing[i].justColored = true;
                 }
             }
 
@@ -75,6 +78,7 @@ namespace Elektronik.Offline.Events
                         color = replaced[i].color,
                         pointId1 = replaced[i].id,
                         pointId2 = replacing[i].id,
+                        lineIdx = replacing[i].id,
                     };
                     lines.Add(line);
                 }

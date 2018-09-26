@@ -37,7 +37,6 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
             {
                 result[i] = operand[i];
                 result[i].isRemoved = !operand[i].isRemoved;
-                result[i].lineIdx = m_linesCloud.GetNewLineIdx();
             }
             return result;
         }

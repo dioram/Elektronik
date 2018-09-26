@@ -80,6 +80,7 @@ namespace Elektronik.Offline.Events
             {
                 recognizedPoints[i].id = stream.ReadInt32();
                 recognizedPoints[i].color = new Color32(0xf4, 0xb3, 0x42, 0xff);
+                recognizedPoints[i].justColored = true;
             }
 
             parsed.RecalcPointsCount = stream.ReadInt32();
@@ -88,6 +89,7 @@ namespace Elektronik.Offline.Events
             {
                 recalcPoints[i].id = stream.ReadInt32();
                 recalcPoints[i].color = new Color32(0xf4, 0xb3, 0x42, 0xff);
+                recalcPoints[i].justColored = true;
             }
 
             parsed.LocalPointsCount = stream.ReadInt32();
@@ -96,6 +98,7 @@ namespace Elektronik.Offline.Events
             {
                 localPoints[i].id = stream.ReadInt32();
                 localPoints[i].color = Color.green;
+                localPoints[i].justColored = true;
             }
 
             parsed.Points = newPoints.Concat(recognizedPoints).Concat(recalcPoints).Concat(localPoints).ToArray();

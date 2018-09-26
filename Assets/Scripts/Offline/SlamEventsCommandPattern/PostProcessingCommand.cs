@@ -12,15 +12,15 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
     {
         public PostProcessingCommand(FastPointCloud pointCloud, FastLinesCloud linesCloud, ISlamEvent slamEvent)
         {
-            if (slamEvent.Lines != null)
-            {
-                SlamLine[] lines = GetLines(slamEvent.Lines);
-                m_commands.Add(new RepaintLinesCommand(linesCloud, pointCloud, lines));
-            }
             if (slamEvent.Points != null)
             {
                 SlamPoint[] points = GetPoints(slamEvent.Points.Where(p => p.id != -1).ToArray(), pointCloud);
                 m_commands.Add(new RepaintPointsCommand(pointCloud, points));
+            }
+            if (slamEvent.Lines != null)
+            {
+                SlamLine[] lines = GetLines(slamEvent.Lines);
+                m_commands.Add(new RepaintLinesCommand(linesCloud, pointCloud, lines));
             }
         }
 
@@ -40,7 +40,8 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
             for (int i = 0; i < dstPoints.Length; ++i)
             {
                 dstPoints[i] = points[i];
-                dstPoints[i].position = Vector3.zero; // передвигать не надо, только раскрасить
+
+                //dstPoints[i].position = Vector3.zero; // передвигать не надо, только раскрасить
 
                 if (dstPoints[i].isRemoved)
                 {

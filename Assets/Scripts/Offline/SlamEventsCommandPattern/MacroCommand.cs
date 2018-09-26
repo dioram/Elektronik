@@ -14,7 +14,7 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
             m_commands = new List<ISlamEventCommand>();
         }
 
-        public void Execute()
+        public virtual void Execute()
         {
             foreach (var command in m_commands)
             {
@@ -22,7 +22,7 @@ namespace Elektronik.Offline.SlamEventsCommandPattern
             }
         }
 
-        public void UnExecute()
+        public virtual void UnExecute()
         {
             foreach (var command in m_commands)
             {
