@@ -35,6 +35,12 @@ namespace Elektronik.Common
             m_filter.mesh = m_mesh;
         }
 
+        public bool PointExists(int idx)
+        {
+            Debug.AssertFormat(idx >= 0 && idx < MAX_VERTICES_COUNT, "Wrong idx ({0})", idx.ToString());
+            return (m_vertices[idx] == Vector3.zero && m_colors[idx] == new Color(0, 0, 0, 0));
+        }
+
         public void GetPoint(int idx, out Vector3 position, out Color color)
         {
             Debug.AssertFormat(idx >= 0 && idx < MAX_VERTICES_COUNT, "Wrong idx ({0})", idx.ToString());

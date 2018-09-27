@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Elektronik.Offline.SlamEventsCommandPattern;
+using Elektronik.Common.SlamEventsCommandPattern;
 using UnityEngine.UI;
 using Elektronik.Common;
 using System;
-using Elektronik.Offline.Events;
+using Elektronik.Common.Events;
 
 namespace Elektronik.Offline
 {

@@ -90,8 +90,8 @@ MonoBehaviour:
     y: 0
     width: 380
     height: 276
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 202, y: 221}
+  m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 18}
   m_Panes:
   - {fileID: 18}
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_MinSize: {x: 538, y: 271}
   m_MaxSize: {x: 18008, y: 10021}
   vertical: 0
-  controlID: 134
+  controlID: 148
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_MinSize: {x: 538, y: 392}
   m_MaxSize: {x: 18008, y: 14042}
   vertical: 1
-  controlID: 110
+  controlID: 9
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_MinSize: {x: 379, y: 121}
   m_MaxSize: {x: 8004, y: 4021}
   vertical: 0
-  controlID: 111
+  controlID: 10
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -278,8 +278,8 @@ MonoBehaviour:
     y: 0
     width: 1554
     height: 671
-  m_MinSize: {x: 100, y: 100}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 102, y: 121}
+  m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 14}
   m_Panes:
   - {fileID: 19}
@@ -458,20 +458,20 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scenes/Offline
+    - Assets/Scripts/Offline/SlamEventsCommandPattern
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Scenes/Offline
+  - Assets/Scripts/Offline/SlamEventsCommandPattern
   m_LastFoldersGridSize: 16
   m_LastProjectPath: "D:\\\u0420\u0430\u0431\u043E\u0442\u0430\\Elektronik tools 2.0"
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 66}
-    m_SelectedIDs: 180f0000
-    m_LastClickedID: 3864
-    m_ExpandedIDs: 00000000ea0e00002a0f0000c21000004a110000dc110000061200004a13000018160000a83b000000ca9a3b
+    scrollPos: {x: 0, y: 102}
+    m_SelectedIDs: 6e300000
+    m_LastClickedID: 12398
+    m_ExpandedIDs: 00000000fa2f00003a300000d23100005a320000ec320000163300005a34000028370000243c000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -499,7 +499,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000ea0e00002a0f0000c21000004a110000dc110000061200004a13000018160000a83b0000
+    m_ExpandedIDs: 00000000fa2f00003a300000d23100005a320000ec320000163300005a34000028370000243c0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -526,7 +526,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000deddffff262c00003693ffffe61200005e0e000000000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -615,9 +615,9 @@ MonoBehaviour:
   m_PersistentViewDataDictionary: {fileID: 0}
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 
+    m_SelectedIDs: c6060000
     m_LastClickedID: 0
-    m_ExpandedIDs: d8fbffff00000000
+    m_ExpandedIDs: 72f9ffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

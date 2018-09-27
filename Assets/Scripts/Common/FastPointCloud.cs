@@ -27,6 +27,20 @@ namespace Elektronik.Common
             }
             pointIdx = srcPointIdx % PointsMeshObject.MAX_VERTICES_COUNT;
         }
+        
+        public bool PointExists(int idx)
+        {
+            int meshIdx = idx / PointsMeshObject.MAX_VERTICES_COUNT;
+            if (m_meshObjects.ContainsKey(meshIdx))
+            {
+                int pointIdx = idx % PointsMeshObject.MAX_VERTICES_COUNT;
+                return m_meshObjects[meshIdx].PointExists(pointIdx);
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public void GetPoint(int idx, out Vector3 position, out Color color)
         {

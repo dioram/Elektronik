@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Elektronik.Offline.Events;
+using Elektronik.Common;
+using Elektronik.Common.Events;
 
 namespace Elektronik.Offline
 {
