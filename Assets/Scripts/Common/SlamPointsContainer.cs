@@ -34,14 +34,23 @@ namespace Elektronik.Common
 
         public void Update(SlamPoint point)
         {
-            Debug.AssertFormat(m_points.ContainsKey(point.id), "Container doesn't contain point with id {0}", point.id);
+            Debug.AssertFormat(m_points.ContainsKey(point.id), "[Update] Container doesn't contain point with id {0}", point.id);
             m_pointCloud.SetPoint(point.id, point.position, point.color);
             m_points[point.id] = point;
         }
 
+        public void ChangeColor(SlamPoint point)
+        {
+            Debug.AssertFormat(m_points.ContainsKey(point.id), "[Change color] Container doesn't contain point with id {0}", point.id);
+            m_pointCloud.SetPointColor(point.id, point.color);
+            SlamPoint current = m_points[point.id];
+            current.color = point.color;
+            m_points[point.id] = current;
+        }
+
         public void Remove(int pointId)
         {
-            Debug.AssertFormat(m_points.ContainsKey(pointId), "Container doesn't contain point with id {0}", pointId);
+            Debug.AssertFormat(m_points.ContainsKey(pointId), "[Remove] Container doesn't contain point with id {0}", pointId);
             m_pointCloud.SetPoint(pointId, Vector3.zero, new Color(0, 0, 0, 0));
             m_points.Remove(pointId);
         }
@@ -52,6 +61,8 @@ namespace Elektronik.Common
             {
                 m_pointCloud.SetPoint(pointId, Vector3.zero, new Color(0, 0, 0, 0));
             }
+            m_points.Clear();
+            Repaint();
         }
 
         public SlamPoint[] GetAllSlamPoints()
@@ -62,7 +73,7 @@ namespace Elektronik.Common
         public void SetPoint(SlamPoint point)
         {
             SlamPoint buttPlug;
-            if (TryGetPoint(point, out buttPlug))
+            if (!TryGetPoint(point, out buttPlug))
             {
                 Add(point);
             }
@@ -74,8 +85,13 @@ namespace Elektronik.Common
 
         public SlamPoint GetPoint(int pointId)
         {
-            Debug.AssertFormat(m_points.ContainsKey(pointId), "Container doesn't contain point with id {0}", pointId);
+            Debug.AssertFormat(m_points.ContainsKey(pointId), "[Get point] Container doesn't contain point with id {0}", pointId);
             return m_points[pointId];
+        }
+
+        public bool PointExists(int pointId)
+        {
+            return m_pointCloud.PointExists(pointId);
         }
 
         public bool TryGetPoint(SlamPoint point, out SlamPoint current)
@@ -83,13 +99,18 @@ namespace Elektronik.Common
             current = new SlamPoint();
             if (m_pointCloud.PointExists(point.id))
             {
-                current = m_points[point.id];
+                current = GetPoint(point.id);
                 return true;
             }
             else
             {
                 return false;
             }
+        }
+
+        public void Repaint()
+        {
+            m_pointCloud.Repaint();
         }
     }
 }

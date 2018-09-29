@@ -38,7 +38,7 @@ namespace Elektronik.Common
         public bool PointExists(int idx)
         {
             Debug.AssertFormat(idx >= 0 && idx < MAX_VERTICES_COUNT, "Wrong idx ({0})", idx.ToString());
-            return (m_vertices[idx] == Vector3.zero && m_colors[idx] == new Color(0, 0, 0, 0));
+            return !(m_vertices[idx] == Vector3.zero && m_colors[idx] == new Color(0, 0, 0, 0));
         }
 
         public void GetPoint(int idx, out Vector3 position, out Color color)

@@ -12,13 +12,14 @@ namespace Elektronik.Common
     {
         public GameObject observationPrefab;
 
-        FastLinesCloud m_fastLinesCloud;
+        SlamLinesContainer m_linesContainer;
+
         SortedDictionary<int, SlamObservationNode> m_slamObservationNodes;
 
         private void Awake()
         {
             m_slamObservationNodes = new SortedDictionary<int, SlamObservationNode>();
-            m_fastLinesCloud = GetComponent<FastLinesCloud>();
+            m_linesContainer = new SlamLinesContainer(GetComponent<FastLinesCloud>());
         }
 
         /// <summary>
@@ -43,7 +44,17 @@ namespace Elektronik.Common
                 int covisibleId = observation.covisibleObservationsIds[covisibleIndx]; 
                 SlamObservationNode covisibleObservationNode = m_slamObservationNodes[covisibleId];
 
-                int lineId = FastLinesCloud.GetIdxFor2VertIds(covisibleObservationNode.SlamObservation.id, newNode.SlamObservation.id);
+                SlamLine newLineCinema = new SlamLine()
+                {
+                    pointId1 = covisibleObservationNode.SlamObservation.id,
+                    pointId2 = newNode.SlamObservation.id,
+                    vert1 = covisibleObservationNode.Position,
+                    vert2 = newNode.Position,
+                    color = Color.gray,
+                };
+                // рисуем грань
+                int lineId = m_linesContainer.Add(newLineCinema);
+                //m_fastLinesCloud.GetIdxFor2VertIds(covisibleObservationNode.SlamObservation.id, newNode.SlamObservation.id);
 
                 // совидимому узлу добавляем новый узел и индекс грани соединения с ним
                 covisibleObservationNode.NodeLineIDPair.Add(newNode, lineId);
@@ -52,7 +63,7 @@ namespace Elektronik.Common
                 newNode.NodeLineIDPair.Add(covisibleObservationNode, lineId);
 
                 // рисуем грань
-                m_fastLinesCloud.SetLine(lineId, newNode.Position, covisibleObservationNode.Position, Color.gray);
+                //m_fastLinesCloud.SetLine(lineId, newNode.Position, covisibleObservationNode.Position, Color.gray);
             }
             m_slamObservationNodes.Add(observation.id, newNode);
         }
@@ -73,7 +84,8 @@ namespace Elektronik.Common
             foreach (var covisibleNode in covisibleNodes)
             {
                 int lineId = covisibleNode.NodeLineIDPair[observationToRemove]; // ID линии, которую нужно убрать
-                m_fastLinesCloud.SetLine(lineId, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0)); // удаляем грань
+                m_linesContainer.Remove(lineId);
+                //m_fastLinesCloud.SetLine(lineId, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0)); // удаляем грань
                 covisibleNode.NodeLineIDPair.Remove(observationToRemove);
             }
 
@@ -95,18 +107,19 @@ namespace Elektronik.Common
             foreach (var covisibleNode in nodeToReplace.NodeLineIDPair)
             {
                 // получаем грань, которую необходимо изменить
-                Vector3 position1;
-                Vector3 position2;
-                Color color;
-                m_fastLinesCloud.GetLine(covisibleNode.Value, out position1, out position2, out color);
+
+                SlamLine line = m_linesContainer.GetLine(covisibleNode.Value);
+                //m_fastLinesCloud.GetLine(covisibleNode.Value, out position1, out position2, out color);
 
                 // определяем торцы изменённой грани
                 // если позиция совпадает, то это торец, который нужно поменять
-                position1 = position1 == nodeToReplace.Position ? observation.position : position1;
-                position2 = position2 == nodeToReplace.Position ? observation.position : position2;
+                line.vert1 = line.vert1 == nodeToReplace.Position ? observation.position : line.vert1;
+                line.vert2 = line.vert2 == nodeToReplace.Position ? observation.position : line.vert2;
 
                 // записываем изменение в облако
-                m_fastLinesCloud.SetLinePosition(covisibleNode.Value, position1, position2);
+                m_linesContainer.Update(line);
+
+                //m_fastLinesCloud.SetLinePosition(covisibleNode.Value, position1, position2);
             }
 
             // Запоминаем текущую позицию
@@ -159,13 +172,13 @@ namespace Elektronik.Common
 
         public void Repaint()
         {
-            m_fastLinesCloud.Repaint();
+            m_linesContainer.Repaint();
         }
 
         public void Clear()
         {
             m_slamObservationNodes.Clear();
-            m_fastLinesCloud.Clear();
+            m_linesContainer.Clear();
             MF_AutoPool.DespawnPool(observationPrefab);
         }
 

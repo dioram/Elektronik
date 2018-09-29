@@ -43,7 +43,7 @@ namespace Elektronik.Common
             Vector3 pos2;
             Color color;
             GetLine(idx, out pos1, out pos2, out color);
-            return (pos1 == Vector3.zero && pos2 == Vector3.zero && color == new Color(0, 0, 0, 0));
+            return !(pos1 == Vector3.zero && pos2 == Vector3.zero && color == new Color(0, 0, 0, 0));
         }
 
         public void GetLine(int idx, out Vector3 position1, out Vector3 position2, out Color color)

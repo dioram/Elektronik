@@ -14,5 +14,11 @@ namespace Elektronik.Common
         public int pointId2;
         public Color color;
         public bool isRemoved;
+
+        public long GenerateLongId()
+        {
+            return pointId1 * UInt32.MaxValue + pointId2;
+        }
+
     }
 }

@@ -46,8 +46,8 @@ namespace Elektronik.Offline
         {
             m_position = -1;
             observationsGraph.Clear();
-            fastPointCloud.Clear();
-            fastLineCloud.Clear();
+            m_pointsContainer.Clear();
+            m_linesContainer.Clear();
         }
 
         public int GetLength()
@@ -152,7 +152,7 @@ namespace Elektronik.Offline
 
         IEnumerator ProcessEvents()
         {
-            Debug.Log("Processing started");
+            Debug.Log("PROCESSING STARTED");
 
             for (int i = 0; i < m_events.Length; ++i)
             {
@@ -161,23 +161,28 @@ namespace Elektronik.Offline
                     Debug.LogFormat("{0}. event {1}", i, m_events[i].ToString());
                     yield return null;
                 }
-                Debug.Log(m_events[i].EventType.ToString());
+                //Debug.Log(m_events[i].EventType.ToString());
                 if (m_events[i] is GlobalMapEvent)
                 {
                     m_commands.Add(new RepaintEntireMapCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_events[i]));
+                    Next(false);
                 }
                 else
                 {
-                    m_commands.Add(new SlamEventCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_events[i]));
+                    m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_events[i]));
                     Next(false);
-                    m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, m_events[i]));
+                    m_commands.Add(new ChangeColorCommand(m_pointsContainer, m_events[i]));
+                    Next(false);
+                    m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_events[i]));
                     Next(false);
                 }
             }
             m_position = -1;
-            fastPointCloud.Clear();
+            m_pointsContainer.Clear();
+            m_linesContainer.Clear();
             observationsGraph.Clear();
             ReadyToPlay = true;
+            Debug.Log("PROCESSING FINISHED");
             yield return null;
         }
     }

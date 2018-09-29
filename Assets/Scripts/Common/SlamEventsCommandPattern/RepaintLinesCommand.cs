@@ -16,8 +16,9 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         SlamLine[] m_operand;
         SlamLine[] m_undoOperand;
 
-        public RepaintLinesCommand(SlamPointsContainer m_pointsContainer, SlamLinesContainer linesContainer, SlamLine[] lines)
+        public RepaintLinesCommand(SlamPointsContainer pointsContainer, SlamLinesContainer linesContainer, SlamLine[] lines)
         {
+            m_pointsContainer = pointsContainer;
             m_linesContainer = linesContainer;
             m_operand = GetOperand(lines);
             m_undoOperand = GetUndoOperand(lines);
@@ -25,7 +26,13 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
         private SlamLine[] GetOperand(SlamLine[] operand)
         {
-            return operand.Clone() as SlamLine[];
+            SlamLine[] result = new SlamLine[operand.Length];
+            for (int i = 0; i < result.Length; ++i)
+            {
+                result[i] = operand[i];
+                result[i].isRemoved = false; // удаляем линии только в постобработке и при отмене этой команды
+            }
+            return result;
         }
 
         private SlamLine[] GetUndoOperand(SlamLine[] operand)
@@ -34,7 +41,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             for (int i = 0; i < operand.Length; ++i)
             {
                 result[i] = operand[i];
-                result[i].isRemoved = !operand[i].isRemoved;
+                result[i].isRemoved = true;
             }
             return result;
         }
@@ -43,22 +50,6 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         {
             for (int i = 0; i < operand.Length; ++i)
             {
-                //int lineId = FastLinesCloud.GetIdxFor2VertIds(operand[i].pointId1, operand[i].pointId2);
-
-                /*if (operand[i].isRemoved)
-                {
-                    m_linesContainer.SetLine(lineId, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
-                }
-                else
-                {
-                    Vector3 point1pos;
-                    Color point1col;
-                    Vector3 point2pos;
-                    Color point2col;
-                    m_pointCloud.GetPoint(operand[i].pointId1, out point1pos, out point1col);
-                    m_pointCloud.GetPoint(operand[i].pointId2, out point2pos, out point2col);
-                    m_linesContainer.SetLine(lineId, point1pos, point2pos, operand[i].color);
-                }*/
                 if (operand[i].isRemoved)
                 {
                     m_linesContainer.Remove(operand[i]);

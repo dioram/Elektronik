@@ -28,16 +28,10 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 points[i] = operand[i];
                 if (points[i].justColored)
                 {
-                    /*Color stub;
-                    m_pointsContainer.GetPoint(points[i].id, out points[i].position, out stub); // получаем текущую позицию*/
                     SlamPoint currentPoint = m_pointsContainer.GetPoint(operand[i].id);
                     points[i].position = currentPoint.position;
                 }
-                //points[i].id = operand[i].id;
-                //points[i].isRemoved = operand[i].isRemoved;
-                //m_pointCloudManager.GetPoint(points[i].id, out points[i].position, out points[i].color);
-                //points[i].position += operand[i].position;
-                //points[i].color = operand[i].color;
+                points[i].isRemoved = false; // точки удаляем только в постобработке, в данной команде только красим в красный
             }
             return points;
         }
@@ -48,12 +42,9 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             for (int i = 0; i < result.Length; ++i)
             {
                 result[i] = operand[i];
-                /*m_pointsContainer.GetPoint(result[i].id, out result[i].position, out result[i].color);
-                if (result[i].color == new Color(0, 0, 0, 0))
-                    result[i].isRemoved = true;*/
                 if (!m_pointsContainer.TryGetPoint(operand[i], out result[i]))
                 {
-                    result[i].isRemoved = true;
+                    result[i].isRemoved = true; // если точки не было до добавления, то удаляем её
                 }
             }
             return result;

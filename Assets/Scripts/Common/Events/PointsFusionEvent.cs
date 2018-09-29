@@ -48,14 +48,16 @@ namespace Elektronik.Common.Events
             SlamPoint[] replaced = new SlamPoint[parsed.FusedMapPointsCount];
             SlamPoint[] replacing = new SlamPoint[parsed.FusedMapPointsCount];
 
+            // TODO: спросить какая точка удаляется Replaced или Replacing
+
             for (int i = 0; i < parsed.FusedMapPointsCount; ++i)
             {
                 replaced[i].id = stream.ReadInt32();
                 if (replaced[i].id != -1)
                 {
                     replaced[i].color = new Color32(0xff, 0x00, 0xff, 0xff);
-                    replaced[i].isRemoved = true;
                     replaced[i].justColored = true;
+                    replaced[i].isRemoved = true;
                 }
             }
             for (int i = 0; i < parsed.FusedMapPointsCount; ++i)
@@ -65,6 +67,7 @@ namespace Elektronik.Common.Events
                 {
                     replacing[i].color = new Color32(0xff, 0x00, 0xff, 0xff);
                     replacing[i].justColored = true;
+                    //replacing[i].isRemoved = true;
                 }
             }
 

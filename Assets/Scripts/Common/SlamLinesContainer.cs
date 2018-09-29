@@ -10,18 +10,41 @@ namespace Elektronik.Common
     {
         private FastLinesCloud m_linesCloud;
         private SortedDictionary<int, SlamLine> m_lines;
+        private SortedDictionary<long, int> m_longId2Id;
+        private Queue<int> m_indices;
 
         public SlamLinesContainer(FastLinesCloud cloud)
         {
+            m_longId2Id = new SortedDictionary<long, int>();
+            m_indices = new Queue<int>(Enumerable.Range(0, 100000));
             m_lines = new SortedDictionary<int, SlamLine>();
             m_linesCloud = cloud;
         }
 
-        public void Add(SlamLine line)
+        public int Add(SlamLine line)
         {
-            int lineId = FastLinesCloud.GetIdxFor2VertIds(line.pointId1, line.pointId2);
-            m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color);
+            long longId = line.GenerateLongId();
+            int lineId = m_indices.Dequeue();
+            m_longId2Id.Add(longId, lineId);
             m_lines.Add(lineId, line);
+            m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color);
+            return lineId;
+        }
+
+        public void Remove(SlamLine line)
+        {
+            long longId = line.GenerateLongId();
+            int lineId = m_longId2Id[longId];
+            Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with Id {0}", lineId);
+            m_linesCloud.SetLine(lineId, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
+            m_lines.Remove(lineId);
+            m_longId2Id.Remove(longId);
+            m_indices.Enqueue(lineId);
+        }
+
+        public void Remove(int lineId)
+        {
+            Remove(m_lines[lineId]);
         }
 
         public void AddRange(SlamLine[] lines)
@@ -34,27 +57,22 @@ namespace Elektronik.Common
 
         public void Update(SlamLine line)
         {
-            int lineId = FastLinesCloud.GetIdxFor2VertIds(line.pointId1, line.pointId2);
+            int lineId = m_longId2Id[line.GetHashCode()];
             Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with Id {0}", lineId);
             m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color);
             m_lines[lineId] = line;
         }
 
-        public void Remove(SlamLine line)
-        {
-            int lineId = FastLinesCloud.GetIdxFor2VertIds(line.pointId1, line.pointId2);
-            Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with Id {0}", lineId);
-            m_linesCloud.SetLine(lineId, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
-            m_lines.Remove(lineId);
-        }
+        
 
         public void Clear()
         {
-            foreach (var lineId in m_lines.Keys)
+            SlamLine[] lines = GetAllSlamLines();
+            for (int i = 0; i < lines.Length; ++i)
             {
-                m_linesCloud.SetLine(lineId, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
+                Remove(lines[i]);
             }
-            m_lines.Clear();
+            Repaint();
         }
 
         public SlamLine[] GetAllSlamLines()
@@ -81,17 +99,17 @@ namespace Elektronik.Common
             return m_lines[lineId];
         }
 
-        public SlamLine GetLine(int vert1Id, int vert2Id)
+        public SlamLine GetLine(SlamLine line)
         {
-            int lineId = FastLinesCloud.GetIdxFor2VertIds(vert1Id, vert2Id);
+            int lineId = m_longId2Id[line.GetHashCode()];
             return GetLine(lineId);
         }
 
         public bool TryGetLine(SlamLine line, out SlamLine current)
         {
             current = new SlamLine();
-            int lineId = FastLinesCloud.GetIdxFor2VertIds(line.pointId1, line.pointId2);
-            if (m_linesCloud.LineExists(lineId))
+            int lineId = -1;
+            if (m_longId2Id.TryGetValue(line.GenerateLongId(), out lineId))
             {
                 current = m_lines[lineId];
                 return true;
@@ -100,6 +118,18 @@ namespace Elektronik.Common
             {
                 return false;
             }
+        }
+
+        public bool LineExists(SlamLine line)
+        {
+            long longId = line.GenerateLongId();
+            int lineId;
+            return m_longId2Id.TryGetValue(longId, out lineId);
+        }
+
+        public void Repaint()
+        {
+            m_linesCloud.Repaint();
         }
     }
 }

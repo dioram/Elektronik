@@ -83,11 +83,13 @@
     <Compile Include="Assets\Scripts\Common\PointsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\Robot2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Common\SceneList.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\AddCommand.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\ChangeColorCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\ClearCommand.cs" />
-    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\CloudsManager.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\ISlamEventCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\MacroCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\PostProcessingCommand.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\RemoveCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\RepaintEntireMapCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\RepaintLinesCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\RepaintObservationsCommand.cs" />

@@ -73,36 +73,6 @@ namespace Elektronik.Common.Events
                 newPoints[i].position.z = stream.ReadSingle();
             }
 
-            parsed.RecognizedPointsCount = stream.ReadInt32();
-
-            SlamPoint[] recognizedPoints = new SlamPoint[parsed.RecognizedPointsCount];
-            for (int i = 0; i < parsed.RecognizedPointsCount; ++i)
-            {
-                recognizedPoints[i].id = stream.ReadInt32();
-                recognizedPoints[i].color = new Color32(0xf4, 0xb3, 0x42, 0xff);
-                recognizedPoints[i].justColored = true;
-            }
-
-            parsed.RecalcPointsCount = stream.ReadInt32();
-            SlamPoint[] recalcPoints = new SlamPoint[parsed.RecalcPointsCount];
-            for (int i = 0; i < parsed.RecalcPointsCount; ++i)
-            {
-                recalcPoints[i].id = stream.ReadInt32();
-                recalcPoints[i].color = new Color32(0xf4, 0xb3, 0x42, 0xff);
-                recalcPoints[i].justColored = true;
-            }
-
-            parsed.LocalPointsCount = stream.ReadInt32();
-            SlamPoint[] localPoints = new SlamPoint[parsed.LocalPointsCount];
-            for (int i = 0; i < parsed.LocalPointsCount; ++i)
-            {
-                localPoints[i].id = stream.ReadInt32();
-                localPoints[i].color = Color.green;
-                localPoints[i].justColored = true;
-            }
-
-            parsed.Points = newPoints.Concat(recognizedPoints).Concat(recalcPoints).Concat(localPoints).ToArray();
-
             SlamObservation observation = new SlamObservation();
 
             parsed.NewKeyObservationId = stream.ReadInt32();
@@ -132,6 +102,34 @@ namespace Elektronik.Common.Events
                 observation.covisibleObservationsOfCommonPointsCount[i] = stream.ReadInt32();
             }
             parsed.Observations = new[] { observation };
+
+            parsed.RecognizedPointsCount = stream.ReadInt32();
+            SlamPoint[] recognizedPoints = new SlamPoint[parsed.RecognizedPointsCount];
+            for (int i = 0; i < parsed.RecognizedPointsCount; ++i)
+            {
+                recognizedPoints[i].id = stream.ReadInt32();
+                recognizedPoints[i].color = new Color32(0, 0xb3, 0x42, 0xff);
+                recognizedPoints[i].justColored = true;
+            }
+
+            parsed.RecalcPointsCount = stream.ReadInt32();
+            SlamPoint[] recalcPoints = new SlamPoint[parsed.RecalcPointsCount];
+            for (int i = 0; i < parsed.RecalcPointsCount; ++i)
+            {
+                recalcPoints[i].id = stream.ReadInt32();
+                recalcPoints[i].color = new Color32(0xf4, 0xb3, 0x42, 0xff);
+                recalcPoints[i].justColored = true;
+            }
+
+            parsed.LocalPointsCount = stream.ReadInt32();
+            SlamPoint[] localPoints = new SlamPoint[parsed.LocalPointsCount];
+            for (int i = 0; i < parsed.LocalPointsCount; ++i)
+            {
+                localPoints[i].id = stream.ReadInt32();
+                localPoints[i].color = Color.green;
+                localPoints[i].justColored = true;
+            }
+            parsed.Points = newPoints.Concat(recognizedPoints).Concat(recalcPoints).Concat(localPoints).ToArray();
 
             return parsed;
         }

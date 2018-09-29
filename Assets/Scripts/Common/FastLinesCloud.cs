@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,14 +13,13 @@ namespace Elektronik.Common
         public LinesMeshObject meshObjectPrefab;
         private Dictionary<int, LinesMeshObject> m_meshObjects;
 
-        public static int GetIdxFor2VertIds(int id1, int id2)
-        {
-            return id1 ^ id2;
-        }
+        private int m_indexCounter = 0;
+        private Dictionary<long, int> m_longIdxToIdx;
 
         private void Awake()
         {
             m_meshObjects = new Dictionary<int, LinesMeshObject>();
+            m_longIdxToIdx = new Dictionary<long, int>();
         }
 
         private void CheckMesh(int srcLineIdx, out int meshIdx, out int lineIdx)

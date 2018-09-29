@@ -6,14 +6,10 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 {
     public class SlamEventCommand : MacroCommand
     {
-        public SlamEventCommand(SlamPointsContainer pointsContainer, SlamLinesContainer linesContainer, SlamObservationsGraph graph, ISlamEvent operand)
+        public SlamEventCommand(SlamPointsContainer pointsContainer, SlamLinesContainer linesContainer, SlamObservationsGraph graph, ISlamEvent slamEvent)
         {
-            if (operand.Points != null)
-                m_commands.Add(new RepaintPointsCommand(pointsContainer, operand.Points.Where(p => p.id != -1).ToArray()));
-            if (operand.Observations != null)
-                m_commands.Add(new RepaintObservationsCommand(graph, operand.Observations));
-            if (operand.Lines != null)
-                m_commands.Add(new RepaintLinesCommand(pointsContainer, linesContainer, operand.Lines));
+            m_commands.Add(new AddCommand(pointsContainer, linesContainer, graph, slamEvent));
+            m_commands.Add(new ChangeColorCommand(pointsContainer, slamEvent.Points.Where(p => p.id != -1).ToArray()));
         }
     }
 }
