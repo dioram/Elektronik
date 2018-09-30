@@ -46,6 +46,10 @@ namespace Elektronik.Offline
                     {
                         return MainThreadEvent.Parse(stream);
                     }
+                case SlamEventType.GlobalMap:
+                    {
+                        return GlobalMapEvent.Parse(stream);
+                    }
                 case SlamEventType.LMPointsRemoval:
                     {
                         return RemovalEvent.Parse(stream, type);

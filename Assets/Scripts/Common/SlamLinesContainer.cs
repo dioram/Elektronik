@@ -13,6 +13,10 @@ namespace Elektronik.Common
         private SortedDictionary<long, int> m_longId2Id;
         private Queue<int> m_indices;
 
+        private int m_added = 0;
+        private int m_removed = 0;
+        private int m_diff = 0;
+
         public SlamLinesContainer(FastLinesCloud cloud)
         {
             m_longId2Id = new SortedDictionary<long, int>();
@@ -23,6 +27,8 @@ namespace Elektronik.Common
 
         public int Add(SlamLine line)
         {
+            ++m_diff;
+            ++m_added;
             long longId = line.GenerateLongId();
             int lineId = m_indices.Dequeue();
             m_longId2Id.Add(longId, lineId);
@@ -33,6 +39,8 @@ namespace Elektronik.Common
 
         public void Remove(SlamLine line)
         {
+            --m_diff;
+            ++m_removed;
             long longId = line.GenerateLongId();
             int lineId = m_longId2Id[longId];
             Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with Id {0}", lineId);
@@ -57,13 +65,12 @@ namespace Elektronik.Common
 
         public void Update(SlamLine line)
         {
-            int lineId = m_longId2Id[line.GetHashCode()];
+            long longId = line.GenerateLongId();
+            int lineId = m_longId2Id[longId];
             Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with Id {0}", lineId);
             m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color);
             m_lines[lineId] = line;
         }
-
-        
 
         public void Clear()
         {
@@ -73,6 +80,9 @@ namespace Elektronik.Common
                 Remove(lines[i]);
             }
             Repaint();
+            Debug.LogFormat("[Clear] Added lines : {0}; Removed lines: {1}; Diff: {2}", m_added, m_removed, m_diff);
+            m_added = 0;
+            m_removed = 0;
         }
 
         public SlamLine[] GetAllSlamLines()

@@ -48,8 +48,6 @@ namespace Elektronik.Common.Events
             SlamPoint[] replaced = new SlamPoint[parsed.FusedMapPointsCount];
             SlamPoint[] replacing = new SlamPoint[parsed.FusedMapPointsCount];
 
-            // TODO: спросить какая точка удаляется Replaced или Replacing
-
             for (int i = 0; i < parsed.FusedMapPointsCount; ++i)
             {
                 replaced[i].id = stream.ReadInt32();

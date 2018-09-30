@@ -13,7 +13,6 @@ namespace Elektronik.Common
         public SlamObservation SlamObservation { get; set; }
 
         public Dictionary<SlamObservationNode, int> NodeLineIDPair { get; private set; }
-        public Vector3 Position { get; set; }
 
         public SlamObservationNode(GameObject gameObject)
         {

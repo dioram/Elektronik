@@ -22,6 +22,12 @@ namespace Elektronik.Common.Events
         public GlobalMapEvent()
         {
             EventType = SlamEventType.GlobalMap;
+            IsKeyEvent = true;
+        }
+
+        public override string ToString()
+        {
+            return "GLOBAL MAP EVENT";
         }
 
         public static GlobalMapEvent Parse(BinaryReader stream)
@@ -37,7 +43,8 @@ namespace Elektronik.Common.Events
                 points[i].id = stream.ReadInt32();
                 points[i].justColored = false;
                 points[i].isRemoved = false;
-                points[i].color = Color.black;
+                points[i].color = Color.red;
+                points[i].isNew = true;
             }
 
             for (int i = 0; i < points.Length; ++i)
@@ -54,6 +61,7 @@ namespace Elektronik.Common.Events
 
             for (int i = 0; i < observations.Length; ++i)
             {
+                observations[i] = new SlamObservation();
                 observations[i].id = stream.ReadInt32();
                 observations[i].color = Color.gray;
                 observations[i].isRemoved = false;

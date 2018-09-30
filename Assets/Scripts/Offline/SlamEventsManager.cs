@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
+
 namespace Elektronik.Offline
 {
     public class SlamEventsManager : MonoBehaviour
@@ -18,6 +19,7 @@ namespace Elektronik.Offline
 
         ISlamEvent[] m_events;
         List<ISlamEventCommand> m_commands;
+        List<ISlamEvent> m_extendedEvents;
 
         public SlamObservationsGraph observationsGraph;
 
@@ -30,6 +32,7 @@ namespace Elektronik.Offline
 
         void Awake()
         {
+            m_extendedEvents = new List<ISlamEvent>();
             m_commands = new List<ISlamEventCommand>();
         }
 
@@ -52,24 +55,17 @@ namespace Elektronik.Offline
 
         public int GetLength()
         {
-            return m_events.Length;
+            return m_commands.Count;
         }
 
         public int GetCurrentEventPosition()
         {
-            return m_position / 2;
+            return m_position;
         }
 
         public ISlamEvent GetCurrentEvent()
         {
-            if (m_position % 2 != 0)
-            {
-                return null;
-            }
-            else
-            {
-                return m_events[m_position / 2]; // делением на 2 пропускаем пост обработку
-            }
+            return m_extendedEvents[m_position];
         }
 
         public bool Next(bool needRepaint = true)
@@ -110,12 +106,26 @@ namespace Elektronik.Offline
             }
         }
 
+        private int FindNextKeyEventIdx(int srcIdx)
+        {
+            for (int i = srcIdx; i < m_extendedEvents.Count; ++i)
+            {
+                if (m_extendedEvents[i].IsKeyEvent && (m_commands[i] is UpdateCommand))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         public bool NextKeyEvent()
         {
-            int idxOfKeyEvent = Array.FindIndex(m_events, GetCurrentEventPosition() + 1, e => e.IsKeyEvent);
+            //int idxOfKeyEvent = Array.FindIndex(m_events, m_position + 1, e => e.IsKeyEvent);
+            //int idxOfKeyEvent = m_extendedEvents.FindIndex(m_position + 1, ex => ex.IsKeyEvent);
+            int idxOfKeyEvent = FindNextKeyEventIdx(m_position + 1);
             if (idxOfKeyEvent == -1)
                 return false;
-            while (GetCurrentEventPosition() != idxOfKeyEvent)
+            while (m_position != idxOfKeyEvent)
             {
                 Next(needRepaint: false);
             }
@@ -125,26 +135,38 @@ namespace Elektronik.Offline
             return true;
         }
 
-        public bool PrevKeyEvent()
+        private int FindPrevKeyEventIdx(int srcIdx)
         {
-            int idxOfKeyEvent = -1;
-            if (GetCurrentEventPosition() == GetLength())
-                Previous(needRepaint: false);
-            for (int i = GetCurrentEventPosition() - 1; i >= 0; --i)
+            for (int i = srcIdx; i >= 0; --i)
             {
-                if (m_events[i].IsKeyEvent)
+                if (m_extendedEvents[i].IsKeyEvent && (m_commands[i] is UpdateCommand))
                 {
-                    idxOfKeyEvent = i;
-                    break;
+                    return i;
                 }
             }
+            return -1;
+        }
+
+        public bool PrevKeyEvent()
+        {
+            if (m_position == GetLength())
+                Previous(needRepaint: false);
+            int idxOfKeyEvent = FindPrevKeyEventIdx(m_position - 1);
+            //for (int i = m_position - 1; i >= 0; --i)
+            //{
+            //    if (m_extendedEvents[i].IsKeyEvent)
+            //    {
+            //        idxOfKeyEvent = i;
+            //        break;
+            //    }
+            //}
             if (idxOfKeyEvent == -1)
                 return false;
-            while (GetCurrentEventPosition() != idxOfKeyEvent)
+            while (m_position != idxOfKeyEvent)
             {
                 Previous(needRepaint: false);
             }
-            Previous(needRepaint: false); // пропускаем пост обработку
+            // Previous(needRepaint: false); // пропускаем пост обработку
             fastPointCloud.Repaint();
             observationsGraph.Repaint();
             return true;
@@ -161,21 +183,22 @@ namespace Elektronik.Offline
                     Debug.LogFormat("{0}. event {1}", i, m_events[i].ToString());
                     yield return null;
                 }
-                //Debug.Log(m_events[i].EventType.ToString());
+                Debug.Log(m_events[i].EventType.ToString());
                 if (m_events[i] is GlobalMapEvent)
                 {
-                    m_commands.Add(new RepaintEntireMapCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_events[i]));
+                    m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, observationsGraph));
+                    m_extendedEvents.Add(m_events[i]);
                     Next(false);
                 }
-                else
-                {
-                    m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_events[i]));
-                    Next(false);
-                    m_commands.Add(new ChangeColorCommand(m_pointsContainer, m_events[i]));
-                    Next(false);
-                    m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_events[i]));
-                    Next(false);
-                }
+                m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_events[i]));
+                m_extendedEvents.Add(m_events[i]);
+                Next(false);
+                m_commands.Add(new UpdateCommand(m_pointsContainer, observationsGraph, m_events[i]));
+                m_extendedEvents.Add(m_events[i]);
+                Next(false);
+                m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_events[i]));
+                m_extendedEvents.Add(m_events[i]);
+                Next(false);
             }
             m_position = -1;
             m_pointsContainer.Clear();

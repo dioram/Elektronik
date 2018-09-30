@@ -24,7 +24,9 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
             if (slamEvent.Points != null)
             {
-                m_addedPoints = slamEvent.Points.Where(p => p.id != -1).Where(p => !pointsContainer.PointExists(p.id)).ToArray();
+                m_addedPoints = slamEvent.Points
+                    .Where(p => p.isNew)
+                    .ToArray();
             }
             if (slamEvent.Lines != null)
             {
@@ -32,7 +34,10 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             }
             if (slamEvent.Observations != null)
             {
-                m_addedObservations = slamEvent.Observations.Where(o => !m_graph.ObservationExists(o.id)).ToArray();
+                m_addedObservations = slamEvent.Observations
+                    .Where(o => !m_graph.ObservationExists(o.id))
+                    .Select(o => new SlamObservation(o))
+                    .ToArray();
             }
         }
 

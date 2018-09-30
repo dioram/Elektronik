@@ -9,6 +9,7 @@ namespace Elektronik.Common.Events
     {
         Invalid = 0xFF,
         MainThreadEvent = 0x00,
+        GlobalMap = 0x01,
         LMPointsRemoval = 0x10,
         LMObservationRemoval = 0x11,
         LMPointsFusion = 0x12,
@@ -17,6 +18,5 @@ namespace Elektronik.Common.Events
         LCOptimizeEssentialGraph = 0x21,
         LCGBA = 0x22,
         LCLoopClosingTry = 0x23,
-        GlobalMap = 0x01,
     }
 }

@@ -13,5 +13,6 @@ namespace Elektronik.Common
         public Vector3 position;
         public Color color;
         public bool isRemoved;
+        public bool isNew;
     }
 }

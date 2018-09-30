@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -23,11 +24,12 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
             m_undoLines = m_linesContainer.GetAllSlamLines();
             m_undoPoints = m_pointsContainer.GetAllSlamPoints();
-            m_undoObservations = m_graph.GetAllSlamObservations();
+            m_undoObservations = m_graph.GetAllSlamObservations().Select(o => new SlamObservation(o)).ToArray();
         }
 
         public void Execute()
         {
+            Debug.Log("[Clear Execute]");
             m_pointsContainer.Clear();
             m_linesContainer.Clear();
             m_graph.Clear();
@@ -35,6 +37,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
         public void UnExecute()
         {
+            Debug.Log("[Clear UnExecute]");
             m_pointsContainer.AddRange(m_undoPoints);
             m_linesContainer.AddRange(m_undoLines);
             foreach (var undoObservation in m_undoObservations)

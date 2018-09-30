@@ -16,17 +16,17 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
         public virtual void Execute()
         {
-            foreach (var command in m_commands)
+            for (int i = 0; i < m_commands.Count; ++i)
             {
-                command.Execute();
+                m_commands[i].Execute();
             }
         }
 
         public virtual void UnExecute()
         {
-            foreach (var command in m_commands)
+            for (int i = m_commands.Count - 1; i >= 0; --i)
             {
-                command.UnExecute();
+                m_commands[i].UnExecute();
             }
         }
     }

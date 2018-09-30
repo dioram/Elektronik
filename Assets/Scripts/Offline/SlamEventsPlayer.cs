@@ -20,8 +20,20 @@ namespace Elektronik.Offline
 
         private void Start()
         {
+            StartCoroutine(WaitForManagerLengthParameter());
+        }
+
+        IEnumerator WaitForManagerLengthParameter()
+        {
+            while (!eventsManager.ReadyToPlay)
+            {
+                yield return new WaitForSeconds(1);
+            }
+
             timelineSlider.minValue = 0;
             timelineSlider.maxValue = eventsManager.GetLength();
+
+            yield return null;
         }
 
         private void PushLog()
@@ -86,6 +98,7 @@ namespace Elektronik.Offline
         public void Stop()
         {
             m_play = false;
+            loggerListView.Clear();
             eventsManager.Clear();
         }
 

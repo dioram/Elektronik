@@ -12,6 +12,10 @@ namespace Elektronik.Common
         private SortedDictionary<int, SlamPoint> m_points;
         private FastPointCloud m_pointCloud;
 
+        private int m_added = 0;
+        private int m_removed = 0;
+        private int m_diff = 0;
+
         public SlamPointsContainer(FastPointCloud cloud)
         {
             m_points = new SortedDictionary<int, SlamPoint>();
@@ -20,6 +24,8 @@ namespace Elektronik.Common
 
         public void Add(SlamPoint point)
         {
+            ++m_diff;
+            ++m_added;
             m_pointCloud.SetPoint(point.id, point.position, point.color);
             m_points.Add(point.id, point);
         }
@@ -41,6 +47,7 @@ namespace Elektronik.Common
 
         public void ChangeColor(SlamPoint point)
         {
+            //Debug.LogFormat("[Change color] point {0} color: {1}", point.id, point.color);
             Debug.AssertFormat(m_points.ContainsKey(point.id), "[Change color] Container doesn't contain point with id {0}", point.id);
             m_pointCloud.SetPointColor(point.id, point.color);
             SlamPoint current = m_points[point.id];
@@ -50,6 +57,9 @@ namespace Elektronik.Common
 
         public void Remove(int pointId)
         {
+            --m_diff;
+            ++m_removed;
+            //Debug.LogFormat("Removing point {0}", pointId);
             Debug.AssertFormat(m_points.ContainsKey(pointId), "[Remove] Container doesn't contain point with id {0}", pointId);
             m_pointCloud.SetPoint(pointId, Vector3.zero, new Color(0, 0, 0, 0));
             m_points.Remove(pointId);
@@ -57,12 +67,17 @@ namespace Elektronik.Common
 
         public void Clear()
         {
-            foreach (var pointId in m_points.Keys)
+            int[] pointsIds = m_points.Keys.ToArray();
+            for (int i = 0; i < pointsIds.Length; ++i)
             {
-                m_pointCloud.SetPoint(pointId, Vector3.zero, new Color(0, 0, 0, 0));
+                Remove(pointsIds[i]);
             }
             m_points.Clear();
             Repaint();
+
+            Debug.LogFormat("[Clear] Added points: {0}; Removed points: {1}; Diff: {2}", m_added, m_removed, m_diff);
+            m_added = 0;
+            m_removed = 0;
         }
 
         public SlamPoint[] GetAllSlamPoints()
@@ -85,13 +100,20 @@ namespace Elektronik.Common
 
         public SlamPoint GetPoint(int pointId)
         {
-            Debug.AssertFormat(m_points.ContainsKey(pointId), "[Get point] Container doesn't contain point with id {0}", pointId);
+            //Debug.AssertFormat(m_points.ContainsKey(pointId), "[Get point] Container doesn't contain point with id {0}", pointId);
+            if (!m_points.ContainsKey(pointId))
+            {
+                Debug.LogWarningFormat("[Get point] Container doesn't contain point with id {0}", pointId);
+                return new SlamPoint();
+            }
+            
             return m_points[pointId];
         }
 
         public bool PointExists(int pointId)
         {
-            return m_pointCloud.PointExists(pointId);
+            //return m_pointCloud.PointExists(pointId);
+            return m_points.ContainsKey(pointId);
         }
 
         public bool TryGetPoint(SlamPoint point, out SlamPoint current)

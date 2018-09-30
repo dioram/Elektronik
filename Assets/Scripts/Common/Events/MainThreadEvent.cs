@@ -65,6 +65,7 @@ namespace Elektronik.Common.Events
             {
                 newPoints[i].id = stream.ReadInt32();
                 newPoints[i].color = Color.blue;
+                newPoints[i].isNew = true;
             }
             for (int i = 0; i < parsed.NewPointsCount; ++i)
             {

@@ -54,6 +54,7 @@ namespace Elektronik.Common.Events
             parsed.Observations = new SlamObservation[parsed.CandidatesCount];
             for (int i = 0; i < parsed.CandidatesCount; ++i)
             {
+                parsed.Observations[i] = new SlamObservation();
                 parsed.Observations[i].id = stream.ReadInt32();
             }
 

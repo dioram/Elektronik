@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Elektronik.Common
 {
-    public struct SlamObservation
+    public class SlamObservation
     {
         public int id;
         public Vector3 position;
@@ -21,7 +21,9 @@ namespace Elektronik.Common
         public int[] covisibleObservationsIds;
         public int[] covisibleObservationsOfCommonPointsCount;
 
-        public SlamObservation(SlamObservation src)
+        public SlamObservation() { }
+
+        public SlamObservation(SlamObservation src, bool sharedCovisibleObservations = true)
         {
             id = src.id;
             position = src.position;
@@ -32,11 +34,11 @@ namespace Elektronik.Common
             statistics2 = src.statistics2;
             statistics3 = src.statistics3;
             statistics4 = src.statistics4;
-            covisibleObservationsIds = null;
-            covisibleObservationsOfCommonPointsCount = null;
-            if (src.covisibleObservationsIds != null)
+            covisibleObservationsIds = src.covisibleObservationsIds;
+            covisibleObservationsOfCommonPointsCount = src.covisibleObservationsOfCommonPointsCount;
+            if (src.covisibleObservationsIds != null && !sharedCovisibleObservations)
                 covisibleObservationsIds = src.covisibleObservationsIds.Clone() as int[];
-            if (src.covisibleObservationsOfCommonPointsCount != null)
+            if (src.covisibleObservationsOfCommonPointsCount != null && !sharedCovisibleObservations)
                 covisibleObservationsOfCommonPointsCount = src.covisibleObservationsOfCommonPointsCount.Clone() as int[];
         }
     }

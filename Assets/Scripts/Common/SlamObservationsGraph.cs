@@ -23,6 +23,61 @@ namespace Elektronik.Common
         }
 
         /// <summary>
+        /// Обновить соединения для узла графа
+        /// </summary>
+        /// <param name="observation"></param>
+        public void UpdateConnections(SlamObservation observation)
+        {
+            if (observation.id == -1)
+                return;
+            Debug.AssertFormat(ObservationExists(observation.id), "[Graph update connections] observation {0} doesn't exists", observation.id);
+            
+            SlamObservationNode obsNode = m_slamObservationNodes[observation.id];
+            obsNode.SlamObservation.position = observation.position;
+
+            // 1. Найти существующих в графе соседей
+            SlamObservationNode[] existsNeighbors = observation.covisibleObservationsIds
+                .Where(ObservationExists)
+                .Select(obsId => m_slamObservationNodes[obsId])
+                .ToArray();
+
+            foreach (var neighbor in existsNeighbors)
+            {
+                // 2. Проверить наличие соединения между ними
+                if (!neighbor.NodeLineIDPair.ContainsKey(obsNode))
+                {
+                    // 3. Где соединение отсутствует добавить соединение
+                    SlamLine newLineCinema = new SlamLine()
+                    {
+                        color = Color.gray,
+                        pointId1 = obsNode.SlamObservation.id,
+                        pointId2 = neighbor.SlamObservation.id,
+                        isRemoved = false,
+                        vert1 = obsNode.SlamObservation.position,
+                        vert2 = neighbor.SlamObservation.position,
+                    };
+                    int lineId = m_linesContainer.Add(newLineCinema);
+                    neighbor.NodeLineIDPair.Add(obsNode, lineId);
+                    obsNode.NodeLineIDPair.Add(neighbor, lineId);
+                }
+                // 4. Обновить вершины соединений
+                int existsLineId = obsNode.NodeLineIDPair[neighbor];
+                SlamLine currentConnection = m_linesContainer.GetLine(existsLineId);
+                if (obsNode.SlamObservation.id == currentConnection.pointId1)
+                {
+                    currentConnection.vert1 = obsNode.SlamObservation.position;
+                    currentConnection.vert2 = neighbor.SlamObservation.position;
+                }
+                else
+                {
+                    currentConnection.vert1 = neighbor.SlamObservation.position;
+                    currentConnection.vert2 = obsNode.SlamObservation.position;
+                }
+                m_linesContainer.Update(currentConnection);
+            }
+        }
+
+        /// <summary>
         /// Добавить Observation
         /// </summary>
         /// <param name="observation"></param>
@@ -34,14 +89,19 @@ namespace Elektronik.Common
                 return;
             }
             var newNode = new SlamObservationNode(MF_AutoPool.Spawn(observationPrefab, observation.position, observation.orientation)); // создаём новый узел
+            
             newNode.SlamObservation = observation;
-            newNode.Position = observation.position; // присваиваем ему положение
-            int countOfCovisibleObservations = observation.covisibleObservationsIds.Length; // определяем, сколько совидимых узлов
+            m_slamObservationNodes.Add(observation.id, newNode);
+
+            // обновляем связи
+            UpdateConnections(observation);
+
+            /*int countOfCovisibleObservations = observation.covisibleObservationsIds.Length; // определяем, сколько совидимых узлов
 
             for (int covisibleIndx = 0; covisibleIndx < countOfCovisibleObservations; ++covisibleIndx)
             {
                 // находим совидимый новому узлу узел
-                int covisibleId = observation.covisibleObservationsIds[covisibleIndx]; 
+                int covisibleId = observation.covisibleObservationsIds[covisibleIndx];
                 SlamObservationNode covisibleObservationNode = m_slamObservationNodes[covisibleId];
 
                 SlamLine newLineCinema = new SlamLine()
@@ -54,6 +114,7 @@ namespace Elektronik.Common
                 };
                 // рисуем грань
                 int lineId = m_linesContainer.Add(newLineCinema);
+
                 //m_fastLinesCloud.GetIdxFor2VertIds(covisibleObservationNode.SlamObservation.id, newNode.SlamObservation.id);
 
                 // совидимому узлу добавляем новый узел и индекс грани соединения с ним
@@ -64,8 +125,8 @@ namespace Elektronik.Common
 
                 // рисуем грань
                 //m_fastLinesCloud.SetLine(lineId, newNode.Position, covisibleObservationNode.Position, Color.gray);
-            }
-            m_slamObservationNodes.Add(observation.id, newNode);
+            }*/
+
         }
 
         /// <summary>
@@ -104,7 +165,7 @@ namespace Elektronik.Common
             // находим узел, который необходимо переместить
             SlamObservationNode nodeToReplace = m_slamObservationNodes[observation.id];
 
-            foreach (var covisibleNode in nodeToReplace.NodeLineIDPair)
+            /*foreach (var covisibleNode in nodeToReplace.NodeLineIDPair)
             {
                 // получаем грань, которую необходимо изменить
 
@@ -120,16 +181,17 @@ namespace Elektronik.Common
                 m_linesContainer.Update(line);
 
                 //m_fastLinesCloud.SetLinePosition(covisibleNode.Value, position1, position2);
-            }
-
-            // Запоминаем текущую позицию
-            nodeToReplace.Position = observation.position;
+            }*/
 
             // Перемещаем в сцене
             nodeToReplace.ObservationObject.transform.position = observation.position;
             nodeToReplace.ObservationObject.transform.rotation = observation.orientation;
 
-            nodeToReplace.SlamObservation = observation;
+            nodeToReplace.SlamObservation.position = observation.position;
+            nodeToReplace.SlamObservation.orientation = observation.orientation;
+
+            // Обновляем связи
+            UpdateConnections(nodeToReplace.SlamObservation);
         }
 
         /// <summary>
@@ -160,7 +222,7 @@ namespace Elektronik.Common
             }
         }
 
-        public SlamObservation GetObservationNode(int observationId)
+        public SlamObservation GetObservation(int observationId)
         {
             return m_slamObservationNodes[observationId].SlamObservation;
         }

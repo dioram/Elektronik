@@ -32,7 +32,10 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             }
             if (slamEvent.Observations != null)
             {
-                m_observations2Remove = slamEvent.Observations.Where(o => o.isRemoved).ToArray();
+                m_observations2Remove = slamEvent.Observations
+                    .Where(o => o.isRemoved)
+                    .Select(o => new SlamObservation(o))
+                    .ToArray();
             }
         }
 
