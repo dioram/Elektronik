@@ -59,7 +59,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             {
                 foreach (var observation in m_observations2Remove)
                 {
-                    m_graph.RemoveObservation(observation.id);
+                    m_graph.Remove(observation.id);
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             {
                 foreach (var observation in m_observations2Remove)
                 {
-                    m_graph.AddNewObservation(observation);
+                    m_graph.Add(observation);
                 }
             }
         }

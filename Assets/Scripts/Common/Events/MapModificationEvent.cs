@@ -73,7 +73,7 @@ namespace Elektronik.Common.Events
                 parsed.Points[i].position.z = stream.ReadSingle();
             }
 
-            parsed.Points = parsed.Points.Where(p => p.position != Vector3.zero).ToArray();
+            //parsed.Points = parsed.Points.Where(p => p.position != Vector3.zero).ToArray();
             parsed.MovedPtsCount = parsed.Points.Length;
 
             parsed.MovedObservationsCount = stream.ReadInt32();
@@ -103,6 +103,17 @@ namespace Elektronik.Common.Events
                 parsed.Observations[i].position = position;
                 parsed.Observations[i].orientation = rotation;
             }
+
+            /*for (int i = 0; i < parsed.MovedObservationsCount; ++i)
+            {
+                int countOfNieghbors = stream.ReadInt32();
+                parsed.Observations[i].covisibleObservationsIds = new List<int>(countOfNieghbors);
+                parsed.Observations[i].covisibleObservationsOfCommonPointsCount = new List<int>(countOfNieghbors);
+                for (int j = 0; j < countOfNieghbors; ++j)
+                {
+                    parsed.Observations[i].covisibleObservationsIds.Add(stream.ReadInt32());
+                }
+            }*/
 
             return parsed;
         }

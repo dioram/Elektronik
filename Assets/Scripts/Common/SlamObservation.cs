@@ -18,8 +18,8 @@ namespace Elektronik.Common
         public byte statistics3;
         public byte statistics4;
 
-        public int[] covisibleObservationsIds;
-        public int[] covisibleObservationsOfCommonPointsCount;
+        public List<int> covisibleObservationsIds;
+        public List<int> covisibleObservationsOfCommonPointsCount;
 
         public SlamObservation() { }
 
@@ -37,9 +37,9 @@ namespace Elektronik.Common
             covisibleObservationsIds = src.covisibleObservationsIds;
             covisibleObservationsOfCommonPointsCount = src.covisibleObservationsOfCommonPointsCount;
             if (src.covisibleObservationsIds != null && !sharedCovisibleObservations)
-                covisibleObservationsIds = src.covisibleObservationsIds.Clone() as int[];
+                covisibleObservationsIds = new List<int>(src.covisibleObservationsIds);
             if (src.covisibleObservationsOfCommonPointsCount != null && !sharedCovisibleObservations)
-                covisibleObservationsOfCommonPointsCount = src.covisibleObservationsOfCommonPointsCount.Clone() as int[];
+                covisibleObservationsOfCommonPointsCount = new List<int>(src.covisibleObservationsOfCommonPointsCount);
         }
     }
 }

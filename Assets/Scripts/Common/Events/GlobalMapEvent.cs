@@ -82,11 +82,11 @@ namespace Elektronik.Common.Events
             for (int i = 0; i < observations.Length; ++i)
             {
                 int countOfNieghbors = stream.ReadInt32();
-                observations[i].covisibleObservationsIds = new int[countOfNieghbors];
-                observations[i].covisibleObservationsOfCommonPointsCount = new int[countOfNieghbors];
+                observations[i].covisibleObservationsIds = new List<int>(countOfNieghbors);
+                observations[i].covisibleObservationsOfCommonPointsCount = new List<int>(countOfNieghbors);
                 for (int j = 0; j < countOfNieghbors; ++j)
                 {
-                    observations[i].covisibleObservationsIds[j] = stream.ReadInt32();
+                    observations[i].covisibleObservationsIds.Add(stream.ReadInt32());
                 }
             }
 

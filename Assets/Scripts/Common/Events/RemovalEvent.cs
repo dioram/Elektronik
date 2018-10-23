@@ -63,6 +63,7 @@ namespace Elektronik.Common.Events
                 parsed.Points = null;
                 for (int i = 0; i < parsed.RemovedCount; ++i)
                 {
+                    parsed.Observations[i] = new SlamObservation();
                     parsed.Observations[i].id = stream.ReadInt32();
                     parsed.Observations[i].color = Color.red;
                     parsed.Observations[i].isRemoved = true;

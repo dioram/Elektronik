@@ -4,23 +4,24 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using System;
+using UnityEngine.Events;
 
 namespace Elektronik.Common
 {
-    [RequireComponent(typeof(Dropdown))]
     public class CameraChanger : MonoBehaviour
     {
-        public GameObject[] cameras;
-        private Dropdown m_dropdown;
+        [Serializable]
+        public sealed class CameraChangerEvent : UnityEvent<int> { }
 
-        void Start()
+        public GameObject[] cameras;
+
+        public CameraChangerEvent onValueChanged = new CameraChangerEvent();
+
+        public void SetCamera(int num)
         {
-            m_dropdown = GetComponent<Dropdown>();
-            
-            m_dropdown.OnValueChangedAsObservable()
-                .Do(_ => Array.ForEach(cameras, c => c.SetActive(false)))
-                .Do(id => cameras[id].SetActive(true))
-                .Subscribe();
+            Array.ForEach(cameras, c => c.SetActive(false));
+            cameras[num].SetActive(true);
+            onValueChanged.Invoke(num);
         }
     }
 }

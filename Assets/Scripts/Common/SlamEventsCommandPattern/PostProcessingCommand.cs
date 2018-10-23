@@ -10,7 +10,12 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 {
     public class PostProcessingCommand : MacroCommand
     {
-        public PostProcessingCommand(SlamPointsContainer pointsContainer, SlamLinesContainer linesContainer, SlamObservationsGraph graph, ISlamEvent slamEvent)
+        public PostProcessingCommand(
+            SlamPointsContainer pointsContainer,
+            SlamLinesContainer linesContainer,
+            SlamObservationsGraph graph,
+            Helmet helmet,
+            ISlamEvent slamEvent)
         {
             SlamPoint[] points;
             if (slamEvent.Points != null)
@@ -20,7 +25,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 {
                     points[i].color = Color.black;
                 }
-                m_commands.Add(new UpdateCommand(pointsContainer, graph, points, null));
+                m_commands.Add(new UpdateCommand(pointsContainer, graph, helmet, points, null));
                 m_commands.Add(new RemoveCommand(pointsContainer, linesContainer, graph, slamEvent));
             }
             

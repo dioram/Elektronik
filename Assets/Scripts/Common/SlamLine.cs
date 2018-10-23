@@ -17,8 +17,12 @@ namespace Elektronik.Common
 
         public long GenerateLongId()
         {
-            return pointId1 * UInt32.MaxValue + pointId2;
+            return GenerateLongId(pointId1, pointId2);
         }
 
+        public static long GenerateLongId(int pointId1, int pointId2)
+        {
+            return pointId1 * UInt32.MaxValue + pointId2;
+        }
     }
 }

@@ -13,13 +13,9 @@ namespace Elektronik.Common
         public LinesMeshObject meshObjectPrefab;
         private Dictionary<int, LinesMeshObject> m_meshObjects;
 
-        private int m_indexCounter = 0;
-        private Dictionary<long, int> m_longIdxToIdx;
-
         private void Awake()
         {
             m_meshObjects = new Dictionary<int, LinesMeshObject>();
-            m_longIdxToIdx = new Dictionary<long, int>();
         }
 
         private void CheckMesh(int srcLineIdx, out int meshIdx, out int lineIdx)

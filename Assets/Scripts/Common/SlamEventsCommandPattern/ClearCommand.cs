@@ -24,7 +24,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
             m_undoLines = m_linesContainer.GetAllSlamLines();
             m_undoPoints = m_pointsContainer.GetAllSlamPoints();
-            m_undoObservations = m_graph.GetAllSlamObservations().Select(o => new SlamObservation(o)).ToArray();
+            m_undoObservations = m_graph.GetAll().Select(o => new SlamObservation(o)).ToArray();
         }
 
         public void Execute()
@@ -42,7 +42,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             m_linesContainer.AddRange(m_undoLines);
             foreach (var undoObservation in m_undoObservations)
             {
-                m_graph.AddNewObservation(undoObservation);
+                m_graph.Add(undoObservation);
             }
         }
     }

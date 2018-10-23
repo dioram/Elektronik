@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -91,16 +92,16 @@ namespace Elektronik.Common.Events
 
             parsed.CovisibleObservationsCount = stream.ReadByte();
 
-            observation.covisibleObservationsIds = new int[parsed.CovisibleObservationsCount];
+            observation.covisibleObservationsIds = new List<int>(parsed.CovisibleObservationsCount);
             for (int i = 0; i < parsed.CovisibleObservationsCount; ++i)
             {
-                observation.covisibleObservationsIds[i] = stream.ReadInt32();
+                observation.covisibleObservationsIds.Add(stream.ReadInt32());
             }
 
-            observation.covisibleObservationsOfCommonPointsCount = new int[parsed.CovisibleObservationsCount];
+            observation.covisibleObservationsOfCommonPointsCount = new List<int>(parsed.CovisibleObservationsCount);
             for (int i = 0; i < parsed.CovisibleObservationsCount; ++i)
             {
-                observation.covisibleObservationsOfCommonPointsCount[i] = stream.ReadInt32();
+                observation.covisibleObservationsOfCommonPointsCount.Add(stream.ReadInt32());
             }
             parsed.Observations = new[] { observation };
 
