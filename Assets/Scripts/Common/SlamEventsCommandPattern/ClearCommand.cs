@@ -3,27 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
     public class ClearCommand : ISlamEventCommand
     {
-        SlamPointsContainer m_pointsContainer;
-        SlamLinesContainer m_linesContainer;
+        ISlamContainer<SlamPoint> m_pointsContainer;
+        ISlamContainer<SlamLine> m_linesContainer;
         SlamObservationsGraph m_graph;
 
         SlamLine[] m_undoLines;
         SlamPoint[] m_undoPoints;
         SlamObservation[] m_undoObservations;
 
-        public ClearCommand(SlamPointsContainer pointsContainer, SlamLinesContainer linesContainer, SlamObservationsGraph graph)
+        public ClearCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, SlamObservationsGraph graph)
         {
             m_pointsContainer = pointsContainer;
             m_linesContainer = linesContainer;
             m_graph = graph;
 
-            m_undoLines = m_linesContainer.GetAllSlamLines();
-            m_undoPoints = m_pointsContainer.GetAllSlamPoints();
+            m_undoLines = m_linesContainer.GetAll();
+            m_undoPoints = m_pointsContainer.GetAll();
             m_undoObservations = m_graph.GetAll().Select(o => new SlamObservation(o)).ToArray();
         }
 

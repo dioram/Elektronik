@@ -45,9 +45,11 @@ namespace Elektronik.Offline
 
         void AttachBehavior2Load()
         {
-            var inputField = GameObject.Find("Path field").GetComponent<InputField>();
+            var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
+            var pathField = GameObject.Find("Path field").GetComponent<InputField>();
             buLoad.OnClickAsObservable()
-                .Do(_ => FileModeSettings.Path = inputField.text)
+                .Do(_ => FileModeSettings.Scaling = scalingField.text.Length == 0 ? 1.0f : float.Parse(scalingField.text))
+                .Do(_ => FileModeSettings.Path = pathField.text)
                 .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Empty", UnityEngine.SceneManagement.LoadSceneMode.Single))
                 .Subscribe();
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -15,13 +16,13 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private SlamPoint[] m_points2Restore;
         private SlamPoint[] m_points2Update;
 
-        private SlamPointsContainer m_pointsContainer;
+        private ISlamContainer<SlamPoint> m_pointsContainer;
         private SlamObservationsGraph m_graph;
         private Helmet m_helmet;
 
 
         public UpdateCommand(
-            SlamPointsContainer pointsContainer,
+            ISlamContainer<SlamPoint> pointsContainer,
             SlamObservationsGraph graph,
             Helmet helmet,
             SlamPoint[] points,
@@ -33,7 +34,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
             if (points != null)
             {
-                m_points2Restore = points.Where(p => p.id != -1).Select(p => pointsContainer.GetPoint(p.id)).ToArray();
+                m_points2Restore = points.Where(p => p.id != -1).Select(p => pointsContainer.Get(p.id)).ToArray();
                 m_points2Update = points.Where(p => p.id != -1).ToArray();
             }
 
@@ -45,7 +46,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         }
 
         public UpdateCommand(
-            SlamPointsContainer pointsContainer,
+            ISlamContainer<SlamPoint> pointsContainer,
             SlamObservationsGraph graph, 
             Helmet helmet, 
             ISlamEvent slamEvent) : this(pointsContainer, graph, helmet, slamEvent.Points, slamEvent.Observations)

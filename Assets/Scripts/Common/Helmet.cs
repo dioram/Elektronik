@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Common
 {
     public class Helmet : MonoBehaviour
     {
-        SlamLinesContainer m_linesContainer;
+        ISlamContainer<SlamLine> m_linesContainer;
         int m_lastLineId;
         int m_lineSegmentIdx;
         GameObject m_helmet;

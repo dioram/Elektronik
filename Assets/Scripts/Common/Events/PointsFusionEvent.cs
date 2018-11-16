@@ -79,6 +79,7 @@ namespace Elektronik.Common.Events
                         color = replaced[i].color,
                         pointId1 = replaced[i].id,
                         pointId2 = replacing[i].id,
+                        isRemoved = true,
                     };
                     lines.Add(line);
                 }

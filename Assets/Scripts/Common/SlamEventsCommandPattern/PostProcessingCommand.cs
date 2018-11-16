@@ -5,14 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
     public class PostProcessingCommand : MacroCommand
     {
         public PostProcessingCommand(
-            SlamPointsContainer pointsContainer,
-            SlamLinesContainer linesContainer,
+            ISlamContainer<SlamPoint> pointsContainer,
+            ISlamContainer<SlamLine> linesContainer,
             SlamObservationsGraph graph,
             Helmet helmet,
             ISlamEvent slamEvent)

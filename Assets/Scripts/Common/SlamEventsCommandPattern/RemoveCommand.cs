@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -13,10 +14,10 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private SlamObservation[] m_observations2Remove;
 
         private SlamObservationsGraph m_graph;
-        private SlamLinesContainer m_linesContainer;
-        private SlamPointsContainer m_pointsContainer;
+        private ISlamContainer<SlamLine> m_linesContainer;
+        private ISlamContainer<SlamPoint> m_pointsContainer;
 
-        public RemoveCommand(SlamPointsContainer pointsContainer, SlamLinesContainer linesContainer, SlamObservationsGraph graph, ISlamEvent slamEvent)
+        public RemoveCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, SlamObservationsGraph graph, ISlamEvent slamEvent)
         {
             m_pointsContainer = pointsContainer;
             m_linesContainer = linesContainer;
@@ -25,10 +26,19 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             if (slamEvent.Points != null)
             {
                 m_points2Remove = slamEvent.Points.Where(p => p.id != -1).Where(p => p.isRemoved).ToArray();
+                for (int i = 0; i < m_points2Remove.Length; ++i)
+                {
+                    m_points2Remove[i].position = m_pointsContainer.Get(m_points2Remove[i].id).position;
+                }
             }
             if (slamEvent.Lines != null)
             {
                 m_lines2Remove = slamEvent.Lines.Where(l => l.isRemoved).ToArray();
+                for (int i = 0; i < m_lines2Remove.Length; ++i)
+                {
+                    m_lines2Remove[i].vert1 = m_pointsContainer.Get(m_lines2Remove[i].pointId1).position;
+                    m_lines2Remove[i].vert2 = m_pointsContainer.Get(m_lines2Remove[i].pointId2).position;
+                }
             }
             if (slamEvent.Observations != null)
             {

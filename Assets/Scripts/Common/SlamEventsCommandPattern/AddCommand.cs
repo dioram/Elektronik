@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -13,10 +14,10 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private SlamObservation[] m_addedObservations;
 
         private SlamObservationsGraph m_graph;
-        private SlamLinesContainer m_linesContainer;
-        private SlamPointsContainer m_pointsContainer;
+        private ISlamContainer<SlamLine> m_linesContainer;
+        private ISlamContainer<SlamPoint> m_pointsContainer;
 
-        public AddCommand(SlamPointsContainer pointsContainer, SlamLinesContainer linesContainer, SlamObservationsGraph graph, ISlamEvent slamEvent)
+        public AddCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, SlamObservationsGraph graph, ISlamEvent slamEvent)
         {
             m_pointsContainer = pointsContainer;
             m_linesContainer = linesContainer;
@@ -30,7 +31,13 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             }
             if (slamEvent.Lines != null)
             {
-                m_addedLines = slamEvent.Lines.Where(l => !m_linesContainer.LineExists(l)).ToArray();
+                m_addedLines = slamEvent.Lines.Where(l => !m_linesContainer.Exists(l)).ToArray();
+                for (int i = 0; i < m_addedLines.Length; ++i)
+                {
+                    m_addedLines[i].isRemoved = true;
+                    m_addedLines[i].vert1 = m_pointsContainer.Get(m_addedLines[i].pointId1).position;
+                    m_addedLines[i].vert2 = m_pointsContainer.Get(m_addedLines[i].pointId2).position;
+                }
             }
             if (slamEvent.Observations != null)
             {

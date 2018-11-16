@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Offline
 {
@@ -26,8 +26,8 @@ namespace Elektronik.Offline
         public FastLinesCloud fastLineCloud;
         public Helmet helmet;
 
-        private SlamLinesContainer m_linesContainer;
-        private SlamPointsContainer m_pointsContainer;
+        private ISlamContainer<SlamLine> m_linesContainer;
+        private ISlamContainer<SlamPoint> m_pointsContainer;
 
         private int m_position = -1;
 
@@ -39,10 +39,10 @@ namespace Elektronik.Offline
 
         void Start()
         {
-            ISlamEventDataConverter converter = new Camera2Unity3dSlamEventConverter(Matrix4x4.Scale(Vector3.one * scale));
-            m_events = EventReader.AnalyzeFile(FileModeSettings.Path, converter);
             m_linesContainer = new SlamLinesContainer(fastLineCloud);
             m_pointsContainer = new SlamPointsContainer(fastPointCloud);
+            ISlamEventDataConverter converter = new Camera2Unity3dSlamEventConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Scaling));
+            m_events = EventReader.AnalyzeFile(FileModeSettings.Path, converter);
             StartCoroutine(ProcessEvents());
         }
 
@@ -197,7 +197,7 @@ namespace Elektronik.Offline
 
             for (int i = 0; i < m_events.Length; ++i)
             {
-                //Debug.Log(m_events[i].EventType.ToString());
+                Debug.LogFormat("Event: {0}; i: {1}", m_events[i].EventType.ToString(), i);
                 if (m_events[i] is GlobalMapEvent)
                 {
                     m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, observationsGraph));

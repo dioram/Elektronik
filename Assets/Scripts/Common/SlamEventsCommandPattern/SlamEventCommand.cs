@@ -1,14 +1,15 @@
 ﻿using Elektronik.Common;
 using Elektronik.Common.Events;
 using System.Linq;
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
     public class SlamEventCommand : MacroCommand
     {
         public SlamEventCommand(
-            SlamPointsContainer pointsContainer,
-            SlamLinesContainer linesContainer,
+            ISlamContainer<SlamPoint> pointsContainer,
+            ISlamContainer<SlamLine> linesContainer,
             SlamObservationsGraph graph,
             Helmet helmet,
             ISlamEvent slamEvent)

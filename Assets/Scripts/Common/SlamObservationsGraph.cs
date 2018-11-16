@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Common
 {
@@ -9,7 +10,7 @@ namespace Elektronik.Common
     {
         public GameObject observationPrefab;
 
-        SlamLinesContainer m_linesContainer;
+        ISlamContainer<SlamLine> m_linesContainer;
 
         SortedDictionary<int, SlamObservationNode> m_slamObservationNodes;
 
@@ -106,7 +107,7 @@ namespace Elektronik.Common
             foreach (var connection in obsNode.NodeLineIDPair)
             {
                 int existsLineId = connection.Value;
-                SlamLine currentConnection = m_linesContainer.GetLine(existsLineId);
+                SlamLine currentConnection = m_linesContainer.Get(existsLineId);
 
                 Debug.Assert(
                     obsNode.SlamObservation.id == currentConnection.pointId1 || obsNode.SlamObservation.id == currentConnection.pointId2,

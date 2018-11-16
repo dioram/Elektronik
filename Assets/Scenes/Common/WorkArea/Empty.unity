@@ -280,7 +280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d18ce208efd2b4548918b0a06b128d5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scale: 0.01
+  scale: 10
   observationsGraph: {fileID: 2096468161}
   fastPointCloud: {fileID: 1735580963}
   fastLineCloud: {fileID: 289725688}
