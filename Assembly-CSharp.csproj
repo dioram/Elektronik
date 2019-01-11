@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_2_7;UNITY_2018_2;UNITY_2018;PLATFORM_ARCH_64;UNITY_64;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITES;ENABLE_GRID;ENABLE_TILEMAP;ENABLE_TERRAIN;ENABLE_TEXTURE_STREAMING;ENABLE_DIRECTOR;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_TIMELINE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;INCLUDE_DYNAMIC_GI;INCLUDE_GI;ENABLE_MONO_BDWGC;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_VIDEO;ENABLE_PACKMAN;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_LOCALIZATION;PLATFORM_STANDALONE_WIN;PLATFORM_STANDALONE;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_EVENT_QUEUE;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_AR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_2_0_SUBSET;DEVELOPMENT_BUILD;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_VSTU;UNITY_POST_PROCESSING_STACK_V2;VRTK_VERSION_3_2_1;VRTK_VERSION_3_2_1_OR_NEWER;VRTK_VERSION_3_1_0_OR_NEWER;VRTK_VERSION_3_2_0_OR_NEWER</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_2_16;UNITY_2018_2;UNITY_2018;PLATFORM_ARCH_64;UNITY_64;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITES;ENABLE_GRID;ENABLE_TILEMAP;ENABLE_TERRAIN;ENABLE_TEXTURE_STREAMING;ENABLE_DIRECTOR;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_TIMELINE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;INCLUDE_DYNAMIC_GI;INCLUDE_GI;ENABLE_MONO_BDWGC;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_VIDEO;ENABLE_PACKMAN;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_LOCALIZATION;PLATFORM_STANDALONE_WIN;PLATFORM_STANDALONE;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_EVENT_QUEUE;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_AR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_2_0_SUBSET;DEVELOPMENT_BUILD;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_VSTU;VRTK_DEFINE_SDK_STEAMVR;VRTK_DEFINE_STEAMVR_PLUGIN_1_2_1_OR_NEWER;VRTK_DEFINE_STEAMVR_PLUGIN_1_2_2_OR_NEWER;VRTK_VERSION_3_2_1;VRTK_VERSION_3_2_1_OR_NEWER;VRTK_VERSION_3_1_0_OR_NEWER;VRTK_VERSION_3_2_0_OR_NEWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
@@ -50,7 +50,7 @@
     <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
-    <UnityVersion>2018.2.7f1</UnityVersion>
+    <UnityVersion>2018.2.16f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -61,48 +61,55 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\CameraChanger.cs" />
+    <Compile Include="Assets\Scripts\Common\Camera2Unity3dSlamEventConverter.cs" />
+    <Compile Include="Assets\Scripts\Common\CameraChanger.cs" />
+    <Compile Include="Assets\Scripts\Common\Containers\ISlamContainer.cs" />
+    <Compile Include="Assets\Scripts\Common\Containers\SlamLinesContainer.cs" />
+    <Compile Include="Assets\Scripts\Common\Containers\SlamPointsContainer.cs" />
     <Compile Include="Assets\Scripts\Common\ControlPanel.cs" />
+    <Compile Include="Assets\Scripts\Common\Events\GlobalMapEvent.cs" />
+    <Compile Include="Assets\Scripts\Common\Events\ISLAMEvent.cs" />
+    <Compile Include="Assets\Scripts\Common\Events\LoopClosingTryEvent.cs" />
+    <Compile Include="Assets\Scripts\Common\Events\MainThreadEvent.cs" />
+    <Compile Include="Assets\Scripts\Common\Events\MapModificationEvent.cs" />
+    <Compile Include="Assets\Scripts\Common\Events\PointsFusionEvent.cs" />
+    <Compile Include="Assets\Scripts\Common\Events\RemovalEvent.cs" />
+    <Compile Include="Assets\Scripts\Common\Events\SlamEventType.cs" />
     <Compile Include="Assets\Scripts\Common\FastLinesCloud.cs" />
     <Compile Include="Assets\Scripts\Common\FastPointCloud.cs" />
     <Compile Include="Assets\Scripts\Common\FreeFlyCameraScript.cs" />
+    <Compile Include="Assets\Scripts\Common\Helmet.cs" />
+    <Compile Include="Assets\Scripts\Common\InGameConsole.cs" />
     <Compile Include="Assets\Scripts\Common\InputWithBrowse.cs" />
+    <Compile Include="Assets\Scripts\Common\ISlamEventDataConverter.cs" />
+    <Compile Include="Assets\Scripts\Common\KeyPressedEventInvoker.cs" />
     <Compile Include="Assets\Scripts\Common\LinesMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\ListView.cs" />
     <Compile Include="Assets\Scripts\Common\ListViewItem.cs" />
-    <Compile Include="Assets\Scripts\Common\PointCloudPainter.cs" />
+    <Compile Include="Assets\Scripts\Common\ObjectStateConditionalEventInvoker.cs" />
     <Compile Include="Assets\Scripts\Common\PointsMeshObject.cs" />
+    <Compile Include="Assets\Scripts\Common\Robot2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Common\SceneList.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\AddCommand.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\ClearCommand.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\ISlamEventCommand.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\MacroCommand.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\PostProcessingCommand.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\RemoveCommand.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\SlamEventCommand.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\UpdateCommand.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamLine.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamObservation.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamObservationNode.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamObservationsGraph.cs" />
+    <Compile Include="Assets\Scripts\Common\SlamPoint.cs" />
     <Compile Include="Assets\Scripts\Common\XYZAxis.cs" />
-    <Compile Include="Assets\Scripts\Offline\Camera2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Offline\EventReader.cs" />
-    <Compile Include="Assets\Scripts\Offline\Events\ISLAMEvent.cs" />
-    <Compile Include="Assets\Scripts\Offline\Events\LoopClosingTryEvent.cs" />
-    <Compile Include="Assets\Scripts\Offline\Events\MainThreadEvent.cs" />
-    <Compile Include="Assets\Scripts\Offline\Events\MapModificationEvent.cs" />
-    <Compile Include="Assets\Scripts\Offline\Events\PointsFusionEvent.cs" />
-    <Compile Include="Assets\Scripts\Offline\Events\RemovalEvent.cs" />
-    <Compile Include="Assets\Scripts\Offline\Events\SlamEventType.cs" />
     <Compile Include="Assets\Scripts\Offline\FileModeSettings.cs" />
-    <Compile Include="Assets\Scripts\Offline\ISlamEventDataConverter.cs" />
     <Compile Include="Assets\Scripts\Offline\Return2OfflineMenu.cs" />
-    <Compile Include="Assets\Scripts\Offline\Robot2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Offline\SettingsMenu.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\CloudsManager.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\ISlamEventCommand.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\MacroCommand.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\PostProcessingCommand.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\RepaintLinesCommand.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\RepaintObservationsCommand.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\RepaintPointsCommand.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\SlamEventCommand.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamEventsCommandPattern\SlamEventsManager.cs" />
+    <Compile Include="Assets\Scripts\Offline\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsPlayer.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamLine.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamObservation.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamObservationNode.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamObservationsGraph.cs" />
-    <Compile Include="Assets\Scripts\Offline\SlamPoint.cs" />
     <None Include="Assets\Models\HorseMask2017\Materials\SFB_StandardHair.shader" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Работа/Elektronik tools 2.0/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
@@ -315,10 +322,10 @@
       <HintPath>D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Analytics">
-      <HintPath>D:/Users/kozin/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
+      <HintPath>D:/Users/Paul/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.StandardEvents">
-      <HintPath>D:/Users/kozin/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
+      <HintPath>D:/Users/Paul/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>D:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/unity/mscorlib.dll</HintPath>

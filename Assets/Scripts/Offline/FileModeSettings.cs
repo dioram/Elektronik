@@ -8,5 +8,6 @@ namespace Elektronik.Offline
     public static class FileModeSettings
     {
         public static string Path { get; set; }
+        public static float Scaling { get; set; }
     }
 }

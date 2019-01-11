@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Elektronik.Offline.Events;
+using Elektronik.Common;
+using Elektronik.Common.Events;
 
 namespace Elektronik.Offline
 {
@@ -44,6 +45,10 @@ namespace Elektronik.Offline
                 case SlamEventType.MainThreadEvent:
                     {
                         return MainThreadEvent.Parse(stream);
+                    }
+                case SlamEventType.GlobalMap:
+                    {
+                        return GlobalMapEvent.Parse(stream);
                     }
                 case SlamEventType.LMPointsRemoval:
                     {

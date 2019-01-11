@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,23 +12,6 @@ namespace Elektronik.Common
 
         public LinesMeshObject meshObjectPrefab;
         private Dictionary<int, LinesMeshObject> m_meshObjects;
-        private int m_lastLineIdx = 0;
-
-        public int[] GetNewLineIdxs(int countOfNewLines)
-        {
-            int[] result = new int[countOfNewLines];
-            for (int i = 0; i < countOfNewLines; ++i)
-            {
-                result[i] = GetNewLineIdx();
-            }
-            return result;
-        }
-
-        public int GetNewLineIdx()
-        {
-            // TODO: разработать более интеллектуальную выдачу ID
-            return m_lastLineIdx++;
-        }
 
         private void Awake()
         {
@@ -42,6 +26,19 @@ namespace Elektronik.Common
                 AddNewMesh(meshIdx);
             }
             lineIdx = srcLineIdx % LinesMeshObject.MAX_LINES_COUNT;
+        }
+
+        public bool LineExists(int lineIdx)
+        {
+            int meshIdx = lineIdx / LinesMeshObject.MAX_LINES_COUNT;
+            if (m_meshObjects.ContainsKey(meshIdx))
+            {
+                return m_meshObjects[meshIdx].LineExists(lineIdx % LinesMeshObject.MAX_LINES_COUNT);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void GetLine(int idx, out Vector3 position1, out Vector3 position2, out Color color)
@@ -97,7 +94,6 @@ namespace Elektronik.Common
                 MF_AutoPool.Despawn(meshObject.Value.gameObject);
             }
             m_meshObjects.Clear();
-            m_lastLineIdx = 0;
         }
 
         public void Repaint()

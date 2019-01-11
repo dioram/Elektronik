@@ -36,6 +36,16 @@ namespace Elektronik.Common
             m_filter.mesh = m_mesh;
         }
 
+        public bool LineExists(int idx)
+        {
+            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Vector3 pos1;
+            Vector3 pos2;
+            Color color;
+            GetLine(idx, out pos1, out pos2, out color);
+            return !(pos1 == Vector3.zero && pos2 == Vector3.zero && color == new Color(0, 0, 0, 0));
+        }
+
         public void GetLine(int idx, out Vector3 position1, out Vector3 position2, out Color color)
         {
             Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
@@ -46,21 +56,21 @@ namespace Elektronik.Common
 
         public void SetLine(int idx, Vector3 position1, Vector3 position2, Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT / 2, "Wrong idx ({0})", idx.ToString());
+            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
             SetLineColor(idx, color);
             SetLinePositions(idx, position1, position2);
         }
 
         public void SetLineColor(int idx, Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT / 2, "Wrong idx ({0})", idx.ToString());
+            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
             m_colors[2 * idx] = color;
             m_colors[2 * idx + 1] = color;
         }
 
         public void SetLinePositions(int idx, Vector3 position1, Vector3 position2)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT / 2, "Wrong idx ({0})", idx.ToString());
+            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
             m_vertices[2 * idx] = position1;
             m_vertices[2 * idx + 1] = position2;
         }

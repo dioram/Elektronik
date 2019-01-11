@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Elektronik.Offline.SlamEventsCommandPattern;
+using Elektronik.Common.SlamEventsCommandPattern;
 using UnityEngine.UI;
 using Elektronik.Common;
 using System;
-using Elektronik.Offline.Events;
+using Elektronik.Common.Events;
 
 namespace Elektronik.Offline
 {
@@ -14,28 +14,35 @@ namespace Elektronik.Offline
 
         public Slider timelineSlider;
         public Text timelineLabel;
-        public ListView loggerListView;
+        public Text eventText;
 
         public SlamEventsManager eventsManager;
 
         private void Start()
         {
+            StartCoroutine(WaitForManagerLengthParameter());
+        }
+
+        IEnumerator WaitForManagerLengthParameter()
+        {
+            while (!eventsManager.ReadyToPlay)
+            {
+                yield return new WaitForSeconds(1);
+            }
+
             timelineSlider.minValue = 0;
-            timelineSlider.maxValue = eventsManager.GetLength();
+            timelineSlider.maxValue = eventsManager.GetLength() - 1;
+
+            yield return null;
         }
 
-        private void PushLog()
+        private void UpdateEventText(ISlamEvent @event)
         {
             ISlamEvent currentEvent = eventsManager.GetCurrentEvent();
-            if (currentEvent != null && currentEvent.IsKeyEvent)
-                loggerListView.PushItem(currentEvent.ToString());
-        }
-
-        private void PopLog()
-        {
-            ISlamEvent currentEvent = eventsManager.GetCurrentEvent();
-            if (currentEvent != null && currentEvent.IsKeyEvent)
-                loggerListView.PopItem();
+            if (currentEvent != null)
+            {
+                eventText.text = currentEvent.ToString();
+            }
         }
 
         private void UpdateTime()
@@ -58,6 +65,11 @@ namespace Elektronik.Offline
             {
                 NextKey();
             }
+            if (eventsManager.ReadyToPlay)
+            {
+                UpdateTime();
+                UpdateEventText(eventsManager.GetCurrentEvent());
+            }
         }
 
         void FixedUpdate()
@@ -65,17 +77,15 @@ namespace Elektronik.Offline
             if (m_play)
             {
                 m_play = eventsManager.Next();
-                if (m_play)
-                {
-                    PushLog();
-                    UpdateTime();
-                }
             }
         }
 
         public void Play()
         {
-            m_play = true;
+            if (eventsManager.ReadyToPlay)
+            {
+                m_play = true;
+            }
         }
 
         public void Pause()
@@ -92,21 +102,21 @@ namespace Elektronik.Offline
         public void PrevKey()
         {
             Pause();
-            if (eventsManager.PrevKeyEvent())
-            {
-                UpdateTime();
-                PopLog();
-            }
-            
+            eventsManager.PrevKeyEvent();
         }
 
         public void NextKey()
         {
             Pause();
-            if (eventsManager.NextKeyEvent())
+            eventsManager.NextKeyEvent();
+        }
+
+        public void SetPosition(float i)
+        {
+            if (Input.GetMouseButton(0))
             {
-                UpdateTime();
-                PushLog();
+                Pause();
+                eventsManager.SetPosition((int)Math.Floor(i));
             }
         }
     }
