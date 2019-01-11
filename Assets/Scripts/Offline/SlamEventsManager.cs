@@ -197,7 +197,7 @@ namespace Elektronik.Offline
 
             for (int i = 0; i < m_events.Length; ++i)
             {
-                Debug.LogFormat("Event: {0}; i: {1}", m_events[i].EventType.ToString(), i);
+                Debug.LogFormat("{0}. Event: {1};", i, m_events[i].EventType.ToString());
                 if (m_events[i] is GlobalMapEvent)
                 {
                     m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, observationsGraph));
@@ -216,7 +216,6 @@ namespace Elektronik.Offline
 
                 if (i % 10 == 0)
                 {
-                    Debug.LogFormat("{0}. event {1}", i, m_events[i].ToString());
                     yield return null;
                 }
             }

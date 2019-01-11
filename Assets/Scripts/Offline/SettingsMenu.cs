@@ -17,6 +17,7 @@ namespace Elektronik.Offline
         public GameObject goFileInput;
         public Button buCancel;
         public Button buLoad;
+        public SettingsStore store;
 
         // Use this for initialization
         void Start()
