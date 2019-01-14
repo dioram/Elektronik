@@ -41,8 +41,8 @@ namespace Elektronik.Offline
         {
             m_linesContainer = new SlamLinesContainer(fastLineCloud);
             m_pointsContainer = new SlamPointsContainer(fastPointCloud);
-            ISlamEventDataConverter converter = new Camera2Unity3dSlamEventConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Scaling));
-            m_events = EventReader.AnalyzeFile(FileModeSettings.Path, converter);
+            ISlamEventDataConverter converter = new Camera2Unity3dSlamEventConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
+            m_events = EventReader.AnalyzeFile(FileModeSettings.Current.Path, converter);
             StartCoroutine(ProcessEvents());
         }
 

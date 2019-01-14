@@ -22,8 +22,6 @@ namespace Elektronik.Offline
         public Button buLoad;
         public SettingsStore store;
 
-        private RecentFile m_current;
-
         // Use this for initialization
         void Start()
         {
@@ -48,22 +46,32 @@ namespace Elektronik.Offline
                 recentFilePrefab.DateTime = recentFile.Time;
                 srRecentFiles.Add(recentFilePrefab);
             }
+            if (store.RecentFiles.Count > 0)
+            {
+                FileModeSettings.Current = store.RecentFiles.First();
+            }
+            else
+            {
+                FileModeSettings.Current = new FileModeSettings();
+            }
             srRecentFiles.OnSelectionChanged += RecentFileChanged;
         }
 
         private void RecentFileChanged(object sender, UIListBox.SelectionChangedEventArgs e)
         {
-            m_current = store.RecentFiles[e.index];
+            FileModeSettings.Current = store.RecentFiles[e.index];
             var browseField = goFileInput.GetComponentInChildren<InputField>();
-            browseField.text = m_current.Path;
+            browseField.text = FileModeSettings.Current.Path;
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
-            scalingField.text = m_current.Settings.scaling.ToString();
+            scalingField.text = FileModeSettings.Current.Scaling.ToString();
             
         }
 
         void AttachBehavior2Cancel()
         {
-
+            buCancel.OnClickAsObservable()
+                .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Main menu", UnityEngine.SceneManagement.LoadSceneMode.Single))
+                .Subscribe();
         }
 
         void AttachBehavior2Load()
@@ -71,22 +79,12 @@ namespace Elektronik.Offline
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
             var pathField = GameObject.Find("Path field").GetComponent<InputField>();
             buLoad.OnClickAsObservable()
-                .Do(_ => FileModeSettings.Scaling = scalingField.text.Length == 0 ? 1.0f : float.Parse(scalingField.text))
-                .Do(_ => FileModeSettings.Path = pathField.text)
-                .Do(_ => 
-                {
-                    RecentFile rf = null;
-                    var settings = new FileSettings()
-                    {
-                        scaling = FileModeSettings.Scaling,
-                    };
-                    if (m_current != null && FileModeSettings.Path == m_current.Path)
-                        rf = m_current;
-                    else
-                        rf = new RecentFile(FileModeSettings.Path);
-                    rf.Update(settings);
-                    store.Add(rf);
-                })
+                .Select(_ => pathField.text == FileModeSettings.Current.Path ? FileModeSettings.Current : new FileModeSettings())
+                .Do(fms => FileModeSettings.Current = fms)
+                .Do(_ => FileModeSettings.Current.Scaling = scalingField.text.Length == 0 ? 1.0f : float.Parse(scalingField.text))
+                .Do(_ => FileModeSettings.Current.Path = pathField.text)
+                .Do(_ => FileModeSettings.Current.Time = DateTime.Now)
+                .Do(_ => store.Add(FileModeSettings.Current))
                 .Do(_ => store.Serialize())
                 .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Empty", UnityEngine.SceneManagement.LoadSceneMode.Single))
                 .Subscribe();

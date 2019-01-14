@@ -13,11 +13,11 @@ namespace Elektronik.Offline
     {
         public int maxCountOfRecentFiles = 20;
 
-        public List<RecentFile> RecentFiles { get; private set; }
+        public List<FileModeSettings> RecentFiles { get; private set; }
 
         private void Awake()
         {
-            RecentFiles = new List<RecentFile>(maxCountOfRecentFiles + 1); // +1 because of first add and second remove
+            RecentFiles = new List<FileModeSettings>(maxCountOfRecentFiles + 1); // +1 because of first add and second remove
         }
 
         private void Start()
@@ -25,9 +25,13 @@ namespace Elektronik.Offline
             Deserialize();
         }
 
-        public void Add(RecentFile recentFile)
+        public void Add(FileModeSettings recentFile)
         {
-            RecentFiles.Remove(recentFile);
+            FileModeSettings existing = RecentFiles.Find(setting => setting.CompareTo(recentFile) == 0);
+            if (existing != null)
+            {
+                RecentFiles.Remove(recentFile);
+            }
             RecentFiles.Insert(0, recentFile);
             if (RecentFiles.Count > maxCountOfRecentFiles)
                 RecentFiles.RemoveAt(RecentFiles.Count - 1);
@@ -41,7 +45,7 @@ namespace Elektronik.Offline
             {
                 using (var file = File.Open(pathToAppData, FileMode.Open))
                 {
-                    RecentFiles = (List<RecentFile>)formatter.Deserialize(file);
+                    RecentFiles = (List<FileModeSettings>)formatter.Deserialize(file);
                 }
             }
         }
