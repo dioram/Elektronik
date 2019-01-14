@@ -67,6 +67,11 @@
     <Compile Include="Assets\Scripts\Common\Containers\SlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamPointsContainer.cs" />
     <Compile Include="Assets\Scripts\Common\ControlPanel.cs" />
+    <Compile Include="Assets\Scripts\Common\Data\ActionType.cs" />
+    <Compile Include="Assets\Scripts\Common\Data\Package.cs" />
+    <Compile Include="Assets\Scripts\Common\Data\SlamBitConverter.cs" />
+    <Compile Include="Assets\Scripts\Common\Data\SlamObservationPackageObject.cs" />
+    <Compile Include="Assets\Scripts\Common\Data\SlamPointsPackageObject.cs" />
     <Compile Include="Assets\Scripts\Common\Events\GlobalMapEvent.cs" />
     <Compile Include="Assets\Scripts\Common\Events\ISLAMEvent.cs" />
     <Compile Include="Assets\Scripts\Common\Events\LoopClosingTryEvent.cs" />
