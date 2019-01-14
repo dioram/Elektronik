@@ -17,8 +17,19 @@ namespace Elektronik.Offline
             Path = path;
         }
 
+        public void Update(string path)
+        {
+            Update(path, Settings);
+        }
+
         public void Update(FileSettings settings)
         {
+            Update(Path, settings);
+        }
+
+        public void Update(string path, FileSettings settings)
+        {
+            Path = path;
             Time = DateTime.Now;
             Settings = settings;
         }

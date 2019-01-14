@@ -35,7 +35,7 @@ namespace Elektronik.Offline
 
         public void Deserialize()
         {
-            string pathToAppData = Application.dataPath + @"/offline/settings.dat";
+            string pathToAppData = Application.persistentDataPath + @"/offline/settings.dat";
             IFormatter formatter = new BinaryFormatter();
             if (File.Exists(pathToAppData))
             {
@@ -48,7 +48,10 @@ namespace Elektronik.Offline
 
         public void Serialize()
         {
-            string pathToAppData = Application.dataPath + @"/offline/settings.dat";
+            DirectoryInfo di = new DirectoryInfo(Application.persistentDataPath + @"/offline");
+            if (!di.Exists)
+                di.Create();
+            string pathToAppData = Application.persistentDataPath + @"/offline/settings.dat";
             Debug.LogFormat("Serialization to:{0}{1}", Environment.NewLine, pathToAppData);
             IFormatter formatter = new BinaryFormatter();
             using (var file = File.Open(pathToAppData, FileMode.OpenOrCreate))
