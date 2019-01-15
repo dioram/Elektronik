@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Elektronik.Common.Containers;
+using Elektronik.Common.Data;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -25,8 +26,8 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             ISlamContainer<SlamPoint> pointsContainer,
             SlamObservationsGraph graph,
             Helmet helmet,
-            SlamPoint[] points,
-            SlamObservation[] observations)
+            ICollection<SlamPoint> points,
+            ICollection<SlamObservation> observations)
         {
             m_pointsContainer = pointsContainer;
             m_graph = graph;
@@ -49,7 +50,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             ISlamContainer<SlamPoint> pointsContainer,
             SlamObservationsGraph graph, 
             Helmet helmet, 
-            ISlamEvent slamEvent) : this(pointsContainer, graph, helmet, slamEvent.Points, slamEvent.Observations)
+            Package slamEvent) : this(pointsContainer, graph, helmet, slamEvent.Points, slamEvent.Observations)
         { }
 
         public void Execute()

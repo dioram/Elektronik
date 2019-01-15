@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Elektronik.Common.Containers;
+using Elektronik.Common.Data;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -17,7 +18,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private ISlamContainer<SlamLine> m_linesContainer;
         private ISlamContainer<SlamPoint> m_pointsContainer;
 
-        public RemoveCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, SlamObservationsGraph graph, ISlamEvent slamEvent)
+        public RemoveCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, SlamObservationsGraph graph, Package slamEvent)
         {
             m_pointsContainer = pointsContainer;
             m_linesContainer = linesContainer;

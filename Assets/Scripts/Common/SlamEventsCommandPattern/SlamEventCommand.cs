@@ -2,6 +2,7 @@
 using Elektronik.Common.Events;
 using System.Linq;
 using Elektronik.Common.Containers;
+using Elektronik.Common.Data;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -12,7 +13,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             ISlamContainer<SlamLine> linesContainer,
             SlamObservationsGraph graph,
             Helmet helmet,
-            ISlamEvent slamEvent)
+            Package slamEvent)
         {
             m_commands.Add(new AddCommand(pointsContainer, linesContainer, graph, slamEvent));
             m_commands.Add(new UpdateCommand(pointsContainer, graph, helmet, slamEvent));

@@ -8,10 +8,37 @@ namespace Elektronik.Common.Data
 {
     public class Package
     {
+        public bool IsKeyEvent { get; private set; }
         public int Timestamp { get; private set; }
         public List<SlamObservation> Observations { get; private set; }
         public List<SlamPoint> Points { get; private set; }
         public List<SlamLine> Lines { get; private set; }
+
+        private string m_summary;
+        private void EvaluateSummary()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[Package]")
+              .AppendLine()
+              .AppendFormat("Timestamp: {0}", Timestamp)
+              .AppendLine()
+              .AppendFormat("Is key: {0}", IsKeyEvent)
+              .AppendLine()
+              .AppendFormat("New points count: {0}", Points.Count(p => p.isNew))
+              .AppendLine()
+              .AppendFormat("Tinted points count: {0}", Points.Count(p => p.justColored))
+              .AppendLine()
+              .AppendFormat("Removed points count: {0}", Points.Count(p => p.isRemoved))
+              .AppendLine()
+              .AppendFormat("Total count of points: {0}", Points.Count)
+              .AppendLine()
+              .AppendFormat("New observations count: {0}", Observations.Count(o => o.isNew))
+              .AppendLine()
+              .AppendFormat("Removed observations count: {0}", Observations.Count(o => o.isRemoved))
+              .AppendLine()
+              .AppendFormat("Total count of observations: {0}", Observations.Count);
+            m_summary = sb.ToString();
+        }
 
         public Package()
         {
@@ -25,18 +52,18 @@ namespace Elektronik.Common.Data
             Package result = new Package();
             int offset = 0;
             result.Timestamp = BitConverter.ToInt32(rawPackage, 0);
+            Debug.Log("timestamp reading");
             offset += sizeof(int);
             int countOfObjects = BitConverter.ToInt32(rawPackage, offset);
+            Debug.LogFormat("count of objects {0}", countOfObjects);
             offset += sizeof(int);
 
             for (int i = 0; i < countOfObjects; ++i)
             {
                 int objectId = BitConverter.ToInt32(rawPackage, offset);
                 offset += sizeof(int);
-
                 byte objectType = rawPackage[offset++];
                 int actionsCount = rawPackage[offset++];
-
                 int actionsSize = 0;
                 for (int actionIdx = 0; actionIdx < actionsCount; ++actionIdx)
                 {
@@ -60,11 +87,25 @@ namespace Elektronik.Common.Data
                 {
                     SlamObservation observation = null;
                     SlamObservationPackageObject.ParseActions(actions, objectId, out observation);
+                    result.Observations.Add(observation);
                 }
                 if (line.HasValue)
                     result.Lines.Add(line.Value);
             }
+            if (result.Observations.Count > 0)
+            {
+                if (result.Observations[0].id == -1)
+                    result.IsKeyEvent = false;
+            }
+            result.EvaluateSummary();
             return result;
+        }
+
+        
+
+        public string Summary()
+        {
+            return m_summary;
         }
     }
 }

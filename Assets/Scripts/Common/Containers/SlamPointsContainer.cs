@@ -27,6 +27,7 @@ namespace Elektronik.Common.Containers
             ++m_diff;
             ++m_added;
             m_pointCloud.SetPoint(point.id, point.position, point.color);
+            Debug.AssertFormat(!m_points.ContainsKey(point.id), "Point with id {0} already in dictionary!", point.id);
             m_points.Add(point.id, point);
             return point.id;
         }

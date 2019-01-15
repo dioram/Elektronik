@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Elektronik.Common.Containers;
+using Elektronik.Common.Data;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -16,7 +17,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             ISlamContainer<SlamLine> linesContainer,
             SlamObservationsGraph graph,
             Helmet helmet,
-            ISlamEvent slamEvent)
+            Package slamEvent)
         {
             SlamPoint[] points;
             if (slamEvent.Points != null)

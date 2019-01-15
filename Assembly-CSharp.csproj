@@ -121,6 +121,7 @@
     <Compile Include="Assets\Scripts\Offline\SettingsStore.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsPlayer.cs" />
+    <Compile Include="Assets\Scripts\Online\OnlineSettings.cs" />
     <Compile Include="Assets\Scripts\Online\SettingsMenu.cs" />
     <None Include="Assets\Models\HorseMask2017\Materials\SFB_StandardHair.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">

@@ -22,8 +22,8 @@ namespace Elektronik.Common.Data
                     return 0;
                 case ActionType.Fuse:
                     return sizeof(int) + sizeof(byte) * 6; // id + color1 + color2
-                case ActionType.Connect:
-                    return sizeof(int) * 2; // id + count of common points
+                /*case ActionType.Connect:
+                    return sizeof(int) * 2; // id + count of common points*/
                 default:
                     return -1;
             }
@@ -76,7 +76,8 @@ namespace Elektronik.Common.Data
                         color1 = color1,
                         color2 = color2,
                     };
-                    fuse = fuseLine;
+                    if (fuseWithId != -1 && point.id != -1)
+                        fuse = fuseLine;
                 }
             }
         }

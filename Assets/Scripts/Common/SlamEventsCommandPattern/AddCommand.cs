@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Elektronik.Common.Containers;
+using Elektronik.Common.Data;
+using UnityEngine;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -17,7 +19,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private ISlamContainer<SlamLine> m_linesContainer;
         private ISlamContainer<SlamPoint> m_pointsContainer;
 
-        public AddCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, SlamObservationsGraph graph, ISlamEvent slamEvent)
+        public AddCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, SlamObservationsGraph graph, Package slamEvent)
         {
             m_pointsContainer = pointsContainer;
             m_linesContainer = linesContainer;
@@ -28,6 +30,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 m_addedPoints = slamEvent.Points
                     .Where(p => p.isNew)
                     .ToArray();
+                
             }
             if (slamEvent.Lines != null)
             {

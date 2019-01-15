@@ -32,7 +32,7 @@ namespace Elektronik.Offline
                     UnityEngine.Debug.Log(String.Format("{0}. offset: {1} (0x{1:X8})", i, offsetTable[i]));
                     long packageLength = 
                         i == eventsCount - 1 ?
-                        br.BaseStream.Length - 4 - offsetTable[i] 
+                        br.BaseStream.Length - sizeof(int) /*table offset*/ - offsetTable[i] 
                         : offsetTable[i + 1] - offsetTable[i];
                     byte[] rawPackage = br.ReadBytes((int)packageLength);
                     Package package = Package.Parse(rawPackage);
