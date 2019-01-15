@@ -33,7 +33,7 @@ namespace Elektronik.Common.Containers
             int lineId = m_indices.Dequeue();
             m_longId2Id.Add(longId, lineId);
             m_lines.Add(lineId, line);
-            m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color);
+            m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color1);
             return lineId;
         }
 
@@ -68,7 +68,7 @@ namespace Elektronik.Common.Containers
             long longId = line.GenerateLongId();
             int lineId = m_longId2Id[longId];
             Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with Id {0}", lineId);
-            m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color);
+            m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color1);
             m_lines[lineId] = line;
         }
 
@@ -135,9 +135,9 @@ namespace Elektronik.Common.Containers
             long longId = line.GenerateLongId();
             int lineId = m_longId2Id[longId];
             Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with Id {0}", lineId);
-            m_linesCloud.SetLineColor(lineId, line.color);
+            m_linesCloud.SetLineColor(lineId, line.color1);
             SlamLine currentLine = m_lines[lineId];
-            currentLine.color = line.color;
+            currentLine.color1 = line.color1;
             m_lines[lineId] = currentLine;
         }
 

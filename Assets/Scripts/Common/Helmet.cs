@@ -52,7 +52,7 @@ namespace Elektronik.Common
             }
             SlamLine line = new SlamLine()
             {
-                color = trackColor,
+                color1 = trackColor,
                 isRemoved = false,
                 pointId1 = m_lineSegmentIdx,
                 pointId2 = ++m_lineSegmentIdx,

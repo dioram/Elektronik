@@ -90,7 +90,7 @@ namespace Elektronik.Common
                     // 3. Где соединение отсутствует добавить соединение
                     SlamLine newLineCinema = new SlamLine()
                     {
-                        color = Color.gray,
+                        color1 = Color.gray,
                         pointId1 = obsNode.SlamObservation.id,
                         pointId2 = neighbor.SlamObservation.id,
                         isRemoved = false,

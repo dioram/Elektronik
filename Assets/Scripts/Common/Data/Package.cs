@@ -35,9 +35,7 @@ namespace Elektronik.Common.Data
                 offset += sizeof(int);
 
                 byte objectType = rawPackage[offset++];
-
-                int actionsCount = BitConverter.ToInt32(rawPackage, offset);
-                offset += sizeof(int);
+                int actionsCount = rawPackage[offset++];
 
                 int actionsSize = 0;
                 for (int actionIdx = 0; actionIdx < actionsCount; ++actionIdx)
