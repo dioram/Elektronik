@@ -15,16 +15,19 @@ namespace Elektronik.Offline
 {
     public class SettingsMenu : MonoBehaviour
     {
+        const string SETTINGS_FILE = @"offline/settings.dat";
+
         public RecentFileListBoxItem recentFilePrefab;
-        public UIListBox srRecentFiles;
+        public UIListBox lbRecentFiles;
         public GameObject goFileInput;
         public Button buCancel;
         public Button buLoad;
-        public SettingsStore store;
+        public OfflineSettingsStore store;
 
         // Use this for initialization
         void Start()
         {
+            store.Deserialize(SETTINGS_FILE);
             AttachBehavior2FileInput();
             AttachBehavior2RecentFiles();
             AttachBehavior2Cancel();
@@ -39,27 +42,27 @@ namespace Elektronik.Offline
 
         void AttachBehavior2RecentFiles()
         {
-            var files = store.RecentFiles;
-            foreach (var recentFile in store.RecentFiles)
+            var files = store.Recent;
+            foreach (var recentFile in store.Recent)
             {
                 recentFilePrefab.Path = recentFile.Path;
                 recentFilePrefab.DateTime = recentFile.Time;
-                srRecentFiles.Add(recentFilePrefab);
+                lbRecentFiles.Add(recentFilePrefab);
             }
-            if (store.RecentFiles.Count > 0)
+            if (store.Recent.Count > 0)
             {
-                FileModeSettings.Current = store.RecentFiles.First();
+                FileModeSettings.Current = store.Recent.First();
             }
             else
             {
                 FileModeSettings.Current = new FileModeSettings();
             }
-            srRecentFiles.OnSelectionChanged += RecentFileChanged;
+            lbRecentFiles.OnSelectionChanged += RecentFileChanged;
         }
 
         private void RecentFileChanged(object sender, UIListBox.SelectionChangedEventArgs e)
         {
-            FileModeSettings.Current = store.RecentFiles[e.index];
+            FileModeSettings.Current = store.Recent[e.index];
             var browseField = goFileInput.GetComponentInChildren<InputField>();
             browseField.text = FileModeSettings.Current.Path;
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
@@ -85,7 +88,7 @@ namespace Elektronik.Offline
                 .Do(_ => FileModeSettings.Current.Path = pathField.text)
                 .Do(_ => FileModeSettings.Current.Time = DateTime.Now)
                 .Do(_ => store.Add(FileModeSettings.Current))
-                .Do(_ => store.Serialize())
+                .Do(_ => store.Serialize(SETTINGS_FILE))
                 .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Empty", UnityEngine.SceneManagement.LoadSceneMode.Single))
                 .Subscribe();
         }

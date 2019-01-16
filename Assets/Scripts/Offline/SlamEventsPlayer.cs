@@ -42,16 +42,18 @@ namespace Elektronik.Offline
             Package currentEvent = eventsManager.GetCurrentEvent();
             if (currentEvent != null)
             {
-                eventText.text = currentEvent.ToString();
+                eventText.text = currentEvent.Summary();
             }
         }
 
         private void UpdateTime()
         {
             Package currentEvent = eventsManager.GetCurrentEvent();
-            if (currentEvent != null)
+            if (currentEvent != null && currentEvent.Timestamp != -1)
             {
-                timelineLabel.text = TimeSpan.FromMilliseconds(eventsManager.GetCurrentEvent().Timestamp).ToString();
+                DateTime timestamp = new DateTime();
+                timestamp += TimeSpan.FromMilliseconds(currentEvent.Timestamp);
+                timelineLabel.text = timestamp.ToString("hh:mm:ss.fff");
                 timelineSlider.value = eventsManager.GetCurrentEventPosition();
             }
         }

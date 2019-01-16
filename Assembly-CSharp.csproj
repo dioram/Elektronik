@@ -93,9 +93,11 @@
     <Compile Include="Assets\Scripts\Common\KeyPressedEventInvoker.cs" />
     <Compile Include="Assets\Scripts\Common\LinesMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\Menu UI scripts\UIMainMenu.cs" />
+    <Compile Include="Assets\Scripts\Common\ModeSelector.cs" />
     <Compile Include="Assets\Scripts\Common\ObjectStateConditionalEventInvoker.cs" />
     <Compile Include="Assets\Scripts\Common\PointsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\Robot2Unity3dSlamEventConverter.cs" />
+    <Compile Include="Assets\Scripts\Common\SettingsStore.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\AddCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\ClearCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\ISlamEventCommand.cs" />
@@ -114,15 +116,18 @@
     <Compile Include="Assets\Scripts\Common\XYZAxis.cs" />
     <Compile Include="Assets\Scripts\Offline\EventReader.cs" />
     <Compile Include="Assets\Scripts\Offline\FileModeSettings.cs" />
+    <Compile Include="Assets\Scripts\Offline\OfflineSettingsStore.cs" />
     <Compile Include="Assets\Scripts\Offline\PackagesReader.cs" />
     <Compile Include="Assets\Scripts\Offline\RecentFileListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Offline\Return2OfflineMenu.cs" />
     <Compile Include="Assets\Scripts\Offline\SettingsMenu.cs" />
-    <Compile Include="Assets\Scripts\Offline\SettingsStore.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsPlayer.cs" />
-    <Compile Include="Assets\Scripts\Online\OnlineSettings.cs" />
+    <Compile Include="Assets\Scripts\Online\OnlineModeSettings.cs" />
+    <Compile Include="Assets\Scripts\Online\OnlineSettingStore.cs" />
+    <Compile Include="Assets\Scripts\Online\RecentIPListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Online\SettingsMenu.cs" />
+    <Compile Include="Assets\Scripts\Online\SlamEventsPlayer.cs" />
     <None Include="Assets\Models\HorseMask2017\Materials\SFB_StandardHair.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>

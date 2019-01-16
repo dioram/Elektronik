@@ -52,10 +52,8 @@ namespace Elektronik.Common.Data
             Package result = new Package();
             int offset = 0;
             result.Timestamp = BitConverter.ToInt32(rawPackage, 0);
-            Debug.Log("timestamp reading");
             offset += sizeof(int);
             int countOfObjects = BitConverter.ToInt32(rawPackage, offset);
-            Debug.LogFormat("count of objects {0}", countOfObjects);
             offset += sizeof(int);
 
             for (int i = 0; i < countOfObjects; ++i)
@@ -94,8 +92,8 @@ namespace Elektronik.Common.Data
             }
             if (result.Observations.Count > 0)
             {
-                if (result.Observations[0].id == -1)
-                    result.IsKeyEvent = false;
+                if (result.Observations[0].id != -1)
+                    result.IsKeyEvent = true;
             }
             result.EvaluateSummary();
             return result;

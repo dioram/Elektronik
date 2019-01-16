@@ -22,10 +22,8 @@ namespace Elektronik.Common.Data
                     return 0;
                 case ActionType.Fuse:
                     return sizeof(int) + sizeof(byte) * 6; // id + color1 + color2
-                /*case ActionType.Connect:
-                    return sizeof(int) * 2; // id + count of common points*/
                 default:
-                    return -1;
+                    throw new ArgumentException(String.Format("Bad action type ({0})", actionType));
             }
         }
 
@@ -75,6 +73,7 @@ namespace Elektronik.Common.Data
                         pointId2 = fuseWithId,
                         color1 = color1,
                         color2 = color2,
+                        isRemoved = true,
                     };
                     if (fuseWithId != -1 && point.id != -1)
                         fuse = fuseLine;

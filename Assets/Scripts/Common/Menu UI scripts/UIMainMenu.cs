@@ -15,7 +15,7 @@ namespace Elektronik.Common.UI
         private void Start()
         {
             m_bOnlineMode = GameObject.Find("Online mode").GetComponent<Button>();
-            m_bOfflineMode.onClick.AddListener(Move2OnlineSettingsScene);
+            m_bOnlineMode.onClick.AddListener(Move2OnlineSettingsScene);
 
             m_bOfflineMode = GameObject.Find("Offline mode").GetComponent<Button>();
             m_bOfflineMode.onClick.AddListener(Move2OfflineSettingsScene);

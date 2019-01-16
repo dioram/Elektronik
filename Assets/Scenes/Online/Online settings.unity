@@ -449,6 +449,72 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 215738380}
   m_CullTransparentMesh: 0
+--- !u!1 &269420343
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 269420346}
+  - component: {fileID: 269420345}
+  - component: {fileID: 269420344}
+  m_Layer: 0
+  m_Name: EventSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &269420344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269420343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1077351063, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalAxis: Horizontal
+  m_VerticalAxis: Vertical
+  m_SubmitButton: Submit
+  m_CancelButton: Cancel
+  m_InputActionsPerSecond: 10
+  m_RepeatDelay: 0.5
+  m_ForceModuleActive: 0
+--- !u!114 &269420345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269420343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -619905303, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!4 &269420346
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269420343}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &437851340
 GameObject:
   m_ObjectHideFlags: 0
@@ -1955,7 +2021,7 @@ GameObject:
   - component: {fileID: 1627476861}
   - component: {fileID: 1627476864}
   m_Layer: 0
-  m_Name: Dropdown
+  m_Name: Dropdown connection type
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2956,10 +3022,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f3e20bcf6601694f942491c79b67b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  address: {fileID: 5006600307515789069}
-  port: {fileID: 1688224466}
-  scaling: {fileID: 596312231}
-  connectionType: {fileID: 1919802}
+  store: {fileID: 5006600308787998862}
+  recentConnectionsListBox: {fileID: 5006600308908788688}
+  recentConnectionPrefab: {fileID: 8172921214314335651, guid: 836926fdaa649ae40b78646224660478,
+    type: 3}
   settingSceneControls: {fileID: 5006600309109215357}
 --- !u!224 &5006600307108146584
 RectTransform:
@@ -3253,7 +3319,7 @@ GameObject:
   - component: {fileID: 5006600307214694584}
   - component: {fileID: 5006600307214694586}
   m_Layer: 0
-  m_Name: '[LE] File loading'
+  m_Name: '[LE] Connection loading'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3623,7 +3689,7 @@ GameObject:
   - component: {fileID: 5006600307440286336}
   - component: {fileID: 5006600307440286351}
   m_Layer: 0
-  m_Name: '[VLG] File loading'
+  m_Name: '[VLG] Connection loading'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3985,7 +4051,7 @@ GameObject:
   - component: {fileID: 5006600307559999106}
   - component: {fileID: 5006600307559999105}
   m_Layer: 0
-  m_Name: '[LG] File setting'
+  m_Name: '[LG] Connection setting'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4679,7 +4745,7 @@ GameObject:
   - component: {fileID: 5006600307829832074}
   - component: {fileID: 5006600307829832073}
   m_Layer: 0
-  m_Name: '[LE] File controls'
+  m_Name: '[LE] Connection controls'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5083,18 +5149,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.ScrollRect+ScrollRectEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &5006600308058836042
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5006600308058836053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86720caa84c49f34b97d314e6df087d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &5006600308058836053
 GameObject:
   m_ObjectHideFlags: 0
@@ -5107,7 +5161,6 @@ GameObject:
   - component: {fileID: 5006600308058836041}
   - component: {fileID: 5006600308058836040}
   - component: {fileID: 5006600308058836055}
-  - component: {fileID: 5006600308058836042}
   m_Layer: 0
   m_Name: Scroll View
   m_TagString: Untagged
@@ -5826,7 +5879,7 @@ GameObject:
   - component: {fileID: 5006600308652655665}
   - component: {fileID: 5006600308652655664}
   m_Layer: 0
-  m_Name: '[LE] File settings'
+  m_Name: '[LE] Connection settings'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5865,7 +5918,7 @@ GameObject:
   - component: {fileID: 5006600308658281462}
   - component: {fileID: 5006600308658281461}
   m_Layer: 0
-  m_Name: '[LG] File controls'
+  m_Name: '[LG] Connection controls'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6217,7 +6270,7 @@ GameObject:
   - component: {fileID: 5006600308787998863}
   - component: {fileID: 5006600308787998862}
   m_Layer: 0
-  m_Name: RecentlyUsedIPs
+  m_Name: DataStore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6232,7 +6285,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5006600308787998861}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c869773cc8c5794c99a2d2ce912e83c, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d6f726f544c48746b3756473396c114, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxCountOfRecentFiles: 20
@@ -6478,8 +6531,9 @@ GameObject:
   - component: {fileID: 5006600308908788673}
   - component: {fileID: 5006600308908788672}
   - component: {fileID: 5006600308908788687}
+  - component: {fileID: 5006600308908788688}
   m_Layer: 0
-  m_Name: '[LE] Recent files'
+  m_Name: '[LE] Recent Connections'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6525,6 +6579,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: 1
   m_LayoutPriority: 1
+--- !u!114 &5006600308908788688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5006600308908788685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86720caa84c49f34b97d314e6df087d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5006600308962465515
 GameObject:
   m_ObjectHideFlags: 0

@@ -198,11 +198,16 @@ namespace Elektronik.Offline
 
             for (int i = 0; i < m_packages.Length; ++i)
             {
-                //Debug.LogFormat("{0}. Event: {1};", i, m_packages[i].EventType.ToString());
                 Debug.Log(m_packages[i].Summary());
+                if (i == 615)
+                {
+                    Debug.LogFormat("[SlamEventsManager] Count of points with id 1540 = {0}", m_packages[i].Points.Count(p => p.id == 1540 && p.isNew));
+                    Debug.LogFormat("[SlamEventsManager] First bad point idx = {0}", m_packages[i].Points.FindIndex(point => point.id > 100000));
+                }
                 if (m_packages[i].Timestamp == -1)
                 {
                     m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, observationsGraph));
+                    m_extendedEvents.Add(m_packages[i]);
                     Next(false);
                     continue;
                 }
