@@ -20,6 +20,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private ISlamContainer<SlamPoint> m_pointsContainer;
         private SlamObservationsGraph m_graph;
         private Helmet m_helmet;
+        private SlamObservation m_helmetPose;
 
 
         public UpdateCommand(
@@ -41,8 +42,13 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
             if (observations != null)
             {
-                m_observations2Restore = observations.Select(o => new SlamObservation(graph.Get(o.id))).ToArray();
-                m_observations2Update = observations.Select(o => new SlamObservation(o)).ToArray();
+                m_helmetPose = observations.FirstOrDefault(o => o.id == -1);
+                m_observations2Restore = observations
+                    .Where(o => o.id != -1)
+                    .Select(o => new SlamObservation(graph.Get(o.id))).ToArray();
+                m_observations2Update = observations
+                    .Where(o => o.id != -1)
+                    .Select(o => new SlamObservation(o)).ToArray();
             }
         }
 
@@ -70,18 +76,16 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 }
             }
 
+            if (m_helmetPose != null)
+            {
+                m_helmet.ReplaceAbs(m_helmetPose.position, m_helmetPose.orientation);
+            }
+
             if (m_observations2Update != null)
             {
                 foreach (var observation in m_observations2Update)
                 {
-                    if (observation.id == -1)
-                    {
-                        m_helmet.ReplaceAbs(observation.position, observation.orientation);
-                    }
-                    else
-                    {
-                        m_graph.Replace(observation);
-                    }
+                    m_graph.Replace(observation);
                 }
             }
         }
@@ -96,18 +100,18 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 }
             }
 
+            if (m_helmetPose != null)
+            {
+                m_helmet.TurnBack();
+            }
+
             if (m_observations2Restore != null)
             {
                 foreach (var observation in m_observations2Restore)
                 {
-                    if (observation.id == -1)
-                    {
-                        m_helmet.TurnBack();
-                    }
-                    else
-                    {
-                        m_graph.Replace(observation);
-                    }
+                    
+                     m_graph.Replace(observation);
+                    
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using Elektronik.Common;
+using Elektronik.Common.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace Elektronik.Offline
         public DateTime DateTime
         {
             get { return DateTime.Parse(dateTime.text); }
-            set { dateTime.text = value.ToString("G", DateTimeFormatInfo.CurrentInfo); }
+            set { dateTime.text = value.ToString("dd/MM/yyyy hh:mm:ss"); }
         }
 
 

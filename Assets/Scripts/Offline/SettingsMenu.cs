@@ -10,12 +10,13 @@ using Elektronik.Common;
 using System.IO;
 using System;
 using System.Threading;
+using Elektronik.Common.UI;
 
 namespace Elektronik.Offline
 {
     public class SettingsMenu : MonoBehaviour
     {
-        const string SETTINGS_FILE = @"offline/settings.dat";
+        const string SETTINGS_FILE = @"offline\settings.dat";
 
         public RecentFileListBoxItem recentFilePrefab;
         public UIListBox lbRecentFiles;

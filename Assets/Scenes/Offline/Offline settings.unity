@@ -124,6 +124,7 @@ GameObject:
   - component: {fileID: 3845689}
   - component: {fileID: 3845688}
   - component: {fileID: 3845687}
+  - component: {fileID: 3845690}
   m_Layer: 0
   m_Name: '[LE] Recent files'
   m_TagString: Untagged
@@ -208,6 +209,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3845685}
   m_CullTransparentMesh: 0
+--- !u!114 &3845690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3845685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b65d0ff358624ba47bee708f908f5446, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &15237303
 GameObject:
   m_ObjectHideFlags: 0
@@ -3056,7 +3069,6 @@ GameObject:
   - component: {fileID: 1322346929}
   - component: {fileID: 1322346928}
   - component: {fileID: 1322346927}
-  - component: {fileID: 1322346930}
   m_Layer: 0
   m_Name: Scroll View
   m_TagString: Untagged
@@ -3155,18 +3167,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.ScrollRect+ScrollRectEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &1322346930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1322346925}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86720caa84c49f34b97d314e6df087d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1352500087
 GameObject:
   m_ObjectHideFlags: 0
@@ -3978,7 +3978,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1588927730}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86720caa84c49f34b97d314e6df087d1, type: 3}
+  m_Script: {fileID: 11500000, guid: b65d0ff358624ba47bee708f908f5446, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1636903348
@@ -4866,7 +4866,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recentFilePrefab: {fileID: 828569441326064196, guid: 8ac66055f1f3ae7418ee2d316c53dc5b,
     type: 3}
-  lbRecentFiles: {fileID: 1322346930}
+  lbRecentFiles: {fileID: 3845690}
   goFileInput: {fileID: 329129744}
   buCancel: {fileID: 1209870604}
   buLoad: {fileID: 362418090}

@@ -8,13 +8,14 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UniRx;
 using System.Net;
+using Elektronik.Common.UI;
 
 namespace Elektronik.Online
 {
     public class SettingsMenu : MonoBehaviour
     {
 
-        const string SETTINGS_FILE = @"online/settings.dat";
+        const string SETTINGS_FILE = @"online\settings.dat";
 
         #region Settings
 
@@ -41,13 +42,17 @@ namespace Elektronik.Online
 
         #endregion
 
+        private void Awake()
+        {
+            FindUIs();
+            SubscribeUIs();
+        }
+
         // Start is called before the first frame update
         void Start()
         {
             store.Deserialize(SETTINGS_FILE);
             AttachBehavior2RecentConnections();
-            FindUIs();
-            SubscribeUIs();
         }
 
         void FindUIs()
@@ -72,14 +77,12 @@ namespace Elektronik.Online
             uiCancel.OnClickAsObservable()
                 .Subscribe(_ => SceneManager.LoadScene("Main menu", LoadSceneMode.Single));
             uiLoad.OnClickAsObservable()
-                .Do(_ => Debug.Log("[SettingsMenu.SubscribeButtons] Before selection"))
                 .Select(_ =>
                 {
                     bool addressesAreEqual = String.Compare(uiAddress.text, OnlineModeSettings.Current.Address.ToString()) == 0;
                     bool portsAreEqual = int.Parse(uiPort.text) == OnlineModeSettings.Current.Port;
                     return addressesAreEqual && portsAreEqual ? OnlineModeSettings.Current : new OnlineModeSettings();
                 })
-                .Do(_ => Debug.Log("[SettingsMenu.SubscribeButtons] After selection"))
                 .Do(oms => OnlineModeSettings.Current = oms)
                 .Do(_ => OnlineModeSettings.Current.Scaling = uiScalingFactor.text.Length == 0 ? 1.0f : float.Parse(uiScalingFactor.text))
                 .Do(_ => OnlineModeSettings.Current.Address = IPAddress.Parse(uiAddress.text))

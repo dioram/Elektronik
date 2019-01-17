@@ -1,0 +1,88 @@
+﻿using Elektronik.Common;
+using Elektronik.Common.Clouds;
+using Elektronik.Common.Containers;
+using Elektronik.Common.Data;
+using Elektronik.Common.SlamEventsCommandPattern;
+using System;
+using System.Collections;
+using System.Linq;
+using System.Text;
+using UniRx;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace Elektronik.Online
+{
+    public class SlamEventsManager : MonoBehaviour
+    {
+        public Button clear;
+        public Button reconnect;
+
+        TCPPackagesReceiver m_receiver;
+
+        public FastLinesCloud linesCloud;
+        public FastPointCloud pointCloud;
+        public SlamObservationsGraph observationsGraph;
+        public Helmet helmet;
+
+        private ISlamContainer<SlamPoint> m_pointsContainer;
+        private ISlamContainer<SlamLine> m_linesContainer;
+        private IPackageCSConverter m_converter;
+
+        private void Awake()
+        {
+            m_converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.Scaling));
+            m_receiver = new TCPPackagesReceiver();
+            m_pointsContainer = new SlamPointsContainer(pointCloud);
+            m_linesContainer = new SlamLinesContainer(linesCloud);
+        }
+
+        private void Start()
+        {
+            clear.onClick.AddListener(Clear);
+            reconnect.onClick.AddListener(Reconnect);
+            StartCoroutine(WaitForConnection(10));
+            var handler =
+                Observable.Start(() => m_receiver.GetPackage())
+                .RepeatUntilDestroy(gameObject)
+                .Where(package => package != null)
+                .Do(pkg => m_converter.Convert(ref pkg))
+                .ObserveOnMainThread(MainThreadDispatchType.FixedUpdate)
+                .Do(pkg => new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, pkg).Execute())
+                .Do(pkg => new UpdateCommand(m_pointsContainer, observationsGraph, helmet, pkg).Execute())
+                .Do(pkg => new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, pkg).Execute())
+                .Do(_ => m_pointsContainer.Repaint())
+                .Do(_ => m_linesContainer.Repaint())
+                .Do(_ => observationsGraph.Repaint())
+                .Subscribe();
+        }
+
+        private void Clear()
+        {
+            m_pointsContainer.Clear();
+            m_linesContainer.Clear();
+            observationsGraph.Clear();
+        }
+
+        private void Reconnect()
+        {
+            StartCoroutine(WaitForConnection(10));
+        }
+
+        IEnumerator WaitForConnection(int tries)
+        {
+            for (int i = 0; i < tries; ++i)
+            {
+                Debug.Log("New connection try");
+                if (m_receiver.Connect(OnlineModeSettings.Current.Address, OnlineModeSettings.Current.Port, TimeSpan.FromSeconds(1)))
+                {
+                    Debug.Log("Connected!");
+                    break;
+                }
+                yield return null;
+            }
+            Debug.Log("Not connected. Make sure that the server is enabled");
+            yield return null;
+        }
+    }
+}

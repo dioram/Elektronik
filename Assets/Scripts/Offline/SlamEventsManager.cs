@@ -9,6 +9,7 @@ using System.Text;
 using UnityEngine;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
+using Elektronik.Common.Clouds;
 
 namespace Elektronik.Offline
 {
@@ -36,12 +37,12 @@ namespace Elektronik.Offline
         {
             m_extendedEvents = new List<Package>();
             m_commands = new List<ISlamEventCommand>();
+            m_linesContainer = new SlamLinesContainer(fastLineCloud);
+            m_pointsContainer = new SlamPointsContainer(fastPointCloud);
         }
 
         void Start()
         {
-            m_linesContainer = new SlamLinesContainer(fastLineCloud);
-            m_pointsContainer = new SlamPointsContainer(fastPointCloud);
             IPackageCSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
             m_packages = PackagesReader.AnalyzeFile(FileModeSettings.Current.Path, converter);
             StartCoroutine(ProcessEvents());
@@ -199,11 +200,6 @@ namespace Elektronik.Offline
             for (int i = 0; i < m_packages.Length; ++i)
             {
                 Debug.Log(m_packages[i].Summary());
-                if (i == 615)
-                {
-                    Debug.LogFormat("[SlamEventsManager] Count of points with id 1540 = {0}", m_packages[i].Points.Count(p => p.id == 1540 && p.isNew));
-                    Debug.LogFormat("[SlamEventsManager] First bad point idx = {0}", m_packages[i].Points.FindIndex(point => point.id > 100000));
-                }
                 if (m_packages[i].Timestamp == -1)
                 {
                     m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, observationsGraph));

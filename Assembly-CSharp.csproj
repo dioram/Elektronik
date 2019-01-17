@@ -63,6 +63,8 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Common\Camera2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Common\CameraChanger.cs" />
+    <Compile Include="Assets\Scripts\Common\Clouds\FastLinesCloud.cs" />
+    <Compile Include="Assets\Scripts\Common\Clouds\FastPointCloud.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\ISlamContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamPointsContainer.cs" />
@@ -83,8 +85,6 @@
     <Compile Include="Assets\Scripts\Common\Events\PointsFusionEvent.cs" />
     <Compile Include="Assets\Scripts\Common\Events\RemovalEvent.cs" />
     <Compile Include="Assets\Scripts\Common\Events\SlamEventType.cs" />
-    <Compile Include="Assets\Scripts\Common\FastLinesCloud.cs" />
-    <Compile Include="Assets\Scripts\Common\FastPointCloud.cs" />
     <Compile Include="Assets\Scripts\Common\FreeFlyCameraScript.cs" />
     <Compile Include="Assets\Scripts\Common\Helmet.cs" />
     <Compile Include="Assets\Scripts\Common\InGameConsole.cs" />
@@ -92,7 +92,6 @@
     <Compile Include="Assets\Scripts\Common\ISlamEventDataConverter.cs" />
     <Compile Include="Assets\Scripts\Common\KeyPressedEventInvoker.cs" />
     <Compile Include="Assets\Scripts\Common\LinesMeshObject.cs" />
-    <Compile Include="Assets\Scripts\Common\Menu UI scripts\UIMainMenu.cs" />
     <Compile Include="Assets\Scripts\Common\ModeSelector.cs" />
     <Compile Include="Assets\Scripts\Common\ObjectStateConditionalEventInvoker.cs" />
     <Compile Include="Assets\Scripts\Common\PointsMeshObject.cs" />
@@ -111,8 +110,10 @@
     <Compile Include="Assets\Scripts\Common\SlamObservationNode.cs" />
     <Compile Include="Assets\Scripts\Common\SlamObservationsGraph.cs" />
     <Compile Include="Assets\Scripts\Common\SlamPoint.cs" />
-    <Compile Include="Assets\Scripts\Common\UIListBox.cs" />
-    <Compile Include="Assets\Scripts\Common\UIListBoxItem.cs" />
+    <Compile Include="Assets\Scripts\Common\TimeoutTcpClient.cs" />
+    <Compile Include="Assets\Scripts\Common\UI\UIListBox.cs" />
+    <Compile Include="Assets\Scripts\Common\UI\UIListBoxItem.cs" />
+    <Compile Include="Assets\Scripts\Common\UI\UIMainMenu.cs" />
     <Compile Include="Assets\Scripts\Common\XYZAxis.cs" />
     <Compile Include="Assets\Scripts\Offline\EventReader.cs" />
     <Compile Include="Assets\Scripts\Offline\FileModeSettings.cs" />
@@ -127,7 +128,9 @@
     <Compile Include="Assets\Scripts\Online\OnlineSettingStore.cs" />
     <Compile Include="Assets\Scripts\Online\RecentIPListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Online\SettingsMenu.cs" />
-    <Compile Include="Assets\Scripts\Online\SlamEventsPlayer.cs" />
+    <Compile Include="Assets\Scripts\Online\SlamEventsManager.cs" />
+    <Compile Include="Assets\Scripts\Online\TCPPackagesReceiver.cs" />
+    <Compile Include="Assets\Scripts\Online\UDPPackagesReceiver.cs" />
     <None Include="Assets\Models\HorseMask2017\Materials\SFB_StandardHair.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>

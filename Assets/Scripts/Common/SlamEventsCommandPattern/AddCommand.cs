@@ -45,7 +45,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             if (slamEvent.Observations != null)
             {
                 m_addedObservations = slamEvent.Observations
-                    .Where(o => !m_graph.ObservationExists(o.id))
+                    .Where(o => !m_graph.ObservationExists(o.id) && o.id != -1)
                     .Select(o => new SlamObservation(o))
                     .ToArray();
             }
