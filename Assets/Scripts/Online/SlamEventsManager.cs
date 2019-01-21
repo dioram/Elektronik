@@ -50,13 +50,15 @@ namespace Elektronik.Online
             
             WaitForConnection(100);
             var handler =
-                Observable.Start(() => m_receiver.GetPackage())
+                /*Observable.Start(() => m_receiver.GetPackage())
                 .RepeatUntilDestroy(gameObject)
+                .ObserveOnMainThread(MainThreadDispatchType.FixedUpdate)*/
+                Observable.EveryFixedUpdate()
+                .Select(_ => m_receiver.GetPackage())
                 .Where(_ => m_receiver.Connected)
                 .Where(package => package != null)
                 .Do(pkg => m_converter.Convert(ref pkg))
-                .ObserveOnMainThread(MainThreadDispatchType.FixedUpdate)
-                //.Do(pkg => Debug.Log(pkg.Timestamp))
+                .Do(pkg => Debug.Log(pkg.Timestamp))
                 .Do(pkg => new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, pkg).Execute())
                 .Do(pkg => new UpdateCommand(m_pointsContainer, observationsGraph, helmet, pkg).Execute())
                 .Do(pkg => new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, pkg).Execute())
