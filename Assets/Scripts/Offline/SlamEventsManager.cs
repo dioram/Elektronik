@@ -24,7 +24,8 @@ namespace Elektronik.Offline
         List<Package> m_extendedEvents;
 
         public SlamObservationsGraph observationsGraph;
-        public FastPointCloud fastPointCloud;
+        //public FastPointCloud fastPointCloud;
+        public FastTrianglesCloud fastTrianglesCloud;
         public FastLinesCloud fastLineCloud;
         public Helmet helmet;
 
@@ -38,7 +39,7 @@ namespace Elektronik.Offline
             m_extendedEvents = new List<Package>();
             m_commands = new List<ISlamEventCommand>();
             m_linesContainer = new SlamLinesContainer(fastLineCloud);
-            m_pointsContainer = new SlamPointsContainer(fastPointCloud);
+            m_pointsContainer = new SlamTrianglePointsContainer(fastTrianglesCloud);
         }
 
         void Start()

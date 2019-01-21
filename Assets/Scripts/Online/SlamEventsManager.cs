@@ -48,7 +48,7 @@ namespace Elektronik.Online
             clear.onClick.AddListener(Clear);
             reconnect.onClick.AddListener(Reconnect);
             
-            StartCoroutine(WaitForConnection(100));
+            WaitForConnection(100);
             var handler =
                 Observable.Start(() => m_receiver.GetPackage())
                 .RepeatUntilDestroy(gameObject)
@@ -56,6 +56,7 @@ namespace Elektronik.Online
                 .Where(package => package != null)
                 .Do(pkg => m_converter.Convert(ref pkg))
                 .ObserveOnMainThread(MainThreadDispatchType.FixedUpdate)
+                //.Do(pkg => Debug.Log(pkg.Timestamp))
                 .Do(pkg => new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, pkg).Execute())
                 .Do(pkg => new UpdateCommand(m_pointsContainer, observationsGraph, helmet, pkg).Execute())
                 .Do(pkg => new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, pkg).Execute())
@@ -74,18 +75,20 @@ namespace Elektronik.Online
 
         private void Reconnect()
         {
-            StartCoroutine(WaitForConnection(100));
+            WaitForConnection(100);
         }
 
-        IEnumerator WaitForConnection(int tries)
+        void WaitForConnection(int tries)
         {
             for (int i = 0; i < tries; ++i)
             {
-                m_receiver.Connect(OnlineModeSettings.Current.Address, OnlineModeSettings.Current.Port);
                 Debug.Log("New connection try...");
-                yield return null;
+                if (m_receiver.Connect(OnlineModeSettings.Current.Address, OnlineModeSettings.Current.Port))
+                {
+                    break;
+                }
+
             }
-            yield return null;
         }
     }
 }

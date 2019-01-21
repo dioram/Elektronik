@@ -400,7 +400,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scale: 10
   observationsGraph: {fileID: 2096468161}
-  fastPointCloud: {fileID: 1735580963}
+  fastTrianglesCloud: {fileID: 1194370011}
   fastLineCloud: {fileID: 289725688}
   helmet: {fileID: 2007305480}
 --- !u!1 &72189911
@@ -1042,7 +1042,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1740554493}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &289725688
 MonoBehaviour:
@@ -2555,7 +2555,8 @@ MonoBehaviour:
     emptyBehavior: 0
     maxSize: 5000
     maxEmptyBehavior: 0
-    prefab: {fileID: 1013427539586658, guid: 43a6ae1673b6f3b4a8941b12aaca4f9a, type: 3}
+    prefab: {fileID: 5376353029113288073, guid: db846e5f31f8b29469633a89c12649f3,
+      type: 3}
     printLogOnQuit: 0
   masterPool: []
 --- !u!1 &574466110
@@ -5529,6 +5530,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1168532853}
   m_CullTransparentMesh: 0
+--- !u!1 &1194370009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1194370010}
+  - component: {fileID: 1194370011}
+  m_Layer: 0
+  m_Name: PointCloud
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1194370010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1194370009}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1740554493}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1194370011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1194370009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d64c369c8cae1694ca09602197f9a3c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scale: 1
+  meshObjectPrefab: {fileID: 7746879887481435546, guid: db846e5f31f8b29469633a89c12649f3,
+    type: 3}
 --- !u!1 &1216796736
 GameObject:
   m_ObjectHideFlags: 0
@@ -8194,52 +8241,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1733190583}
   m_CullTransparentMesh: 0
---- !u!1 &1735580961
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1735580962}
-  - component: {fileID: 1735580963}
-  m_Layer: 0
-  m_Name: PointCloud
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1735580962
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1735580961}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1740554493}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1735580963
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1735580961}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eec0f75916a8afd45bb89947e1427556, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scale: 1
-  meshObjectPrefab: {fileID: 114956592286009986, guid: 43a6ae1673b6f3b4a8941b12aaca4f9a,
-    type: 3}
 --- !u!1 &1740554492
 GameObject:
   m_ObjectHideFlags: 0
@@ -8268,8 +8269,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2096468160}
-  - {fileID: 1735580962}
   - {fileID: 289725687}
+  - {fileID: 1194370010}
   m_Father: {fileID: 55821239}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

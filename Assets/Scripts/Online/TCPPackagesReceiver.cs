@@ -23,18 +23,20 @@ namespace Elektronik.Online
             m_network = new TcpClient();
         }
 
-        public void Connect(IPAddress ip, int port)
+        public bool Connect(IPAddress ip, int port)
         {
             try
             {
                 m_network.Connect(ip.ToString(), port);
                 m_stream = m_network.GetStream();
                 Debug.Log("Connected!");
+                return true;
             }
             catch
             {
                 Debug.Log("Connection failed");
             }
+            return false;
         }
 
         public Package GetPackage()
@@ -47,7 +49,6 @@ namespace Elektronik.Online
             if (m_network.Available > sizeof(int) * 2)
             {
                 byte[] buffer = new byte[sizeof(int)];
-                m_stream.Seek(sizeof(int), SeekOrigin.Current); // skip number of package
                 m_stream.Read(buffer, 0, sizeof(int)); // read count of package bytes
                 countOfPackageBytes = BitConverter.ToInt32(buffer, 0);
                 byte[] rawPackage = new byte[countOfPackageBytes];

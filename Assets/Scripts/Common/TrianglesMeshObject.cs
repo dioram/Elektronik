@@ -10,8 +10,8 @@ namespace Elektronik.Common
     public class TrianglesMeshObject : MonoBehaviour
     {
         public const int MAX_VERTICES_COUNT = 64998;
-        public const int MAX_TRIANGLES_COUNT = MAX_VERTICES_COUNT / 3;
-        public float triangleSideSize = .2f;
+        public const int MAX_TRIANGLES_COUNT = MAX_VERTICES_COUNT / 6; // 6 becuase of 2 triangles by 3 vertices
+        public float triangleSideSize = 1f;
 
         MeshFilter m_filter;
         Mesh m_mesh;
@@ -23,7 +23,18 @@ namespace Elektronik.Common
         void Awake()
         {
             m_filter = GetComponent<MeshFilter>();
-            m_indices = Enumerable.Range(0, MAX_VERTICES_COUNT).ToArray();
+            m_indices = new int[MAX_VERTICES_COUNT];
+            for (int i = 0; i < MAX_VERTICES_COUNT / 2; ++i)
+            {
+                m_indices[i] = i;
+            }
+            for (int i = MAX_VERTICES_COUNT / 2; i < MAX_VERTICES_COUNT; i += 3)
+            {
+                m_indices[i] = i + 2;
+                m_indices[i + 1] = i + 1;
+                m_indices[i + 2] = i;
+            }
+            
             m_vertices = new Vector3[MAX_VERTICES_COUNT];
             m_colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
             m_mesh = new Mesh();
@@ -70,6 +81,9 @@ namespace Elektronik.Common
             m_colors[idx * 3] = color;
             m_colors[idx * 3 + 1] = color;
             m_colors[idx * 3 + 2] = color;
+            m_colors[idx * 3 + MAX_VERTICES_COUNT / 2] = m_colors[idx * 3];
+            m_colors[idx * 3 + MAX_VERTICES_COUNT / 2 + 1] = m_colors[idx * 3 + 1];
+            m_colors[idx * 3 + MAX_VERTICES_COUNT / 2 + 2] = m_colors[idx * 3 + 2];
         }
 
         public void SetTrianglePosition(int idx, Vector3 triangleCG)
@@ -79,12 +93,16 @@ namespace Elektronik.Common
             m_vertices[idx * 3] = new Vector3(-halfOfSideSize, -halfOfSideSize) + triangleCG;
             m_vertices[idx * 3 + 1] = new Vector3(halfOfSideSize, -halfOfSideSize) + triangleCG;
             m_vertices[idx * 3 + 2] = new Vector3(0, 0.86603f * triangleSideSize - halfOfSideSize) + triangleCG;
+            m_vertices[idx * 3 + MAX_VERTICES_COUNT / 2] = m_vertices[idx * 3];
+            m_vertices[idx * 3 + MAX_VERTICES_COUNT / 2 + 1] = m_vertices[idx * 3 + 1];
+            m_vertices[idx * 3 + MAX_VERTICES_COUNT / 2 + 2] = m_vertices[idx * 3 + 2];
         }
 
         public void Repaint()
         {
             m_mesh.vertices = m_vertices;
             m_mesh.colors = m_colors;
+            m_mesh.RecalculateNormals();
             m_mesh.RecalculateBounds();
         }
 
