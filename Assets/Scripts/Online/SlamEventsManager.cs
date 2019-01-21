@@ -28,6 +28,12 @@ namespace Elektronik.Online
         private ISlamContainer<SlamPoint> m_pointsContainer;
         private ISlamContainer<SlamLine> m_linesContainer;
         private IPackageCSConverter m_converter;
+        private bool m_cancelCoroutine = false;
+
+        private void OnDestroy()
+        {
+            m_cancelCoroutine = true;
+        }
 
         private void Awake()
         {
@@ -41,10 +47,12 @@ namespace Elektronik.Online
         {
             clear.onClick.AddListener(Clear);
             reconnect.onClick.AddListener(Reconnect);
-            StartCoroutine(WaitForConnection(10));
+            
+            StartCoroutine(WaitForConnection(100));
             var handler =
                 Observable.Start(() => m_receiver.GetPackage())
                 .RepeatUntilDestroy(gameObject)
+                .Where(_ => m_receiver.Connected)
                 .Where(package => package != null)
                 .Do(pkg => m_converter.Convert(ref pkg))
                 .ObserveOnMainThread(MainThreadDispatchType.FixedUpdate)
@@ -66,22 +74,17 @@ namespace Elektronik.Online
 
         private void Reconnect()
         {
-            StartCoroutine(WaitForConnection(10));
+            StartCoroutine(WaitForConnection(100));
         }
 
         IEnumerator WaitForConnection(int tries)
         {
             for (int i = 0; i < tries; ++i)
             {
-                Debug.Log("New connection try");
-                if (m_receiver.Connect(OnlineModeSettings.Current.Address, OnlineModeSettings.Current.Port, TimeSpan.FromSeconds(1)))
-                {
-                    Debug.Log("Connected!");
-                    break;
-                }
+                m_receiver.Connect(OnlineModeSettings.Current.Address, OnlineModeSettings.Current.Port);
+                Debug.Log("New connection try...");
                 yield return null;
             }
-            Debug.Log("Not connected. Make sure that the server is enabled");
             yield return null;
         }
     }

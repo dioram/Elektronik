@@ -3026,7 +3026,7 @@ MonoBehaviour:
   recentConnectionsListBox: {fileID: 5006600308908788688}
   recentConnectionPrefab: {fileID: 8172921214314335651, guid: 836926fdaa649ae40b78646224660478,
     type: 3}
-  settingSceneControls: {fileID: 5006600309109215357}
+  settingSceneControls: {fileID: 5006600308962465515}
 --- !u!224 &5006600307108146584
 RectTransform:
   m_ObjectHideFlags: 0

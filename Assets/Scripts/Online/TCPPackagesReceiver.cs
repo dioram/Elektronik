@@ -2,6 +2,7 @@
 using Elektronik.Common.Data;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -12,25 +13,27 @@ namespace Elektronik.Online
 {
     public class TCPPackagesReceiver
     {
-        private TimeoutTcpClient m_network;
+        private TcpClient m_network;
         private NetworkStream m_stream;
+
+        public bool Connected { get { return m_network.Connected; } }
 
         public TCPPackagesReceiver()
         {
-            m_network = new TimeoutTcpClient();
+            m_network = new TcpClient();
         }
 
-        public bool Connect(IPAddress ip, int port, TimeSpan timeout)
+        public void Connect(IPAddress ip, int port)
         {
             try
             {
-                m_network.Connect(ip, port, timeout);
+                m_network.Connect(ip.ToString(), port);
                 m_stream = m_network.GetStream();
-                return true;
+                Debug.Log("Connected!");
             }
-            catch (TimeoutException)
+            catch
             {
-                return false;
+                Debug.Log("Connection failed");
             }
         }
 
@@ -44,17 +47,14 @@ namespace Elektronik.Online
             if (m_network.Available > sizeof(int) * 2)
             {
                 byte[] buffer = new byte[sizeof(int)];
-                m_stream.Seek(sizeof(int), System.IO.SeekOrigin.Current);
-                m_stream.Read(buffer, 0, sizeof(int));
+                m_stream.Seek(sizeof(int), SeekOrigin.Current); // skip number of package
+                m_stream.Read(buffer, 0, sizeof(int)); // read count of package bytes
                 countOfPackageBytes = BitConverter.ToInt32(buffer, 0);
+                byte[] rawPackage = new byte[countOfPackageBytes];
+                m_stream.Read(rawPackage, 0, rawPackage.Length);
+                return Package.Parse(rawPackage);
             }
-            else
-            {
-                return null;
-            }
-            byte[] rawPackage = new byte[countOfPackageBytes];
-            m_stream.Read(rawPackage, 0, rawPackage.Length);
-            return Package.Parse(rawPackage);
+            return null;
         }
 
         ~TCPPackagesReceiver()

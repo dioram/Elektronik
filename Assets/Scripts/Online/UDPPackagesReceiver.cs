@@ -86,10 +86,5 @@ namespace Elektronik.Online
             // Wi-Fi pass: 5251166525 :)
             return receivedPackage;
         }
-
-        ~UDPPackagesReceiver()
-        {
-            m_network.Close();
-        }
     }
 }
