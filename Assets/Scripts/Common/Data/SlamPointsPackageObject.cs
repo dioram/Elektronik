@@ -33,6 +33,7 @@ namespace Elektronik.Common.Data
             point = new SlamPoint();
             fuse = null;
             point.id = id;
+            bool wasMoved = false;
             while (offset != actions.Length)
             {
                 Debug.AssertFormat(offset <= actions.Length, "[SlamPointsPackageObject.ParseActions] offset ({0}) out of range", offset);
@@ -41,6 +42,7 @@ namespace Elektronik.Common.Data
                 {
                     point.position = SlamBitConverter.ToVector3(actions, offset);
                     offset += sizeof(float) * 3;
+                    wasMoved = true;
                 }
                 if (type == ActionType.Create)
                 {
@@ -51,7 +53,7 @@ namespace Elektronik.Common.Data
                 {
                     point.color = SlamBitConverter.ToRGBColor(actions, offset);
                     offset += sizeof(byte) * 3;
-                    point.justColored = true;
+                    point.justColored = !wasMoved;
                 }
                 if (type == ActionType.Remove)
                 {
