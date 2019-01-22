@@ -25,7 +25,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 points = slamEvent.Points.Where(p => p.id != -1).ToArray();
                 for (int i = 0; i < points.Length; ++i)
                 {
-                    points[i].color = Color.black;
+                    points[i].color = points[i].defaultColor;
                 }
                 m_commands.Add(new UpdateCommand(pointsContainer, graph, helmet, points, null));
                 m_commands.Add(new RemoveCommand(pointsContainer, linesContainer, graph, slamEvent));

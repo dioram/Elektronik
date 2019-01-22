@@ -47,6 +47,8 @@ namespace Elektronik.Common.Data
                 if (type == ActionType.Create)
                 {
                     point.isNew = true;
+                    point.defaultColor = SlamBitConverter.ToRGBColor(actions, offset);
+                    offset += sizeof(float) * 3;
                     point.color = Color.blue;
                 }
                 if (type == ActionType.Tint)
