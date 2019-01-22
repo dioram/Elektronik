@@ -80,7 +80,6 @@ namespace Elektronik.Common.Data
                 {
                     SlamPoint point = new SlamPoint();
                     SlamPointsPackageObject.ParseActions(actions, objectId, out point, out line);
-                    point.color = new Color((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble());
                     result.Points.Add(point);
                 }
                 else

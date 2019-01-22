@@ -134,6 +134,7 @@
     <Compile Include="Assets\Scripts\Online\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Online\TCPPackagesReceiver.cs" />
     <Compile Include="Assets\Scripts\Online\UDPPackagesReceiver.cs" />
+    <None Include="Assets\Materials\Points shader.shader" />
     <None Include="Assets\Models\HorseMask2017\Materials\SFB_StandardHair.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
