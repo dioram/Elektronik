@@ -20,20 +20,20 @@ namespace Elektronik.Common.Clouds
 
         private void CheckMesh(int srcPointIdx, out int meshIdx, out int pointIdx)
         {
-            meshIdx = srcPointIdx / TrianglesMeshObject.MAX_VERTICES_COUNT;
+            meshIdx = srcPointIdx / TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT;
             if (!m_meshObjects.ContainsKey(meshIdx))
             {
                 AddNewMesh(meshIdx);
             }
-            pointIdx = srcPointIdx % TrianglesMeshObject.MAX_VERTICES_COUNT;
+            pointIdx = srcPointIdx % TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT;
         }
 
         public bool PointExists(int idx)
         {
-            int meshIdx = idx / TrianglesMeshObject.MAX_VERTICES_COUNT;
+            int meshIdx = idx / TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT;
             if (m_meshObjects.ContainsKey(meshIdx))
             {
-                int pointIdx = idx % TrianglesMeshObject.MAX_VERTICES_COUNT;
+                int pointIdx = idx % TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT;
                 return m_meshObjects[meshIdx].TriangleExists(pointIdx);
             }
             else
@@ -103,19 +103,19 @@ namespace Elektronik.Common.Clouds
 
         public void GetAllPoints(out int[] indices, out Vector3[] positions, out Color[] colors)
         {
-            indices = Enumerable.Repeat(1, TrianglesMeshObject.MAX_VERTICES_COUNT * m_meshObjects.Count).ToArray();
-            positions = new Vector3[TrianglesMeshObject.MAX_VERTICES_COUNT * m_meshObjects.Count];
-            colors = new Color[TrianglesMeshObject.MAX_VERTICES_COUNT * m_meshObjects.Count];
+            indices = Enumerable.Repeat(1, TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT * m_meshObjects.Count).ToArray();
+            positions = new Vector3[TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT * m_meshObjects.Count];
+            colors = new Color[TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT * m_meshObjects.Count];
             KeyValuePair<int, TrianglesMeshObject>[] allMeshes = m_meshObjects.Select(kv => kv).ToArray();
             for (int meshNum = 0; meshNum < allMeshes.Length; ++meshNum)
             {
                 Vector3[] meshObjPositions;
                 Color[] meshObjColors;
                 allMeshes[meshNum].Value.GetAllTriangles(out meshObjPositions, out meshObjColors);
-                for (int i = 0; i < TrianglesMeshObject.MAX_VERTICES_COUNT; ++i)
+                for (int i = 0; i < TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT; ++i)
                 {
-                    positions[TrianglesMeshObject.MAX_VERTICES_COUNT * allMeshes[meshNum].Key + i] = meshObjPositions[i];
-                    colors[TrianglesMeshObject.MAX_VERTICES_COUNT * allMeshes[meshNum].Key + i] = meshObjColors[i];
+                    positions[TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT * allMeshes[meshNum].Key + i] = meshObjPositions[i];
+                    colors[TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT * allMeshes[meshNum].Key + i] = meshObjColors[i];
                 }
             }
         }

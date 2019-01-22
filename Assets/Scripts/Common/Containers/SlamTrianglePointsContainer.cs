@@ -80,6 +80,7 @@ namespace Elektronik.Common.Containers
                 Remove(pointsIds[i]);
             }
             m_points.Clear();
+            m_trianglesCloud.Clear();
             Repaint();
 
             Debug.LogFormat("[Clear] Added points: {0}; Removed points: {1}; Diff: {2}", m_added, m_removed, m_diff);

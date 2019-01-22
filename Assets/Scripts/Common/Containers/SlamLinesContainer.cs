@@ -80,6 +80,7 @@ namespace Elektronik.Common.Containers
             {
                 Remove(lines[i]);
             }
+            m_linesCloud.Clear();
             Repaint();
             Debug.LogFormat("[Clear] Added lines : {0}; Removed lines: {1}; Diff: {2}", m_added, m_removed, m_diff);
             m_added = 0;

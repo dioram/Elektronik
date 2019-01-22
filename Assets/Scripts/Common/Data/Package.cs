@@ -49,6 +49,7 @@ namespace Elektronik.Common.Data
 
         public static Package Parse(byte[] rawPackage)
         {
+            System.Random rand = new System.Random();
             Package result = new Package();
             int offset = 0;
             result.Timestamp = BitConverter.ToInt32(rawPackage, 0);
@@ -79,6 +80,7 @@ namespace Elektronik.Common.Data
                 {
                     SlamPoint point = new SlamPoint();
                     SlamPointsPackageObject.ParseActions(actions, objectId, out point, out line);
+                    point.color = new Color((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble());
                     result.Points.Add(point);
                 }
                 else

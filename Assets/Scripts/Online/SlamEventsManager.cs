@@ -25,14 +25,19 @@ namespace Elektronik.Online
         public SlamObservationsGraph observationsGraph;
         public Helmet helmet;
 
+        public int connectionTries = 10;
+
         private ISlamContainer<SlamPoint> m_pointsContainer;
         private ISlamContainer<SlamLine> m_linesContainer;
         private IPackageCSConverter m_converter;
         private bool m_cancelCoroutine = false;
+        private bool m_connecting = false;
 
         private void OnDestroy()
         {
             m_cancelCoroutine = true;
+            if (m_receiver != null)
+                m_receiver.Dispose();
         }
 
         private void Awake()
@@ -47,12 +52,8 @@ namespace Elektronik.Online
         {
             clear.onClick.AddListener(Clear);
             reconnect.onClick.AddListener(Reconnect);
-            
-            WaitForConnection(100);
+            Reconnect();
             var handler =
-                /*Observable.Start(() => m_receiver.GetPackage())
-                .RepeatUntilDestroy(gameObject)
-                .ObserveOnMainThread(MainThreadDispatchType.FixedUpdate)*/
                 Observable.EveryFixedUpdate()
                 .Select(_ => m_receiver.GetPackage())
                 .Where(_ => m_receiver.Connected)
@@ -68,29 +69,43 @@ namespace Elektronik.Online
                 .Subscribe();
         }
 
+
         private void Clear()
         {
             m_pointsContainer.Clear();
             m_linesContainer.Clear();
             observationsGraph.Clear();
+            helmet.ResetHelmet();
         }
 
         private void Reconnect()
         {
-            WaitForConnection(100);
+            if (m_connecting)
+                return;
+            Disconnect();
+            StartCoroutine(WaitForConnection(connectionTries));
         }
 
-        void WaitForConnection(int tries)
+        private void Disconnect()
         {
+            m_receiver.Dispose();
+            m_receiver = new TCPPackagesReceiver();
+        }
+
+        IEnumerator WaitForConnection(int tries)
+        {
+            m_connecting = true;
             for (int i = 0; i < tries; ++i)
             {
                 Debug.Log("New connection try...");
                 if (m_receiver.Connect(OnlineModeSettings.Current.Address, OnlineModeSettings.Current.Port))
                 {
-                    break;
+                   yield break;
                 }
-
+                yield return new WaitForSeconds(1);
             }
+            m_connecting = false;
+            yield return null;
         }
     }
 }

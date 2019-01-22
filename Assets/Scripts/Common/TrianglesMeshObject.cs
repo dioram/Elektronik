@@ -9,9 +9,11 @@ namespace Elektronik.Common
     [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
     public class TrianglesMeshObject : MonoBehaviour
     {
-        public const int MAX_VERTICES_COUNT = 64998;
-        public const int MAX_TRIANGLES_COUNT = MAX_VERTICES_COUNT / 6; // 6 becuase of 2 triangles by 3 vertices
-        public float triangleSideSize = 1f;
+        private const int INDICES_PER_THETRAHEDRON = 12;
+        private const int MAX_VERTICES_COUNT = 64992;
+        public const int MAX_THETRAHEDRONS_COUNT = MAX_VERTICES_COUNT / INDICES_PER_THETRAHEDRON;
+        
+        public float sideSize = .001f;
 
         MeshFilter m_filter;
         Mesh m_mesh;
@@ -22,22 +24,21 @@ namespace Elektronik.Common
 
         void Awake()
         {
-            m_filter = GetComponent<MeshFilter>();
+            
             m_indices = new int[MAX_VERTICES_COUNT];
-            for (int i = 0; i < MAX_VERTICES_COUNT / 2; ++i)
+            for (int i = 0; i < MAX_VERTICES_COUNT; ++i) // 12 is count of vertices of thetrahedron
             {
                 m_indices[i] = i;
-            }
-            for (int i = MAX_VERTICES_COUNT / 2; i < MAX_VERTICES_COUNT; i += 3)
-            {
-                m_indices[i] = i + 2;
-                m_indices[i + 1] = i + 1;
-                m_indices[i + 2] = i;
             }
             
             m_vertices = new Vector3[MAX_VERTICES_COUNT];
             m_colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
-            m_mesh = new Mesh();
+            m_filter = GetComponent<MeshFilter>();
+            if (m_filter.mesh == null)
+            {
+                m_filter.mesh = new Mesh();
+            }
+            m_mesh = m_filter.sharedMesh;
         }
 
         private void Start()
@@ -51,51 +52,68 @@ namespace Elektronik.Common
 
         public bool TriangleExists(int idx)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_TRIANGLES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
             bool verticesIsDefault = true;
-            verticesIsDefault = verticesIsDefault && (m_vertices[idx * 3] == m_vertices[idx * 3 + 1]);
-            verticesIsDefault = verticesIsDefault && (m_vertices[idx * 3 + 1] == m_vertices[idx * 3 + 2]);
+            verticesIsDefault = verticesIsDefault && (m_vertices[idx * 4] == m_vertices[idx * 4 + 1]);
+            verticesIsDefault = verticesIsDefault && (m_vertices[idx * 4 + 1] == m_vertices[idx * 4 + 2]);
             return verticesIsDefault;
         }
 
         public void GetTriangle(int idx, out Vector3 triangleCG, out Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_TRIANGLES_COUNT, "Wrong idx ({0})", idx.ToString());
-            Vector3 vert1 = m_vertices[idx * 3];
-            Vector3 vert2 = m_vertices[idx * 3 + 1];
-            Vector3 vert3 = m_vertices[idx * 3 + 2];
-            triangleCG = (vert1 + vert2 + vert3) / 3;
-            color = m_colors[idx * 3];
+            Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
+            triangleCG = new Vector3();
+            for (int i = 0; i < INDICES_PER_THETRAHEDRON; ++i)
+            {
+                triangleCG += m_vertices[idx * INDICES_PER_THETRAHEDRON + i];
+            }
+            triangleCG /= INDICES_PER_THETRAHEDRON;
+            color = m_colors[idx * INDICES_PER_THETRAHEDRON];
         }
 
         public void SetTriangle(int idx, Vector3 triangleCG, Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_TRIANGLES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
             SetTrianglePosition(idx, triangleCG);
             SetTriangleColor(idx, color);
         }
 
         public void SetTriangleColor(int idx, Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_TRIANGLES_COUNT, "Wrong idx ({0})", idx.ToString());
-            m_colors[idx * 3] = color;
-            m_colors[idx * 3 + 1] = color;
-            m_colors[idx * 3 + 2] = color;
-            m_colors[idx * 3 + MAX_VERTICES_COUNT / 2] = m_colors[idx * 3];
-            m_colors[idx * 3 + MAX_VERTICES_COUNT / 2 + 1] = m_colors[idx * 3 + 1];
-            m_colors[idx * 3 + MAX_VERTICES_COUNT / 2 + 2] = m_colors[idx * 3 + 2];
+            Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
+            for (int i = 0; i < INDICES_PER_THETRAHEDRON; ++i)
+            {
+                m_colors[idx * INDICES_PER_THETRAHEDRON + i] = color;
+            }
         }
 
-        public void SetTrianglePosition(int idx, Vector3 triangleCG)
+        public void SetTrianglePosition(int idx, Vector3 CG)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_TRIANGLES_COUNT, "Wrong idx ({0})", idx.ToString());
-            float halfOfSideSize = triangleSideSize / 2f;
-            m_vertices[idx * 3] = new Vector3(-halfOfSideSize, -halfOfSideSize) + triangleCG;
-            m_vertices[idx * 3 + 1] = new Vector3(halfOfSideSize, -halfOfSideSize) + triangleCG;
-            m_vertices[idx * 3 + 2] = new Vector3(0, 0.86603f * triangleSideSize - halfOfSideSize) + triangleCG;
-            m_vertices[idx * 3 + MAX_VERTICES_COUNT / 2] = m_vertices[idx * 3];
-            m_vertices[idx * 3 + MAX_VERTICES_COUNT / 2 + 1] = m_vertices[idx * 3 + 1];
-            m_vertices[idx * 3 + MAX_VERTICES_COUNT / 2 + 2] = m_vertices[idx * 3 + 2];
+            Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
+            float halfOfSideSize = sideSize / 2f;
+            Vector3 toCenter = new Vector3() * (-halfOfSideSize);
+            Vector3 v0 = new Vector3(0, 0, 0) + toCenter + CG;
+            Vector3 v1 = new Vector3(sideSize, 0, 0) + toCenter + CG;
+            Vector3 v2 = new Vector3(sideSize / 2, 0, 0.86603f * sideSize) + toCenter + CG;
+            Vector3 v3 = new Vector3(sideSize / 2, 0.86603f * sideSize, 0.86603f * sideSize / 3) + toCenter + CG;
+
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 0] = v0;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 1] = v1;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 2] = v2;
+
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 3] = v0;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 4] = v2;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 5] = v3;
+
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 6] = v2;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 7] = v1;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 8] = v3;
+
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 9] = v0;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 10] = v3;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 11] = v1;
+
+
         }
 
         public void Repaint()
@@ -108,9 +126,9 @@ namespace Elektronik.Common
 
         public void GetAllTriangles(out Vector3[] trianglesCGs, out Color[] colors)
         {
-            List<Vector3> trianglesCGs_ = new List<Vector3>(MAX_TRIANGLES_COUNT);
-            List<Color> trianglesColors_ = new List<Color>(MAX_TRIANGLES_COUNT);
-            for (int i = 0; i < MAX_TRIANGLES_COUNT; ++i)
+            List<Vector3> trianglesCGs_ = new List<Vector3>(MAX_THETRAHEDRONS_COUNT);
+            List<Color> trianglesColors_ = new List<Color>(MAX_THETRAHEDRONS_COUNT);
+            for (int i = 0; i < MAX_THETRAHEDRONS_COUNT; ++i)
             {
                 if (TriangleExists(i))
                 {
@@ -127,11 +145,12 @@ namespace Elektronik.Common
 
         public void Clear()
         {
-            for (int i = 0; i < MAX_VERTICES_COUNT; ++i)
+            for (int i = 0; i < MAX_THETRAHEDRONS_COUNT; ++i)
             {
                 m_vertices[i] = Vector3.zero;
                 m_colors[i] = new Color(0, 0, 0, 0);
             }
+
             Repaint();
         }
     }
