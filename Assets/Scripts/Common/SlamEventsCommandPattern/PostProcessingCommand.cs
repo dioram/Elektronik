@@ -22,7 +22,8 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             SlamPoint[] points;
             if (slamEvent.Points != null)
             {
-                points = slamEvent.Points.Where(p => p.id != -1).ToArray();
+                //points = slamEvent.Points.Where(p => p.id != -1).ToArray();
+                points = slamEvent.Points.Where(p => p.id != -1).Select(pointsContainer.Get).ToArray();
                 for (int i = 0; i < points.Length; ++i)
                 {
                     points[i].color = points[i].defaultColor;

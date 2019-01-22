@@ -13,7 +13,7 @@ namespace Elektronik.Common.Data
             switch (actionType)
             {
                 case ActionType.Create:
-                    return sizeof(float) * 3; // Vector3
+                    return sizeof(float) * 3 + sizeof(byte) * 3; // Vector3
                 case ActionType.Tint:
                     return sizeof(byte) * 3; // color
                 case ActionType.Move:
@@ -48,7 +48,7 @@ namespace Elektronik.Common.Data
                 {
                     point.isNew = true;
                     point.defaultColor = SlamBitConverter.ToRGBColor(actions, offset);
-                    offset += sizeof(float) * 3;
+                    offset += sizeof(byte) * 3;
                     point.color = Color.blue;
                 }
                 if (type == ActionType.Tint)

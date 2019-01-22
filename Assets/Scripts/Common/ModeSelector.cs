@@ -17,10 +17,12 @@ namespace Elektronik.Common
         {
             if (FileModeSettings.Current != null)
             {
+                onlinePlayer.SetActive(false);
                 filePlayer.SetActive(true);
             }
             else if (OnlineModeSettings.Current != null)
             {
+                filePlayer.SetActive(false);
                 onlinePlayer.SetActive(true);
             }
             else

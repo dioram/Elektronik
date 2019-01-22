@@ -45,7 +45,10 @@ namespace Elektronik.Common.Containers
         {
             Debug.AssertFormat(m_points.ContainsKey(point.id), "[Update] Container doesn't contain point with id {0}", point.id);
             m_pointCloud.SetPoint(point.id, point.position, point.color);
-            m_points[point.id] = point;
+            SlamPoint current = m_points[point.id];
+            current.position = point.position;
+            current.color = point.color;
+            m_points[point.id] = current;
         }
 
         public void ChangeColor(SlamPoint point)

@@ -49,7 +49,6 @@ namespace Elektronik.Common.Data
 
         public static Package Parse(byte[] rawPackage)
         {
-            System.Random rand = new System.Random();
             Package result = new Package();
             int offset = 0;
             result.Timestamp = BitConverter.ToInt32(rawPackage, 0);
