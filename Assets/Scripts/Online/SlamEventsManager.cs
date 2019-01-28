@@ -15,6 +15,7 @@ namespace Elektronik.Online
 {
     public class SlamEventsManager : MonoBehaviour
     {
+        public Text status;
         public Button clear;
         public Button reconnect;
 
@@ -52,11 +53,12 @@ namespace Elektronik.Online
         {
             clear.onClick.AddListener(Clear);
             reconnect.onClick.AddListener(Reconnect);
-            Reconnect();
+            status.color = Color.red;
+            status.text = "Not connected...";
             var handler =
                 Observable.EveryFixedUpdate()
-                .Select(_ => m_receiver.GetPackage())
                 .Where(_ => m_receiver.Connected)
+                .Select(_ => m_receiver.GetPackage())
                 .Where(package => package != null)
                 .Do(pkg => m_converter.Convert(ref pkg))
                 .Do(pkg => Debug.Log(pkg.Timestamp))
@@ -82,6 +84,12 @@ namespace Elektronik.Online
         {
             if (m_connecting)
                 return;
+            Observable
+                .FromEvent(action => m_receiver.OnDisconnect += () => action(), action => m_receiver.OnDisconnect -= () => action())
+                .Do(_ => status.color = Color.red)
+                .Do(_ => status.text = "Disconnected!")
+                .Subscribe();
+            status.color = Color.blue;
             Disconnect();
             StartCoroutine(WaitForConnection(connectionTries));
         }
@@ -95,15 +103,22 @@ namespace Elektronik.Online
         IEnumerator WaitForConnection(int tries)
         {
             m_connecting = true;
+            status.color = Color.blue;
             for (int i = 0; i < tries; ++i)
             {
-                Debug.Log("New connection try...");
+                status.text = String.Format("New connection try... ({0} from {1})", i + 1, tries);
+                yield return null;
                 if (m_receiver.Connect(OnlineModeSettings.Current.Address, OnlineModeSettings.Current.Port))
                 {
-                   yield break;
+                    status.color = Color.green;
+                    status.text = "Connected!";
+                    m_connecting = false;
+                    yield break;
                 }
-                yield return new WaitForSeconds(1);
+                yield return null /*new WaitForSeconds(1)*/;
             }
+            status.color = Color.red;
+            status.text = "Not connected...";
             m_connecting = false;
             yield return null;
         }

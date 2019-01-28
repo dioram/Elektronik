@@ -28,11 +28,11 @@ namespace Elektronik.Offline
             if (FileModeSettings.Current != null)
             {
                 FileModeSettings.Current = null;
-                SceneManager.LoadScene(@"Assets/Scenes/Offline/Offline settings.unity");
+                SceneManager.LoadScene(@"Assets/Scenes/Offline/Offline settings.unity", LoadSceneMode.Single);
             } else if (OnlineModeSettings.Current != null)
             {
                 OnlineModeSettings.Current = null;
-                SceneManager.LoadScene(@"Assets/Scenes/Online/Online settings.unity");
+                SceneManager.LoadScene(@"Assets/Scenes/Online/Online settings.unity", LoadSceneMode.Single);
             }
             else
             {

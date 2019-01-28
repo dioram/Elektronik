@@ -75,6 +75,7 @@ namespace Elektronik.Online
                 })
                 .Subscribe();
             uiCancel.OnClickAsObservable()
+                .Do(_ => OnlineModeSettings.Current = null)
                 .Subscribe(_ => SceneManager.LoadScene("Main menu", LoadSceneMode.Single));
             uiLoad.OnClickAsObservable()
                 .Select(_ =>

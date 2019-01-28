@@ -26,17 +26,41 @@ namespace Elektronik.Online
         private IPGlobalProperties m_ipProperties;
         private TcpConnectionInformation[] m_tcpConnections;
 
+        public delegate void TCPPackagesReceiverHandler();
+        public event TCPPackagesReceiverHandler OnDisconnect;
+
         public bool Connected { get { return m_network.Connected; } }
 
         public TCPPackagesReceiver()
         {
             m_network = new TcpClient();
             m_network.ReceiveBufferSize = 64 * 1024;
-            m_packagesBuffer = new List<Package>();
-            m_readPackages = new Queue<Package>();
+            m_packagesBuffer = new List<Package>(20);
+            m_readPackages = new Queue<Package>(100);
             m_sync = new object();
             m_readingThread = new Thread(ReadPackages);
             m_readingThread.IsBackground = true;
+        }
+
+        private bool CheckConnection(byte[] zeroByte)
+        {
+            bool isConnected = false;
+            if (m_network.Client.Poll(-1, SelectMode.SelectRead))
+            {
+                byte[] buff = new byte[1];
+                try
+                {
+                    if (m_network.Client.Receive(buff, SocketFlags.Peek) != 0)
+                    {
+                        isConnected = true;
+                    }
+                }
+                catch (SocketException e)
+                {
+                    Debug.LogWarning(e.Message);
+                }
+            }
+            return isConnected;
         }
 
         private void ReadPackages()
@@ -45,6 +69,7 @@ namespace Elektronik.Online
             {
                 throw new InvalidOperationException("Call Connect before using this [GetPackage] method");
             }
+            byte[] zeroByte = new byte[1];
             Package receivedPackage = null;
             while (!m_stop)
             {
@@ -54,14 +79,19 @@ namespace Elektronik.Online
                     m_stream.Read(rawCountOfBytes, 0, sizeof(int));
                     int countOfBytes = BitConverter.ToInt32(rawCountOfBytes, 0);
                     byte[] rawPackage = new byte[countOfBytes];
-                    while (m_network.Available < countOfBytes)
+                    int readBytes = 0;
+                    do
                     {
-                        Debug.LogFormat("available data = {0}", m_network.Available);
-                    }
-                    m_stream.Read(rawPackage, 0, countOfBytes);
+                        readBytes += m_stream.Read(rawPackage, readBytes, countOfBytes - readBytes);
+                        if (m_stop)
+                            return;
+                    } while (readBytes != countOfBytes);
                     receivedPackage = Package.Parse(rawPackage);
-                    m_packagesBuffer.Add(receivedPackage);
-                    receivedPackage = m_packagesBuffer.Find(pkg => pkg.Timestamp == m_packageNum);
+                    if (receivedPackage.Timestamp != m_packageNum)
+                    {
+                        m_packagesBuffer.Add(receivedPackage);
+                        receivedPackage = m_packagesBuffer.Find(pkg => pkg.Timestamp == m_packageNum);
+                    }
                     if (receivedPackage != null)
                     {
                         lock (m_sync)
@@ -72,6 +102,12 @@ namespace Elektronik.Online
                         ++m_packageNum;
                     }
                 }
+                if (!CheckConnection(zeroByte))
+                {
+                    if (OnDisconnect != null)
+                        OnDisconnect();
+                    m_stop = true;
+                }
             }
             Debug.Log("Disconnected or stopped");
         }
@@ -81,17 +117,17 @@ namespace Elektronik.Online
             try
             {
                 m_network.Connect(ip.ToString(), port);
-                m_stream = m_network.GetStream();
-                m_stop = false;
-                m_readingThread.Start();
-                Debug.Log("Connected!");
-                return true;
             }
             catch
             {
                 Debug.Log("Connection failed");
+                return false;
             }
-            return false;
+            m_stream = m_network.GetStream();
+            m_stop = false;
+            m_readingThread.Start();
+            Debug.Log("Connected!");
+            return true;
         }
 
         public Package GetPackage()
@@ -109,11 +145,11 @@ namespace Elektronik.Online
 
         public void Dispose()
         {
-            m_stop = true;
-            m_network.Close();
             Debug.Log("[TCPPackagesReceiver] disposing");
+            m_stop = true;
             if (m_readingThread.ThreadState == ThreadState.Running)
                 m_readingThread.Join();
+            m_network.Close();
             Debug.Log("[TCPPackagesReceiver] disposed");
         }
     }

@@ -74,6 +74,7 @@ namespace Elektronik.Offline
         void AttachBehavior2Cancel()
         {
             buCancel.OnClickAsObservable()
+                .Do(_ => FileModeSettings.Current = null)
                 .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Main menu", UnityEngine.SceneManagement.LoadSceneMode.Single))
                 .Subscribe();
         }
