@@ -28,13 +28,13 @@ namespace Elektronik.Common.Clouds
             pointIdx = srcPointIdx % TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT;
         }
 
-        public bool PointExists(int idx)
+        public bool TetrahedronExists(int idx)
         {
             int meshIdx = idx / TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT;
             if (m_meshObjects.ContainsKey(meshIdx))
             {
                 int pointIdx = idx % TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT;
-                return m_meshObjects[meshIdx].TriangleExists(pointIdx);
+                return m_meshObjects[meshIdx].TetrahedronExists(pointIdx);
             }
             else
             {
@@ -42,44 +42,61 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-        public void GetPoint(int idx, out Vector3 position, out Color color)
+        public void GetTetrahedron(int idx, out Vector3 position, out Color color)
         {
             int meshId;
             int pointId;
             CheckMesh(idx, out meshId, out pointId);
-            m_meshObjects[meshId].GetTriangle(pointId, out position, out color);
+            m_meshObjects[meshId].GetTetrahedron(pointId, out position, out color);
         }
 
-        public void SetPoint(int idx, Vector3 vertix, Color color)
+
+        public void SetTetrahedron(int idx, Vector3 vertix, Quaternion rotation, Color color)
         {
             int meshId;
             int pointId;
             CheckMesh(idx, out meshId, out pointId);
-            m_meshObjects[meshId].SetTriangle(pointId, vertix * scale, color);
+            m_meshObjects[meshId].SetTetrahedron(pointId, vertix * scale, rotation, color);
         }
 
-        public void SetPointColor(int idx, Color color)
+        public void SetTetrahedron(int idx, Vector3 vertix, Color color)
         {
             int meshId;
             int pointId;
             CheckMesh(idx, out meshId, out pointId);
-            m_meshObjects[meshId].SetTriangleColor(pointId, color);
+            m_meshObjects[meshId].SetTetrahedron(pointId, vertix * scale, color);
         }
 
-        public void SetPointPosition(int idx, Vector3 position)
+        public void SetTetrahedron(int idx, Quaternion rotation, Color color)
         {
             int meshId;
             int pointId;
             CheckMesh(idx, out meshId, out pointId);
-            m_meshObjects[meshId].SetTrianglePosition(pointId, position * scale);
+            m_meshObjects[meshId].SetTetrahedron(pointId, rotation, color);
         }
 
-        public void SetPoints(int[] idxs, Vector3[] vertices, Color[] colors)
+        public void SetTetrahedron(int idx, Color color)
+        {
+            int meshId;
+            int pointId;
+            CheckMesh(idx, out meshId, out pointId);
+            m_meshObjects[meshId].SetTetrahedron(pointId, color);
+        }
+
+        public void SetTetrahedron(int idx, Vector3 position)
+        {
+            int meshId;
+            int pointId;
+            CheckMesh(idx, out meshId, out pointId);
+            m_meshObjects[meshId].SetTetrahedron(pointId, position * scale);
+        }
+
+        public void SetTetrahedrons(int[] idxs, Vector3[] vertices, Color[] colors)
         {
             Debug.Assert((idxs.Length == vertices.Length) && (vertices.Length == colors.Length));
             for (int i = 0; i < idxs.Length; ++i)
             {
-                SetPoint(idxs[i], vertices[i], colors[i]);
+                SetTetrahedron(idxs[i], vertices[i], colors[i]);
             }
         }
 
@@ -101,7 +118,7 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-        public void GetAllPoints(out int[] indices, out Vector3[] positions, out Color[] colors)
+        public void GetAllTetrahedrons(out int[] indices, out Vector3[] positions, out Color[] colors)
         {
             indices = Enumerable.Repeat(1, TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT * m_meshObjects.Count).ToArray();
             positions = new Vector3[TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT * m_meshObjects.Count];
@@ -111,7 +128,7 @@ namespace Elektronik.Common.Clouds
             {
                 Vector3[] meshObjPositions;
                 Color[] meshObjColors;
-                allMeshes[meshNum].Value.GetAllTriangles(out meshObjPositions, out meshObjColors);
+                allMeshes[meshNum].Value.GetAllTetrahedrons(out meshObjPositions, out meshObjColors);
                 for (int i = 0; i < TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT; ++i)
                 {
                     positions[TrianglesMeshObject.MAX_THETRAHEDRONS_COUNT * allMeshes[meshNum].Key + i] = meshObjPositions[i];

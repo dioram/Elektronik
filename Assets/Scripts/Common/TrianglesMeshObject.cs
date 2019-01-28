@@ -50,35 +50,49 @@ namespace Elektronik.Common
             m_filter.mesh = m_mesh;
         }
 
-        public bool TriangleExists(int idx)
+        public bool TetrahedronExists(int idx)
         {
             Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
-            bool verticesIsDefault = true;
-            verticesIsDefault = verticesIsDefault && (m_vertices[idx * 4] == m_vertices[idx * 4 + 1]);
-            verticesIsDefault = verticesIsDefault && (m_vertices[idx * 4 + 1] == m_vertices[idx * 4 + 2]);
-            return verticesIsDefault;
+            bool notExists = true;
+            for (int i = 0; i < MAX_VERTICES_COUNT; ++i)
+            {
+                notExists = notExists && (m_colors[idx * INDICES_PER_THETRAHEDRON + i] == new Color(0, 0, 0, 0));
+            }
+            return !notExists;
         }
 
-        public void GetTriangle(int idx, out Vector3 triangleCG, out Color color)
+        public void GetTetrahedron(int idx, out Vector3 tetrahedronCG, out Color color)
         {
             Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
-            triangleCG = new Vector3();
+            tetrahedronCG = new Vector3();
             for (int i = 0; i < INDICES_PER_THETRAHEDRON; ++i)
             {
-                triangleCG += m_vertices[idx * INDICES_PER_THETRAHEDRON + i];
+                tetrahedronCG += m_vertices[idx * INDICES_PER_THETRAHEDRON + i];
             }
-            triangleCG /= INDICES_PER_THETRAHEDRON;
+            tetrahedronCG /= INDICES_PER_THETRAHEDRON;
             color = m_colors[idx * INDICES_PER_THETRAHEDRON];
         }
 
-        public void SetTriangle(int idx, Vector3 triangleCG, Color color)
+        public void SetTetrahedron(int idx, Vector3 tetrahedronCG, Quaternion rotation, Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
-            SetTrianglePosition(idx, triangleCG);
-            SetTriangleColor(idx, color);
+            SetTetrahedron(idx, tetrahedronCG);
+            SetTetrahedron(idx, rotation);
+            SetTetrahedron(idx, color);
         }
 
-        public void SetTriangleColor(int idx, Color color)
+        public void SetTetrahedron(int idx, Vector3 tetrahedronCG, Color color)
+        {
+            SetTetrahedron(idx, tetrahedronCG);
+            SetTetrahedron(idx, color);
+        }
+
+        public void SetTetrahedron(int idx, Quaternion rotation, Color color)
+        {
+            SetTetrahedron(idx, rotation);
+            SetTetrahedron(idx, color);
+        }
+
+        public void SetTetrahedron(int idx, Color color)
         {
             Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
             for (int i = 0; i < INDICES_PER_THETRAHEDRON; ++i)
@@ -87,11 +101,11 @@ namespace Elektronik.Common
             }
         }
 
-        public void SetTrianglePosition(int idx, Vector3 CG)
+        public void SetTetrahedron(int idx, Vector3 CG)
         {
             Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
             float halfOfSideSize = sideSize / 2f;
-            Vector3 toCenter = new Vector3() * (-halfOfSideSize);
+            Vector3 toCenter = new Vector3(-0.86603f * sideSize / 2, -0.86603f * sideSize / 2, -0.86603f * sideSize / 2);
             Vector3 v0 = new Vector3(0, 0, 0) + toCenter + CG;
             Vector3 v1 = new Vector3(sideSize, 0, 0) + toCenter + CG;
             Vector3 v2 = new Vector3(sideSize / 2, 0, 0.86603f * sideSize) + toCenter + CG;
@@ -112,8 +126,17 @@ namespace Elektronik.Common
             m_vertices[idx * INDICES_PER_THETRAHEDRON + 9] = v0;
             m_vertices[idx * INDICES_PER_THETRAHEDRON + 10] = v3;
             m_vertices[idx * INDICES_PER_THETRAHEDRON + 11] = v1;
+        }
 
-
+        public void SetTetrahedron(int idx, Quaternion rotation)
+        {
+            Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
+            /*Matrix4x4 rotationMat = Matrix4x4.Rotate(rotation);
+            for (int i = 0; i < INDICES_PER_THETRAHEDRON; ++i)
+            {
+                Matrix4x4 t = Matrix4x4.Translate(m_vertices[idx * INDICES_PER_THETRAHEDRON + i]);
+                m_vertices[idx * INDICES_PER_THETRAHEDRON + i] = (rotationMat * t).GetPosition();
+            }*/
         }
 
         public void Repaint()
@@ -124,23 +147,23 @@ namespace Elektronik.Common
             m_mesh.RecalculateBounds();
         }
 
-        public void GetAllTriangles(out Vector3[] trianglesCGs, out Color[] colors)
+        public void GetAllTetrahedrons(out Vector3[] tetrahedronsCGs, out Color[] colors)
         {
-            List<Vector3> trianglesCGs_ = new List<Vector3>(MAX_THETRAHEDRONS_COUNT);
-            List<Color> trianglesColors_ = new List<Color>(MAX_THETRAHEDRONS_COUNT);
+            List<Vector3> tetrahedronsCGs_ = new List<Vector3>(MAX_THETRAHEDRONS_COUNT);
+            List<Color> tetrahedronsColors_ = new List<Color>(MAX_THETRAHEDRONS_COUNT);
             for (int i = 0; i < MAX_THETRAHEDRONS_COUNT; ++i)
             {
-                if (TriangleExists(i))
+                if (TetrahedronExists(i))
                 {
                     Vector3 CG = new Vector3();
                     Color color = new Color();
-                    GetTriangle(i, out CG, out color);
-                    trianglesCGs_.Add(CG);
-                    trianglesColors_.Add(color);
+                    GetTetrahedron(i, out CG, out color);
+                    tetrahedronsCGs_.Add(CG);
+                    tetrahedronsColors_.Add(color);
                 }
             }
-            trianglesCGs = trianglesCGs_.ToArray();
-            colors = trianglesColors_.ToArray();
+            tetrahedronsCGs = tetrahedronsCGs_.ToArray();
+            colors = tetrahedronsColors_.ToArray();
         }
 
         public void Clear()

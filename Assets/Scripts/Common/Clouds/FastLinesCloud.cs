@@ -107,7 +107,8 @@ namespace Elektronik.Common.Clouds
 
         private void AddNewMesh(int idx)
         {
-            LinesMeshObject newMesh = MF_AutoPool.Spawn(meshObjectPrefab.gameObject).GetComponent<LinesMeshObject>();
+            GameObject clone = MF_AutoPool.Spawn(meshObjectPrefab.gameObject);
+            LinesMeshObject newMesh = clone.GetComponent<LinesMeshObject>();
             m_meshObjects.Add(idx, newMesh);
         }
     }

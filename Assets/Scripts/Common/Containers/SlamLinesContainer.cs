@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class SlamLinesContainer : ISlamContainer<SlamLine>
+    public class SlamLinesContainer : ISlamLinesContainer<SlamLine>
     {
         private FastLinesCloud m_linesCloud;
         private SortedDictionary<int, SlamLine> m_lines;
@@ -117,13 +117,35 @@ namespace Elektronik.Common.Containers
             return Get(lineId);
         }
 
-        public bool TryGet(SlamLine line, out SlamLine current)
+        public SlamLine Get(int id1, int id2)
         {
-            current = new SlamLine();
+            return m_lines
+                .Where(kv => 
+                    kv.Value.pointId1 == id1 && kv.Value.pointId2 == id2 ||
+                    kv.Value.pointId2 == id1 && kv.Value.pointId1 == id2)
+                .Select(kv => kv.Value).First();
+        }
+
+        public bool TryGet(int id1, int id2, out SlamLine line)
+        {
+            line = new SlamLine();
+            if (m_lines.Any(kv => 
+                kv.Value.pointId1 == id1 && kv.Value.pointId2 == id2 ||
+                kv.Value.pointId2 == id1 && kv.Value.pointId1 == id2))
+            {
+                line = Get(id1, id2);
+                return true;
+            }
+            return false;
+        }
+
+        public bool TryGet(SlamLine line, out SlamLine lineFromContainer)
+        {
+            lineFromContainer = new SlamLine();
             int lineId = -1;
             if (m_longId2Id.TryGetValue(line.GenerateLongId(), out lineId))
             {
-                current = m_lines[lineId];
+                lineFromContainer = m_lines[lineId];
                 return true;
             }
             else
@@ -153,6 +175,22 @@ namespace Elektronik.Common.Containers
         public void Repaint()
         {
             m_linesCloud.Repaint();
+        }
+
+        public bool Exists(int id1, int id2)
+        {
+            int lineId;
+            return m_longId2Id.TryGetValue(SlamLine.GenerateLongId(id1, id2), out lineId);
+        }
+
+        public bool Exists(int objId)
+        {
+            return m_lines.ContainsKey(objId);
+        }
+
+        public void Remove(int id1, int id2)
+        {
+            Remove(Get(id1, id2));
         }
     }
 }

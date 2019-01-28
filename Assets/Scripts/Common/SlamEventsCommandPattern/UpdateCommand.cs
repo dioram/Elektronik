@@ -44,8 +44,8 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             {
                 m_helmetPose = observations.FirstOrDefault(o => o.id == -1);
                 m_observations2Restore = observations
-                    .Where(o => !o.isRemoved)
                     .Where(o => o.id != -1)
+                    .Where(o => !o.isRemoved)
                     .Select(o => new SlamObservation(graph.Get(o.id))).ToArray();
                 m_observations2Update = observations
                     .Where(o => o.id != -1)

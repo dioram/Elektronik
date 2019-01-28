@@ -39,7 +39,7 @@ namespace Elektronik.Offline
             m_extendedEvents = new List<Package>();
             m_commands = new List<ISlamEventCommand>();
             m_linesContainer = new SlamLinesContainer(fastLineCloud);
-            m_pointsContainer = new SlamTrianglePointsContainer(fastTrianglesCloud);
+            m_pointsContainer = new SlamTetrahedronPointsContainer(fastTrianglesCloud);
         }
 
         void Start()

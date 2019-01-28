@@ -67,9 +67,11 @@
     <Compile Include="Assets\Scripts\Common\Clouds\FastPointCloud.cs" />
     <Compile Include="Assets\Scripts\Common\Clouds\FastTrianglesCloud.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\ISlamContainer.cs" />
+    <Compile Include="Assets\Scripts\Common\Containers\ISlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamPointsContainer.cs" />
-    <Compile Include="Assets\Scripts\Common\Containers\SlamTrianglePointsContainer.cs" />
+    <Compile Include="Assets\Scripts\Common\Containers\SlamTetrahedronObservationsContainer.cs" />
+    <Compile Include="Assets\Scripts\Common\Containers\SlamTetrahedronPointsContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Data\ActionType.cs" />
     <Compile Include="Assets\Scripts\Common\Data\Camera2Unity3dPackageConverter.cs" />
     <Compile Include="Assets\Scripts\Common\Data\Package.cs" />

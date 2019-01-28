@@ -13,6 +13,7 @@ namespace Elektronik.Common.Containers
         void ChangeColor(T obj);
         void Clear();
         bool Exists(T obj);
+        bool Exists(int objId);
         T Get(int id);
         T Get(T obj);
         T[] GetAll();

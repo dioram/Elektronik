@@ -9,15 +9,13 @@ namespace Elektronik.Common
     public class SlamObservationNode
     {
         // представление узла в сцене
-        public GameObject ObservationObject { get; private set; }
-        public SlamObservation SlamObservation { get; set; }
-
+        public SlamObservation SlamObservation { get; private set; }
         public Dictionary<SlamObservationNode, int> NodeLineIDPair { get; private set; }
 
-        public SlamObservationNode(GameObject gameObject)
+        public SlamObservationNode(SlamObservation slamObservation)
         {
             NodeLineIDPair = new Dictionary<SlamObservationNode, int>();
-            ObservationObject = gameObject;
+            SlamObservation = slamObservation;
         }
     }
 }

@@ -33,6 +33,7 @@ namespace Elektronik.Common.Data
             observation = new SlamObservation();
             observation.orientation = Quaternion.identity;
             observation.id = id;
+            observation.color = Color.magenta;
             while (offset != actions.Length)
             {
                 Debug.AssertFormat(offset <= actions.Length, "[SlamObservationPackageObject.ParseActions] offset ({0}) out of range", offset);
@@ -40,6 +41,7 @@ namespace Elektronik.Common.Data
                 if (type == ActionType.Create)
                 {
                     observation.isNew = true;
+                    observation.color = Color.magenta;
                 }
                 if (type == ActionType.Create || type == ActionType.Move)
                 {
@@ -47,7 +49,6 @@ namespace Elektronik.Common.Data
                     offset += sizeof(float) * 3;
                     observation.orientation = SlamBitConverter.ToQuaternion(actions, offset);
                     offset += sizeof(float) * 4;
-                    observation.color = Color.gray;
                 }
                 
                 if (type == ActionType.Tint)
