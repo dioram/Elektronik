@@ -26,7 +26,10 @@ namespace Elektronik.Common.Containers
         {
             ++m_diff;
             ++m_added;
-            m_trianglesCloud.SetTetrahedron(observation.id, observation.position, observation.color);
+            m_trianglesCloud.SetTetrahedron(
+                observation.id,
+                Matrix4x4.TRS(observation.position, observation.orientation, Vector3.one),
+                observation.color);
             Debug.AssertFormat(!m_observations.ContainsKey(observation.id), "Point with id {0} already in dictionary!", observation.id);
             m_observations.Add(observation.id, observation);
             return observation.id;
@@ -43,10 +46,12 @@ namespace Elektronik.Common.Containers
         public void Update(SlamObservation observation)
         {
             Debug.AssertFormat(m_observations.ContainsKey(observation.id), "[Update] Container doesn't contain point with id {0}", observation.id);
-            m_trianglesCloud.SetTetrahedron(observation.id, observation.position, observation.color);
             SlamObservation current = m_observations[observation.id];
+            Matrix4x4 to = Matrix4x4.TRS(observation.position, observation.orientation, Vector3.one);
             current.position = observation.position;
+            current.orientation = observation.orientation;
             current.color = observation.color;
+            m_trianglesCloud.SetTetrahedron(observation.id, to, observation.color);
             m_observations[observation.id] = current;
         }
 
@@ -66,7 +71,7 @@ namespace Elektronik.Common.Containers
             ++m_removed;
             //Debug.LogFormat("Removing point {0}", pointId);
             Debug.AssertFormat(m_observations.ContainsKey(pointId), "[Remove] Container doesn't contain point with id {0}", pointId);
-            m_trianglesCloud.SetTetrahedron(pointId, Vector3.zero, new Color(0, 0, 0, 0));
+            m_trianglesCloud.SetTetrahedron(pointId, Matrix4x4.identity, new Color(0, 0, 0, 0));
             m_observations.Remove(pointId);
         }
 

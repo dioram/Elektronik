@@ -14,6 +14,7 @@ namespace Elektronik.Common
         public const int MAX_THETRAHEDRONS_COUNT = MAX_VERTICES_COUNT / INDICES_PER_THETRAHEDRON;
         
         public float sideSize = .001f;
+        public bool needOrientation = false;
 
         MeshFilter m_filter;
         Mesh m_mesh;
@@ -24,7 +25,6 @@ namespace Elektronik.Common
 
         void Awake()
         {
-            
             m_indices = new int[MAX_VERTICES_COUNT];
             for (int i = 0; i < MAX_VERTICES_COUNT; ++i) // 12 is count of vertices of thetrahedron
             {
@@ -73,70 +73,57 @@ namespace Elektronik.Common
             color = m_colors[idx * INDICES_PER_THETRAHEDRON];
         }
 
-        public void SetTetrahedron(int idx, Vector3 tetrahedronCG, Quaternion rotation, Color color)
+        public void SetTetrahedron(int idx, Matrix4x4 rel, Color color)
         {
-            SetTetrahedron(idx, tetrahedronCG);
-            SetTetrahedron(idx, rotation);
-            SetTetrahedron(idx, color);
-        }
-
-        public void SetTetrahedron(int idx, Vector3 tetrahedronCG, Color color)
-        {
-            SetTetrahedron(idx, tetrahedronCG);
-            SetTetrahedron(idx, color);
-        }
-
-        public void SetTetrahedron(int idx, Quaternion rotation, Color color)
-        {
-            SetTetrahedron(idx, rotation);
+            SetTetrahedron(idx, rel);
             SetTetrahedron(idx, color);
         }
 
         public void SetTetrahedron(int idx, Color color)
         {
             Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
-            for (int i = 0; i < INDICES_PER_THETRAHEDRON; ++i)
+            int init = needOrientation ? 3 : 0;
+            for (int i = init; i < INDICES_PER_THETRAHEDRON; ++i)
             {
                 m_colors[idx * INDICES_PER_THETRAHEDRON + i] = color;
             }
         }
 
-        public void SetTetrahedron(int idx, Vector3 CG)
+        public void SetTetrahedron(int idx, Matrix4x4 rel)
         {
             Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
-            float halfOfSideSize = sideSize / 2f;
-            Vector3 toCenter = new Vector3(-0.86603f * sideSize / 2, -0.86603f * sideSize / 2, -0.86603f * sideSize / 2);
-            Vector3 v0 = new Vector3(0, 0, 0) + toCenter + CG;
-            Vector3 v1 = new Vector3(sideSize, 0, 0) + toCenter + CG;
-            Vector3 v2 = new Vector3(sideSize / 2, 0, 0.86603f * sideSize) + toCenter + CG;
-            Vector3 v3 = new Vector3(sideSize / 2, 0.86603f * sideSize, 0.86603f * sideSize / 3) + toCenter + CG;
+            float halfHeight = 0.86603f * sideSize / 2;
+            float halfSide = sideSize / 2f;
+            Vector3 toCenter = new Vector3(-halfSide, -halfHeight, -halfHeight);
+            Vector3 v0 = new Vector3(0, 0, 0.86603f * sideSize) + toCenter;
+            Vector3 v1 = new Vector3(halfSide, 0.86603f * sideSize, 0.86603f * sideSize) + toCenter;
+            Vector3 v2 = new Vector3(sideSize, 0, 0.86603f * sideSize) + toCenter;
+            Vector3 v3 = new Vector3(halfSide, halfHeight, 0) + toCenter;
 
-            m_vertices[idx * INDICES_PER_THETRAHEDRON + 0] = v0;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 0] = v2;
             m_vertices[idx * INDICES_PER_THETRAHEDRON + 1] = v1;
-            m_vertices[idx * INDICES_PER_THETRAHEDRON + 2] = v2;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 2] = v0;
+            m_colors[idx * INDICES_PER_THETRAHEDRON + 0] = Color.blue;
+            m_colors[idx * INDICES_PER_THETRAHEDRON + 1] = Color.blue;
+            m_colors[idx * INDICES_PER_THETRAHEDRON + 2] = Color.blue;
 
-            m_vertices[idx * INDICES_PER_THETRAHEDRON + 3] = v0;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 3] = v3;
             m_vertices[idx * INDICES_PER_THETRAHEDRON + 4] = v2;
-            m_vertices[idx * INDICES_PER_THETRAHEDRON + 5] = v3;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 5] = v0;
 
-            m_vertices[idx * INDICES_PER_THETRAHEDRON + 6] = v2;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 6] = v3;
             m_vertices[idx * INDICES_PER_THETRAHEDRON + 7] = v1;
-            m_vertices[idx * INDICES_PER_THETRAHEDRON + 8] = v3;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 8] = v2;
 
-            m_vertices[idx * INDICES_PER_THETRAHEDRON + 9] = v0;
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 9] = v1;
             m_vertices[idx * INDICES_PER_THETRAHEDRON + 10] = v3;
-            m_vertices[idx * INDICES_PER_THETRAHEDRON + 11] = v1;
-        }
+            m_vertices[idx * INDICES_PER_THETRAHEDRON + 11] = v0;
 
-        public void SetTetrahedron(int idx, Quaternion rotation)
-        {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
-            /*Matrix4x4 rotationMat = Matrix4x4.Rotate(rotation);
             for (int i = 0; i < INDICES_PER_THETRAHEDRON; ++i)
             {
-                Matrix4x4 t = Matrix4x4.Translate(m_vertices[idx * INDICES_PER_THETRAHEDRON + i]);
-                m_vertices[idx * INDICES_PER_THETRAHEDRON + i] = (rotationMat * t).GetPosition();
-            }*/
+                var t = Matrix4x4.Translate(m_vertices[idx * INDICES_PER_THETRAHEDRON + i]);
+                m_vertices[idx * INDICES_PER_THETRAHEDRON + i] = (rel * t).GetPosition();
+            }
         }
 
         public void Repaint()

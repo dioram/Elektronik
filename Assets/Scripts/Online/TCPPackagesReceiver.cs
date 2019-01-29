@@ -101,14 +101,15 @@ namespace Elektronik.Online
                         m_packagesBuffer.Remove(receivedPackage);
                         ++m_packageNum;
                     }
+                    Thread.Sleep((int)(100f / 7f));
                 }
                 if (!CheckConnection(zeroByte))
                 {
-                    if (OnDisconnect != null)
-                        OnDisconnect();
                     m_stop = true;
                 }
             }
+            if (OnDisconnect != null)
+                OnDisconnect();
             Debug.Log("Disconnected or stopped");
         }
 

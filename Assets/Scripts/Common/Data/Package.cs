@@ -42,9 +42,9 @@ namespace Elektronik.Common.Data
 
         public Package()
         {
-            Observations = new List<SlamObservation>();
-            Points = new List<SlamPoint>();
-            Lines = new List<SlamLine>();
+            Observations = new List<SlamObservation>(20);
+            Points = new List<SlamPoint>(5000);
+            Lines = new List<SlamLine>(1000);
         }
 
         public static Package Parse(byte[] rawPackage)
@@ -98,8 +98,6 @@ namespace Elektronik.Common.Data
             result.EvaluateSummary();
             return result;
         }
-
-        
 
         public string Summary()
         {

@@ -51,28 +51,12 @@ namespace Elektronik.Common.Clouds
         }
 
 
-        public void SetTetrahedron(int idx, Vector3 vertix, Quaternion rotation, Color color)
+        public void SetTetrahedron(int idx, Matrix4x4 rel, Color color)
         {
             int meshId;
             int pointId;
             CheckMesh(idx, out meshId, out pointId);
-            m_meshObjects[meshId].SetTetrahedron(pointId, vertix * scale, rotation, color);
-        }
-
-        public void SetTetrahedron(int idx, Vector3 vertix, Color color)
-        {
-            int meshId;
-            int pointId;
-            CheckMesh(idx, out meshId, out pointId);
-            m_meshObjects[meshId].SetTetrahedron(pointId, vertix * scale, color);
-        }
-
-        public void SetTetrahedron(int idx, Quaternion rotation, Color color)
-        {
-            int meshId;
-            int pointId;
-            CheckMesh(idx, out meshId, out pointId);
-            m_meshObjects[meshId].SetTetrahedron(pointId, rotation, color);
+            m_meshObjects[meshId].SetTetrahedron(pointId, rel, color);
         }
 
         public void SetTetrahedron(int idx, Color color)
@@ -83,20 +67,12 @@ namespace Elektronik.Common.Clouds
             m_meshObjects[meshId].SetTetrahedron(pointId, color);
         }
 
-        public void SetTetrahedron(int idx, Vector3 position)
+        public void SetTetrahedrons(int[] idxs, Matrix4x4[] rels, Color[] colors)
         {
-            int meshId;
-            int pointId;
-            CheckMesh(idx, out meshId, out pointId);
-            m_meshObjects[meshId].SetTetrahedron(pointId, position * scale);
-        }
-
-        public void SetTetrahedrons(int[] idxs, Vector3[] vertices, Color[] colors)
-        {
-            Debug.Assert((idxs.Length == vertices.Length) && (vertices.Length == colors.Length));
+            Debug.Assert((idxs.Length == rels.Length) && (rels.Length == colors.Length));
             for (int i = 0; i < idxs.Length; ++i)
             {
-                SetTetrahedron(idxs[i], vertices[i], colors[i]);
+                SetTetrahedron(idxs[i], rels[i], colors[i]);
             }
         }
 

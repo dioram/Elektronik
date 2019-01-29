@@ -26,7 +26,7 @@ namespace Elektronik.Common.Containers
         {
             ++m_diff;
             ++m_added;
-            m_trianglesCloud.SetTetrahedron(point.id, point.position, point.color);
+            m_trianglesCloud.SetTetrahedron(point.id, Matrix4x4.Translate(point.position), point.color);
             Debug.AssertFormat(!m_points.ContainsKey(point.id), "Point with id {0} already in dictionary!", point.id);
             m_points.Add(point.id, point);
             return point.id;
@@ -43,11 +43,12 @@ namespace Elektronik.Common.Containers
         public void Update(SlamPoint point)
         {
             Debug.AssertFormat(m_points.ContainsKey(point.id), "[Update] Container doesn't contain point with id {0}", point.id);
-            m_trianglesCloud.SetTetrahedron(point.id, point.position, point.color);
             SlamPoint current = m_points[point.id];
+            Matrix4x4 to = Matrix4x4.Translate(point.position);
             current.position = point.position;
             current.color = point.color;
             m_points[point.id] = current;
+            m_trianglesCloud.SetTetrahedron(point.id, to, point.color);
         }
 
         public void ChangeColor(SlamPoint point)
@@ -66,7 +67,7 @@ namespace Elektronik.Common.Containers
             ++m_removed;
             //Debug.LogFormat("Removing point {0}", pointId);
             Debug.AssertFormat(m_points.ContainsKey(pointId), "[Remove] Container doesn't contain point with id {0}", pointId);
-            m_trianglesCloud.SetTetrahedron(pointId, Vector3.zero, new Color(0, 0, 0, 0));
+            m_trianglesCloud.SetTetrahedron(pointId, Matrix4x4.identity, new Color(0, 0, 0, 0));
             m_points.Remove(pointId);
         }
 
