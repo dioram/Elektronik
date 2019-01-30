@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Elektronik.Common.Containers;
+using Elektronik.Common.Data;
+using Elektronik.Common.Clouds;
 
 namespace Elektronik.Offline
 {
@@ -17,12 +19,13 @@ namespace Elektronik.Offline
 
         public float scale;
 
-        ISlamEvent[] m_events;
+        Package[] m_packages;
         List<ISlamEventCommand> m_commands;
-        List<ISlamEvent> m_extendedEvents;
+        List<Package> m_extendedEvents;
 
         public SlamObservationsGraph observationsGraph;
-        public FastPointCloud fastPointCloud;
+        //public FastPointCloud fastPointCloud;
+        public FastTrianglesCloud fastTrianglesCloud;
         public FastLinesCloud fastLineCloud;
         public Helmet helmet;
 
@@ -33,16 +36,16 @@ namespace Elektronik.Offline
 
         void Awake()
         {
-            m_extendedEvents = new List<ISlamEvent>();
+            m_extendedEvents = new List<Package>();
             m_commands = new List<ISlamEventCommand>();
+            m_linesContainer = new SlamLinesContainer(fastLineCloud);
+            m_pointsContainer = new SlamTetrahedronPointsContainer(fastTrianglesCloud);
         }
 
         void Start()
         {
-            m_linesContainer = new SlamLinesContainer(fastLineCloud);
-            m_pointsContainer = new SlamPointsContainer(fastPointCloud);
-            ISlamEventDataConverter converter = new Camera2Unity3dSlamEventConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Scaling));
-            m_events = EventReader.AnalyzeFile(FileModeSettings.Path, converter);
+            IPackageCSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
+            m_packages = PackagesReader.AnalyzeFile(FileModeSettings.Current.Path, converter);
             StartCoroutine(ProcessEvents());
         }
 
@@ -72,7 +75,7 @@ namespace Elektronik.Offline
             return m_position;
         }
 
-        public ISlamEvent GetCurrentEvent()
+        public Package GetCurrentEvent()
         {
             if (m_position == -1) // до свершения какого либо события
                 return null;
@@ -195,28 +198,28 @@ namespace Elektronik.Offline
         {
             Debug.Log("PROCESSING STARTED");
 
-            for (int i = 0; i < m_events.Length; ++i)
+            for (int i = 0; i < m_packages.Length; ++i)
             {
-                Debug.LogFormat("Event: {0}; i: {1}", m_events[i].EventType.ToString(), i);
-                if (m_events[i] is GlobalMapEvent)
+                Debug.Log(m_packages[i].Summary());
+                if (m_packages[i].Timestamp == -1)
                 {
                     m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, observationsGraph));
-                    m_extendedEvents.Add(m_events[i]);
+                    m_extendedEvents.Add(m_packages[i]);
                     Next(false);
+                    continue;
                 }
-                m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_events[i]));
-                m_extendedEvents.Add(m_events[i]);
+                m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_packages[i]));
+                m_extendedEvents.Add(m_packages[i]);
                 Next(false);
-                m_commands.Add(new UpdateCommand(m_pointsContainer, observationsGraph, helmet, m_events[i]));
-                m_extendedEvents.Add(m_events[i]);
+                m_commands.Add(new UpdateCommand(m_pointsContainer, observationsGraph, helmet, m_packages[i]));
+                m_extendedEvents.Add(m_packages[i]);
                 Next(false);
-                m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, m_events[i]));
-                m_extendedEvents.Add(m_events[i]);
+                m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, m_packages[i]));
+                m_extendedEvents.Add(m_packages[i]);
                 Next(false);
 
                 if (i % 10 == 0)
                 {
-                    Debug.LogFormat("{0}. event {1}", i, m_events[i].ToString());
                     yield return null;
                 }
             }

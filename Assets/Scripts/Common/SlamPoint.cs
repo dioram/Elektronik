@@ -11,6 +11,7 @@ namespace Elektronik.Common
         public bool justColored;
         public int id;
         public Vector3 position;
+        public Color defaultColor;
         public Color color;
         public bool isRemoved;
         public bool isNew;

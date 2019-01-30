@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using Elektronik.Common.Containers;
+using Elektronik.Common.Clouds;
 
 namespace Elektronik.Common
 {
@@ -46,6 +47,8 @@ namespace Elektronik.Common
         /// <param name="observation">Observation с абсолютными координатами</param>
         public void Replace(SlamObservation observation)
         {
+            // TODO: разобраться почему в ноль перемещается со связями
+            //Debug.Log("[SlamObservationsGraph.Replace] Replacing");
             Debug.AssertFormat(m_slamObservationNodes.ContainsKey(observation.id), "Observation with Id {0} doesn't exist", observation.id);
 
             // находим узел, который необходимо переместить
@@ -71,7 +74,7 @@ namespace Elektronik.Common
             if (observation.id == -1)
                 return;
             Debug.AssertFormat(ObservationExists(observation.id), "[Graph update connections] observation {0} doesn't exists", observation.id);
-            
+
             SlamObservationNode obsNode = m_slamObservationNodes[observation.id];
             obsNode.SlamObservation.covisibleObservationsIds = observation.covisibleObservationsIds;
             obsNode.SlamObservation.covisibleObservationsOfCommonPointsCount = observation.covisibleObservationsOfCommonPointsCount;
@@ -90,7 +93,7 @@ namespace Elektronik.Common
                     // 3. Где соединение отсутствует добавить соединение
                     SlamLine newLineCinema = new SlamLine()
                     {
-                        color = Color.gray,
+                        color1 = Color.gray,
                         pointId1 = obsNode.SlamObservation.id,
                         pointId2 = neighbor.SlamObservation.id,
                         isRemoved = false,
@@ -135,10 +138,11 @@ namespace Elektronik.Common
         {
             // находим узел, который необходимо удалить
             SlamObservationNode observationToRemove = m_slamObservationNodes[observationId];
+            MF_AutoPool.Despawn(observationToRemove.ObservationObject); // выпиливаем со сцены
 
             // находим узлы из которых нужно выпилить текущий узел
             SlamObservationNode[] covisibleNodes = observationToRemove.NodeLineIDPair.Select(kv => kv.Key).ToArray();
-            
+
             // выпиливаем узел из совидимых узлов и очищаем облако
             foreach (var covisibleNode in covisibleNodes)
             {
@@ -146,8 +150,6 @@ namespace Elektronik.Common
                 covisibleNode.NodeLineIDPair.Remove(observationToRemove);
                 m_linesContainer.Remove(lineId);
             }
-
-            MF_AutoPool.Despawn(observationToRemove.ObservationObject); // выпиливаем со сцены
             m_slamObservationNodes.Remove(observationId); // выпиливаем из графа
         }
 

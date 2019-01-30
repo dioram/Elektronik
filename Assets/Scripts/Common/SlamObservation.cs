@@ -12,6 +12,7 @@ namespace Elektronik.Common
         public Vector3 position;
         public Quaternion orientation;
         public bool isRemoved;
+        public bool isNew;
         public Color color;
         public byte statistics1;
         public byte statistics2;
@@ -21,9 +22,13 @@ namespace Elektronik.Common
         public List<int> covisibleObservationsIds;
         public List<int> covisibleObservationsOfCommonPointsCount;
 
-        public SlamObservation() { }
+        public SlamObservation()
+        {
+            covisibleObservationsIds = new List<int>();
+            covisibleObservationsOfCommonPointsCount = new List<int>();
+        }
 
-        public SlamObservation(SlamObservation src, bool sharedCovisibleObservations = true)
+        public SlamObservation(SlamObservation src, bool sharedCovisibleObservations = true) : this()
         {
             id = src.id;
             position = src.position;

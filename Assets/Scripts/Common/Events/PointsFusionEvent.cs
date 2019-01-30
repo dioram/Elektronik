@@ -76,7 +76,7 @@ namespace Elektronik.Common.Events
                 {
                     SlamLine line = new SlamLine()
                     {
-                        color = replaced[i].color,
+                        color1 = replaced[i].color,
                         pointId1 = replaced[i].id,
                         pointId2 = replacing[i].id,
                         isRemoved = true,

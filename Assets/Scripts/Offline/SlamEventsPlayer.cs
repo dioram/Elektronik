@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Elektronik.Common;
 using System;
 using Elektronik.Common.Events;
+using Elektronik.Common.Data;
 
 namespace Elektronik.Offline
 {
@@ -36,21 +37,23 @@ namespace Elektronik.Offline
             yield return null;
         }
 
-        private void UpdateEventText(ISlamEvent @event)
+        private void UpdateEventText(Package @event)
         {
-            ISlamEvent currentEvent = eventsManager.GetCurrentEvent();
+            Package currentEvent = eventsManager.GetCurrentEvent();
             if (currentEvent != null)
             {
-                eventText.text = currentEvent.ToString();
+                eventText.text = currentEvent.Summary();
             }
         }
 
         private void UpdateTime()
         {
-            ISlamEvent currentEvent = eventsManager.GetCurrentEvent();
-            if (currentEvent != null)
+            Package currentEvent = eventsManager.GetCurrentEvent();
+            if (currentEvent != null && currentEvent.Timestamp != -1)
             {
-                timelineLabel.text = TimeSpan.FromMilliseconds(eventsManager.GetCurrentEvent().Timestamp).ToString();
+                DateTime timestamp = new DateTime();
+                timestamp += TimeSpan.FromMilliseconds(currentEvent.Timestamp);
+                timelineLabel.text = timestamp.ToString("hh:mm:ss.fff");
                 timelineSlider.value = eventsManager.GetCurrentEventPosition();
             }
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Elektronik.Common.Clouds;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace Elektronik.Common.Containers
             ++m_diff;
             ++m_added;
             m_pointCloud.SetPoint(point.id, point.position, point.color);
+            Debug.AssertFormat(!m_points.ContainsKey(point.id), "Point with id {0} already in dictionary!", point.id);
             m_points.Add(point.id, point);
             return point.id;
         }
@@ -43,7 +45,10 @@ namespace Elektronik.Common.Containers
         {
             Debug.AssertFormat(m_points.ContainsKey(point.id), "[Update] Container doesn't contain point with id {0}", point.id);
             m_pointCloud.SetPoint(point.id, point.position, point.color);
-            m_points[point.id] = point;
+            SlamPoint current = m_points[point.id];
+            current.position = point.position;
+            current.color = point.color;
+            m_points[point.id] = current;
         }
 
         public void ChangeColor(SlamPoint point)
@@ -79,6 +84,7 @@ namespace Elektronik.Common.Containers
                 Remove(pointsIds[i]);
             }
             m_points.Clear();
+            m_pointCloud.Clear();
             Repaint();
 
             Debug.LogFormat("[Clear] Added points: {0}; Removed points: {1}; Diff: {2}", m_added, m_removed, m_diff);

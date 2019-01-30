@@ -12,7 +12,8 @@ namespace Elektronik.Common
         public Vector3 vert2;
         public int pointId1;
         public int pointId2;
-        public Color color;
+        public Color color1;
+        public Color color2;
         public bool isRemoved;
 
         public long GenerateLongId()
