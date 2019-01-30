@@ -26,8 +26,8 @@ namespace Elektronik.Common
         {
             if (Input.GetMouseButton(1))
             {
-                _rotationX += Input.GetAxis("Mouse X") * cameraSensitivity * Time.deltaTime;
-                _rotationY += Input.GetAxis("Mouse Y") * cameraSensitivity * Time.deltaTime;
+                _rotationX += Input.GetAxis("Mouse X") * cameraSensitivity * Time.fixedDeltaTime;
+                _rotationY += Input.GetAxis("Mouse Y") * cameraSensitivity * Time.fixedDeltaTime;
                 _rotationY = Mathf.Clamp(_rotationY, -80, 80);
             }
 
@@ -36,13 +36,13 @@ namespace Elektronik.Common
 
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
-                transform.position += transform.forward * (normalMoveSpeed * fastMoveFactor) * Input.GetAxis("Vertical") * Time.deltaTime;
-                transform.position += transform.right * (normalMoveSpeed * fastMoveFactor) * Input.GetAxis("Horizontal") * Time.deltaTime;
+                transform.position += transform.forward * (normalMoveSpeed * fastMoveFactor) * Input.GetAxis("Vertical") * Time.fixedDeltaTime;
+                transform.position += transform.right * (normalMoveSpeed * fastMoveFactor) * Input.GetAxis("Horizontal") * Time.fixedDeltaTime;
             }
             else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
             {
-                transform.position += transform.forward * (normalMoveSpeed * slowMoveFactor) * Input.GetAxis("Vertical") * Time.deltaTime;
-                transform.position += transform.right * (normalMoveSpeed * slowMoveFactor) * Input.GetAxis("Horizontal") * Time.deltaTime;
+                transform.position += transform.forward * (normalMoveSpeed * slowMoveFactor) * Input.GetAxis("Vertical") * Time.fixedDeltaTime;
+                transform.position += transform.right * (normalMoveSpeed * slowMoveFactor) * Input.GetAxis("Horizontal") * Time.fixedDeltaTime;
             }
             else
             {
@@ -50,8 +50,8 @@ namespace Elektronik.Common
                 transform.position += transform.right * normalMoveSpeed * Input.GetAxis("Horizontal") * Time.deltaTime;
             }
 
-            if (Input.GetKey(KeyCode.Q)) { transform.position += transform.up * climbSpeed * Time.deltaTime; }
-            if (Input.GetKey(KeyCode.E)) { transform.position -= transform.up * climbSpeed * Time.deltaTime; }
+            if (Input.GetKey(KeyCode.Q)) { transform.position += transform.up * climbSpeed * Time.fixedDeltaTime; }
+            if (Input.GetKey(KeyCode.E)) { transform.position -= transform.up * climbSpeed * Time.fixedDeltaTime; }
 
             if (Input.GetKeyDown(KeyCode.End))
             {
