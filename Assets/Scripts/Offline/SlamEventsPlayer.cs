@@ -15,9 +15,16 @@ namespace Elektronik.Offline
 
         public Slider timelineSlider;
         public Text timelineLabel;
-        public Text eventText;
+        private Text m_eventText;
 
         public SlamEventsManager eventsManager;
+
+        private void Awake()
+        {
+            m_eventText = GameObject
+                .Find(@"Common/NonVRMode/UIControls/Common info/[SW] Events logger background/Viewport/Content/Events logger background")
+                .GetComponentInChildren<Text>();
+        }
 
         private void Start()
         {
@@ -42,7 +49,7 @@ namespace Elektronik.Offline
             Package currentEvent = eventsManager.GetCurrentEvent();
             if (currentEvent != null)
             {
-                eventText.text = currentEvent.Summary();
+                m_eventText.text = currentEvent.Summary();
             }
         }
 

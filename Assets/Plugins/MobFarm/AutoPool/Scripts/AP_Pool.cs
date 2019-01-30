@@ -117,7 +117,7 @@ public class AP_Pool : MonoBehaviour {
 		if ( obj == null ) { return null; } // early out
 
 		obj.SetActive(false); // reset item in case object is being reused, has no effect if object is already disabled
-		obj.transform.parent = null;
+		obj.transform.SetParent(null);
 		obj.transform.position = usePosRot ? pos : transform.position;
 		obj.transform.rotation = usePosRot ? rot : transform.rotation;
 	

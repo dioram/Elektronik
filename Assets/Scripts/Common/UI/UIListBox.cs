@@ -42,7 +42,7 @@ namespace Elektronik.Common.UI
 
         public void Add(UIListBoxItem item)
         {
-            UIListBoxItem listViewItem = Instantiate(item);
+            UIListBoxItem listViewItem = MF_AutoPool.Spawn(item.gameObject).GetComponent<UIListBoxItem>();
             listViewItem.OnClick += SelectionChanged;
             listViewItem.transform.SetParent(m_scrollView.content);
             m_listOfItems.Add(listViewItem);
@@ -62,7 +62,7 @@ namespace Elektronik.Common.UI
             UIListBoxItem listViewItem = m_listOfItems[idx];
             m_listOfItems.RemoveAt(idx);
             listViewItem.transform.SetParent(null);
-            Destroy(listViewItem);
+            MF_AutoPool.Despawn(listViewItem.gameObject);
         }
 
         public void Remove(GameObject listViewItem)
