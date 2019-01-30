@@ -86,6 +86,7 @@ namespace Elektronik.Online
                 return;
             Observable
                 .FromEvent(action => m_receiver.OnDisconnect += () => action(), action => m_receiver.OnDisconnect -= () => action())
+                .ObserveOnMainThread()
                 .Do(_ => status.color = Color.red)
                 .Do(_ => status.text = "Disconnected!")
                 .Subscribe();
