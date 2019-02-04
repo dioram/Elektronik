@@ -15,5 +15,6 @@ namespace Elektronik.Common
         public Color color;
         public bool isRemoved;
         public bool isNew;
+        public string message;
     }
 }

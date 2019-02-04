@@ -13,5 +13,6 @@ namespace Elektronik.Common.Data
         Remove = 3,
         Fuse = 4,
         Connect = 5,
+        Message = 6,
     }
 }

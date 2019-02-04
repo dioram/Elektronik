@@ -8,6 +8,8 @@ namespace Elektronik.Common.Data
 {
     public static class SlamObservationPackageObject
     {
+        private static int MAX_MESSAGE_LENGTH_IN_BYTES = 256;
+
         public static int GetSizeOfActionInBytes(ActionType actionType)
         {
             switch (actionType)
@@ -22,6 +24,8 @@ namespace Elektronik.Common.Data
                     return 0;
                 case ActionType.Connect:
                     return sizeof(int) * 2; // id + count of common points
+                case ActionType.Message:
+                    return sizeof(int) + sizeof(byte) * MAX_MESSAGE_LENGTH_IN_BYTES; // max count of symbols
                 default:
                     throw new ArgumentException(String.Format("Bad action type ({0})", actionType));
             }
@@ -69,7 +73,13 @@ namespace Elektronik.Common.Data
                     observation.covisibleObservationsIds.Add(covisibleId);
                     observation.covisibleObservationsOfCommonPointsCount.Add(countOfCommonPoints);
                 }
-
+                if (type == ActionType.Message)
+                {
+                    int countOfMsgBytes = BitConverter.ToInt32(actions, offset);
+                    offset += sizeof(int);
+                    observation.message = Encoding.UTF8.GetString(actions, offset, countOfMsgBytes);
+                    offset += sizeof(byte) * MAX_MESSAGE_LENGTH_IN_BYTES;
+                }
             }
         }
 

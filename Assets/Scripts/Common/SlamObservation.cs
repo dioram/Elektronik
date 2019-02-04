@@ -18,6 +18,7 @@ namespace Elektronik.Common
         public byte statistics2;
         public byte statistics3;
         public byte statistics4;
+        public string message;
 
         public List<int> covisibleObservationsIds;
         public List<int> covisibleObservationsOfCommonPointsCount;
@@ -39,6 +40,7 @@ namespace Elektronik.Common
             statistics2 = src.statistics2;
             statistics3 = src.statistics3;
             statistics4 = src.statistics4;
+            message = src.message;
             covisibleObservationsIds = src.covisibleObservationsIds;
             covisibleObservationsOfCommonPointsCount = src.covisibleObservationsOfCommonPointsCount;
             if (src.covisibleObservationsIds != null && !sharedCovisibleObservations)

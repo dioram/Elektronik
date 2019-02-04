@@ -16,7 +16,6 @@ namespace Elektronik.Offline
     public class SlamEventsManager : MonoBehaviour
     {
         public bool ReadyToPlay { get; private set; }
-
         public float scale;
 
         Package[] m_packages;
@@ -32,6 +31,9 @@ namespace Elektronik.Offline
         private ISlamContainer<SlamLine> m_linesContainer;
         private ISlamContainer<SlamPoint> m_pointsContainer;
 
+        public List<SlamPoint> SpecialPoints { get; private set; }
+        public List<SlamObservation> SpecialObservations { get; private set; }
+
         private int m_position = -1;
 
         void Awake()
@@ -40,6 +42,8 @@ namespace Elektronik.Offline
             m_commands = new List<ISlamEventCommand>();
             m_linesContainer = new SlamLinesContainer(fastLineCloud);
             m_pointsContainer = new SlamTetrahedronPointsContainer(fastTrianglesCloud);
+            SpecialObservations = new List<SlamObservation>();
+            SpecialPoints = new List<SlamPoint>();
         }
 
         void Start()

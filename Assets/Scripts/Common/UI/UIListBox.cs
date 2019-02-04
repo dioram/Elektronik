@@ -70,5 +70,15 @@ namespace Elektronik.Common.UI
             int idx = m_listOfItems.FindIndex(obj => obj == listViewItem);
             Remove(idx);
         }
+
+        public void Clear()
+        {
+            foreach (var item in m_listOfItems)
+            {
+                item.transform.SetParent(null);
+                MF_AutoPool.Despawn(item.gameObject);
+            }
+            m_listOfItems.Clear();
+        }
     }
 }
