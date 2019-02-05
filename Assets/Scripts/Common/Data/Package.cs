@@ -13,6 +13,7 @@ namespace Elektronik.Common.Data
         public List<SlamObservation> Observations { get; private set; }
         public List<SlamPoint> Points { get; private set; }
         public List<SlamLine> Lines { get; private set; }
+        public string EventMessage { get; private set; }
 
         private string m_summary;
         private void EvaluateSummary()
@@ -40,7 +41,7 @@ namespace Elektronik.Common.Data
             m_summary = sb.ToString();
         }
 
-        public Package()
+        private Package()
         {
             Observations = new List<SlamObservation>(20);
             Points = new List<SlamPoint>(5000);

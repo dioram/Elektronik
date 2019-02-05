@@ -45,14 +45,14 @@ namespace Elektronik.Common
             return Mathf.Clamp(angle, min, max);
         }
 
-        public void FlyToPosition(Vector3 @from, Vector3 to, Quaternion orientation)
+        public void FlyToPosition(Vector3 @from, Vector3 to)
         {
             if (m_state == State.Inactive)
             {
                 m_state = State.FlyingToPosition;
                 target = to;
                 transform.position = @from;
-                transform.rotation = orientation;
+                transform.LookAt(to);
             }
         }
 
@@ -73,6 +73,7 @@ namespace Elektronik.Common
             m_state = State.Inactive;
             if (OnSwitchOff != null)
                 OnSwitchOff();
+            OnSwitchOff = delegate { };
         }
 
         public void Update()

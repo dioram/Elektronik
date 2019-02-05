@@ -1,50 +1,34 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Elektronik.Common.UI
 {
-    [RequireComponent(typeof(Button))]
     public class SpecialInfoListBoxItem : UIListBoxItem
     {
-        private Button m_button;
+        public Text uitext;
 
-        void Awake()
+        public void SetObject(int id, string type, Vector3 position, string msg)
         {
-            m_button = GetComponent<Button>();
+            ID = id;
+            Type = type;
+            Position = position;
+            Text = String.Format("ID {0}. {1}.", id, type);
+            Message = msg;
+        }
+        public int ID { get; private set; }
+        public string Type { get; private set; }
+        public Vector3 Position { get; private set; }
+
+        public string Text
+        {
+            get { return uitext.text; }
+            private set { uitext.text = value; }
         }
 
-        SlamPoint? m_point;
-        public SlamPoint? Point
-        {
-            get
-            {
-                return m_point;
-            }
-            set
-            {
-                m_point = value;
-                m_obs = null;
-                Text = string.Format("Id {0}. Point", m_point.Value.id);
-            }
-        }
-
-        SlamObservation m_obs;
-        public SlamObservation Observation
-        {
-            get
-            {
-                return m_obs;
-            }
-            set
-            {
-                m_obs = value;
-                m_point = null;
-                Text = string.Format("Id {0}. Observation", m_obs.id);
-            }
-        }
-        public string Text { get; private set; }
+        public string Message { get; private set; }
     }
 
 }

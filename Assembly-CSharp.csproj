@@ -121,9 +121,10 @@
     <Compile Include="Assets\Scripts\Common\UI\UIListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Common\UI\UIMainMenu.cs" />
     <Compile Include="Assets\Scripts\Common\XYZAxis.cs" />
+    <Compile Include="Assets\Scripts\Offline\EventLogger.cs" />
     <Compile Include="Assets\Scripts\Offline\EventReader.cs" />
     <Compile Include="Assets\Scripts\Offline\FileModeSettings.cs" />
-    <Compile Include="Assets\Scripts\Offline\Logger.cs" />
+    <Compile Include="Assets\Scripts\Offline\ObjectLogger.cs" />
     <Compile Include="Assets\Scripts\Offline\OfflineSettingsStore.cs" />
     <Compile Include="Assets\Scripts\Offline\PackagesReader.cs" />
     <Compile Include="Assets\Scripts\Offline\RecentFileListBoxItem.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Assets\Scripts\Offline\SettingsMenu.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsPlayer.cs" />
+    <Compile Include="Assets\Scripts\Offline\SpecialInformationBanner.cs" />
     <Compile Include="Assets\Scripts\Online\OnlineModeSettings.cs" />
     <Compile Include="Assets\Scripts\Online\OnlineSettingStore.cs" />
     <Compile Include="Assets\Scripts\Online\RecentIPListBoxItem.cs" />

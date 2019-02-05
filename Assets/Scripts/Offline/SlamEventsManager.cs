@@ -23,10 +23,10 @@ namespace Elektronik.Offline
         List<Package> m_extendedEvents;
 
         public SlamObservationsGraph observationsGraph;
-        //public FastPointCloud fastPointCloud;
         public FastTrianglesCloud fastTrianglesCloud;
         public FastLinesCloud fastLineCloud;
         public Helmet helmet;
+        public EventLogger eventsLogger;
 
         private ISlamContainer<SlamLine> m_linesContainer;
         private ISlamContainer<SlamPoint> m_pointsContainer;
@@ -120,6 +120,7 @@ namespace Elektronik.Offline
                 if (needRepaint)
                 {
                     Repaint();
+                    eventsLogger.UpdateInfo(m_extendedEvents[m_position], m_pointsContainer, observationsGraph);
                 }
                 return true;
             }
@@ -137,6 +138,7 @@ namespace Elektronik.Offline
                 if (needRepaint)
                 {
                     Repaint();
+                    eventsLogger.UpdateInfo(m_extendedEvents[m_position], m_pointsContainer, observationsGraph);
                 }
                 return true;
             }
