@@ -19,7 +19,7 @@ namespace Elektronik.Common.Data
         private void EvaluateSummary()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("[{0}]", EventType)
+            sb.AppendFormat("[Package. {0}]", EventType)
               .AppendLine()
               .AppendFormat("Timestamp: {0}", Timestamp)
               .AppendLine()
@@ -56,7 +56,9 @@ namespace Elektronik.Common.Data
             offset += sizeof(int);
             int sizeInBytesOfEventType = BitConverter.ToInt32(rawPackage, offset);
             offset += sizeof(int);
-            result.EventType = Encoding.Unicode.GetString(rawPackage, offset, sizeInBytesOfEventType);
+            result.EventType = sizeInBytesOfEventType > 0 ?
+                Encoding.ASCII.GetString(rawPackage, offset, sizeInBytesOfEventType) :
+                "";
             offset += sizeInBytesOfEventType;
             int countOfObjects = BitConverter.ToInt32(rawPackage, offset);
             offset += sizeof(int);

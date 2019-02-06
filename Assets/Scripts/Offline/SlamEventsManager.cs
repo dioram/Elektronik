@@ -67,6 +67,9 @@ namespace Elektronik.Offline
             observationsGraph.Repaint();
             m_pointsContainer.Repaint();
             m_linesContainer.Repaint();
+            Package currentEvent = GetCurrentEvent();
+            if (currentEvent != null)
+                eventsLogger.UpdateInfo(currentEvent, m_pointsContainer, observationsGraph);
         }
 
         public int GetLength()
@@ -120,7 +123,6 @@ namespace Elektronik.Offline
                 if (needRepaint)
                 {
                     Repaint();
-                    eventsLogger.UpdateInfo(m_extendedEvents[m_position], m_pointsContainer, observationsGraph);
                 }
                 return true;
             }
@@ -138,7 +140,6 @@ namespace Elektronik.Offline
                 if (needRepaint)
                 {
                     Repaint();
-                    eventsLogger.UpdateInfo(m_extendedEvents[m_position], m_pointsContainer, observationsGraph);
                 }
                 return true;
             }

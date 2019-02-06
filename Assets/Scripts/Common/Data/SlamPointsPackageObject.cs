@@ -8,7 +8,7 @@ namespace Elektronik.Common.Data
 {
     public static class SlamPointsPackageObject
     {
-        private static int MAX_MESSAGE_LENGTH_IN_BYTES = 256;
+        private static int MAX_MESSAGE_LENGTH_IN_BYTES = 128;
 
         public static int GetSizeOfActionInBytes(ActionType actionType)
         {
@@ -83,14 +83,16 @@ namespace Elektronik.Common.Data
                         color2 = color2,
                         isRemoved = true,
                     };
-                    if (fuseWithId != -1 && point.id != -1)
+                    if (fuseLine.pointId1 != -1 && fuseLine.pointId2 != -1)
                         fuse = fuseLine;
                 }
                 if (type == ActionType.Message)
                 {
                     int countOfMsgBytes = BitConverter.ToInt32(actions, offset);
                     offset += sizeof(int);
-                    point.message = Encoding.UTF8.GetString(actions, offset, countOfMsgBytes);
+                    if (countOfMsgBytes >= MAX_MESSAGE_LENGTH_IN_BYTES)
+                        throw new Exception();
+                    point.message = countOfMsgBytes > 0 ? Encoding.ASCII.GetString(actions, offset, countOfMsgBytes) : "";
                     offset += sizeof(byte) * MAX_MESSAGE_LENGTH_IN_BYTES;
                 }
             }
