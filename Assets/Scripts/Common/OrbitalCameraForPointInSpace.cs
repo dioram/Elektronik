@@ -34,7 +34,7 @@ namespace Elektronik.Common
             FlyingToPosition,
         }
 
-        State m_state;
+        public State CurrentState { get; private set; }
 
         public static float ClampAngle(float angle, float min, float max)
         {
@@ -47,9 +47,9 @@ namespace Elektronik.Common
 
         public void FlyToPosition(Vector3 @from, Vector3 to)
         {
-            if (m_state == State.Inactive)
+            if (CurrentState == State.Inactive)
             {
-                m_state = State.FlyingToPosition;
+                CurrentState = State.FlyingToPosition;
                 target = to;
                 transform.position = @from;
                 transform.LookAt(to);
@@ -58,11 +58,11 @@ namespace Elektronik.Common
 
         private void OnPosition()
         {
-            if (m_state == State.FlyingToPosition)
+            if (CurrentState == State.FlyingToPosition)
             {
                 if (Vector3.Distance(transform.position, target) < 1.0f)
                 {
-                    m_state = State.Active;
+                    CurrentState = State.Active;
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace Elektronik.Common
         public void SwitchOff()
         {
             gameObject.SetActive(false);
-            m_state = State.Inactive;
+            CurrentState = State.Inactive;
             if (OnSwitchOff != null)
                 OnSwitchOff();
             OnSwitchOff = delegate { };
@@ -85,11 +85,11 @@ namespace Elektronik.Common
             {
                 SwitchOff();
             }
-            if (isActiveAndEnabled && m_state == State.FlyingToPosition)
+            if (isActiveAndEnabled && CurrentState == State.FlyingToPosition)
             {
                 Vector3.MoveTowards(transform.position, target, fly2TargetDistanceDelta);
             }
-            if (isActiveAndEnabled && m_state == State.Active)
+            if (isActiveAndEnabled && CurrentState == State.Active)
             {
                 if (Input.GetKeyDown(KeyCode.End))
                 {

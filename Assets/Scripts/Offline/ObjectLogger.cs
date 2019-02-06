@@ -15,6 +15,10 @@ namespace Elektronik.Offline
 
         public void ShowObjectInformation(string information, Vector3 objectPosition)
         {
+            if (specialCamera.CurrentState != OrbitalCameraForPointInSpace.State.Inactive)
+            {
+                specialCamera.SwitchOff();
+            }
             specialInformationBanner.gameObject.SetActive(true);
             specialInformationBanner.SetText(information);
             arrow.SetActive(true);

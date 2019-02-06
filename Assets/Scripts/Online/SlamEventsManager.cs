@@ -84,12 +84,7 @@ namespace Elektronik.Online
         {
             if (m_connecting)
                 return;
-            Observable
-                .FromEvent(action => m_receiver.OnDisconnect += () => action(), action => m_receiver.OnDisconnect -= () => action())
-                .ObserveOnMainThread()
-                .Do(_ => status.color = Color.red)
-                .Do(_ => status.text = "Disconnected!")
-                .Subscribe();
+            m_connecting = true;
             status.color = Color.blue;
             Disconnect();
             StartCoroutine(WaitForConnection(connectionTries));
@@ -103,7 +98,6 @@ namespace Elektronik.Online
 
         IEnumerator WaitForConnection(int tries)
         {
-            m_connecting = true;
             status.color = Color.blue;
             for (int i = 0; i < tries; ++i)
             {
@@ -113,6 +107,12 @@ namespace Elektronik.Online
                 {
                     status.color = Color.green;
                     status.text = "Connected!";
+                    Observable
+                        .FromEvent(action => m_receiver.OnDisconnect += () => action(), action => m_receiver.OnDisconnect -= () => action())
+                        .ObserveOnMainThread()
+                        .Do(_ => status.color = Color.red)
+                        .Do(_ => status.text = "Disconnected!")
+                        .Subscribe();
                     m_connecting = false;
                     yield break;
                 }

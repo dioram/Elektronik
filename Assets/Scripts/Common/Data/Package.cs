@@ -13,13 +13,13 @@ namespace Elektronik.Common.Data
         public List<SlamObservation> Observations { get; private set; }
         public List<SlamPoint> Points { get; private set; }
         public List<SlamLine> Lines { get; private set; }
-        public string EventMessage { get; private set; }
+        public string EventType { get; private set; }
 
         private string m_summary;
         private void EvaluateSummary()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("[Package]")
+            sb.AppendFormat("[{0}]", EventType)
               .AppendLine()
               .AppendFormat("Timestamp: {0}", Timestamp)
               .AppendLine()
@@ -54,6 +54,10 @@ namespace Elektronik.Common.Data
             int offset = 0;
             result.Timestamp = BitConverter.ToInt32(rawPackage, 0);
             offset += sizeof(int);
+            int sizeInBytesOfEventType = BitConverter.ToInt32(rawPackage, offset);
+            offset += sizeof(int);
+            result.EventType = Encoding.Unicode.GetString(rawPackage, offset, sizeInBytesOfEventType);
+            offset += sizeInBytesOfEventType;
             int countOfObjects = BitConverter.ToInt32(rawPackage, offset);
             offset += sizeof(int);
 
