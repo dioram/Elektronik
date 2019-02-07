@@ -40,12 +40,13 @@ namespace Elektronik.Common.UI
             }
         }
 
-        public void Add(UIListBoxItem item)
+        public UIListBoxItem Add(UIListBoxItem item)
         {
             UIListBoxItem listViewItem = MF_AutoPool.Spawn(item.gameObject).GetComponent<UIListBoxItem>();
             listViewItem.OnClick += SelectionChanged;
             listViewItem.transform.SetParent(m_scrollView.content);
             m_listOfItems.Add(listViewItem);
+            return listViewItem;
         }
 
         private void SelectionChanged(object sender, EventArgs e)

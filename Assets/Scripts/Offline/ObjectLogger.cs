@@ -22,10 +22,10 @@ namespace Elektronik.Offline
             specialInformationBanner.gameObject.SetActive(true);
             specialInformationBanner.SetText(information);
             arrow.SetActive(true);
-            arrow.transform.position = objectPosition + new Vector3(0, 1, 0);
-            Camera currentCam = Camera.current;
+            arrow.transform.position = objectPosition + new Vector3(0, .45f, 0);
+            Camera currentCam = Camera.allCameras[0];
             currentCam.gameObject.SetActive(false);
-            specialCamera.FlyToPosition(currentCam.transform.position, objectPosition);
+            specialCamera.FlyToPosition(currentCam.transform, objectPosition);
             specialCamera.OnSwitchOff += () => currentCam.gameObject.SetActive(true);
             specialCamera.OnSwitchOff += () => specialInformationBanner.Clear();
             specialCamera.OnSwitchOff += () => specialInformationBanner.gameObject.SetActive(false);

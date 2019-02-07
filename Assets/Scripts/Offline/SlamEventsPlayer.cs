@@ -81,6 +81,7 @@ namespace Elektronik.Offline
         public void Pause()
         {
             m_play = false;
+            eventsManager.UpdateEventInfo();
         }
 
         public void Stop()

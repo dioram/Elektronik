@@ -1,0 +1,11 @@
+1.0.2
+- Fixed a bug in AP_Manager RemoveAll() that would attempt to remove pools incorrectly.
+- Fixed a bug in MF_StaticAutoPool DespawnAll() that would incorrectly remove pools instead of despawning them.
+
+1.0.1
+- Fixed a bug in MF_DemoUtilityKeys that ignored initial play scale value in a build player.
+- Fixed a number of typos.
+- Fixed help link references.
+
+1.0
+- Initial release

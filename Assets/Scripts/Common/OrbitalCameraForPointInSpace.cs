@@ -9,10 +9,11 @@ namespace Elektronik.Common
     [AddComponentMenu("Camera-Control/Mouse Orbit with zoom")]
     public class OrbitalCameraForPointInSpace : MonoBehaviour
     {
-        private Vector3 target;
+        private Vector3 m_targetPosition;
+        private Quaternion m_targetRotation;
         public float fly2TargetDistanceDelta = .25f;
 
-        public float distance = 5.0f;
+        public float distance = 10.0f;
         public float xSpeed = 120.0f;
         public float ySpeed = 120.0f;
 
@@ -45,14 +46,15 @@ namespace Elektronik.Common
             return Mathf.Clamp(angle, min, max);
         }
 
-        public void FlyToPosition(Vector3 @from, Vector3 to)
+        public void FlyToPosition(Transform @from, Vector3 to)
         {
             if (CurrentState == State.Inactive)
             {
                 CurrentState = State.FlyingToPosition;
-                target = to;
-                transform.position = @from;
-                transform.LookAt(to);
+                m_targetPosition = to;
+                transform.position = from.position;
+                transform.rotation = from.rotation;
+                gameObject.SetActive(true);
             }
         }
 
@@ -60,7 +62,7 @@ namespace Elektronik.Common
         {
             if (CurrentState == State.FlyingToPosition)
             {
-                if (Vector3.Distance(transform.position, target) < 1.0f)
+                if (Vector3.Distance(transform.position, m_targetPosition) < 1.0f)
                 {
                     CurrentState = State.Active;
                 }
@@ -85,11 +87,20 @@ namespace Elektronik.Common
             {
                 SwitchOff();
             }
-            if (isActiveAndEnabled && CurrentState == State.FlyingToPosition)
+            if (CurrentState == State.FlyingToPosition)
             {
-                Vector3.MoveTowards(transform.position, target, fly2TargetDistanceDelta);
+                float currentDistance = Vector3.Distance(transform.position, m_targetPosition);
+                m_targetRotation = Quaternion.LookRotation((m_targetPosition - transform.position).normalized);
+                transform.position = Vector3.MoveTowards(transform.position, m_targetPosition, fly2TargetDistanceDelta * currentDistance * .05f);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, m_targetRotation, fly2TargetDistanceDelta + (1 / currentDistance));
+                if (currentDistance <= distance)
+                {
+                    CurrentState = State.Active;
+                    x = transform.rotation.eulerAngles.y;
+                    y = transform.rotation.eulerAngles.x;
+                }
             }
-            if (isActiveAndEnabled && CurrentState == State.Active)
+            if (CurrentState == State.Active)
             {
                 if (Input.GetKeyDown(KeyCode.End))
                 {
@@ -107,9 +118,13 @@ namespace Elektronik.Common
 
                 Quaternion rotation = Quaternion.Euler(y, x, 0);
                 distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 5, distanceMin, distanceMax);
-                distance -= Vector3.Distance(transform.position, target);
+                RaycastHit hit;
+                if (Physics.Linecast(m_targetPosition, transform.position, out hit))
+                {
+                    distance -= hit.distance;
+                }
                 Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
-                Vector3 position = rotation * negDistance + target;
+                Vector3 position = rotation * negDistance + m_targetPosition;
                 transform.rotation = rotation;
                 transform.position = position;
             }

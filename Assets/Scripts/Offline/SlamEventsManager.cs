@@ -60,6 +60,7 @@ namespace Elektronik.Offline
             m_pointsContainer.Clear();
             m_linesContainer.Clear();
             helmet.ResetHelmet();
+            eventsLogger.Clear();
         }
 
         public void Repaint()
@@ -67,6 +68,10 @@ namespace Elektronik.Offline
             observationsGraph.Repaint();
             m_pointsContainer.Repaint();
             m_linesContainer.Repaint();
+        }
+
+        public void UpdateEventInfo()
+        {
             Package currentEvent = GetCurrentEvent();
             if (currentEvent != null)
                 eventsLogger.UpdateInfo(currentEvent, m_pointsContainer, observationsGraph);

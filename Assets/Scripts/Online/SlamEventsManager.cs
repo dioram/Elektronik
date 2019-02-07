@@ -31,12 +31,10 @@ namespace Elektronik.Online
         private ISlamContainer<SlamPoint> m_pointsContainer;
         private ISlamContainer<SlamLine> m_linesContainer;
         private IPackageCSConverter m_converter;
-        private bool m_cancelCoroutine = false;
         private bool m_connecting = false;
 
         private void OnDestroy()
         {
-            m_cancelCoroutine = true;
             if (m_receiver != null)
                 m_receiver.Dispose();
         }
@@ -55,8 +53,7 @@ namespace Elektronik.Online
             reconnect.onClick.AddListener(Reconnect);
             status.color = Color.red;
             status.text = "Not connected...";
-            var handler =
-                Observable.EveryFixedUpdate()
+            Observable.EveryFixedUpdate()
                 .Where(_ => m_receiver.Connected)
                 .Select(_ => m_receiver.GetPackage())
                 .Where(package => package != null)

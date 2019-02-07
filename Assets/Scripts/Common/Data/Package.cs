@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 namespace Elektronik.Common.Data
 {
@@ -19,7 +18,9 @@ namespace Elektronik.Common.Data
         private void EvaluateSummary()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("[Package. {0}]", EventType)
+            sb.Append("[Package]")
+              .AppendLine()
+              .AppendFormat("Event: {0}", EventType)
               .AppendLine()
               .AppendFormat("Timestamp: {0}", Timestamp)
               .AppendLine()

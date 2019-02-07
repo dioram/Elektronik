@@ -1,0 +1,2 @@
+The Demo Scene folder and all its contents may safely be deleted.
+It contains no parts that make AutoPool function. The items are solely for running the demo scene.

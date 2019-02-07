@@ -23,30 +23,37 @@ namespace Elektronik.Offline
             listBoxWithSpecializedObjects.OnSelectionChanged += ObjectInfoSelectionChanged;
         }
 
+        public void Clear()
+        {
+            commonIformation.text = "";
+            listBoxWithSpecializedObjects.Clear();
+            
+        }
+
         public void UpdateInfo(Package package, ISlamContainer<SlamPoint> pointsMap, SlamObservationsGraph graph)
         {
             listBoxWithSpecializedObjects.Clear();
 
             commonIformation.text = package.Summary();
 
-            SlamPoint[] specialPts = package.Points.Where(p => p.message != null).ToArray();
+            SlamPoint[] specialPts = package.Points.Where(p => p.id != -1).Where(p => p.message != null).ToArray();
             Vector3[] ptsPositionsFromMap = specialPts.Select(p => pointsMap.Get(p.id).position).ToArray();
 
             SlamObservation[] specialObs = package.Observations
+                .Where(o => o.id != -1)
                 .Where(o => o.message != null)
-                .Select(o => new SlamObservation(o))
                 .ToArray();
             Vector3[] obsPositionsFromMap = specialObs.Select(o => graph.Get(o.id).position).ToArray();
 
             for (int i = 0; i < specialPts.Length; ++i)
             {
-                itemPrefab.SetObject(specialPts[i].id, "Point", ptsPositionsFromMap[i], specialPts[i].message);
-                listBoxWithSpecializedObjects.Add(itemPrefab);
+                var item = listBoxWithSpecializedObjects.Add(itemPrefab) as SpecialInfoListBoxItem;
+                item.SetObject(specialPts[i].id, "Point", ptsPositionsFromMap[i], specialPts[i].message);
             }
             for (int i = 0; i < specialObs.Length; ++i)
             {
-                itemPrefab.SetObject(specialObs[i].id, "Observation", obsPositionsFromMap[i], specialObs[i].message);
-                listBoxWithSpecializedObjects.Add(itemPrefab);
+                var item = listBoxWithSpecializedObjects.Add(itemPrefab) as SpecialInfoListBoxItem;
+                item.SetObject(specialObs[i].id, "Observation", obsPositionsFromMap[i], specialObs[i].message);
             }
         }
 

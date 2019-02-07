@@ -61,6 +61,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Plugins\MobFarm\AutoPool\Demo Scene\Demo Scripts\AP_DemoDeathTimer.cs" />
+    <Compile Include="Assets\Plugins\MobFarm\AutoPool\Demo Scene\Demo Scripts\AP_DemoSpawn.cs" />
+    <Compile Include="Assets\Plugins\MobFarm\AutoPool\Demo Scene\Demo Scripts\MF_DemoUtilityKeys.cs" />
     <Compile Include="Assets\Plugins\MobFarm\AutoPool\Scripts\AP_Manager.cs" />
     <Compile Include="Assets\Plugins\MobFarm\AutoPool\Scripts\AP_Pool.cs" />
     <Compile Include="Assets\Plugins\MobFarm\AutoPool\Scripts\AP_Reference.cs" />
@@ -376,12 +379,14 @@
     <None Include="Assets\Plugins\SteamVR\Resources\SteamVR_Fade.shader" />
     <None Include="Assets\Plugins\SteamVR\Resources\SteamVR_ClearAll.shader" />
     <None Include="Assets\Plugins\SteamVR\InteractionSystem\Hints\Shaders\ControllerButtonHints.shader" />
+    <None Include="Assets\Plugins\MobFarm\AutoPool\Demo Scene\You may delete this folder.txt" />
     <None Include="Assets\Plugins\PointCloud\Shaders\VertexColor.shader" />
     <None Include="Assets\Plugins\VRTK\Scripts\Internal\Shaders\UIOverlay.shader" />
     <None Include="Assets\Plugins\SteamVR\InteractionSystem\Teleport\Shaders\Highlight.shader" />
     <None Include="Assets\Plugins\VRTK\Scripts\Internal\Shaders\VRTK_OutlineBasic.shader" />
     <None Include="Assets\Plugins\VRTK\Scripts\Internal\Shaders\AdaptiveQualityDebugVisualization.shader" />
     <None Include="Assets\Plugins\UniRx\ReadMe.txt" />
+    <None Include="Assets\Plugins\MobFarm\_Docs\AutoPool Docs\AutoPool Change Log.txt" />
     <None Include="Assets\Plugins\SteamVR\Resources\SteamVR_SphericalProjection.shader" />
     <None Include="Assets\Plugins\SteamVR\Resources\SteamVR_AlphaOut.shader" />
     <None Include="Assets\Plugins\VRTK\Scripts\Internal\Shaders\TransparentFresnelBehind.shader" />

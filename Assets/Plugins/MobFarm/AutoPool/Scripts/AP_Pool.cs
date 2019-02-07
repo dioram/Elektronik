@@ -134,7 +134,7 @@ public class AP_Pool : MonoBehaviour {
 	public void Despawn ( GameObject obj, AP_Reference oprScript ) { // return an object back to this pool
 		if ( obj.transform.parent == transform ) { return; } // already in pool
 		obj.SetActive(false);
-		obj.transform.parent = transform;
+		obj.transform.SetParent(transform);
 		obj.transform.localPosition = Vector3.zero;
 		obj.transform.localRotation = Quaternion.identity;
 		oprScript.CancelInvoke();
