@@ -20,7 +20,7 @@ namespace Elektronik.Common.Data
             StringBuilder sb = new StringBuilder();
             sb.Append("[Package]")
               .AppendLine()
-              .AppendFormat("Event: {0}", EventType)
+              .AppendFormat("{0}", EventType)
               .AppendLine()
               .AppendFormat("Timestamp: {0}", Timestamp)
               .AppendLine()
