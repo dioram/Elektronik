@@ -8,6 +8,7 @@ using Elektronik.Common.Events;
 
 namespace Elektronik.Offline
 {
+    [Obsolete("This class will be removed soon")]
     public static class EventReader
     {
         public static ISlamEvent[] AnalyzeFile(string path, ISlamEventDataConverter converter)
