@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Elektronik.Offline
 {
@@ -29,7 +30,7 @@ namespace Elektronik.Offline
                 for (int i = 0; i < eventsCount; ++i)
                 {
                     br.BaseStream.Seek(offsetTable[i], SeekOrigin.Begin);
-                    UnityEngine.Debug.Log(String.Format("{0}. offset: {1} (0x{1:X8})", i, offsetTable[i]));
+                    Debug.Log(String.Format("{0}. offset: {1} (0x{1:X8})", i, offsetTable[i]));
                     long packageLength = 
                         i == eventsCount - 1 ?
                         br.BaseStream.Length - sizeof(int) /*table offset*/ - offsetTable[i] 

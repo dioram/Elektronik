@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Elektronik.Common.Data;
+using UnityEngine;
 
 namespace Elektronik.Common.Events
 {
-    public interface ISlamEvent
+    public interface ISlamEvent // Курбан Байрам например
     {
         SlamEventType EventType { get; }
         int Timestamp { get; }

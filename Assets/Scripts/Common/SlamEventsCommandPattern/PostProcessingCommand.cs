@@ -28,7 +28,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 {
                     points[i].color = points[i].defaultColor;
                 }
-                m_commands.Add(new UpdateCommand(pointsContainer, graph, helmet, points, null));
+                m_commands.Add(new UpdateCommand(pointsContainer, graph, helmet, slamEvent));
                 m_commands.Add(new RemoveCommand(pointsContainer, linesContainer, graph, slamEvent));
             }
             

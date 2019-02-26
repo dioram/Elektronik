@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
+using Elektronik.Offline;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -27,39 +28,31 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             ISlamContainer<SlamPoint> pointsContainer,
             SlamObservationsGraph graph,
             Helmet helmet,
-            ICollection<SlamPoint> points,
-            ICollection<SlamObservation> observations)
+            Package slamEvent)
         {
             m_pointsContainer = pointsContainer;
             m_graph = graph;
             m_helmet = helmet;
 
-            if (points != null)
+            if (slamEvent.Points != null)
             {
-                m_points2Restore = points.Where(p => p.id != -1).Select(p => pointsContainer.Get(p.id)).ToArray();
-                m_points2Update = points.Where(p => p.id != -1).ToArray();
+                m_points2Restore = slamEvent.Points.Where(p => p.id != -1).Select(p => pointsContainer.Get(p.id)).ToArray();
+                m_points2Update = slamEvent.Points.Where(p => p.id != -1).ToArray();
             }
 
-            if (observations != null)
+            if (slamEvent.Observations != null)
             {
-                m_helmetPose = observations.FirstOrDefault(o => o.id == -1);
-                m_observations2Restore = observations
+                m_helmetPose = slamEvent.Observations.FirstOrDefault(o => o.id == -1);
+                m_observations2Restore = slamEvent.Observations
                     .Where(o => o.id != -1)
                     .Where(o => !o.isRemoved)
                     .Select(o => new SlamObservation(graph.Get(o.id))).ToArray();
-                m_observations2Update = observations
+                m_observations2Update = slamEvent.Observations
                     .Where(o => o.id != -1)
                     .Where(o => !o.isRemoved)
                     .Select(o => new SlamObservation(o)).ToArray();
             }
         }
-
-        public UpdateCommand(
-            ISlamContainer<SlamPoint> pointsContainer,
-            SlamObservationsGraph graph, 
-            Helmet helmet, 
-            Package slamEvent) : this(pointsContainer, graph, helmet, slamEvent.Points, slamEvent.Observations)
-        { }
 
         public void Execute()
         {

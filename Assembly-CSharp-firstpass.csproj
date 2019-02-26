@@ -396,11 +396,11 @@
     <None Include="Assets\Plugins\SteamVR\Resources\SteamVR_ColorOut.shader" />
     <None Include="Assets\Plugins\SteamVR\InteractionSystem\Core\Shaders\SeeThru.shader" />
     <None Include="Assets\Plugins\SteamVR\InteractionSystem\Readme_InteractionSystem.txt" />
-    <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.PackageManagerUI.Editor">
+      <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
       <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -31,7 +29,7 @@ namespace Elektronik.Common.Data
             }
         }
 
-        public static void ParseActions(byte[] actions, int id, out SlamPoint point, out SlamLine? fuse)
+        public static void ParseActions(byte[] actions, int id, out SlamPoint point, out SlamLine fuse)
         {
             int offset = 0;
             point = new SlamPoint();

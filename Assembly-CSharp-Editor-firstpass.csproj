@@ -79,11 +79,11 @@
     <Compile Include="Assets\Plugins\VRTK\Editor\VRTK_SDKSetupEditor.cs" />
     <Compile Include="Assets\Plugins\VRTK\Editor\VRTK_SupportInfoWindow.cs" />
     <Compile Include="Assets\Plugins\VRTK\Editor\VRTK_UpdatePrompt.cs" />
-    <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.PackageManagerUI.Editor">
+      <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
       <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>

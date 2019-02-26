@@ -23,7 +23,7 @@ namespace Elektronik.Offline
         List<Package> m_extendedEvents;
 
         public SlamObservationsGraph observationsGraph;
-        public FastTrianglesCloud fastTrianglesCloud;
+        public IFastPointsCloud fastPointsCloud;
         public FastLinesCloud fastLineCloud;
         public Helmet helmet;
         public EventLogger eventsLogger;
@@ -41,16 +41,22 @@ namespace Elektronik.Offline
             m_extendedEvents = new List<Package>();
             m_commands = new List<ISlamEventCommand>();
             m_linesContainer = new SlamLinesContainer(fastLineCloud);
-            m_pointsContainer = new SlamTetrahedronPointsContainer(fastTrianglesCloud);
+            m_pointsContainer = new SlamPointsContainer(fastPointsCloud);
             SpecialObservations = new List<SlamObservation>();
             SpecialPoints = new List<SlamPoint>();
         }
 
         void Start()
         {
+            Application.logMessageReceived += ElektronikLogger.Log;
             IPackageCSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
             m_packages = PackagesReader.AnalyzeFile(FileModeSettings.Current.Path, converter);
             StartCoroutine(ProcessEvents());
+        }
+
+        private void OnDestroy()
+        {
+            Application.logMessageReceived -= ElektronikLogger.Log;
         }
 
         public void Clear()
@@ -220,12 +226,19 @@ namespace Elektronik.Offline
                     Next(false);
                     continue;
                 }
+
+                // При добавлении объектов в карту их в карте быть не должно.
+                m_packages[i].TestExistent(obj => obj.id != -1 && obj.isNew, m_pointsContainer, observationsGraph);
                 m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_packages[i]));
                 m_extendedEvents.Add(m_packages[i]);
                 Next(false);
+
+                // При любых манипуляциях с картой объекты, над которыми происходят манипуляции, должны быть в карте.
+                m_packages[i].TestNonExistent(obj => obj.id != -1, m_pointsContainer, observationsGraph);
                 m_commands.Add(new UpdateCommand(m_pointsContainer, observationsGraph, helmet, m_packages[i]));
                 m_extendedEvents.Add(m_packages[i]);
                 Next(false);
+
                 m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, m_packages[i]));
                 m_extendedEvents.Add(m_packages[i]);
                 Next(false);

@@ -65,21 +65,30 @@
     <Compile Include="Assets\Scripts\Common\CameraChanger.cs" />
     <Compile Include="Assets\Scripts\Common\Clouds\FastLinesCloud.cs" />
     <Compile Include="Assets\Scripts\Common\Clouds\FastPointCloud.cs" />
-    <Compile Include="Assets\Scripts\Common\Clouds\FastTrianglesCloud.cs" />
+    <Compile Include="Assets\Scripts\Common\Clouds\IFastPointsCloud.cs" />
+    <Compile Include="Assets\Scripts\Common\Clouds\Meshes\IPointsMeshObject.cs" />
+    <Compile Include="Assets\Scripts\Common\Clouds\Meshes\LinesMeshObject.cs" />
+    <Compile Include="Assets\Scripts\Common\Clouds\Meshes\PointsMeshObject.cs" />
+    <Compile Include="Assets\Scripts\Common\Clouds\Meshes\TetrahedronsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\ISlamContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\ISlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamPointsContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamTetrahedronObservationsContainer.cs" />
-    <Compile Include="Assets\Scripts\Common\Containers\SlamTetrahedronPointsContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Data\ActionType.cs" />
     <Compile Include="Assets\Scripts\Common\Data\Camera2Unity3dPackageConverter.cs" />
+    <Compile Include="Assets\Scripts\Common\Data\ISlamObject.cs" />
     <Compile Include="Assets\Scripts\Common\Data\Package.cs" />
     <Compile Include="Assets\Scripts\Common\Data\PackageCSConverter.cs" />
+    <Compile Include="Assets\Scripts\Common\Data\PackageTestExtensions.cs" />
     <Compile Include="Assets\Scripts\Common\Data\Robot2Unity3dPackageConverter.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamBitConverter.cs" />
+    <Compile Include="Assets\Scripts\Common\Data\SlamLine.cs" />
+    <Compile Include="Assets\Scripts\Common\Data\SlamObservation.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamObservationPackageObject.cs" />
+    <Compile Include="Assets\Scripts\Common\Data\SlamPoint.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamPointsPackageObject.cs" />
+    <Compile Include="Assets\Scripts\Common\ElektronikLogger.cs" />
     <Compile Include="Assets\Scripts\Common\Events\GlobalMapEvent.cs" />
     <Compile Include="Assets\Scripts\Common\Events\ISLAMEvent.cs" />
     <Compile Include="Assets\Scripts\Common\Events\LoopClosingTryEvent.cs" />
@@ -90,16 +99,15 @@
     <Compile Include="Assets\Scripts\Common\Events\SlamEventType.cs" />
     <Compile Include="Assets\Scripts\Common\FreeFlyCameraScript.cs" />
     <Compile Include="Assets\Scripts\Common\Helmet.cs" />
+    <Compile Include="Assets\Scripts\Common\IClonable.cs" />
     <Compile Include="Assets\Scripts\Common\InGameConsole.cs" />
     <Compile Include="Assets\Scripts\Common\InputWithBrowse.cs" />
     <Compile Include="Assets\Scripts\Common\ISlamEventDataConverter.cs" />
     <Compile Include="Assets\Scripts\Common\KeyPressedEventInvoker.cs" />
-    <Compile Include="Assets\Scripts\Common\LinesMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\MainMenuButtons.cs" />
     <Compile Include="Assets\Scripts\Common\ModeSelector.cs" />
     <Compile Include="Assets\Scripts\Common\ObjectStateConditionalEventInvoker.cs" />
     <Compile Include="Assets\Scripts\Common\OrbitalCameraForPointInSpace.cs" />
-    <Compile Include="Assets\Scripts\Common\PointsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\Robot2Unity3dSlamEventConverter.cs" />
     <Compile Include="Assets\Scripts\Common\SettingsStore.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\AddCommand.cs" />
@@ -110,13 +118,9 @@
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\RemoveCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\SlamEventCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\UpdateCommand.cs" />
-    <Compile Include="Assets\Scripts\Common\SlamLine.cs" />
-    <Compile Include="Assets\Scripts\Common\SlamObservation.cs" />
     <Compile Include="Assets\Scripts\Common\SlamObservationNode.cs" />
     <Compile Include="Assets\Scripts\Common\SlamObservationsGraph.cs" />
-    <Compile Include="Assets\Scripts\Common\SlamPoint.cs" />
     <Compile Include="Assets\Scripts\Common\SpecialInfoListBoxItem.cs" />
-    <Compile Include="Assets\Scripts\Common\TrianglesMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\UI\UIListBox.cs" />
     <Compile Include="Assets\Scripts\Common\UI\UIListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Common\UI\UIMainMenu.cs" />
@@ -142,11 +146,11 @@
     <Compile Include="Assets\Scripts\Online\UDPPackagesReceiver.cs" />
     <None Include="Assets\Materials\Points shader.shader" />
     <None Include="Assets\Models\HorseMask2017\Materials\SFB_StandardHair.shader" />
-    <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.PackageManagerUI.Editor">
+      <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
       <HintPath>D:/Work/Elektronik tools 2.0/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
