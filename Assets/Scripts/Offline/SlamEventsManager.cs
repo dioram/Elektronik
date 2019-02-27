@@ -1,5 +1,4 @@
 ﻿using Elektronik.Common;
-using Elektronik.Common.Events;
 using Elektronik.Common.SlamEventsCommandPattern;
 using System;
 using System.Collections;

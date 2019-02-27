@@ -4,7 +4,6 @@ using Elektronik.Common.SlamEventsCommandPattern;
 using UnityEngine.UI;
 using Elektronik.Common;
 using System;
-using Elektronik.Common.Events;
 using Elektronik.Common.Data;
 using Elektronik.Common.UI;
 using System.Linq;

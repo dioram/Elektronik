@@ -12,7 +12,7 @@ namespace Elektronik.Common
         private static StreamWriter m_logger;
         static ElektronikLogger()
         {
-            string logFileName = string.Format("log_{0}.txt", DateTime.Now.ToString(@"mm_dd_yyyy hh_MM_ss"));
+            string logFileName = string.Format(@"logs\log_{0}.txt", DateTime.Now.ToString(@"mm_dd_yyyy hh_MM_ss"));
             m_logger = new StreamWriter(logFileName);
         }
 
