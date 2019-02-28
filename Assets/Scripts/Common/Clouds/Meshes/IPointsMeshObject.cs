@@ -8,7 +8,7 @@ namespace Elektronik.Common.Clouds.Meshes
 {
     public interface IPointsMeshObject
     {
-        int GetMaxCountOfPoints { get; }
+        int MaxPointsCount { get; }
         void Get(int idx, out Vector3 tetrahedronCG, out Color color);
         void Set(int idx, Matrix4x4 offset, Color color);
         void Set(int idx, Color color);

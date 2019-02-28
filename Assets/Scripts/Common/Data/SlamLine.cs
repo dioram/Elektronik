@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Data
 {
-    public class SlamLine : ISlamObject
+    public struct SlamLine
     {
         public Vector3 vert1;
         public Vector3 vert2;
@@ -11,11 +11,7 @@ namespace Elektronik.Common.Data
         public int pointId2;
         public Color color1;
         public Color color2;
-
-        public SlamLine()
-        {
-
-        }
+        public bool isRemoved;
 
         public SlamLine(Vector3 vert1, Vector3 vert2, int pointId1, int pointId2, Color color1, Color color2)
         {
@@ -23,8 +19,9 @@ namespace Elektronik.Common.Data
             this.vert2 = vert2;
             this.pointId1 = pointId1;
             this.pointId2 = pointId2;
-
-            this.id = -1;
+            this.color1 = color1;
+            this.color2 = color2;
+            this.isRemoved = false;
         }
 
         public long GenerateLongId()

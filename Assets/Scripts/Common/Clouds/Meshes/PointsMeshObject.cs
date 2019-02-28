@@ -17,7 +17,7 @@ namespace Elektronik.Common.Clouds.Meshes
         Vector3[] m_vertices;
         Color[] m_colors;
 
-        public int GetMaxCountOfPoints { get { return MAX_VERTICES_COUNT; } }
+        public int MaxPointsCount { get { return MAX_VERTICES_COUNT; } }
 
         void Awake()
         {

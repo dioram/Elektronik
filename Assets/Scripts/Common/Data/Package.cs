@@ -35,9 +35,9 @@ namespace Elektronik.Common.Data
               .AppendLine()
               .AppendFormat("Total count of points: {0}", Points.Count)
               .AppendLine()
-              .AppendFormat("New observations count: {0}", Observations.Count(o => o.isNew))
+              .AppendFormat("New observations count: {0}", Observations.Count(o => o.Point.isNew))
               .AppendLine()
-              .AppendFormat("Removed observations count: {0}", Observations.Count(o => o.isRemoved))
+              .AppendFormat("Removed observations count: {0}", Observations.Count(o => o.Point.isRemoved))
               .AppendLine()
               .AppendFormat("Total count of observations: {0}", Observations.Count);
             m_summary = sb.ToString();
@@ -84,12 +84,12 @@ namespace Elektronik.Common.Data
                 }
                 byte[] actions = new byte[actionsSize];
                 Debug.AssertFormat(
-                    offset + actionsSize >= rawPackage.Length,
+                    offset + actionsSize <= rawPackage.Length,
                     "[Package.Parse] Wrong size of action. actionSize + offset = {0}, but size of package is {1}",
                     offset + actionsSize, rawPackage.Length);
                 Array.Copy(rawPackage, offset, actions, 0, actionsSize);
                 offset += actionsSize;
-                SlamLine line = null;
+                SlamLine? line = null;
                 if (objectType == 0)
                 {
                     SlamPoint point = new SlamPoint();
@@ -103,11 +103,11 @@ namespace Elektronik.Common.Data
                     result.Observations.Add(observation);
                 }
                 if (line != null)
-                    result.Lines.Add(line);
+                    result.Lines.Add(line.Value);
             }
             if (result.Observations.Count > 0)
             {
-                if (result.Observations[0].id != -1)
+                if (result.Observations[0].Point.id != -1)
                     result.IsKeyEvent = true;
             }
             result.EvaluateSummary();

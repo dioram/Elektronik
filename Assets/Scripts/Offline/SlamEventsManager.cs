@@ -22,7 +22,7 @@ namespace Elektronik.Offline
         List<Package> m_extendedEvents;
 
         public SlamObservationsGraph observationsGraph;
-        public IFastPointsCloud fastPointsCloud;
+        public GameObject fastPointCloud;
         public FastLinesCloud fastLineCloud;
         public Helmet helmet;
         public EventLogger eventsLogger;
@@ -40,22 +40,14 @@ namespace Elektronik.Offline
             m_extendedEvents = new List<Package>();
             m_commands = new List<ISlamEventCommand>();
             m_linesContainer = new SlamLinesContainer(fastLineCloud);
-            m_pointsContainer = new SlamPointsContainer(fastPointsCloud);
+            m_pointsContainer = new SlamPointsContainer(fastPointCloud.GetComponent<IFastPointsCloud>());
             SpecialObservations = new List<SlamObservation>();
             SpecialPoints = new List<SlamPoint>();
         }
 
         void Start()
         {
-            Application.logMessageReceived += ElektronikLogger.Log;
-            IPackageCSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
-            m_packages = PackagesReader.AnalyzeFile(FileModeSettings.Current.Path, converter);
             StartCoroutine(ProcessEvents());
-        }
-
-        private void OnDestroy()
-        {
-            Application.logMessageReceived -= ElektronikLogger.Log;
         }
 
         public void Clear()
@@ -213,11 +205,18 @@ namespace Elektronik.Offline
 
         IEnumerator ProcessEvents()
         {
+            ElektronikLogger.OpenLog();
+            Application.logMessageReceived += ElektronikLogger.Log;
+            Debug.Log("ANALYSIS STARTED");
+            yield return null;
+            IPackageCSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
+            m_packages = PackagesReader.AnalyzeFile(FileModeSettings.Current.Path, converter);
+            Debug.Log("ANALYSIS FINISHED");
+            yield return null;
             Debug.Log("PROCESSING STARTED");
-
             for (int i = 0; i < m_packages.Length; ++i)
             {
-                Debug.Log(m_packages[i].Summary());
+                //Debug.Log(m_packages[i].Summary());
                 if (m_packages[i].Timestamp == -1)
                 {
                     m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, observationsGraph));
@@ -247,10 +246,12 @@ namespace Elektronik.Offline
                     yield return null;
                 }
             }
+            Debug.Log("PROCESSING FINISHED");
+            Application.logMessageReceived -= ElektronikLogger.Log;
+            ElektronikLogger.CloseLog();
             Clear();
             Repaint();
             ReadyToPlay = true;
-            Debug.Log("PROCESSING FINISHED");
             yield return null;
         }
     }

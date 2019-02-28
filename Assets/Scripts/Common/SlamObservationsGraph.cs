@@ -30,13 +30,14 @@ namespace Elektronik.Common
         {
             if (observation.covisibleObservationsIds == null || observation.covisibleObservationsOfCommonPointsCount == null)
             {
-                Debug.LogWarningFormat("Wrong observation id {0}", observation.id);
+                Debug.LogWarningFormat("Wrong observation id {0}", observation.Point.id);
                 return;
             }
-            var newNode = new SlamObservationNode(MF_AutoPool.Spawn(observationPrefab, observation.position, observation.orientation)); // создаём новый узел
-
-            newNode.SlamObservation = new SlamObservation(observation);
-            m_slamObservationNodes.Add(observation.id, newNode);
+            var newNode = new SlamObservationNode(MF_AutoPool.Spawn(observationPrefab, observation.Point.position, observation.orientation)) // создаём новый узел
+            {
+                SlamObservation = new SlamObservation(observation),
+            };
+            m_slamObservationNodes.Add(observation.Point.id, newNode);
 
             // обновляем связи
             UpdateConnections(observation);
@@ -50,16 +51,21 @@ namespace Elektronik.Common
         {
             // TODO: разобраться почему в ноль перемещается со связями
             //Debug.Log("[SlamObservationsGraph.Replace] Replacing");
-            Debug.AssertFormat(m_slamObservationNodes.ContainsKey(observation.id), "Observation with Id {0} doesn't exist", observation.id);
+            Debug.AssertFormat(
+                m_slamObservationNodes.ContainsKey(observation.Point.id),
+                "Observation with Id {0} doesn't exist",
+                observation.Point.id);
 
             // находим узел, который необходимо переместить
-            SlamObservationNode nodeToReplace = m_slamObservationNodes[observation.id];
+            SlamObservationNode nodeToReplace = m_slamObservationNodes[observation.Point.id];
 
             // Перемещаем в сцене
-            nodeToReplace.ObservationObject.transform.position = observation.position;
+            nodeToReplace.ObservationObject.transform.position = observation.Point.position;
             nodeToReplace.ObservationObject.transform.rotation = observation.orientation;
 
-            nodeToReplace.SlamObservation.position = observation.position;
+            SlamPoint nodeToReplacePoint = nodeToReplace.SlamObservation;
+            nodeToReplacePoint.position = observation.Point.position;
+            nodeToReplace.SlamObservation.Point = nodeToReplacePoint;
             nodeToReplace.SlamObservation.orientation = observation.orientation;
 
             // Обновляем связи
@@ -72,11 +78,14 @@ namespace Elektronik.Common
         /// <param name="observation"></param>
         public void UpdateConnections(SlamObservation observation)
         {
-            if (observation.id == -1)
+            if (observation.Point.id == -1)
                 return;
-            Debug.AssertFormat(ObservationExists(observation.id), "[Graph update connections] observation {0} doesn't exists", observation.id);
+            Debug.AssertFormat(
+                ObservationExists(observation.Point.id),
+                "[Graph update connections] observation {0} doesn't exists",
+                observation.Point.id);
 
-            SlamObservationNode obsNode = m_slamObservationNodes[observation.id];
+            SlamObservationNode obsNode = m_slamObservationNodes[observation.Point.id];
             obsNode.SlamObservation.covisibleObservationsIds = observation.covisibleObservationsIds;
             obsNode.SlamObservation.covisibleObservationsOfCommonPointsCount = observation.covisibleObservationsOfCommonPointsCount;
 
@@ -95,11 +104,11 @@ namespace Elektronik.Common
                     SlamLine newLineCinema = new SlamLine()
                     {
                         color1 = Color.gray,
-                        pointId1 = obsNode.SlamObservation.id,
-                        pointId2 = neighbor.SlamObservation.id,
+                        pointId1 = obsNode.SlamObservation.Point.id,
+                        pointId2 = neighbor.SlamObservation.Point.id,
                         isRemoved = false,
-                        vert1 = obsNode.SlamObservation.position,
-                        vert2 = neighbor.SlamObservation.position,
+                        vert1 = obsNode.SlamObservation.Point.position,
+                        vert2 = neighbor.SlamObservation.Point.position,
                     };
                     int lineId = m_linesContainer.Add(newLineCinema);
                     neighbor.NodeLineIDPair.Add(obsNode, lineId);
@@ -114,18 +123,19 @@ namespace Elektronik.Common
                 SlamLine currentConnection = m_linesContainer.Get(existsLineId);
 
                 Debug.Assert(
-                    obsNode.SlamObservation.id == currentConnection.pointId1 || obsNode.SlamObservation.id == currentConnection.pointId2,
+                    obsNode.SlamObservation.Point.id == currentConnection.pointId1 || 
+                    obsNode.SlamObservation.Point.id == currentConnection.pointId2,
                     "[SlamObservationGraph.UpdateConnections] at least one of vertex point id must be equal to observation id");
 
-                if (obsNode.SlamObservation.id == currentConnection.pointId1)
+                if (obsNode.SlamObservation.Point.id == currentConnection.pointId1)
                 {
-                    currentConnection.vert1 = obsNode.SlamObservation.position;
-                    currentConnection.vert2 = connection.Key.SlamObservation.position;
+                    currentConnection.vert1 = obsNode.SlamObservation.Point.position;
+                    currentConnection.vert2 = connection.Key.SlamObservation.Point.position;
                 }
-                else if (obsNode.SlamObservation.id == currentConnection.pointId2)
+                else if (obsNode.SlamObservation.Point.id == currentConnection.pointId2)
                 {
-                    currentConnection.vert1 = connection.Key.SlamObservation.position;
-                    currentConnection.vert2 = obsNode.SlamObservation.position;
+                    currentConnection.vert1 = connection.Key.SlamObservation.Point.position;
+                    currentConnection.vert2 = obsNode.SlamObservation.Point.position;
                 }
                 m_linesContainer.Update(currentConnection);
             }
@@ -160,9 +170,12 @@ namespace Elektronik.Common
         /// <param name="observation"></param>
         public void UpdateNode(SlamObservation observation)
         {
-            Debug.AssertFormat(m_slamObservationNodes.ContainsKey(observation.id), "Observation with Id {0} doesn't exist", observation.id);
+            Debug.AssertFormat(
+                m_slamObservationNodes.ContainsKey(observation.Point.id),
+                "Observation with Id {0} doesn't exist",
+                observation.Point.id);
 
-            Remove(observation.id);
+            Remove(observation.Point.id);
             Add(observation);
         }
 
@@ -172,7 +185,7 @@ namespace Elektronik.Common
         /// <param name="observation"></param>
         public void UpdateOrAdd(SlamObservation observation)
         {
-            if (ObservationExists(observation.id))
+            if (ObservationExists(observation.Point.id))
             {
                 UpdateNode(observation);
             }

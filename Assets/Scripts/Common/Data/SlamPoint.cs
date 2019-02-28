@@ -1,12 +1,17 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Elektronik.Common.Data
 {
-    public class SlamPoint : ISlamObject, IClonable<SlamPoint>
+    public struct SlamPoint
     {
-        public SlamPoint Clone()
-        {
-            return MemberwiseClone() as SlamPoint;
-        }
+        public Vector3 position;
+        public bool justColored;
+        public int id;
+        public Color defaultColor;
+        public Color color;
+        public bool isRemoved;
+        public bool isNew;
+        public string message;
     }
 }

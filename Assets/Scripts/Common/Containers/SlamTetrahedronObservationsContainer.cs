@@ -28,12 +28,12 @@ namespace Elektronik.Common.Containers
             ++m_diff;
             ++m_added;
             m_trianglesCloud.Set(
-                observation.id,
-                Matrix4x4.TRS(observation.position, observation.orientation, Vector3.one),
-                observation.color);
-            Debug.AssertFormat(!m_observations.ContainsKey(observation.id), "Point with id {0} already in dictionary!", observation.id);
-            m_observations.Add(observation.id, observation);
-            return observation.id;
+                observation.Point.id,
+                Matrix4x4.TRS(observation.Point.position, observation.orientation, Vector3.one),
+                observation.Point.color);
+            Debug.AssertFormat(!m_observations.ContainsKey(observation.Point.id), "Point with id {0} already in dictionary!", observation.Point.id);
+            m_observations.Add(observation.Point.id, observation);
+            return observation.Point.id;
         }
 
         public void AddRange(SlamObservation[] observations)
@@ -46,24 +46,26 @@ namespace Elektronik.Common.Containers
 
         public void Update(SlamObservation observation)
         {
-            Debug.AssertFormat(m_observations.ContainsKey(observation.id), "[Update] Container doesn't contain point with id {0}", observation.id);
-            SlamObservation current = m_observations[observation.id];
-            Matrix4x4 to = Matrix4x4.TRS(observation.position, observation.orientation, Vector3.one);
-            current.position = observation.position;
+            Debug.AssertFormat(m_observations.ContainsKey(observation.Point.id), "[Update] Container doesn't contain point with id {0}", observation.Point.id);
+            SlamObservation current = m_observations[observation.Point.id];
+            Matrix4x4 to = Matrix4x4.TRS(observation.Point.position, observation.orientation, Vector3.one);
+            SlamPoint obsPoint = current;
+            obsPoint.position = observation.Point.position;
+            obsPoint.color = observation.Point.color;
+            current.Point = obsPoint;
             current.orientation = observation.orientation;
-            current.color = observation.color;
-            m_trianglesCloud.Set(observation.id, to, observation.color);
-            m_observations[observation.id] = current;
+            m_trianglesCloud.Set(observation.Point.id, to, observation.Point.color);
+            m_observations[observation.Point.id] = current;
         }
 
         public void ChangeColor(SlamObservation observation)
         {
             //Debug.LogFormat("[Change color] point {0} color: {1}", point.id, point.color);
-            Debug.AssertFormat(m_observations.ContainsKey(observation.id), "[Change color] Container doesn't contain point with id {0}", observation.id);
-            m_trianglesCloud.Set(observation.id, observation.color);
-            SlamObservation current = m_observations[observation.id];
-            current.color = observation.color;
-            m_observations[observation.id] = current;
+            Debug.AssertFormat(m_observations.ContainsKey(observation.Point.id), "[Change color] Container doesn't contain point with id {0}", observation.Point.id);
+            m_trianglesCloud.Set(observation.Point.id, observation.Point.color);
+            SlamPoint current = m_observations[observation.Point.id];
+            current.color = observation.Point.color;
+            m_observations[observation.Point.id].Point = current;
         }
 
         public void Remove(int pointId)
@@ -78,7 +80,7 @@ namespace Elektronik.Common.Containers
 
         public void Remove(SlamObservation observation)
         {
-            Remove(observation.id);
+            Remove(observation.Point.id);
         }
 
         public void Clear()
@@ -129,7 +131,7 @@ namespace Elektronik.Common.Containers
 
         public SlamObservation Get(SlamObservation observation)
         {
-            return Get(observation.id);
+            return Get(observation.Point.id);
         }
 
         public bool Exists(int observationId)
@@ -140,15 +142,15 @@ namespace Elektronik.Common.Containers
 
         public bool Exists(SlamObservation observation)
         {
-            return Exists(observation.id);
+            return Exists(observation.Point.id);
         }
 
         public bool TryGet(SlamObservation observation, out SlamObservation current)
         {
             current = null;
-            if (m_trianglesCloud.Exists(observation.id))
+            if (m_trianglesCloud.Exists(observation.Point.id))
             {
-                current = Get(observation.id);
+                current = Get(observation.Point.id);
                 return true;
             }
             else

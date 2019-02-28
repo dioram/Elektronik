@@ -562,6 +562,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scale: 10
   observationsGraph: {fileID: 2096468161}
+  fastPointCloud: {fileID: 1194370009}
   fastLineCloud: {fileID: 289725688}
   helmet: {fileID: 13}
   eventsLogger: {fileID: 1778431254}
@@ -3161,8 +3162,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 150, y: -380.85498}
-  m_SizeDelta: {x: 300, y: 361.70996}
+  m_AnchoredPosition: {x: 150, y: -378.62677}
+  m_SizeDelta: {x: 300, y: 357.25354}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &543542291
 MonoBehaviour:
@@ -4039,8 +4040,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1016.25, y: -25}
-  m_SizeDelta: {x: 677.5, y: 50}
+  m_AnchoredPosition: {x: 1004.25, y: -25}
+  m_SizeDelta: {x: 669.5, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &690474891
 MonoBehaviour:
@@ -5298,8 +5299,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 763.5, y: -30}
-  m_SizeDelta: {x: 967, y: 50}
+  m_AnchoredPosition: {x: 755.5, y: -30}
+  m_SizeDelta: {x: 951, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &916201463
 MonoBehaviour:
@@ -5899,7 +5900,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 522.5, y: -25}
+  m_AnchoredPosition: {x: 514.5, y: -25}
   m_SizeDelta: {x: 300, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1033620178
@@ -6507,8 +6508,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 338.75, y: -25}
-  m_SizeDelta: {x: 677.5, y: 50}
+  m_AnchoredPosition: {x: 334.75, y: -25}
+  m_SizeDelta: {x: 669.5, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1098043033
 MonoBehaviour:
@@ -8399,7 +8400,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1300, y: -30}
+  m_AnchoredPosition: {x: 1284, y: -30}
   m_SizeDelta: {x: 100, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1366019660
@@ -8518,8 +8519,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 483.5, y: -25}
-  m_SizeDelta: {x: 957, y: 20}
+  m_AnchoredPosition: {x: 475.5, y: -25}
+  m_SizeDelta: {x: 941, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1375853871
 MonoBehaviour:
@@ -12873,5 +12874,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scale: 1
-  meshObjectPrefab: {fileID: 114302450432174488, guid: 62ec3e443b6597e4f8dfc1f8750f3261,
+  meshObjectPrefab: {fileID: 7697568200795095899, guid: 62ec3e443b6597e4f8dfc1f8750f3261,
     type: 3}

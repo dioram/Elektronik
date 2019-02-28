@@ -6,7 +6,7 @@ namespace Elektronik.Common.Data
 {
     public static class SlamPointsPackageObject
     {
-        private static int MAX_MESSAGE_LENGTH_IN_BYTES = 128;
+        private static readonly int MAX_MESSAGE_LENGTH_IN_BYTES = 128;
 
         public static int GetSizeOfActionInBytes(ActionType actionType)
         {
@@ -29,7 +29,7 @@ namespace Elektronik.Common.Data
             }
         }
 
-        public static void ParseActions(byte[] actions, int id, out SlamPoint point, out SlamLine fuse)
+        public static void ParseActions(byte[] actions, int id, out SlamPoint point, out SlamLine? fuse)
         {
             int offset = 0;
             point = new SlamPoint();

@@ -10,10 +10,16 @@ namespace Elektronik.Common
     public static class ElektronikLogger
     {
         private static StreamWriter m_logger;
-        static ElektronikLogger()
+
+        public static void OpenLog()
         {
-            string logFileName = string.Format(@"logs\log_{0}.txt", DateTime.Now.ToString(@"mm_dd_yyyy hh_MM_ss"));
+            string logFileName = string.Format(@"logs\log_{0}.txt", DateTime.Now.ToString(@"MM_dd_yyyy hh_mm_ss"));
             m_logger = new StreamWriter(logFileName);
+        }
+
+        public static void CloseLog()
+        {
+            m_logger.Dispose();
         }
 
         public static void Log(string logString, string stackTrace, LogType type)
@@ -24,6 +30,9 @@ namespace Elektronik.Common
             {
                 m_logger.WriteLine(stackTrace);
             }
+            m_logger.WriteLine();
+            m_logger.WriteLine(new String('/', 50));
+            m_logger.WriteLine();
 #endif
         }
 

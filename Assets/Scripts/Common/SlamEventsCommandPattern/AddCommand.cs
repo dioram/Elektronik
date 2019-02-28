@@ -11,8 +11,8 @@ namespace Elektronik.Common.SlamEventsCommandPattern
     public class AddCommand : ISlamEventCommand
     {
         private SlamLine[] m_addedLines;
-        private SlamPoint[] m_addedPoints;
-        private SlamObservation[] m_addedObservations;
+        private readonly SlamPoint[] m_addedPoints;
+        private readonly SlamObservation[] m_addedObservations;
 
         private SlamObservationsGraph m_graph;
         private ISlamContainer<SlamLine> m_linesContainer;
@@ -44,7 +44,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             if (slamEvent.Observations != null)
             {
                 m_addedObservations = slamEvent.Observations
-                    .Where(o => !m_graph.ObservationExists(o.id) && o.id != -1)
+                    .Where(o => !m_graph.ObservationExists(o.Point.id) && o.Point.id != -1)
                     .Select(o => new SlamObservation(o))
                     .ToArray();
             }
@@ -95,7 +95,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             {
                 foreach (var observation in m_addedObservations)
                 {
-                    m_graph.Remove(observation.id);
+                    m_graph.Remove(observation.Point.id);
                 }
             }
         }

@@ -27,8 +27,7 @@ namespace Elektronik.Common.Containers
             ++m_diff;
             ++m_added;
             m_pointsCloud.Set(point.id, Matrix4x4.Translate(point.position), point.color);
-            SlamPoint clone = point.Clone();
-            m_points.Add(clone.id, clone);
+            m_points.Add(point.id, point);
             return point.id;
         }
 
@@ -44,8 +43,10 @@ namespace Elektronik.Common.Containers
         {
             Debug.AssertFormat(m_points.ContainsKey(point.id), "[Update] Container doesn't contain point with id {0}", point.id);
             Matrix4x4 to = Matrix4x4.Translate(point.position);
-            m_points[point.id].position = point.position;
-            m_points[point.id].color = point.color;
+            SlamPoint currentPoint = m_points[point.id];
+            currentPoint.position = point.position;
+            currentPoint.color = point.color;
+            m_points[point.id] = currentPoint;
             m_pointsCloud.Set(point.id, to, point.color);
         }
 
@@ -54,7 +55,9 @@ namespace Elektronik.Common.Containers
             //Debug.LogFormat("[Change color] point {0} color: {1}", point.id, point.color);
             Debug.AssertFormat(m_points.ContainsKey(point.id), "[Change color] Container doesn't contain point with id {0}", point.id);
             m_pointsCloud.Set(point.id, point.color);
-            m_points[point.id].color = point.color;
+            SlamPoint currentPoint = m_points[point.id];
+            currentPoint.color = point.color;
+            m_points[point.id] = currentPoint;
         }
 
         public void Remove(int pointId)
@@ -115,7 +118,7 @@ namespace Elektronik.Common.Containers
                 return new SlamPoint();
             }*/
 
-            return m_points[pointId].Clone();
+            return m_points[pointId];
         }
 
         public SlamPoint Get(SlamPoint point)
@@ -136,7 +139,7 @@ namespace Elektronik.Common.Containers
 
         public bool TryGet(SlamPoint point, out SlamPoint current)
         {
-            current = null;
+            current = new SlamPoint();
             if (m_pointsCloud.Exists(point.id))
             {
                 current = Get(point.id);

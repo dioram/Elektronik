@@ -23,7 +23,7 @@ namespace Elektronik.Common.Clouds.Meshes
         Vector3[] m_vertices;
         Color[] m_colors;
 
-        public int GetMaxCountOfPoints { get { return MAX_THETRAHEDRONS_COUNT; } }
+        public int MaxPointsCount { get { return MAX_THETRAHEDRONS_COUNT; } }
 
         void Awake()
         {

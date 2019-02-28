@@ -56,6 +56,8 @@ namespace Elektronik.Offline
                 if (m_play)
                 {
                     m_play = eventsManager.Next();
+                    eventsManager.UpdateEventInfo();
+                    UpdateTime();
                 }
                 if (Input.GetKeyDown(KeyCode.LeftBracket))
                 {
@@ -65,8 +67,6 @@ namespace Elektronik.Offline
                 {
                     NextKey();
                 }
-                eventsManager.UpdateEventInfo();
-                UpdateTime();
             }
         }
 

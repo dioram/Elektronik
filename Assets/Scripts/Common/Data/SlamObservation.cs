@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Data
 {
-    public class SlamObservation : ISlamObject
+    public class SlamObservation
     {
         public Quaternion orientation;
         public byte statistics1;
@@ -14,6 +14,8 @@ namespace Elektronik.Common.Data
         public List<int> covisibleObservationsIds;
         public List<int> covisibleObservationsOfCommonPointsCount;
 
+        public SlamPoint Point { get; set; }
+
         public SlamObservation()
         {
             covisibleObservationsIds = new List<int>();
@@ -22,22 +24,23 @@ namespace Elektronik.Common.Data
 
         public SlamObservation(SlamObservation src, bool sharedCovisibleObservations = true) : this()
         {
-            id = src.id;
-            position = src.position;
+            Point = src.Point;
             orientation = src.orientation;
-            isRemoved = src.isRemoved;
-            color = src.color;
             statistics1 = src.statistics1;
             statistics2 = src.statistics2;
             statistics3 = src.statistics3;
             statistics4 = src.statistics4;
-            message = src.message;
             covisibleObservationsIds = src.covisibleObservationsIds;
             covisibleObservationsOfCommonPointsCount = src.covisibleObservationsOfCommonPointsCount;
             if (src.covisibleObservationsIds != null && !sharedCovisibleObservations)
                 covisibleObservationsIds = new List<int>(src.covisibleObservationsIds);
             if (src.covisibleObservationsOfCommonPointsCount != null && !sharedCovisibleObservations)
                 covisibleObservationsOfCommonPointsCount = new List<int>(src.covisibleObservationsOfCommonPointsCount);
+        }
+
+        public static implicit operator SlamPoint(SlamObservation obs)
+        {
+            return obs.Point;
         }
     }
 }

@@ -18,16 +18,15 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             Helmet helmet,
             Package slamEvent)
         {
-            SlamPoint[] points;
+            IEnumerable<SlamPoint> points = null;
             if (slamEvent.Points != null)
             {
                 //points = slamEvent.Points.Where(p => p.id != -1).ToArray();
-                points = slamEvent.Points.Where(p => p.id != -1).Select(pointsContainer.Get).ToArray();
-                for (int i = 0; i < points.Length; ++i)
-                {
-                    points[i].color = points[i].defaultColor;
-                }
-                m_commands.Add(new UpdateCommand(pointsContainer, graph, helmet, slamEvent));
+                points = slamEvent.Points
+                    .Where(p => p.id != -1)
+                    .Select(pointsContainer.Get)
+                    .Select(p => { p.color = p.defaultColor; return p; });
+                m_commands.Add(new UpdateCommand(pointsContainer, graph, helmet, points, null));
                 m_commands.Add(new RemoveCommand(pointsContainer, linesContainer, graph, slamEvent));
             }
             

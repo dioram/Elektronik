@@ -23,20 +23,20 @@ namespace Elektronik.Common.Clouds
 
         private void CheckMesh(int srcPointIdx, out int meshIdx, out int pointIdx)
         {
-            meshIdx = srcPointIdx / m_pointsMesh.GetMaxCountOfPoints;
+            meshIdx = srcPointIdx / m_pointsMesh.MaxPointsCount;
             if (!m_meshObjects.ContainsKey(meshIdx))
             {
                 AddNewMesh(meshIdx);
             }
-            pointIdx = srcPointIdx % m_pointsMesh.GetMaxCountOfPoints;
+            pointIdx = srcPointIdx % m_pointsMesh.MaxPointsCount;
         }
         
         public bool Exists(int idx)
         {
-            int meshIdx = idx / m_pointsMesh.GetMaxCountOfPoints;
+            int meshIdx = idx / m_pointsMesh.MaxPointsCount;
             if (m_meshObjects.ContainsKey(meshIdx))
             {
-                int pointIdx = idx % m_pointsMesh.GetMaxCountOfPoints;
+                int pointIdx = idx % m_pointsMesh.MaxPointsCount;
                 return m_meshObjects[meshIdx].Exists(pointIdx);
             }
             else
@@ -98,19 +98,19 @@ namespace Elektronik.Common.Clouds
 
         public void GetAll(out int[] indices, out Vector3[] positions, out Color[] colors)
         {
-            indices = Enumerable.Repeat(1, m_pointsMesh.GetMaxCountOfPoints * m_meshObjects.Count).ToArray();
-            positions = new Vector3[m_pointsMesh.GetMaxCountOfPoints * m_meshObjects.Count];
-            colors = new Color[m_pointsMesh.GetMaxCountOfPoints * m_meshObjects.Count];
+            indices = Enumerable.Repeat(1, m_pointsMesh.MaxPointsCount * m_meshObjects.Count).ToArray();
+            positions = new Vector3[m_pointsMesh.MaxPointsCount * m_meshObjects.Count];
+            colors = new Color[m_pointsMesh.MaxPointsCount * m_meshObjects.Count];
             KeyValuePair<int, IPointsMeshObject>[] allMeshes = m_meshObjects.Select(kv => kv).ToArray();
             for (int meshNum = 0; meshNum < allMeshes.Length; ++meshNum)
             {
                 Vector3[] meshObjPositions;
                 Color[] meshObjColors;
                 allMeshes[meshNum].Value.GetAll(out meshObjPositions, out meshObjColors);
-                for (int i = 0; i < m_pointsMesh.GetMaxCountOfPoints; ++i)
+                for (int i = 0; i < m_pointsMesh.MaxPointsCount; ++i)
                 {
-                    positions[m_pointsMesh.GetMaxCountOfPoints * allMeshes[meshNum].Key + i] = meshObjPositions[i];
-                    colors[m_pointsMesh.GetMaxCountOfPoints * allMeshes[meshNum].Key + i] = meshObjColors[i];
+                    positions[m_pointsMesh.MaxPointsCount * allMeshes[meshNum].Key + i] = meshObjPositions[i];
+                    colors[m_pointsMesh.MaxPointsCount * allMeshes[meshNum].Key + i] = meshObjColors[i];
                 }
             }
         }
