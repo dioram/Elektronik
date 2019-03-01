@@ -83,7 +83,7 @@ namespace Elektronik.Common.Clouds.Meshes
 
         public void Clear()
         {
-            for (int i = 0; i < MAX_VERTICES_COUNT; ++i)
+            for (int i = 0; i < m_vertices.Length; ++i)
             {
                 m_vertices[i] = Vector3.zero;
                 m_colors[i] = new Color(0, 0, 0, 0);

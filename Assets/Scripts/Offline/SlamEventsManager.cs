@@ -91,16 +91,16 @@ namespace Elektronik.Offline
             return m_extendedEvents[m_position];
         }
 
-        public void SetPosition(int pos)
+        public void SetPosition(int pos, Action whenPositionWasSet)
         {
             if (!ReadyToPlay)
                 return;
             int maxLength = GetLength();
             Debug.AssertFormat(pos >= 0 && pos < maxLength, "[SlamEventsManger.SetPosition] out of range pos == {0}, but range is [0,{1})", pos, maxLength);
-            StartCoroutine(MoveToPostion(pos));
+            StartCoroutine(MoveToPostion(pos, whenPositionWasSet));
         }
 
-        IEnumerator MoveToPostion(int pos)
+        IEnumerator MoveToPostion(int pos, Action whenPositionWasSet)
         {
             ReadyToPlay = false;
             while (m_position != pos)
@@ -112,6 +112,7 @@ namespace Elektronik.Offline
                 if (m_position % 10 == 0)
                     yield return null;
             }
+            whenPositionWasSet();
             Repaint();
             ReadyToPlay = true;
             yield return null;

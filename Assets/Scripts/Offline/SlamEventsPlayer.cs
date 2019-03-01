@@ -62,10 +62,14 @@ namespace Elektronik.Offline
                 if (Input.GetKeyDown(KeyCode.LeftBracket))
                 {
                     PrevKey();
+                    eventsManager.UpdateEventInfo();
+                    UpdateTime();
                 }
                 if (Input.GetKeyDown(KeyCode.RightBracket))
                 {
                     NextKey();
+                    eventsManager.UpdateEventInfo();
+                    UpdateTime();
                 }
             }
         }
@@ -106,7 +110,11 @@ namespace Elektronik.Offline
             if (Input.GetMouseButton(0))
             {
                 Pause();
-                eventsManager.SetPosition((int)Math.Floor(i));
+                eventsManager.SetPosition((int)Math.Floor(i), () =>
+                {
+                    eventsManager.UpdateEventInfo();
+                    UpdateTime();
+                });
             }
         }
     }

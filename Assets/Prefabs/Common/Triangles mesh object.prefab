@@ -90,5 +90,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c851d3c2b065a2142ba237d487bfb503, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sideSize: 0.25
+  sideSize: 0.1
   needOrientation: 0
