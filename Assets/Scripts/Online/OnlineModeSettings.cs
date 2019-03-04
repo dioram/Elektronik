@@ -17,20 +17,25 @@ namespace Elektronik.Online
 
         public OnlineModeSettings()
         {
-            Address = IPAddress.Parse("127.0.0.1");
+            MapInfoAddress = IPAddress.Parse("127.0.0.1");
         }
 
         public static OnlineModeSettings Current { get; set; }
 
-        public IPAddress Address { get; set; }
-        public int Port { get; set; }
-        public float Scaling { get; set; }
-        public ConnectionTypes ConnectionType { get; set; }
+        public IPAddress MapInfoAddress { get; set; }
+        public int MapInfoPort { get; set; }
+        public float MapInfoScaling { get; set; }
+
+        public IPAddress VRAddress { get; set; }
+        public int VRPort { get; set; }
+        public float VRScaling { get; set; }
+        public ConnectionTypes VRConnectionType { get; set; }
+
         public DateTime Time { get; set; }
 
         public int CompareTo(OnlineModeSettings other)
         {
-            if (Address.Equals(other.Address) && Port == other.Port)
+            if (MapInfoAddress.Equals(other.MapInfoAddress) && MapInfoPort == other.MapInfoPort)
                 return 0;
             return -1;
         }

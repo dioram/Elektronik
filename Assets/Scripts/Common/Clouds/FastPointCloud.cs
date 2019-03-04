@@ -120,5 +120,11 @@ namespace Elektronik.Common.Clouds
             IPointsMeshObject newMesh = MF_AutoPool.Spawn(meshObjectPrefab).GetComponent<IPointsMeshObject>();
             m_meshObjects.Add(idx, newMesh);
         }
+
+        public void SetActive(bool value)
+        {
+            meshObjectPrefab.SetActive(value);
+            MF_AutoPool.ForEach(meshObjectPrefab, obj => obj.SetActive(value));
+        }
     }
 }

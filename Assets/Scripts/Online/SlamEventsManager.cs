@@ -28,6 +28,7 @@ namespace Elektronik.Online
 
         public int connectionTries = 10;
 
+        private IDisposable m_mapUpdate;
         private ISlamContainer<SlamPoint> m_pointsContainer;
         private ISlamContainer<SlamLine> m_linesContainer;
         private IPackageCSConverter m_converter;
@@ -35,7 +36,7 @@ namespace Elektronik.Online
 
         private void Awake()
         {
-            m_converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.Scaling));
+            m_converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.MapInfoScaling));
             m_receiver = new TCPPackagesReceiver();
             m_pointsContainer = new SlamPointsContainer(pointCloud);
             m_linesContainer = new SlamLinesContainer(linesCloud);
@@ -47,7 +48,7 @@ namespace Elektronik.Online
             reconnect.onClick.AddListener(Reconnect);
             status.color = Color.red;
             status.text = "Not connected...";
-            Observable.EveryFixedUpdate()
+            m_mapUpdate = Observable.EveryFixedUpdate()
                 .Where(_ => m_receiver.Connected)
                 .Select(_ => m_receiver.GetPackage())
                 .Where(package => package != null)
@@ -66,6 +67,8 @@ namespace Elektronik.Online
         {
             if (m_receiver != null)
                 m_receiver.Dispose();
+            if (m_mapUpdate != null)
+                m_mapUpdate.Dispose();
         }
 
         private void Clear()
@@ -99,7 +102,7 @@ namespace Elektronik.Online
             {
                 status.text = String.Format("New connection try... ({0} from {1})", i + 1, tries);
                 yield return null;
-                if (m_receiver.Connect(OnlineModeSettings.Current.Address, OnlineModeSettings.Current.Port))
+                if (m_receiver.Connect(OnlineModeSettings.Current.MapInfoAddress, OnlineModeSettings.Current.MapInfoPort))
                 {
                     status.color = Color.green;
                     status.text = "Connected!";

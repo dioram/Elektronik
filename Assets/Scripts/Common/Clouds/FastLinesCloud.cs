@@ -105,12 +105,17 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-
         private void AddNewMesh(int idx)
         {
             GameObject clone = MF_AutoPool.Spawn(meshObjectPrefab.gameObject);
             LinesMeshObject newMesh = clone.GetComponent<LinesMeshObject>();
             m_meshObjects.Add(idx, newMesh);
+        }
+
+        public void SetActive(bool value)
+        {
+            meshObjectPrefab.gameObject.SetActive(value);
+            MF_AutoPool.ForEach(meshObjectPrefab.gameObject, obj => obj.SetActive(value));
         }
     }
 }

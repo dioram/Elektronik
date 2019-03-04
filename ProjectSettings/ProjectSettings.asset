@@ -118,7 +118,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.0
+  bundleVersion: 2.0
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -301,10 +301,8 @@ PlayerSettings:
     m_Enabled: 0
     m_Devices: []
   - m_BuildTarget: Standalone
-    m_Enabled: 1
-    m_Devices:
-    - None
-    - OpenVR
+    m_Enabled: 0
+    m_Devices: []
   - m_BuildTarget: Tizen
     m_Enabled: 0
     m_Devices: []

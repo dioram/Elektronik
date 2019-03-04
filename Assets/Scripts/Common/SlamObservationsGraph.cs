@@ -218,6 +218,12 @@ namespace Elektronik.Common
             MF_AutoPool.DespawnPool(observationPrefab);
         }
 
+        public void SetActive(bool value)
+        {
+            observationPrefab.SetActive(value);
+            MF_AutoPool.ForEach(observationPrefab, obj => obj.SetActive(value));
+        }
+
         public SlamObservation[] GetAll()
         {
             return m_slamObservationNodes.Select(obsNode => obsNode.Value.SlamObservation).ToArray();
