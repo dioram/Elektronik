@@ -8,7 +8,7 @@ namespace Elektronik.Common.Data
 {
     public static class SlamObservationPackageObject
     {
-        private static int MAX_MESSAGE_LENGTH_IN_BYTES = 128;
+        private static readonly int MAX_MESSAGE_LENGTH_IN_BYTES = 128;
 
         public static int GetSizeOfActionInBytes(ActionType actionType)
         {
@@ -34,21 +34,24 @@ namespace Elektronik.Common.Data
         public static void ParseActions(byte[] actions, int id, out SlamObservation observation)
         {
             int offset = 0;
-            observation = new SlamObservation();
-            observation.orientation = Quaternion.identity;
-            observation.id = id;
-            observation.color = Color.gray;
+            observation = new SlamObservation()
+            {
+                orientation = Quaternion.identity,
+            };
+            SlamPoint obsPoint = observation;
+            obsPoint.id = id;
+            obsPoint.color = Color.gray;
             while (offset != actions.Length)
             {
                 Debug.AssertFormat(offset <= actions.Length, "[SlamObservationPackageObject.ParseActions] offset ({0}) out of range", offset);
                 ActionType type = (ActionType)actions[offset++];
                 if (type == ActionType.Create)
                 {
-                    observation.isNew = true;
+                    obsPoint.isNew = true;
                 }
                 if (type == ActionType.Create || type == ActionType.Move)
                 {
-                    observation.position = SlamBitConverter.ToVector3(actions, offset);
+                    obsPoint.position = SlamBitConverter.ToVector3(actions, offset);
                     offset += sizeof(float) * 3;
                     observation.orientation = SlamBitConverter.ToQuaternion(actions, offset);
                     offset += sizeof(float) * 4;
@@ -56,13 +59,13 @@ namespace Elektronik.Common.Data
                 
                 if (type == ActionType.Tint)
                 {
-                    observation.color = SlamBitConverter.ToRGBColor(actions, offset);
+                    obsPoint.color = SlamBitConverter.ToRGBColor(actions, offset);
                     offset += sizeof(byte) * 3;
                 }
                 if (type == ActionType.Remove)
                 {
-                    observation.color = Color.red;
-                    observation.isRemoved = true;
+                    obsPoint.color = Color.red;
+                    obsPoint.isRemoved = true;
                 }
                 if (type == ActionType.Connect)
                 {
@@ -79,10 +82,11 @@ namespace Elektronik.Common.Data
                     offset += sizeof(int);
                     if (countOfMsgBytes >= MAX_MESSAGE_LENGTH_IN_BYTES)
                         throw new Exception();
-                    observation.message = countOfMsgBytes > 0 ? Encoding.ASCII.GetString(actions, offset, countOfMsgBytes) : "";
+                    obsPoint.message = countOfMsgBytes > 0 ? Encoding.ASCII.GetString(actions, offset, countOfMsgBytes) : "";
                     offset += sizeof(byte) * MAX_MESSAGE_LENGTH_IN_BYTES;
                 }
             }
+            observation.Point = obsPoint;
         }
 
     }

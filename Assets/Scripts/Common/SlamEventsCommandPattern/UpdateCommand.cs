@@ -1,21 +1,21 @@
-﻿using Elektronik.Common.Events;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
+using Elektronik.Offline;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
     public class UpdateCommand : ISlamEventCommand
     {
-        private SlamObservation[] m_observations2Restore;
-        private SlamObservation[] m_observations2Update;
+        private readonly SlamObservation[] m_observations2Restore;
+        private readonly SlamObservation[] m_observations2Update;
 
-        private SlamPoint[] m_points2Restore;
-        private SlamPoint[] m_points2Update;
+        private readonly SlamPoint[] m_points2Restore;
+        private readonly SlamPoint[] m_points2Update;
 
         private ISlamContainer<SlamPoint> m_pointsContainer;
         private SlamObservationsGraph m_graph;
@@ -27,8 +27,15 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             ISlamContainer<SlamPoint> pointsContainer,
             SlamObservationsGraph graph,
             Helmet helmet,
-            ICollection<SlamPoint> points,
-            ICollection<SlamObservation> observations)
+            Package slamEvent) : this(pointsContainer, graph, helmet, slamEvent.Points, slamEvent.Observations)
+        {}
+
+        public UpdateCommand(
+            ISlamContainer<SlamPoint> pointsContainer,
+            SlamObservationsGraph graph,
+            Helmet helmet,
+            IEnumerable<SlamPoint> points,
+            IEnumerable<SlamObservation> observations)
         {
             m_pointsContainer = pointsContainer;
             m_graph = graph;
@@ -42,24 +49,17 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
             if (observations != null)
             {
-                m_helmetPose = observations.FirstOrDefault(o => o.id == -1);
+                m_helmetPose = observations.FirstOrDefault(o => o.Point.id == -1);
                 m_observations2Restore = observations
-                    .Where(o => o.id != -1)
-                    .Where(o => !o.isRemoved)
-                    .Select(o => new SlamObservation(graph.Get(o.id))).ToArray();
+                    .Where(o => o.Point.id != -1)
+                    .Where(o => !o.Point.isRemoved)
+                    .Select(o => new SlamObservation(graph.Get(o.Point.id))).ToArray();
                 m_observations2Update = observations
-                    .Where(o => o.id != -1)
-                    .Where(o => !o.isRemoved)
+                    .Where(o => o.Point.id != -1)
+                    .Where(o => !o.Point.isRemoved)
                     .Select(o => new SlamObservation(o)).ToArray();
             }
         }
-
-        public UpdateCommand(
-            ISlamContainer<SlamPoint> pointsContainer,
-            SlamObservationsGraph graph, 
-            Helmet helmet, 
-            Package slamEvent) : this(pointsContainer, graph, helmet, slamEvent.Points, slamEvent.Observations)
-        { }
 
         public void Execute()
         {
@@ -80,7 +80,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
             if (m_helmetPose != null)
             {
-                m_helmet.ReplaceAbs(m_helmetPose.position, m_helmetPose.orientation);
+                m_helmet.ReplaceAbs(m_helmetPose.Point.position, m_helmetPose.orientation);
             }
 
             if (m_observations2Update != null)

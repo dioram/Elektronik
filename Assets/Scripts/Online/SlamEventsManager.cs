@@ -33,12 +33,6 @@ namespace Elektronik.Online
         private IPackageCSConverter m_converter;
         private bool m_connecting = false;
 
-        private void OnDestroy()
-        {
-            if (m_receiver != null)
-                m_receiver.Dispose();
-        }
-
         private void Awake()
         {
             m_converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.Scaling));
@@ -68,6 +62,11 @@ namespace Elektronik.Online
                 .Subscribe();
         }
 
+        private void OnDestroy()
+        {
+            if (m_receiver != null)
+                m_receiver.Dispose();
+        }
 
         private void Clear()
         {

@@ -1,5 +1,4 @@
-﻿using Elektronik.Common.Events;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +10,8 @@ namespace Elektronik.Common.SlamEventsCommandPattern
     public class RemoveCommand : ISlamEventCommand
     {
         private SlamLine[] m_lines2Remove;
-        private SlamPoint[] m_points2Remove;
-        private SlamObservation[] m_observations2Remove;
+        private readonly SlamPoint[] m_points2Remove;
+        private readonly SlamObservation[] m_observations2Remove;
 
         private SlamObservationsGraph m_graph;
         private ISlamContainer<SlamLine> m_linesContainer;
@@ -44,8 +43,8 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             if (slamEvent.Observations != null)
             {
                 m_observations2Remove = slamEvent.Observations
-                    .Where(o => o.id != -1)
-                    .Where(o => o.isRemoved)
+                    .Where(o => o.Point.id != -1)
+                    .Where(o => o.Point.isRemoved)
                     .Select(o => new SlamObservation(o))
                     .ToArray();
             }
@@ -71,7 +70,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             {
                 foreach (var observation in m_observations2Remove)
                 {
-                    m_graph.Remove(observation.id);
+                    m_graph.Remove(observation.Point.id);
                 }
             }
         }

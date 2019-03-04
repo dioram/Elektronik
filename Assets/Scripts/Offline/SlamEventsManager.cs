@@ -1,5 +1,4 @@
 ﻿using Elektronik.Common;
-using Elektronik.Common.Events;
 using Elektronik.Common.SlamEventsCommandPattern;
 using System;
 using System.Collections;
@@ -23,7 +22,7 @@ namespace Elektronik.Offline
         List<Package> m_extendedEvents;
 
         public SlamObservationsGraph observationsGraph;
-        public FastTrianglesCloud fastTrianglesCloud;
+        public GameObject fastPointCloud;
         public FastLinesCloud fastLineCloud;
         public Helmet helmet;
         public EventLogger eventsLogger;
@@ -41,15 +40,13 @@ namespace Elektronik.Offline
             m_extendedEvents = new List<Package>();
             m_commands = new List<ISlamEventCommand>();
             m_linesContainer = new SlamLinesContainer(fastLineCloud);
-            m_pointsContainer = new SlamTetrahedronPointsContainer(fastTrianglesCloud);
+            m_pointsContainer = new SlamPointsContainer(fastPointCloud.GetComponent<IFastPointsCloud>());
             SpecialObservations = new List<SlamObservation>();
             SpecialPoints = new List<SlamPoint>();
         }
 
         void Start()
         {
-            IPackageCSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
-            m_packages = PackagesReader.AnalyzeFile(FileModeSettings.Current.Path, converter);
             StartCoroutine(ProcessEvents());
         }
 
@@ -94,16 +91,16 @@ namespace Elektronik.Offline
             return m_extendedEvents[m_position];
         }
 
-        public void SetPosition(int pos)
+        public void SetPosition(int pos, Action whenPositionWasSet)
         {
             if (!ReadyToPlay)
                 return;
             int maxLength = GetLength();
             Debug.AssertFormat(pos >= 0 && pos < maxLength, "[SlamEventsManger.SetPosition] out of range pos == {0}, but range is [0,{1})", pos, maxLength);
-            StartCoroutine(MoveToPostion(pos));
+            StartCoroutine(MoveToPostion(pos, whenPositionWasSet));
         }
 
-        IEnumerator MoveToPostion(int pos)
+        IEnumerator MoveToPostion(int pos, Action whenPositionWasSet)
         {
             ReadyToPlay = false;
             while (m_position != pos)
@@ -115,6 +112,7 @@ namespace Elektronik.Offline
                 if (m_position % 10 == 0)
                     yield return null;
             }
+            whenPositionWasSet();
             Repaint();
             ReadyToPlay = true;
             yield return null;
@@ -208,11 +206,18 @@ namespace Elektronik.Offline
 
         IEnumerator ProcessEvents()
         {
+            ElektronikLogger.OpenLog();
+            Application.logMessageReceived += ElektronikLogger.Log;
+            Debug.Log("ANALYSIS STARTED");
+            yield return null;
+            IPackageCSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
+            m_packages = PackagesReader.AnalyzeFile(FileModeSettings.Current.Path, converter);
+            Debug.Log("ANALYSIS FINISHED");
+            yield return null;
             Debug.Log("PROCESSING STARTED");
-
             for (int i = 0; i < m_packages.Length; ++i)
             {
-                Debug.Log(m_packages[i].Summary());
+                //Debug.Log(m_packages[i].Summary());
                 if (m_packages[i].Timestamp == -1)
                 {
                     m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, observationsGraph));
@@ -220,12 +225,19 @@ namespace Elektronik.Offline
                     Next(false);
                     continue;
                 }
+
+                // При добавлении объектов в карту их в карте быть не должно.
+                m_packages[i].TestExistent(obj => obj.id != -1 && obj.isNew, m_pointsContainer, observationsGraph);
                 m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_packages[i]));
                 m_extendedEvents.Add(m_packages[i]);
                 Next(false);
+
+                // При любых манипуляциях с картой объекты, над которыми происходят манипуляции, должны быть в карте.
+                m_packages[i].TestNonExistent(obj => obj.id != -1, m_pointsContainer, observationsGraph);
                 m_commands.Add(new UpdateCommand(m_pointsContainer, observationsGraph, helmet, m_packages[i]));
                 m_extendedEvents.Add(m_packages[i]);
                 Next(false);
+
                 m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, m_packages[i]));
                 m_extendedEvents.Add(m_packages[i]);
                 Next(false);
@@ -235,10 +247,12 @@ namespace Elektronik.Offline
                     yield return null;
                 }
             }
+            Debug.Log("PROCESSING FINISHED");
+            Application.logMessageReceived -= ElektronikLogger.Log;
+            ElektronikLogger.CloseLog();
             Clear();
             Repaint();
             ReadyToPlay = true;
-            Debug.Log("PROCESSING FINISHED");
             yield return null;
         }
     }

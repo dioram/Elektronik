@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -8,7 +6,7 @@ namespace Elektronik.Common.Data
 {
     public static class SlamPointsPackageObject
     {
-        private static int MAX_MESSAGE_LENGTH_IN_BYTES = 128;
+        private static readonly int MAX_MESSAGE_LENGTH_IN_BYTES = 128;
 
         public static int GetSizeOfActionInBytes(ActionType actionType)
         {

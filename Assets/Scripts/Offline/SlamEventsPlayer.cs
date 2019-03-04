@@ -4,7 +4,6 @@ using Elektronik.Common.SlamEventsCommandPattern;
 using UnityEngine.UI;
 using Elektronik.Common;
 using System;
-using Elektronik.Common.Events;
 using Elektronik.Common.Data;
 using Elektronik.Common.UI;
 using System.Linq;
@@ -57,17 +56,21 @@ namespace Elektronik.Offline
                 if (m_play)
                 {
                     m_play = eventsManager.Next();
+                    eventsManager.UpdateEventInfo();
+                    UpdateTime();
                 }
                 if (Input.GetKeyDown(KeyCode.LeftBracket))
                 {
                     PrevKey();
+                    eventsManager.UpdateEventInfo();
+                    UpdateTime();
                 }
                 if (Input.GetKeyDown(KeyCode.RightBracket))
                 {
                     NextKey();
+                    eventsManager.UpdateEventInfo();
+                    UpdateTime();
                 }
-                eventsManager.UpdateEventInfo();
-                UpdateTime();
             }
         }
 
@@ -107,7 +110,11 @@ namespace Elektronik.Offline
             if (Input.GetMouseButton(0))
             {
                 Pause();
-                eventsManager.SetPosition((int)Math.Floor(i));
+                eventsManager.SetPosition((int)Math.Floor(i), () =>
+                {
+                    eventsManager.UpdateEventInfo();
+                    UpdateTime();
+                });
             }
         }
     }

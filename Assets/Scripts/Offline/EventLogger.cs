@@ -40,10 +40,10 @@ namespace Elektronik.Offline
             Vector3[] ptsPositionsFromMap = specialPts.Select(p => pointsMap.Get(p.id).position).ToArray();
 
             SlamObservation[] specialObs = package.Observations
-                .Where(o => o.id != -1)
-                .Where(o => o.message != null)
+                .Where(o => o.Point.id != -1)
+                .Where(o => o.Point.message != null)
                 .ToArray();
-            Vector3[] obsPositionsFromMap = specialObs.Select(o => graph.Get(o.id).position).ToArray();
+            Vector3[] obsPositionsFromMap = specialObs.Select(o => graph.Get(o.Point.id).Point.position).ToArray();
 
             for (int i = 0; i < specialPts.Length; ++i)
             {
@@ -53,7 +53,7 @@ namespace Elektronik.Offline
             for (int i = 0; i < specialObs.Length; ++i)
             {
                 var item = listBoxWithSpecializedObjects.Add(itemPrefab) as SpecialInfoListBoxItem;
-                item.SetObject(specialObs[i].id, "Observation", obsPositionsFromMap[i], specialObs[i].message);
+                item.SetObject(specialObs[i].Point.id, "Observation", obsPositionsFromMap[i], specialObs[i].Point.message);
             }
         }
 
