@@ -87,7 +87,6 @@
     <Compile Include="Assets\Scripts\Common\Data\SlamObservationPackageObject.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamPoint.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamPointsPackageObject.cs" />
-    <Compile Include="Assets\Scripts\Common\Elektronik_SDKObjectAlias.cs" />
     <Compile Include="Assets\Scripts\Common\ElektronikLogger.cs" />
     <Compile Include="Assets\Scripts\Common\FreeFlyCameraScript.cs" />
     <Compile Include="Assets\Scripts\Common\Helmet.cs" />
@@ -136,6 +135,7 @@
     <Compile Include="Assets\Scripts\Online\TCPPackagesReceiver.cs" />
     <Compile Include="Assets\Scripts\Online\UDPPackagesReceiver.cs" />
     <Compile Include="Assets\Scripts\Online\VRHacker.cs" />
+    <Compile Include="Assets\Scripts\Online\VRHackerUDPConnection.cs" />
     <None Include="Assets\Materials\Points shader.shader" />
     <None Include="Assets\Models\HorseMask2017\Materials\SFB_StandardHair.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
