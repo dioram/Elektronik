@@ -11,12 +11,12 @@ namespace Elektronik.Common
         [HideInInspector]
         public VRTK_SDKSetup Setup { get; set; }
 
-        private void Start()
+        private void OnEnable()
         {
             GetComponent<VRTK_SDKManager>().TryLoadSDKSetup(0, false, Setup);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             GetComponent<VRTK_SDKManager>().UnloadSDKSetup(true);
         }
