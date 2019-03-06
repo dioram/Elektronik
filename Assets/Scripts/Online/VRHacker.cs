@@ -18,22 +18,22 @@ namespace Elektronik.Online
         void Awake()
         {
             m_connection = GetComponent<VRHackerUDPConnection>();
+            m_dataListener = new Thread(Listen);
         }
 
-        void Start()
+        void OnEnable()
         {
             m_lastPose = new Pose();
             m_lastPose.rotation = Quaternion.identity;
             m_lastPose.position = Vector3.zero;
             m_stop = false;
-            m_dataListener = new Thread(Listen);
-            m_dataListener.IsBackground = true;
             m_dataListener.Start();
         }
 
-        void OnDestroy()
+        void OnDisable()
         {
             m_stop = true;
+            m_dataListener.Join();
         }
 
         void Listen()

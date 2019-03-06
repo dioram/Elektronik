@@ -12,12 +12,19 @@ namespace Elektronik.Online
     public class VRHackerUDPConnection : MonoBehaviour
     {
         private UdpClient m_client;
+
         private IPEndPoint m_ep;
 
-        private void Start()
+        void Awake()
         {
             m_ep = new IPEndPoint(OnlineModeSettings.Current.VRAddress, OnlineModeSettings.Current.VRPort);
             m_client = new UdpClient(m_ep);
+        }
+
+        void OnDestroy()
+        {
+            m_client.Client.Shutdown(SocketShutdown.Both);
+            m_client.Close();
         }
 
         private Pose Trans(Pose pose)
