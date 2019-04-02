@@ -73,8 +73,8 @@ namespace Elektronik.Common.Data
                     offset += sizeof(int);
                     int countOfCommonPoints = BitConverter.ToInt32(actions, offset);
                     offset += sizeof(int);
-                    observation.covisibleObservationsIds.Add(covisibleId);
-                    observation.covisibleObservationsOfCommonPointsCount.Add(countOfCommonPoints);
+                    observation.m_covisibleObservationsIds.Add(covisibleId);
+                    observation.m_covisibleObservationsOfCommonPointsCount.Add(countOfCommonPoints);
                 }
                 if (type == ActionType.Message)
                 {

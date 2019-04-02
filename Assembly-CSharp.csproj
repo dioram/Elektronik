@@ -72,8 +72,8 @@
     <Compile Include="Assets\Scripts\Common\Containers\ISlamContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\ISlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamLinesContainer.cs" />
+    <Compile Include="Assets\Scripts\Common\Containers\SlamObservationsContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamPointsContainer.cs" />
-    <Compile Include="Assets\Scripts\Common\Containers\SlamTetrahedronObservationsContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Data\ActionType.cs" />
     <Compile Include="Assets\Scripts\Common\Data\Camera2Unity3dPackageConverter.cs" />
     <Compile Include="Assets\Scripts\Common\Data\Package.cs" />
@@ -85,7 +85,6 @@
     <Compile Include="Assets\Scripts\Common\Data\SlamObject.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamObservation.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamObservationPackageObject.cs" />
-    <Compile Include="Assets\Scripts\Common\Data\SlamObservationV2.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamPoint.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamPointsPackageObject.cs" />
     <Compile Include="Assets\Scripts\Common\DisableAutoXR.cs" />

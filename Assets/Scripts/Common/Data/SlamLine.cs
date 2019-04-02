@@ -12,6 +12,7 @@ namespace Elektronik.Common.Data
         public Color color1;
         public Color color2;
         public bool isRemoved;
+        public readonly Guid id;
 
         public SlamLine(Vector3 vert1, Vector3 vert2, int pointId1, int pointId2, Color color1, Color color2)
         {
@@ -22,16 +23,7 @@ namespace Elektronik.Common.Data
             this.color1 = color1;
             this.color2 = color2;
             this.isRemoved = false;
-        }
-
-        public long GenerateLongId()
-        {
-            return GenerateLongId(pointId1, pointId2);
-        }
-
-        public static long GenerateLongId(int pointId1, int pointId2)
-        {
-            return pointId1 * UInt32.MaxValue + pointId2;
+            id = Guid.NewGuid();
         }
     }
 }

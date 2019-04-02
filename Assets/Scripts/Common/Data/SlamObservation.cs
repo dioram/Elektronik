@@ -1,41 +1,51 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.ObjectModel;
 
 namespace Elektronik.Common.Data
 {
     public class SlamObservation
     {
-        public Quaternion orientation;
-        public byte statistics1;
-        public byte statistics2;
-        public byte statistics3;
-        public byte statistics4;
+        public struct Stats
+        {
+            public byte statistics1;
+            public byte statistics2;
+            public byte statistics3;
+            public byte statistics4;
+        }
 
-        public List<int> covisibleObservationsIds;
-        public List<int> covisibleObservationsOfCommonPointsCount;
+        public struct CovisibleObservationInfo
+        {
+            public int id;
+            public int sharedPointsCount;
+        }
 
         public SlamPoint Point { get; set; }
+        public Quaternion Orientation { get; set; }
+        public Stats Statistics { get; set; }
+
+        public List<CovisibleObservationInfo> CovisibleObservationsInfo { get; private set; }
 
         public SlamObservation()
         {
-            covisibleObservationsIds = new List<int>();
-            covisibleObservationsOfCommonPointsCount = new List<int>();
+            CovisibleObservationsInfo = new List<CovisibleObservationInfo>();
         }
 
-        public SlamObservation(SlamObservation src, bool sharedCovisibleObservations = true) : this()
+        public SlamObservation(List<CovisibleObservationInfo> covisibleObservationsInfo)
+        {
+            CovisibleObservationsInfo = covisibleObservationsInfo;
+        }
+        
+        public SlamObservation(SlamObservation src, bool sharedCovisibleObservations = true)
         {
             Point = src.Point;
-            orientation = src.orientation;
-            statistics1 = src.statistics1;
-            statistics2 = src.statistics2;
-            statistics3 = src.statistics3;
-            statistics4 = src.statistics4;
-            covisibleObservationsIds = src.covisibleObservationsIds;
-            covisibleObservationsOfCommonPointsCount = src.covisibleObservationsOfCommonPointsCount;
-            if (src.covisibleObservationsIds != null && !sharedCovisibleObservations)
-                covisibleObservationsIds = new List<int>(src.covisibleObservationsIds);
-            if (src.covisibleObservationsOfCommonPointsCount != null && !sharedCovisibleObservations)
-                covisibleObservationsOfCommonPointsCount = new List<int>(src.covisibleObservationsOfCommonPointsCount);
+            Orientation = src.Orientation;
+            Statistics = src.Statistics;
+
+            CovisibleObservationsInfo = src.CovisibleObservationsInfo;
+            if (src.CovisibleObservationsInfo != null && !sharedCovisibleObservations)
+                CovisibleObservationsInfo = new List<CovisibleObservationInfo>(src.CovisibleObservationsInfo);
         }
 
         public static implicit operator SlamPoint(SlamObservation obs)

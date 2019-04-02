@@ -28,7 +28,7 @@ namespace Elektronik.Common
         /// <param name="observation"></param>
         public void Add(SlamObservation observation)
         {
-            if (observation.covisibleObservationsIds == null || observation.covisibleObservationsOfCommonPointsCount == null)
+            if (observation.m_covisibleObservationsIds == null || observation.m_covisibleObservationsOfCommonPointsCount == null)
             {
                 Debug.LogWarningFormat("Wrong observation id {0}", observation.Point.id);
                 return;
@@ -86,11 +86,11 @@ namespace Elektronik.Common
                 observation.Point.id);
 
             SlamObservationNode obsNode = m_slamObservationNodes[observation.Point.id];
-            obsNode.SlamObservation.covisibleObservationsIds = observation.covisibleObservationsIds;
-            obsNode.SlamObservation.covisibleObservationsOfCommonPointsCount = observation.covisibleObservationsOfCommonPointsCount;
+            obsNode.SlamObservation.m_covisibleObservationsIds = observation.m_covisibleObservationsIds;
+            obsNode.SlamObservation.m_covisibleObservationsOfCommonPointsCount = observation.m_covisibleObservationsOfCommonPointsCount;
 
             // 1. Найти существующих в графе соседей
-            SlamObservationNode[] existsNeighbors = observation.covisibleObservationsIds
+            SlamObservationNode[] existsNeighbors = observation.m_covisibleObservationsIds
                 .Where(ObservationExists)
                 .Select(obsId => m_slamObservationNodes[obsId])
                 .ToArray();
