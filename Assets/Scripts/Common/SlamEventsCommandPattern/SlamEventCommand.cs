@@ -10,7 +10,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         public SlamEventCommand(
             ISlamContainer<SlamPoint> pointsContainer,
             ISlamContainer<SlamLine> linesContainer,
-            SlamObservationsGraph graph,
+            ISlamContainer<SlamObservation> graph,
             Helmet helmet,
             Package slamEvent)
         {

@@ -31,6 +31,9 @@ namespace Elektronik.Common.Containers
             ++m_added;
             long longId = line.GenerateLongId();
             int lineId = m_indices.Dequeue();
+            Debug.LogFormat(
+                "[SlamLinesContainer.Add] id1: {0} id2: {1} longId {2} uniqueId {3}",
+                line.pointId1, line.pointId2, longId, lineId);
             m_longId2Id.Add(longId, lineId);
             m_lines.Add(lineId, line);
             m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color1);

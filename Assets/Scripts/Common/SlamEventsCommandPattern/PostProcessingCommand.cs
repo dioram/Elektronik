@@ -14,7 +14,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         public PostProcessingCommand(
             ISlamContainer<SlamPoint> pointsContainer,
             ISlamContainer<SlamLine> linesContainer,
-            SlamObservationsGraph graph,
+            ISlamContainer<SlamObservation> graph,
             Helmet helmet,
             Package slamEvent)
         {

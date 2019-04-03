@@ -36,7 +36,7 @@ namespace Elektronik.Common.Data
             int offset = 0;
             observation = new SlamObservation()
             {
-                orientation = Quaternion.identity,
+                Orientation = Quaternion.identity,
             };
             SlamPoint obsPoint = observation;
             obsPoint.id = id;
@@ -53,7 +53,7 @@ namespace Elektronik.Common.Data
                 {
                     obsPoint.position = SlamBitConverter.ToVector3(actions, offset);
                     offset += sizeof(float) * 3;
-                    observation.orientation = SlamBitConverter.ToQuaternion(actions, offset);
+                    observation.Orientation = SlamBitConverter.ToQuaternion(actions, offset);
                     offset += sizeof(float) * 4;
                 }
                 
@@ -73,8 +73,11 @@ namespace Elektronik.Common.Data
                     offset += sizeof(int);
                     int countOfCommonPoints = BitConverter.ToInt32(actions, offset);
                     offset += sizeof(int);
-                    observation.m_covisibleObservationsIds.Add(covisibleId);
-                    observation.m_covisibleObservationsOfCommonPointsCount.Add(countOfCommonPoints);
+                    observation.CovisibleInfos.Add(new SlamObservation.CovisibleInfo()
+                    {
+                        id = covisibleId,
+                        sharedPointsCount = countOfCommonPoints
+                    });
                 }
                 if (type == ActionType.Message)
                 {

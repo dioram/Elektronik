@@ -30,7 +30,7 @@ namespace Elektronik.Offline
             
         }
 
-        public void UpdateInfo(Package package, ISlamContainer<SlamPoint> pointsMap, SlamObservationsGraph graph)
+        public void UpdateInfo(Package package, ISlamContainer<SlamPoint> pointsMap, ISlamContainer<SlamObservation> graph)
         {
             listBoxWithSpecializedObjects.Clear();
 

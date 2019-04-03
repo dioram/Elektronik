@@ -12,33 +12,88 @@ namespace Elektronik.Common.Containers
     {
         private List<SlamObservation> m_nodes;
         private Dictionary<int, GameObject> m_gameObjects;
-        private Dictionary<int, Guid> m_connections;
+        private List<Connection> m_connections;
 
         private GameObject m_observationPrefab;
-        private FastLinesCloud m_linesCloud;
+        private ISlamContainer<SlamLine> m_lines;
+
+        private struct Connection
+        {
+            public readonly SlamObservation first;
+            public readonly SlamObservation second;
+            public readonly int id;
+
+            public Connection(SlamObservation first, SlamObservation second, int id)
+            {
+                this.first = first;
+                this.second = second;
+                this.id = id;
+            }
+        }
 
         /// <summary>
         /// Make sure that the prefab was registered in MF_Autopool
         /// </summary>
         /// <param name="prefab">Desired prefab of observation</param>
-        /// <param name="linesCloud">Lines cloud objects for connections drawing</param>
-        public SlamObservationsContainer(GameObject prefab, FastLinesCloud linesCloud)
+        /// <param name="lines">Lines cloud objects for connections drawing</param>
+        public SlamObservationsContainer(GameObject prefab, ISlamContainer<SlamLine> lines)
         {
             m_nodes = new List<SlamObservation>();
             m_gameObjects = new Dictionary<int, GameObject>();
             m_observationPrefab = prefab;
-            m_linesCloud = linesCloud;
-            m_connections = new Dictionary<int, Guid>();
+            m_lines = lines;
+            m_connections = new List<Connection>();
         }
 
         private void DisconnectFromAll(SlamObservation observation)
         {
-
+            foreach (var connection in m_connections)
+            {
+                if (connection.first == observation || connection.second == observation)
+                    m_lines.Remove(connection.id);
+            }
+            m_connections.RemoveAll(c => c.first == observation || c.second == observation);
         }
 
         private void UpdateConnectionsOf(SlamObservation observation)
         {
-
+            foreach (var covisible in observation.CovisibleInfos)
+            {
+                // 1. Найти существующих в графе соседей
+                SlamObservation neighbour = m_nodes.FirstOrDefault(node => node.Point.id == covisible.id);
+                if (neighbour == null)
+                    continue;
+                // 2. Проверить наличие соединения между ними
+                int connectionIdx = m_connections.FindIndex(c =>
+                    c.first == observation && c.second == neighbour ||
+                    c.second == observation && c.first == neighbour);
+                if (connectionIdx == -1)
+                {
+                    // 3. Где соединение отсутствует, добавить соединение
+                    var line = new SlamLine(
+                        observation.Point.position, neighbour.Point.position,
+                        observation.Point.id, neighbour.Point.id,
+                        Color.gray, Color.gray);
+                    m_connections.Add(new Connection(observation, neighbour, m_lines.Add(line)));
+                }
+                else
+                {
+                    // 4. Обновить вершины соединений
+                    Connection connection = m_connections[connectionIdx];
+                    SlamLine line = m_lines.Get(connection.id);
+                    if (connection.first == observation)
+                    {
+                        line.vert1 = observation.Point.position;
+                        line.vert2 = neighbour.Point.position;
+                    }
+                    else
+                    {
+                        line.vert2 = observation.Point.position;
+                        line.vert1 = neighbour.Point.position;
+                    }
+                    m_lines.Update(line);
+                }
+            }
         }
 
         private void UpdateGameobjectOf(SlamObservation observation)
@@ -63,9 +118,8 @@ namespace Elektronik.Common.Containers
                 !Exists(observation),
                 "[SlamObservationsContainer.Add] Graph already contains observation with id {0}", observation.Point.id);
             m_nodes.Add(observation);
-            m_gameObjects[observation.Point.id] = MF_AutoPool.Spawn(m_observationPrefab);
+            m_gameObjects[observation.Point.id] = MF_AutoPool.Spawn(m_observationPrefab, observation.Point.position, observation.Orientation);
             UpdateConnectionsOf(observation);
-            UpdateGameobjectOf(observation);
             return observation.Point.id;
         }
 
@@ -103,8 +157,10 @@ namespace Elektronik.Common.Containers
         /// </summary>
         public void Clear()
         {
+            MF_AutoPool.DespawnPool(m_observationPrefab);
+            m_lines.Clear();
+            m_connections.Clear();
             m_nodes.Clear();
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -173,9 +229,11 @@ namespace Elektronik.Common.Containers
                 Exists(id),
                 "[SlamObservationsContainer.Remove] Graph doesn't contain observation with id {0}", id);
 
+            var node = m_nodes.First(obs => obs.Point.id == id);
+            DisconnectFromAll(node);
             MF_AutoPool.Despawn(m_gameObjects[id]);
             m_gameObjects.Remove(id);
-            m_nodes.Remove(Get(id));
+            m_nodes.Remove(node);
         }
 
         /// <summary>
@@ -194,11 +252,11 @@ namespace Elektronik.Common.Containers
         /// </summary>
         public void Repaint()
         {
-            throw new NotImplementedException();
+            m_lines.Repaint();
         }
 
         /// <summary>
-        /// Add or hard set obj ref into graph
+        /// Add or Update node by obj
         /// </summary>
         /// <param name="obj"></param>
         public void Set(SlamObservation obj)
@@ -210,10 +268,7 @@ namespace Elektronik.Common.Containers
             }
             else
             {
-                int index = m_nodes.FindIndex(o => o.Point.id == obj.Point.id);
-                m_nodes[index] = obj;
-                UpdateGameobjectOf(obj);
-                UpdateConnectionsOf(obj);
+                Update(obj);
             }
         }
 
@@ -232,9 +287,7 @@ namespace Elektronik.Common.Containers
         }
 
         /// <summary>
-        /// Unlike Set this function does not replace reference to Covisible observations, 
-        /// it updates covisible observations list of graph node by adding missing observations from obj.
-        /// In the rest behavior is same to Set.
+        /// Copy data from obj.
         /// </summary>
         /// <param name="obj"></param>
         public void Update(SlamObservation obj)
@@ -250,10 +303,14 @@ namespace Elektronik.Common.Containers
             node.Orientation = obj.Orientation;
             UpdateGameobjectOf(node);
 
-            foreach (var covisible in obj.CovisibleObservationsInfo)
+            node.CovisibleInfos.Clear();
+            foreach (var covisible in obj.CovisibleInfos)
             {
-                if (!node.CovisibleObservationsInfo.Contains(covisible))
-                    node.CovisibleObservationsInfo.Add(covisible);
+                node.CovisibleInfos.Add(new SlamObservation.CovisibleInfo()
+                {
+                    id = covisible.id,
+                    sharedPointsCount = covisible.sharedPointsCount
+                });
             }
 
             UpdateConnectionsOf(node);

@@ -22,7 +22,7 @@ namespace Elektronik.Common.Data
                 for (int observationIdx = 0; observationIdx < package.Observations.Count; ++observationIdx)
                 {
                     Vector3 curPos = package.Observations[observationIdx].Point.position;
-                    Quaternion curRot = package.Observations[observationIdx].orientation.normalized;
+                    Quaternion curRot = package.Observations[observationIdx].Orientation.normalized;
                     curPos.y = -curPos.y;
                     curRot.y = -curRot.y; curRot.w = -curRot.w;
 
@@ -35,7 +35,7 @@ namespace Elektronik.Common.Data
                     SlamPoint obsPoint = package.Observations[observationIdx];
                     obsPoint.position = curPos;
                     package.Observations[observationIdx].Point = obsPoint;
-                    package.Observations[observationIdx].orientation = curRot;
+                    package.Observations[observationIdx].Orientation = curRot;
                 }
             }
 

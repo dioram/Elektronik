@@ -12,13 +12,13 @@ namespace Elektronik.Common.SlamEventsCommandPattern
     {
         ISlamContainer<SlamPoint> m_pointsContainer;
         ISlamContainer<SlamLine> m_linesContainer;
-        SlamObservationsGraph m_graph;
+        ISlamContainer<SlamObservation> m_graph;
 
         SlamLine[] m_undoLines;
         SlamPoint[] m_undoPoints;
         SlamObservation[] m_undoObservations;
 
-        public ClearCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, SlamObservationsGraph graph)
+        public ClearCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, ISlamContainer<SlamObservation> graph)
         {
             m_pointsContainer = pointsContainer;
             m_linesContainer = linesContainer;

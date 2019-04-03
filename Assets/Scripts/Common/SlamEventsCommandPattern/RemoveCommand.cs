@@ -13,11 +13,11 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private readonly SlamPoint[] m_points2Remove;
         private readonly SlamObservation[] m_observations2Remove;
 
-        private SlamObservationsGraph m_graph;
+        private ISlamContainer<SlamObservation> m_graph;
         private ISlamContainer<SlamLine> m_linesContainer;
         private ISlamContainer<SlamPoint> m_pointsContainer;
 
-        public RemoveCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, SlamObservationsGraph graph, Package slamEvent)
+        public RemoveCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, ISlamContainer<SlamObservation> graph, Package slamEvent)
         {
             m_pointsContainer = pointsContainer;
             m_linesContainer = linesContainer;

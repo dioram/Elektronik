@@ -18,28 +18,30 @@ namespace Elektronik.Online
         public Text status;
         public Button clear;
         public Button reconnect;
-
-        TCPPackagesReceiver m_receiver;
-
+        
+        public GameObject observationPrefab;
+        public FastLinesCloud observationsLinesCloud;
         public FastLinesCloud linesCloud;
         public FastPointCloud pointCloud;
-        public SlamObservationsGraph observationsGraph;
         public Helmet helmet;
-
         public int connectionTries = 10;
 
         private IDisposable m_mapUpdate;
+        private ISlamContainer<SlamObservation> m_observationsContainer;
         private ISlamContainer<SlamPoint> m_pointsContainer;
         private ISlamContainer<SlamLine> m_linesContainer;
         private IPackageCSConverter m_converter;
         private bool m_connecting = false;
+        private TCPPackagesReceiver m_receiver;
 
         private void Awake()
         {
             m_converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.MapInfoScaling));
             m_receiver = new TCPPackagesReceiver();
+
             m_pointsContainer = new SlamPointsContainer(pointCloud);
             m_linesContainer = new SlamLinesContainer(linesCloud);
+            m_observationsContainer = new SlamObservationsContainer(observationPrefab, new SlamLinesContainer(observationsLinesCloud));
         }
 
         private void Start()
@@ -54,12 +56,12 @@ namespace Elektronik.Online
                 .Where(package => package != null)
                 .Do(pkg => m_converter.Convert(ref pkg))
                 .Do(pkg => Debug.Log(pkg.Timestamp))
-                .Do(pkg => new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, pkg).Execute())
-                .Do(pkg => new UpdateCommand(m_pointsContainer, observationsGraph, helmet, pkg).Execute())
-                .Do(pkg => new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, pkg).Execute())
+                .Do(pkg => new AddCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, pkg).Execute())
+                .Do(pkg => new UpdateCommand(m_pointsContainer, m_observationsContainer, helmet, pkg).Execute())
+                .Do(pkg => new PostProcessingCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, helmet, pkg).Execute())
                 .Do(_ => m_pointsContainer.Repaint())
                 .Do(_ => m_linesContainer.Repaint())
-                .Do(_ => observationsGraph.Repaint())
+                .Do(_ => m_observationsContainer.Repaint())
                 .Subscribe();
         }
 
@@ -75,7 +77,7 @@ namespace Elektronik.Online
         {
             m_pointsContainer.Clear();
             m_linesContainer.Clear();
-            observationsGraph.Clear();
+            m_observationsContainer.Clear();
             helmet.ResetHelmet();
         }
 

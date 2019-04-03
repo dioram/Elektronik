@@ -28,12 +28,12 @@ namespace Elektronik.Common
         /// <param name="observation"></param>
         public void Add(SlamObservation observation)
         {
-            if (observation.m_covisibleObservationsIds == null || observation.m_covisibleObservationsOfCommonPointsCount == null)
+            if (observation.CovisibleInfos == null)
             {
                 Debug.LogWarningFormat("Wrong observation id {0}", observation.Point.id);
                 return;
             }
-            var newNode = new SlamObservationNode(MF_AutoPool.Spawn(observationPrefab, observation.Point.position, observation.orientation)) // создаём новый узел
+            var newNode = new SlamObservationNode(MF_AutoPool.Spawn(observationPrefab, observation.Point.position, observation.Orientation)) // создаём новый узел
             {
                 SlamObservation = new SlamObservation(observation),
             };
@@ -49,7 +49,6 @@ namespace Elektronik.Common
         /// <param name="observation">Observation с абсолютными координатами</param>
         public void Replace(SlamObservation observation)
         {
-            // TODO: разобраться почему в ноль перемещается со связями
             //Debug.Log("[SlamObservationsGraph.Replace] Replacing");
             Debug.AssertFormat(
                 m_slamObservationNodes.ContainsKey(observation.Point.id),
@@ -61,12 +60,12 @@ namespace Elektronik.Common
 
             // Перемещаем в сцене
             nodeToReplace.ObservationObject.transform.position = observation.Point.position;
-            nodeToReplace.ObservationObject.transform.rotation = observation.orientation;
+            nodeToReplace.ObservationObject.transform.rotation = observation.Orientation;
 
             SlamPoint nodeToReplacePoint = nodeToReplace.SlamObservation;
             nodeToReplacePoint.position = observation.Point.position;
             nodeToReplace.SlamObservation.Point = nodeToReplacePoint;
-            nodeToReplace.SlamObservation.orientation = observation.orientation;
+            nodeToReplace.SlamObservation.Orientation = observation.Orientation;
 
             // Обновляем связи
             UpdateConnections(nodeToReplace.SlamObservation);
@@ -86,11 +85,11 @@ namespace Elektronik.Common
                 observation.Point.id);
 
             SlamObservationNode obsNode = m_slamObservationNodes[observation.Point.id];
-            obsNode.SlamObservation.m_covisibleObservationsIds = observation.m_covisibleObservationsIds;
-            obsNode.SlamObservation.m_covisibleObservationsOfCommonPointsCount = observation.m_covisibleObservationsOfCommonPointsCount;
+            obsNode.SlamObservation = new SlamObservation(observation, true);
 
             // 1. Найти существующих в графе соседей
-            SlamObservationNode[] existsNeighbors = observation.m_covisibleObservationsIds
+            SlamObservationNode[] existsNeighbors = observation.CovisibleInfos
+                .Select(obs => obs.id)
                 .Where(ObservationExists)
                 .Select(obsId => m_slamObservationNodes[obsId])
                 .ToArray();

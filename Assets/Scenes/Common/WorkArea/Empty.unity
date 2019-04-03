@@ -504,9 +504,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scale: 10
-  observationsGraph: {fileID: 2096468161}
+  observationPrefab: {fileID: 3038893354545110125, guid: 7a3fa4516cf7b3f4a8dcd5fa4783592f,
+    type: 3}
   fastPointCloud: {fileID: 1194370009}
-  fastLineCloud: {fileID: 289725688}
+  fusionLinesCloud: {fileID: 289725688}
+  graphConnectionLinesCloud: {fileID: 2096468162}
   helmet: {fileID: 13}
   eventsLogger: {fileID: 1778431254}
 --- !u!1 &72189911
@@ -2249,9 +2251,11 @@ MonoBehaviour:
   status: {fileID: 1033620179}
   clear: {fileID: 1110241025}
   reconnect: {fileID: 458094770}
+  observationPrefab: {fileID: 3038893354545110125, guid: 7a3fa4516cf7b3f4a8dcd5fa4783592f,
+    type: 3}
+  observationsLinesCloud: {fileID: 2096468162}
   linesCloud: {fileID: 289725688}
   pointCloud: {fileID: 19794141}
-  observationsGraph: {fileID: 2096468161}
   helmet: {fileID: 13}
   connectionTries: 3
 --- !u!1 &456528934

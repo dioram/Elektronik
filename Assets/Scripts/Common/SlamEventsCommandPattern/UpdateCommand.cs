@@ -18,21 +18,21 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private readonly SlamPoint[] m_points2Update;
 
         private ISlamContainer<SlamPoint> m_pointsContainer;
-        private SlamObservationsGraph m_graph;
+        private ISlamContainer<SlamObservation> m_graph;
         private Helmet m_helmet;
         private SlamObservation m_helmetPose;
 
 
         public UpdateCommand(
             ISlamContainer<SlamPoint> pointsContainer,
-            SlamObservationsGraph graph,
+            ISlamContainer<SlamObservation> graph,
             Helmet helmet,
             Package slamEvent) : this(pointsContainer, graph, helmet, slamEvent.Points, slamEvent.Observations)
         {}
 
         public UpdateCommand(
             ISlamContainer<SlamPoint> pointsContainer,
-            SlamObservationsGraph graph,
+            ISlamContainer<SlamObservation> graph,
             Helmet helmet,
             IEnumerable<SlamPoint> points,
             IEnumerable<SlamObservation> observations)
@@ -80,14 +80,14 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
             if (m_helmetPose != null)
             {
-                m_helmet.ReplaceAbs(m_helmetPose.Point.position, m_helmetPose.orientation);
+                m_helmet.ReplaceAbs(m_helmetPose.Point.position, m_helmetPose.Orientation);
             }
 
             if (m_observations2Update != null)
             {
                 foreach (var observation in m_observations2Update)
                 {
-                    m_graph.Replace(observation);
+                    m_graph.Update(observation);
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 foreach (var observation in m_observations2Restore)
                 {
                     
-                     m_graph.Replace(observation);
+                     m_graph.Update(observation);
                     
                 }
             }

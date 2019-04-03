@@ -15,7 +15,7 @@ namespace Elektronik.Common.Data
             public byte statistics4;
         }
 
-        public struct CovisibleObservationInfo
+        public struct CovisibleInfo
         {
             public int id;
             public int sharedPointsCount;
@@ -25,16 +25,16 @@ namespace Elektronik.Common.Data
         public Quaternion Orientation { get; set; }
         public Stats Statistics { get; set; }
 
-        public List<CovisibleObservationInfo> CovisibleObservationsInfo { get; private set; }
+        public List<CovisibleInfo> CovisibleInfos { get; private set; }
 
         public SlamObservation()
         {
-            CovisibleObservationsInfo = new List<CovisibleObservationInfo>();
+            CovisibleInfos = new List<CovisibleInfo>();
         }
 
-        public SlamObservation(List<CovisibleObservationInfo> covisibleObservationsInfo)
+        public SlamObservation(List<CovisibleInfo> covisibleObservationsInfo)
         {
-            CovisibleObservationsInfo = covisibleObservationsInfo;
+            CovisibleInfos = covisibleObservationsInfo;
         }
         
         public SlamObservation(SlamObservation src, bool sharedCovisibleObservations = true)
@@ -43,9 +43,9 @@ namespace Elektronik.Common.Data
             Orientation = src.Orientation;
             Statistics = src.Statistics;
 
-            CovisibleObservationsInfo = src.CovisibleObservationsInfo;
-            if (src.CovisibleObservationsInfo != null && !sharedCovisibleObservations)
-                CovisibleObservationsInfo = new List<CovisibleObservationInfo>(src.CovisibleObservationsInfo);
+            CovisibleInfos = src.CovisibleInfos;
+            if (src.CovisibleInfos != null && !sharedCovisibleObservations)
+                CovisibleInfos = new List<CovisibleInfo>(src.CovisibleInfos);
         }
 
         public static implicit operator SlamPoint(SlamObservation obs)

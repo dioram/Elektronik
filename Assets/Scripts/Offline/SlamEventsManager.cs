@@ -21,12 +21,15 @@ namespace Elektronik.Offline
         List<ISlamEventCommand> m_commands;
         List<Package> m_extendedEvents;
 
-        public SlamObservationsGraph observationsGraph;
+        public GameObject observationPrefab;
         public GameObject fastPointCloud;
-        public FastLinesCloud fastLineCloud;
+        public FastLinesCloud fusionLinesCloud;
+        public FastLinesCloud graphConnectionLinesCloud;
+
         public Helmet helmet;
         public EventLogger eventsLogger;
 
+        private ISlamContainer<SlamObservation> m_observationsContainer;
         private ISlamContainer<SlamLine> m_linesContainer;
         private ISlamContainer<SlamPoint> m_pointsContainer;
 
@@ -39,7 +42,10 @@ namespace Elektronik.Offline
         {
             m_extendedEvents = new List<Package>();
             m_commands = new List<ISlamEventCommand>();
-            m_linesContainer = new SlamLinesContainer(fastLineCloud);
+            m_linesContainer = new SlamLinesContainer(fusionLinesCloud);
+            m_observationsContainer = new SlamObservationsContainer(
+                observationPrefab, 
+                new SlamLinesContainer(graphConnectionLinesCloud));
             m_pointsContainer = new SlamPointsContainer(fastPointCloud.GetComponent<IFastPointsCloud>());
             SpecialObservations = new List<SlamObservation>();
             SpecialPoints = new List<SlamPoint>();
@@ -53,7 +59,7 @@ namespace Elektronik.Offline
         public void Clear()
         {
             m_position = -1;
-            observationsGraph.Clear();
+            m_observationsContainer.Clear();
             m_pointsContainer.Clear();
             m_linesContainer.Clear();
             helmet.ResetHelmet();
@@ -62,7 +68,7 @@ namespace Elektronik.Offline
 
         public void Repaint()
         {
-            observationsGraph.Repaint();
+            m_observationsContainer.Repaint();
             m_pointsContainer.Repaint();
             m_linesContainer.Repaint();
         }
@@ -71,7 +77,7 @@ namespace Elektronik.Offline
         {
             Package currentEvent = GetCurrentEvent();
             if (currentEvent != null)
-                eventsLogger.UpdateInfo(currentEvent, m_pointsContainer, observationsGraph);
+                eventsLogger.UpdateInfo(currentEvent, m_pointsContainer, m_observationsContainer);
         }
 
         public int GetLength()
@@ -220,25 +226,25 @@ namespace Elektronik.Offline
                 //Debug.Log(m_packages[i].Summary());
                 if (m_packages[i].Timestamp == -1)
                 {
-                    m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, observationsGraph));
+                    m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, m_observationsContainer));
                     m_extendedEvents.Add(m_packages[i]);
                     Next(false);
                     continue;
                 }
 
                 // При добавлении объектов в карту их в карте быть не должно.
-                m_packages[i].TestExistent(obj => obj.id != -1 && obj.isNew, m_pointsContainer, observationsGraph);
-                m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_packages[i]));
+                m_packages[i].TestExistent(obj => obj.id != -1 && obj.isNew, m_pointsContainer, m_observationsContainer);
+                m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, m_packages[i]));
                 m_extendedEvents.Add(m_packages[i]);
                 Next(false);
 
                 // При любых манипуляциях с картой объекты, над которыми происходят манипуляции, должны быть в карте.
-                m_packages[i].TestNonExistent(obj => obj.id != -1, m_pointsContainer, observationsGraph);
-                m_commands.Add(new UpdateCommand(m_pointsContainer, observationsGraph, helmet, m_packages[i]));
+                m_packages[i].TestNonExistent(obj => obj.id != -1, m_pointsContainer, m_observationsContainer);
+                m_commands.Add(new UpdateCommand(m_pointsContainer, m_observationsContainer, helmet, m_packages[i]));
                 m_extendedEvents.Add(m_packages[i]);
                 Next(false);
 
-                m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, m_packages[i]));
+                m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, helmet, m_packages[i]));
                 m_extendedEvents.Add(m_packages[i]);
                 Next(false);
 

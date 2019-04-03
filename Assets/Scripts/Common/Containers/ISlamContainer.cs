@@ -1,4 +1,6 @@
-﻿namespace Elektronik.Common.Containers
+﻿using Elektronik.Common.Clouds;
+
+namespace Elektronik.Common.Containers
 {
     public interface ISlamContainer<T>
     {
@@ -17,6 +19,5 @@
         void Set(T obj);
         bool TryGet(T obj, out T current);
         void Update(T obj);
-        
     }
 }
