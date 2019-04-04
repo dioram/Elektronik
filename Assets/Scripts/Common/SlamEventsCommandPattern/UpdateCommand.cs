@@ -18,7 +18,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private readonly SlamPoint[] m_points2Update;
 
         private ISlamContainer<SlamPoint> m_pointsContainer;
-        private ISlamContainer<SlamObservation> m_graph;
+        private ISlamContainer<SlamObservation> m_observationsContainer;
         private Helmet m_helmet;
         private SlamObservation m_helmetPose;
 
@@ -32,13 +32,13 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
         public UpdateCommand(
             ISlamContainer<SlamPoint> pointsContainer,
-            ISlamContainer<SlamObservation> graph,
+            ISlamContainer<SlamObservation> observationsContainer,
             Helmet helmet,
             IEnumerable<SlamPoint> points,
             IEnumerable<SlamObservation> observations)
         {
             m_pointsContainer = pointsContainer;
-            m_graph = graph;
+            m_observationsContainer = observationsContainer;
             m_helmet = helmet;
 
             if (points != null)
@@ -53,11 +53,12 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 m_observations2Restore = observations
                     .Where(o => o.Point.id != -1)
                     .Where(o => !o.Point.isRemoved)
-                    .Select(o => new SlamObservation(graph.Get(o.Point.id))).ToArray();
+                    .Select(observationsContainer.Get)
+                    .ToArray();
                 m_observations2Update = observations
                     .Where(o => o.Point.id != -1)
                     .Where(o => !o.Point.isRemoved)
-                    .Select(o => new SlamObservation(o)).ToArray();
+                    .ToArray();
             }
         }
 
@@ -87,7 +88,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             {
                 foreach (var observation in m_observations2Update)
                 {
-                    m_graph.Update(observation);
+                    m_observationsContainer.Update(observation);
                 }
             }
         }
@@ -111,9 +112,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             {
                 foreach (var observation in m_observations2Restore)
                 {
-                    
-                     m_graph.Update(observation);
-                    
+                    m_observationsContainer.Update(observation);
                 }
             }
         }

@@ -14,15 +14,19 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private readonly SlamPoint[] m_addedPoints;
         private readonly SlamObservation[] m_addedObservations;
 
-        private ISlamContainer<SlamObservation> m_graph;
+        private ISlamContainer<SlamObservation> m_observationsContainer;
         private ISlamContainer<SlamLine> m_linesContainer;
         private ISlamContainer<SlamPoint> m_pointsContainer;
 
-        public AddCommand(ISlamContainer<SlamPoint> pointsContainer, ISlamContainer<SlamLine> linesContainer, ISlamContainer<SlamObservation> graph, Package slamEvent)
+        public AddCommand(
+            ISlamContainer<SlamPoint> pointsContainer,
+            ISlamContainer<SlamLine> linesContainer,
+            ISlamContainer<SlamObservation> observationsContainer,
+            Package slamEvent)
         {
             m_pointsContainer = pointsContainer;
             m_linesContainer = linesContainer;
-            m_graph = graph;
+            m_observationsContainer = observationsContainer;
 
             if (slamEvent.Points != null)
             {
@@ -44,8 +48,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             if (slamEvent.Observations != null)
             {
                 m_addedObservations = slamEvent.Observations
-                    .Where(o => !m_graph.Exists(o.Point.id) && o.Point.id != -1)
-                    .Select(o => new SlamObservation(o))
+                    .Where(o => o.Point.isNew && o.Point.id != -1)
                     .ToArray();
             }
         }
@@ -70,7 +73,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             {
                 foreach (var observation in m_addedObservations)
                 {
-                    m_graph.Add(new SlamObservation(observation, false));
+                    m_observationsContainer.Add(observation);
                 }
             }
         }
@@ -95,7 +98,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             {
                 foreach (var observation in m_addedObservations)
                 {
-                    m_graph.Remove(observation.Point.id);
+                    m_observationsContainer.Remove(observation.Point.id);
                 }
             }
         }

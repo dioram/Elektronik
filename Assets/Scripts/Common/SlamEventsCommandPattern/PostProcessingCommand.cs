@@ -14,7 +14,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         public PostProcessingCommand(
             ISlamContainer<SlamPoint> pointsContainer,
             ISlamContainer<SlamLine> linesContainer,
-            ISlamContainer<SlamObservation> graph,
+            ISlamContainer<SlamObservation> observationsContainer,
             Helmet helmet,
             Package slamEvent)
         {
@@ -26,8 +26,8 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                     .Where(p => p.id != -1)
                     .Select(pointsContainer.Get)
                     .Select(p => { p.color = p.defaultColor; return p; });
-                m_commands.Add(new UpdateCommand(pointsContainer, graph, helmet, points, null));
-                m_commands.Add(new RemoveCommand(pointsContainer, linesContainer, graph, slamEvent));
+                m_commands.Add(new UpdateCommand(pointsContainer, observationsContainer, helmet, points, null));
+                m_commands.Add(new RemoveCommand(pointsContainer, linesContainer, observationsContainer, slamEvent));
             }
             
         }

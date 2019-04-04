@@ -7,6 +7,9 @@ namespace Elektronik.Common.Data
 {
     public class SlamObservation
     {
+        public SlamPoint Point { get; set; }
+        public Quaternion Orientation { get; set; }
+
         public struct Stats
         {
             public byte statistics1;
@@ -14,17 +17,13 @@ namespace Elektronik.Common.Data
             public byte statistics3;
             public byte statistics4;
         }
+        public Stats Statistics { get; set; }
 
         public struct CovisibleInfo
         {
             public int id;
             public int sharedPointsCount;
         }
-
-        public SlamPoint Point { get; set; }
-        public Quaternion Orientation { get; set; }
-        public Stats Statistics { get; set; }
-
         public List<CovisibleInfo> CovisibleInfos { get; private set; }
 
         public SlamObservation()
