@@ -88,7 +88,9 @@ namespace Elektronik.Common.Interop.OMW
         }
     }
 
+#if UNITY_EDITOR
     [InitializeOnLoad]
+#endif
     public static class OMWSlamWrapper
     {
         static OMWSlamWrapper() // static Constructor
