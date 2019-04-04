@@ -86,6 +86,7 @@ namespace Elektronik.Common.Containers
                     m_connections[connectionIdx].obsId1, m_connections[connectionIdx].obsId2);
             }
         }
+
         private void ReplaceConnectionPlaceholdersFor(SlamObservation observation)
         {
             for (int i = 0; i < m_connections.Count; ++i)
