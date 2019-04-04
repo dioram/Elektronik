@@ -62,7 +62,9 @@ namespace Elektronik.Common.Containers
 
                 var connection = m_connections[connectionIdx];
                 SlamObservation covisibleObs = m_nodes.FirstOrDefault(node => node.Point.id == covisible.id);
-                if (covisibleObs != null && connection.lineId == -1)
+                if (
+                    /*already in map*/ covisibleObs != null &&
+                    /*is placeholder*/ covisibleObs.Point.id == connection.obsId2 && connection.lineId == -1)
                 {
                     SlamLine line = new SlamLine()
                     {
@@ -74,20 +76,10 @@ namespace Elektronik.Common.Containers
                         color2 = covisibleObs.Point.color,
                         isRemoved = false
                     };
-                    if (covisibleObs.Point.id == connection.obsId1)
-                    {
-                        m_connections[connectionIdx] = new Connection(
-                            connection.obsId1, connection.obsId2,
-                            covisibleObs, observation,
-                            m_lines.Add(line));
-                    }
-                    else
-                    {
-                        m_connections[connectionIdx] = new Connection(
-                            connection.obsId1, connection.obsId2,
-                            observation, covisibleObs,
-                            m_lines.Add(line));
-                    }
+                    m_connections[connectionIdx] = new Connection(
+                        connection.obsId1, connection.obsId2,
+                        observation, covisibleObs,
+                        m_lines.Add(line));
                 }
                 Debug.AssertFormat(m_connections[connectionIdx].first != null || m_connections[connectionIdx].second != null,
                     "[SlamObservationsContainer.UpdateConnectionsOf] connection.first == connection.second == null for id1 = {0}, id2 = {1}",
@@ -372,24 +364,6 @@ namespace Elektronik.Common.Containers
             node.Point = obj.Point;
             node.Orientation = obj.Orientation;
             UpdateGameobjectFor(node);
-
-            foreach (var covisible in obj.CovisibleInfos)
-            {
-                int idx = node.CovisibleInfos.FindIndex(cov => cov.id == covisible.id);
-                if (idx == -1)
-                {
-                    node.CovisibleInfos.Add(new SlamObservation.CovisibleInfo()
-                    {
-                        id = covisible.id,
-                        sharedPointsCount = covisible.sharedPointsCount
-                    });
-                }
-                else
-                {
-                    node.CovisibleInfos[idx] = covisible;
-                }
-            }
-
             UpdateConnectionsFor(node);
 
             Debug.LogFormat(
