@@ -110,8 +110,6 @@
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\PostProcessingCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\RemoveCommand.cs" />
     <Compile Include="Assets\Scripts\Common\SlamEventsCommandPattern\UpdateCommand.cs" />
-    <Compile Include="Assets\Scripts\Common\SlamObservationNode.cs" />
-    <Compile Include="Assets\Scripts\Common\SlamObservationsGraph.cs" />
     <Compile Include="Assets\Scripts\Common\SpecialInfoListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Common\UI\PlayerUIInitializer.cs" />
     <Compile Include="Assets\Scripts\Common\UI\UIListBox.cs" />

@@ -4327,7 +4327,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2096468161}
+      - m_Target: {fileID: 0}
         m_MethodName: SetActive
         m_Mode: 0
         m_Arguments:
@@ -14403,7 +14403,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2096468160}
-  - component: {fileID: 2096468161}
   - component: {fileID: 2096468162}
   m_Layer: 0
   m_Name: ObservationGraph
@@ -14427,20 +14426,6 @@ Transform:
   m_Father: {fileID: 1885779070}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2096468161
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2096468159}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 907e563719d9e2a47ac76ac0e0a2b563, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  observationPrefab: {fileID: 3038893354545110125, guid: 7a3fa4516cf7b3f4a8dcd5fa4783592f,
-    type: 3}
 --- !u!114 &2096468162
 MonoBehaviour:
   m_ObjectHideFlags: 0
