@@ -34,6 +34,23 @@ namespace Elektronik.Online
         private bool m_connecting = false;
         private TCPPackagesReceiver m_receiver;
 
+        private void SubscribeToIncome()
+        {
+            m_mapUpdate = Observable.EveryFixedUpdate()
+                .Where(_ => m_receiver.Connected)
+                .Select(_ => m_receiver.GetPackage())
+                .Where(package => package != null)
+                .Do(pkg => m_converter.Convert(ref pkg))
+                .Do(pkg => Debug.Log(pkg.Timestamp))
+                .Do(pkg => new AddCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, pkg).Execute())
+                .Do(pkg => new UpdateCommand(m_pointsContainer, m_observationsContainer, helmet, pkg).Execute())
+                .Do(pkg => new PostProcessingCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, helmet, pkg).Execute())
+                .Do(_ => m_pointsContainer.Repaint())
+                .Do(_ => m_linesContainer.Repaint())
+                .Do(_ => m_observationsContainer.Repaint())
+                .Subscribe();
+        }
+
         private void Awake()
         {
             m_converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.MapInfoScaling));
@@ -50,19 +67,6 @@ namespace Elektronik.Online
             reconnect.onClick.AddListener(Reconnect);
             status.color = Color.red;
             status.text = "Not connected...";
-            m_mapUpdate = Observable.EveryFixedUpdate()
-                .Where(_ => m_receiver.Connected)
-                .Select(_ => m_receiver.GetPackage())
-                .Where(package => package != null)
-                .Do(pkg => m_converter.Convert(ref pkg))
-                .Do(pkg => Debug.Log(pkg.Timestamp))
-                .Do(pkg => new AddCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, pkg).Execute())
-                .Do(pkg => new UpdateCommand(m_pointsContainer, m_observationsContainer, helmet, pkg).Execute())
-                .Do(pkg => new PostProcessingCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, helmet, pkg).Execute())
-                .Do(_ => m_pointsContainer.Repaint())
-                .Do(_ => m_linesContainer.Repaint())
-                .Do(_ => m_observationsContainer.Repaint())
-                .Subscribe();
         }
 
         private void OnDestroy()
@@ -75,6 +79,11 @@ namespace Elektronik.Online
 
         private void Clear()
         {
+            if (m_mapUpdate != null)
+            {
+                m_mapUpdate.Dispose();
+                m_mapUpdate = null;
+            }
             m_pointsContainer.Clear();
             m_linesContainer.Clear();
             m_observationsContainer.Clear();
@@ -114,6 +123,7 @@ namespace Elektronik.Online
                         .Do(_ => status.color = Color.red)
                         .Do(_ => status.text = "Disconnected!")
                         .Subscribe();
+                    SubscribeToIncome();
                     m_connecting = false;
                     yield break;
                 }

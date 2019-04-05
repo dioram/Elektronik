@@ -43,7 +43,9 @@ namespace Elektronik.Common.Containers
             ++m_removed;
             long longId = line.GenerateLongId();
             int lineId = m_longId2Id[longId];
-            Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with Id {0}", lineId);
+            Debug.AssertFormat(
+                m_lines.ContainsKey(lineId), 
+                "[SlamLinesContainer.Remove] Container doesn't contain line with Id {0}", lineId);
             m_linesCloud.SetLine(lineId, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
             m_lines.Remove(lineId);
             m_longId2Id.Remove(longId);
@@ -67,7 +69,9 @@ namespace Elektronik.Common.Containers
         {
             long longId = line.GenerateLongId();
             int lineId = m_longId2Id[longId];
-            Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with Id {0}", lineId);
+            Debug.AssertFormat(
+                m_lines.ContainsKey(lineId), 
+                "[SlamLinesContainer.Update] Container doesn't contain line with Id {0}", lineId);
             m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color1);
             m_lines[lineId] = line;
         }
@@ -81,7 +85,7 @@ namespace Elektronik.Common.Containers
             }
             m_linesCloud.Clear();
             Repaint();
-            Debug.LogFormat("[Clear] Added lines : {0}; Removed lines: {1}; Diff: {2}", m_added, m_removed, m_diff);
+            Debug.LogFormat("[SlamLinesContainer.Clear] Added lines : {0}; Removed lines: {1}; Diff: {2}", m_added, m_removed, m_diff);
             m_added = 0;
             m_removed = 0;
         }
@@ -106,7 +110,9 @@ namespace Elektronik.Common.Containers
 
         public SlamLine Get(int lineId)
         {
-            Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with id {0}", lineId);
+            Debug.AssertFormat(
+                m_lines.ContainsKey(lineId), 
+                "[SlamLinesContainer.Get] Container doesn't contain line with id {0}", lineId);
             return m_lines[lineId];
         }
 
@@ -157,7 +163,9 @@ namespace Elektronik.Common.Containers
         {
             long longId = line.GenerateLongId();
             int lineId = m_longId2Id[longId];
-            Debug.AssertFormat(m_lines.ContainsKey(lineId), "Container doesn't contain line with Id {0}", lineId);
+            Debug.AssertFormat(
+                m_lines.ContainsKey(lineId), 
+                "[SlamLinesContainer.ChangeColor] Container doesn't contain line with Id {0}", lineId);
             m_linesCloud.SetLineColor(lineId, line.color1);
             SlamLine currentLine = m_lines[lineId];
             currentLine.color1 = line.color1;

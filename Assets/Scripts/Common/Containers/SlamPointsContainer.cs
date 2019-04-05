@@ -23,7 +23,9 @@ namespace Elektronik.Common.Containers
 
         public int Add(SlamPoint point)
         {
-            Debug.AssertFormat(!m_points.ContainsKey(point.id), "Point with id {0} already in dictionary!", point.id);
+            Debug.AssertFormat(
+                !m_points.ContainsKey(point.id), 
+                "[SlamPointsContainer.Add] Point with id {0} already in dictionary!", point.id);
             ++m_diff;
             ++m_added;
             m_pointsCloud.Set(point.id, Matrix4x4.Translate(point.position), point.color);
@@ -41,7 +43,9 @@ namespace Elektronik.Common.Containers
 
         public void Update(SlamPoint point)
         {
-            Debug.AssertFormat(m_points.ContainsKey(point.id), "[Update] Container doesn't contain point with id {0}", point.id);
+            Debug.AssertFormat(
+                m_points.ContainsKey(point.id), 
+                "[SlamPointsContainer.Update] Container doesn't contain point with id {0}", point.id);
             Matrix4x4 to = Matrix4x4.Translate(point.position);
             SlamPoint currentPoint = m_points[point.id];
             currentPoint.position = point.position;
@@ -52,8 +56,9 @@ namespace Elektronik.Common.Containers
 
         public void ChangeColor(SlamPoint point)
         {
-            //Debug.LogFormat("[Change color] point {0} color: {1}", point.id, point.color);
-            Debug.AssertFormat(m_points.ContainsKey(point.id), "[Change color] Container doesn't contain point with id {0}", point.id);
+            Debug.AssertFormat(
+                m_points.ContainsKey(point.id),
+                "[SlamPointsContainer.ChangeColor] Container doesn't contain point with id {0}", point.id);
             m_pointsCloud.Set(point.id, point.color);
             SlamPoint currentPoint = m_points[point.id];
             currentPoint.color = point.color;
@@ -64,8 +69,9 @@ namespace Elektronik.Common.Containers
         {
             --m_diff;
             ++m_removed;
-            //Debug.LogFormat("Removing point {0}", pointId);
-            Debug.AssertFormat(m_points.ContainsKey(pointId), "[Remove] Container doesn't contain point with id {0}", pointId);
+            Debug.AssertFormat(
+                m_points.ContainsKey(pointId), 
+                "[SlamPointsContainer.Remove] Container doesn't contain point with id {0}", pointId);
             m_pointsCloud.Set(pointId, Matrix4x4.identity, new Color(0, 0, 0, 0));
             m_points.Remove(pointId);
         }
@@ -86,7 +92,8 @@ namespace Elektronik.Common.Containers
             m_pointsCloud.Clear();
             Repaint();
 
-            Debug.LogFormat("[Clear] Added points: {0}; Removed points: {1}; Diff: {2}", m_added, m_removed, m_diff);
+            Debug.LogFormat(
+                "[SlamPointsContainer.Clear] Added points: {0}; Removed points: {1}; Diff: {2}", m_added, m_removed, m_diff);
             m_added = 0;
             m_removed = 0;
         }
@@ -111,13 +118,9 @@ namespace Elektronik.Common.Containers
 
         public SlamPoint Get(int pointId)
         {
-            Debug.AssertFormat(m_points.ContainsKey(pointId), "[Get point] Container doesn't contain point with id {0}", pointId);
-            /*if (!m_points.ContainsKey(pointId))
-            {
-                Debug.LogWarningFormat("[Get point] Container doesn't contain point with id {0}", pointId);
-                return new SlamPoint();
-            }*/
-
+            Debug.AssertFormat(
+                m_points.ContainsKey(pointId), 
+                "[SlamPointsContainer.Get] Container doesn't contain point with id {0}", pointId);
             return m_points[pointId];
         }
 
@@ -128,7 +131,6 @@ namespace Elektronik.Common.Containers
 
         public bool Exists(int pointId)
         {
-            //return m_pointCloud.PointExists(pointId);
             return m_points.ContainsKey(pointId);
         }
 

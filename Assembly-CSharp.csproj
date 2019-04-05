@@ -91,7 +91,6 @@
     <Compile Include="Assets\Scripts\Common\ElektronikLogger.cs" />
     <Compile Include="Assets\Scripts\Common\FreeFlyCameraScript.cs" />
     <Compile Include="Assets\Scripts\Common\Helmet.cs" />
-    <Compile Include="Assets\Scripts\Common\IClonable.cs" />
     <Compile Include="Assets\Scripts\Common\InGameConsole.cs" />
     <Compile Include="Assets\Scripts\Common\InputWithBrowse.cs" />
     <Compile Include="Assets\Scripts\Common\Interop\OMW\OMWSlamWrapper.cs" />

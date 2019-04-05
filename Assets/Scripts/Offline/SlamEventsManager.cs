@@ -223,7 +223,7 @@ namespace Elektronik.Offline
             Debug.Log("PROCESSING STARTED");
             for (int i = 0; i < m_packages.Length; ++i)
             {
-                //Debug.Log(m_packages[i].Summary());
+                Debug.Log(m_packages[i].Summary());
                 if (m_packages[i].Timestamp == -1)
                 {
                     m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, m_observationsContainer));
