@@ -2255,7 +2255,7 @@ MonoBehaviour:
     type: 3}
   observationsLinesCloud: {fileID: 2096468162}
   linesCloud: {fileID: 289725688}
-  pointCloud: {fileID: 19794141}
+  pointCloud: {fileID: 1194370011}
   helmet: {fileID: 13}
   connectionTries: 3
 --- !u!1 &456528934

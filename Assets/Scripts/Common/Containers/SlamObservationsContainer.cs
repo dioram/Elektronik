@@ -173,7 +173,7 @@ namespace Elektronik.Common.Containers
                 !Exists(observation),
                 "[SlamObservationsContainer.Add] Graph already contains observation with id {0}", observation.Point.id);
             int last = m_nodes.Count;
-            m_nodes.Add(new SlamObservation(observation, false));
+            m_nodes.Add(new SlamObservation(observation));
             m_gameObjects[m_nodes[last].Point.id] = MF_AutoPool.Spawn(m_observationPrefab, observation.Point.position, observation.Orientation);
             UpdateConnectionsFor(m_nodes[last]);
             Debug.LogFormat(
@@ -254,7 +254,7 @@ namespace Elektronik.Common.Containers
             Debug.AssertFormat(
                 Exists(id),
                 "[SlamObservationsContainer.Get] Graph doesn't contain observation with id {0}", id);
-            return new SlamObservation(m_nodes.Find(obs => obs.Point.id == id), false);
+            return new SlamObservation(m_nodes.Find(obs => obs.Point.id == id));
         }
 
         /// <summary>
@@ -275,7 +275,7 @@ namespace Elektronik.Common.Containers
         /// <returns></returns>
         public SlamObservation[] GetAll()
         {
-            return m_nodes.Select(node => new SlamObservation(node, false)).ToArray();
+            return m_nodes.Select(node => new SlamObservation(node)).ToArray();
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace Elektronik.Common.Containers
         {
             if (obj == null)
                 Debug.LogWarning("[SlamObservationsContainer.TryGet] Null observation");
-            current = new SlamObservation(m_nodes.FirstOrDefault(o => o.Point.id == obj.Point.id), false);
+            current = new SlamObservation(m_nodes.FirstOrDefault(o => o.Point.id == obj.Point.id));
             return current == null;
         }
 

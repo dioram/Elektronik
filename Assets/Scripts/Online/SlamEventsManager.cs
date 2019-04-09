@@ -5,6 +5,7 @@ using Elektronik.Common.Data;
 using Elektronik.Common.SlamEventsCommandPattern;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UniRx;
@@ -41,14 +42,92 @@ namespace Elektronik.Online
                 .Select(_ => m_receiver.GetPackage())
                 .Where(package => package != null)
                 .Do(pkg => m_converter.Convert(ref pkg))
-                .Do(pkg => Debug.Log(pkg.Timestamp))
-                .Do(pkg => new AddCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, pkg).Execute())
-                .Do(pkg => new UpdateCommand(m_pointsContainer, m_observationsContainer, helmet, pkg).Execute())
-                .Do(pkg => new PostProcessingCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, helmet, pkg).Execute())
-                .Do(_ => m_pointsContainer.Repaint())
-                .Do(_ => m_linesContainer.Repaint())
-                .Do(_ => m_observationsContainer.Repaint())
+                .Do(UpdateMaps)
+                .Do(RepaintMaps)
+                .Do(PostProcessMaps)
+                .Do(UpdateHelmet)
                 .Subscribe();
+        }
+
+        private void UpdateHelmet(Package pkg)
+        {
+            int helmetObsId = pkg.Observations.FindIndex(o => o.Point.id == -1);
+            if (helmetObsId != -1)
+            {
+                SlamObservation obs = pkg.Observations[helmetObsId];
+                helmet.ReplaceAbs(obs.Point.position, obs.Orientation);
+            }
+        }
+
+        private void RepaintMaps(Package pkg)
+        {
+            m_pointsContainer.Repaint();
+            m_linesContainer.Repaint();
+            m_observationsContainer.Repaint();
+        }
+
+        private void UpdateMaps(Package pkg)
+        {
+            UpdateMap(pkg.Points, p => p.isNew, p => p.isRemoved, p => p.justColored, p => p.id != -1, m_pointsContainer);
+            UpdateMap(
+                pkg.Lines, 
+                /*isNew*/ _ => true, /*isRemoved*/ _ => false, /*justColored*/ _ => false, /*isValid*/ _ => true, 
+                m_linesContainer);
+            UpdateMap(
+                pkg.Observations, 
+                o => o.Point.isNew, o => o.Point.isRemoved, o => o.Point.justColored, o => o.Point.id != -1, 
+                m_observationsContainer);
+        }
+
+        private void PostProcessMaps(Package pkg)
+        {
+            if (pkg.Points != null)
+            {
+                SlamPoint[] updatedPoints = pkg.Points
+                    .Where(p => p.id != -1)
+                    .Where(p => !p.isRemoved)
+                    .Select(p => { var mp = m_pointsContainer.Get(p); mp.color = mp.defaultColor; return mp; })
+                    .ToArray();
+                UpdateMap(
+                    updatedPoints, 
+                    /*isNew*/ _ => false, /*isRemoved*/ _ => false, /*justColored*/ _ => true, p => p.id != -1, 
+                    m_pointsContainer);
+            }
+            if (pkg.Lines != null)
+            {
+                UpdateMap(
+                    pkg.Lines, 
+                    /*isNew*/ _ => false, /*isRemoved*/ _ => true, /*justColored*/ _ => false, /*isValid*/_ => true, 
+                    m_linesContainer);
+            }
+        }
+
+        private void UpdateMap<T>(
+            ICollection<T> source,
+            Func<T, bool> isNewSelector,
+            Func<T, bool> isRemovedSelector,
+            Func<T, bool> justColoredSelector,
+            Func<T, bool> isValidSelector,
+            ISlamContainer<T> map)
+        {
+            if (source != null)
+            {
+                foreach (var element in source)
+                {
+                    if (isValidSelector(element))
+                    {
+                        if (isNewSelector(element))
+                            map.Add(element);
+                        else if (isRemovedSelector(element))
+                            map.Remove(element);
+                        else if (justColoredSelector(element))
+                            map.ChangeColor(element);
+                        else
+                            map.Update(element);
+                    }
+                }
+
+            }
         }
 
         private void Awake()

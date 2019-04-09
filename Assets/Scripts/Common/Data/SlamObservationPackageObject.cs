@@ -34,7 +34,8 @@ namespace Elektronik.Common.Data
         public static void ParseActions(byte[] actions, int id, out SlamObservation observation)
         {
             int offset = 0;
-            observation = new SlamObservation()
+            var covisible = new List<SlamObservation.CovisibleInfo>();
+            observation = new SlamObservation(covisible)
             {
                 Orientation = Quaternion.identity,
             };
@@ -73,7 +74,7 @@ namespace Elektronik.Common.Data
                     offset += sizeof(int);
                     int countOfCommonPoints = BitConverter.ToInt32(actions, offset);
                     offset += sizeof(int);
-                    observation.CovisibleInfos.Add(new SlamObservation.CovisibleInfo()
+                    covisible.Add(new SlamObservation.CovisibleInfo()
                     {
                         id = covisibleId,
                         sharedPointsCount = countOfCommonPoints

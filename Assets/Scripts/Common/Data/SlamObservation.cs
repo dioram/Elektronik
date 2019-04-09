@@ -24,27 +24,19 @@ namespace Elektronik.Common.Data
             public int id;
             public int sharedPointsCount;
         }
-        public List<CovisibleInfo> CovisibleInfos { get; private set; }
-
-        public SlamObservation()
-        {
-            CovisibleInfos = new List<CovisibleInfo>();
-        }
+        public ReadOnlyCollection<CovisibleInfo> CovisibleInfos { get; private set; }
 
         public SlamObservation(List<CovisibleInfo> covisibleObservationsInfo)
         {
-            CovisibleInfos = covisibleObservationsInfo;
+            CovisibleInfos = new ReadOnlyCollection<CovisibleInfo>(covisibleObservationsInfo);
         }
         
-        public SlamObservation(SlamObservation src, bool sharedCovisibleObservations = true)
+        public SlamObservation(SlamObservation src)
         {
             Point = src.Point;
             Orientation = src.Orientation;
             Statistics = src.Statistics;
-
             CovisibleInfos = src.CovisibleInfos;
-            if (src.CovisibleInfos != null && !sharedCovisibleObservations)
-                CovisibleInfos = new List<CovisibleInfo>(src.CovisibleInfos);
         }
 
         public static implicit operator SlamPoint(SlamObservation obs)

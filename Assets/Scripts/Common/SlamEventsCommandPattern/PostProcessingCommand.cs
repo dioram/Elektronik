@@ -21,7 +21,6 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             IEnumerable<SlamPoint> points = null;
             if (slamEvent.Points != null)
             {
-                //points = slamEvent.Points.Where(p => p.id != -1).ToArray();
                 points = slamEvent.Points
                     .Where(p => p.id != -1)
                     .Select(pointsContainer.Get)
