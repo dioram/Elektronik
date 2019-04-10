@@ -14,7 +14,6 @@ namespace Elektronik.Online
         private Thread m_dataListener;
         private bool m_stop;
 
-        // Start is called before the first frame update
         void Awake()
         {
             m_connection = GetComponent<VRHackerUDPConnection>();
@@ -36,7 +35,12 @@ namespace Elektronik.Online
             m_dataListener.Join();
         }
 
-        void Listen()
+        void Update()
+        {
+            HackPose();
+        }
+
+        private void Listen()
         {
             while (!m_stop)
             {
@@ -46,12 +50,6 @@ namespace Elektronik.Online
                     m_lastPose = newPose;
                 }
             }
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            HackPose();
         }
 
         private void HackPose()

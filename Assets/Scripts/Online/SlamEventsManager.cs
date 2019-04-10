@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,55 +29,115 @@ namespace Elektronik.Online
         public int connectionTries = 10;
 
         private IDisposable m_mapUpdate;
+        private IDisposable m_mapRepaint;
         private ISlamContainer<SlamObservation> m_observationsContainer;
         private ISlamContainer<SlamPoint> m_pointsContainer;
         private ISlamContainer<SlamLine> m_linesContainer;
         private IPackageCSConverter m_converter;
         private bool m_connecting = false;
         private TCPPackagesReceiver m_receiver;
+        private Queue<Pose> m_positions;
+
+        private void Awake()
+        {
+            m_converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.MapInfoScaling));
+            m_receiver = new TCPPackagesReceiver();
+            m_pointsContainer = new SlamPointsContainer(pointCloud);
+            m_linesContainer = new SlamLinesContainer(linesCloud);
+            m_observationsContainer = new SlamObservationsContainer(observationPrefab, new SlamLinesContainer(observationsLinesCloud));
+        }
+
+        private void Start()
+        {
+            m_positions = new Queue<Pose>();
+            clear.OnClickAsObservable().Subscribe(_ => Clear());
+            reconnect.OnClickAsObservable().Subscribe(_ => Reconnect());
+            status.color = Color.red;
+            status.text = "Not connected...";
+            
+        }
+
+        private void OnDestroy()
+        {
+            if (m_mapUpdate != null)
+                m_mapUpdate.Dispose();
+            if (m_mapRepaint != null)
+                m_mapRepaint.Dispose();
+        }
 
         private void SubscribeToIncome()
         {
-            m_mapUpdate = Observable.EveryFixedUpdate()
-                .Where(_ => m_receiver.Connected)
-                .Select(_ => m_receiver.GetPackage())
+            var pkgSrc = new Subject<Package>();
+            m_mapUpdate = Observable.Interval(TimeSpan.FromMilliseconds(0))
+                .TakeWhile(_ => m_receiver.Connected)
+                .Select(_ => SafeReadPackage())
                 .Where(package => package != null)
                 .Do(pkg => m_converter.Convert(ref pkg))
+                .Do(AddPose)
                 .Do(UpdateMaps)
-                .Do(RepaintMaps)
                 .Do(PostProcessMaps)
-                .Do(UpdateHelmet)
                 .Subscribe();
+
+            m_mapRepaint = Observable.EveryFixedUpdate().Do(_ => RepaintMaps()).Do(_ => UpdateHelmet()).Subscribe();
         }
 
-        private void UpdateHelmet(Package pkg)
+        private Package SafeReadPackage()
         {
-            int helmetObsId = pkg.Observations.FindIndex(o => o.Point.id == -1);
-            if (helmetObsId != -1)
+            Package package = null;
+            lock (m_receiver)
             {
-                SlamObservation obs = pkg.Observations[helmetObsId];
-                helmet.ReplaceAbs(obs.Point.position, obs.Orientation);
+                if (m_receiver.Connected)
+                    package = m_receiver.GetPackage();
+            }
+            return package;
+        }
+
+        private void AddPose(Package pkg)
+        {
+            int helmetPoseId = pkg.Observations.FindIndex(obs => obs.Point.id == -1);
+            if (helmetPoseId != -1)
+            {
+                SlamObservation helmet = pkg.Observations[helmetPoseId];
+                lock (m_positions)
+                {
+                    m_positions.Enqueue(new Pose(helmet.Point.position, helmet.Orientation));
+                }
             }
         }
-
-        private void RepaintMaps(Package pkg)
+        private void UpdateHelmet()
         {
-            m_pointsContainer.Repaint();
-            m_linesContainer.Repaint();
-            m_observationsContainer.Repaint();
+            lock (m_positions)
+            {
+                if (m_positions.Count > 0)
+                {
+                    Pose pose = m_positions.Dequeue();
+                    helmet.ReplaceAbs(pose.position, pose.rotation);
+                }
+            }
+            
+        }
+
+        private void RepaintMaps()
+        {
+            lock (m_pointsContainer) m_pointsContainer.Repaint();
+            lock (m_linesContainer) m_linesContainer.Repaint();
+            lock (m_observationsContainer) m_observationsContainer.Repaint();
         }
 
         private void UpdateMaps(Package pkg)
         {
-            UpdateMap(pkg.Points, p => p.isNew, p => p.isRemoved, p => p.justColored, p => p.id != -1, m_pointsContainer);
-            UpdateMap(
-                pkg.Lines, 
-                /*isNew*/ _ => true, /*isRemoved*/ _ => false, /*justColored*/ _ => false, /*isValid*/ _ => true, 
-                m_linesContainer);
-            UpdateMap(
-                pkg.Observations, 
-                o => o.Point.isNew, o => o.Point.isRemoved, o => o.Point.justColored, o => o.Point.id != -1, 
-                m_observationsContainer);
+            lock (m_pointsContainer)
+                UpdateMap(pkg.Points, p => p.isNew, p => p.isRemoved, p => p.justColored, p => p.id != -1, m_pointsContainer);
+            lock (m_linesContainer)
+                UpdateMap(
+                      pkg.Lines,
+                      /*isNew*/ _ => true, /*isRemoved*/ _ => false, /*justColored*/ _ => false, /*isValid*/ _ => true,
+                      m_linesContainer);
+            lock (m_observationsContainer)
+                UpdateMap(
+                      pkg.Observations,
+                      o => o.Point.isNew, o => o.Point.isRemoved, o => o.Point.justColored, o => o.Point.id != -1,
+                      m_observationsContainer);
         }
 
         private void PostProcessMaps(Package pkg)
@@ -88,17 +149,19 @@ namespace Elektronik.Online
                     .Where(p => !p.isRemoved)
                     .Select(p => { var mp = m_pointsContainer.Get(p); mp.color = mp.defaultColor; return mp; })
                     .ToArray();
-                UpdateMap(
-                    updatedPoints, 
-                    /*isNew*/ _ => false, /*isRemoved*/ _ => false, /*justColored*/ _ => true, p => p.id != -1, 
-                    m_pointsContainer);
+                lock (m_pointsContainer)
+                    UpdateMap(
+                      updatedPoints,
+                      /*isNew*/ _ => false, /*isRemoved*/ _ => false, /*justColored*/ _ => true, p => p.id != -1,
+                      m_pointsContainer);
             }
             if (pkg.Lines != null)
             {
-                UpdateMap(
-                    pkg.Lines, 
-                    /*isNew*/ _ => false, /*isRemoved*/ _ => true, /*justColored*/ _ => false, /*isValid*/_ => true, 
-                    m_linesContainer);
+                lock (m_linesContainer)
+                    UpdateMap(
+                      pkg.Lines,
+                      /*isNew*/ _ => false, /*isRemoved*/ _ => true, /*justColored*/ _ => false, /*isValid*/_ => true,
+                      m_linesContainer);
             }
         }
 
@@ -130,42 +193,13 @@ namespace Elektronik.Online
             }
         }
 
-        private void Awake()
-        {
-            m_converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.MapInfoScaling));
-            m_receiver = new TCPPackagesReceiver();
-
-            m_pointsContainer = new SlamPointsContainer(pointCloud);
-            m_linesContainer = new SlamLinesContainer(linesCloud);
-            m_observationsContainer = new SlamObservationsContainer(observationPrefab, new SlamLinesContainer(observationsLinesCloud));
-        }
-
-        private void Start()
-        {
-            clear.onClick.AddListener(Clear);
-            reconnect.onClick.AddListener(Reconnect);
-            status.color = Color.red;
-            status.text = "Not connected...";
-        }
-
-        private void OnDestroy()
-        {
-            if (m_receiver != null)
-                m_receiver.Dispose();
-            if (m_mapUpdate != null)
-                m_mapUpdate.Dispose();
-        }
-
         private void Clear()
         {
-            if (m_mapUpdate != null)
-            {
-                m_mapUpdate.Dispose();
-                m_mapUpdate = null;
-            }
-            m_pointsContainer.Clear();
-            m_linesContainer.Clear();
-            m_observationsContainer.Clear();
+            Disconnect();
+            lock (m_pointsContainer) m_pointsContainer.Clear();
+            lock (m_linesContainer) m_linesContainer.Clear();
+            lock (m_observationsContainer) m_observationsContainer.Clear();
+            lock (m_positions) m_positions.Clear();
             helmet.ResetHelmet();
         }
 
@@ -181,8 +215,16 @@ namespace Elektronik.Online
 
         private void Disconnect()
         {
-            m_receiver.Dispose();
-            m_receiver = new TCPPackagesReceiver();
+            if (m_mapUpdate != null)
+                m_mapUpdate.Dispose();
+            if (m_mapRepaint != null)
+                m_mapRepaint.Dispose();
+            lock (m_receiver)
+            {
+                if (m_receiver != null)
+                    m_receiver.Dispose();
+                m_receiver = new TCPPackagesReceiver();
+            }
         }
 
         IEnumerator WaitForConnection(int tries)
@@ -201,6 +243,7 @@ namespace Elektronik.Online
                         .ObserveOnMainThread()
                         .Do(_ => status.color = Color.red)
                         .Do(_ => status.text = "Disconnected!")
+                        .Do(_ => Disconnect())
                         .Subscribe();
                     SubscribeToIncome();
                     m_connecting = false;

@@ -136,6 +136,7 @@
     <Compile Include="Assets\Scripts\Online\TCPPackagesReceiver.cs" />
     <Compile Include="Assets\Scripts\Online\UDPPackagesReceiver.cs" />
     <Compile Include="Assets\Scripts\Online\VRHacker.cs" />
+    <Compile Include="Assets\Scripts\Online\VRHacker_New.cs" />
     <Compile Include="Assets\Scripts\Online\VRHackerDirect.cs" />
     <Compile Include="Assets\Scripts\Online\VRHackerUDPConnection.cs" />
     <None Include="Assets\Materials\Points shader.shader" />
