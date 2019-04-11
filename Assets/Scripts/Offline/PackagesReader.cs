@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Elektronik.Offline
@@ -26,19 +27,21 @@ namespace Elektronik.Offline
                 int eventsCount = br.ReadInt32();
                 result = new Package[eventsCount];
                 int[] offsetTable = Enumerable.Range(0, eventsCount).Select(_ => br.ReadInt32()).ToArray();
-                for (int i = 0; i < eventsCount; ++i)
+                byte[] data = new byte[br.BaseStream.Length];
+                br.BaseStream.Read(data, 0, data.Length);
+                Parallel.For(0, eventsCount, (i) =>
                 {
-                    br.BaseStream.Seek(offsetTable[i], SeekOrigin.Begin);
-                    Debug.Log(String.Format("{0}. offset: {1} (0x{1:X8})", i, offsetTable[i]));
-                    long packageLength = 
+                    Debug.Log($"{i}. offset: {offsetTable[i]} (0x{offsetTable[i]:X8})");
+                    long packageLength =
                         i == eventsCount - 1 ?
-                        br.BaseStream.Length - sizeof(int) /*table offset*/ - offsetTable[i] 
+                        br.BaseStream.Length - sizeof(int) /*table offset*/ - offsetTable[i]
                         : offsetTable[i + 1] - offsetTable[i];
-                    byte[] rawPackage = br.ReadBytes((int)packageLength);
+                    byte[] rawPackage = new byte[(int)packageLength];
+                    Buffer.BlockCopy(data, offsetTable[i], rawPackage, 0, (int)packageLength);
                     Package package = Package.Parse(rawPackage);
                     converter.Convert(ref package);
                     result[i] = package;
-                }
+                });
             }
             return result;
         }

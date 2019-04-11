@@ -4988,7 +4988,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fe6691d545ea0a46a1d4f4dc336fb02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timelineSlider: {fileID: 1375853871}
+  timelineSlider: {fileID: 1375853872}
   timelineLabel: {fileID: 833832414}
   eventsManager: {fileID: 55821241}
 --- !u!1 &786835440
@@ -9432,6 +9432,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1375853870}
   - component: {fileID: 1375853871}
+  - component: {fileID: 1375853872}
   m_Layer: 0
   m_Name: Time slider
   m_TagString: Untagged
@@ -9509,7 +9510,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 776814864}
-        m_MethodName: SetPosition
+        m_MethodName: UpdateInfo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9521,6 +9522,18 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Slider+SliderEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &1375853872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375853869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bad3e4722d68a8f4ab72b54a71062ebe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1397915452
 GameObject:
   m_ObjectHideFlags: 0
@@ -11672,7 +11685,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1751248718
 Transform:
   m_ObjectHideFlags: 0
