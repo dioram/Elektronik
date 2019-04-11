@@ -38,7 +38,7 @@ namespace Elektronik.Common
             string pathToAppData = Path.Combine(Application.persistentDataPath, filename);
             FileInfo fi = new FileInfo(pathToAppData);
             IFormatter formatter = new BinaryFormatter();
-            if (File.Exists(pathToAppData) && fi.Directory.Exists)
+            if (fi.Directory.Exists && File.Exists(pathToAppData))
             {
                 using (var file = File.Open(pathToAppData, FileMode.Open))
                 {
