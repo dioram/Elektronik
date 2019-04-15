@@ -12111,22 +12111,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1833250762, guid: 1e9d1ac053dc1e941bba19676218e05a, type: 3}
+    - target: {fileID: 1243955800413906685, guid: 1e9d1ac053dc1e941bba19676218e05a,
+        type: 3}
       propertyPath: helmet
       value: 
       objectReference: {fileID: 4621595615911013}
-    - target: {fileID: 1833250762, guid: 1e9d1ac053dc1e941bba19676218e05a, type: 3}
-      propertyPath: m_headset
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1833250762, guid: 1e9d1ac053dc1e941bba19676218e05a, type: 3}
+    - target: {fileID: 1243955800413906685, guid: 1e9d1ac053dc1e941bba19676218e05a,
+        type: 3}
       propertyPath: headset
       value: 
       objectReference: {fileID: 1902341832}
-    - target: {fileID: 1833250762, guid: 1e9d1ac053dc1e941bba19676218e05a, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1e9d1ac053dc1e941bba19676218e05a, type: 3}
 --- !u!1 &1833250760 stripped

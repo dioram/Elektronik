@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8743577008333223137}
-  - component: {fileID: 1833250762}
+  - component: {fileID: 1243955800413906685}
   m_Layer: 0
   m_Name: VRHacker
   m_TagString: Untagged
@@ -31,7 +31,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1833250762
+--- !u!114 &1243955800413906685
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,3 +44,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   helmet: {fileID: 0}
+  headset: {fileID: 0}
