@@ -1,11 +1,7 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.Containers;
+﻿using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
 using Elektronik.Common.UI;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,20 +26,20 @@ namespace Elektronik.Offline
             
         }
 
-        public void UpdateInfo(Package package, ISlamContainer<SlamPoint> pointsMap, SlamObservationsGraph graph)
+        public void UpdateInfo(Package package, ICloudObjectsContainer<SlamPoint> pointsMap, ICloudObjectsContainer<SlamObservation> graph)
         {
             listBoxWithSpecializedObjects.Clear();
 
             commonIformation.text = package.Summary();
 
             SlamPoint[] specialPts = package.Points.Where(p => p.id != -1).Where(p => p.message != null).ToArray();
-            Vector3[] ptsPositionsFromMap = specialPts.Select(p => pointsMap.Get(p.id).position).ToArray();
+            Vector3[] ptsPositionsFromMap = specialPts.Select(p => pointsMap[p].position).ToArray();
 
             SlamObservation[] specialObs = package.Observations
                 .Where(o => o.Point.id != -1)
                 .Where(o => o.Point.message != null)
                 .ToArray();
-            Vector3[] obsPositionsFromMap = specialObs.Select(o => graph.Get(o.Point.id).Point.position).ToArray();
+            Vector3[] obsPositionsFromMap = specialObs.Select(o => graph[o].Point.position).ToArray();
 
             for (int i = 0; i < specialPts.Length; ++i)
             {

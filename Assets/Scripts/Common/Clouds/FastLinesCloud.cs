@@ -1,6 +1,4 @@
 ﻿using Elektronik.Common.Clouds.Meshes;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,17 +42,13 @@ namespace Elektronik.Common.Clouds
 
         public void GetLine(int idx, out Vector3 position1, out Vector3 position2, out Color color)
         {
-            int meshId;
-            int lineId;
-            CheckMesh(idx, out meshId, out lineId);
+            CheckMesh(idx, out int meshId, out int lineId);
             m_meshObjects[meshId].GetLine(lineId, out position1, out position2, out color);
         }
 
         public void SetLine(int idx, Vector3 position1, Vector3 position2, Color color)
         {
-            int meshId;
-            int lineId;
-            CheckMesh(idx, out meshId, out lineId);
+            CheckMesh(idx, out int meshId, out int lineId);
             position1.Scale(scale * Vector3.one);
             position2.Scale(scale * Vector3.one);
             m_meshObjects[meshId].SetLine(lineId, position1, position2, color);
@@ -62,17 +56,13 @@ namespace Elektronik.Common.Clouds
 
         public void SetLineColor(int idx, Color color)
         {
-            int meshId;
-            int lineId;
-            CheckMesh(idx, out meshId, out lineId);
+            CheckMesh(idx, out int meshId, out int lineId);
             m_meshObjects[meshId].SetLineColor(lineId, color);
         }
 
         public void SetLinePosition(int idx, Vector3 position1, Vector3 position2)
         {
-            int meshId;
-            int pointId;
-            CheckMesh(idx, out meshId, out pointId);
+            CheckMesh(idx, out int meshId, out int pointId);
             position1.Scale(scale * Vector3.one);
             position2.Scale(scale * Vector3.one);
             m_meshObjects[meshId].SetLinePositions(pointId, position1, position2);
@@ -105,12 +95,17 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-
         private void AddNewMesh(int idx)
         {
             GameObject clone = MF_AutoPool.Spawn(meshObjectPrefab.gameObject);
             LinesMeshObject newMesh = clone.GetComponent<LinesMeshObject>();
             m_meshObjects.Add(idx, newMesh);
+        }
+
+        public void SetActive(bool value)
+        {
+            meshObjectPrefab.gameObject.SetActive(value);
+            MF_AutoPool.ForEach(meshObjectPrefab.gameObject, obj => obj.SetActive(value));
         }
     }
 }

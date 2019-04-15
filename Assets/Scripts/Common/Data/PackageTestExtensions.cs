@@ -37,8 +37,8 @@ namespace Elektronik.Common.Data
         public static void TestExistent(
             this Package package,
             Func<SlamPoint, bool> filter,
-            ISlamContainer<SlamPoint> pointsContainer,
-            SlamObservationsGraph graph)
+            ICloudObjectsContainer<SlamPoint> pointsContainer,
+            ICloudObjectsContainer<SlamObservation> graph)
         {
             if (package.Points != null)
             {
@@ -47,7 +47,7 @@ namespace Elektronik.Common.Data
             }
             if (package.Observations != null)
             {
-                var existentObs = SlamObjectQuery(package.Observations.Select(o => (SlamPoint)o).Where(o => filter(o)), id => graph.ObservationExists(id));
+                var existentObs = SlamObjectQuery(package.Observations.Select(o => (SlamPoint)o).Where(o => filter(o)), id => graph.Exists(id));
                 Test(package, existentObs, "Observation id {0} already exists. New: '{1}'. Removed: '{2}'");
             }
         }
@@ -55,8 +55,8 @@ namespace Elektronik.Common.Data
         public static void TestNonExistent(
             this Package package,
             Func<SlamPoint, bool> filter,
-            ISlamContainer<SlamPoint> pointsContainer,
-            SlamObservationsGraph graph)
+            ICloudObjectsContainer<SlamPoint> pointsContainer,
+            ICloudObjectsContainer<SlamObservation> graph)
         {
 #if DEBUG
             if (package.Points != null)
@@ -66,7 +66,7 @@ namespace Elektronik.Common.Data
             }
             if (package.Observations != null)
             {
-                var existentObs = SlamObjectQuery(package.Observations.Select(o => (SlamPoint)o).Where(o => filter(o)), id => !graph.ObservationExists(id));
+                var existentObs = SlamObjectQuery(package.Observations.Select(o => (SlamPoint)o).Where(o => filter(o)), id => !graph.Exists(id));
                 ElektronikLogger.WrapDebug(() => Test(package, existentObs, "Observation id {0} doesn't exists. New: '{1}'. Removed: '{2}'"));
             }
 #endif

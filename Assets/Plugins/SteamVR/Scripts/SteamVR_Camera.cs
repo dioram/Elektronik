@@ -44,23 +44,22 @@ public class SteamVR_Camera : MonoBehaviour
 		SteamVR_Render.Remove(this);
 	}
 
-	void OnEnable()
+    void OnEnable()
 	{
-		// Bail if no hmd is connected
-		var vr = SteamVR.instance;
-		if (vr == null)
-		{
-			if (head != null)
-			{
-				head.GetComponent<SteamVR_TrackedObject>().enabled = false;
-			}
+        // Bail if no hmd is connected
+        var vr = SteamVR.instance;
+        if (vr == null)
+        {
+            if (head != null)
+            {
+                head.GetComponent<SteamVR_TrackedObject>().enabled = false;
+            }
 
-			enabled = false;
-			return;
-		}
-
-		// Convert camera rig for native OpenVR integration.
-		var t = transform;
+            enabled = false;
+            return;
+        }
+        // Convert camera rig for native OpenVR integration.
+        var t = transform;
 		if (head != t)
 		{
 			Expand();

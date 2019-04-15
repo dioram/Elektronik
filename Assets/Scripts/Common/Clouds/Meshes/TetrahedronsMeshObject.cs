@@ -144,9 +144,7 @@ namespace Elektronik.Common.Clouds.Meshes
             {
                 if (Exists(i))
                 {
-                    Vector3 CG = new Vector3();
-                    Color color = new Color();
-                    Get(i, out CG, out color);
+                    Get(i, out Vector3 CG, out Color color);
                     tetrahedronsCGs_.Add(CG);
                     tetrahedronsColors_.Add(color);
                 }

@@ -16,7 +16,6 @@ namespace Elektronik.Online
     public class TCPPackagesReceiver : IDisposable
     {
         Thread m_readingThread;
-        object m_sync;
         List<Package> m_packagesBuffer;
         Queue<Package> m_readPackages;
         private int m_packageNum = 0;
@@ -37,7 +36,6 @@ namespace Elektronik.Online
             m_network.ReceiveBufferSize = 64 * 1024;
             m_packagesBuffer = new List<Package>(20);
             m_readPackages = new Queue<Package>(100);
-            m_sync = new object();
             m_readingThread = new Thread(ReadPackages);
             m_readingThread.IsBackground = true;
         }
@@ -94,14 +92,13 @@ namespace Elektronik.Online
                     }
                     if (receivedPackage != null)
                     {
-                        lock (m_sync)
+                        lock (m_readPackages)
                         {
                             m_readPackages.Enqueue(receivedPackage);
                         }
                         m_packagesBuffer.Remove(receivedPackage);
                         ++m_packageNum;
                     }
-                    Thread.Sleep((int)(100f / 7f));
                 }
                 if (!CheckConnection(zeroByte))
                 {
@@ -134,7 +131,7 @@ namespace Elektronik.Online
         public Package GetPackage()
         {
             Package package = null;
-            lock (m_sync)
+            lock (m_readPackages)
             {
                 if (m_readPackages.Count > 0)
                 {
@@ -148,7 +145,7 @@ namespace Elektronik.Online
         {
             Debug.Log("[TCPPackagesReceiver] disposing");
             m_stop = true;
-            if (m_readingThread.ThreadState == ThreadState.Running)
+            if (m_readingThread.IsAlive)
                 m_readingThread.Join();
             m_network.Close();
             Debug.Log("[TCPPackagesReceiver] disposed");

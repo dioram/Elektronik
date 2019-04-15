@@ -39,10 +39,7 @@ namespace Elektronik.Common.Clouds.Meshes
         public bool LineExists(int idx)
         {
             Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
-            Vector3 pos1;
-            Vector3 pos2;
-            Color color;
-            GetLine(idx, out pos1, out pos2, out color);
+            GetLine(idx, out Vector3 pos1, out Vector3 pos2, out Color color);
             return !(pos1 == Vector3.zero && pos2 == Vector3.zero && color == new Color(0, 0, 0, 0));
         }
 

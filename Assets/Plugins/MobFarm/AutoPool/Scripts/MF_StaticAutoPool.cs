@@ -111,6 +111,15 @@ public class MF_AutoPool {
 		}
 	}
 
+    public static bool ForEach (GameObject prefab, System.Action<GameObject> action) {
+        FindOPM();
+        if ( opmScript == null ) { // didn't find an object pool manager
+            return false;
+        } else {
+            return opmScript.ForEach(prefab, action);
+        }
+    }
+
 	public static bool RemovePool ( GameObject obj ) {
 		bool result = false;
 		FindOPM();

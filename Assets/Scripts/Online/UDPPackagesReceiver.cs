@@ -11,6 +11,7 @@ using UnityEngine;
 
 namespace Elektronik.Online
 {
+    [Obsolete]
     public class UDPPackagesReceiver
     {
         private uint m_packageNum = 0;

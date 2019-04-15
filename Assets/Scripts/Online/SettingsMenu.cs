@@ -33,10 +33,9 @@ namespace Elektronik.Online
 
         #region UIs
 
-        InputField uiAddress;
-        InputField uiPort;
-        InputField uiScalingFactor;
-        Dropdown uiConnectionType;
+        InputField uiMapInfoAddress;
+        InputField uiMapInfoPort;
+        InputField uiMapInfoScalingFactor;
         Button uiCancel;
         Button uiLoad;
 
@@ -57,21 +56,20 @@ namespace Elektronik.Online
 
         void FindUIs()
         {
-            uiAddress = GameObject.Find("Input address").GetComponent<InputField>();
-            uiPort = GameObject.Find("Input port").GetComponent<InputField>();
-            uiScalingFactor = GameObject.Find("Input scaling").GetComponent<InputField>();
-            uiConnectionType = GameObject.Find("Dropdown connection type").GetComponent<Dropdown>();
+            uiMapInfoAddress = GameObject.Find("Map info address").GetComponent<InputField>();
+            uiMapInfoPort = GameObject.Find("Map info port").GetComponent<InputField>();
+            uiMapInfoScalingFactor = GameObject.Find("Map info scaling").GetComponent<InputField>();
             uiCancel = GameObject.Find("Cancel").GetComponent<Button>();
             uiLoad = GameObject.Find("Load").GetComponent<Button>();
         }
 
         void SubscribeUIs()
         {
-            uiAddress.ObserveEveryValueChanged(addr => addr.text)
+            uiMapInfoAddress.ObserveEveryValueChanged(addr => addr.text)
                 .Do(content =>
                 {
                     IPAddress stub = null;
-                    uiLoad.enabled = IPAddress.TryParse(content, out stub) && !String.IsNullOrEmpty(uiPort.text);
+                    uiLoad.enabled = IPAddress.TryParse(content, out stub) && !String.IsNullOrEmpty(uiMapInfoPort.text);
                 })
                 .Subscribe();
             uiCancel.OnClickAsObservable()
@@ -80,16 +78,14 @@ namespace Elektronik.Online
             uiLoad.OnClickAsObservable()
                 .Select(_ =>
                 {
-                    bool addressesAreEqual = String.Compare(uiAddress.text, OnlineModeSettings.Current.Address.ToString()) == 0;
-                    bool portsAreEqual = int.Parse(uiPort.text) == OnlineModeSettings.Current.Port;
-                    return addressesAreEqual && portsAreEqual ? OnlineModeSettings.Current : new OnlineModeSettings();
+                    bool mapInfoAddressesAreEqual = String.Compare(uiMapInfoAddress.text, OnlineModeSettings.Current.MapInfoAddress.ToString()) == 0;
+                    bool mapInfoPortsAreEqual = int.Parse(uiMapInfoPort.text) == OnlineModeSettings.Current.MapInfoPort;
+                    return mapInfoAddressesAreEqual && mapInfoPortsAreEqual ? OnlineModeSettings.Current : new OnlineModeSettings();
                 })
                 .Do(oms => OnlineModeSettings.Current = oms)
-                .Do(_ => OnlineModeSettings.Current.Scaling = uiScalingFactor.text.Length == 0 ? 1.0f : float.Parse(uiScalingFactor.text))
-                .Do(_ => OnlineModeSettings.Current.Address = IPAddress.Parse(uiAddress.text))
-                .Do(_ => OnlineModeSettings.Current.Port = Int32.Parse(uiPort.text))
-                .Do(_ => OnlineModeSettings.Current.ConnectionType = 
-                    uiConnectionType.value == 0 ? OnlineModeSettings.ConnectionTypes.UDP : OnlineModeSettings.ConnectionTypes.TCP)
+                .Do(_ => OnlineModeSettings.Current.MapInfoScaling = uiMapInfoScalingFactor.text.Length == 0 ? 1.0f : float.Parse(uiMapInfoScalingFactor.text))
+                .Do(_ => OnlineModeSettings.Current.MapInfoAddress = IPAddress.Parse(uiMapInfoAddress.text))
+                .Do(_ => OnlineModeSettings.Current.MapInfoPort = Int32.Parse(uiMapInfoPort.text))
                 .Do(_ => OnlineModeSettings.Current.Time = DateTime.Now)
                 .Do(_ => store.Add(OnlineModeSettings.Current))
                 .Do(_ => store.Serialize(SETTINGS_FILE))
@@ -102,7 +98,7 @@ namespace Elektronik.Online
             var IPs = store.Recent;
             foreach (var recent in store.Recent)
             {
-                recentConnectionPrefab.FullAddress = String.Format("{0}:{1}", recent.Address.ToString(), recent.Port.ToString());
+                recentConnectionPrefab.FullAddress = String.Format("{0}:{1}", recent.MapInfoAddress.ToString(), recent.MapInfoPort.ToString());
                 recentConnectionPrefab.Time = recent.Time;
                 recentConnectionsListBox.Add(recentConnectionPrefab);
             }
@@ -120,11 +116,9 @@ namespace Elektronik.Online
         void RecentIPChanged(object sender, UIListBox.SelectionChangedEventArgs args)
         {
             OnlineModeSettings.Current = store.Recent[args.index];
-            uiAddress.text = OnlineModeSettings.Current.Address.ToString();
-            uiPort.text = OnlineModeSettings.Current.Port.ToString();
-            uiScalingFactor.text = OnlineModeSettings.Current.Scaling.ToString();
-            uiConnectionType.value =
-                OnlineModeSettings.Current.ConnectionType == OnlineModeSettings.ConnectionTypes.UDP ? 0 : 1;
+            uiMapInfoAddress.text = OnlineModeSettings.Current.MapInfoAddress.ToString();
+            uiMapInfoPort.text = OnlineModeSettings.Current.MapInfoPort.ToString();
+            uiMapInfoScalingFactor.text = OnlineModeSettings.Current.MapInfoScaling.ToString();
         }
     }
 }

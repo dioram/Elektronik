@@ -9,10 +9,9 @@ namespace Elektronik.Common
 {
     public class Helmet : MonoBehaviour
     {
-        ISlamContainer<SlamLine> m_linesContainer;
+        ICloudObjectsContainer<SlamLine> m_linesContainer;
         int m_lastLineId;
         int m_lineSegmentIdx;
-        GameObject m_helmet;
         Stack<Pose> m_poseHistory;
         Stack<int> m_lineIdsHistory;
 
@@ -22,7 +21,6 @@ namespace Elektronik.Common
         public void Start()
         {
             m_lastLineId = -1;
-            m_helmet = gameObject;
             m_linesContainer = new SlamLinesContainer(linesCloud);
             m_poseHistory = new Stack<Pose>();
             m_lineIdsHistory = new Stack<int>();
@@ -33,8 +31,8 @@ namespace Elektronik.Common
             if (m_poseHistory.Count > 0)
             {
                 Pose lastPose = m_poseHistory.Pop();
-                m_helmet.transform.position = lastPose.position;
-                m_helmet.transform.rotation = lastPose.rotation;
+                transform.position = lastPose.position;
+                transform.rotation = lastPose.rotation;
             }
             if (m_lineIdsHistory.Count > 0)
             {
@@ -68,28 +66,28 @@ namespace Elektronik.Common
 
         public void ReplaceAbs(Vector3 position, Quaternion rotation)
         {
-            m_poseHistory.Push(new Pose(m_helmet.transform.position, m_helmet.transform.rotation));
-            ContinueTrack(m_helmet.transform.position, position);
-            m_helmet.transform.SetPositionAndRotation(position, rotation);
+            m_poseHistory.Push(new Pose(transform.position, transform.rotation));
+            ContinueTrack(transform.position, position);
+            transform.SetPositionAndRotation(position, rotation);
         }
 
         public void ReplaceRel(Vector3 position, Quaternion rotation)
         {
-            m_poseHistory.Push(new Pose(m_helmet.transform.position, m_helmet.transform.rotation));
-            Matrix4x4 current = Matrix4x4.TRS(m_helmet.transform.position, m_helmet.transform.rotation, Vector3.one);
+            m_poseHistory.Push(new Pose(transform.position, transform.rotation));
+            Matrix4x4 current = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
             Matrix4x4 rel = Matrix4x4.TRS(position, rotation, Vector3.one);
             Matrix4x4 newPose = current * rel;
             Vector3 newPosition = newPose.GetColumn(3);
             Quaternion newRotation = Quaternion.LookRotation(newPose.GetColumn(2), newPose.GetColumn(1));
-            ContinueTrack(m_helmet.transform.position, position);
-            m_helmet.transform.position = newPosition;
-            m_helmet.transform.rotation = newRotation;
+            ContinueTrack(transform.position, position);
+            transform.position = newPosition;
+            transform.rotation = newRotation;
         }
 
         public void ResetHelmet()
         {
-            m_helmet.transform.position = Vector3.zero;
-            m_helmet.transform.rotation = Quaternion.identity;
+            transform.position = Vector3.zero;
+            transform.rotation = Quaternion.identity;
             m_lastLineId = -1;
             m_lineSegmentIdx = 0;
             m_lineIdsHistory.Clear();

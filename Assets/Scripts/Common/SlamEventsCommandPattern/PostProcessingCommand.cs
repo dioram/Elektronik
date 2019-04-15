@@ -1,33 +1,28 @@
-﻿using Elektronik.Common;
-using System;
+﻿using Elektronik.Common.Containers;
+using Elektronik.Common.Data;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using UnityEngine;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
     public class PostProcessingCommand : MacroCommand
     {
         public PostProcessingCommand(
-            ISlamContainer<SlamPoint> pointsContainer,
-            ISlamContainer<SlamLine> linesContainer,
-            SlamObservationsGraph graph,
+            ICloudObjectsContainer<SlamPoint> pointsContainer,
+            ICloudObjectsContainer<SlamLine> linesContainer,
+            ICloudObjectsContainer<SlamObservation> observationsContainer,
             Helmet helmet,
             Package slamEvent)
         {
             IEnumerable<SlamPoint> points = null;
             if (slamEvent.Points != null)
             {
-                //points = slamEvent.Points.Where(p => p.id != -1).ToArray();
                 points = slamEvent.Points
                     .Where(p => p.id != -1)
-                    .Select(pointsContainer.Get)
+                    .Select(p => pointsContainer[p])
                     .Select(p => { p.color = p.defaultColor; return p; });
-                m_commands.Add(new UpdateCommand(pointsContainer, graph, helmet, points, null));
-                m_commands.Add(new RemoveCommand(pointsContainer, linesContainer, graph, slamEvent));
+                m_commands.Add(new UpdateCommand(pointsContainer, observationsContainer, helmet, points, null));
+                m_commands.Add(new RemoveCommand(pointsContainer, linesContainer, observationsContainer, slamEvent));
             }
             
         }

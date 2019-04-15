@@ -12,7 +12,6 @@ namespace Elektronik.Common.Data
         public Color color1;
         public Color color2;
         public bool isRemoved;
-
         public SlamLine(Vector3 vert1, Vector3 vert2, int pointId1, int pointId2, Color color1, Color color2)
         {
             this.vert1 = vert1;

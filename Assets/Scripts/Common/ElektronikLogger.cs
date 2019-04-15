@@ -13,7 +13,13 @@ namespace Elektronik.Common
 
         public static void OpenLog()
         {
-            string logFileName = string.Format(@"logs\log_{0}.txt", DateTime.Now.ToString(@"MM_dd_yyyy hh_mm_ss"));
+            DirectoryInfo directory = new DirectoryInfo(Application.dataPath);
+            directory = directory.Parent;
+            string directoryPath = Path.Combine(directory.FullName, "Logs");
+            if (!Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+            string filename = string.Format("log_{0}.txt", DateTime.Now.ToString(@"MM_dd_yyyy hh_mm_ss"));
+            string logFileName = Path.Combine(directoryPath, filename);
             m_logger = new StreamWriter(logFileName);
         }
 

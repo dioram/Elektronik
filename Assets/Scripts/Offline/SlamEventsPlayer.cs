@@ -1,26 +1,25 @@
-﻿using UnityEngine;
-using System.Collections;
-using Elektronik.Common.SlamEventsCommandPattern;
-using UnityEngine.UI;
-using Elektronik.Common;
-using System;
-using Elektronik.Common.Data;
+﻿using Elektronik.Common.Data;
 using Elektronik.Common.UI;
-using System.Linq;
-using System.Collections.Generic;
+using System;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Elektronik.Offline
 {
     public class SlamEventsPlayer : MonoBehaviour
     {
         private bool m_play = false;
-        public Slider timelineSlider;
+
+        public UITimelineSlider timelineSlider;
         public Text timelineLabel;
 
         public SlamEventsManager eventsManager;
 
+
         private void Start()
         {
+            timelineSlider.OnTimelineChanged += OnTimelineChanged;
             StartCoroutine(WaitForManagerLengthParameter());
         }
 
@@ -31,8 +30,8 @@ namespace Elektronik.Offline
                 yield return new WaitForSeconds(1);
             }
 
-            timelineSlider.minValue = 0;
-            timelineSlider.maxValue = eventsManager.GetLength() - 1;
+            timelineSlider.GetComponent<Slider>().minValue = 0;
+            timelineSlider.GetComponent<Slider>().maxValue = eventsManager.GetLength() - 1;
 
             yield return null;
         }
@@ -42,10 +41,8 @@ namespace Elektronik.Offline
             Package currentEvent = eventsManager.GetCurrentEvent();
             if (currentEvent != null && currentEvent.Timestamp != -1)
             {
-                DateTime timestamp = new DateTime();
-                timestamp += TimeSpan.FromMilliseconds(currentEvent.Timestamp);
-                timelineLabel.text = timestamp.ToString("hh:mm:ss.fff");
-                timelineSlider.value = eventsManager.GetCurrentEventPosition();
+                timelineLabel.text = TimeSpan.FromMilliseconds(currentEvent.Timestamp).ToString(@"mm\:ss\.fff");
+                timelineSlider.GetComponent<Slider>().value = eventsManager.GetCurrentEventPosition();
             }
         }
 
@@ -107,15 +104,17 @@ namespace Elektronik.Offline
 
         public void SetPosition(float i)
         {
-            if (Input.GetMouseButton(0))
+            eventsManager.SetPosition((int)Math.Floor(i), () =>
             {
-                Pause();
-                eventsManager.SetPosition((int)Math.Floor(i), () =>
-                {
-                    eventsManager.UpdateEventInfo();
-                    UpdateTime();
-                });
-            }
+                eventsManager.UpdateEventInfo();
+                UpdateTime();
+            });
+        }
+
+        public void OnTimelineChanged(float i)
+        {
+            Pause();
+            SetPosition(i);
         }
     }
 }

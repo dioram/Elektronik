@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 [HelpURL("http://mobfarmgames.weebly.com/ap_manager.html")]
 public class AP_Manager : MonoBehaviour {
@@ -166,6 +167,15 @@ public class AP_Manager : MonoBehaviour {
 		}
 		return result;
 	}
+
+    public bool ForEach (GameObject prefab, Action<GameObject> action) {
+        bool result = true;
+        if ( poolRef.ContainsKey( prefab ) == false ) { return false; }
+		foreach ( AP_Pool.PoolItem pool in poolRef[prefab].masterPool ) {
+            action(pool.obj);
+		}
+		return result;
+    }
 
 	public bool DespawnAll () {
 		bool result = true;
