@@ -47,17 +47,13 @@ namespace Elektronik.Common.Clouds
 
         public void Get(int idx, out Vector3 position, out Color color)
         {
-            int meshId;
-            int pointId;
-            CheckMesh(idx, out meshId, out pointId);
+            CheckMesh(idx, out int meshId, out int pointId);
             m_meshObjects[meshId].Get(pointId, out position, out color);
         }
 
         public void Set(int idx, Matrix4x4 offset, Color color)
         {
-            int meshId;
-            int pointId;
-            CheckMesh(idx, out meshId, out pointId);
+            CheckMesh(idx, out int meshId, out int pointId);
             m_meshObjects[meshId].Set(pointId, offset, color);
         }
 
@@ -72,9 +68,7 @@ namespace Elektronik.Common.Clouds
 
         public void Set(int idx, Color color)
         {
-            int meshId;
-            int pointId;
-            CheckMesh(idx, out meshId, out pointId);
+            CheckMesh(idx, out int meshId, out int pointId);
             m_meshObjects[meshId].Set(pointId, color);
         }
 
@@ -104,9 +98,7 @@ namespace Elektronik.Common.Clouds
             KeyValuePair<int, IPointsMeshObject>[] allMeshes = m_meshObjects.Select(kv => kv).ToArray();
             for (int meshNum = 0; meshNum < allMeshes.Length; ++meshNum)
             {
-                Vector3[] meshObjPositions;
-                Color[] meshObjColors;
-                allMeshes[meshNum].Value.GetAll(out meshObjPositions, out meshObjColors);
+                allMeshes[meshNum].Value.GetAll(out Vector3[] meshObjPositions, out Color[] meshObjColors);
                 for (int i = 0; i < m_pointsMesh.MaxPointsCount; ++i)
                 {
                     positions[m_pointsMesh.MaxPointsCount * allMeshes[meshNum].Key + i] = meshObjPositions[i];

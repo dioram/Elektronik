@@ -1,14 +1,12 @@
 ﻿using Elektronik.Common;
+using Elektronik.Common.Clouds;
+using Elektronik.Common.Containers;
+using Elektronik.Common.Data;
 using Elektronik.Common.SlamEventsCommandPattern;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data;
-using Elektronik.Common.Clouds;
 
 namespace Elektronik.Offline
 {
@@ -29,9 +27,9 @@ namespace Elektronik.Offline
         public Helmet helmet;
         public EventLogger eventsLogger;
 
-        private ISlamContainer<SlamObservation> m_observationsContainer;
-        private ISlamContainer<SlamLine> m_linesContainer;
-        private ISlamContainer<SlamPoint> m_pointsContainer;
+        private ICloudObjectsContainer<SlamObservation> m_observationsContainer;
+        private ICloudObjectsContainer<SlamLine> m_linesContainer;
+        private ICloudObjectsContainer<SlamPoint> m_pointsContainer;
 
         public List<SlamPoint> SpecialPoints { get; private set; }
         public List<SlamObservation> SpecialObservations { get; private set; }

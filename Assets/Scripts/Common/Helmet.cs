@@ -9,7 +9,7 @@ namespace Elektronik.Common
 {
     public class Helmet : MonoBehaviour
     {
-        ISlamContainer<SlamLine> m_linesContainer;
+        ICloudObjectsContainer<SlamLine> m_linesContainer;
         int m_lastLineId;
         int m_lineSegmentIdx;
         Stack<Pose> m_poseHistory;

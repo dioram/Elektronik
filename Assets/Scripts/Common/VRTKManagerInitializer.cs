@@ -13,12 +13,14 @@ namespace Elektronik.Common
 
         private void OnEnable()
         {
-            GetComponent<VRTK_SDKManager>().TryLoadSDKSetup(0, false, Setup);
+            var manager = GetComponent<VRTK_SDKManager>();
+            manager.TryLoadSDKSetup(0, false, Setup);
         }
 
         private void OnDisable()
         {
-            GetComponent<VRTK_SDKManager>().UnloadSDKSetup(true);
+            var manager = GetComponent<VRTK_SDKManager>();
+            manager.UnloadSDKSetup();
         }
     }
 }

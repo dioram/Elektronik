@@ -1,19 +1,22 @@
 ﻿using Elektronik.Common.Clouds;
 using Elektronik.Common.Data;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class SlamPointsContainer : ISlamContainer<SlamPoint>
+    public class SlamPointsContainer : ICloudObjectsContainer<SlamPoint>
     {
-        private SortedDictionary<int, SlamPoint> m_points;
-        private IFastPointsCloud m_pointsCloud;
+        private readonly SortedDictionary<int, SlamPoint> m_points;
+        private readonly IFastPointsCloud m_pointsCloud;
 
         private int m_added = 0;
         private int m_removed = 0;
         private int m_diff = 0;
+
+        
 
         public SlamPointsContainer(IFastPointsCloud cloud)
         {
@@ -103,30 +106,24 @@ namespace Elektronik.Common.Containers
             return m_points.Select(kv => kv.Value).ToArray();
         }
 
-        public void Set(SlamPoint point)
+        public SlamPoint this[SlamPoint obj]
         {
-            SlamPoint buttPlug;
-            if (!TryGet(point, out buttPlug))
-            {
-                Add(point);
-            }
-            else
-            {
-                Update(point);
-            }
+            get => this[obj.id];
+            set => this[obj.id] = value;
         }
-
-        public SlamPoint Get(int pointId)
+        public SlamPoint this[int id]
         {
-            Debug.AssertFormat(
-                m_points.ContainsKey(pointId), 
-                "[SlamPointsContainer.Get] Container doesn't contain point with id {0}", pointId);
-            return m_points[pointId];
-        }
-
-        public SlamPoint Get(SlamPoint point)
-        {
-            return Get(point.id);
+            get
+            {
+                Debug.AssertFormat(
+                    m_points.ContainsKey(id),
+                    "[SlamPointsContainer.Get] Container doesn't contain point with id {0}", id);
+                return m_points[id];
+            }
+            set
+            {
+                if (!TryGet(id, out _)) Add(value); else Update(value);
+            }
         }
 
         public bool Exists(int pointId)
@@ -138,13 +135,12 @@ namespace Elektronik.Common.Containers
         {
             return Exists(point.id);
         }
-
-        public bool TryGet(SlamPoint point, out SlamPoint current)
+        public bool TryGet(int idx, out SlamPoint current)
         {
             current = new SlamPoint();
-            if (m_pointsCloud.Exists(point.id))
+            if (m_pointsCloud.Exists(idx))
             {
-                current = Get(point.id);
+                current = this[idx];
                 return true;
             }
             else
@@ -152,10 +148,20 @@ namespace Elektronik.Common.Containers
                 return false;
             }
         }
+        public bool TryGet(SlamPoint point, out SlamPoint current)
+        {
+            return TryGet(point.id, out current);
+        }
 
         public void Repaint()
         {
             m_pointsCloud.Repaint();
         }
+
+        public IEnumerator<SlamPoint> GetEnumerator() => m_points.Select(kv => kv.Value).GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => m_points.Select(kv => kv.Value).GetEnumerator();
+
+        
     }
 }

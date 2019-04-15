@@ -9,10 +9,12 @@ namespace Elektronik.Common
     {
         public VRTK_SDKSetup setup;
         public VRTKManagerInitializer m_managerInitializer;
+        public Transform VRMode;
 
         private void Start()
         {
             m_managerInitializer.Setup = setup;
+            transform.parent = VRMode;
         }
     }
 }

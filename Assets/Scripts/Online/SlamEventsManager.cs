@@ -2,13 +2,10 @@
 using Elektronik.Common.Clouds;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
-using Elektronik.Common.SlamEventsCommandPattern;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,9 +27,9 @@ namespace Elektronik.Online
 
         private IDisposable m_mapUpdate;
         private IDisposable m_mapRepaint;
-        private ISlamContainer<SlamObservation> m_observationsContainer;
-        private ISlamContainer<SlamPoint> m_pointsContainer;
-        private ISlamContainer<SlamLine> m_linesContainer;
+        private ICloudObjectsContainer<SlamObservation> m_observationsContainer;
+        private ICloudObjectsContainer<SlamPoint> m_pointsContainer;
+        private ICloudObjectsContainer<SlamLine> m_linesContainer;
         private IPackageCSConverter m_converter;
         private bool m_connecting = false;
         private TCPPackagesReceiver m_receiver;
@@ -147,7 +144,7 @@ namespace Elektronik.Online
                 SlamPoint[] updatedPoints = pkg.Points
                     .Where(p => p.id != -1)
                     .Where(p => !p.isRemoved)
-                    .Select(p => { var mp = m_pointsContainer.Get(p); mp.color = mp.defaultColor; return mp; })
+                    .Select(p => { var mp = m_pointsContainer[p]; mp.color = mp.defaultColor; return mp; })
                     .ToArray();
                 lock (m_pointsContainer)
                     UpdateMap(
@@ -171,7 +168,7 @@ namespace Elektronik.Online
             Func<T, bool> isRemovedSelector,
             Func<T, bool> justColoredSelector,
             Func<T, bool> isValidSelector,
-            ISlamContainer<T> map)
+            ICloudObjectsContainer<T> map)
         {
             if (source != null)
             {
@@ -232,7 +229,7 @@ namespace Elektronik.Online
             status.color = Color.blue;
             for (int i = 0; i < tries; ++i)
             {
-                status.text = String.Format("New connection try... ({0} from {1})", i + 1, tries);
+                status.text = $"New connection try... ({i + 1} from {tries})";
                 yield return null;
                 if (m_receiver.Connect(OnlineModeSettings.Current.MapInfoAddress, OnlineModeSettings.Current.MapInfoPort))
                 {
@@ -249,7 +246,7 @@ namespace Elektronik.Online
                     m_connecting = false;
                     yield break;
                 }
-                yield return null /*new WaitForSeconds(1)*/;
+                yield return null;
             }
             status.color = Color.red;
             status.text = "Not connected...";

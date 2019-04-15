@@ -9,8 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8743577008333223137}
-  - component: {fileID: 8743577008333223167}
-  - component: {fileID: 8743577008333223136}
+  - component: {fileID: 1833250762}
   m_Layer: 0
   m_Name: VRHacker
   m_TagString: Untagged
@@ -25,14 +24,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8743577008333223138}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8743577008333223167
+--- !u!114 &1833250762
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,18 +40,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8743577008333223138}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 647e8447d3aced648ac73009ce54ffc6, type: 3}
+  m_Script: {fileID: 11500000, guid: 02d5f5514bfd2eb49b206ca5b919946b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8743577008333223136
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8743577008333223138}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35c29034ed4fc1846acc4784bbd6fc3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  helmet: {fileID: 0}

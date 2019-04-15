@@ -37,8 +37,8 @@ namespace Elektronik.Common.Data
         public static void TestExistent(
             this Package package,
             Func<SlamPoint, bool> filter,
-            ISlamContainer<SlamPoint> pointsContainer,
-            ISlamContainer<SlamObservation> graph)
+            ICloudObjectsContainer<SlamPoint> pointsContainer,
+            ICloudObjectsContainer<SlamObservation> graph)
         {
             if (package.Points != null)
             {
@@ -55,8 +55,8 @@ namespace Elektronik.Common.Data
         public static void TestNonExistent(
             this Package package,
             Func<SlamPoint, bool> filter,
-            ISlamContainer<SlamPoint> pointsContainer,
-            ISlamContainer<SlamObservation> graph)
+            ICloudObjectsContainer<SlamPoint> pointsContainer,
+            ICloudObjectsContainer<SlamObservation> graph)
         {
 #if DEBUG
             if (package.Points != null)

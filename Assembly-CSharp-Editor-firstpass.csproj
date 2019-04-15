@@ -68,7 +68,6 @@
     <Compile Include="Assets\Plugins\SteamVR\Editor\SteamVR_Settings.cs" />
     <Compile Include="Assets\Plugins\SteamVR\Editor\SteamVR_SkyboxEditor.cs" />
     <Compile Include="Assets\Plugins\SteamVR\Editor\SteamVR_Update.cs" />
-    <Compile Include="Assets\Plugins\VRTK\Examples\ExampleResources\SharedResources\Scripts\Editor\VRTKExample_FixSetupEditor.cs" />
     <Compile Include="Assets\Plugins\VRTK\Source\Editor\Attributes\MinMaxRangeDrawer.cs" />
     <Compile Include="Assets\Plugins\VRTK\Source\Editor\Attributes\ObsoleteInspectorDrawer.cs" />
     <Compile Include="Assets\Plugins\VRTK\Source\Editor\Attributes\SerializedPropertyExtensions.cs" />

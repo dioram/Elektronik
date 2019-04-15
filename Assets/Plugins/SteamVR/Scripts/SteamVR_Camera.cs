@@ -37,35 +37,29 @@ public class SteamVR_Camera : MonoBehaviour
 		set { UnityEngine.XR.XRSettings.eyeTextureResolutionScale = value; }
 	}
 
-    #region Enable / Disable
+	#region Enable / Disable
 
-    void OnEnable()
-    {
-        SteamVR_Render.Add(this);
-    }
-
-    void OnDisable()
+	void OnDisable()
 	{
 		SteamVR_Render.Remove(this);
 	}
 
-	void Start()
+    void OnEnable()
 	{
-		// Bail if no hmd is connected
-		var vr = SteamVR.instance;
-		if (vr == null)
-		{
-			if (head != null)
-			{
-				head.GetComponent<SteamVR_TrackedObject>().enabled = false;
-			}
+        // Bail if no hmd is connected
+        var vr = SteamVR.instance;
+        if (vr == null)
+        {
+            if (head != null)
+            {
+                head.GetComponent<SteamVR_TrackedObject>().enabled = false;
+            }
 
-			enabled = false;
-			return;
-		}
-
-		// Convert camera rig for native OpenVR integration.
-		var t = transform;
+            enabled = false;
+            return;
+        }
+        // Convert camera rig for native OpenVR integration.
+        var t = transform;
 		if (head != t)
 		{
 			Expand();
@@ -95,13 +89,15 @@ public class SteamVR_Camera : MonoBehaviour
 
 		if (ears != null)
 			ears.GetComponent<SteamVR_Ears>().vrcam = this;
+
+		SteamVR_Render.Add(this);
 	}
 
-    #endregion
+	#endregion
 
-    #region Functionality to ensure SteamVR_Camera component is always the last component on an object
+	#region Functionality to ensure SteamVR_Camera component is always the last component on an object
 
-    void Awake()
+	void Awake()
 	{
 		camera = GetComponent<Camera>(); // cached to avoid runtime lookup
 		ForceLast();

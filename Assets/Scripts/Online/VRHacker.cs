@@ -1,65 +1,34 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Threading;
-using VRTK;
+﻿using UnityEngine;
 
 namespace Elektronik.Online
 {
-    [RequireComponent(typeof(VRHackerUDPConnection))]
-    public class VRHacker : MonoBehaviour
+    class VRHacker_New : MonoBehaviour
     {
-        private VRHackerUDPConnection m_connection;
-        private Pose m_lastPose;
-        private Thread m_dataListener;
-        private bool m_stop;
+        public Transform helmet;
+        public Transform headset;
 
-        void Awake()
+        private bool m_positionalTracking;
+        
+        
+        private void OnEnable()
         {
-            m_connection = GetComponent<VRHackerUDPConnection>();
-            m_dataListener = new Thread(Listen);
+            m_positionalTracking = UnityEngine.XR.InputTracking.disablePositionalTracking;
+            UnityEngine.XR.InputTracking.disablePositionalTracking = true;
+            Debug.Log("Hacker enabled");
+            UnityEngine.XR.XRDevice.DisableAutoXRCameraTracking(headset.gameObject.GetComponent<Camera>(), true);
         }
 
-        void OnEnable()
+        private void OnDisable()
         {
-            m_lastPose = new Pose();
-            m_lastPose.rotation = Quaternion.identity;
-            m_lastPose.position = Vector3.zero;
-            m_stop = false;
-            m_dataListener.Start();
+            UnityEngine.XR.InputTracking.disablePositionalTracking = m_positionalTracking;;
+            Debug.Log("Hacker disabled");
+            UnityEngine.XR.XRDevice.DisableAutoXRCameraTracking(headset.gameObject.GetComponent<Camera>(), false);
         }
 
-        void OnDisable()
+        private void Update()
         {
-            m_stop = true;
-            m_dataListener.Join();
-        }
-
-        void Update()
-        {
-            HackPose();
-        }
-
-        private void Listen()
-        {
-            while (!m_stop)
-            {
-                Pose newPose;
-                if (m_connection.GetPose(out newPose))
-                {
-                    m_lastPose = newPose;
-                }
-            }
-        }
-
-        private void HackPose()
-        {
-            Transform headset = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.Headset);
-            if (headset != null)
-            {
-                headset.rotation = m_lastPose.rotation;
-                headset.position = m_lastPose.position;
-            }
+            headset.rotation = helmet.rotation;
+            headset.localPosition = helmet.position + new Vector3(0, 1, 0);
         }
     }
 }

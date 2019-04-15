@@ -1,11 +1,7 @@
-﻿using System;
+﻿using Elektronik.Common.Containers;
+using Elektronik.Common.Data;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using UnityEngine;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data;
-using Elektronik.Offline;
 
 namespace Elektronik.Common.SlamEventsCommandPattern
 {
@@ -17,22 +13,22 @@ namespace Elektronik.Common.SlamEventsCommandPattern
         private readonly SlamPoint[] m_points2Restore;
         private readonly SlamPoint[] m_points2Update;
 
-        private ISlamContainer<SlamPoint> m_pointsContainer;
-        private ISlamContainer<SlamObservation> m_observationsContainer;
-        private Helmet m_helmet;
-        private SlamObservation m_helmetPose;
+        private readonly ICloudObjectsContainer<SlamPoint> m_pointsContainer;
+        private readonly ICloudObjectsContainer<SlamObservation> m_observationsContainer;
+        private readonly Helmet m_helmet;
+        private readonly SlamObservation m_helmetPose;
 
 
         public UpdateCommand(
-            ISlamContainer<SlamPoint> pointsContainer,
-            ISlamContainer<SlamObservation> graph,
+            ICloudObjectsContainer<SlamPoint> pointsContainer,
+            ICloudObjectsContainer<SlamObservation> graph,
             Helmet helmet,
             Package slamEvent) : this(pointsContainer, graph, helmet, slamEvent.Points, slamEvent.Observations)
         {}
 
         public UpdateCommand(
-            ISlamContainer<SlamPoint> pointsContainer,
-            ISlamContainer<SlamObservation> observationsContainer,
+            ICloudObjectsContainer<SlamPoint> pointsContainer,
+            ICloudObjectsContainer<SlamObservation> observationsContainer,
             Helmet helmet,
             IEnumerable<SlamPoint> points,
             IEnumerable<SlamObservation> observations)
@@ -43,7 +39,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
             if (points != null)
             {
-                m_points2Restore = points.Where(p => p.id != -1).Select(p => pointsContainer.Get(p.id)).ToArray();
+                m_points2Restore = points.Where(p => p.id != -1).Select(p => pointsContainer[p]).ToArray();
                 m_points2Update = points.Where(p => p.id != -1).ToArray();
             }
 
@@ -53,7 +49,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 m_observations2Restore = observations
                     .Where(o => o.Point.id != -1)
                     .Where(o => !o.Point.isRemoved)
-                    .Select(observationsContainer.Get)
+                    .Select(o => observationsContainer[o])
                     .ToArray();
                 m_observations2Update = observations
                     .Where(o => o.Point.id != -1)

@@ -1,28 +1,25 @@
-﻿using UnityEngine;
-using System.Collections;
-using Elektronik.Common.SlamEventsCommandPattern;
-using UnityEngine.UI;
-using Elektronik.Common;
-using System;
-using Elektronik.Common.Data;
+﻿using Elektronik.Common.Data;
 using Elektronik.Common.UI;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Elektronik.Offline
 {
     public class SlamEventsPlayer : MonoBehaviour
     {
         private bool m_play = false;
+
         public UITimelineSlider timelineSlider;
         public Text timelineLabel;
 
         public SlamEventsManager eventsManager;
 
+
         private void Start()
         {
-            timelineSlider.OnTimelineSliderClick += SetPosition;
+            timelineSlider.OnTimelineChanged += OnTimelineChanged;
             StartCoroutine(WaitForManagerLengthParameter());
         }
 
@@ -107,15 +104,17 @@ namespace Elektronik.Offline
 
         public void SetPosition(float i)
         {
-            if (Input.GetMouseButton(0))
+            eventsManager.SetPosition((int)Math.Floor(i), () =>
             {
-                Pause();
-                eventsManager.SetPosition((int)Math.Floor(i), () =>
-                {
-                    eventsManager.UpdateEventInfo();
-                    UpdateTime();
-                });
-            }
+                eventsManager.UpdateEventInfo();
+                UpdateTime();
+            });
+        }
+
+        public void OnTimelineChanged(float i)
+        {
+            Pause();
+            SetPosition(i);
         }
     }
 }

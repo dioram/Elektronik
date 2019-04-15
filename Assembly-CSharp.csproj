@@ -68,7 +68,7 @@
     <Compile Include="Assets\Scripts\Common\Clouds\Meshes\LinesMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\Clouds\Meshes\PointsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\Clouds\Meshes\TetrahedronsMeshObject.cs" />
-    <Compile Include="Assets\Scripts\Common\Containers\ISlamContainer.cs" />
+    <Compile Include="Assets\Scripts\Common\Containers\ICloudObjectsContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\ISlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamObservationsContainer.cs" />
@@ -90,7 +90,6 @@
     <Compile Include="Assets\Scripts\Common\ElektronikLogger.cs" />
     <Compile Include="Assets\Scripts\Common\FreeFlyCameraScript.cs" />
     <Compile Include="Assets\Scripts\Common\Helmet.cs" />
-    <Compile Include="Assets\Scripts\Common\InGameConsole.cs" />
     <Compile Include="Assets\Scripts\Common\InputWithBrowse.cs" />
     <Compile Include="Assets\Scripts\Common\Interop\OMW\OMWSlamWrapper.cs" />
     <Compile Include="Assets\Scripts\Common\Interop\OMW\Tracker.cs" />
@@ -136,7 +135,6 @@
     <Compile Include="Assets\Scripts\Online\TCPPackagesReceiver.cs" />
     <Compile Include="Assets\Scripts\Online\UDPPackagesReceiver.cs" />
     <Compile Include="Assets\Scripts\Online\VRHacker.cs" />
-    <Compile Include="Assets\Scripts\Online\VRHacker_New.cs" />
     <Compile Include="Assets\Scripts\Online\VRHackerDirect.cs" />
     <Compile Include="Assets\Scripts\Online\VRHackerUDPConnection.cs" />
     <None Include="Assets\Materials\Points shader.shader" />

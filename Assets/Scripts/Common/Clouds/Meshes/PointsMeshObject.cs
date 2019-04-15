@@ -17,7 +17,7 @@ namespace Elektronik.Common.Clouds.Meshes
         Vector3[] m_vertices;
         Color[] m_colors;
 
-        public int MaxPointsCount { get { return MAX_VERTICES_COUNT; } }
+        public int MaxPointsCount => MAX_VERTICES_COUNT;
 
         void Awake()
         {
@@ -26,6 +26,7 @@ namespace Elektronik.Common.Clouds.Meshes
             m_vertices = new Vector3[MAX_VERTICES_COUNT];
             m_colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
             m_mesh = new Mesh();
+            
         }
 
         private void Start()
@@ -39,13 +40,13 @@ namespace Elektronik.Common.Clouds.Meshes
 
         public bool Exists(int idx)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_VERTICES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
             return !(m_vertices[idx] == Vector3.zero && m_colors[idx] == new Color(0, 0, 0, 0));
         }
 
         public void Get(int idx, out Vector3 position, out Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_VERTICES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
             position = m_vertices[idx];
             color = m_colors[idx];
         }
@@ -58,13 +59,13 @@ namespace Elektronik.Common.Clouds.Meshes
 
         public void Set(int idx, Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_VERTICES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
             m_colors[idx] = color;
         }
 
         public void Set(int idx, Matrix4x4 position)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_VERTICES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
             m_vertices[idx] = position.GetPosition();
         }
 
@@ -93,7 +94,7 @@ namespace Elektronik.Common.Clouds.Meshes
 
         bool IPointsMeshObject.Exists(int idx)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_VERTICES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
             return !(m_vertices[idx] == Vector3.zero && m_colors[idx] == new Color(0, 0, 0, 0));
         }
     }
