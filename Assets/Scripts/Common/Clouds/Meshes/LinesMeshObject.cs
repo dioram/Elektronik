@@ -17,6 +17,7 @@ namespace Elektronik.Common.Clouds.Meshes
         int[] m_indices;
         Vector3[] m_vertices;
         Color[] m_colors;
+        bool m_wasUpdated;
 
         void Awake()
         {
@@ -25,6 +26,7 @@ namespace Elektronik.Common.Clouds.Meshes
             m_vertices = new Vector3[MAX_VERTICES_COUNT];
             m_colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
             m_mesh = new Mesh();
+            m_wasUpdated = false;
         }
 
         private void Start()
@@ -56,6 +58,7 @@ namespace Elektronik.Common.Clouds.Meshes
             Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
             SetLineColor(idx, color);
             SetLinePositions(idx, position1, position2);
+            m_wasUpdated = true;
         }
 
         public void SetLineColor(int idx, Color color)
@@ -63,6 +66,7 @@ namespace Elektronik.Common.Clouds.Meshes
             Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
             m_colors[2 * idx] = color;
             m_colors[2 * idx + 1] = color;
+            m_wasUpdated = true;
         }
 
         public void SetLinePositions(int idx, Vector3 position1, Vector3 position2)
@@ -70,13 +74,18 @@ namespace Elektronik.Common.Clouds.Meshes
             Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
             m_vertices[2 * idx] = position1;
             m_vertices[2 * idx + 1] = position2;
+            m_wasUpdated = true;
         }
 
         public void Repaint()
         {
-            m_mesh.vertices = m_vertices;
-            m_mesh.colors = m_colors;
-            m_mesh.RecalculateBounds();
+            if (m_wasUpdated)
+            {
+                m_mesh.vertices = m_vertices;
+                m_mesh.colors = m_colors;
+                m_mesh.RecalculateBounds();
+                m_wasUpdated = false;
+            }
         }
 
         public void Clear()

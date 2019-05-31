@@ -142,6 +142,7 @@ namespace Elektronik.Online
             if (pkg.Points != null)
             {
                 SlamPoint[] updatedPoints = pkg.Points
+                    .AsParallel()
                     .Where(p => p.id != -1)
                     .Where(p => !p.isRemoved)
                     .Select(p => { var mp = m_pointsContainer[p]; mp.color = mp.defaultColor; return mp; })
