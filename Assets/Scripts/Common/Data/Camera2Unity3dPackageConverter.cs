@@ -15,7 +15,7 @@ namespace Elektronik.Common.Data
             m_initPose = initPose;
         }
 
-        public void Convert(ref Package package)
+        public void Convert(ref SlamPackage package)
         {
             if (package.Observations != null)
             {

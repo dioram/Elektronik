@@ -11,7 +11,7 @@ namespace Elektronik.Common.Data
     public static class PackageTestExtensions
     {
         public static void Test(
-            Package package,
+            SlamPackage package,
             IEnumerable<SlamPoint> objects,
             string messageTemplate)
         {
@@ -35,7 +35,7 @@ namespace Elektronik.Common.Data
         }
 
         public static void TestExistent(
-            this Package package,
+            this SlamPackage package,
             Func<SlamPoint, bool> filter,
             ICloudObjectsContainer<SlamPoint> pointsContainer,
             ICloudObjectsContainer<SlamObservation> graph)
@@ -53,7 +53,7 @@ namespace Elektronik.Common.Data
         }
 
         public static void TestNonExistent(
-            this Package package,
+            this SlamPackage package,
             Func<SlamPoint, bool> filter,
             ICloudObjectsContainer<SlamPoint> pointsContainer,
             ICloudObjectsContainer<SlamObservation> graph)

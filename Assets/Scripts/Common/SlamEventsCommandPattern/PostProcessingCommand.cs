@@ -12,7 +12,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             ICloudObjectsContainer<SlamLine> linesContainer,
             ICloudObjectsContainer<SlamObservation> observationsContainer,
             Helmet helmet,
-            Package slamEvent)
+            SlamPackage slamEvent)
         {
             IEnumerable<SlamPoint> points = null;
             if (slamEvent.Points != null)

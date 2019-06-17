@@ -18,7 +18,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             ICloudObjectsContainer<SlamPoint> pointsContainer, 
             ICloudObjectsContainer<SlamLine> linesContainer, 
             ICloudObjectsContainer<SlamObservation> observationsContainer, 
-            Package slamEvent)
+            SlamPackage slamEvent)
         {
             m_pointsContainer = pointsContainer;
             m_linesContainer = linesContainer;

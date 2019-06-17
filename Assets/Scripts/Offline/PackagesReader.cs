@@ -12,9 +12,9 @@ namespace Elektronik.Offline
 {
     public class PackagesReader
     {
-        public static Package[] AnalyzeFile(string path, IPackageCSConverter converter)
+        public static SlamPackage[] AnalyzeFile(string path, IPackageCSConverter converter)
         {
-            Package[] result = null;
+            SlamPackage[] result = null;
             using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
             {
                 if (br.ReadUInt32() != 0xDEADBEEF)
@@ -25,7 +25,7 @@ namespace Elektronik.Offline
                 if (br.ReadUInt32() != 0xDEADBEEF)
                     throw new FileLoadException("broken file (2nd magic number)");
                 int eventsCount = br.ReadInt32();
-                result = new Package[eventsCount];
+                result = new SlamPackage[eventsCount];
                 int[] offsetTable = Enumerable.Range(0, eventsCount).Select(_ => br.ReadInt32()).ToArray();
                 br.BaseStream.Seek(0, SeekOrigin.Begin);
                 byte[] data = br.ReadBytes((int)br.BaseStream.Length);
@@ -38,7 +38,7 @@ namespace Elektronik.Offline
                         : offsetTable[i + 1] - offsetTable[i];
                     byte[] rawPackage = new byte[(int)packageLength];
                     Buffer.BlockCopy(data, offsetTable[i], rawPackage, 0, (int)packageLength);
-                    Package package = Package.Parse(rawPackage);
+                    SlamPackage package = SlamPackage.Parse(rawPackage);
                     converter.Convert(ref package);
                     result[i] = package;
                 });

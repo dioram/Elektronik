@@ -26,7 +26,7 @@ namespace Elektronik.Offline
             
         }
 
-        public void UpdateInfo(Package package, ICloudObjectsContainer<SlamPoint> pointsMap, ICloudObjectsContainer<SlamObservation> graph)
+        public void UpdateInfo(SlamPackage package, ICloudObjectsContainer<SlamPoint> pointsMap, ICloudObjectsContainer<SlamObservation> graph)
         {
             listBoxWithSpecializedObjects.Clear();
 

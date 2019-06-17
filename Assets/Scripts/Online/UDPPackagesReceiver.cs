@@ -15,22 +15,22 @@ namespace Elektronik.Online
     public class UDPPackagesReceiver
     {
         private uint m_packageNum = 0;
-        SortedList<uint, Package> m_packagesBuffer;
+        SortedList<uint, SlamPackage> m_packagesBuffer;
         private UdpClient m_network;
         IPEndPoint endPoint;
 
         public UDPPackagesReceiver(IPAddress ip, int port)
         {
-            m_packagesBuffer = new SortedList<uint, Package>();
+            m_packagesBuffer = new SortedList<uint, SlamPackage>();
             endPoint = new IPEndPoint(ip, port);
             m_network = new UdpClient(endPoint);
         }
 
-        public Package GetPackage()
+        public SlamPackage GetPackage()
         {
             int countOfBytes = -1;
             
-            Package receivedPackage = null;
+            SlamPackage receivedPackage = null;
 
             Debug.LogFormat("[PackagesReceiver.GetPackage] Buffer size {0}", m_packagesBuffer.Count);
 
@@ -64,7 +64,7 @@ namespace Elektronik.Online
                     byte[] rawPackage = new byte[countOfBytes];
                     Array.Copy(datagram, sizeof(int) * 2, rawPackage, 0, countOfBytes);
                     Debug.LogFormat("[PackagesReceiver.GetPackage] Parse");
-                    receivedPackage = Package.Parse(rawPackage);
+                    receivedPackage = SlamPackage.Parse(rawPackage);
                     Debug.LogFormat("[PackagesReceiver.GetPackage] Parsed");
                 }
 

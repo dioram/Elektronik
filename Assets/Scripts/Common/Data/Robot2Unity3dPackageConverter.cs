@@ -7,7 +7,7 @@ namespace Elektronik.Common.Data
 {
     public class Robot2Unity3dSlamEventConverter : IPackageCSConverter
     {
-        public void Convert(ref Package srcEvent)
+        public void Convert(ref SlamPackage srcEvent)
         {
             throw new NotImplementedException();
         }

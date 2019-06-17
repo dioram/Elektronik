@@ -15,9 +15,9 @@ namespace Elektronik.Offline
         public bool ReadyToPlay { get; private set; }
         public float scale;
 
-        Package[] m_packages;
+        SlamPackage[] m_packages;
         List<ISlamEventCommand> m_commands;
-        List<Package> m_extendedEvents;
+        List<SlamPackage> m_extendedEvents;
 
         public GameObject observationPrefab;
         public GameObject fastPointCloud;
@@ -38,7 +38,7 @@ namespace Elektronik.Offline
 
         void Awake()
         {
-            m_extendedEvents = new List<Package>();
+            m_extendedEvents = new List<SlamPackage>();
             m_commands = new List<ISlamEventCommand>();
             m_linesContainer = new SlamLinesContainer(fusionLinesCloud);
             m_observationsContainer = new SlamObservationsContainer(
@@ -73,7 +73,7 @@ namespace Elektronik.Offline
 
         public void UpdateEventInfo()
         {
-            Package currentEvent = GetCurrentEvent();
+            SlamPackage currentEvent = GetCurrentEvent();
             if (currentEvent != null)
                 eventsLogger.UpdateInfo(currentEvent, m_pointsContainer, m_observationsContainer);
         }
@@ -88,7 +88,7 @@ namespace Elektronik.Offline
             return m_position;
         }
 
-        public Package GetCurrentEvent()
+        public SlamPackage GetCurrentEvent()
         {
             if (m_position == -1) // до свершения какого либо события
                 return null;

@@ -16,8 +16,8 @@ namespace Elektronik.Online
     public class TCPPackagesReceiver : IDisposable
     {
         Thread m_readingThread;
-        List<Package> m_packagesBuffer;
-        Queue<Package> m_readPackages;
+        List<SlamPackage> m_packagesBuffer;
+        Queue<SlamPackage> m_readPackages;
         private int m_packageNum = 0;
         private TcpClient m_network;
         private NetworkStream m_stream;
@@ -34,8 +34,8 @@ namespace Elektronik.Online
         {
             m_network = new TcpClient();
             m_network.ReceiveBufferSize = 64 * 1024;
-            m_packagesBuffer = new List<Package>(20);
-            m_readPackages = new Queue<Package>(100);
+            m_packagesBuffer = new List<SlamPackage>(20);
+            m_readPackages = new Queue<SlamPackage>(100);
             m_readingThread = new Thread(ReadPackages);
             m_readingThread.IsBackground = true;
         }
@@ -68,7 +68,7 @@ namespace Elektronik.Online
                 throw new InvalidOperationException("Call Connect before using this [GetPackage] method");
             }
             byte[] zeroByte = new byte[1];
-            Package receivedPackage = null;
+            SlamPackage receivedPackage = null;
             while (!m_stop)
             {
                 while (m_network.Available > 4)
@@ -84,7 +84,7 @@ namespace Elektronik.Online
                         if (m_stop)
                             return;
                     } while (readBytes != countOfBytes);
-                    receivedPackage = Package.Parse(rawPackage);
+                    receivedPackage = SlamPackage.Parse(rawPackage);
                     if (receivedPackage.Timestamp != m_packageNum)
                     {
                         m_packagesBuffer.Add(receivedPackage);
@@ -105,9 +105,8 @@ namespace Elektronik.Online
                     m_stop = true;
                 }
             }
-            if (OnDisconnect != null)
-                OnDisconnect();
             Debug.Log("Disconnected or stopped");
+            OnDisconnect?.Invoke();
         }
 
         public bool Connect(IPAddress ip, int port)
@@ -128,9 +127,9 @@ namespace Elektronik.Online
             return true;
         }
 
-        public Package GetPackage()
+        public SlamPackage GetPackage()
         {
-            Package package = null;
+            SlamPackage package = null;
             lock (m_readPackages)
             {
                 if (m_readPackages.Count > 0)

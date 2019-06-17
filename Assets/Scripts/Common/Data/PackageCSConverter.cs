@@ -7,6 +7,6 @@ namespace Elektronik.Common.Data
 {
     public interface IPackageCSConverter
     {
-        void Convert(ref Package srcEvent);
+        void Convert(ref SlamPackage srcEvent);
     }
 }

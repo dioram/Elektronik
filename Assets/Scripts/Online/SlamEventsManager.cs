@@ -64,7 +64,7 @@ namespace Elektronik.Online
 
         private void SubscribeToIncome()
         {
-            var pkgSrc = new Subject<Package>();
+            var pkgSrc = new Subject<SlamPackage>();
             m_mapUpdate = Observable.Interval(TimeSpan.FromMilliseconds(0))
                 .TakeWhile(_ => m_receiver.Connected)
                 .Select(_ => SafeReadPackage())
@@ -78,9 +78,9 @@ namespace Elektronik.Online
             m_mapRepaint = Observable.EveryFixedUpdate().Do(_ => RepaintMaps()).Do(_ => UpdateHelmet()).Subscribe();
         }
 
-        private Package SafeReadPackage()
+        private SlamPackage SafeReadPackage()
         {
-            Package package = null;
+            SlamPackage package = null;
             lock (m_receiver)
             {
                 if (m_receiver.Connected)
@@ -89,7 +89,7 @@ namespace Elektronik.Online
             return package;
         }
 
-        private void AddPose(Package pkg)
+        private void AddPose(SlamPackage pkg)
         {
             int helmetPoseId = pkg.Observations.FindIndex(obs => obs.Point.id == -1);
             if (helmetPoseId != -1)
@@ -121,7 +121,7 @@ namespace Elektronik.Online
             lock (m_observationsContainer) m_observationsContainer.Repaint();
         }
 
-        private void UpdateMaps(Package pkg)
+        private void UpdateMaps(SlamPackage pkg)
         {
             lock (m_pointsContainer)
                 UpdateMap(pkg.Points, p => p.isNew, p => p.isRemoved, p => p.justColored, p => p.id != -1, m_pointsContainer);
@@ -137,7 +137,7 @@ namespace Elektronik.Online
                       m_observationsContainer);
         }
 
-        private void PostProcessMaps(Package pkg)
+        private void PostProcessMaps(SlamPackage pkg)
         {
             if (pkg.Points != null)
             {
