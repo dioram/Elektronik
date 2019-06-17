@@ -2,9 +2,9 @@
 using Elektronik.Common.Data;
 using UnityEngine;
 
-namespace Elektronik.Common.SlamEventsCommandPattern
+namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
-    public class ClearCommand : ISlamEventCommand
+    public class ClearCommand : IPackageViewUpdateCommand
     {
         private readonly ICloudObjectsContainer<SlamPoint> m_pointsContainer;
         private readonly ICloudObjectsContainer<SlamLine> m_linesContainer;

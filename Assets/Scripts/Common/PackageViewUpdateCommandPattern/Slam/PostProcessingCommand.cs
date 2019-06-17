@@ -3,7 +3,7 @@ using Elektronik.Common.Data;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Elektronik.Common.SlamEventsCommandPattern
+namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
     public class PostProcessingCommand : MacroCommand
     {
@@ -11,7 +11,6 @@ namespace Elektronik.Common.SlamEventsCommandPattern
             ICloudObjectsContainer<SlamPoint> pointsContainer,
             ICloudObjectsContainer<SlamLine> linesContainer,
             ICloudObjectsContainer<SlamObservation> observationsContainer,
-            Helmet helmet,
             SlamPackage slamEvent)
         {
             IEnumerable<SlamPoint> points = null;
@@ -21,7 +20,7 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                     .Where(p => p.id != -1)
                     .Select(p => pointsContainer[p])
                     .Select(p => { p.color = p.defaultColor; return p; });
-                m_commands.Add(new UpdateCommand(pointsContainer, observationsContainer, helmet, points, null));
+                m_commands.Add(new UpdateCommand(pointsContainer, observationsContainer, points, null));
                 m_commands.Add(new RemoveCommand(pointsContainer, linesContainer, observationsContainer, slamEvent));
             }
             

@@ -43,5 +43,10 @@ namespace Elektronik.Common.Data
         {
             return obs.Point;
         }
+
+        public override string ToString()
+        {
+            return "SlamObservation";
+        }
     }
 }

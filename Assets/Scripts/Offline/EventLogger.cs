@@ -26,11 +26,14 @@ namespace Elektronik.Offline
             
         }
 
-        public void UpdateInfo(SlamPackage package, ICloudObjectsContainer<SlamPoint> pointsMap, ICloudObjectsContainer<SlamObservation> graph)
+        public void UpdateInfo(
+            SlamPackage package, 
+            ICloudObjectsContainer<SlamPoint> pointsMap, 
+            ICloudObjectsContainer<SlamObservation> graph)
         {
             listBoxWithSpecializedObjects.Clear();
 
-            commonIformation.text = package.Summary();
+            commonIformation.text = package.ToString();
 
             SlamPoint[] specialPts = package.Points.Where(p => p.id != -1).Where(p => p.message != null).ToArray();
             Vector3[] ptsPositionsFromMap = specialPts.Select(p => pointsMap[p].position).ToArray();
@@ -44,12 +47,12 @@ namespace Elektronik.Offline
             for (int i = 0; i < specialPts.Length; ++i)
             {
                 var item = listBoxWithSpecializedObjects.Add(itemPrefab) as SpecialInfoListBoxItem;
-                item.SetObject(specialPts[i].id, "Point", ptsPositionsFromMap[i], specialPts[i].message);
+                item.SetObject(specialPts[i].id, specialPts[i].ToString(), ptsPositionsFromMap[i], specialPts[i].message);
             }
             for (int i = 0; i < specialObs.Length; ++i)
             {
                 var item = listBoxWithSpecializedObjects.Add(itemPrefab) as SpecialInfoListBoxItem;
-                item.SetObject(specialObs[i].Point.id, "Observation", obsPositionsFromMap[i], specialObs[i].Point.message);
+                item.SetObject(specialObs[i].Point.id, specialObs[i].ToString(), obsPositionsFromMap[i], specialObs[i].Point.message);
             }
         }
 

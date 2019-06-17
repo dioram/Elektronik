@@ -2,7 +2,7 @@
 using Elektronik.Common.Clouds;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
-using Elektronik.Common.SlamEventsCommandPattern;
+using Elektronik.Common.PackageViewUpdateCommandPattern;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,80 +15,69 @@ namespace Elektronik.Offline
         public bool ReadyToPlay { get; private set; }
         public float scale;
 
-        SlamPackage[] m_packages;
-        List<ISlamEventCommand> m_commands;
-        List<SlamPackage> m_extendedEvents;
-
-        public GameObject observationPrefab;
-        public GameObject fastPointCloud;
-        public FastLinesCloud fusionLinesCloud;
-        public FastLinesCloud graphConnectionLinesCloud;
+        IList<IPackage> m_packages;
+        LinkedList<IPackageViewUpdateCommand> m_commands;
+        IList<IPackage> m_extendedEvents;
+        
 
         public Helmet helmet;
-        public EventLogger eventsLogger;
+        public RepaintablePackageViewUpdateCommander[] commanders;
+        public PackagePresenter[] presenters;
+        private PackageViewUpdateCommander m_commander;
 
-        private ICloudObjectsContainer<SlamObservation> m_observationsContainer;
-        private ICloudObjectsContainer<SlamLine> m_linesContainer;
-        private ICloudObjectsContainer<SlamPoint> m_pointsContainer;
-
-        public List<SlamPoint> SpecialPoints { get; private set; }
-        public List<SlamObservation> SpecialObservations { get; private set; }
+        private DataSource m_dataSource;
 
         private int m_position = -1;
+        private LinkedListNode<IPackageViewUpdateCommand> m_currentCommand;
 
         void Awake()
         {
-            m_extendedEvents = new List<SlamPackage>();
-            m_commands = new List<ISlamEventCommand>();
-            m_linesContainer = new SlamLinesContainer(fusionLinesCloud);
-            m_observationsContainer = new SlamObservationsContainer(
-                observationPrefab, 
-                new SlamLinesContainer(graphConnectionLinesCloud));
-            m_pointsContainer = new SlamPointsContainer(fastPointCloud.GetComponent<IFastPointsCloud>());
-            SpecialObservations = new List<SlamObservation>();
-            SpecialPoints = new List<SlamPoint>();
+            m_extendedEvents = new List<IPackage>();
+            m_commands = new LinkedList<IPackageViewUpdateCommand>();
+            m_dataSource = new DataSource();
+            m_dataSource.DataReady += (IList<IPackage> packages) => 
+            {
+                m_packages = packages;
+                StartCoroutine(ProcessEvents());
+            };
         }
 
         void Start()
         {
-            StartCoroutine(ProcessEvents());
+            PackageViewUpdateCommander commander = m_commander = null;
+            for (int i = 0; i < presenters.Length; ++i)
+            {
+                if (commander == null)
+                    m_commander = commander = commanders[i];
+                else
+                    commander = commander.SetSuccessor(commanders[i]);
+            }
+            ElektronikLogger.OpenLog();
+            Application.logMessageReceived += ElektronikLogger.Log;
+            m_dataSource.ParseData(FileModeSettings.Current.Path);
+            Application.logMessageReceived -= ElektronikLogger.Log;
+            ElektronikLogger.CloseLog();
         }
 
         public void Clear()
         {
             m_position = -1;
-            m_observationsContainer.Clear();
-            m_pointsContainer.Clear();
-            m_linesContainer.Clear();
+            foreach (var commander in commanders)
+                commander.Clear();
             helmet.ResetHelmet();
-            eventsLogger.Clear();
         }
 
         public void Repaint()
         {
-            m_observationsContainer.Repaint();
-            m_pointsContainer.Repaint();
-            m_linesContainer.Repaint();
+            foreach (var commander in commanders)
+                commander.Clear();
         }
 
-        public void UpdateEventInfo()
-        {
-            SlamPackage currentEvent = GetCurrentEvent();
-            if (currentEvent != null)
-                eventsLogger.UpdateInfo(currentEvent, m_pointsContainer, m_observationsContainer);
-        }
+        public int GetLength() => m_commands.Count;
 
-        public int GetLength()
-        {
-            return m_commands.Count;
-        }
+        public int GetCurrentEventPosition() => m_position;
 
-        public int GetCurrentEventPosition()
-        {
-            return m_position;
-        }
-
-        public SlamPackage GetCurrentEvent()
+        public IPackage GetCurrentEvent()
         {
             if (m_position == -1) // до свершения какого либо события
                 return null;
@@ -124,9 +113,10 @@ namespace Elektronik.Offline
 
         public bool Next(bool needRepaint = true)
         {
-            if (m_position < m_commands.Count - 1)
+            if (m_currentCommand != m_commands.Last)
             {
-                m_commands[++m_position].Execute();
+                m_currentCommand = m_currentCommand.Next;
+                m_currentCommand.Value.Execute();
                 if (needRepaint)
                 {
                     Repaint();
@@ -141,9 +131,10 @@ namespace Elektronik.Offline
 
         public bool Previous(bool needRepaint = true)
         {
-            if (m_position != 0)
+            if (m_currentCommand != m_commands.First)
             {
-                m_commands[m_position--].UnExecute();
+                m_currentCommand = m_currentCommand.Previous;
+                m_currentCommand.Value.UnExecute();
                 if (needRepaint)
                 {
                     Repaint();
@@ -160,7 +151,7 @@ namespace Elektronik.Offline
         {
             for (int i = srcIdx; i < m_extendedEvents.Count; ++i)
             {
-                if (m_extendedEvents[i].IsKeyEvent && (m_commands[i] is UpdateCommand))
+                if (m_extendedEvents[i].IsKey)
                 {
                     return i;
                 }
@@ -185,7 +176,7 @@ namespace Elektronik.Offline
         {
             for (int i = srcIdx; i >= 0; --i)
             {
-                if (m_extendedEvents[i].IsKeyEvent && (m_commands[i] is UpdateCommand))
+                if (m_extendedEvents[i].IsKey)
                 {
                     return i;
                 }
@@ -210,50 +201,20 @@ namespace Elektronik.Offline
 
         IEnumerator ProcessEvents()
         {
-            ElektronikLogger.OpenLog();
-            Application.logMessageReceived += ElektronikLogger.Log;
-            Debug.Log("ANALYSIS STARTED");
-            yield return null;
-            IPackageCSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
-            m_packages = PackagesReader.AnalyzeFile(FileModeSettings.Current.Path, converter);
-            Debug.Log("ANALYSIS FINISHED");
-            yield return null;
             Debug.Log("PROCESSING STARTED");
-            for (int i = 0; i < m_packages.Length; ++i)
+            for (int i = 0; i < m_packages.Count; ++i)
             {
-                Debug.Log(m_packages[i].Summary());
-                if (m_packages[i].Timestamp == -1)
-                {
-                    m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, m_observationsContainer));
+                Debug.Log(m_packages[i]);
+                LinkedList<IPackageViewUpdateCommand> pkgCommands = m_commander.GetCommands(m_packages[i]);
+                m_commands.AddLast(pkgCommands.First);
+                foreach (var pkgCommand in pkgCommands)
                     m_extendedEvents.Add(m_packages[i]);
-                    Next(false);
-                    continue;
-                }
-
-                // При добавлении объектов в карту их в карте быть не должно.
-                m_packages[i].TestExistent(obj => obj.id != -1 && obj.isNew, m_pointsContainer, m_observationsContainer);
-                m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, m_packages[i]));
-                m_extendedEvents.Add(m_packages[i]);
-                Next(false);
-
-                // При любых манипуляциях с картой объекты, над которыми происходят манипуляции, должны быть в карте.
-                m_packages[i].TestNonExistent(obj => obj.id != -1, m_pointsContainer, m_observationsContainer);
-                m_commands.Add(new UpdateCommand(m_pointsContainer, m_observationsContainer, helmet, m_packages[i]));
-                m_extendedEvents.Add(m_packages[i]);
-                Next(false);
-
-                m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, helmet, m_packages[i]));
-                m_extendedEvents.Add(m_packages[i]);
-                Next(false);
-
                 if (i % 10 == 0)
                 {
                     yield return null;
                 }
             }
             Debug.Log("PROCESSING FINISHED");
-            Application.logMessageReceived -= ElektronikLogger.Log;
-            ElektronikLogger.CloseLog();
             Clear();
             Repaint();
             ReadyToPlay = true;

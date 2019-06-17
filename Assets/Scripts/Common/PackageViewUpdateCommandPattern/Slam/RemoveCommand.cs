@@ -2,9 +2,9 @@
 using Elektronik.Common.Data;
 using System.Linq;
 
-namespace Elektronik.Common.SlamEventsCommandPattern
+namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
-    public class RemoveCommand : ISlamEventCommand
+    public class RemoveCommand : IPackageViewUpdateCommand
     {
         private readonly SlamLine[] m_lines2Remove;
         private readonly SlamPoint[] m_points2Remove;

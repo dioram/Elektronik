@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Elektronik.Common.Data
 {
-    public interface IPackageCSConverter
+    public interface ICSConverter
     {
-        void Convert(ref SlamPackage srcEvent);
+        void Convert(ref Vector3 pos, ref Quaternion rot);
     }
 }

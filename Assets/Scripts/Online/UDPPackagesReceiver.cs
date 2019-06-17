@@ -64,7 +64,7 @@ namespace Elektronik.Online
                     byte[] rawPackage = new byte[countOfBytes];
                     Array.Copy(datagram, sizeof(int) * 2, rawPackage, 0, countOfBytes);
                     Debug.LogFormat("[PackagesReceiver.GetPackage] Parse");
-                    receivedPackage = SlamPackage.Parse(rawPackage);
+                    SlamPackage.Parse(rawPackage, 0, out receivedPackage);
                     Debug.LogFormat("[PackagesReceiver.GetPackage] Parsed");
                 }
 

@@ -13,5 +13,10 @@ namespace Elektronik.Common.Data
         public bool isRemoved;
         public bool isNew;
         public string message;
+
+        public override string ToString()
+        {
+            return "SlamPoint";
+        }
     }
 }

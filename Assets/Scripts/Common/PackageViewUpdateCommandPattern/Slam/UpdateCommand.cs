@@ -3,9 +3,9 @@ using Elektronik.Common.Data;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Elektronik.Common.SlamEventsCommandPattern
+namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
-    public class UpdateCommand : ISlamEventCommand
+    public class UpdateCommand : IPackageViewUpdateCommand
     {
         private readonly SlamObservation[] m_observations2Restore;
         private readonly SlamObservation[] m_observations2Update;
@@ -15,27 +15,23 @@ namespace Elektronik.Common.SlamEventsCommandPattern
 
         private readonly ICloudObjectsContainer<SlamPoint> m_pointsContainer;
         private readonly ICloudObjectsContainer<SlamObservation> m_observationsContainer;
-        private readonly Helmet m_helmet;
         private readonly SlamObservation m_helmetPose;
 
 
         public UpdateCommand(
             ICloudObjectsContainer<SlamPoint> pointsContainer,
             ICloudObjectsContainer<SlamObservation> graph,
-            Helmet helmet,
-            SlamPackage slamEvent) : this(pointsContainer, graph, helmet, slamEvent.Points, slamEvent.Observations)
+            SlamPackage slamEvent) : this(pointsContainer, graph, slamEvent.Points, slamEvent.Observations)
         {}
 
         public UpdateCommand(
             ICloudObjectsContainer<SlamPoint> pointsContainer,
             ICloudObjectsContainer<SlamObservation> observationsContainer,
-            Helmet helmet,
             IEnumerable<SlamPoint> points,
             IEnumerable<SlamObservation> observations)
         {
             m_pointsContainer = pointsContainer;
             m_observationsContainer = observationsContainer;
-            m_helmet = helmet;
 
             if (points != null)
             {
@@ -75,11 +71,6 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 }
             }
 
-            if (m_helmetPose != null)
-            {
-                m_helmet.ReplaceAbs(m_helmetPose.Point.position, m_helmetPose.Orientation);
-            }
-
             if (m_observations2Update != null)
             {
                 foreach (var observation in m_observations2Update)
@@ -97,11 +88,6 @@ namespace Elektronik.Common.SlamEventsCommandPattern
                 {
                     m_pointsContainer.Update(point); // восстанавливаем и положение и цвет
                 }
-            }
-
-            if (m_helmetPose != null)
-            {
-                m_helmet.TurnBack();
             }
 
             if (m_observations2Restore != null)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Data
 {
-    public class SlamPackage
+    public class SlamPackage : IPackage
     {
         private enum ObjectType : byte
         {
@@ -14,14 +15,13 @@ namespace Elektronik.Common.Data
             SlamObservation = 1,
             TrajectoryPoint = 2,
         }
-
-        public bool IsKeyEvent { get; private set; }
+        public PackageType Type { get => PackageType.SLAMPackage; }
+        public bool IsKey { get; private set; }
         public int Timestamp { get; private set; }
         public List<SlamObservation> Observations { get; private set; }
         public List<SlamPoint> Points { get; private set; }
         public List<SlamLine> Lines { get; private set; }
         public string EventType { get; private set; }
-
         private string m_summary;
         private void EvaluateSummary()
         {
@@ -32,7 +32,7 @@ namespace Elektronik.Common.Data
               .AppendLine()
               .AppendFormat("Timestamp: {0}", Timestamp)
               .AppendLine()
-              .AppendFormat("Is key: {0}", IsKeyEvent)
+              .AppendFormat("Is key: {0}", IsKey)
               .AppendLine()
               .AppendFormat("New points count: {0}", Points.Count(p => p.isNew))
               .AppendLine()
@@ -49,25 +49,23 @@ namespace Elektronik.Common.Data
               .AppendFormat("Total count of observations: {0}", Observations.Count);
             m_summary = sb.ToString();
         }
-
-        private SlamPackage()
+        public SlamPackage()
         {
             Observations = new List<SlamObservation>(20);
             Points = new List<SlamPoint>(1000);
             Lines = new List<SlamLine>(500);
         }
-
-        public static SlamPackage Parse(byte[] rawPackage)
+        public static int Parse(byte[] rawPackage, int startIdx, out SlamPackage result)
         {
-            SlamPackage result = new SlamPackage();
-            int offset = 0;
-            result.Timestamp = BitConverter.ToInt32(rawPackage, 0);
+            var pkg = new SlamPackage();
+            int offset = startIdx;
+            pkg.Timestamp = BitConverter.ToInt32(rawPackage, 0);
             offset += sizeof(int);
 
             int sizeInBytesOfEventType = BitConverter.ToInt32(rawPackage, offset);
             offset += sizeof(int);
 
-            result.EventType = sizeInBytesOfEventType > 0 ?
+            pkg.EventType = sizeInBytesOfEventType > 0 ?
                 Encoding.ASCII.GetString(rawPackage, offset, sizeInBytesOfEventType) :
                 "";
             offset += sizeInBytesOfEventType;
@@ -95,32 +93,40 @@ namespace Elektronik.Common.Data
                     "[Package.Parse] Wrong size of action. actionSize + offset = {0}, but size of package is {1}",
                     offset + actionsSize, rawPackage.Length);
                 Buffer.BlockCopy(rawPackage, offset, actions, 0, actionsSize);
-                //Array.Copy(rawPackage, offset, actions, 0, actionsSize);
                 offset += actionsSize;
                 SlamLine? line = null;
                 if (objectType == ObjectType.SlamPoint)
                 {
                     SlamPointsPackageObject.ParseActions(actions, objectId, out SlamPoint point, out line);
-                    result.Points.Add(point);
+                    pkg.Points.Add(point);
                 }
                 else
                 {
                     SlamObservationPackageObject.ParseActions(actions, objectId, out SlamObservation observation);
-                    result.Observations.Add(observation);
+                    pkg.Observations.Add(observation);
                 }
                 if (line != null)
-                    result.Lines.Add(line.Value);
+                    pkg.Lines.Add(line.Value);
             }
-            if (result.Observations.Count > 0)
+            if (pkg.Observations.Count > 0)
             {
-                if (result.Observations[0].Point.id != -1)
-                    result.IsKeyEvent = true;
+                if (pkg.Observations[0].Point.id != -1)
+                    pkg.IsKey = true;
             }
-            result.EvaluateSummary();
-            return result;
+            pkg.EvaluateSummary();
+            result = pkg;
+            return offset - startIdx;
         }
 
-        public string Summary()
+
+        private void Clear()
+        {
+            Observations.Clear();
+            Lines.Clear();
+            Points.Clear();
+        }
+
+        public override string ToString()
         {
             return m_summary;
         }

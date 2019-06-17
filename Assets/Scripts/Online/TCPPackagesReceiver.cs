@@ -16,28 +16,30 @@ namespace Elektronik.Online
     public class TCPPackagesReceiver : IDisposable
     {
         Thread m_readingThread;
-        List<SlamPackage> m_packagesBuffer;
-        Queue<SlamPackage> m_readPackages;
+        List<IPackage> m_packagesBuffer;
+        Queue<IPackage> m_readPackages;
         private int m_packageNum = 0;
         private TcpClient m_network;
         private NetworkStream m_stream;
         private bool m_stop;
         private IPGlobalProperties m_ipProperties;
         private TcpConnectionInformation[] m_tcpConnections;
+        private DataParser m_parser;
 
         public delegate void TCPPackagesReceiverHandler();
         public event TCPPackagesReceiverHandler OnDisconnect;
 
         public bool Connected { get { return m_network.Connected; } }
 
-        public TCPPackagesReceiver()
+        public TCPPackagesReceiver(DataParser parser)
         {
             m_network = new TcpClient();
             m_network.ReceiveBufferSize = 64 * 1024;
-            m_packagesBuffer = new List<SlamPackage>(20);
-            m_readPackages = new Queue<SlamPackage>(100);
+            m_packagesBuffer = new List<IPackage>(20);
+            m_readPackages = new Queue<IPackage>(100);
             m_readingThread = new Thread(ReadPackages);
             m_readingThread.IsBackground = true;
+            m_parser = parser;
         }
 
         private bool CheckConnection(byte[] zeroByte)
@@ -68,7 +70,7 @@ namespace Elektronik.Online
                 throw new InvalidOperationException("Call Connect before using this [GetPackage] method");
             }
             byte[] zeroByte = new byte[1];
-            SlamPackage receivedPackage = null;
+            IPackage receivedPackage = null;
             while (!m_stop)
             {
                 while (m_network.Available > 4)
@@ -84,7 +86,7 @@ namespace Elektronik.Online
                         if (m_stop)
                             return;
                     } while (readBytes != countOfBytes);
-                    receivedPackage = SlamPackage.Parse(rawPackage);
+                    m_parser.Parse(rawPackage, 0, out receivedPackage);
                     if (receivedPackage.Timestamp != m_packageNum)
                     {
                         m_packagesBuffer.Add(receivedPackage);
@@ -127,9 +129,9 @@ namespace Elektronik.Online
             return true;
         }
 
-        public SlamPackage GetPackage()
+        public IPackage GetPackage()
         {
-            SlamPackage package = null;
+            IPackage package = null;
             lock (m_readPackages)
             {
                 if (m_readPackages.Count > 0)

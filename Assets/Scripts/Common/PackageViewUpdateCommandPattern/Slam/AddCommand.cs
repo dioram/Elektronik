@@ -2,9 +2,9 @@
 using Elektronik.Common.Data;
 using System.Linq;
 
-namespace Elektronik.Common.SlamEventsCommandPattern
+namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
-    public class AddCommand : ISlamEventCommand
+    public class AddCommand : IPackageViewUpdateCommand
     {
         private readonly SlamLine[] m_addedLines;
         private readonly SlamPoint[] m_addedPoints;

@@ -18,7 +18,7 @@ namespace Elektronik.Common.Data
             var objArray = objects.ToArray();
             if (objArray.Length != 0)
             {
-                ElektronikLogger.Log(package.Summary(), "", LogType.Error);
+                ElektronikLogger.Log(package.ToString(), "", LogType.Error);
                 foreach (var obj in objArray)
                 {
                     string msg = String.Format(messageTemplate, obj.id, obj.isNew, obj.isRemoved);

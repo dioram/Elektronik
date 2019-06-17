@@ -1,15 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace Elektronik.Common.SlamEventsCommandPattern
+namespace Elektronik.Common.PackageViewUpdateCommandPattern
 {
-    public class MacroCommand : ISlamEventCommand
+    public class MacroCommand : IPackageViewUpdateCommand
     {
-        protected List<ISlamEventCommand> m_commands;
-
-        protected MacroCommand()
-        {
-            m_commands = new List<ISlamEventCommand>();
-        }
+        protected IList<IPackageViewUpdateCommand> m_commands;
 
         public virtual void Execute()
         {

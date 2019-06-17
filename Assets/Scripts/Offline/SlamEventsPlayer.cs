@@ -38,7 +38,7 @@ namespace Elektronik.Offline
 
         private void UpdateTime()
         {
-            SlamPackage currentEvent = eventsManager.GetCurrentEvent();
+            IPackage currentEvent = eventsManager.GetCurrentEvent();
             if (currentEvent != null && currentEvent.Timestamp != -1)
             {
                 timelineLabel.text = TimeSpan.FromMilliseconds(currentEvent.Timestamp).ToString(@"mm\:ss\.fff");
@@ -53,19 +53,16 @@ namespace Elektronik.Offline
                 if (m_play)
                 {
                     m_play = eventsManager.Next();
-                    eventsManager.UpdateEventInfo();
                     UpdateTime();
                 }
                 if (Input.GetKeyDown(KeyCode.LeftBracket))
                 {
                     PrevKey();
-                    eventsManager.UpdateEventInfo();
                     UpdateTime();
                 }
                 if (Input.GetKeyDown(KeyCode.RightBracket))
                 {
                     NextKey();
-                    eventsManager.UpdateEventInfo();
                     UpdateTime();
                 }
             }
@@ -106,7 +103,6 @@ namespace Elektronik.Offline
         {
             eventsManager.SetPosition((int)Math.Floor(i), () =>
             {
-                eventsManager.UpdateEventInfo();
                 UpdateTime();
             });
         }

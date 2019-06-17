@@ -10,11 +10,28 @@ using UnityEngine;
 
 namespace Elektronik.Offline
 {
-    public class PackagesReader
+    public class DataSource
     {
-        public static SlamPackage[] AnalyzeFile(string path, IPackageCSConverter converter)
+        private DataParser m_parser;
+        public DataSource()
         {
-            SlamPackage[] result = null;
+            var converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
+            m_parser = new SlamPackageParser(converter);
+            m_parser.SetSuccessor(null);
+        }
+
+        public event Action<IList<IPackage>> DataReady;
+        public async void ParseData(string path)
+        {
+            Debug.Log("ANALYSIS STARTED");
+            var task = new Task<IList<IPackage>>(() => Parse(path));
+            DataReady?.Invoke(await task);
+            Debug.Log("ANALYSIS FINISHED");
+        }
+
+        private IList<IPackage> Parse(string path)
+        {
+            IList<IPackage> result = null;
             using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
             {
                 if (br.ReadUInt32() != 0xDEADBEEF)
@@ -25,7 +42,7 @@ namespace Elektronik.Offline
                 if (br.ReadUInt32() != 0xDEADBEEF)
                     throw new FileLoadException("broken file (2nd magic number)");
                 int eventsCount = br.ReadInt32();
-                result = new SlamPackage[eventsCount];
+                result = new List<IPackage>(eventsCount);
                 int[] offsetTable = Enumerable.Range(0, eventsCount).Select(_ => br.ReadInt32()).ToArray();
                 br.BaseStream.Seek(0, SeekOrigin.Begin);
                 byte[] data = br.ReadBytes((int)br.BaseStream.Length);
@@ -38,8 +55,7 @@ namespace Elektronik.Offline
                         : offsetTable[i + 1] - offsetTable[i];
                     byte[] rawPackage = new byte[(int)packageLength];
                     Buffer.BlockCopy(data, offsetTable[i], rawPackage, 0, (int)packageLength);
-                    SlamPackage package = SlamPackage.Parse(rawPackage);
-                    converter.Convert(ref package);
+                    m_parser.Parse(rawPackage, 0, out IPackage package);
                     result[i] = package;
                 });
             }
