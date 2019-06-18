@@ -83,7 +83,6 @@
     <Compile Include="Assets\Scripts\Common\Data\PackageTestExtensions.cs" />
     <Compile Include="Assets\Scripts\Common\Data\PackageType.cs" />
     <Compile Include="Assets\Scripts\Common\Data\Robot2Unity3dPackageConverter.cs" />
-    <Compile Include="Assets\Scripts\Common\Data\SlamBitConverter.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamLine.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamObject.cs" />
     <Compile Include="Assets\Scripts\Common\Data\SlamObservation.cs" />
@@ -94,11 +93,13 @@
     <Compile Include="Assets\Scripts\Common\Data\SlamPointsPackageObject.cs" />
     <Compile Include="Assets\Scripts\Common\Data\TrackingPackage.cs" />
     <Compile Include="Assets\Scripts\Common\Data\TrackingPackageParser.cs" />
-    <Compile Include="Assets\Scripts\Common\Data\TrajectoryPoint.cs" />
     <Compile Include="Assets\Scripts\Common\DisableAutoXR.cs" />
     <Compile Include="Assets\Scripts\Common\ElektronikLogger.cs" />
+    <Compile Include="Assets\Scripts\Common\Extensions\BitConverterEx.cs" />
+    <Compile Include="Assets\Scripts\Common\Extensions\ChainExtensions.cs" />
     <Compile Include="Assets\Scripts\Common\FreeFlyCameraScript.cs" />
     <Compile Include="Assets\Scripts\Common\Helmet.cs" />
+    <Compile Include="Assets\Scripts\Common\IChainable.cs" />
     <Compile Include="Assets\Scripts\Common\InputWithBrowse.cs" />
     <Compile Include="Assets\Scripts\Common\Interop\OMW\OMWSlamWrapper.cs" />
     <Compile Include="Assets\Scripts\Common\Interop\OMW\Tracker.cs" />
@@ -143,7 +144,7 @@
     <Compile Include="Assets\Scripts\Offline\SlamEventsPlayer.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamPackageCommander.cs" />
     <Compile Include="Assets\Scripts\Offline\SpecialInformationBanner.cs" />
-    <Compile Include="Assets\Scripts\Offline\TrackingPackagePresenter.cs" />
+    <Compile Include="Assets\Scripts\Offline\TrackingPackageCommander.cs" />
     <Compile Include="Assets\Scripts\Online\OnlineModeSettings.cs" />
     <Compile Include="Assets\Scripts\Online\OnlineSettingStore.cs" />
     <Compile Include="Assets\Scripts\Online\RecentIPListBoxItem.cs" />
@@ -151,6 +152,7 @@
     <Compile Include="Assets\Scripts\Online\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Online\SlamPackagePresenter.cs" />
     <Compile Include="Assets\Scripts\Online\TCPPackagesReceiver.cs" />
+    <Compile Include="Assets\Scripts\Online\TrackingPackagePresenter.cs" />
     <Compile Include="Assets\Scripts\Online\UDPPackagesReceiver.cs" />
     <Compile Include="Assets\Scripts\Online\VRHacker.cs" />
     <Compile Include="Assets\Scripts\Online\VRHackerDirect.cs" />

@@ -55,7 +55,7 @@ namespace Elektronik.Online
                 lock (m_pointsContainer)
                     UpdateMap(
                       updatedPoints,
-                      /*isNew*/ _ => false, /*isRemoved*/ _ => false, /*justColored*/ _ => true, p => p.id != -1,
+                      /*isNew*/ _ => false, /*isRemoved*/ _ => false, /*justColored*/ _ => true, /*isValid*/ p => p.id != -1,
                       m_pointsContainer);
             }
             if (pkg.Lines != null)
@@ -63,7 +63,7 @@ namespace Elektronik.Online
                 lock (m_linesContainer)
                     UpdateMap(
                       pkg.Lines,
-                      /*isNew*/ _ => false, /*isRemoved*/ _ => true, /*justColored*/ _ => false, /*isValid*/_ => true,
+                      /*isNew*/ _ => false, /*isRemoved*/ _ => true, /*justColored*/ _ => false, /*isValid*/ _ => true,
                       m_linesContainer);
             }
         }

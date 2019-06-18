@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Elektronik.Common.Data
 {
@@ -12,7 +13,20 @@ namespace Elektronik.Common.Data
 
         private void Convert(ref TrackingPackage pkg)
         {
-
+            for (int trackIdx = 0; trackIdx < pkg.Tracks.Count; ++trackIdx)
+            {
+                Vector3 trackPos = pkg.Tracks[trackIdx].position;
+                Quaternion trackRot = pkg.Tracks[trackIdx].rotation;
+                m_converter.Convert(ref trackPos, ref trackRot);
+                var unit = new TrackingPackage.TrackingUnit()
+                {
+                    position = trackPos,
+                    rotation = trackRot,
+                    id = pkg.Tracks[trackIdx].id,
+                    color = pkg.Tracks[trackIdx].color,
+                };
+                pkg.Tracks[trackIdx] = unit;
+            }
         }
 
         public override int Parse(byte[] data, int startIdx, out IPackage result)
@@ -22,9 +36,10 @@ namespace Elektronik.Common.Data
             {
                 return m_successor?.Parse(data, startIdx, out result) ?? 0;
             }
-            var trackingPackage = new TrackingPackage();
+            int readBytes = TrackingPackage.Parse(data, startIdx, out TrackingPackage trackingPackage);
             Convert(ref trackingPackage);
-            throw new NotImplementedException();
+            result = trackingPackage;
+            return readBytes;
         }
     }
 }

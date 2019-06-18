@@ -9,14 +9,15 @@ namespace Elektronik.Common
 {
     public class Helmet : MonoBehaviour
     {
-        ICloudObjectsContainer<SlamLine> m_linesContainer;
-        int m_lastLineId;
-        int m_lineSegmentIdx;
-        Stack<Pose> m_poseHistory;
-        Stack<int> m_lineIdsHistory;
+        private ICloudObjectsContainer<SlamLine> m_linesContainer;
+        private int m_lastLineId;
+        private int m_lineSegmentIdx;
+        private Stack<Pose> m_poseHistory;
+        private Stack<int> m_lineIdsHistory;
 
         public FastLinesCloud linesCloud;
-        public Color trackColor = Color.red;
+        public Color color = Color.red;
+        public int id;
 
         public void Start()
         {
@@ -52,7 +53,7 @@ namespace Elektronik.Common
             }
             SlamLine line = new SlamLine()
             {
-                color1 = trackColor,
+                color1 = color,
                 isRemoved = false,
                 pointId1 = m_lineSegmentIdx,
                 pointId2 = ++m_lineSegmentIdx,

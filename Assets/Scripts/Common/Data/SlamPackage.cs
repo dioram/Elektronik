@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Elektronik.Common.Extensions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,6 @@ namespace Elektronik.Common.Data
         {
             SlamPoint = 0,
             SlamObservation = 1,
-            TrajectoryPoint = 2,
         }
         public PackageType Type { get => PackageType.SLAMPackage; }
         public bool IsKey { get; private set; }
@@ -57,25 +57,22 @@ namespace Elektronik.Common.Data
         }
         public static int Parse(byte[] rawPackage, int startIdx, out SlamPackage result)
         {
-            var pkg = new SlamPackage();
+            result = null;
             int offset = startIdx;
-            pkg.Timestamp = BitConverter.ToInt32(rawPackage, 0);
-            offset += sizeof(int);
-
-            int sizeInBytesOfEventType = BitConverter.ToInt32(rawPackage, offset);
-            offset += sizeof(int);
-
-            pkg.EventType = sizeInBytesOfEventType > 0 ?
+            if ((PackageType)rawPackage[offset++] != PackageType.SLAMPackage)
+                return 0;
+            result = new SlamPackage();
+            result.Timestamp = BitConverterEx.ToInt32(rawPackage, offset, ref offset);
+            int sizeInBytesOfEventType = BitConverterEx.ToInt32(rawPackage, offset, ref offset);
+            result.EventType = sizeInBytesOfEventType > 0 ?
                 Encoding.ASCII.GetString(rawPackage, offset, sizeInBytesOfEventType) :
                 "";
             offset += sizeInBytesOfEventType;
-            int countOfObjects = BitConverter.ToInt32(rawPackage, offset);
-            offset += sizeof(int);
+            int countOfObjects = BitConverterEx.ToInt32(rawPackage, offset, ref offset);
 
             for (int i = 0; i < countOfObjects; ++i)
             {
-                int objectId = BitConverter.ToInt32(rawPackage, offset);
-                offset += sizeof(int);
+                int objectId = BitConverterEx.ToInt32(rawPackage, offset, ref offset);
                 ObjectType objectType = (ObjectType)rawPackage[offset++];
                 int actionsCount = rawPackage[offset++];
                 int actionsSize = 0;
@@ -98,23 +95,22 @@ namespace Elektronik.Common.Data
                 if (objectType == ObjectType.SlamPoint)
                 {
                     SlamPointsPackageObject.ParseActions(actions, objectId, out SlamPoint point, out line);
-                    pkg.Points.Add(point);
+                    result.Points.Add(point);
                 }
                 else
                 {
                     SlamObservationPackageObject.ParseActions(actions, objectId, out SlamObservation observation);
-                    pkg.Observations.Add(observation);
+                    result.Observations.Add(observation);
                 }
                 if (line != null)
-                    pkg.Lines.Add(line.Value);
+                    result.Lines.Add(line.Value);
             }
-            if (pkg.Observations.Count > 0)
+            if (result.Observations.Count > 0)
             {
-                if (pkg.Observations[0].Point.id != -1)
-                    pkg.IsKey = true;
+                if (result.Observations[0].Point.id != -1)
+                    result.IsKey = true;
             }
-            pkg.EvaluateSummary();
-            result = pkg;
+            result.EvaluateSummary();
             return offset - startIdx;
         }
 

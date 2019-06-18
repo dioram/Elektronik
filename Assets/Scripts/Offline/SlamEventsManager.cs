@@ -1,12 +1,11 @@
 ﻿using Elektronik.Common;
-using Elektronik.Common.Clouds;
-using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
 using Elektronik.Common.PackageViewUpdateCommandPattern;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Elektronik.Common.Extensions;
 
 namespace Elektronik.Offline
 {
@@ -14,19 +13,13 @@ namespace Elektronik.Offline
     {
         public bool ReadyToPlay { get; private set; }
         public float scale;
-
-        IList<IPackage> m_packages;
-        LinkedList<IPackageViewUpdateCommand> m_commands;
-        IList<IPackage> m_extendedEvents;
-        
-
-        public Helmet helmet;
         public RepaintablePackageViewUpdateCommander[] commanders;
-        public PackagePresenter[] presenters;
+
+        private IList<IPackage> m_packages;
+        private LinkedList<IPackageViewUpdateCommand> m_commands;
+        private IList<IPackage> m_extendedEvents;
         private PackageViewUpdateCommander m_commander;
-
         private DataSource m_dataSource;
-
         private int m_position = -1;
         private LinkedListNode<IPackageViewUpdateCommand> m_currentCommand;
 
@@ -44,14 +37,7 @@ namespace Elektronik.Offline
 
         void Start()
         {
-            PackageViewUpdateCommander commander = m_commander = null;
-            for (int i = 0; i < presenters.Length; ++i)
-            {
-                if (commander == null)
-                    m_commander = commander = commanders[i];
-                else
-                    commander = commander.SetSuccessor(commanders[i]);
-            }
+            m_commander = commanders.BuildChain();
             ElektronikLogger.OpenLog();
             Application.logMessageReceived += ElektronikLogger.Log;
             m_dataSource.ParseData(FileModeSettings.Current.Path);
@@ -64,25 +50,19 @@ namespace Elektronik.Offline
             m_position = -1;
             foreach (var commander in commanders)
                 commander.Clear();
-            helmet.ResetHelmet();
         }
 
         public void Repaint()
         {
             foreach (var commander in commanders)
-                commander.Clear();
+                commander.Repaint();
         }
 
         public int GetLength() => m_commands.Count;
 
         public int GetCurrentEventPosition() => m_position;
 
-        public IPackage GetCurrentEvent()
-        {
-            if (m_position == -1) // до свершения какого либо события
-                return null;
-            return m_extendedEvents[m_position];
-        }
+        public IPackage GetCurrentEvent() => m_position == -1 ? null : m_extendedEvents[m_position];
 
         public void SetPosition(int pos, Action whenPositionWasSet)
         {
@@ -209,10 +189,7 @@ namespace Elektronik.Offline
                 m_commands.AddLast(pkgCommands.First);
                 foreach (var pkgCommand in pkgCommands)
                     m_extendedEvents.Add(m_packages[i]);
-                if (i % 10 == 0)
-                {
-                    yield return null;
-                }
+                if (i % 10 == 0) yield return null;
             }
             Debug.Log("PROCESSING FINISHED");
             Clear();

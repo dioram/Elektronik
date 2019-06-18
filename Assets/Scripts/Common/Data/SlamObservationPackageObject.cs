@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Elektronik.Common.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,16 +53,12 @@ namespace Elektronik.Common.Data
                 }
                 if (type == ActionType.Create || type == ActionType.Move)
                 {
-                    obsPoint.position = SlamBitConverter.ToVector3(actions, offset);
-                    offset += sizeof(float) * 3;
-                    observation.Orientation = SlamBitConverter.ToQuaternion(actions, offset);
-                    offset += sizeof(float) * 4;
+                    obsPoint.position = BitConverterEx.ToVector3(actions, offset, ref offset);
+                    observation.Orientation = BitConverterEx.ToQuaternion(actions, offset, ref offset);
                 }
-                
                 if (type == ActionType.Tint)
                 {
-                    obsPoint.color = SlamBitConverter.ToRGBColor(actions, offset);
-                    offset += sizeof(byte) * 3;
+                    obsPoint.color = BitConverterEx.ToRGBColor(actions, offset, ref offset);
                 }
                 if (type == ActionType.Remove)
                 {
@@ -70,20 +67,16 @@ namespace Elektronik.Common.Data
                 }
                 if (type == ActionType.Connect)
                 {
-                    int covisibleId = BitConverter.ToInt32(actions, offset);
-                    offset += sizeof(int);
-                    int countOfCommonPoints = BitConverter.ToInt32(actions, offset);
-                    offset += sizeof(int);
-                    covisible.Add(new SlamObservation.CovisibleInfo()
-                    {
-                        id = covisibleId,
-                        sharedPointsCount = countOfCommonPoints
-                    });
+                    covisible.Add(
+                        new SlamObservation.CovisibleInfo()
+                        {
+                            id = BitConverterEx.ToInt32(actions, offset, ref offset),
+                            sharedPointsCount = BitConverterEx.ToInt32(actions, offset, ref offset)
+                        });
                 }
                 if (type == ActionType.Message)
                 {
-                    int countOfMsgBytes = BitConverter.ToInt32(actions, offset);
-                    offset += sizeof(int);
+                    int countOfMsgBytes = BitConverterEx.ToInt32(actions, offset, ref offset);
                     if (countOfMsgBytes >= MAX_MESSAGE_LENGTH_IN_BYTES)
                         throw new Exception();
                     obsPoint.message = countOfMsgBytes > 0 ? Encoding.ASCII.GetString(actions, offset, countOfMsgBytes) : "";

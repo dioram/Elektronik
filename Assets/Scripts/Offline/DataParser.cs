@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Elektronik.Common.Extensions;
 
 namespace Elektronik.Offline
 {
@@ -16,8 +17,12 @@ namespace Elektronik.Offline
         public DataSource()
         {
             var converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
-            m_parser = new SlamPackageParser(converter);
-            m_parser.SetSuccessor(null);
+            m_parser = 
+                new IChainable<DataParser>[] 
+                {
+                    new SlamPackageParser(converter),
+                    new TrackingPackageParser(converter),
+                }.BuildChain();
         }
 
         public event Action<IList<IPackage>> DataReady;
