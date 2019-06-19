@@ -31,9 +31,12 @@ namespace Elektronik.Common.Data
 
         public override int Parse(byte[] data, int startIdx, out IPackage result)
         {
+            Debug.Log("[SlamPackageParser.Parse]");
             result = null;
             if ((PackageType)data[startIdx] != PackageType.SLAMPackage)
+            {
                 return m_successor?.Parse(data, startIdx, out result) ?? 0;
+            }
             int readBytes = SlamPackage.Parse(data, startIdx, out SlamPackage slamPkg);
             Convert(ref slamPkg);
             result = slamPkg;

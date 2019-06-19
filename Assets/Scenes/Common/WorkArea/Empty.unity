@@ -4821,7 +4821,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   observationPrefab: {fileID: 3038893354545110125, guid: 7a3fa4516cf7b3f4a8dcd5fa4783592f,
     type: 3}
-  fastPointCloud: {fileID: 967179610}
+  fastPointCloud: {fileID: 1194370009}
   fusionLinesCloud: {fileID: 289725688}
   graphConnectionLinesCloud: {fileID: 2096468162}
   eventsLogger: {fileID: 1778431254}

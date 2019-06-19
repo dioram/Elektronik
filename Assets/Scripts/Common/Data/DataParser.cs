@@ -14,7 +14,7 @@ namespace Elektronik.Common.Data
 
         public IChainable<DataParser> SetSuccessor(IChainable<DataParser> parser)
         {
-            Debug.AssertFormat(parser != this, "[DataParser.SetSuccessor] Cyclic reference!");
+            Debug.Assert(parser != this, "[DataParser.SetSuccessor] Cyclic reference!");
             m_successor = parser as DataParser;
             return m_successor;
         }

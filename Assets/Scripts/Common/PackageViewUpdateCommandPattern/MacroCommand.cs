@@ -6,6 +6,11 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern
     {
         protected IList<IPackageViewUpdateCommand> m_commands;
 
+        public MacroCommand()
+        {
+            m_commands = new List<IPackageViewUpdateCommand>();
+        }
+
         public virtual void Execute()
         {
             for (int i = 0; i < m_commands.Count; ++i)

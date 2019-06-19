@@ -24,28 +24,18 @@ namespace Elektronik.Common.Data
         private string m_summary;
         private void EvaluateSummary()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("[Package]")
-              .AppendLine()
-              .AppendFormat("{0}", EventType)
-              .AppendLine()
-              .AppendFormat("Timestamp: {0}", Timestamp)
-              .AppendLine()
-              .AppendFormat("Is key: {0}", IsKey)
-              .AppendLine()
-              .AppendFormat("New points count: {0}", Points.Count(p => p.isNew))
-              .AppendLine()
-              .AppendFormat("Tinted points count: {0}", Points.Count(p => p.justColored))
-              .AppendLine()
-              .AppendFormat("Removed points count: {0}", Points.Count(p => p.isRemoved))
-              .AppendLine()
-              .AppendFormat("Total count of points: {0}", Points.Count)
-              .AppendLine()
-              .AppendFormat("New observations count: {0}", Observations.Count(o => o.Point.isNew))
-              .AppendLine()
-              .AppendFormat("Removed observations count: {0}", Observations.Count(o => o.Point.isRemoved))
-              .AppendLine()
-              .AppendFormat("Total count of observations: {0}", Observations.Count);
+            var sb = new StringBuilder();
+            sb.AppendLine("[Package]")
+              .AppendLine($"{EventType}")
+              .AppendLine($"Timestamp: {Timestamp}")
+              .AppendLine($"Is key: {IsKey}")
+              .AppendLine($"New points count: {Points.Count(p => p.isNew)}")
+              .AppendLine($"Tinted points count: {Points.Count(p => p.justColored)}")
+              .AppendLine($"Removed points count: {Points.Count(p => p.isRemoved)}")
+              .AppendLine($"Total count of points: {Points.Count}")
+              .AppendLine($"New observations count: {Observations.Count(o => o.Point.isNew)}")
+              .AppendLine($"Removed observations count: {Observations.Count(o => o.Point.isRemoved)}")
+              .AppendLine($"Total count of observations: {Observations.Count}");
             m_summary = sb.ToString();
         }
         public SlamPackage()
@@ -85,10 +75,9 @@ namespace Elektronik.Common.Data
                     ++actionsSize; // type byte
                 }
                 byte[] actions = new byte[actionsSize];
-                Debug.AssertFormat(
+                Debug.Assert(
                     offset + actionsSize <= rawPackage.Length,
-                    "[Package.Parse] Wrong size of action. actionSize + offset = {0}, but size of package is {1}",
-                    offset + actionsSize, rawPackage.Length);
+                    $"[Package.Parse] Wrong size of action. actionSize + offset = {actionsSize + offset}, but size of package is {rawPackage.Length}");
                 Buffer.BlockCopy(rawPackage, offset, actions, 0, actionsSize);
                 offset += actionsSize;
                 SlamLine? line = null;

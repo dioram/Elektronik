@@ -5,6 +5,7 @@ using Elektronik.Common.PackageViewUpdateCommandPattern;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Elektronik.Offline
@@ -28,26 +29,18 @@ namespace Elektronik.Offline
             m_extendedEvents = new List<IPackage>();
             m_commands = new LinkedList<IPackageViewUpdateCommand>();
             m_dataSource = new DataSource();
-            m_dataSource.DataReady += (IList<IPackage> packages) =>
-            {
-                m_packages = packages;
-                StartCoroutine(ProcessEvents());
-            };
         }
 
         void Start()
         {
             m_commander = commanders.BuildChain();
-            ElektronikLogger.OpenLog();
-            Application.logMessageReceived += ElektronikLogger.Log;
-            m_dataSource.ParseData(FileModeSettings.Current.Path);
-            Application.logMessageReceived -= ElektronikLogger.Log;
-            ElektronikLogger.CloseLog();
+            StartCoroutine(ProcessEvents());
         }
 
         public void Clear()
         {
             m_position = -1;
+            m_currentCommand = m_commands.First;
             foreach (var commander in commanders)
                 commander.Clear();
         }
@@ -93,8 +86,9 @@ namespace Elektronik.Offline
 
         public bool Next(bool needRepaint = true)
         {
-            if (m_currentCommand != m_commands.Last)
+            if (m_currentCommand.Next != null)
             {
+                ++m_position;
                 m_currentCommand = m_currentCommand.Next;
                 m_currentCommand.Value.Execute();
                 if (needRepaint)
@@ -111,8 +105,9 @@ namespace Elektronik.Offline
 
         public bool Previous(bool needRepaint = true)
         {
-            if (m_currentCommand != m_commands.First)
+            if (m_currentCommand.Previous != null)
             {
+                --m_position;
                 m_currentCommand = m_currentCommand.Previous;
                 m_currentCommand.Value.UnExecute();
                 if (needRepaint)
@@ -181,20 +176,26 @@ namespace Elektronik.Offline
 
         IEnumerator ProcessEvents()
         {
-            Debug.Log("PROCESSING STARTED");
+            ElektronikLogger.OpenLog();
+            Application.logMessageReceived += ElektronikLogger.Log;
+            Debug.Log("ANALYSIS STARTED");
+            m_packages = m_dataSource.ParseData(FileModeSettings.Current.Path);
+            Debug.Log("PROCESSING FINISHED");
             for (int i = 0; i < m_packages.Count; ++i)
             {
                 Debug.Log(m_packages[i]);
                 LinkedList<IPackageViewUpdateCommand> pkgCommands = m_commander.GetCommands(m_packages[i]);
-                m_commands.AddLast(pkgCommands.First);
                 foreach (var pkgCommand in pkgCommands)
                     m_extendedEvents.Add(m_packages[i]);
-                if (i % 10 == 0) yield return null;
+                m_commands.MoveFrom(pkgCommands);
+                //if (i % 10 == 0) yield return null;
             }
             Debug.Log("PROCESSING FINISHED");
             Clear();
             Repaint();
             ReadyToPlay = true;
+            Application.logMessageReceived -= ElektronikLogger.Log;
+            ElektronikLogger.CloseLog();
             yield return null;
         }
     }

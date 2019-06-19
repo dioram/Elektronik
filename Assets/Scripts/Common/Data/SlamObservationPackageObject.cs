@@ -27,7 +27,7 @@ namespace Elektronik.Common.Data
                 case ActionType.Message:
                     return sizeof(int) + sizeof(byte) * MAX_MESSAGE_LENGTH_IN_BYTES; // size + message bytes
                 default:
-                    throw new ArgumentException(String.Format("Bad action type ({0})", actionType));
+                    throw new ArgumentException($"Bad action type ({actionType})");
             }
         }
 
@@ -44,7 +44,7 @@ namespace Elektronik.Common.Data
             obsPoint.color = Color.gray;
             while (offset != actions.Length)
             {
-                Debug.AssertFormat(offset <= actions.Length, "[SlamObservationPackageObject.ParseActions] offset ({0}) out of range", offset);
+                Debug.Assert(offset <= actions.Length, $"[SlamObservationPackageObject.ParseActions] offset ({offset}) out of range");
                 ActionType type = (ActionType)actions[offset++];
                 if (type == ActionType.Create)
                 {

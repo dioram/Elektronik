@@ -61,10 +61,10 @@ namespace Elektronik.Offline
                 commands.AddLast(new LambdaCommand(
                     () => eventsLogger.UpdateInfo(slamPkg, m_pointsContainer, m_observationsContainer),
                     () =>
-                        {
-                            if (m_lastPackage != null)
-                                eventsLogger.UpdateInfo(m_lastPackage, m_pointsContainer, m_observationsContainer);
-                        }));
+                    {
+                        if (m_lastPackage != null)
+                            eventsLogger.UpdateInfo(m_lastPackage, m_pointsContainer, m_observationsContainer);
+                    }));
                 commands.Last.Value.Execute();
                 m_lastPackage = slamPkg;
             }

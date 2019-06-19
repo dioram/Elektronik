@@ -26,6 +26,7 @@ namespace Elektronik.Common.Data
 
         public override int Parse(byte[] data, int startIdx, out IPackage result)
         {
+            Debug.Log("[TrackingPackageParser.Parse]");
             result = null;
             if ((PackageType)data[startIdx] != PackageType.TrackingPackage)
             {

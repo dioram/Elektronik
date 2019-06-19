@@ -11,6 +11,11 @@ namespace Elektronik.Offline
         public Helmet helmetPrefab;
         private IList<Helmet> m_helmets;
 
+        private void Awake()
+        {
+            m_helmets = new List<Helmet>();
+        }
+
         public override void Clear()
         {
             foreach (var helmet in m_helmets)

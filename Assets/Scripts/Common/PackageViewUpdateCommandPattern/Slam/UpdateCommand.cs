@@ -15,8 +15,6 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         private readonly ICloudObjectsContainer<SlamPoint> m_pointsContainer;
         private readonly ICloudObjectsContainer<SlamObservation> m_observationsContainer;
-        private readonly SlamObservation m_helmetPose;
-
 
         public UpdateCommand(
             ICloudObjectsContainer<SlamPoint> pointsContainer,
@@ -41,7 +39,6 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
             if (observations != null)
             {
-                m_helmetPose = observations.FirstOrDefault(o => o.Point.id == -1);
                 m_observations2Restore = observations
                     .Where(o => o.Point.id != -1)
                     .Where(o => !o.Point.isRemoved)

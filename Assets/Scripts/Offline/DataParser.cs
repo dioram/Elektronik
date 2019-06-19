@@ -24,13 +24,9 @@ namespace Elektronik.Offline
                 }.BuildChain();
         }
 
-        public event Action<IList<IPackage>> DataReady;
-        public async void ParseData(string path)
+        public IList<IPackage> ParseData(string path)
         {
-            Debug.Log("ANALYSIS STARTED");
-            var task = new Task<IList<IPackage>>(() => Parse(path));
-            DataReady?.Invoke(await task);
-            Debug.Log("ANALYSIS FINISHED");
+            return Parse(path);
         }
 
         private IList<IPackage> Parse(string path)
@@ -50,6 +46,7 @@ namespace Elektronik.Offline
                 int[] offsetTable = Enumerable.Range(0, eventsCount).Select(_ => br.ReadInt32()).ToArray();
                 br.BaseStream.Seek(0, SeekOrigin.Begin);
                 byte[] data = br.ReadBytes((int)br.BaseStream.Length);
+                //for (int i = 0; i < eventsCount; ++i)
                 Parallel.For(0, eventsCount, (i) =>
                 {
                     Debug.Log($"{i}. offset: {offsetTable[i]} (0x{offsetTable[i]:X8})");
@@ -59,8 +56,10 @@ namespace Elektronik.Offline
                         : offsetTable[i + 1] - offsetTable[i];
                     byte[] rawPackage = new byte[(int)packageLength];
                     Buffer.BlockCopy(data, offsetTable[i], rawPackage, 0, (int)packageLength);
-                    m_parser.Parse(rawPackage, 0, out IPackage package);
-                    result[i] = package;
+                    int readBytes = m_parser.Parse(rawPackage, 0, out IPackage package);
+                    if (readBytes == 0)
+                        Debug.LogWarning("No one parsers was found");
+                    result.Add(package);
                 });
             }
             return result;
