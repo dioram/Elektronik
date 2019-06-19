@@ -1,6 +1,5 @@
 ﻿using Elektronik.Common.Extensions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,8 +15,8 @@ namespace Elektronik.Common.Data
             SlamObservation = 1,
         }
         public PackageType Type { get => PackageType.SLAMPackage; }
-        public bool IsKey { get; private set; }
         public int Timestamp { get; private set; }
+        public bool IsKey { get; private set; }
         public List<SlamObservation> Observations { get; private set; }
         public List<SlamPoint> Points { get; private set; }
         public List<SlamLine> Lines { get; private set; }
@@ -63,6 +62,7 @@ namespace Elektronik.Common.Data
                 return 0;
             result = new SlamPackage();
             result.Timestamp = BitConverterEx.ToInt32(rawPackage, offset, ref offset);
+            result.IsKey = BitConverterEx.ToBoolean(rawPackage, offset, ref offset);
             int sizeInBytesOfEventType = BitConverterEx.ToInt32(rawPackage, offset, ref offset);
             result.EventType = sizeInBytesOfEventType > 0 ?
                 Encoding.ASCII.GetString(rawPackage, offset, sizeInBytesOfEventType) :

@@ -1,15 +1,13 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using System;
+using UnityEngine;
 
 namespace Elektronik.Common
 {
-    public class SettingsStore<T> : MonoBehaviour 
+    public class SettingsStore<T> : MonoBehaviour
         where T : IComparable<T>
     {
         public int maxCountOfRecentFiles = 20;

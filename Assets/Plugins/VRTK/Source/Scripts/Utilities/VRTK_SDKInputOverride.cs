@@ -1,10 +1,10 @@
 ﻿// SDK Input Override|Utilities|90170
 namespace VRTK
 {
-    using UnityEngine;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEngine;
 
     [Serializable]
     public class VRTK_SDKInputOverrideType

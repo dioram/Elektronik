@@ -1,13 +1,9 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.Data;
+﻿using Elektronik.Common.Data;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using UnityEngine;
 
@@ -94,10 +90,7 @@ namespace Elektronik.Online
                     }
                     if (receivedPackage != null)
                     {
-                        lock (m_readPackages)
-                        {
-                            m_readPackages.Enqueue(receivedPackage);
-                        }
+                        lock (m_readPackages) m_readPackages.Enqueue(receivedPackage);
                         m_packagesBuffer.Remove(receivedPackage);
                         ++m_packageNum;
                     }

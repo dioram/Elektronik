@@ -23,12 +23,12 @@ namespace Elektronik.Offline
         {
             commonIformation.text = "";
             listBoxWithSpecializedObjects.Clear();
-            
+
         }
 
         public void UpdateInfo(
-            SlamPackage package, 
-            ICloudObjectsContainer<SlamPoint> pointsMap, 
+            SlamPackage package,
+            ICloudObjectsContainer<SlamPoint> pointsMap,
             ICloudObjectsContainer<SlamObservation> graph)
         {
             listBoxWithSpecializedObjects.Clear();

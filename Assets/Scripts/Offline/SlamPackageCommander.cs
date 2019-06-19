@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Elektronik.Common;
-using Elektronik.Common.Clouds;
+﻿using Elektronik.Common.Clouds;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
 using Elektronik.Common.PackageViewUpdateCommandPattern;
 using Elektronik.Common.PackageViewUpdateCommandPattern.Slam;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Elektronik.Offline
@@ -47,7 +42,7 @@ namespace Elektronik.Offline
                 commands.Last.Value.Execute();
                 return commands;
             }
-            
+
             // При добавлении объектов в карту их в карте быть не должно.
             slamPkg.TestExistent(obj => obj.id != -1 && obj.isNew, m_pointsContainer, m_observationsContainer);
             commands.AddLast(new AddCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, slamPkg));
@@ -65,7 +60,7 @@ namespace Elektronik.Offline
             {
                 commands.AddLast(new LambdaCommand(
                     () => eventsLogger.UpdateInfo(slamPkg, m_pointsContainer, m_observationsContainer),
-                    () => 
+                    () =>
                         {
                             if (m_lastPackage != null)
                                 eventsLogger.UpdateInfo(m_lastPackage, m_pointsContainer, m_observationsContainer);

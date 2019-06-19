@@ -15,9 +15,9 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
         private readonly ICloudObjectsContainer<SlamPoint> m_pointsContainer;
 
         public RemoveCommand(
-            ICloudObjectsContainer<SlamPoint> pointsContainer, 
-            ICloudObjectsContainer<SlamLine> linesContainer, 
-            ICloudObjectsContainer<SlamObservation> observationsContainer, 
+            ICloudObjectsContainer<SlamPoint> pointsContainer,
+            ICloudObjectsContainer<SlamLine> linesContainer,
+            ICloudObjectsContainer<SlamObservation> observationsContainer,
             SlamPackage slamEvent)
         {
             m_pointsContainer = pointsContainer;

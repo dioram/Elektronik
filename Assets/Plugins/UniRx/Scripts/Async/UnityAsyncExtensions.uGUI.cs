@@ -5,10 +5,10 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using UniRx.Async.Internal;
+using UniRx.Async.Triggers;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using UniRx.Async.Triggers;
 
 namespace UniRx.Async
 {

@@ -1,10 +1,8 @@
 ﻿using Elektronik.Common;
-using Elektronik.Common.Clouds;
-using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
+using Elektronik.Common.Extensions;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
@@ -17,38 +15,35 @@ namespace Elektronik.Online
         public Text status;
         public Button clear;
         public Button reconnect;
-        
-        //public GameObject observationPrefab;
-        //public FastLinesCloud observationsLinesCloud;
-        //public FastLinesCloud linesCloud;
-        //public FastPointCloud pointCloud;
-        //public Helmet helmet;
+
         public int connectionTries = 10;
         public RepaintablePackagePresenter[] presenters;
-        
+
         private IDisposable m_mapUpdate;
         private IDisposable m_mapRepaint;
         private bool m_connecting = false;
         private TCPPackagesReceiver m_receiver;
-        //private Queue<Pose> m_positions;
         private DataParser m_parser;
         private PackagePresenter m_presenter;
 
         private void Awake()
         {
             ICSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.MapInfoScaling));
-            m_parser = new SlamPackageParser(converter);
+            m_parser = new IChainable<DataParser>[]
+            {
+                new SlamPackageParser(converter),
+                new TrackingPackageParser(converter),
+            }.BuildChain();
+            m_presenter = presenters.BuildChain();
             m_receiver = new TCPPackagesReceiver(m_parser);
         }
 
         private void Start()
         {
-            //m_positions = new Queue<Pose>();
             clear.OnClickAsObservable().Subscribe(_ => Clear());
             reconnect.OnClickAsObservable().Subscribe(_ => Reconnect());
             status.color = Color.red;
             status.text = "Not connected...";
-            
         }
 
         private void OnDestroy()
@@ -69,7 +64,7 @@ namespace Elektronik.Online
                 .Do(m_presenter.Present)
                 .Subscribe();
 
-            m_mapRepaint = Observable.EveryFixedUpdate().Do(_ => Repaint())/*.Do(_ => UpdateHelmet())*/.Subscribe();
+            m_mapRepaint = Observable.EveryFixedUpdate().Do(_ => Repaint()).Subscribe();
         }
 
         private IPackage SafeReadPackage()
@@ -83,29 +78,6 @@ namespace Elektronik.Online
             return package;
         }
 
-        //private void AddPose(IPackage pkg)
-        //{
-        //    int helmetPoseId = pkg.Observations.FindIndex(obs => obs.Point.id == -1);
-        //    if (helmetPoseId != -1)
-        //    {
-        //        SlamObservation helmet = pkg.Observations[helmetPoseId];
-        //        lock (m_positions)
-        //        {
-        //            m_positions.Enqueue(new Pose(helmet.Point.position, helmet.Orientation));
-        //        }
-        //    }
-        //}
-        //private void UpdateHelmet()
-        //{
-        //    lock (m_positions)
-        //    {
-        //        if (m_positions.Count > 0)
-        //        {
-        //            Pose pose = m_positions.Dequeue();
-        //            helmet.ReplaceAbs(pose.position, pose.rotation);
-        //        }
-        //    }
-        //}
         private void Repaint()
         {
             foreach (var presenter in presenters)
@@ -116,7 +88,6 @@ namespace Elektronik.Online
             Disconnect();
             foreach (var presenter in presenters)
                 presenter.Clear();
-            //helmet.ResetHelmet();
         }
 
         private void Reconnect()

@@ -1,7 +1,7 @@
 namespace VRTK
 {
-    using UnityEngine;
     using UnityEditor;
+    using UnityEngine;
 
     [CustomEditor(typeof(VRTK_RadialMenu))]
     public class VRTK_RadialMenuEditor : Editor

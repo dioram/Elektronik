@@ -1,9 +1,5 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.UI;
+﻿using Elektronik.Common.UI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine.UI;
 
 namespace Elektronik.Online

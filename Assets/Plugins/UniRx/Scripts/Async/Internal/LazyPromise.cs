@@ -98,8 +98,8 @@ namespace UniRx.Async.Internal
         {
             get
             {
-                    Create();
-                    return value.Status;
+                Create();
+                return value.Status;
             }
         }
 

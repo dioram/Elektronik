@@ -810,7 +810,7 @@ namespace VRTK
         private static IEnumerable<T> FindEvenInactiveComponentsInScene<T>(Scene scene, bool stopOnMatch = false)
         {
             List<T> results = new List<T>();
-            if(!scene.isLoaded)
+            if (!scene.isLoaded)
             {
                 return results;
             }

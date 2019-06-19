@@ -1,14 +1,11 @@
-﻿using Elektronik.Common;
+﻿using Elektronik.Common.UI;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UniRx;
-using System.Net;
-using Elektronik.Common.UI;
 
 namespace Elektronik.Online
 {

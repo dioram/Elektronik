@@ -1,12 +1,12 @@
 ﻿// SDK Setup Switcher|Prefabs|0010
 namespace VRTK
 {
-    using UnityEngine;
-    using UnityEngine.EventSystems;
-    using UnityEngine.UI;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEngine;
+    using UnityEngine.EventSystems;
+    using UnityEngine.UI;
 
     /// <summary>
     /// Provides a GUI overlay to allow switching the loaded VRTK_SDKSetup of the the current VRTK_SDKManager.

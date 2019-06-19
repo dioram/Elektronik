@@ -1,13 +1,12 @@
 ﻿using Elektronik.Common;
 using Elektronik.Common.Data;
+using Elektronik.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using Elektronik.Common.Extensions;
 
 namespace Elektronik.Offline
 {
@@ -17,8 +16,8 @@ namespace Elektronik.Offline
         public DataSource()
         {
             var converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
-            m_parser = 
-                new IChainable<DataParser>[] 
+            m_parser =
+                new IChainable<DataParser>[]
                 {
                     new SlamPackageParser(converter),
                     new TrackingPackageParser(converter),

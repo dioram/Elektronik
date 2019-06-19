@@ -128,7 +128,7 @@ namespace UniRx.Async.Internal
                     tail = i; // loop end
                     break; // LOOP END
 
-                    NEXT_LOOP:
+                NEXT_LOOP:
                     continue;
                 }
 

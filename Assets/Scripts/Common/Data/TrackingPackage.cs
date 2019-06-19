@@ -1,9 +1,5 @@
 ﻿using Elektronik.Common.Extensions;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Elektronik.Common.Data
@@ -17,18 +13,12 @@ namespace Elektronik.Common.Data
             public int id;
             public Color color;
         }
-
-        public PackageType Type => PackageType.TrackingPackage;
+        public PackageType Type { get => PackageType.TrackingPackage; }
         public int Timestamp { get; private set; }
         public bool IsKey { get; private set; }
-
         public IList<TrackingUnit> Tracks { get; private set; }
-
-        private TrackingPackage()
-        {
+        private TrackingPackage() =>
             Tracks = new List<TrackingUnit>();
-        }
-
         public static int Parse(byte[] data, int startIdx, out TrackingPackage result)
         {
             result = null;

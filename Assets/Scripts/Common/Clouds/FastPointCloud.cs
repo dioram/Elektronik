@@ -1,8 +1,6 @@
 ﻿using Elektronik.Common.Clouds.Meshes;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace Elektronik.Common.Clouds
@@ -30,7 +28,7 @@ namespace Elektronik.Common.Clouds
             }
             pointIdx = srcPointIdx % m_pointsMesh.MaxPointsCount;
         }
-        
+
         public bool Exists(int idx)
         {
             int meshIdx = idx / m_pointsMesh.MaxPointsCount;

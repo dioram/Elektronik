@@ -1,9 +1,6 @@
 ﻿// HyperealVR Defines|SDK_HyperealVR|001
 namespace VRTK
 {
-    using System;
-    using System.Reflection;
-
     /// <summary>
     /// Handles all the scripting define symbols for the Hypereal SDK.
     /// </summary>

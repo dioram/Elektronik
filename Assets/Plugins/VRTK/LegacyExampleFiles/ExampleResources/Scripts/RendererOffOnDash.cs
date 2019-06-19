@@ -1,7 +1,7 @@
 namespace VRTK.Examples
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     public class RendererOffOnDash : MonoBehaviour
     {

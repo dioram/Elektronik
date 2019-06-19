@@ -1,9 +1,9 @@
 ﻿// Interact Controller Appearance|Interactables|30040
 namespace VRTK
 {
-    using UnityEngine;
     using System;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

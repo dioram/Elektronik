@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class MoveBlock : MonoBehaviour
 {
@@ -14,13 +12,13 @@ public class MoveBlock : MonoBehaviour
     private float stoppedUntilTime;
     private float moveUpAmount;
 
-    protected virtual void Start ()
+    protected virtual void Start()
     {
         startY = transform.position.y;
 
         moveUpAmount = Mathf.Abs(moveYAmount);
 
-        if(moveYAmount < 0.0f)
+        if (moveYAmount < 0.0f)
         {
             startY -= moveYAmount;
             goingUp = false;
@@ -28,14 +26,14 @@ public class MoveBlock : MonoBehaviour
 
         stoppedUntilTime = Time.time + waitTime;
     }
-    
-    protected virtual void Update ()
+
+    protected virtual void Update()
     {
-        if( Time.time > stoppedUntilTime)
+        if (Time.time > stoppedUntilTime)
         {
-            if(goingUp)
+            if (goingUp)
             {
-                if(transform.position.y < startY+moveUpAmount)
+                if (transform.position.y < startY + moveUpAmount)
                 {
                     Vector3 newPosition = transform.position;
                     newPosition.y += Time.deltaTime * moveSpeed;
@@ -49,7 +47,7 @@ public class MoveBlock : MonoBehaviour
             }
             else
             {
-                if(transform.position.y > startY)
+                if (transform.position.y > startY)
                 {
                     Vector3 newPosition = transform.position;
                     newPosition.y -= Time.deltaTime * moveSpeed;

@@ -1,9 +1,9 @@
 ﻿// Interact Object Appearance|Interactables|35030
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

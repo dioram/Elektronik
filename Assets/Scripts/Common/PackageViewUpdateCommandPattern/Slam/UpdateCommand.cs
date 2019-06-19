@@ -22,7 +22,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
             ICloudObjectsContainer<SlamPoint> pointsContainer,
             ICloudObjectsContainer<SlamObservation> graph,
             SlamPackage slamEvent) : this(pointsContainer, graph, slamEvent.Points, slamEvent.Observations)
-        {}
+        { }
 
         public UpdateCommand(
             ICloudObjectsContainer<SlamPoint> pointsContainer,

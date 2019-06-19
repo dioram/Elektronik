@@ -1,10 +1,10 @@
 ﻿// Desktop Camera|Prefabs|0040
 namespace VRTK
 {
-    using UnityEngine;
-    using UnityEngine.UI;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEngine;
+    using UnityEngine.UI;
 
     /// <summary>
     /// Allows rendering a separate camera that is shown on the desktop only, without changing what's seen in VR headsets.

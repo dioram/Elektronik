@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using UnityEngine.UI;
-using UniRx;
-using System;
 using UnityEngine.Events;
 
 namespace Elektronik.Common

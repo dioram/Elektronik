@@ -36,8 +36,8 @@
             if (isMoving)
             {
                 Vector3 moveAmount;
-                
-                if(isMovingDown)
+
+                if (isMovingDown)
                 {
                     currentSpeed += acceleration * Time.deltaTime;
                     moveAmount = Vector3.down * currentSpeed * Time.deltaTime;
@@ -49,7 +49,7 @@
 
                 handle.transform.localPosition += moveAmount;
 
-                if((isMovingDown && handle.transform.localPosition.y <= handleEndPosition.localPosition.y) || 
+                if ((isMovingDown && handle.transform.localPosition.y <= handleEndPosition.localPosition.y) ||
                     (!isMovingDown && handle.transform.localPosition.y >= handleStartPosition.localPosition.y))
                 {
                     isMoving = false;

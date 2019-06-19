@@ -1,11 +1,9 @@
 ﻿using Elektronik.Common.Data;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using UniRx;
 using UnityEngine;
 
@@ -29,7 +27,7 @@ namespace Elektronik.Online
         public SlamPackage GetPackage()
         {
             int countOfBytes = -1;
-            
+
             SlamPackage receivedPackage = null;
 
             Debug.LogFormat("[PackagesReceiver.GetPackage] Buffer size {0}", m_packagesBuffer.Count);
@@ -37,7 +35,7 @@ namespace Elektronik.Online
             Debug.LogFormat("[PackagesReceiver.GetPackage] Buffer check");
             if (m_packagesBuffer.Count > 0 && m_packagesBuffer.First().Key == m_packageNum)
             {
-                
+
                 receivedPackage = m_packagesBuffer[m_packageNum];
                 Debug.LogFormat("[PackagesReceiver.GetPackage] Buffer removing");
                 m_packagesBuffer.Remove(m_packageNum);
@@ -46,7 +44,7 @@ namespace Elektronik.Online
                 m_packageNum += 1;
                 return receivedPackage;
             }
-            
+
             Debug.LogFormat("[PackagesReceiver.GetPackage] Socket check");
             if (m_network.Available > 8)
             {

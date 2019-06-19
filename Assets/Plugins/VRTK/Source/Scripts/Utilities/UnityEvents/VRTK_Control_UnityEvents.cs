@@ -1,8 +1,8 @@
 ﻿namespace VRTK.UnityEventHelper
 {
+    using System;
     using UnityEngine;
     using UnityEngine.Events;
-    using System;
 
     [AddComponentMenu("VRTK/Scripts/Utilities/Unity Events/VRTK_Control_UnityEvents")]
     [Obsolete("`VRTK_Control_UnityEvents` has been deprecated and can be recreated with `VRTK_BaseControllable_UnityEvents`. This script will be removed in a future version of VRTK.")]

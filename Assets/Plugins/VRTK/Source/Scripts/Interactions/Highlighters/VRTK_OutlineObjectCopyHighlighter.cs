@@ -1,10 +1,10 @@
 ﻿// Outline Object Copy|Highlighters|40030
 namespace VRTK.Highlighters
 {
-    using UnityEngine;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEngine;
 
     /// <summary>
     /// Creates a mesh copy and applies an outline shader which is toggled on and off when highlighting the object.
@@ -234,7 +234,7 @@ namespace VRTK.Highlighters
             }
 
             if (copyModel == null)
-            { 
+            {
                 VRTK_Logger.Error(VRTK_Logger.GetCommonMessage(VRTK_Logger.CommonMessageKeys.REQUIRED_COMPONENT_MISSING_FROM_GAMEOBJECT, "VRTK_OutlineObjectCopyHighlighter", "Renderer", "the same or child", " to add the highlighter to"));
                 return null;
             }

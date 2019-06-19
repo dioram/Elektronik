@@ -16,7 +16,7 @@ namespace Elektronik.Common.Containers
         private int m_removed = 0;
         private int m_diff = 0;
 
-        
+
 
         public SlamPointsContainer(IFastPointsCloud cloud)
         {
@@ -27,7 +27,7 @@ namespace Elektronik.Common.Containers
         public int Add(SlamPoint point)
         {
             Debug.AssertFormat(
-                !m_points.ContainsKey(point.id), 
+                !m_points.ContainsKey(point.id),
                 "[SlamPointsContainer.Add] Point with id {0} already in dictionary!", point.id);
             ++m_diff;
             ++m_added;
@@ -47,7 +47,7 @@ namespace Elektronik.Common.Containers
         public void Update(SlamPoint point)
         {
             Debug.AssertFormat(
-                m_points.ContainsKey(point.id), 
+                m_points.ContainsKey(point.id),
                 "[SlamPointsContainer.Update] Container doesn't contain point with id {0}", point.id);
             Matrix4x4 to = Matrix4x4.Translate(point.position);
             SlamPoint currentPoint = m_points[point.id];
@@ -73,7 +73,7 @@ namespace Elektronik.Common.Containers
             --m_diff;
             ++m_removed;
             Debug.AssertFormat(
-                m_points.ContainsKey(pointId), 
+                m_points.ContainsKey(pointId),
                 "[SlamPointsContainer.Remove] Container doesn't contain point with id {0}", pointId);
             m_pointsCloud.Set(pointId, Matrix4x4.identity, new Color(0, 0, 0, 0));
             m_points.Remove(pointId);
@@ -162,6 +162,6 @@ namespace Elektronik.Common.Containers
 
         IEnumerator IEnumerable.GetEnumerator() => m_points.Select(kv => kv.Value).GetEnumerator();
 
-        
+
     }
 }

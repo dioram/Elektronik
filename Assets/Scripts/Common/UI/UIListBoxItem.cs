@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +21,6 @@ namespace Elektronik.Common.UI
             m_button.onClick.AddListener(() => { if (OnClick != null) OnClick(this, null); });
         }
 
-        
+
     }
 }

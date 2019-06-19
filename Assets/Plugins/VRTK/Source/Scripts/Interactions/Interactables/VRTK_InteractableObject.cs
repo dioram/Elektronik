@@ -1,11 +1,11 @@
 ﻿// Interactable Object|Interactables|35010
 namespace VRTK
 {
-    using UnityEngine;
-    using System.Collections;
-    using System.Collections.Generic;
     using GrabAttachMechanics;
     using SecondaryControllerGrabActions;
+    using System.Collections;
+    using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

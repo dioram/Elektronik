@@ -1,8 +1,8 @@
 ﻿// Object Auto Grab|Interactors|30080
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

@@ -1,8 +1,8 @@
 ﻿namespace VRTK
 {
-    using UnityEngine;
     using System;
     using System.Collections.Generic;
+    using UnityEngine;
 
     public class VRTK_ControllerReference : IEquatable<VRTK_ControllerReference>
     {

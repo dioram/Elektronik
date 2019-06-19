@@ -1,9 +1,9 @@
 ﻿namespace VRTK
 {
-    using UnityEngine;
-    using UnityEngine.UI;
     using System;
     using System.Collections.Generic;
+    using UnityEngine;
+    using UnityEngine.UI;
 
     /// <summary>
     /// The `[VRSimulator_CameraRig]` prefab is a mock Camera Rig set up that can be used to develop with VRTK without the need for VR Hardware.

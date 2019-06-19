@@ -1,8 +1,8 @@
 ﻿// Move Transform Grab Attach|GrabAttachMechanics|50110
 namespace VRTK.GrabAttachMechanics
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload
@@ -374,7 +374,7 @@ namespace VRTK.GrabAttachMechanics
         /// <param name="speed">The speed in which to move the Interactable Object.</param>
         public virtual void SetCurrentPosition(Vector3 newPosition, float speed)
         {
-            if(speed > 0f)
+            if (speed > 0f)
             {
                 CancelResetPosition();
                 resetPositionRoutine = StartCoroutine(MoveToPosition(newPosition, speed));

@@ -1,9 +1,9 @@
 ﻿namespace VRTK
 {
-    using UnityEngine;
-    using UnityEditor;
     using System;
     using System.Reflection;
+    using UnityEditor;
+    using UnityEngine;
 
     public static class VRTK_EditorUtilities
     {

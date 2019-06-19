@@ -1,8 +1,8 @@
 ﻿// Base Controllable|Controllables|101010
 namespace VRTK.Controllables
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

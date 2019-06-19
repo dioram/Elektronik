@@ -1,9 +1,9 @@
 ﻿namespace VRTK.Examples
 {
-    using UnityEngine;
     using Controllables;
-    using Controllables.PhysicsBased;
     using Controllables.ArtificialBased;
+    using Controllables.PhysicsBased;
+    using UnityEngine;
 
     public class PusherStickyToggle : MonoBehaviour
     {

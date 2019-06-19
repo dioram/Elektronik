@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Elektronik.Common.Data
+﻿namespace Elektronik.Common.Data
 {
     public enum ActionType : byte
     {

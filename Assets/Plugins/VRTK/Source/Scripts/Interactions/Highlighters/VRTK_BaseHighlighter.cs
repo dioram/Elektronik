@@ -1,8 +1,8 @@
 ﻿// Base Highlighter|Highlighters|40010
 namespace VRTK.Highlighters
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// Provides a base that all highlighters can inherit from.

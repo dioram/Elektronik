@@ -27,7 +27,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
             if (slamEvent.Points != null)
             {
                 m_addedPoints = slamEvent.Points.Where(p => p.isNew).ToArray();
-                
+
             }
             if (slamEvent.Lines != null)
             {

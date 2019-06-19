@@ -1,8 +1,8 @@
 ﻿// Interact Near Touch|Interactors|30030
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// Determines if a GameObject can initiate a near touch with an Interactable Object.

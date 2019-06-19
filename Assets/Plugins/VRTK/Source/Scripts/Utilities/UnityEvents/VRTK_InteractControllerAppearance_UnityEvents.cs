@@ -1,8 +1,8 @@
 ﻿namespace VRTK.UnityEventHelper
 {
+    using System;
     using UnityEngine;
     using UnityEngine.Events;
-    using System;
 
 #pragma warning disable 0618
     [AddComponentMenu("VRTK/Scripts/Utilities/Unity Events/VRTK_InteractControllerAppearance_UnityEvents")]

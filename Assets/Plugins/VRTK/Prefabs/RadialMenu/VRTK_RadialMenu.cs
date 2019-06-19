@@ -1,12 +1,12 @@
 ﻿// Radial Menu|Prefabs|0110
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
-    using UnityEngine.Events;
     using System.Collections.Generic;
-    using UnityEngine.UI;
+    using UnityEngine;
+    using UnityEngine.Events;
     using UnityEngine.EventSystems;
+    using UnityEngine.UI;
 
     public struct TouchAngleDeflection
     {

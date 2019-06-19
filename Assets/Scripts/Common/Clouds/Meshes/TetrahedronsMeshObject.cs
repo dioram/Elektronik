@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace Elektronik.Common.Clouds.Meshes
@@ -12,7 +10,7 @@ namespace Elektronik.Common.Clouds.Meshes
         private const int INDICES_PER_THETRAHEDRON = 12;
         private const int MAX_VERTICES_COUNT = 64992;
         private const int MAX_THETRAHEDRONS_COUNT = MAX_VERTICES_COUNT / INDICES_PER_THETRAHEDRON;
-        
+
         public float sideSize = .001f;
         public bool needOrientation = false;
 
@@ -32,7 +30,7 @@ namespace Elektronik.Common.Clouds.Meshes
             {
                 m_indices[i] = i;
             }
-            
+
             m_vertices = new Vector3[MAX_VERTICES_COUNT];
             m_colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
             m_filter = GetComponent<MeshFilter>();

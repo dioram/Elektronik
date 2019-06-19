@@ -1,11 +1,11 @@
 ﻿namespace VRTK
 {
-    using UnityEngine;
-    using UnityEditor;
-    using UnityEditorInternal;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEditor;
+    using UnityEditorInternal;
+    using UnityEngine;
 
     [CustomEditor(typeof(VRTK_SDKManager))]
     public class VRTK_SDKManagerEditor : Editor

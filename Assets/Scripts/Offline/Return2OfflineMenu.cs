@@ -1,12 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Elektronik.Online;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UniRx;
-using VRTK;
-using Elektronik.Online;
-using System;
 
 namespace Elektronik.Offline
 {
@@ -29,7 +25,8 @@ namespace Elektronik.Offline
             {
                 FileModeSettings.Current = null;
                 SceneManager.LoadScene(@"Assets/Scenes/Offline/Offline settings.unity", LoadSceneMode.Single);
-            } else if (OnlineModeSettings.Current != null)
+            }
+            else if (OnlineModeSettings.Current != null)
             {
                 OnlineModeSettings.Current = null;
                 SceneManager.LoadScene(@"Assets/Scenes/Online/Online settings.unity", LoadSceneMode.Single);

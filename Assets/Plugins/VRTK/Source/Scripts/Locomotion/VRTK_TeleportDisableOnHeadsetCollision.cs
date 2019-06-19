@@ -1,8 +1,8 @@
 ﻿// Teleport Disable On Headset Collision|Locomotion|20040
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Prevents teleportation when the HMD is colliding with valid geometry.

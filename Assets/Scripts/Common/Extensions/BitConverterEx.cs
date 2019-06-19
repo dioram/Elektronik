@@ -83,7 +83,7 @@ namespace Elektronik.Common.Extensions
             offset += sizeof(ulong);
             return ToUInt64(value, startIndex);
         }
-        public static Vector3 ToVector3(byte[] value, int startIndex) => 
+        public static Vector3 ToVector3(byte[] value, int startIndex) =>
             new Vector3()
             {
                 x = BitConverter.ToSingle(value, startIndex),

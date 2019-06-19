@@ -1,9 +1,9 @@
 ﻿// Controller Haptics|Interactions|30030
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// A collection of static methods for calling haptic functions on a given controller.

@@ -1,8 +1,8 @@
 ﻿// Control Animation Grab Attach|GrabAttachMechanics|50100
 namespace VRTK.GrabAttachMechanics
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

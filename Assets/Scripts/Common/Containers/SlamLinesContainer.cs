@@ -65,7 +65,7 @@ namespace Elektronik.Common.Containers
             long longId = line.GenerateLongId();
             int lineId = m_longId2Id[longId];
             Debug.AssertFormat(
-                m_lines.ContainsKey(lineId), 
+                m_lines.ContainsKey(lineId),
                 "[SlamLinesContainer.Remove] Container doesn't contain line with Id {0}", lineId);
             m_linesCloud.SetLine(lineId, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
             m_lines.Remove(lineId);
@@ -88,7 +88,7 @@ namespace Elektronik.Common.Containers
             long longId = line.GenerateLongId();
             int lineId = m_longId2Id[longId];
             Debug.AssertFormat(
-                m_lines.ContainsKey(lineId), 
+                m_lines.ContainsKey(lineId),
                 "[SlamLinesContainer.Update] Container doesn't contain line with Id {0}", lineId);
             m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color1);
             m_lines[lineId] = line;
@@ -113,7 +113,7 @@ namespace Elektronik.Common.Containers
         public SlamLine Get(int id1, int id2)
         {
             return m_lines
-                .Where(kv => 
+                .Where(kv =>
                     kv.Value.pointId1 == id1 && kv.Value.pointId2 == id2 ||
                     kv.Value.pointId2 == id1 && kv.Value.pointId1 == id2)
                 .Select(kv => kv.Value).First();
@@ -122,7 +122,7 @@ namespace Elektronik.Common.Containers
         public bool TryGet(int id1, int id2, out SlamLine line)
         {
             line = new SlamLine();
-            if (m_lines.Any(kv => 
+            if (m_lines.Any(kv =>
                 kv.Value.pointId1 == id1 && kv.Value.pointId2 == id2 ||
                 kv.Value.pointId2 == id1 && kv.Value.pointId1 == id2))
             {
@@ -152,7 +152,7 @@ namespace Elektronik.Common.Containers
             long longId = line.GenerateLongId();
             int lineId = m_longId2Id[longId];
             Debug.AssertFormat(
-                m_lines.ContainsKey(lineId), 
+                m_lines.ContainsKey(lineId),
                 "[SlamLinesContainer.ChangeColor] Container doesn't contain line with Id {0}", lineId);
             m_linesCloud.SetLineColor(lineId, line.color1);
             SlamLine currentLine = m_lines[lineId];
@@ -168,7 +168,7 @@ namespace Elektronik.Common.Containers
 
         public void Repaint() => m_linesCloud.Repaint();
 
-        public bool Exists(int id1, int id2)=> m_longId2Id.TryGetValue(SlamLine.GenerateLongId(id1, id2), out _);
+        public bool Exists(int id1, int id2) => m_longId2Id.TryGetValue(SlamLine.GenerateLongId(id1, id2), out _);
 
         public bool Exists(int objId) => m_lines.ContainsKey(objId);
 
@@ -176,6 +176,6 @@ namespace Elektronik.Common.Containers
 
         public IEnumerator<SlamLine> GetEnumerator() => m_lines.Select(kv => kv.Value).GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => m_lines.Select(kv => kv.Value).GetEnumerator();        
+        IEnumerator IEnumerable.GetEnumerator() => m_lines.Select(kv => kv.Value).GetEnumerator();
     }
 }

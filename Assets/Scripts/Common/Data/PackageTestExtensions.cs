@@ -1,6 +1,4 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data;
+﻿using Elektronik.Common.Containers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +25,7 @@ namespace Elektronik.Common.Data
             }
         }
 
-        private static IEnumerable<SlamPoint> SlamObjectQuery(IEnumerable<SlamPoint> src, Func<int, bool> cond) 
+        private static IEnumerable<SlamPoint> SlamObjectQuery(IEnumerable<SlamPoint> src, Func<int, bool> cond)
         {
             IEnumerable<SlamPoint> query = src
                 .Where(p => cond(p.id));

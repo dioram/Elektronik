@@ -1,8 +1,8 @@
 ﻿// Interact Object Highlighter|Interactables|35040
 namespace VRTK
 {
-    using UnityEngine;
     using Highlighters;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

@@ -1,11 +1,11 @@
 ﻿using Elektronik.Common;
 using Elektronik.Common.Data;
+using Elektronik.Common.Extensions;
 using Elektronik.Common.PackageViewUpdateCommandPattern;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Elektronik.Common.Extensions;
 
 namespace Elektronik.Offline
 {
@@ -28,7 +28,7 @@ namespace Elektronik.Offline
             m_extendedEvents = new List<IPackage>();
             m_commands = new LinkedList<IPackageViewUpdateCommand>();
             m_dataSource = new DataSource();
-            m_dataSource.DataReady += (IList<IPackage> packages) => 
+            m_dataSource.DataReady += (IList<IPackage> packages) =>
             {
                 m_packages = packages;
                 StartCoroutine(ProcessEvents());

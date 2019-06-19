@@ -1,8 +1,8 @@
 ﻿// Policy List|Utilities|90070
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// The Policy List allows to create a list of either tag names, script names or layer names that can be checked against to see if another operation is permitted.
@@ -99,7 +99,7 @@ namespace VRTK
 
         protected virtual bool ScriptCheck(GameObject obj, bool returnState)
         {
-            for(int i = 0; i < identifiers.Count; i++)
+            for (int i = 0; i < identifiers.Count; i++)
             {
                 if (obj.GetComponent(identifiers[i]))
                 {

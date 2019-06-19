@@ -1,10 +1,10 @@
 ﻿// Snap Drop Zone|Prefabs|0080
 namespace VRTK
 {
-    using UnityEngine;
+    using Highlighters;
     using System.Collections;
     using System.Collections.Generic;
-    using Highlighters;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload
@@ -433,7 +433,7 @@ namespace VRTK
                 StopCoroutine(checkCanSnapRoutine);
             }
 
-            if(overridePreviousStateAtEndOfFrameRoutine != null)
+            if (overridePreviousStateAtEndOfFrameRoutine != null)
             {
                 StopCoroutine(overridePreviousStateAtEndOfFrameRoutine);
             }

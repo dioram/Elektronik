@@ -84,7 +84,7 @@ namespace UniRx.Async.Internal
         {
             var nextCapacity = CalculateCapacity(size + 1, loadFactor);
 
-            TRY_ADD_AGAIN:
+        TRY_ADD_AGAIN:
             if (buckets.Length < nextCapacity)
             {
                 // rehash
@@ -116,7 +116,7 @@ namespace UniRx.Async.Internal
             var h = keyHash;
             var hashIndex = h & (targetBuckets.Length - 1);
 
-            TRY_ADD_AGAIN:
+        TRY_ADD_AGAIN:
             if (targetBuckets[hashIndex] == null)
             {
                 targetBuckets[hashIndex] = new Entry

@@ -1,16 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Elektronik.Common.UI;
+using System;
+using System.IO;
+using System.Linq;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using UniRx;
-using SimpleFileBrowser;
-using UnityEditor;
-using System.Linq;
-using Elektronik.Common;
-using System.IO;
-using System;
-using System.Threading;
-using Elektronik.Common.UI;
 
 namespace Elektronik.Offline
 {
@@ -68,7 +62,7 @@ namespace Elektronik.Offline
             browseField.text = FileModeSettings.Current.Path;
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
             scalingField.text = FileModeSettings.Current.Scaling.ToString();
-            
+
         }
 
         void AttachBehavior2Cancel()

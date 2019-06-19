@@ -1,7 +1,7 @@
 ﻿namespace VRTK
 {
-    using UnityEngine;
     using UnityEditor;
+    using UnityEngine;
 
     [CustomPropertyDrawer(typeof(Limits2D))]
     public class Limits2DDrawer : PropertyDrawer

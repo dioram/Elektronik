@@ -1,8 +1,8 @@
 ﻿// Unity Headset|SDK_Unity|002
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// The Unity Headset SDK script provides a bridge to the base Unity headset support.

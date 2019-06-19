@@ -1,9 +1,6 @@
 ﻿// WindowsMR Headset|SDK_WindowsMR|003
 namespace VRTK
 {
-    using System.Collections.Generic;
-    using UnityEngine;
-
     /// <summary>
     /// The WindowsMR Headset SDK script provides a bridge to the WindowsMR XR.
     /// </summary>

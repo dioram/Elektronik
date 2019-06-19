@@ -1,8 +1,8 @@
 ﻿// Base Controller|SDK_Base|006
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     public struct VRTKSDKBaseControllerEventArgs
     {

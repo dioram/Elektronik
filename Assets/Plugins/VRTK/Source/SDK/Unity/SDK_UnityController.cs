@@ -1,9 +1,9 @@
 ﻿// Unity Controller|SDK_Unity|003
 namespace VRTK
 {
-    using UnityEngine;
     using System;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// The Unity Controller SDK script provides a bridge  to the base Unity input device support.

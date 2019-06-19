@@ -1,8 +1,8 @@
 ﻿// Dash Teleport|Locomotion|20030
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

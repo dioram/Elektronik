@@ -41,7 +41,7 @@
                 rope.transform.localScale = scale;
                 rope.transform.position = midpoint;
 
-                if((!isMovingUp && handle.transform.position.y <= ropeBottom.position.y) || 
+                if ((!isMovingUp && handle.transform.position.y <= ropeBottom.position.y) ||
                     (isMovingUp && handle.transform.position.y >= handleTop.position.y))
                 {
                     isMoving = false;

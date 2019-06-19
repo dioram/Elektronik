@@ -1,8 +1,8 @@
 ﻿namespace VRTK.UnityEventHelper
 {
+    using System;
     using UnityEngine;
     using UnityEngine.Events;
-    using System;
 
     [AddComponentMenu("VRTK/Scripts/Utilities/Unity Events/VRTK_SlingshotJump_UnityEvents")]
     public sealed class VRTK_SlingshotJump_UnityEvents : VRTK_UnityEvents<VRTK_SlingshotJump>

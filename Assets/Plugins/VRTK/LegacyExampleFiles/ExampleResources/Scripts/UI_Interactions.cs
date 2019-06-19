@@ -1,9 +1,9 @@
 ﻿namespace VRTK.Examples
 {
+    using System.Collections;
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
-    using System.Collections;
 
     public class UI_Interactions : MonoBehaviour
     {

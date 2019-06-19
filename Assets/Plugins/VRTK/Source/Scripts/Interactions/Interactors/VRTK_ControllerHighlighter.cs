@@ -1,9 +1,9 @@
 ﻿// Controller Highlighter|Interactors|30070
 namespace VRTK
 {
-    using UnityEngine;
-    using System.Collections.Generic;
     using Highlighters;
+    using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// Enables highlighting of controller elements.

@@ -1,14 +1,10 @@
 ﻿using Elektronik.Common;
 using Elektronik.Common.Data;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Elektronik.Online
 {
-    public class TrackingPackagePresenter : PackagePresenter
+    public class TrackingPackagePresenter : RepaintablePackagePresenter
     {
         public Helmet helmetPrefab;
         private IDictionary<int, Helmet> m_helmets;
@@ -35,7 +31,15 @@ namespace Elektronik.Online
                 m_helmets[track.id].color = track.color;
                 m_helmets[track.id].ReplaceAbs(track.position, track.rotation);
             }
-            
+
+        }
+
+        public override void Repaint()
+        {
+        }
+
+        public override void Clear()
+        {
         }
     }
 }

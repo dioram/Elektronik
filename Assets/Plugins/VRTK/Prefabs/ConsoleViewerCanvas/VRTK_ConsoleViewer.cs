@@ -1,11 +1,11 @@
 ﻿// Console Viewer Canvas|Prefabs|0020
 namespace VRTK
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
     using UnityEngine;
     using UnityEngine.UI;
-    using System.Collections.Generic;
-    using System.Text.RegularExpressions;
-    using System.Linq;
 
     /// <summary>
     /// Adds an in-scene representation of the Unity console on a world space canvas.

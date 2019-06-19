@@ -1,8 +1,8 @@
 ﻿// Interact Touch|Interactors|30020
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

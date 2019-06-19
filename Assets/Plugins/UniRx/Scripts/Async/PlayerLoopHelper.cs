@@ -3,10 +3,10 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using UniRx.Async.Internal;
 using UnityEngine;
 using UnityEngine.Experimental.LowLevel;
-using UniRx.Async.Internal;
-using System.Threading;
 
 namespace UniRx.Async
 {

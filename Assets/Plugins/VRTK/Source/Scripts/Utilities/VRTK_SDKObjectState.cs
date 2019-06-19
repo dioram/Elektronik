@@ -1,9 +1,9 @@
 ﻿// SDK Object State|Utilities|90160
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
     using System.Reflection;
+    using UnityEngine;
 
     /// <summary>
     /// The SDK Object State script can be used to set the enable/active state of a GameObject or Component based on SDK information.
