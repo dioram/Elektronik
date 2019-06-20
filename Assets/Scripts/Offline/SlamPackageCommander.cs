@@ -33,9 +33,23 @@ namespace Elektronik.Offline
         public override LinkedList<IPackageViewUpdateCommand> GetCommands(IPackage pkg)
         {
             if (pkg.Type != PackageType.SLAMPackage)
-                return m_commander.GetCommands(pkg);
+                return m_commander?.GetCommands(pkg);
             var commands = new LinkedList<IPackageViewUpdateCommand>();
             var slamPkg = pkg as SlamPackage;
+
+            if (slamPkg.IsKey)
+            { 
+                commands.AddLast(new LambdaCommand(
+                    () => eventsLogger.UpdateInfo(slamPkg, m_pointsContainer, m_observationsContainer),
+                    () =>
+                    {
+                        if (m_lastPackage != null)
+                            eventsLogger.UpdateInfo(m_lastPackage, m_pointsContainer, m_observationsContainer);
+                    }));
+                commands.Last.Value.Execute();
+                m_lastPackage = slamPkg;
+            }
+
             if (slamPkg.Timestamp == -1)
             {
                 commands.AddLast(new ClearCommand(m_pointsContainer, m_linesContainer, m_observationsContainer));
@@ -56,18 +70,6 @@ namespace Elektronik.Offline
             commands.AddLast(new PostProcessingCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, slamPkg));
             commands.Last.Value.Execute();
 
-            if (slamPkg.IsKey)
-            {
-                commands.AddLast(new LambdaCommand(
-                    () => eventsLogger.UpdateInfo(slamPkg, m_pointsContainer, m_observationsContainer),
-                    () =>
-                    {
-                        if (m_lastPackage != null)
-                            eventsLogger.UpdateInfo(m_lastPackage, m_pointsContainer, m_observationsContainer);
-                    }));
-                commands.Last.Value.Execute();
-                m_lastPackage = slamPkg;
-            }
             return commands;
         }
 

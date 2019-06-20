@@ -16,12 +16,12 @@ namespace Elektronik.Offline
         public float scale;
         public RepaintablePackageViewUpdateCommander[] commanders;
 
-        private IList<IPackage> m_packages;
+        private IPackage[] m_packages;
         private LinkedList<IPackageViewUpdateCommand> m_commands;
         private IList<IPackage> m_extendedEvents;
         private PackageViewUpdateCommander m_commander;
         private DataSource m_dataSource;
-        private int m_position = -1;
+        private int m_position = 0;
         private LinkedListNode<IPackageViewUpdateCommand> m_currentCommand;
 
         void Awake()
@@ -39,14 +39,16 @@ namespace Elektronik.Offline
 
         public void Clear()
         {
-            m_position = -1;
-            m_currentCommand = m_commands.First;
             foreach (var commander in commanders)
                 commander.Clear();
+            m_position = 0;
+            m_currentCommand = m_commands.First;
+            m_currentCommand.Value.Execute();
         }
 
         public void Repaint()
         {
+            Debug.Log(nameof(this.Repaint));
             foreach (var commander in commanders)
                 commander.Repaint();
         }
@@ -108,8 +110,8 @@ namespace Elektronik.Offline
             if (m_currentCommand.Previous != null)
             {
                 --m_position;
-                m_currentCommand = m_currentCommand.Previous;
                 m_currentCommand.Value.UnExecute();
+                m_currentCommand = m_currentCommand.Previous;
                 if (needRepaint)
                 {
                     Repaint();
@@ -136,15 +138,16 @@ namespace Elektronik.Offline
 
         public bool NextKeyEvent()
         {
-            int idxOfKeyEvent = FindNextKeyEventIdx(m_position + 1);
-            if (idxOfKeyEvent == -1)
-                return false;
-            while (m_position != idxOfKeyEvent)
-            {
-                Next(needRepaint: false);
-            }
+            //int idxOfKeyEvent = FindNextKeyEventIdx(m_position + 1);
+            //if (idxOfKeyEvent == -1)
+            //    return false;
+            //while (m_position != idxOfKeyEvent)
+            //{
+            //    Next(needRepaint: false);
+            //}
+            while (Next(needRepaint: false) && !m_extendedEvents[m_position].IsKey) { }
             Repaint();
-            return true;
+            return m_extendedEvents[m_position].IsKey;
         }
 
         private int FindPrevKeyEventIdx(int srcIdx)
@@ -161,17 +164,18 @@ namespace Elektronik.Offline
 
         public bool PrevKeyEvent()
         {
-            if (m_position == GetLength())
-                Previous(needRepaint: false);
-            int idxOfKeyEvent = FindPrevKeyEventIdx(m_position - 1);
-            if (idxOfKeyEvent == -1)
-                return false;
-            while (m_position != idxOfKeyEvent)
-            {
-                Previous(needRepaint: false);
-            }
+            //if (m_position == GetLength())
+            //    Previous(needRepaint: false);
+            //int idxOfKeyEvent = FindPrevKeyEventIdx(m_position - 1);
+            //if (idxOfKeyEvent == -1)
+            //    return false;
+            //while (m_position != idxOfKeyEvent)
+            //{
+            //    Previous(needRepaint: false);
+            //}
+            while (Previous(needRepaint: false) && !m_extendedEvents[m_position].IsKey) { }
             Repaint();
-            return true;
+            return m_extendedEvents[m_position].IsKey;
         }
 
         IEnumerator ProcessEvents()
@@ -179,16 +183,16 @@ namespace Elektronik.Offline
             ElektronikLogger.OpenLog();
             Application.logMessageReceived += ElektronikLogger.Log;
             Debug.Log("ANALYSIS STARTED");
-            m_packages = m_dataSource.ParseData(FileModeSettings.Current.Path);
+            m_packages = m_dataSource.Parse(FileModeSettings.Current.Path);
             Debug.Log("PROCESSING FINISHED");
-            for (int i = 0; i < m_packages.Count; ++i)
+            for (int i = 0; i < m_packages.Length; ++i)
             {
                 Debug.Log(m_packages[i]);
-                LinkedList<IPackageViewUpdateCommand> pkgCommands = m_commander.GetCommands(m_packages[i]);
+                var pkgCommands = m_commander.GetCommands(m_packages[i]);
                 foreach (var pkgCommand in pkgCommands)
                     m_extendedEvents.Add(m_packages[i]);
                 m_commands.MoveFrom(pkgCommands);
-                //if (i % 10 == 0) yield return null;
+                if (i % 10 == 0) yield return null;
             }
             Debug.Log("PROCESSING FINISHED");
             Clear();

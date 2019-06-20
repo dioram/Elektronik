@@ -132,7 +132,7 @@
     <Compile Include="Assets\Scripts\Common\VRTKManagerInitializer.cs" />
     <Compile Include="Assets\Scripts\Common\VRTKSetupInitializer.cs" />
     <Compile Include="Assets\Scripts\Common\XYZAxis.cs" />
-    <Compile Include="Assets\Scripts\Offline\DataParser.cs" />
+    <Compile Include="Assets\Scripts\Offline\DataSource.cs" />
     <Compile Include="Assets\Scripts\Offline\EventLogger.cs" />
     <Compile Include="Assets\Scripts\Offline\FileModeSettings.cs" />
     <Compile Include="Assets\Scripts\Offline\ObjectLogger.cs" />

@@ -23,7 +23,6 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
                 m_commands.Add(new UpdateCommand(pointsContainer, observationsContainer, points, null));
                 m_commands.Add(new RemoveCommand(pointsContainer, linesContainer, observationsContainer, slamEvent));
             }
-
         }
     }
 }

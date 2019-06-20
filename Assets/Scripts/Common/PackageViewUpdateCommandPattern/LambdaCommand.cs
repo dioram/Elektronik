@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Elektronik.Common.PackageViewUpdateCommandPattern
 {
@@ -13,8 +14,16 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern
             m_unexecute = unexecute;
         }
 
-        public void Execute() => m_execute();
+        public void Execute()
+        {
+            Debug.Log("[LambdaCommand.Execute]");
+            m_execute();
+        }
 
-        public void UnExecute() => m_unexecute();
+        public void UnExecute()
+        {
+            Debug.Log("[LambdaCommand.UnExecute]");
+            m_unexecute();
+        }
     }
 }

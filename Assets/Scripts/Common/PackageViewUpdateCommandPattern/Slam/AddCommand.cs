@@ -1,6 +1,8 @@
 ﻿using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
@@ -47,6 +49,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         public void Execute()
         {
+            Debug.Log("[AddCommand.Execute]");
             if (m_addedPoints != null)
             {
                 foreach (var point in m_addedPoints)
@@ -72,6 +75,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         public void UnExecute()
         {
+            Debug.Log("[AddCommand.UnExecute]");
             if (m_addedPoints != null)
             {
                 foreach (var point in m_addedPoints)

@@ -35,6 +35,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Tracking
 
         public void Execute()
         {
+            Debug.Log("[[Tr]UpdateCommand.Execute]");
             foreach (var track in m_pkg.Tracks)
             {
                 m_helmets[track.id].color = track.color;
@@ -43,6 +44,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Tracking
         }
         public void UnExecute()
         {
+            Debug.Log("[[Tr]UpdateCommand.UnExecute]");
             foreach (var track in m_pkg.Tracks)
             {
                 m_helmets[track.id].TurnBack();

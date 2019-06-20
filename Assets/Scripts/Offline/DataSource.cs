@@ -24,14 +24,9 @@ namespace Elektronik.Offline
                 }.BuildChain();
         }
 
-        public IList<IPackage> ParseData(string path)
+        public IPackage[] Parse(string path)
         {
-            return Parse(path);
-        }
-
-        private IList<IPackage> Parse(string path)
-        {
-            IList<IPackage> result = null;
+            IPackage[] result = null;
             using (BinaryReader br = new BinaryReader(File.OpenRead(path)))
             {
                 if (br.ReadUInt32() != 0xDEADBEEF)
@@ -42,7 +37,7 @@ namespace Elektronik.Offline
                 if (br.ReadUInt32() != 0xDEADBEEF)
                     throw new FileLoadException("broken file (2nd magic number)");
                 int eventsCount = br.ReadInt32();
-                result = new List<IPackage>(eventsCount);
+                result = new IPackage[eventsCount];
                 int[] offsetTable = Enumerable.Range(0, eventsCount).Select(_ => br.ReadInt32()).ToArray();
                 br.BaseStream.Seek(0, SeekOrigin.Begin);
                 byte[] data = br.ReadBytes((int)br.BaseStream.Length);
@@ -59,7 +54,7 @@ namespace Elektronik.Offline
                     int readBytes = m_parser.Parse(rawPackage, 0, out IPackage package);
                     if (readBytes == 0)
                         Debug.LogWarning("No one parsers was found");
-                    result.Add(package);
+                    result[i] = package;
                 });
             }
             return result;

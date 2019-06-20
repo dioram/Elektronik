@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Elektronik.Common.PackageViewUpdateCommandPattern
 {
@@ -13,6 +14,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern
 
         public virtual void Execute()
         {
+            Debug.Log("[MacroCommand.Execute]");
             for (int i = 0; i < m_commands.Count; ++i)
             {
                 m_commands[i].Execute();
@@ -21,6 +23,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern
 
         public virtual void UnExecute()
         {
+            Debug.Log("[MacroCommand.UnExecute]");
             for (int i = m_commands.Count - 1; i >= 0; --i)
             {
                 m_commands[i].UnExecute();
