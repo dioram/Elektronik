@@ -9,22 +9,22 @@ namespace Elektronik.Common.Clouds.Meshes
         public const int MAX_VERTICES_COUNT = 65000;
         public const int MAX_LINES_COUNT = MAX_VERTICES_COUNT / 2;
 
-        MeshFilter m_filter;
-        Mesh m_mesh;
+        private MeshFilter m_filter;
+        private Mesh m_mesh;
 
-        int[] m_indices;
-        Vector3[] m_vertices;
-        Color[] m_colors;
-        bool m_wasUpdated;
+        private int[] m_indices;
+        private Vector3[] m_vertices;
+        private Color[] m_colors;
+        private bool m_needRepaint;
 
-        void Awake()
+        private void Awake()
         {
             m_filter = GetComponent<MeshFilter>();
             m_indices = Enumerable.Range(0, MAX_VERTICES_COUNT).ToArray();
             m_vertices = new Vector3[MAX_VERTICES_COUNT];
             m_colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
             m_mesh = new Mesh();
-            m_wasUpdated = false;
+            m_needRepaint = false;
         }
 
         private void Start()
@@ -38,14 +38,14 @@ namespace Elektronik.Common.Clouds.Meshes
 
         public bool LineExists(int idx)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
             GetLine(idx, out Vector3 pos1, out Vector3 pos2, out Color color);
             return !(pos1 == Vector3.zero && pos2 == Vector3.zero && color == new Color(0, 0, 0, 0));
         }
 
         public void GetLine(int idx, out Vector3 position1, out Vector3 position2, out Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
             position1 = m_vertices[2 * idx];
             position2 = m_vertices[2 * idx + 1];
             color = m_colors[2 * idx];
@@ -53,36 +53,36 @@ namespace Elektronik.Common.Clouds.Meshes
 
         public void SetLine(int idx, Vector3 position1, Vector3 position2, Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
             SetLineColor(idx, color);
             SetLinePositions(idx, position1, position2);
-            m_wasUpdated = true;
+            m_needRepaint = true;
         }
 
         public void SetLineColor(int idx, Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
             m_colors[2 * idx] = color;
             m_colors[2 * idx + 1] = color;
-            m_wasUpdated = true;
+            m_needRepaint = true;
         }
 
         public void SetLinePositions(int idx, Vector3 position1, Vector3 position2)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_LINES_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
             m_vertices[2 * idx] = position1;
             m_vertices[2 * idx + 1] = position2;
-            m_wasUpdated = true;
+            m_needRepaint = true;
         }
 
         public void Repaint()
         {
-            if (m_wasUpdated)
+            if (m_needRepaint)
             {
                 m_mesh.vertices = m_vertices;
                 m_mesh.colors = m_colors;
                 m_mesh.RecalculateBounds();
-                m_wasUpdated = false;
+                m_needRepaint = false;
             }
         }
 

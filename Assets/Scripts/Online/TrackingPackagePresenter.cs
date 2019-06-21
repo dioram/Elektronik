@@ -42,6 +42,12 @@ namespace Elektronik.Online
 
         public override void Clear()
         {
+            foreach(var hmd in m_helmets.Values)
+            {
+                hmd.ResetHelmet();
+                m_helmetsPool.Despawn(hmd.gameObject);
+            }
+            m_helmets.Clear();
         }
     }
 }

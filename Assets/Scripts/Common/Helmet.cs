@@ -14,14 +14,13 @@ namespace Elektronik.Common
         private Stack<Pose> m_poseHistory;
         private Stack<int> m_lineIdsHistory;
 
-        public FastLinesCloud linesCloud;
         public Color color = Color.red;
         public int id;
 
         private void Awake()
         {
             m_lastLineId = -1;
-            m_linesContainer = new SlamLinesContainer(linesCloud);
+            m_linesContainer = new SlamLinesContainer(GetComponentInChildren<FastLinesCloud>());
             m_poseHistory = new Stack<Pose>();
             m_lineIdsHistory = new Stack<int>();
         }

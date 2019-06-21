@@ -19,7 +19,6 @@ namespace Elektronik.Offline
         private ICloudObjectsContainer<SlamObservation> m_observationsContainer;
         private ICloudObjectsContainer<SlamLine> m_linesContainer;
         private ICloudObjectsContainer<SlamPoint> m_pointsContainer;
-        private SlamPackage m_lastPackage;
 
         private void Awake()
         {
@@ -36,19 +35,6 @@ namespace Elektronik.Offline
                 return m_commander?.GetCommands(pkg);
             var commands = new LinkedList<IPackageViewUpdateCommand>();
             var slamPkg = pkg as SlamPackage;
-
-            if (slamPkg.IsKey)
-            {
-                commands.AddLast(new LambdaCommand(
-                    () => eventsLogger.UpdateInfo(slamPkg, m_pointsContainer, m_observationsContainer),
-                    () =>
-                    {
-                        if (m_lastPackage != null)
-                            eventsLogger.UpdateInfo(m_lastPackage, m_pointsContainer, m_observationsContainer);
-                    }));
-                commands.Last.Value.Execute();
-                m_lastPackage = slamPkg;
-            }
 
             if (slamPkg.Timestamp == -1)
             {
@@ -69,6 +55,13 @@ namespace Elektronik.Offline
 
             commands.AddLast(new PostProcessingCommand(m_pointsContainer, m_linesContainer, m_observationsContainer, slamPkg));
             commands.Last.Value.Execute();
+
+            if (slamPkg.IsKey)
+            {
+                commands.AddLast(new LambdaCommand(
+                    () => eventsLogger.UpdateInfo(slamPkg, m_pointsContainer, m_observationsContainer),
+                    () => eventsLogger.RestoreInfo(m_pointsContainer, m_observationsContainer)));
+            }
 
             return commands;
         }

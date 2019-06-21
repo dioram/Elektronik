@@ -23,7 +23,7 @@ namespace Elektronik.Offline
             StartCoroutine(WaitForManagerLengthParameter());
         }
 
-        IEnumerator WaitForManagerLengthParameter()
+        private IEnumerator WaitForManagerLengthParameter()
         {
             while (!eventsManager.ReadyToPlay)
             {
@@ -85,6 +85,7 @@ namespace Elektronik.Offline
         {
             m_play = false;
             eventsManager.Clear();
+            UpdateTime();
         }
 
         public void PrevKey()

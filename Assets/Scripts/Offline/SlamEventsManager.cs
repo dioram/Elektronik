@@ -18,20 +18,20 @@ namespace Elektronik.Offline
 
         private IPackage[] m_packages;
         private LinkedList<IPackageViewUpdateCommand> m_commands;
-        private IList<IPackage> m_extendedEvents;
+        private Dictionary<IPackageViewUpdateCommand, IPackage> m_extendedEvents;
         private PackageViewUpdateCommander m_commander;
         private DataSource m_dataSource;
         private int m_position = 0;
         private LinkedListNode<IPackageViewUpdateCommand> m_currentCommand;
 
-        void Awake()
+        private void Awake()
         {
-            m_extendedEvents = new List<IPackage>();
+            m_extendedEvents = new Dictionary<IPackageViewUpdateCommand, IPackage>();
             m_commands = new LinkedList<IPackageViewUpdateCommand>();
             m_dataSource = new DataSource();
         }
 
-        void Start()
+        private void Start()
         {
             m_commander = commanders.BuildChain();
             StartCoroutine(ProcessEvents());
@@ -57,7 +57,7 @@ namespace Elektronik.Offline
 
         public int GetCurrentEventPosition() => m_position;
 
-        public IPackage GetCurrentEvent() => m_position == -1 ? null : m_extendedEvents[m_position];
+        public IPackage GetCurrentEvent() => m_position == -1 ? null : m_extendedEvents[m_currentCommand.Value];
 
         public void SetPosition(int pos, Action whenPositionWasSet)
         {
@@ -68,7 +68,7 @@ namespace Elektronik.Offline
             StartCoroutine(MoveToPostion(pos, whenPositionWasSet));
         }
 
-        IEnumerator MoveToPostion(int pos, Action whenPositionWasSet)
+        private IEnumerator MoveToPostion(int pos, Action whenPositionWasSet)
         {
             ReadyToPlay = false;
             while (m_position != pos)
@@ -124,61 +124,44 @@ namespace Elektronik.Offline
             }
         }
 
-        private int FindNextKeyEventIdx(int srcIdx)
+        private bool FindKeyEvent(Func<LinkedListNode<IPackageViewUpdateCommand>, LinkedListNode<IPackageViewUpdateCommand>> switchCommand)
         {
-            for (int i = srcIdx; i < m_extendedEvents.Count; ++i)
+            var command = switchCommand(m_currentCommand);
+            bool isKey = false;
+            while (!isKey && command != null)
             {
-                if (m_extendedEvents[i].IsKey)
+                if (isKey = m_extendedEvents[m_currentCommand.Value].IsKey)
                 {
-                    return i;
+                    break;
                 }
+                command = switchCommand(command);
             }
-            return -1;
+            return isKey;
         }
 
         public bool NextKeyEvent()
         {
-            //int idxOfKeyEvent = FindNextKeyEventIdx(m_position + 1);
-            //if (idxOfKeyEvent == -1)
-            //    return false;
-            //while (m_position != idxOfKeyEvent)
-            //{
-            //    Next(needRepaint: false);
-            //}
-            while (Next(needRepaint: false) && !m_extendedEvents[m_position].IsKey) { }
-            Repaint();
-            return m_extendedEvents[m_position].IsKey;
-        }
-
-        private int FindPrevKeyEventIdx(int srcIdx)
-        {
-            for (int i = srcIdx; i >= 0; --i)
+            if (FindKeyEvent(c => c.Next))
             {
-                if (m_extendedEvents[i].IsKey)
-                {
-                    return i;
-                }
+                while (Next(needRepaint: false) && !m_extendedEvents[m_currentCommand.Value].IsKey) { }
+                Repaint();
+                return true;
             }
-            return -1;
+            return false;
         }
 
         public bool PrevKeyEvent()
         {
-            //if (m_position == GetLength())
-            //    Previous(needRepaint: false);
-            //int idxOfKeyEvent = FindPrevKeyEventIdx(m_position - 1);
-            //if (idxOfKeyEvent == -1)
-            //    return false;
-            //while (m_position != idxOfKeyEvent)
-            //{
-            //    Previous(needRepaint: false);
-            //}
-            while (Previous(needRepaint: false) && !m_extendedEvents[m_position].IsKey) { }
-            Repaint();
-            return m_extendedEvents[m_position].IsKey;
+            if (FindKeyEvent(c => c.Previous))
+            {
+                while (Previous(needRepaint: false) && !m_extendedEvents[m_currentCommand.Value].IsKey) { }
+                Repaint();
+                return true;
+            }
+            return false;
         }
 
-        IEnumerator ProcessEvents()
+        private IEnumerator ProcessEvents()
         {
             ElektronikLogger.OpenLog();
             Application.logMessageReceived += ElektronikLogger.Log;
@@ -190,7 +173,7 @@ namespace Elektronik.Offline
                 Debug.Log(m_packages[i]);
                 var pkgCommands = m_commander.GetCommands(m_packages[i]);
                 foreach (var pkgCommand in pkgCommands)
-                    m_extendedEvents.Add(m_packages[i]);
+                    m_extendedEvents[pkgCommand] = m_packages[i];
                 m_commands.MoveFrom(pkgCommands);
                 if (i % 10 == 0) yield return null;
             }

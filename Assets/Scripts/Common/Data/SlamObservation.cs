@@ -45,7 +45,7 @@ namespace Elektronik.Common.Data
 
         public override string ToString()
         {
-            return "SlamObservation";
+            return Point.message ?? "SlamObservation";
         }
     }
 }

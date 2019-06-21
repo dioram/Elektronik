@@ -1,17 +1,30 @@
 ﻿using Elektronik.Common;
+using Elektronik.Common.Clouds;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Elektronik.Online
 {
     public class SlamPackagePresenter : RepaintablePackagePresenter
     {
+        public GameObject observationPrefab;
+        public FastLinesCloud observationLines;
         private ICloudObjectsContainer<SlamObservation> m_observationsContainer;
+        public FastLinesCloud pointCloudLines;
         private ICloudObjectsContainer<SlamLine> m_linesContainer;
+        public GameObject pointsCloud;
         private ICloudObjectsContainer<SlamPoint> m_pointsContainer;
+
+        private void Awake()
+        {
+            m_observationsContainer = new SlamObservationsContainer(observationPrefab, new SlamLinesContainer(observationLines));
+            m_linesContainer = new SlamLinesContainer(pointCloudLines);
+            m_pointsContainer = new SlamPointsContainer(pointsCloud.GetComponent<IFastPointsCloud>());
+        }
 
         public override void Present(IPackage package)
         {

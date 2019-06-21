@@ -30,7 +30,6 @@ namespace Elektronik.Common.Containers
         }
         private readonly List<Connection> m_connections;
 
-        private readonly GameObject m_observationPrefab;
         private readonly ObjectPool m_observationsPool;
         private readonly ICloudObjectsContainer<SlamLine> m_lines;
 
@@ -185,17 +184,13 @@ namespace Elektronik.Common.Containers
             objectTransform.rotation = observation.Orientation;
         }
 
-        /// <summary>
-        /// Make sure that the prefab was registered in MF_Autopool
-        /// </summary>
         /// <param name="prefab">Desired prefab of observation</param>
         /// <param name="lines">Lines cloud objects for connections drawing</param>
         public SlamObservationsContainer(GameObject prefab, ICloudObjectsContainer<SlamLine> lines)
         {
             m_nodes = new List<SlamObservation>();
             m_gameObjects = new Dictionary<int, GameObject>();
-            m_observationPrefab = prefab;
-            m_observationsPool = new ObjectPool(m_observationPrefab);
+            m_observationsPool = new ObjectPool(prefab);
             m_lines = lines;
             m_connections = new List<Connection>();
         }
