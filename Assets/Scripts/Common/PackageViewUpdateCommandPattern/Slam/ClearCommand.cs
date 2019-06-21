@@ -30,7 +30,6 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         public void Execute()
         {
-            Debug.Log("[ClearCommand.Execute]");
             m_pointsContainer.Clear();
             m_linesContainer.Clear();
             m_observationsContainer.Clear();
@@ -38,7 +37,6 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         public void UnExecute()
         {
-            Debug.Log("[ClearCommand.UnExecute]");
             m_observationsContainer.AddRange(m_undoObservations);
             m_linesContainer.AddRange(m_undoLines);
             m_pointsContainer.AddRange(m_undoPoints);

@@ -62,13 +62,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Plugins\MobFarm\AutoPool\Demo Scene\Demo Scripts\AP_DemoDeathTimer.cs" />
-    <Compile Include="Assets\Plugins\MobFarm\AutoPool\Demo Scene\Demo Scripts\AP_DemoSpawn.cs" />
-    <Compile Include="Assets\Plugins\MobFarm\AutoPool\Demo Scene\Demo Scripts\MF_DemoUtilityKeys.cs" />
-    <Compile Include="Assets\Plugins\MobFarm\AutoPool\Scripts\AP_Manager.cs" />
-    <Compile Include="Assets\Plugins\MobFarm\AutoPool\Scripts\AP_Pool.cs" />
-    <Compile Include="Assets\Plugins\MobFarm\AutoPool\Scripts\AP_Reference.cs" />
-    <Compile Include="Assets\Plugins\MobFarm\AutoPool\Scripts\MF_StaticAutoPool.cs" />
+    <Compile Include="Assets\Plugins\AdvanceObjectpool\Scripts\DictionaryObjectPool.cs" />
+    <Compile Include="Assets\Plugins\AdvanceObjectpool\Scripts\Events\IDespawnEvent.cs" />
+    <Compile Include="Assets\Plugins\AdvanceObjectpool\Scripts\Events\ISpawnEvent.cs" />
+    <Compile Include="Assets\Plugins\AdvanceObjectpool\Scripts\ObjectPool.cs" />
+    <Compile Include="Assets\Plugins\AdvanceObjectpool\Scripts\ObjectPoolTargets.cs" />
+    <Compile Include="Assets\Plugins\AdvanceObjectpool\Scripts\ScriptableObjectObjectPool.cs" />
     <Compile Include="Assets\Plugins\SimpleFileBrowser\Android\FBPermissionCallbackAndroid.cs" />
     <Compile Include="Assets\Plugins\SimpleFileBrowser\Scripts\FileBrowser.cs" />
     <Compile Include="Assets\Plugins\SimpleFileBrowser\Scripts\FileBrowserItem.cs" />
@@ -494,7 +493,6 @@
     <None Include="Assets\Plugins\SteamVR\Resources\SteamVR_Fade.shader" />
     <None Include="Assets\Plugins\SteamVR\Resources\SteamVR_ClearAll.shader" />
     <None Include="Assets\Plugins\SteamVR\InteractionSystem\Hints\Shaders\ControllerButtonHints.shader" />
-    <None Include="Assets\Plugins\MobFarm\AutoPool\Demo Scene\You may delete this folder.txt" />
     <None Include="Assets\Plugins\PointCloud\Shaders\VertexColor.shader" />
     <None Include="Assets\Plugins\VRTK\Source\Scripts\Internal\Shaders\UIOverlay.shader" />
     <None Include="Assets\Plugins\SteamVR\InteractionSystem\Teleport\Shaders\Highlight.shader" />
@@ -502,7 +500,6 @@
     <None Include="Assets\Plugins\VRTK\Source\Scripts\Internal\Shaders\AdaptiveQualityDebugVisualization.shader" />
     <None Include="Assets\Plugins\UniRx\ReadMe.txt" />
     <None Include="Assets\Plugins\NuGet\LICENSE.txt" />
-    <None Include="Assets\Plugins\MobFarm\_Docs\AutoPool Docs\AutoPool Change Log.txt" />
     <None Include="Assets\Plugins\VRTK\Source\Scripts\Internal\Shaders\VRTK_TunnelEffect.shader" />
     <None Include="Assets\Plugins\SteamVR\Resources\SteamVR_SphericalProjection.shader" />
     <None Include="Assets\Plugins\SteamVR\Resources\SteamVR_AlphaOut.shader" />

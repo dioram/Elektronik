@@ -31,6 +31,7 @@ namespace Elektronik.Common.Containers
         private readonly List<Connection> m_connections;
 
         private readonly GameObject m_observationPrefab;
+        private readonly ObjectPool m_observationsPool;
         private readonly ICloudObjectsContainer<SlamLine> m_lines;
 
         /// <summary>
@@ -194,6 +195,7 @@ namespace Elektronik.Common.Containers
             m_nodes = new List<SlamObservation>();
             m_gameObjects = new Dictionary<int, GameObject>();
             m_observationPrefab = prefab;
+            m_observationsPool = new ObjectPool(m_observationPrefab);
             m_lines = lines;
             m_connections = new List<Connection>();
         }
@@ -213,7 +215,7 @@ namespace Elektronik.Common.Containers
                 "[SlamObservationsContainer.Add] Graph already contains observation with id {0}", observation.Point.id);
             int last = m_nodes.Count;
             m_nodes.Add(new SlamObservation(observation));
-            m_gameObjects[m_nodes[last].Point.id] = MF_AutoPool.Spawn(m_observationPrefab, observation.Point.position, observation.Orientation);
+            m_gameObjects[m_nodes[last].Point.id] = m_observationsPool.Spawn(observation.Point.position, observation.Orientation);
             UpdateConnectionsFor(m_nodes[last]);
             Debug.LogFormat(
                 "[SlamObservationsContainer.Add] Added observation with id {0}; count of covisible nodes {1}",
@@ -255,7 +257,7 @@ namespace Elektronik.Common.Containers
         /// </summary>
         public void Clear()
         {
-            MF_AutoPool.DespawnPool(m_observationPrefab);
+            m_observationsPool.DespawnAllActiveObjects();
             m_lines.Clear();
             m_connections.Clear();
             m_nodes.Clear();
@@ -301,7 +303,7 @@ namespace Elektronik.Common.Containers
                 "[SlamObservationsContainer.Remove] Removing observation with id {0}; count of covisible nodes {1}",
                 id, node.CovisibleInfos.Count);
             DisconnectFromAll(node);
-            MF_AutoPool.Despawn(m_gameObjects[id]);
+            m_observationsPool.Despawn(m_gameObjects[id]);
             m_gameObjects.Remove(id);
             m_nodes.Remove(node);
         }

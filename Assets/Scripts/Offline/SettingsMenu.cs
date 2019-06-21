@@ -12,7 +12,6 @@ namespace Elektronik.Offline
     {
         const string SETTINGS_FILE = @"offline\settings.dat";
 
-        public RecentFileListBoxItem recentFilePrefab;
         public UIListBox lbRecentFiles;
         public GameObject goFileInput;
         public Button buCancel;
@@ -40,9 +39,9 @@ namespace Elektronik.Offline
             var files = store.Recent;
             foreach (var recentFile in store.Recent)
             {
-                recentFilePrefab.Path = recentFile.Path;
-                recentFilePrefab.DateTime = recentFile.Time;
-                lbRecentFiles.Add(recentFilePrefab);
+                var rf = lbRecentFiles.Add() as RecentFileListBoxItem;
+                rf.Path = recentFile.Path;
+                rf.DateTime = recentFile.Time;
             }
             if (store.Recent.Count > 0)
             {

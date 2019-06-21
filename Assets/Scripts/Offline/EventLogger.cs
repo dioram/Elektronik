@@ -11,7 +11,6 @@ namespace Elektronik.Offline
     {
         public Text commonIformation;
         public UIListBox listBoxWithSpecializedObjects;
-        public SpecialInfoListBoxItem itemPrefab;
         public ObjectLogger loggerForSpecialInformation;
 
         private void Start()
@@ -46,12 +45,12 @@ namespace Elektronik.Offline
 
             for (int i = 0; i < specialPts.Length; ++i)
             {
-                var item = listBoxWithSpecializedObjects.Add(itemPrefab) as SpecialInfoListBoxItem;
+                var item = listBoxWithSpecializedObjects.Add() as SpecialInfoListBoxItem;
                 item.SetObject(specialPts[i].id, specialPts[i].ToString(), ptsPositionsFromMap[i], specialPts[i].message);
             }
             for (int i = 0; i < specialObs.Length; ++i)
             {
-                var item = listBoxWithSpecializedObjects.Add(itemPrefab) as SpecialInfoListBoxItem;
+                var item = listBoxWithSpecializedObjects.Add() as SpecialInfoListBoxItem;
                 item.SetObject(specialObs[i].Point.id, specialObs[i].ToString(), obsPositionsFromMap[i], specialObs[i].Point.message);
             }
         }

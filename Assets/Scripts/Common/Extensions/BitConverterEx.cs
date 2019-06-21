@@ -107,6 +107,22 @@ namespace Elektronik.Common.Extensions
             offset += sizeof(float) * 4;
             return ToQuaternion(value, startIndex);
         }
+        public static Color ToRGBColor32(byte[] value, int startIndex)
+        {
+            Color color = new Color32()
+            {
+                r = value[startIndex],
+                g = value[startIndex + 1],
+                b = value[startIndex + 2],
+                a = 0xff
+            };
+            return color;
+        }
+        public static Color ToRGBColor32(byte[] value, int startIndex, ref int offset)
+        {
+            offset += sizeof(byte) * 3;
+            return ToRGBColor32(value, startIndex);
+        }
         public static Color ToRGBColor(byte[] value, int startIndex)
         {
             Color color = new Color()
@@ -116,8 +132,6 @@ namespace Elektronik.Common.Extensions
                 b = value[startIndex + 2],
                 a = 0xff
             };
-            if (color.a == 1.0 || color.r == 1.0 || color.g == 1.0 || color.b == 1.0)
-                Debug.LogWarning("[BitConverterEx.ToRGBColor] One of color channels equals to 1.0, are you sure? Max value of this color is 255.");
             return color;
         }
         public static Color ToRGBColor(byte[] value, int startIndex, ref int offset)

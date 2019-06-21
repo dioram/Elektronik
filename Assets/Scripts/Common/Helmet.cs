@@ -18,7 +18,7 @@ namespace Elektronik.Common
         public Color color = Color.red;
         public int id;
 
-        public void Start()
+        private void Awake()
         {
             m_lastLineId = -1;
             m_linesContainer = new SlamLinesContainer(linesCloud);

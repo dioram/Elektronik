@@ -44,11 +44,11 @@ namespace Elektronik.Offline
             m_position = 0;
             m_currentCommand = m_commands.First;
             m_currentCommand.Value.Execute();
+            Repaint();
         }
 
         public void Repaint()
         {
-            Debug.Log(nameof(this.Repaint));
             foreach (var commander in commanders)
                 commander.Repaint();
         }

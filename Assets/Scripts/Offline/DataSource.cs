@@ -41,7 +41,6 @@ namespace Elektronik.Offline
                 int[] offsetTable = Enumerable.Range(0, eventsCount).Select(_ => br.ReadInt32()).ToArray();
                 br.BaseStream.Seek(0, SeekOrigin.Begin);
                 byte[] data = br.ReadBytes((int)br.BaseStream.Length);
-                //for (int i = 0; i < eventsCount; ++i)
                 Parallel.For(0, eventsCount, (i) =>
                 {
                     Debug.Log($"{i}. offset: {offsetTable[i]} (0x{offsetTable[i]:X8})");

@@ -128,6 +128,7 @@
     <Compile Include="Assets\Scripts\Common\UI\UIListBox.cs" />
     <Compile Include="Assets\Scripts\Common\UI\UIListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Common\UI\UIMainMenu.cs" />
+    <Compile Include="Assets\Scripts\Common\UI\UISceneListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Common\UI\UITimelineSlider.cs" />
     <Compile Include="Assets\Scripts\Common\VRTKManagerInitializer.cs" />
     <Compile Include="Assets\Scripts\Common\VRTKSetupInitializer.cs" />

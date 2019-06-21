@@ -57,7 +57,7 @@ namespace Elektronik.Common.Data
                 }
                 if (type == ActionType.Tint)
                 {
-                    obsPoint.color = BitConverterEx.ToRGBColor(actions, offset, ref offset);
+                    obsPoint.color = BitConverterEx.ToRGBColor32(actions, offset, ref offset);
                 }
                 if (type == ActionType.Remove)
                 {

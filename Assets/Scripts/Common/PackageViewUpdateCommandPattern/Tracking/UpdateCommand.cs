@@ -8,51 +8,51 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Tracking
     public class UpdateCommand : IPackageViewUpdateCommand
     {
         private TrackingPackage m_pkg;
+        private IList<Helmet> m_helmets;
+        private ObjectPool m_helmetsPool;
+        private Stack<Helmet> m_addedHelmets;
+        private Stack<Color> m_oldColors;
 
-        private IDictionary<int, Helmet> m_helmets;
-        private IDictionary<int, Color> m_oldColors;
-        private IList<int> m_addedHelmets;
 
-        public UpdateCommand(IList<Helmet> helmets, TrackingPackage package, Helmet helmetPrefab)
+        public UpdateCommand(IList<Helmet> existingHelmets, TrackingPackage package, ObjectPool helmetsPool)
         {
-            m_oldColors = new Dictionary<int, Color>();
-            m_addedHelmets = new List<int>();
-            foreach (var track in package.Tracks)
-            {
-                if (!m_helmets.ContainsKey(track.id))
-                {
-                    m_addedHelmets.Add(track.id);
-                    helmets.Add(MF_AutoPool.Spawn(helmetPrefab.gameObject).GetComponent<Helmet>());
-                }
-                else
-                {
-                    m_oldColors[track.id] = m_helmets[track.id].color;
-                }
-            }
             m_pkg = package;
-            m_helmets = helmets.ToDictionary(h => h.id);
+            m_helmetsPool = helmetsPool;
+            m_helmets = existingHelmets;
+            m_addedHelmets = new Stack<Helmet>();
+            m_oldColors = new Stack<Color>();
         }
 
         public void Execute()
         {
-            Debug.Log("[[Tr]UpdateCommand.Execute]");
             foreach (var track in m_pkg.Tracks)
             {
-                m_helmets[track.id].color = track.color;
-                m_helmets[track.id].ReplaceAbs(track.position, track.rotation);
+                Helmet hmd = m_helmets.FirstOrDefault(h => h.id == track.id);
+                if (hmd == null)
+                {
+                    hmd = m_helmetsPool.Spawn().GetComponent<Helmet>();
+                    hmd.id = track.id;
+                    m_helmets.Add(hmd);
+                    m_addedHelmets.Push(hmd);
+                }
+                m_oldColors.Push(hmd.color);
+                hmd.color = track.color;
+                hmd.ReplaceAbs(track.position, track.rotation);
             }
         }
         public void UnExecute()
         {
-            Debug.Log("[[Tr]UpdateCommand.UnExecute]");
             foreach (var track in m_pkg.Tracks)
             {
-                m_helmets[track.id].TurnBack();
-                m_helmets[track.id].color = m_oldColors[track.id];
-                if (m_addedHelmets.Contains(track.id))
+                Helmet hmd = m_helmets.First(h => h.id == track.id);
+                hmd.TurnBack();
+                hmd.color = m_oldColors.Pop();
+                if (m_addedHelmets.Count > 0 && m_addedHelmets.Peek() == hmd)
                 {
-                    m_helmets[track.id].ResetHelmet();
-                    MF_AutoPool.Despawn(m_helmets[track.id].gameObject);
+                    m_addedHelmets.Pop();
+                    hmd.ResetHelmet();
+                    m_helmets.Remove(hmd);
+                    m_helmetsPool.Despawn(hmd.gameObject);
                 }
             }
         }

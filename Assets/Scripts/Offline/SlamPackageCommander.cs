@@ -11,7 +11,7 @@ namespace Elektronik.Offline
     public class SlamPackageCommander : RepaintablePackageViewUpdateCommander
     {
         public GameObject observationPrefab;
-        public GameObject fastPointCloud;
+        public FastPointCloud fastPointCloud;
         public FastLinesCloud fusionLinesCloud;
         public FastLinesCloud graphConnectionLinesCloud;
         public EventLogger eventsLogger;
@@ -27,7 +27,7 @@ namespace Elektronik.Offline
             m_observationsContainer = new SlamObservationsContainer(
                 observationPrefab,
                 new SlamLinesContainer(graphConnectionLinesCloud));
-            m_pointsContainer = new SlamPointsContainer(fastPointCloud.GetComponent<IFastPointsCloud>());
+            m_pointsContainer = new SlamPointsContainer(fastPointCloud);
         }
 
         public override LinkedList<IPackageViewUpdateCommand> GetCommands(IPackage pkg)
@@ -38,7 +38,7 @@ namespace Elektronik.Offline
             var slamPkg = pkg as SlamPackage;
 
             if (slamPkg.IsKey)
-            { 
+            {
                 commands.AddLast(new LambdaCommand(
                     () => eventsLogger.UpdateInfo(slamPkg, m_pointsContainer, m_observationsContainer),
                     () =>

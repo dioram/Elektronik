@@ -54,7 +54,6 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         public void Execute()
         {
-            Debug.Log("[UpdateCommand.Execute]");
             if (m_points2Update != null)
             {
                 foreach (var point in m_points2Update)
@@ -81,7 +80,6 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         public void UnExecute()
         {
-            Debug.Log("[UpdateCommand.UnExecute]");
             if (m_points2Restore != null)
             {
                 foreach (var point in m_points2Restore)

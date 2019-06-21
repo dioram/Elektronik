@@ -29,7 +29,6 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
             if (slamEvent.Points != null)
             {
                 m_addedPoints = slamEvent.Points.Where(p => p.isNew).ToArray();
-
             }
             if (slamEvent.Lines != null)
             {
@@ -49,7 +48,6 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         public void Execute()
         {
-            Debug.Log("[AddCommand.Execute]");
             if (m_addedPoints != null)
             {
                 foreach (var point in m_addedPoints)
@@ -75,7 +73,6 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         public void UnExecute()
         {
-            Debug.Log("[AddCommand.UnExecute]");
             if (m_addedPoints != null)
             {
                 foreach (var point in m_addedPoints)

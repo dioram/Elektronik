@@ -49,12 +49,12 @@ namespace Elektronik.Common.Data
                 if (type == ActionType.Create)
                 {
                     point.isNew = true;
-                    point.defaultColor = BitConverterEx.ToRGBColor(actions, offset, ref offset);
+                    point.defaultColor = BitConverterEx.ToRGBColor32(actions, offset, ref offset);
                     point.color = Color.blue;
                 }
                 if (type == ActionType.Tint)
                 {
-                    point.color = BitConverterEx.ToRGBColor(actions, offset, ref offset);
+                    point.color = BitConverterEx.ToRGBColor32(actions, offset, ref offset);
                     point.justColored = !wasMoved;
                 }
                 if (type == ActionType.Remove)
@@ -69,8 +69,8 @@ namespace Elektronik.Common.Data
                     {
                         pointId1 = point.id,
                         pointId2 = BitConverterEx.ToInt32(actions, offset, ref offset),
-                        color1 = BitConverterEx.ToRGBColor(actions, offset, ref offset),
-                        color2 = BitConverterEx.ToRGBColor(actions, offset, ref offset),
+                        color1 = BitConverterEx.ToRGBColor32(actions, offset, ref offset),
+                        color2 = BitConverterEx.ToRGBColor32(actions, offset, ref offset),
                         isRemoved = true,
                     };
                     if (fuseLine.pointId1 != -1 && fuseLine.pointId2 != -1)

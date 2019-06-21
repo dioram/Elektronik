@@ -9,18 +9,21 @@ namespace Elektronik.Offline
     public class TrackingPackageCommander : RepaintablePackageViewUpdateCommander
     {
         public Helmet helmetPrefab;
+        private ObjectPool m_helmetsPool;
         private IList<Helmet> m_helmets;
 
         private void Awake()
         {
             m_helmets = new List<Helmet>();
+            m_helmetsPool = new ObjectPool(helmetPrefab.gameObject);
         }
 
         public override void Clear()
         {
             foreach (var helmet in m_helmets)
             {
-                MF_AutoPool.Despawn(helmet.gameObject);
+                helmet.ResetHelmet();
+                m_helmetsPool.Despawn(helmet.gameObject);
             }
             m_helmets.Clear();
         }
@@ -30,7 +33,7 @@ namespace Elektronik.Offline
             var commands = new LinkedList<IPackageViewUpdateCommand>();
             if (pkg.Type != PackageType.TrackingPackage)
                 return m_commander?.GetCommands(pkg) ?? commands;
-            commands.AddLast(new UpdateCommand(m_helmets, pkg as TrackingPackage, helmetPrefab));
+            commands.AddLast(new UpdateCommand(m_helmets, pkg as TrackingPackage, m_helmetsPool));
             return commands;
         }
 

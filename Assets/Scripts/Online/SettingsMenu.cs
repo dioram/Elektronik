@@ -18,7 +18,6 @@ namespace Elektronik.Online
 
         public OnlineSettingStore store;
         public UIListBox recentConnectionsListBox;
-        public RecentIPListBoxItem recentConnectionPrefab;
 
         #endregion
 
@@ -95,9 +94,9 @@ namespace Elektronik.Online
             var IPs = store.Recent;
             foreach (var recent in store.Recent)
             {
-                recentConnectionPrefab.FullAddress = String.Format("{0}:{1}", recent.MapInfoAddress.ToString(), recent.MapInfoPort.ToString());
-                recentConnectionPrefab.Time = recent.Time;
-                recentConnectionsListBox.Add(recentConnectionPrefab);
+                var rc = recentConnectionsListBox.Add() as RecentIPListBoxItem;
+                rc.FullAddress = String.Format("{0}:{1}", recent.MapInfoAddress.ToString(), recent.MapInfoPort.ToString());
+                rc.Time = recent.Time;
             }
             if (store.Recent.Count > 0)
             {
