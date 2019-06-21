@@ -5,7 +5,7 @@ namespace Elektronik.Common.Extensions
 {
     public static class ChainExtensions
     {
-        public static T BuildChain<T>(this ICollection<IChainable<T>> collection)
+        public static T BuildChain<T>(this IEnumerable<IChainable<T>> collection)
         {
             IChainable<T> first = collection.First();
             IChainable<T> link = first;

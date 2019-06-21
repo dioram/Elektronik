@@ -124,7 +124,12 @@ namespace Elektronik.Offline
             }
         }
 
-        private bool FindKeyEvent(Func<LinkedListNode<IPackageViewUpdateCommand>, LinkedListNode<IPackageViewUpdateCommand>> switchCommand)
+        /// <summary>
+        /// We need this check because we do not want to switch iterations and come back if there is no any key event
+        /// </summary>
+        /// <param name="switchCommand">function that define Next or Previous event we need</param>
+        /// <returns>true - if key event is found; false - otherwise</returns>
+        private bool KeyEventIsFound(Func<LinkedListNode<IPackageViewUpdateCommand>, LinkedListNode<IPackageViewUpdateCommand>> switchCommand)
         {
             var command = switchCommand(m_currentCommand);
             bool isKey = false;
@@ -141,7 +146,7 @@ namespace Elektronik.Offline
 
         public bool NextKeyEvent()
         {
-            if (FindKeyEvent(c => c.Next))
+            if (KeyEventIsFound(c => c.Next))
             {
                 while (Next(needRepaint: false) && !m_extendedEvents[m_currentCommand.Value].IsKey) { }
                 Repaint();
@@ -152,7 +157,7 @@ namespace Elektronik.Offline
 
         public bool PrevKeyEvent()
         {
-            if (FindKeyEvent(c => c.Previous))
+            if (KeyEventIsFound(c => c.Previous))
             {
                 while (Previous(needRepaint: false) && !m_extendedEvents[m_currentCommand.Value].IsKey) { }
                 Repaint();

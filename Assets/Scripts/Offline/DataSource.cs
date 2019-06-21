@@ -43,7 +43,7 @@ namespace Elektronik.Offline
                 byte[] data = br.ReadBytes((int)br.BaseStream.Length);
                 Parallel.For(0, eventsCount, (i) =>
                 {
-                    Debug.Log($"{i}. offset: {offsetTable[i]} (0x{offsetTable[i]:X8})");
+                    Debug.Log($"{i}. offset: DEC {offsetTable[i]} ; HEX (0x{offsetTable[i]:X8})");
                     long packageLength =
                         i == eventsCount - 1 ?
                         br.BaseStream.Length - sizeof(int) /*table offset*/ - offsetTable[i]
