@@ -1,11 +1,11 @@
 ﻿using Elektronik.Common;
+using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
 using Elektronik.Common.Extensions;
 using Elektronik.Common.PackageViewUpdateCommandPattern;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Elektronik.Offline
@@ -15,14 +15,19 @@ namespace Elektronik.Offline
         public bool ReadyToPlay { get; private set; }
         public float scale;
         public RepaintablePackageViewUpdateCommander[] commanders;
+        public RepaintablePackagePresenter[] presenters;
+
+        private PackageViewUpdateCommander m_commander;
+        private PackagePresenter m_presenter;
 
         private IPackage[] m_packages;
+        private DataSource m_dataSource;
+
+        private LinkedListNode<IPackageViewUpdateCommand> m_currentCommand;
         private LinkedList<IPackageViewUpdateCommand> m_commands;
         private Dictionary<IPackageViewUpdateCommand, IPackage> m_extendedEvents;
-        private PackageViewUpdateCommander m_commander;
-        private DataSource m_dataSource;
         private int m_position = 0;
-        private LinkedListNode<IPackageViewUpdateCommand> m_currentCommand;
+        
 
         private void Awake()
         {
@@ -34,6 +39,7 @@ namespace Elektronik.Offline
         private void Start()
         {
             m_commander = commanders.BuildChain();
+            m_presenter = presenters.BuildChain();
             StartCoroutine(ProcessEvents());
         }
 
@@ -41,9 +47,12 @@ namespace Elektronik.Offline
         {
             foreach (var commander in commanders)
                 commander.Clear();
+            foreach (var presenter in presenters)
+                presenter.Clear();
             m_position = 0;
             m_currentCommand = m_commands.First;
             m_currentCommand.Value.Execute();
+            m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
             Repaint();
         }
 
@@ -51,6 +60,8 @@ namespace Elektronik.Offline
         {
             foreach (var commander in commanders)
                 commander.Repaint();
+            foreach (var presenter in presenters)
+                presenter.Repaint();
         }
 
         public int GetLength() => m_commands.Count;
@@ -93,6 +104,7 @@ namespace Elektronik.Offline
                 ++m_position;
                 m_currentCommand = m_currentCommand.Next;
                 m_currentCommand.Value.Execute();
+                m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
                 if (needRepaint)
                 {
                     Repaint();
@@ -112,6 +124,7 @@ namespace Elektronik.Offline
                 --m_position;
                 m_currentCommand.Value.UnExecute();
                 m_currentCommand = m_currentCommand.Previous;
+                m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
                 if (needRepaint)
                 {
                     Repaint();
@@ -135,7 +148,7 @@ namespace Elektronik.Offline
             bool isKey = false;
             while (!isKey && command != null)
             {
-                if (isKey = m_extendedEvents[m_currentCommand.Value].IsKey)
+                if (isKey = m_extendedEvents[command.Value].IsKey)
                 {
                     break;
                 }
@@ -176,7 +189,17 @@ namespace Elektronik.Offline
             for (int i = 0; i < m_packages.Length; ++i)
             {
                 Debug.Log(m_packages[i]);
-                var pkgCommands = m_commander.GetCommands(m_packages[i]);
+
+                LinkedList<IPackageViewUpdateCommand> pkgCommands = null;
+                try
+                {
+                    pkgCommands = m_commander.GetCommands(m_packages[i]);
+                }
+                catch (InvalidSlamContainerOperationException e)
+                {
+                    Debug.LogWarning(e.Message);
+                    break;
+                }
                 foreach (var pkgCommand in pkgCommands)
                     m_extendedEvents[pkgCommand] = m_packages[i];
                 m_commands.MoveFrom(pkgCommands);

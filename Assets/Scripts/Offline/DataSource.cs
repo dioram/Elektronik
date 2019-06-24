@@ -52,7 +52,7 @@ namespace Elektronik.Offline
                     Buffer.BlockCopy(data, offsetTable[i], rawPackage, 0, (int)packageLength);
                     int readBytes = m_parser.Parse(rawPackage, 0, out IPackage package);
                     if (readBytes == 0)
-                        Debug.LogWarning("No one parsers was found");
+                        Debug.LogWarning("No parsers was found");
                     result[i] = package;
                 });
             }

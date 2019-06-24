@@ -71,6 +71,7 @@
     <Compile Include="Assets\Scripts\Common\Clouds\Meshes\PointsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\Clouds\Meshes\TetrahedronsMeshObject.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\ICloudObjectsContainer.cs" />
+    <Compile Include="Assets\Scripts\Common\Containers\InvalidSlamContainerOperationException.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\ISlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamLinesContainer.cs" />
     <Compile Include="Assets\Scripts\Common\Containers\SlamObservationsContainer.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Assets\Scripts\Offline\DataSource.cs" />
     <Compile Include="Assets\Scripts\Offline\EventLogger.cs" />
     <Compile Include="Assets\Scripts\Offline\FileModeSettings.cs" />
+    <Compile Include="Assets\Scripts\Offline\Map.cs" />
     <Compile Include="Assets\Scripts\Offline\ObjectLogger.cs" />
     <Compile Include="Assets\Scripts\Offline\OfflineSettingsStore.cs" />
     <Compile Include="Assets\Scripts\Offline\RecentFileListBoxItem.cs" />
@@ -144,6 +146,7 @@
     <Compile Include="Assets\Scripts\Offline\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsPlayer.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamPackageCommander.cs" />
+    <Compile Include="Assets\Scripts\Offline\SlamPackageInfoPresenter.cs" />
     <Compile Include="Assets\Scripts\Offline\SpecialInformationBanner.cs" />
     <Compile Include="Assets\Scripts\Offline\TrackingPackageCommander.cs" />
     <Compile Include="Assets\Scripts\Online\OnlineModeSettings.cs" />

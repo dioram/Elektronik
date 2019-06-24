@@ -14,13 +14,6 @@ namespace Elektronik.Offline
         public UIListBox listBoxWithSpecializedObjects;
         public ObjectLogger loggerForSpecialInformation;
 
-        private Stack<SlamPackage> m_updateHistory;
-
-        private void Awake()
-        {
-            m_updateHistory = new Stack<SlamPackage>();
-        }
-
         private void Start()
         {
             listBoxWithSpecializedObjects.OnSelectionChanged += ObjectInfoSelectionChanged;
@@ -30,7 +23,6 @@ namespace Elektronik.Offline
         {
             commonIformation.text = "";
             listBoxWithSpecializedObjects.Clear();
-
         }
 
         public void UpdateInfo(
@@ -39,7 +31,6 @@ namespace Elektronik.Offline
             ICloudObjectsContainer<SlamObservation> graph)
         {
             listBoxWithSpecializedObjects.Clear();
-            m_updateHistory.Push(package);
             if (package == null)
             {
                 commonIformation.text = "";
@@ -67,18 +58,6 @@ namespace Elektronik.Offline
                 var item = listBoxWithSpecializedObjects.Add() as SpecialInfoListBoxItem;
                 item.SetObject(specialObs[i].Point.id, specialObs[i].ToString(), obsPositionsFromMap[i], specialObs[i].Point.message);
             }
-        }
-
-        public void RestoreInfo(
-            ICloudObjectsContainer<SlamPoint> pointsMap,
-            ICloudObjectsContainer<SlamObservation> graph)
-        {
-            if (m_updateHistory.Count > 0)
-                m_updateHistory.Pop();
-            if (m_updateHistory.Count > 0)
-                UpdateInfo(m_updateHistory.Peek(), pointsMap, graph);
-            else
-                UpdateInfo(null, pointsMap, graph);
         }
 
         private void ObjectInfoSelectionChanged(object sender, UIListBox.SelectionChangedEventArgs e)

@@ -63,9 +63,11 @@ namespace Elektronik.Common.Containers
         {
             get
             {
-                Debug.AssertFormat(
-                Exists(id),
-                "[SlamObservationsContainer.Get] Graph doesn't contain observation with id {0}", id);
+                //Debug.Assert(
+                //    Exists(id),
+                //    $"[SlamObservationsContainer.Get] Graph doesn't contain observation with id {id}");
+                if (!Exists(id))
+                    throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Get] Graph doesn't contain observation with id {id}");
                 return new SlamObservation(m_nodes.Find(obs => obs.Point.id == id));
             }
             set
@@ -120,9 +122,15 @@ namespace Elektronik.Common.Containers
                         observation, covisibleObs,
                         m_lines.Add(line));
                 }
-                Debug.AssertFormat(m_connections[connectionIdx].first != null || m_connections[connectionIdx].second != null,
-                    "[SlamObservationsContainer.UpdateConnectionsOf] connection.first == connection.second == null for id1 = {0}, id2 = {1}",
-                    m_connections[connectionIdx].obsId1, m_connections[connectionIdx].obsId2);
+                //Debug.Assert(m_connections[connectionIdx].first != null || m_connections[connectionIdx].second != null,
+                //    $"[SlamObservationsContainer.UpdateConnectionsOf] connection.first == connection.second == null for " +
+                //    $"id1 = {m_connections[connectionIdx].obsId1}, " +
+                //    $"id2 = {m_connections[connectionIdx].obsId2}");
+                if (m_connections[connectionIdx].first != null || m_connections[connectionIdx].second != null)
+                    throw new InvalidSlamContainerOperationException(
+                      $"[SlamObservationsContainer.UpdateConnectionsOf] connection.first == connection.second == null for " +
+                      $"id1 = {m_connections[connectionIdx].obsId1}, " +
+                      $"id2 = {m_connections[connectionIdx].obsId2}");
             }
         }
 
@@ -205,16 +213,17 @@ namespace Elektronik.Common.Containers
         {
             if (observation == null)
                 Debug.LogWarning("[SlamObservationsContainer.Add] Null observation");
-            Debug.AssertFormat(
-                !Exists(observation),
-                "[SlamObservationsContainer.Add] Graph already contains observation with id {0}", observation.Point.id);
+            //Debug.Assert(
+            //    !Exists(observation),
+            //    $"[SlamObservationsContainer.Add] Graph already contains observation with id {observation.Point.id}");
+            if (Exists(observation))
+                throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Add] Graph already contains observation with id {observation.Point.id}");
             int last = m_nodes.Count;
             m_nodes.Add(new SlamObservation(observation));
             m_gameObjects[m_nodes[last].Point.id] = m_observationsPool.Spawn(observation.Point.position, observation.Orientation);
             UpdateConnectionsFor(m_nodes[last]);
-            Debug.LogFormat(
-                "[SlamObservationsContainer.Add] Added observation with id {0}; count of covisible nodes {1}",
-                m_nodes[last].Point.id, m_nodes[last].CovisibleInfos.Count);
+            Debug.Log(
+                $"[SlamObservationsContainer.Add] Added observation with id {m_nodes[last].Point.id}; count of covisible nodes {m_nodes[last].CovisibleInfos.Count}");
             return observation.Point.id;
         }
 
@@ -238,9 +247,11 @@ namespace Elektronik.Common.Containers
         {
             if (obj == null)
                 Debug.LogWarning("[SlamObservationsContainer.ChangeColor] Null observation");
-            Debug.AssertFormat(
-                Exists(obj),
-                "[SlamObservationsContainer.ChangeColor] Graph doesn't contain observation with id {0}", obj.Point.id);
+            //Debug.Assert(
+            //    Exists(obj),
+            //    $"[SlamObservationsContainer.ChangeColor] Graph doesn't contain observation with id {obj.Point.id}");
+            if (!Exists(obj))
+                throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.ChangeColor] Graph doesn't contain observation with id {obj.Point.id}");
             SlamObservation node = m_nodes.First(n => obj.Point.id == n.Point.id);
             SlamPoint point = node.Point;
             point.color = obj.Point.color;
@@ -289,14 +300,15 @@ namespace Elektronik.Common.Containers
         /// <param name="id"></param>
         public void Remove(int id)
         {
-            Debug.AssertFormat(
-                Exists(id),
-                "[SlamObservationsContainer.Remove] Graph doesn't contain observation with id {0}", id);
+            //Debug.Assert(
+            //    Exists(id),
+            //    $"[SlamObservationsContainer.Remove] Graph doesn't contain observation with id {id}");
+            if (!Exists(id))
+                throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Remove] Graph doesn't contain observation with id {id}");
 
             var node = m_nodes.First(obs => obs.Point.id == id);
-            Debug.LogFormat(
-                "[SlamObservationsContainer.Remove] Removing observation with id {0}; count of covisible nodes {1}",
-                id, node.CovisibleInfos.Count);
+            Debug.Log(
+                $"[SlamObservationsContainer.Remove] Removing observation with id {id}; count of covisible nodes {node.CovisibleInfos.Count}");
             DisconnectFromAll(node);
             m_observationsPool.Despawn(m_gameObjects[id]);
             m_gameObjects.Remove(id);
@@ -346,9 +358,11 @@ namespace Elektronik.Common.Containers
         {
             if (obj == null)
                 Debug.LogWarning("[SlamObservationsContainer.Update] Null observation");
-            Debug.AssertFormat(
-                Exists(obj.Point.id),
-                "[SlamObservationsContainer.Update] Graph doesn't contain observation with id {0}", obj.Point.id);
+            //Debug.Assert(
+            //    Exists(obj.Point.id),
+            //    $"[SlamObservationsContainer.Update] Graph doesn't contain observation with id {obj.Point.id}");
+            if (!Exists(obj.Point.id))
+                throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Update] Graph doesn't contain observation with id {obj.Point.id}");
             SlamObservation node = m_nodes.First(obs => obs.Point.id == obj.Point.id);
 
             node.Statistics = obj.Statistics;
@@ -357,9 +371,8 @@ namespace Elektronik.Common.Containers
             UpdateGameobjectFor(node);
             UpdateConnectionsFor(node);
 
-            Debug.LogFormat(
-                "[SlamObservationsContainer.Update] Updated observation with id {0}; count of covisible nodes {1}",
-                node.Point.id, node.CovisibleInfos.Count);
+            Debug.Log(
+                $"[SlamObservationsContainer.Update] Updated observation with id {node.Point.id}; count of covisible nodes {node.CovisibleInfos.Count}");
         }
 
         public IEnumerator<SlamObservation> GetEnumerator() => m_nodes.GetEnumerator();
