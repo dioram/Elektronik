@@ -27,7 +27,7 @@ namespace Elektronik.Common.Containers
             //Debug.Assert(
             //    !m_points.ContainsKey(point.id),
             //    $"[SlamPointsContainer.Add] Point with id {point.id} already in dictionary!");
-            if (!m_points.ContainsKey(point.id))
+            if (m_points.ContainsKey(point.id))
                 throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.Add] Point with id {point.id} already in dictionary!");
             ++m_diff;
             ++m_added;

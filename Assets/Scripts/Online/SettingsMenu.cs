@@ -1,11 +1,14 @@
-﻿using Elektronik.Common.UI;
+﻿using Elektronik.Common;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UniRx;
+using System.Net;
+using Elektronik.Common.UI;
 
 namespace Elektronik.Online
 {
@@ -16,14 +19,8 @@ namespace Elektronik.Online
 
         #region Settings
 
-        public OnlineSettingStore store;
+        public SettingsBagStore store;
         public UIListBox recentConnectionsListBox;
-
-        #endregion
-
-        #region Buttons
-
-        public GameObject settingSceneControls;
 
         #endregion
 
@@ -39,6 +36,7 @@ namespace Elektronik.Online
 
         private void Awake()
         {
+            SettingsBag.Mode = Mode.Online;
             FindUIs();
             SubscribeUIs();
         }
@@ -59,31 +57,34 @@ namespace Elektronik.Online
             uiLoad = GameObject.Find("Load").GetComponent<Button>();
         }
 
+        SettingsBag SettingsSelector()
+        {
+            if (SettingsBag.Current.TryGetValue(SettingName.IPAddress, out Setting ipSetting) &&
+                SettingsBag.Current.TryGetValue(SettingName.Port, out Setting portSetting))
+            {
+                bool mapInfoAddressesAreEqual = uiMapInfoAddress.text == ipSetting.As<IPAddress>().ToString();
+                bool mapInfoPortsAreEqual = int.Parse(uiMapInfoPort.text) == portSetting.As<int>();
+                return mapInfoAddressesAreEqual && mapInfoPortsAreEqual ? SettingsBag.Current : new SettingsBag();
+            }
+            return new SettingsBag();
+        }
+
         void SubscribeUIs()
         {
             uiMapInfoAddress.ObserveEveryValueChanged(addr => addr.text)
-                .Do(content =>
-                {
-                    IPAddress stub = null;
-                    uiLoad.enabled = IPAddress.TryParse(content, out stub) && !String.IsNullOrEmpty(uiMapInfoPort.text);
-                })
+                .Do(content => uiLoad.enabled = IPAddress.TryParse(content, out IPAddress stub) && !String.IsNullOrEmpty(uiMapInfoPort.text))
                 .Subscribe();
             uiCancel.OnClickAsObservable()
-                .Do(_ => OnlineModeSettings.Current = null)
+                .Do(_ => SettingsBag.Current = null)
                 .Subscribe(_ => SceneManager.LoadScene("Main menu", LoadSceneMode.Single));
             uiLoad.OnClickAsObservable()
-                .Select(_ =>
-                {
-                    bool mapInfoAddressesAreEqual = String.Compare(uiMapInfoAddress.text, OnlineModeSettings.Current.MapInfoAddress.ToString()) == 0;
-                    bool mapInfoPortsAreEqual = int.Parse(uiMapInfoPort.text) == OnlineModeSettings.Current.MapInfoPort;
-                    return mapInfoAddressesAreEqual && mapInfoPortsAreEqual ? OnlineModeSettings.Current : new OnlineModeSettings();
-                })
-                .Do(oms => OnlineModeSettings.Current = oms)
-                .Do(_ => OnlineModeSettings.Current.MapInfoScaling = uiMapInfoScalingFactor.text.Length == 0 ? 1.0f : float.Parse(uiMapInfoScalingFactor.text))
-                .Do(_ => OnlineModeSettings.Current.MapInfoAddress = IPAddress.Parse(uiMapInfoAddress.text))
-                .Do(_ => OnlineModeSettings.Current.MapInfoPort = Int32.Parse(uiMapInfoPort.text))
-                .Do(_ => OnlineModeSettings.Current.Time = DateTime.Now)
-                .Do(_ => store.Add(OnlineModeSettings.Current))
+                .Select(_ => SettingsSelector())
+                .Do(oms => SettingsBag.Current = oms)
+                .Do(_ => SettingsBag.Current.Change(SettingName.Scale,
+                    uiMapInfoScalingFactor.text.Length == 0 ? 1f : float.Parse(uiMapInfoScalingFactor.text)))
+                .Do(_ => SettingsBag.Current.Change(SettingName.IPAddress, IPAddress.Parse(uiMapInfoAddress.text)))
+                .Do(_ => SettingsBag.Current.Change(SettingName.Port, Int32.Parse(uiMapInfoPort.text)))
+                .Do(_ => store.Add(SettingsBag.Current))
                 .Do(_ => store.Serialize(SETTINGS_FILE))
                 .Do(_ => SceneManager.LoadScene("Empty", LoadSceneMode.Single))
                 .Subscribe();
@@ -94,27 +95,27 @@ namespace Elektronik.Online
             var IPs = store.Recent;
             foreach (var recent in store.Recent)
             {
-                var rc = recentConnectionsListBox.Add() as RecentIPListBoxItem;
-                rc.FullAddress = String.Format("{0}:{1}", recent.MapInfoAddress.ToString(), recent.MapInfoPort.ToString());
-                rc.Time = recent.Time;
+                var recentConnectionItem = recentConnectionsListBox.Add() as RecentIPListBoxItem;
+                recentConnectionItem.FullAddress = $"{recent[SettingName.IPAddress].As<IPAddress>()}:{recent[SettingName.Port].As<int>()}";
+                recentConnectionItem.Time = recent.ModificationTime;
             }
             if (store.Recent.Count > 0)
             {
-                OnlineModeSettings.Current = store.Recent.First();
+                SettingsBag.Current = store.Recent.First();
             }
             else
             {
-                OnlineModeSettings.Current = new OnlineModeSettings();
+                SettingsBag.Current = new SettingsBag();
             }
             recentConnectionsListBox.OnSelectionChanged += RecentIPChanged;
         }
 
         void RecentIPChanged(object sender, UIListBox.SelectionChangedEventArgs args)
         {
-            OnlineModeSettings.Current = store.Recent[args.index];
-            uiMapInfoAddress.text = OnlineModeSettings.Current.MapInfoAddress.ToString();
-            uiMapInfoPort.text = OnlineModeSettings.Current.MapInfoPort.ToString();
-            uiMapInfoScalingFactor.text = OnlineModeSettings.Current.MapInfoScaling.ToString();
+            SettingsBag.Current = store.Recent[args.index];
+            uiMapInfoAddress.text = SettingsBag.Current[SettingName.IPAddress].As<IPAddress>().ToString();
+            uiMapInfoPort.text = SettingsBag.Current[SettingName.Port].As<int>().ToString();
+            uiMapInfoScalingFactor.text = SettingsBag.Current[SettingName.Scale].As<float>().ToString();
         }
     }
 }

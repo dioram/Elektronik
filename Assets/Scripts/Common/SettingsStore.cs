@@ -51,7 +51,7 @@ namespace Elektronik.Common
             FileInfo fi = new FileInfo(pathToAppData);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
-            Debug.LogFormat("Serialization to:{0}{1}", Environment.NewLine, pathToAppData);
+            Debug.Log($"Serialization to:{Environment.NewLine}{pathToAppData}");
             IFormatter formatter = new BinaryFormatter();
             using (var file = File.Open(pathToAppData, FileMode.OpenOrCreate))
             {

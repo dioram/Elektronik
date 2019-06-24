@@ -13,7 +13,6 @@ namespace Elektronik.Offline
     public class SlamEventsManager : MonoBehaviour
     {
         public bool ReadyToPlay { get; private set; }
-        public float scale;
         public RepaintablePackageViewUpdateCommander[] commanders;
         public RepaintablePackagePresenter[] presenters;
 
@@ -184,7 +183,7 @@ namespace Elektronik.Offline
             ElektronikLogger.OpenLog();
             Application.logMessageReceived += ElektronikLogger.Log;
             Debug.Log("ANALYSIS STARTED");
-            m_packages = m_dataSource.Parse(FileModeSettings.Current.Path);
+            m_packages = m_dataSource.Parse(SettingsBag.Current[SettingName.Path].As<string>());
             Debug.Log("PROCESSING FINISHED");
             for (int i = 0; i < m_packages.Length; ++i)
             {

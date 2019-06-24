@@ -2064,7 +2064,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   store: {fileID: 5006600308787998862}
   recentConnectionsListBox: {fileID: 5006600308908788688}
-  settingSceneControls: {fileID: 5006600308962465515}
 --- !u!224 &5006600307108146584
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5353,7 +5352,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5006600308787998861}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d6f726f544c48746b3756473396c114, type: 3}
+  m_Script: {fileID: 11500000, guid: fd63415db3e6e6e4f9842d49ae1345f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxCountOfRecentFiles: 20

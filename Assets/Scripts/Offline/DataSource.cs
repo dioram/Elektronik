@@ -15,7 +15,7 @@ namespace Elektronik.Offline
         private DataParser m_parser;
         public DataSource()
         {
-            var converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
+            var converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>()));
             m_parser =
                 new IChainable<DataParser>[]
                 {

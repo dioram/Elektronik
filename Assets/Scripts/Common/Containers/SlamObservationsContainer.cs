@@ -126,7 +126,7 @@ namespace Elektronik.Common.Containers
                 //    $"[SlamObservationsContainer.UpdateConnectionsOf] connection.first == connection.second == null for " +
                 //    $"id1 = {m_connections[connectionIdx].obsId1}, " +
                 //    $"id2 = {m_connections[connectionIdx].obsId2}");
-                if (m_connections[connectionIdx].first != null || m_connections[connectionIdx].second != null)
+                if (!(m_connections[connectionIdx].first != null || m_connections[connectionIdx].second != null))
                     throw new InvalidSlamContainerOperationException(
                       $"[SlamObservationsContainer.UpdateConnectionsOf] connection.first == connection.second == null for " +
                       $"id1 = {m_connections[connectionIdx].obsId1}, " +

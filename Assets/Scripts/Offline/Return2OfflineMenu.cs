@@ -1,8 +1,13 @@
-﻿using Elektronik.Online;
-using System;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UniRx;
+using VRTK;
+using Elektronik.Online;
+using System;
+using Elektronik.Common;
 
 namespace Elektronik.Offline
 {
@@ -21,19 +26,16 @@ namespace Elektronik.Offline
 
         void OnBackToMenuClick()
         {
-            if (FileModeSettings.Current != null)
+            switch (SettingsBag.Mode)
             {
-                FileModeSettings.Current = null;
-                SceneManager.LoadScene(@"Assets/Scenes/Offline/Offline settings.unity", LoadSceneMode.Single);
-            }
-            else if (OnlineModeSettings.Current != null)
-            {
-                OnlineModeSettings.Current = null;
-                SceneManager.LoadScene(@"Assets/Scenes/Online/Online settings.unity", LoadSceneMode.Single);
-            }
-            else
-            {
-                throw new Exception("Go to this scene from settings scene");
+                case Mode.Offline:
+                    SceneManager.LoadScene(@"Assets/Scenes/Offline/Offline settings.unity", LoadSceneMode.Single);
+                    break;
+                case Mode.Online:
+                    SceneManager.LoadScene(@"Assets/Scenes/Online/Online settings.unity", LoadSceneMode.Single);
+                    break;
+                default:
+                    throw new Exception("Go to this scene from settings scene");
             }
         }
 

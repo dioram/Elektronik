@@ -106,6 +106,7 @@
     <Compile Include="Assets\Scripts\Common\Interop\OMW\Tracker.cs" />
     <Compile Include="Assets\Scripts\Common\KeyPressedEventInvoker.cs" />
     <Compile Include="Assets\Scripts\Common\MainMenuButtons.cs" />
+    <Compile Include="Assets\Scripts\Common\Mode.cs" />
     <Compile Include="Assets\Scripts\Common\ModeSelector.cs" />
     <Compile Include="Assets\Scripts\Common\ObjectStateConditionalEventInvoker.cs" />
     <Compile Include="Assets\Scripts\Common\OrbitalCameraForPointInSpace.cs" />
@@ -123,6 +124,9 @@
     <Compile Include="Assets\Scripts\Common\PackageViewUpdateCommandPattern\Tracking\UpdateCommand.cs" />
     <Compile Include="Assets\Scripts\Common\RepaintablePackagePresenter.cs" />
     <Compile Include="Assets\Scripts\Common\RuntimeGameObjectAttacher.cs" />
+    <Compile Include="Assets\Scripts\Common\Setting.cs" />
+    <Compile Include="Assets\Scripts\Common\SettingsBag.cs" />
+    <Compile Include="Assets\Scripts\Common\SettingsBagStore.cs" />
     <Compile Include="Assets\Scripts\Common\SettingsStore.cs" />
     <Compile Include="Assets\Scripts\Common\SpecialInfoListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Common\UI\PlayerUIInitializer.cs" />
@@ -136,12 +140,11 @@
     <Compile Include="Assets\Scripts\Common\XYZAxis.cs" />
     <Compile Include="Assets\Scripts\Offline\DataSource.cs" />
     <Compile Include="Assets\Scripts\Offline\EventLogger.cs" />
-    <Compile Include="Assets\Scripts\Offline\FileModeSettings.cs" />
     <Compile Include="Assets\Scripts\Offline\Map.cs" />
     <Compile Include="Assets\Scripts\Offline\ObjectLogger.cs" />
-    <Compile Include="Assets\Scripts\Offline\OfflineSettingsStore.cs" />
     <Compile Include="Assets\Scripts\Offline\RecentFileListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Offline\Return2OfflineMenu.cs" />
+    <Compile Include="Assets\Scripts\Offline\SettingName.cs" />
     <Compile Include="Assets\Scripts\Offline\SettingsMenu.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Offline\SlamEventsPlayer.cs" />
@@ -149,9 +152,8 @@
     <Compile Include="Assets\Scripts\Offline\SlamPackageInfoPresenter.cs" />
     <Compile Include="Assets\Scripts\Offline\SpecialInformationBanner.cs" />
     <Compile Include="Assets\Scripts\Offline\TrackingPackageCommander.cs" />
-    <Compile Include="Assets\Scripts\Online\OnlineModeSettings.cs" />
-    <Compile Include="Assets\Scripts\Online\OnlineSettingStore.cs" />
     <Compile Include="Assets\Scripts\Online\RecentIPListBoxItem.cs" />
+    <Compile Include="Assets\Scripts\Online\SettingName.cs" />
     <Compile Include="Assets\Scripts\Online\SettingsMenu.cs" />
     <Compile Include="Assets\Scripts\Online\SlamEventsManager.cs" />
     <Compile Include="Assets\Scripts\Online\SlamPackagePresenter.cs" />

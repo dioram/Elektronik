@@ -1,6 +1,9 @@
 ﻿using Elektronik.Offline;
 using Elektronik.Online;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Elektronik.Common
@@ -12,19 +15,20 @@ namespace Elektronik.Common
 
         private void Start()
         {
-            if (FileModeSettings.Current != null)
+            switch (SettingsBag.Mode)
             {
-                onlinePlayer.SetActive(false);
-                filePlayer.SetActive(true);
-            }
-            else if (OnlineModeSettings.Current != null)
-            {
-                filePlayer.SetActive(false);
-                onlinePlayer.SetActive(true);
-            }
-            else
-            {
-                throw new NullReferenceException("No one of modes are initialized");
+                case Mode.Offline:
+                    {
+                        filePlayer.SetActive(true);
+                        break;
+                    }
+                case Mode.Online:
+                    {
+                        onlinePlayer.SetActive(true);
+                        break;
+                    }
+                default:
+                    throw new NullReferenceException("No modes are initialized");
             }
         }
     }

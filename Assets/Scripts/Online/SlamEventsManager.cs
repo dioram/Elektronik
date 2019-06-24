@@ -4,6 +4,7 @@ using Elektronik.Common.Extensions;
 using System;
 using System.Collections;
 using System.Linq;
+using System.Net;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,7 +29,7 @@ namespace Elektronik.Online
 
         private void Awake()
         {
-            ICSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.MapInfoScaling));
+            ICSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>()));
             m_parser = new IChainable<DataParser>[]
             {
                 new SlamPackageParser(converter),
@@ -121,7 +122,7 @@ namespace Elektronik.Online
             {
                 status.text = $"New connection try... ({i + 1} from {tries})";
                 yield return null;
-                if (m_receiver.Connect(OnlineModeSettings.Current.MapInfoAddress, OnlineModeSettings.Current.MapInfoPort))
+                if (m_receiver.Connect(SettingsBag.Current[SettingName.IPAddress].As<IPAddress>(), SettingsBag.Current[SettingName.Port].As<int>()))
                 {
                     status.color = Color.green;
                     status.text = "Connected!";
