@@ -1,7 +1,7 @@
 ﻿namespace VRTK.Examples.Tests
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     public abstract class VRTK_BaseTest : MonoBehaviour
     {

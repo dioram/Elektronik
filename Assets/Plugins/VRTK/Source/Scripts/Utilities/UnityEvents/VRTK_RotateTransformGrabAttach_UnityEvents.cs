@@ -1,8 +1,8 @@
 ﻿namespace VRTK.UnityEventHelper
 {
+    using System;
     using UnityEngine;
     using UnityEngine.Events;
-    using System;
     using VRTK.GrabAttachMechanics;
 
     [AddComponentMenu("VRTK/Scripts/Utilities/Unity Events/VRTK_RotateTransformGrabAttach_UnityEvents")]

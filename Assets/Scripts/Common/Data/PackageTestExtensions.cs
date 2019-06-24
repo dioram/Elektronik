@@ -1,6 +1,4 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data;
+﻿using Elektronik.Common.Containers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +9,14 @@ namespace Elektronik.Common.Data
     public static class PackageTestExtensions
     {
         public static void Test(
-            Package package,
+            SlamPackage package,
             IEnumerable<SlamPoint> objects,
             string messageTemplate)
         {
             var objArray = objects.ToArray();
             if (objArray.Length != 0)
             {
-                ElektronikLogger.Log(package.Summary(), "", LogType.Error);
+                ElektronikLogger.Log(package.ToString(), "", LogType.Error);
                 foreach (var obj in objArray)
                 {
                     string msg = String.Format(messageTemplate, obj.id, obj.isNew, obj.isRemoved);
@@ -27,7 +25,7 @@ namespace Elektronik.Common.Data
             }
         }
 
-        private static IEnumerable<SlamPoint> SlamObjectQuery(IEnumerable<SlamPoint> src, Func<int, bool> cond) 
+        private static IEnumerable<SlamPoint> SlamObjectQuery(IEnumerable<SlamPoint> src, Func<int, bool> cond)
         {
             IEnumerable<SlamPoint> query = src
                 .Where(p => cond(p.id));
@@ -35,7 +33,7 @@ namespace Elektronik.Common.Data
         }
 
         public static void TestExistent(
-            this Package package,
+            this SlamPackage package,
             Func<SlamPoint, bool> filter,
             ICloudObjectsContainer<SlamPoint> pointsContainer,
             ICloudObjectsContainer<SlamObservation> graph)
@@ -53,7 +51,7 @@ namespace Elektronik.Common.Data
         }
 
         public static void TestNonExistent(
-            this Package package,
+            this SlamPackage package,
             Func<SlamPoint, bool> filter,
             ICloudObjectsContainer<SlamPoint> pointsContainer,
             ICloudObjectsContainer<SlamObservation> graph)

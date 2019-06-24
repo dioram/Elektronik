@@ -1,7 +1,7 @@
 ﻿// WindowsMR System|SDK_WindowsMR|002
 namespace VRTK
 {
-	/// <summary>
+    /// <summary>
     /// The Windows Mixed Reality System SDK script provides a bridge to the Windows Mixed Reality Unity SDK.
     /// </summary>
     [SDK_Description("WindowsMR", SDK_WindowsMRDefines.ScriptingDefineSymbol, "WindowsMR", "WSA")]

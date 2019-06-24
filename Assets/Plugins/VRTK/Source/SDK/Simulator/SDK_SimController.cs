@@ -1,8 +1,8 @@
 ﻿// Simulator Controller|SDK_Simulator|003
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// The Sim Controller SDK script provides functions to help simulate VR controllers.

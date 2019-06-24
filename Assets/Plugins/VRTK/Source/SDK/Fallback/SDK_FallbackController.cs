@@ -1,8 +1,8 @@
 ﻿// Fallback Controller|SDK_Fallback|003
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// The Fallback Controller SDK script provides a fallback collection of methods that return null or default headset values.

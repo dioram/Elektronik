@@ -1,8 +1,8 @@
 ﻿// Destination Point|Prefabs|0090
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

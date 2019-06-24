@@ -1,9 +1,9 @@
 ﻿namespace VRTK
 {
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
-    using System.Collections.Generic;
 
     public class VRTK_VRInputModule : PointerInputModule
     {

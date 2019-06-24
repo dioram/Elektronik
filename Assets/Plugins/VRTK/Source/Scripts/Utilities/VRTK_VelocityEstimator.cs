@@ -1,8 +1,8 @@
 ﻿// Velocity Estimator|Utilities|90180
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// The Velocity Estimator is used to calculate an estimated velocity on a moving object that is moving outside of Unity physics.

@@ -1,7 +1,7 @@
 ﻿namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     public struct VRTKTrackedControllerEventArgs
     {

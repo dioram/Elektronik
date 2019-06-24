@@ -1,8 +1,8 @@
 ﻿// Rotate Transform Grab Attach|GrabAttachMechanics|50120
 namespace VRTK.GrabAttachMechanics
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

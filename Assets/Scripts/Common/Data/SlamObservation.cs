@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using UnityEngine;
 
 namespace Elektronik.Common.Data
 {
@@ -30,7 +29,7 @@ namespace Elektronik.Common.Data
         {
             CovisibleInfos = new ReadOnlyCollection<CovisibleInfo>(covisibleObservationsInfo);
         }
-        
+
         public SlamObservation(SlamObservation src)
         {
             Point = src.Point;
@@ -42,6 +41,11 @@ namespace Elektronik.Common.Data
         public static implicit operator SlamPoint(SlamObservation obs)
         {
             return obs.Point;
+        }
+
+        public override string ToString()
+        {
+            return Point.message ?? "SlamObservation";
         }
     }
 }

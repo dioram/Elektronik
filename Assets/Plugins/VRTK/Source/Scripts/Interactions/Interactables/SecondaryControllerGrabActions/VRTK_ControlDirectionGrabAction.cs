@@ -1,8 +1,8 @@
 ﻿// Control Direction Grab Action|SecondaryControllerGrabActions|60040
 namespace VRTK.SecondaryControllerGrabActions
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Controls the facing direction of the grabbed Interactable Object to rotate in the direction of the secondary grabbing object.

@@ -1,6 +1,7 @@
 ﻿using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
 using Elektronik.Common.UI;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +12,6 @@ namespace Elektronik.Offline
     {
         public Text commonIformation;
         public UIListBox listBoxWithSpecializedObjects;
-        public SpecialInfoListBoxItem itemPrefab;
         public ObjectLogger loggerForSpecialInformation;
 
         private void Start()
@@ -23,14 +23,21 @@ namespace Elektronik.Offline
         {
             commonIformation.text = "";
             listBoxWithSpecializedObjects.Clear();
-            
         }
 
-        public void UpdateInfo(Package package, ICloudObjectsContainer<SlamPoint> pointsMap, ICloudObjectsContainer<SlamObservation> graph)
+        public void UpdateInfo(
+            SlamPackage package,
+            ICloudObjectsContainer<SlamPoint> pointsMap,
+            ICloudObjectsContainer<SlamObservation> graph)
         {
             listBoxWithSpecializedObjects.Clear();
+            if (package == null)
+            {
+                commonIformation.text = "";
+                return;
+            }
 
-            commonIformation.text = package.Summary();
+            commonIformation.text = package.ToString();
 
             SlamPoint[] specialPts = package.Points.Where(p => p.id != -1).Where(p => p.message != null).ToArray();
             Vector3[] ptsPositionsFromMap = specialPts.Select(p => pointsMap[p].position).ToArray();
@@ -43,13 +50,13 @@ namespace Elektronik.Offline
 
             for (int i = 0; i < specialPts.Length; ++i)
             {
-                var item = listBoxWithSpecializedObjects.Add(itemPrefab) as SpecialInfoListBoxItem;
-                item.SetObject(specialPts[i].id, "Point", ptsPositionsFromMap[i], specialPts[i].message);
+                var item = listBoxWithSpecializedObjects.Add() as SpecialInfoListBoxItem;
+                item.SetObject(specialPts[i].id, specialPts[i].ToString(), ptsPositionsFromMap[i], specialPts[i].message);
             }
             for (int i = 0; i < specialObs.Length; ++i)
             {
-                var item = listBoxWithSpecializedObjects.Add(itemPrefab) as SpecialInfoListBoxItem;
-                item.SetObject(specialObs[i].Point.id, "Observation", obsPositionsFromMap[i], specialObs[i].Point.message);
+                var item = listBoxWithSpecializedObjects.Add() as SpecialInfoListBoxItem;
+                item.SetObject(specialObs[i].Point.id, specialObs[i].ToString(), obsPositionsFromMap[i], specialObs[i].Point.message);
             }
         }
 

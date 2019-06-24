@@ -1,13 +1,9 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.Data;
+﻿using Elektronik.Common.Data;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using UnityEngine;
 
@@ -16,28 +12,30 @@ namespace Elektronik.Online
     public class TCPPackagesReceiver : IDisposable
     {
         Thread m_readingThread;
-        List<Package> m_packagesBuffer;
-        Queue<Package> m_readPackages;
+        List<IPackage> m_packagesBuffer;
+        Queue<IPackage> m_readPackages;
         private int m_packageNum = 0;
         private TcpClient m_network;
         private NetworkStream m_stream;
         private bool m_stop;
         private IPGlobalProperties m_ipProperties;
         private TcpConnectionInformation[] m_tcpConnections;
+        private DataParser m_parser;
 
         public delegate void TCPPackagesReceiverHandler();
         public event TCPPackagesReceiverHandler OnDisconnect;
 
         public bool Connected { get { return m_network.Connected; } }
 
-        public TCPPackagesReceiver()
+        public TCPPackagesReceiver(DataParser parser)
         {
             m_network = new TcpClient();
             m_network.ReceiveBufferSize = 64 * 1024;
-            m_packagesBuffer = new List<Package>(20);
-            m_readPackages = new Queue<Package>(100);
+            m_packagesBuffer = new List<IPackage>(20);
+            m_readPackages = new Queue<IPackage>(100);
             m_readingThread = new Thread(ReadPackages);
             m_readingThread.IsBackground = true;
+            m_parser = parser;
         }
 
         private bool CheckConnection(byte[] zeroByte)
@@ -68,7 +66,7 @@ namespace Elektronik.Online
                 throw new InvalidOperationException("Call Connect before using this [GetPackage] method");
             }
             byte[] zeroByte = new byte[1];
-            Package receivedPackage = null;
+            IPackage receivedPackage = null;
             while (!m_stop)
             {
                 while (m_network.Available > 4)
@@ -84,7 +82,7 @@ namespace Elektronik.Online
                         if (m_stop)
                             return;
                     } while (readBytes != countOfBytes);
-                    receivedPackage = Package.Parse(rawPackage);
+                    m_parser.Parse(rawPackage, 0, out receivedPackage);
                     if (receivedPackage.Timestamp != m_packageNum)
                     {
                         m_packagesBuffer.Add(receivedPackage);
@@ -92,10 +90,7 @@ namespace Elektronik.Online
                     }
                     if (receivedPackage != null)
                     {
-                        lock (m_readPackages)
-                        {
-                            m_readPackages.Enqueue(receivedPackage);
-                        }
+                        lock (m_readPackages) m_readPackages.Enqueue(receivedPackage);
                         m_packagesBuffer.Remove(receivedPackage);
                         ++m_packageNum;
                     }
@@ -105,9 +100,8 @@ namespace Elektronik.Online
                     m_stop = true;
                 }
             }
-            if (OnDisconnect != null)
-                OnDisconnect();
             Debug.Log("Disconnected or stopped");
+            OnDisconnect?.Invoke();
         }
 
         public bool Connect(IPAddress ip, int port)
@@ -128,9 +122,9 @@ namespace Elektronik.Online
             return true;
         }
 
-        public Package GetPackage()
+        public IPackage GetPackage()
         {
-            Package package = null;
+            IPackage package = null;
             lock (m_readPackages)
             {
                 if (m_readPackages.Count > 0)

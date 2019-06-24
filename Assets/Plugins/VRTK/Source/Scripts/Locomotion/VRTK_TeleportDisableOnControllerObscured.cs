@@ -1,8 +1,8 @@
 ﻿// Teleport Disable On Controller Obscured|Locomotion|20050
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Prevents teleportation when the controllers are obscured from line of sight of the HMD.

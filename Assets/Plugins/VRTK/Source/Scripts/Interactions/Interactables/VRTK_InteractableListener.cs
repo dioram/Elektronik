@@ -1,8 +1,8 @@
 ﻿// Interactable Listener|Interactables|35015
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// Provides a base that classes which require to subscribe to the interaction events of an Interactable Object can inherit from.

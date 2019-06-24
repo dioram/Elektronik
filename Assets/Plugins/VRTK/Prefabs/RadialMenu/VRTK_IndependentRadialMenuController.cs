@@ -1,9 +1,9 @@
 ﻿// Independent Radial Menu|Prefabs|0120
 namespace VRTK
 {
-    using UnityEngine;
-    using System.Collections.Generic;
     using System.Collections;
+    using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// Allows the RadialMenu to be anchored to any object, not just a controller.

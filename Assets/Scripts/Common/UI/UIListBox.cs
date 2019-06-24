@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,6 +19,9 @@ namespace Elektronik.Common.UI
         public delegate void SelectionChangedEventHandler(object sender, SelectionChangedEventArgs e);
         public event SelectionChangedEventHandler OnSelectionChanged;
 
+        public UIListBoxItem itemPrefab;
+        private ObjectPool m_poolOfItems;
+
         private ScrollRect m_scrollView;
         private List<UIListBoxItem> m_listOfItems;
 
@@ -28,21 +29,14 @@ namespace Elektronik.Common.UI
         {
             m_listOfItems = new List<UIListBoxItem>();
             m_scrollView = GetComponentInChildren<ScrollRect>();
+            m_poolOfItems = new ObjectPool(itemPrefab.gameObject);
         }
 
         public UIListBoxItem this[int idx] { get { return m_listOfItems[idx]; } }
 
-        public void AddRange(IEnumerable<UIListBoxItem> objects)
+        public UIListBoxItem Add()
         {
-            foreach (var obj in objects)
-            {
-                Add(obj);
-            }
-        }
-
-        public UIListBoxItem Add(UIListBoxItem item)
-        {
-            UIListBoxItem listViewItem = MF_AutoPool.Spawn(item.gameObject).GetComponent<UIListBoxItem>();
+            UIListBoxItem listViewItem = m_poolOfItems.Spawn().GetComponent<UIListBoxItem>();
             listViewItem.OnClick += SelectionChanged;
             listViewItem.transform.SetParent(m_scrollView.content);
             m_listOfItems.Add(listViewItem);
@@ -51,11 +45,11 @@ namespace Elektronik.Common.UI
 
         private void SelectionChanged(object sender, EventArgs e)
         {
-            Debug.AssertFormat(sender is UIListBoxItem, "Sender must be {0}, but found {1}", typeof(UIListBoxItem), sender.GetType());
+            Debug.Assert(sender is UIListBoxItem, $"Sender must be {typeof(UIListBoxItem)}, but found {sender.GetType()}");
             int index = m_listOfItems.FindIndex(current => current == (UIListBoxItem)sender);
             Debug.Assert(index != -1, "UIListView wasn't found");
             SelectionChangedEventArgs selectionChangedEventArgs = new SelectionChangedEventArgs(index);
-            if (OnSelectionChanged != null) OnSelectionChanged(this, selectionChangedEventArgs);
+            OnSelectionChanged?.Invoke(this, selectionChangedEventArgs);
         }
 
         public void Remove(int idx)
@@ -63,7 +57,7 @@ namespace Elektronik.Common.UI
             UIListBoxItem listViewItem = m_listOfItems[idx];
             m_listOfItems.RemoveAt(idx);
             listViewItem.transform.SetParent(null);
-            MF_AutoPool.Despawn(listViewItem.gameObject);
+            m_poolOfItems.Despawn(listViewItem.gameObject);
         }
 
         public void Remove(GameObject listViewItem)
@@ -77,7 +71,7 @@ namespace Elektronik.Common.UI
             foreach (var item in m_listOfItems)
             {
                 item.transform.SetParent(null);
-                MF_AutoPool.Despawn(item.gameObject);
+                m_poolOfItems.Despawn(item.gameObject);
             }
             m_listOfItems.Clear();
         }

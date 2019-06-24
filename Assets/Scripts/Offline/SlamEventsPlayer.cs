@@ -23,7 +23,7 @@ namespace Elektronik.Offline
             StartCoroutine(WaitForManagerLengthParameter());
         }
 
-        IEnumerator WaitForManagerLengthParameter()
+        private IEnumerator WaitForManagerLengthParameter()
         {
             while (!eventsManager.ReadyToPlay)
             {
@@ -38,7 +38,7 @@ namespace Elektronik.Offline
 
         private void UpdateTime()
         {
-            Package currentEvent = eventsManager.GetCurrentEvent();
+            IPackage currentEvent = eventsManager.GetCurrentEvent();
             if (currentEvent != null && currentEvent.Timestamp != -1)
             {
                 timelineLabel.text = TimeSpan.FromMilliseconds(currentEvent.Timestamp).ToString(@"mm\:ss\.fff");
@@ -53,19 +53,16 @@ namespace Elektronik.Offline
                 if (m_play)
                 {
                     m_play = eventsManager.Next();
-                    eventsManager.UpdateEventInfo();
                     UpdateTime();
                 }
                 if (Input.GetKeyDown(KeyCode.LeftBracket))
                 {
                     PrevKey();
-                    eventsManager.UpdateEventInfo();
                     UpdateTime();
                 }
                 if (Input.GetKeyDown(KeyCode.RightBracket))
                 {
                     NextKey();
-                    eventsManager.UpdateEventInfo();
                     UpdateTime();
                 }
             }
@@ -88,6 +85,7 @@ namespace Elektronik.Offline
         {
             m_play = false;
             eventsManager.Clear();
+            UpdateTime();
         }
 
         public void PrevKey()
@@ -106,7 +104,6 @@ namespace Elektronik.Offline
         {
             eventsManager.SetPosition((int)Math.Floor(i), () =>
             {
-                eventsManager.UpdateEventInfo();
                 UpdateTime();
             });
         }

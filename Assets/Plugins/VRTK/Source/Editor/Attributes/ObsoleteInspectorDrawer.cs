@@ -1,8 +1,8 @@
 ﻿namespace VRTK
 {
-    using UnityEngine;
-    using UnityEditor;
     using System;
+    using UnityEditor;
+    using UnityEngine;
 
     [CustomPropertyDrawer(typeof(ObsoleteInspectorAttribute))]
     class ObsoleteInspectorDrawer : PropertyDrawer

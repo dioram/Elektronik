@@ -1,7 +1,7 @@
 ﻿namespace VRTK
 {
-    using UnityEditor;
     using System;
+    using UnityEditor;
 
     [CustomEditor(typeof(VRTK_PolicyList))]
     public class VRTK_PolicyListEditor : Editor

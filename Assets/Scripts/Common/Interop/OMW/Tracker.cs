@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Elektronik.Common.Interop.OMW
 {
-    using UnityPose = UnityEngine.Pose;
     using UnityMatrix4x4 = UnityEngine.Matrix4x4;
-    using UnityVector3 = UnityEngine.Vector3;
+    using UnityPose = UnityEngine.Pose;
     using UnityQuaternion = UnityEngine.Quaternion;
+    using UnityVector3 = UnityEngine.Vector3;
 
     public class Tracker
     {

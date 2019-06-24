@@ -1,10 +1,10 @@
 ﻿// Object Appearance|Interactions|30090
 namespace VRTK
 {
-    using UnityEngine;
+    using Highlighters;
     using System.Collections;
     using System.Collections.Generic;
-    using Highlighters;
+    using UnityEngine;
 
     /// <summary>
     /// A collection of static methods for calling controlling the appearance of GameObjects such as opacity, render state and highlighter state.

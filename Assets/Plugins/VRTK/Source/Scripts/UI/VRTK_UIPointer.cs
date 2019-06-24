@@ -1,9 +1,9 @@
 ﻿// UI Pointer|UI|80020
 namespace VRTK
 {
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.EventSystems;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Event Payload

@@ -1,9 +1,9 @@
 ﻿namespace VRTK
 {
-    using UnityEngine;
-    using UnityEditor;
-    using System.Globalization;
     using Supyrb;
+    using System.Globalization;
+    using UnityEditor;
+    using UnityEngine;
 
     [CustomPropertyDrawer(typeof(MinMaxRangeAttribute))]
     class MinMaxRangeDrawer : PropertyDrawer

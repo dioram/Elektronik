@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using Elektronik.Common;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using UnityEngine;
 
 namespace Elektronik.Online
@@ -17,7 +15,7 @@ namespace Elektronik.Online
 
         void Awake()
         {
-            m_ep = new IPEndPoint(OnlineModeSettings.Current.VRAddress, OnlineModeSettings.Current.VRPort);
+            m_ep = new IPEndPoint(SettingsBag.Current[SettingName.IPAddress].As<IPAddress>(), SettingsBag.Current[SettingName.Port].As<int>());
             m_client = new UdpClient(m_ep);
         }
 

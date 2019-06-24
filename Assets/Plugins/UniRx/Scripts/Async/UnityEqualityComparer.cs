@@ -100,7 +100,7 @@ namespace UniRx
             return null;
         }
 
-        #if !UniRxLibrary
+#if !UniRxLibrary
 
         sealed class Vector2EqualityComparer : IEqualityComparer<Vector2>
         {

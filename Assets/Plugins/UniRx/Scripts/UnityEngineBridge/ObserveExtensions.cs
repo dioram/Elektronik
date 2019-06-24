@@ -219,7 +219,7 @@ namespace UniRx
                 yield break;
             }
 
-            STANDARD_LOOP:
+        STANDARD_LOOP:
             while (!cancellationToken.IsCancellationRequested)
             {
                 if (unityObject != null)

@@ -4,78 +4,78 @@
 //
 //=============================================================================
 
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections;
 
 namespace Valve.VR.InteractionSystem
 {
-	//-------------------------------------------------------------------------
-	public class ArcheryTarget : MonoBehaviour
-	{
-		public UnityEvent onTakeDamage;
+    //-------------------------------------------------------------------------
+    public class ArcheryTarget : MonoBehaviour
+    {
+        public UnityEvent onTakeDamage;
 
-		public bool onceOnly = false;
-		public Transform targetCenter;
+        public bool onceOnly = false;
+        public Transform targetCenter;
 
-		public Transform baseTransform;
-		public Transform fallenDownTransform;
-		public float fallTime = 0.5f;
+        public Transform baseTransform;
+        public Transform fallenDownTransform;
+        public float fallTime = 0.5f;
 
-		const float targetRadius = 0.25f;
+        const float targetRadius = 0.25f;
 
-		private bool targetEnabled = true;
-
-
-		//-------------------------------------------------
-		private void ApplyDamage()
-		{
-			OnDamageTaken();
-		}
+        private bool targetEnabled = true;
 
 
-		//-------------------------------------------------
-		private void FireExposure()
-		{
-			OnDamageTaken();
-		}
+        //-------------------------------------------------
+        private void ApplyDamage()
+        {
+            OnDamageTaken();
+        }
 
 
-		//-------------------------------------------------
-		private void OnDamageTaken()
-		{
-			if ( targetEnabled )
-			{
-				onTakeDamage.Invoke();
-				StartCoroutine( this.FallDown() );
-
-				if ( onceOnly )
-				{
-					targetEnabled = false;
-				}
-			}
-		}
+        //-------------------------------------------------
+        private void FireExposure()
+        {
+            OnDamageTaken();
+        }
 
 
-		//-------------------------------------------------
-		private IEnumerator FallDown()
-		{
-			if ( baseTransform )
-			{
-				Quaternion startingRot = baseTransform.rotation;
+        //-------------------------------------------------
+        private void OnDamageTaken()
+        {
+            if (targetEnabled)
+            {
+                onTakeDamage.Invoke();
+                StartCoroutine(this.FallDown());
 
-				float startTime = Time.time;
-				float rotLerp = 0f;
+                if (onceOnly)
+                {
+                    targetEnabled = false;
+                }
+            }
+        }
 
-				while ( rotLerp < 1 )
-				{
-					rotLerp = Util.RemapNumberClamped( Time.time, startTime, startTime + fallTime, 0f, 1f );
-					baseTransform.rotation = Quaternion.Lerp( startingRot, fallenDownTransform.rotation, rotLerp );
-					yield return null;
-				}
-			}
 
-			yield return null;
-		}
-	}
+        //-------------------------------------------------
+        private IEnumerator FallDown()
+        {
+            if (baseTransform)
+            {
+                Quaternion startingRot = baseTransform.rotation;
+
+                float startTime = Time.time;
+                float rotLerp = 0f;
+
+                while (rotLerp < 1)
+                {
+                    rotLerp = Util.RemapNumberClamped(Time.time, startTime, startTime + fallTime, 0f, 1f);
+                    baseTransform.rotation = Quaternion.Lerp(startingRot, fallenDownTransform.rotation, rotLerp);
+                    yield return null;
+                }
+            }
+
+            yield return null;
+        }
+    }
 }

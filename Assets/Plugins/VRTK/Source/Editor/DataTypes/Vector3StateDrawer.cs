@@ -1,7 +1,7 @@
 ﻿namespace VRTK
 {
-    using UnityEngine;
     using UnityEditor;
+    using UnityEngine;
 
     [CustomPropertyDrawer(typeof(Vector3State))]
     public class Vector3StateDrawer : PropertyDrawer

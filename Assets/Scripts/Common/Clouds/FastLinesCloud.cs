@@ -10,11 +10,13 @@ namespace Elektronik.Common.Clouds
         public float scale = 1;
 
         public LinesMeshObject meshObjectPrefab;
+        private ObjectPool m_meshesPool;
         private Dictionary<int, LinesMeshObject> m_meshObjects;
 
         private void Awake()
         {
             m_meshObjects = new Dictionary<int, LinesMeshObject>();
+            m_meshesPool = new ObjectPool(meshObjectPrefab.gameObject);
         }
 
         private void CheckMesh(int srcLineIdx, out int meshIdx, out int lineIdx)
@@ -82,7 +84,7 @@ namespace Elektronik.Common.Clouds
             foreach (var meshObject in m_meshObjects)
             {
                 meshObject.Value.Clear();
-                MF_AutoPool.Despawn(meshObject.Value.gameObject);
+                m_meshesPool.Despawn(meshObject.Value.gameObject);
             }
             m_meshObjects.Clear();
         }
@@ -97,7 +99,7 @@ namespace Elektronik.Common.Clouds
 
         private void AddNewMesh(int idx)
         {
-            GameObject clone = MF_AutoPool.Spawn(meshObjectPrefab.gameObject);
+            GameObject clone = m_meshesPool.Spawn();
             LinesMeshObject newMesh = clone.GetComponent<LinesMeshObject>();
             m_meshObjects.Add(idx, newMesh);
         }
@@ -105,7 +107,10 @@ namespace Elektronik.Common.Clouds
         public void SetActive(bool value)
         {
             meshObjectPrefab.gameObject.SetActive(value);
-            MF_AutoPool.ForEach(meshObjectPrefab.gameObject, obj => obj.SetActive(value));
+            foreach (var val in m_meshObjects.Values)
+            {
+                val.gameObject.SetActive(value);
+            }
         }
     }
 }

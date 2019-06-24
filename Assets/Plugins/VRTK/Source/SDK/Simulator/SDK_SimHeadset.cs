@@ -1,8 +1,8 @@
 ﻿// Simulator Headset|SDK_Simulator|002
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// The Sim Headset SDK script  provides dummy functions for the headset.

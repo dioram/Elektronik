@@ -1,7 +1,7 @@
 ﻿namespace VRTK
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     public static class VRTK_SDK_Bridge
     {

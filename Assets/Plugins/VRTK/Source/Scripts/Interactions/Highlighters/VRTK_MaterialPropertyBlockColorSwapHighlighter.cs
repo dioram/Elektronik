@@ -1,9 +1,9 @@
 ﻿// Material Property Block Colour Swap|Highlighters|40021
 namespace VRTK.Highlighters
 {
-    using UnityEngine;
     using System.Collections;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// Swaps the texture colour on the Renderers material for the given highlight colour using property blocks.

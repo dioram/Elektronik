@@ -1,8 +1,8 @@
 ﻿// Wheel|Controls3D|100062
 namespace VRTK
 {
-    using UnityEngine;
     using GrabAttachMechanics;
+    using UnityEngine;
 
     /// <summary>
     /// Attaching the script to a game object will allow the user to interact with it as if it were a spinnable wheel.

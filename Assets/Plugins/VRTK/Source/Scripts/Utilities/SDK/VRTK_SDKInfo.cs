@@ -1,10 +1,10 @@
 ﻿// SDK Info|Utilities|90040
 namespace VRTK
 {
-    using UnityEngine;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEngine;
 
     /// <summary>
     /// Holds all the info necessary to describe an SDK.

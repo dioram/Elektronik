@@ -1,8 +1,6 @@
 ﻿// WindowsMR Controller|SDK_WindowsMR|004
 namespace VRTK
 {
-    using UnityEngine;
-    using System.Collections.Generic;
 #if VRTK_DEFINE_SDK_WINDOWSMR && UNITY_2017_2_OR_NEWER
     using UnityEngine.XR.WSA.Input;
 #endif

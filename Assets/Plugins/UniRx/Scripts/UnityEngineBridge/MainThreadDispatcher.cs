@@ -4,9 +4,7 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using UniRx.InternalUtil;
 using UnityEngine;
 
@@ -157,7 +155,7 @@ namespace UniRx
                     }
 #endif
 
-                    ENQUEUE:
+                ENQUEUE:
                     editorQueueWorker.Enqueue(_ => ConsumeEnumerator(routine), null); // next update
                 }
             }

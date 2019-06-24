@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Elektronik.Common.Clouds.Meshes
@@ -12,16 +11,18 @@ namespace Elektronik.Common.Clouds.Meshes
         private const int INDICES_PER_THETRAHEDRON = 12;
         private const int MAX_VERTICES_COUNT = 64992;
         private const int MAX_THETRAHEDRONS_COUNT = MAX_VERTICES_COUNT / INDICES_PER_THETRAHEDRON;
-        
+
         public float sideSize = .001f;
         public bool needOrientation = false;
 
-        MeshFilter m_filter;
-        Mesh m_mesh;
+        private bool m_needRepaint = false;
 
-        int[] m_indices;
-        Vector3[] m_vertices;
-        Color[] m_colors;
+        private MeshFilter m_filter;
+        private Mesh m_mesh;
+
+        private int[] m_indices;
+        private Vector3[] m_vertices;
+        private Color[] m_colors;
 
         public int MaxPointsCount { get { return MAX_THETRAHEDRONS_COUNT; } }
 
@@ -32,7 +33,7 @@ namespace Elektronik.Common.Clouds.Meshes
             {
                 m_indices[i] = i;
             }
-            
+
             m_vertices = new Vector3[MAX_VERTICES_COUNT];
             m_colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
             m_filter = GetComponent<MeshFilter>();
@@ -83,7 +84,8 @@ namespace Elektronik.Common.Clouds.Meshes
 
         public void Set(int idx, Color color)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, $"Wrong idx ({idx})");
+            m_needRepaint = true;
             int init = needOrientation ? 3 : 0;
             for (int i = init; i < INDICES_PER_THETRAHEDRON; ++i)
             {
@@ -93,7 +95,8 @@ namespace Elektronik.Common.Clouds.Meshes
 
         public void Set(int idx, Matrix4x4 offset)
         {
-            Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
+            Debug.Assert(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, $"Wrong idx ({idx})");
+            m_needRepaint = true;
             float halfHeight = 0.86603f * sideSize / 2;
             float halfSide = sideSize / 2f;
             Vector3 toCenter = new Vector3(-halfSide, -halfHeight, -halfHeight);
@@ -130,10 +133,14 @@ namespace Elektronik.Common.Clouds.Meshes
 
         public void Repaint()
         {
-            m_mesh.vertices = m_vertices;
-            m_mesh.colors = m_colors;
-            m_mesh.RecalculateNormals();
-            m_mesh.RecalculateBounds();
+            if (m_needRepaint)
+            {
+                m_mesh.vertices = m_vertices;
+                m_mesh.colors = m_colors;
+                m_mesh.RecalculateNormals();
+                m_mesh.RecalculateBounds();
+            }
+            m_needRepaint = false;
         }
 
         public void GetAll(out Vector3[] tetrahedronsCGs, out Color[] colors)

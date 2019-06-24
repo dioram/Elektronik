@@ -5,10 +5,10 @@
 
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Collections.Generic;
-using System;
 using UniRx.InternalUtil;
 
 #pragma warning disable 0659

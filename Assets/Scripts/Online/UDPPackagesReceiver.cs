@@ -1,11 +1,9 @@
 ﻿using Elektronik.Common.Data;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using UniRx;
 using UnityEngine;
 
@@ -15,29 +13,29 @@ namespace Elektronik.Online
     public class UDPPackagesReceiver
     {
         private uint m_packageNum = 0;
-        SortedList<uint, Package> m_packagesBuffer;
+        SortedList<uint, SlamPackage> m_packagesBuffer;
         private UdpClient m_network;
         IPEndPoint endPoint;
 
         public UDPPackagesReceiver(IPAddress ip, int port)
         {
-            m_packagesBuffer = new SortedList<uint, Package>();
+            m_packagesBuffer = new SortedList<uint, SlamPackage>();
             endPoint = new IPEndPoint(ip, port);
             m_network = new UdpClient(endPoint);
         }
 
-        public Package GetPackage()
+        public SlamPackage GetPackage()
         {
             int countOfBytes = -1;
-            
-            Package receivedPackage = null;
+
+            SlamPackage receivedPackage = null;
 
             Debug.LogFormat("[PackagesReceiver.GetPackage] Buffer size {0}", m_packagesBuffer.Count);
 
             Debug.LogFormat("[PackagesReceiver.GetPackage] Buffer check");
             if (m_packagesBuffer.Count > 0 && m_packagesBuffer.First().Key == m_packageNum)
             {
-                
+
                 receivedPackage = m_packagesBuffer[m_packageNum];
                 Debug.LogFormat("[PackagesReceiver.GetPackage] Buffer removing");
                 m_packagesBuffer.Remove(m_packageNum);
@@ -46,7 +44,7 @@ namespace Elektronik.Online
                 m_packageNum += 1;
                 return receivedPackage;
             }
-            
+
             Debug.LogFormat("[PackagesReceiver.GetPackage] Socket check");
             if (m_network.Available > 8)
             {
@@ -64,7 +62,7 @@ namespace Elektronik.Online
                     byte[] rawPackage = new byte[countOfBytes];
                     Array.Copy(datagram, sizeof(int) * 2, rawPackage, 0, countOfBytes);
                     Debug.LogFormat("[PackagesReceiver.GetPackage] Parse");
-                    receivedPackage = Package.Parse(rawPackage);
+                    SlamPackage.Parse(rawPackage, 0, out receivedPackage);
                     Debug.LogFormat("[PackagesReceiver.GetPackage] Parsed");
                 }
 

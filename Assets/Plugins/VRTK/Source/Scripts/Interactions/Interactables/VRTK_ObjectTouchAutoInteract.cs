@@ -1,8 +1,8 @@
 ﻿// Object Touch Auto Interact|Interactables|35050
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// Allows for Interact Grab or Interact Use interactions to automatically happen upon touching an Interactable Object.

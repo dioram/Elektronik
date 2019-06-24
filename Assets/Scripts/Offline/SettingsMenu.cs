@@ -1,15 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
-using SimpleFileBrowser;
-using UnityEditor;
 using System.Linq;
 using Elektronik.Common;
 using System.IO;
-using System;
-using System.Threading;
 using Elektronik.Common.UI;
 
 namespace Elektronik.Offline
@@ -18,12 +12,16 @@ namespace Elektronik.Offline
     {
         const string SETTINGS_FILE = @"offline\settings.dat";
 
-        public RecentFileListBoxItem recentFilePrefab;
         public UIListBox lbRecentFiles;
         public GameObject goFileInput;
         public Button buCancel;
         public Button buLoad;
-        public OfflineSettingsStore store;
+        public SettingsBagStore store;
+
+        void Awake()
+        {
+            SettingsBag.Mode = Mode.Offline;
+        }
 
         // Use this for initialization
         void Start()
@@ -46,35 +44,34 @@ namespace Elektronik.Offline
             var files = store.Recent;
             foreach (var recentFile in store.Recent)
             {
-                recentFilePrefab.Path = recentFile.Path;
-                recentFilePrefab.DateTime = recentFile.Time;
-                lbRecentFiles.Add(recentFilePrefab);
+                var recentFileItem = lbRecentFiles.Add() as RecentFileListBoxItem;
+                recentFileItem.Path = recentFile[SettingName.Path].As<string>();
+                recentFileItem.DateTime = recentFile.ModificationTime;
             }
             if (store.Recent.Count > 0)
             {
-                FileModeSettings.Current = store.Recent.First();
+                SettingsBag.Current = store.Recent.First();
             }
             else
             {
-                FileModeSettings.Current = new FileModeSettings();
+                SettingsBag.Current = new SettingsBag();
             }
             lbRecentFiles.OnSelectionChanged += RecentFileChanged;
         }
 
         private void RecentFileChanged(object sender, UIListBox.SelectionChangedEventArgs e)
         {
-            FileModeSettings.Current = store.Recent[e.index];
+            SettingsBag.Current = store.Recent[e.index];
             var browseField = goFileInput.GetComponentInChildren<InputField>();
-            browseField.text = FileModeSettings.Current.Path;
+            browseField.text = SettingsBag.Current[SettingName.Path].As<string>();
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
-            scalingField.text = FileModeSettings.Current.Scaling.ToString();
-            
+            scalingField.text = SettingsBag.Current[SettingName.Scale].As<float>().ToString();
         }
 
         void AttachBehavior2Cancel()
         {
             buCancel.OnClickAsObservable()
-                .Do(_ => FileModeSettings.Current = null)
+                .Do(_ => SettingsBag.Current = null)
                 .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Main menu", UnityEngine.SceneManagement.LoadSceneMode.Single))
                 .Subscribe();
         }
@@ -84,12 +81,18 @@ namespace Elektronik.Offline
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
             var pathField = GameObject.Find("Path field").GetComponent<InputField>();
             buLoad.OnClickAsObservable()
-                .Select(_ => pathField.text == FileModeSettings.Current.Path ? FileModeSettings.Current : new FileModeSettings())
-                .Do(fms => FileModeSettings.Current = fms)
-                .Do(_ => FileModeSettings.Current.Scaling = scalingField.text.Length == 0 ? 1.0f : float.Parse(scalingField.text))
-                .Do(_ => FileModeSettings.Current.Path = pathField.text)
-                .Do(_ => FileModeSettings.Current.Time = DateTime.Now)
-                .Do(_ => store.Add(FileModeSettings.Current))
+                .Select(_ =>
+                {
+                    if (SettingsBag.Current.TryGetValue(SettingName.Path, out Setting pathSetting))
+                    {
+                        return pathField.text == SettingsBag.Current[SettingName.Path].As<string>() ? SettingsBag.Current : new SettingsBag();
+                    }
+                    return new SettingsBag();
+                })
+                .Do(fms => SettingsBag.Current = fms)
+                .Do(_ => SettingsBag.Current.Change(SettingName.Scale, scalingField.text.Length == 0 ? 1.0f : float.Parse(scalingField.text)))
+                .Do(_ => SettingsBag.Current.Change(SettingName.Path, pathField.text))
+                .Do(_ => store.Add(SettingsBag.Current))
                 .Do(_ => store.Serialize(SETTINGS_FILE))
                 .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Empty", UnityEngine.SceneManagement.LoadSceneMode.Single))
                 .Subscribe();

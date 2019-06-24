@@ -1,15 +1,13 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using System;
+using UnityEngine;
 
 namespace Elektronik.Common
 {
-    public class SettingsStore<T> : MonoBehaviour 
+    public class SettingsStore<T> : MonoBehaviour
         where T : IComparable<T>
     {
         public int maxCountOfRecentFiles = 20;
@@ -53,7 +51,7 @@ namespace Elektronik.Common
             FileInfo fi = new FileInfo(pathToAppData);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
-            Debug.LogFormat("Serialization to:{0}{1}", Environment.NewLine, pathToAppData);
+            Debug.Log($"Serialization to:{Environment.NewLine}{pathToAppData}");
             IFormatter formatter = new BinaryFormatter();
             using (var file = File.Open(pathToAppData, FileMode.OpenOrCreate))
             {

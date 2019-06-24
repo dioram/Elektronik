@@ -155,7 +155,7 @@ namespace UniRx.Async
                     l.Add(action);
                 }
 
-                TRYINVOKE:
+            TRYINVOKE:
                 if (state != Pending)
                 {
                     TryInvokeContinuation();
@@ -326,7 +326,7 @@ namespace UniRx.Async
                     l.Add(action);
                 }
 
-                TRYINVOKE:
+            TRYINVOKE:
                 if (state != Pending)
                 {
                     TryInvokeContinuation();

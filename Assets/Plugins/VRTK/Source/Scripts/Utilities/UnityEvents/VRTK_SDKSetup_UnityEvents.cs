@@ -1,7 +1,7 @@
 ﻿namespace VRTK.UnityEventHelper
 {
-    using UnityEngine.Events;
     using System;
+    using UnityEngine.Events;
 
     public sealed class VRTK_SDKSetup_UnityEvents : VRTK_UnityEvents<VRTK_SDKSetup>
     {

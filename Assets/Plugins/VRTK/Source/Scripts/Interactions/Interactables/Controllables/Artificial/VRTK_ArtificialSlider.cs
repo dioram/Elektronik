@@ -1,8 +1,8 @@
 ﻿// Artificial Slider|ArtificialControllables|120030
 namespace VRTK.Controllables.ArtificialBased
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
     using VRTK.GrabAttachMechanics;
     using VRTK.SecondaryControllerGrabActions;
 

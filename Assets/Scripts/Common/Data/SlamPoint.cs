@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Elektronik.Common.Data
 {
@@ -13,5 +12,10 @@ namespace Elektronik.Common.Data
         public bool isRemoved;
         public bool isNew;
         public string message;
+
+        public override string ToString()
+        {
+            return message ?? "SlamPoint";
+        }
     }
 }

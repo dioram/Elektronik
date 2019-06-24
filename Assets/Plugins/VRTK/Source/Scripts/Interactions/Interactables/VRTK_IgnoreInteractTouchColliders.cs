@@ -1,10 +1,10 @@
 ﻿// Ignore Interact Touch Colliders|Interactables|35060
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEngine;
 
     /// <summary>
     /// Ignores the collisions between the given Interact Touch colliders and the colliders on the GameObject this script is attached to.

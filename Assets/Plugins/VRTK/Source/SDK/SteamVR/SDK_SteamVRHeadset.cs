@@ -2,8 +2,8 @@
 namespace VRTK
 {
 #if VRTK_DEFINE_SDK_STEAMVR
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
     using Valve.VR;
 #endif
 

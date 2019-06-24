@@ -1,8 +1,8 @@
 ﻿// Artificial Pusher|ArtificialControllables|120010
 namespace VRTK.Controllables.ArtificialBased
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     /// <summary>
     /// An artificially simulated pushable pusher.

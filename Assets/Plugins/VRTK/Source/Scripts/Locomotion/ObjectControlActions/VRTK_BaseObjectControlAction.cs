@@ -39,7 +39,7 @@ namespace VRTK
         protected Transform controlledTransform;
         protected Transform playArea;
         protected VRTK_BodyPhysics internalBodyPhysics;
-        
+
         protected Vector3 playerHeadPositionBeforeRotation;
         protected Transform headsetTransform;
         protected bool validPlayerObject;
@@ -187,7 +187,7 @@ namespace VRTK
             float distance = Vector3.Distance(currentPosition, proposedPosition);
             return !givenBodyPhysics.SweepCollision(proposedDirection, distance);
         }
-        
+
         /// <summary>
         /// Since rotation scripts may rotate the game object '[CameraRig]' in order to rotate the player and the player's head does not always have the local position (0,0,0), the rotation will result in a position offset of player's head. The game object '[CameraRig]' will moved relativly to compensate that. Therefore it will save the player's head position in this method. 
         /// Call 'CheckForPlayerAfterRotation()' to correct the player's head position offset after rotation.

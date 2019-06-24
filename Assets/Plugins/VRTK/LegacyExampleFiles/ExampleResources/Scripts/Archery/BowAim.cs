@@ -1,7 +1,7 @@
 ﻿namespace VRTK.Examples.Archery
 {
-    using UnityEngine;
     using System.Collections;
+    using UnityEngine;
 
     public class BowAim : MonoBehaviour
     {

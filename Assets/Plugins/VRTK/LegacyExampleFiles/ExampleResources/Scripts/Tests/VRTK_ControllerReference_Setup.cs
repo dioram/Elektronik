@@ -1,7 +1,7 @@
 ﻿namespace VRTK.Examples.Tests
 {
-    using UnityEngine;
     using System.Collections.Generic;
+    using UnityEngine;
 
     public class VRTK_ControllerReference_Setup : VRTK_BaseTest
     {
@@ -91,7 +91,8 @@
             Assert("testReference.model == modelController", testReference.model == modelController, "The reference model [" + testReference.model + "] does not match the model [" + modelController + "]");
             Assert("testReference.hand == actualControllerHand", testReference.hand == actualControllerHand, "The reference hand [" + testReference.hand + "] does not match the hand [" + actualControllerHand + "]");
 
-            foreach(SDK_BaseController.ControllerHand otherHand in GetOtherHands(actualControllerHand)) {
+            foreach (SDK_BaseController.ControllerHand otherHand in GetOtherHands(actualControllerHand))
+            {
                 Assert("testReference.hand == " + otherHand, testReference.hand != otherHand, "The reference hand [" + testReference.hand + "] should not match the hand [" + otherHand + "]");
             }
 

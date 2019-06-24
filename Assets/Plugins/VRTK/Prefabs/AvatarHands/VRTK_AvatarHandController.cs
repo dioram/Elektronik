@@ -1,9 +1,9 @@
 ﻿// Avatar Hands|Prefabs|0150
 namespace VRTK
 {
-    using UnityEngine;
     using System;
     using System.Collections;
+    using UnityEngine;
 
     [Serializable]
     public sealed class AxisOverrides

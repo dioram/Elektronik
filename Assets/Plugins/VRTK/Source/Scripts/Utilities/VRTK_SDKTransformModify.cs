@@ -1,10 +1,10 @@
 ﻿// SDK Transform Modify|Utilities|90150
 namespace VRTK
 {
-    using UnityEngine;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEngine;
 
     [Serializable]
     public class VRTK_SDKTransformModifiers

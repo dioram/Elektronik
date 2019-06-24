@@ -3,8 +3,8 @@
 #if (NET_4_6 || NET_STANDARD_2_0)
 
 using System;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace UniRx
 {

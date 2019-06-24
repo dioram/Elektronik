@@ -1,9 +1,9 @@
 ﻿// Body Physics|Presence|70060
 namespace VRTK
 {
-    using UnityEngine;
     using System.Collections;
     using System.Collections.Generic;
+    using UnityEngine;
 
     /// <summary>
     /// Event Payload

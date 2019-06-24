@@ -2,8 +2,8 @@
 {
     using UnityEngine;
     using VRTK.Controllables;
-    using VRTK.Controllables.PhysicsBased;
     using VRTK.Controllables.ArtificialBased;
+    using VRTK.Controllables.PhysicsBased;
 
     public class ButtonReactor : MonoBehaviour
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Elektronik.Common.Extensions;
+using System;
 using System.Text;
 using UnityEngine;
 
@@ -42,21 +43,18 @@ namespace Elektronik.Common.Data
                 ActionType type = (ActionType)actions[offset++];
                 if (type == ActionType.Create || type == ActionType.Move)
                 {
-                    point.position = SlamBitConverter.ToVector3(actions, offset);
-                    offset += sizeof(float) * 3;
+                    point.position = BitConverterEx.ToVector3(actions, offset, ref offset);
                     wasMoved = true;
                 }
                 if (type == ActionType.Create)
                 {
                     point.isNew = true;
-                    point.defaultColor = SlamBitConverter.ToRGBColor(actions, offset);
-                    offset += sizeof(byte) * 3;
+                    point.defaultColor = BitConverterEx.ToRGBColor32(actions, offset, ref offset);
                     point.color = Color.blue;
                 }
                 if (type == ActionType.Tint)
                 {
-                    point.color = SlamBitConverter.ToRGBColor(actions, offset);
-                    offset += sizeof(byte) * 3;
+                    point.color = BitConverterEx.ToRGBColor32(actions, offset, ref offset);
                     point.justColored = !wasMoved;
                 }
                 if (type == ActionType.Remove)
@@ -67,18 +65,12 @@ namespace Elektronik.Common.Data
                 if (type == ActionType.Fuse)
                 {
                     point.color = Color.magenta;
-                    int fuseWithId = BitConverter.ToInt32(actions, offset);
-                    offset += sizeof(int);
-                    Color color1 = SlamBitConverter.ToRGBColor(actions, offset);
-                    offset += sizeof(byte) * 3;
-                    Color color2 = SlamBitConverter.ToRGBColor(actions, offset);
-                    offset += sizeof(byte) * 3;
                     SlamLine fuseLine = new SlamLine()
                     {
                         pointId1 = point.id,
-                        pointId2 = fuseWithId,
-                        color1 = color1,
-                        color2 = color2,
+                        pointId2 = BitConverterEx.ToInt32(actions, offset, ref offset),
+                        color1 = BitConverterEx.ToRGBColor32(actions, offset, ref offset),
+                        color2 = BitConverterEx.ToRGBColor32(actions, offset, ref offset),
                         isRemoved = true,
                     };
                     if (fuseLine.pointId1 != -1 && fuseLine.pointId2 != -1)
@@ -86,8 +78,7 @@ namespace Elektronik.Common.Data
                 }
                 if (type == ActionType.Message)
                 {
-                    int countOfMsgBytes = BitConverter.ToInt32(actions, offset);
-                    offset += sizeof(int);
+                    int countOfMsgBytes = BitConverterEx.ToInt32(actions, offset, ref offset);
                     if (countOfMsgBytes >= MAX_MESSAGE_LENGTH_IN_BYTES)
                         throw new Exception();
                     point.message = countOfMsgBytes > 0 ? Encoding.ASCII.GetString(actions, offset, countOfMsgBytes) : "";
@@ -95,8 +86,5 @@ namespace Elektronik.Common.Data
                 }
             }
         }
-
-        
-
     }
 }
