@@ -115,7 +115,9 @@ namespace Elektronik.Common.Clouds
 
         public void SetActive(bool value)
         {
-            meshObjectPrefab.SetActive(value);
+            m_meshObjectPool.OnObjectSpawn += (o, s) => o.SetActive(value);
+            foreach (var mesh in m_meshObjectPool.ActiveObject)
+                mesh.SetActive(value);
         }
     }
 }

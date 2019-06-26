@@ -11,20 +11,7 @@ namespace Elektronik.Online
 {
     public class SlamPackagePresenter : RepaintablePackagePresenter
     {
-        public GameObject observationPrefab;
-        public FastLinesCloud observationLines;
-        private ICloudObjectsContainer<SlamObservation> m_observationsContainer;
-        public FastLinesCloud pointCloudLines;
-        private ICloudObjectsContainer<SlamLine> m_linesContainer;
-        public GameObject pointsCloud;
-        private ICloudObjectsContainer<SlamPoint> m_pointsContainer;
-
-        private void Awake()
-        {
-            m_observationsContainer = new SlamObservationsContainer(observationPrefab, new SlamLinesContainer(observationLines));
-            m_linesContainer = new SlamLinesContainer(pointCloudLines);
-            m_pointsContainer = new SlamPointsContainer(pointsCloud.GetComponent<IFastPointsCloud>());
-        }
+        public Map map;
 
         public override void Present(IPackage package)
         {
@@ -40,18 +27,18 @@ namespace Elektronik.Online
 
         private void UpdateMaps(SlamPackage pkg)
         {
-            lock (m_pointsContainer)
-                UpdateMap(pkg.Points, p => p.isNew, p => p.isRemoved, p => p.justColored, p => p.id != -1, m_pointsContainer);
-            lock (m_linesContainer)
+            lock (map.PointsContainer)
+                UpdateMap(pkg.Points, p => p.isNew, p => p.isRemoved, p => p.justColored, p => p.id != -1, map.PointsContainer);
+            lock (map.LinesContainer)
                 UpdateMap(
                       pkg.Lines,
                       /*isNew*/ _ => true, /*isRemoved*/ _ => false, /*justColored*/ _ => false, /*isValid*/ _ => true,
-                      m_linesContainer);
-            lock (m_observationsContainer)
+                      map.LinesContainer);
+            lock (map.ObservationsContainer)
                 UpdateMap(
                       pkg.Observations,
                       o => o.Point.isNew, o => o.Point.isRemoved, o => o.Point.justColored, o => o.Point.id != -1,
-                      m_observationsContainer);
+                      map.ObservationsContainer);
         }
         private void PostProcessMaps(SlamPackage pkg)
         {
@@ -61,21 +48,21 @@ namespace Elektronik.Online
                     .AsParallel()
                     .Where(p => p.id != -1)
                     .Where(p => !p.isRemoved)
-                    .Select(p => { var mp = m_pointsContainer[p]; mp.color = mp.defaultColor; return mp; })
+                    .Select(p => { var mp = map.PointsContainer[p]; mp.color = mp.defaultColor; return mp; })
                     .ToArray();
-                lock (m_pointsContainer)
+                lock (map.PointsContainer)
                     UpdateMap(
                       updatedPoints,
                       /*isNew*/ _ => false, /*isRemoved*/ _ => false, /*justColored*/ _ => true, /*isValid*/ p => p.id != -1,
-                      m_pointsContainer);
+                      map.PointsContainer);
             }
             if (pkg.Lines != null)
             {
-                lock (m_linesContainer)
+                lock (map.LinesContainer)
                     UpdateMap(
                       pkg.Lines,
                       /*isNew*/ _ => false, /*isRemoved*/ _ => true, /*justColored*/ _ => false, /*isValid*/ _ => true,
-                      m_linesContainer);
+                      map.LinesContainer);
             }
         }
 
@@ -108,16 +95,16 @@ namespace Elektronik.Online
 
         public override void Repaint()
         {
-            lock (m_pointsContainer) m_pointsContainer.Repaint();
-            lock (m_linesContainer) m_linesContainer.Repaint();
-            lock (m_observationsContainer) m_observationsContainer.Repaint();
+            lock (map.PointsContainer) map.PointsContainer.Repaint();
+            lock (map.LinesContainer) map.LinesContainer.Repaint();
+            lock (map.ObservationsContainer) map.ObservationsContainer.Repaint();
         }
 
         public override void Clear()
         {
-            lock (m_pointsContainer) m_pointsContainer.Clear();
-            lock (m_linesContainer) m_linesContainer.Clear();
-            lock (m_observationsContainer) m_observationsContainer.Clear();
+            lock (map.PointsContainer) map.PointsContainer.Clear();
+            lock (map.LinesContainer) map.LinesContainer.Clear();
+            lock (map.ObservationsContainer) map.ObservationsContainer.Clear();
         }
     }
 }

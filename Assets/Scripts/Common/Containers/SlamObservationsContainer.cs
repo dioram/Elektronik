@@ -30,7 +30,7 @@ namespace Elektronik.Common.Containers
         }
         private readonly List<Connection> m_connections;
 
-        private readonly ObjectPool m_observationsPool;
+        public ObjectPool ObservationsPool { get; private set; }
         private readonly ICloudObjectsContainer<SlamLine> m_lines;
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Elektronik.Common.Containers
         {
             m_nodes = new List<SlamObservation>();
             m_gameObjects = new Dictionary<int, GameObject>();
-            m_observationsPool = new ObjectPool(prefab);
+            ObservationsPool = new ObjectPool(prefab);
             m_lines = lines;
             m_connections = new List<Connection>();
         }
@@ -220,7 +220,7 @@ namespace Elektronik.Common.Containers
                 throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Add] Graph already contains observation with id {observation.Point.id}");
             int last = m_nodes.Count;
             m_nodes.Add(new SlamObservation(observation));
-            m_gameObjects[m_nodes[last].Point.id] = m_observationsPool.Spawn(observation.Point.position, observation.Orientation);
+            m_gameObjects[m_nodes[last].Point.id] = ObservationsPool.Spawn(observation.Point.position, observation.Orientation);
             UpdateConnectionsFor(m_nodes[last]);
             Debug.Log(
                 $"[SlamObservationsContainer.Add] Added observation with id {m_nodes[last].Point.id}; count of covisible nodes {m_nodes[last].CovisibleInfos.Count}");
@@ -263,7 +263,7 @@ namespace Elektronik.Common.Containers
         /// </summary>
         public void Clear()
         {
-            m_observationsPool.DespawnAllActiveObjects();
+            ObservationsPool.DespawnAllActiveObjects();
             m_lines.Clear();
             m_connections.Clear();
             m_nodes.Clear();
@@ -310,7 +310,7 @@ namespace Elektronik.Common.Containers
             Debug.Log(
                 $"[SlamObservationsContainer.Remove] Removing observation with id {id}; count of covisible nodes {node.CovisibleInfos.Count}");
             DisconnectFromAll(node);
-            m_observationsPool.Despawn(m_gameObjects[id]);
+            ObservationsPool.Despawn(m_gameObjects[id]);
             m_gameObjects.Remove(id);
             m_nodes.Remove(node);
         }

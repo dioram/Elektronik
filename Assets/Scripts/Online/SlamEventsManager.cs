@@ -53,6 +53,7 @@ namespace Elektronik.Online
                 m_mapUpdate.Dispose();
             if (m_mapRepaint != null)
                 m_mapRepaint.Dispose();
+            StopAllCoroutines();
         }
 
         private void SubscribeToIncome()

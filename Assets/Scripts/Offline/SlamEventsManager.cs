@@ -194,7 +194,7 @@ namespace Elektronik.Offline
                 {
                     pkgCommands = m_commander.GetCommands(m_packages[i]);
                 }
-                catch (InvalidSlamContainerOperationException e)
+                catch (Exception e)
                 {
                     Debug.LogWarning(e.Message);
                     break;

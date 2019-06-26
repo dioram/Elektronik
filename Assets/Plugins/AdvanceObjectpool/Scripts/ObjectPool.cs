@@ -17,7 +17,7 @@ public class ObjectPool
     /// <summary>
     /// A list over all the active object in this pool. - NOTE: You should NEVER destroy any object(s) instantiate/spawned with this object pool as this may cause errors.
     /// </summary>
-    private List<GameObject> ActiveObject { get; set; }
+    public List<GameObject> ActiveObject { get; private set; }
     /// <summary>
     /// A queue over all despawned objects.
     /// </summary>

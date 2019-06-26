@@ -106,6 +106,7 @@
     <Compile Include="Assets\Scripts\Common\Interop\OMW\Tracker.cs" />
     <Compile Include="Assets\Scripts\Common\KeyPressedEventInvoker.cs" />
     <Compile Include="Assets\Scripts\Common\MainMenuButtons.cs" />
+    <Compile Include="Assets\Scripts\Common\Map.cs" />
     <Compile Include="Assets\Scripts\Common\Mode.cs" />
     <Compile Include="Assets\Scripts\Common\ModeSelector.cs" />
     <Compile Include="Assets\Scripts\Common\ObjectStateConditionalEventInvoker.cs" />
@@ -140,7 +141,6 @@
     <Compile Include="Assets\Scripts\Common\XYZAxis.cs" />
     <Compile Include="Assets\Scripts\Offline\DataSource.cs" />
     <Compile Include="Assets\Scripts\Offline\EventLogger.cs" />
-    <Compile Include="Assets\Scripts\Offline\Map.cs" />
     <Compile Include="Assets\Scripts\Offline\ObjectLogger.cs" />
     <Compile Include="Assets\Scripts\Offline\RecentFileListBoxItem.cs" />
     <Compile Include="Assets\Scripts\Offline\Return2OfflineMenu.cs" />

@@ -148,6 +148,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2006035974}
+  - {fileID: 2100200591}
   - {fileID: 1885779070}
   - {fileID: 553730107}
   - {fileID: 2060962917}
@@ -423,7 +424,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d18ce208efd2b4548918b0a06b128d5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scale: 10
   commanders:
   - {fileID: 752695775}
   - {fileID: 748506907}
@@ -3416,7 +3416,7 @@ Transform:
   - {fileID: 821947985}
   - {fileID: 1140519773}
   m_Father: {fileID: 11294688}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &553730108
 MonoBehaviour:
@@ -4192,19 +4192,8 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2096468162}
-        m_MethodName: SetActive
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_MethodName: SetActive
+      - m_Target: {fileID: 2100200592}
+        m_MethodName: SetActiveObservationsGraph
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9455,11 +9444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19be056db0318bd4eb6dba3b3dd54adb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  observationPrefab: {fileID: 3038893354545110125, guid: 7a3fa4516cf7b3f4a8dcd5fa4783592f,
-    type: 3}
-  observationLines: {fileID: 2096468162}
-  pointCloudLines: {fileID: 289725688}
-  pointsCloud: {fileID: 1194370009}
+  map: {fileID: 0}
 --- !u!1 &1466220528
 GameObject:
   m_ObjectHideFlags: 0
@@ -10267,7 +10252,6 @@ Transform:
   m_Children:
   - {fileID: 1860791326}
   - {fileID: 776814863}
-  - {fileID: 2100200591}
   m_Father: {fileID: 2049829130}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11905,19 +11889,8 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1194370011}
-        m_MethodName: SetActive
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 19794141}
-        m_MethodName: SetActive
+      - m_Target: {fileID: 2100200592}
+        m_MethodName: SetActivePointCloud
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12381,7 +12354,7 @@ Transform:
   - {fileID: 1194370010}
   - {fileID: 19794140}
   m_Father: {fileID: 11294688}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1891367725
 GameObject:
@@ -13562,7 +13535,7 @@ Transform:
   - {fileID: 591181632}
   - {fileID: 1239571964}
   m_Father: {fileID: 11294688}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2063496417
 GameObject:
@@ -13963,12 +13936,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2100200590}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1561290877}
-  m_RootOrder: 2
+  m_Father: {fileID: 11294688}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2100200592
 MonoBehaviour:
