@@ -95,10 +95,6 @@ namespace Elektronik.Online
 
         public override void Repaint()
         {
-            Debug.Log(map == null);
-            Debug.Log(map.PointsContainer == null);
-            Debug.Log(map.LinesContainer == null);
-            Debug.Log(map.ObservationsContainer == null);
             lock (map.PointsContainer) map.PointsContainer.Repaint();
             lock (map.LinesContainer) map.LinesContainer.Repaint();
             lock (map.ObservationsContainer) map.ObservationsContainer.Repaint();
@@ -106,10 +102,6 @@ namespace Elektronik.Online
 
         public override void Clear()
         {
-            Debug.Log(map == null);
-            Debug.Log(map.PointsContainer == null);
-            Debug.Log(map.LinesContainer == null);
-            Debug.Log(map.ObservationsContainer == null);
             lock (map.PointsContainer) map.PointsContainer.Clear();
             lock (map.LinesContainer) map.LinesContainer.Clear();
             lock (map.ObservationsContainer) map.ObservationsContainer.Clear();
