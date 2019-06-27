@@ -1,6 +1,7 @@
 ﻿using Elektronik.Common.Clouds;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
+using Elektronik.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,9 +40,7 @@ namespace Elektronik.Common
         public void SetActiveObservationsGraph(bool value)
         {
             var obsGraphPool = m_observationsContainer.ObservationsPool;
-            obsGraphPool.OnObjectSpawn += (o, s) => o.SetActive(value);
-            foreach (var obs in obsGraphPool.ActiveObject)
-                obs.SetActive(value);
+            obsGraphPool.SetActive(value);
             graphConnectionLinesCloud.SetActive(value);
         }
     }

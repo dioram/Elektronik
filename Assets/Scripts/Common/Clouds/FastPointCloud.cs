@@ -1,4 +1,5 @@
 ﻿using Elektronik.Common.Clouds.Meshes;
+using Elektronik.Common.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -115,9 +116,7 @@ namespace Elektronik.Common.Clouds
 
         public void SetActive(bool value)
         {
-            m_meshObjectPool.OnObjectSpawn += (o, s) => o.SetActive(value);
-            foreach (var mesh in m_meshObjectPool.ActiveObject)
-                mesh.SetActive(value);
+            m_meshObjectPool.SetActive(value);
         }
     }
 }

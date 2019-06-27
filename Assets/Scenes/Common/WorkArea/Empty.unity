@@ -4192,7 +4192,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 842380027}
         m_MethodName: SetActiveObservationsGraph
         m_Mode: 0
         m_Arguments:
@@ -9648,6 +9648,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 289725687}
     m_Modifications:
+    - target: {fileID: 1013427539586658, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
+      propertyPath: m_Name
+      value: Lines mesh object
+      objectReference: {fileID: 0}
     - target: {fileID: 4534342212751386, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -9691,10 +9695,6 @@ PrefabInstance:
     - target: {fileID: 4534342212751386, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1013427539586658, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
-      propertyPath: m_Name
-      value: Lines mesh object
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
@@ -11937,7 +11937,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 842380027}
         m_MethodName: SetActivePointCloud
         m_Mode: 0
         m_Arguments:
@@ -12570,6 +12570,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2096468160}
     m_Modifications:
+    - target: {fileID: 1013427539586658, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
+      propertyPath: m_Name
+      value: Lines mesh object
+      objectReference: {fileID: 0}
     - target: {fileID: 4534342212751386, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -12613,10 +12617,6 @@ PrefabInstance:
     - target: {fileID: 4534342212751386, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1013427539586658, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
-      propertyPath: m_Name
-      value: Lines mesh object
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}

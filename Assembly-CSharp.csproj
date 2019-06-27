@@ -98,6 +98,7 @@
     <Compile Include="Assets\Scripts\Common\Extensions\BitConverterEx.cs" />
     <Compile Include="Assets\Scripts\Common\Extensions\ChainExtensions.cs" />
     <Compile Include="Assets\Scripts\Common\Extensions\LinkedListExtensions.cs" />
+    <Compile Include="Assets\Scripts\Common\Extensions\ObjectPoolExtensions.cs" />
     <Compile Include="Assets\Scripts\Common\FreeFlyCameraScript.cs" />
     <Compile Include="Assets\Scripts\Common\Helmet.cs" />
     <Compile Include="Assets\Scripts\Common\IChainable.cs" />
