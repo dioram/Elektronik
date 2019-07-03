@@ -11,7 +11,7 @@ namespace Elektronik.Online
 {
     public class SlamPackagePresenter : RepaintablePackagePresenter
     {
-        public Map map;
+        public SlamMap map;
 
         public override void Present(IPackage package)
         {

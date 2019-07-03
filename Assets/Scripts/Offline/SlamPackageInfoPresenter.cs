@@ -13,7 +13,7 @@ namespace Elektronik.Offline
     public class SlamPackageInfoPresenter : RepaintablePackagePresenter
     {
         public EventLogger eventsLogger;
-        public Map map;
+        public SlamMap map;
 
         private SlamPackage m_pkg2Present;
 

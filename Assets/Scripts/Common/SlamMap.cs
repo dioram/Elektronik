@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Elektronik.Common
 {
-    public class Map : MonoBehaviour
+    public class SlamMap : AMap
     {
         public GameObject observationPrefab;
         public FastPointCloud fastPointCloud;
@@ -42,6 +42,20 @@ namespace Elektronik.Common
             var obsGraphPool = m_observationsContainer.ObservationsPool;
             obsGraphPool.SetActive(value);
             graphConnectionLinesCloud.SetActive(value);
+        }
+
+        public override void Repaint()
+        {
+            ObservationsContainer.Repaint();
+            LinesContainer.Repaint();
+            PointsContainer.Repaint();
+        }
+
+        public override void Clear()
+        {
+            PointsContainer.Clear();
+            LinesContainer.Clear();
+            ObservationsContainer.Clear();
         }
     }
 }

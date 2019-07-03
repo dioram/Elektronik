@@ -13,7 +13,7 @@ namespace Elektronik.Offline
     public class SlamEventsManager : MonoBehaviour
     {
         public bool ReadyToPlay { get; private set; }
-        public RepaintablePackageViewUpdateCommander[] commanders;
+        public PackageViewUpdateCommander[] commanders;
         public RepaintablePackagePresenter[] presenters;
 
         private PackageViewUpdateCommander m_commander;
@@ -33,6 +33,13 @@ namespace Elektronik.Offline
             m_extendedEvents = new Dictionary<IPackageViewUpdateCommand, IPackage>();
             m_commands = new LinkedList<IPackageViewUpdateCommand>();
             m_dataSource = new DataSource();
+            foreach (var commander in commanders)
+            {
+                if (commander is SlamPackageCommander)
+                    commander.map = commander.map as SlamMap;
+                else if (commander is TrackingPackageCommander)
+                    commander.map = commander.map as TrackingMap;
+            }
         }
 
         private void Start()
@@ -45,7 +52,7 @@ namespace Elektronik.Offline
         public void Clear()
         {
             foreach (var commander in commanders)
-                commander.Clear();
+                commander.map.Clear();
             foreach (var presenter in presenters)
                 presenter.Clear();
             m_position = 0;
@@ -58,7 +65,7 @@ namespace Elektronik.Offline
         public void Repaint()
         {
             foreach (var commander in commanders)
-                commander.Repaint();
+                commander.map.Repaint();
             foreach (var presenter in presenters)
                 presenter.Repaint();
         }

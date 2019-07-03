@@ -9,53 +9,38 @@ using UnityEngine;
 
 namespace Elektronik.Offline
 {
-    public class SlamPackageCommander : RepaintablePackageViewUpdateCommander
+    public class SlamPackageCommander : PackageViewUpdateCommander
     {
-        public Map map;
-
         public override LinkedList<IPackageViewUpdateCommand> GetCommands(IPackage pkg)
         {
             if (pkg.Type != PackageType.SLAMPackage)
                 return m_commander?.GetCommands(pkg);
             var commands = new LinkedList<IPackageViewUpdateCommand>();
             var slamPkg = pkg as SlamPackage;
-
+            var slamMap = map as SlamMap;
             if (slamPkg.Timestamp == -1)
             {
-                commands.AddLast(new ClearCommand(map.PointsContainer, map.LinesContainer, map.ObservationsContainer));
+                commands.AddLast(new ClearCommand(slamMap.PointsContainer, slamMap.LinesContainer, slamMap.ObservationsContainer));
                 commands.Last.Value.Execute();
                 return commands;
             }
 
             // При добавлении объектов в карту их в карте быть не должно.
-            slamPkg.TestExistent(obj => obj.id != -1 && obj.isNew, map.PointsContainer, map.ObservationsContainer);
-            commands.AddLast(new AddCommand(map.PointsContainer, map.LinesContainer, map.ObservationsContainer, slamPkg));
+            slamPkg.TestExistent(obj => obj.id != -1 && obj.isNew, slamMap.PointsContainer, slamMap.ObservationsContainer);
+            commands.AddLast(new AddCommand(slamMap.PointsContainer, slamMap.LinesContainer, slamMap.ObservationsContainer, slamPkg));
             commands.Last.Value.Execute();
 
             // При любых манипуляциях с картой объекты, над которыми происходят манипуляции, должны быть в карте.
-            slamPkg.TestNonExistent(obj => obj.id != -1, map.PointsContainer, map.ObservationsContainer);
-            commands.AddLast(new UpdateCommand(map.PointsContainer, map.ObservationsContainer, slamPkg));
+            slamPkg.TestNonExistent(obj => obj.id != -1, slamMap.PointsContainer, slamMap.ObservationsContainer);
+            commands.AddLast(new UpdateCommand(slamMap.PointsContainer, slamMap.ObservationsContainer, slamPkg));
             commands.Last.Value.Execute();
 
-            commands.AddLast(new PostProcessingCommand(map.PointsContainer, map.LinesContainer, map.ObservationsContainer, slamPkg));
+            commands.AddLast(new PostProcessingCommand(slamMap.PointsContainer, slamMap.LinesContainer, slamMap.ObservationsContainer, slamPkg));
             commands.Last.Value.Execute();
 
             return commands;
         }
 
-        public override void Repaint()
-        {
-            map.ObservationsContainer.Repaint();
-            map.LinesContainer.Repaint();
-            map.PointsContainer.Repaint();
-        }
-
-        public override void Clear()
-        {
-            map.PointsContainer.Clear();
-            map.LinesContainer.Clear();
-            map.ObservationsContainer.Clear();
-        }
 
     }
 }
