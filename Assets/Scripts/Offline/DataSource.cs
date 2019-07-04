@@ -1,8 +1,11 @@
 ﻿using Elektronik.Common;
-using Elektronik.Common.Data;
+using Elektronik.Common.Data.Parsers;
+using Elektronik.Common.Data.Packages;
+using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Settings;
+using Elektronik.Offline.Settings;
 using Elektronik.Common.Extensions;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;

@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Elektronik.Common.Events;
 
-namespace Elektronik.Common
+namespace Elektronik.Common.UI
 {
     public class PlayerUIInitializer : MonoBehaviour
     {

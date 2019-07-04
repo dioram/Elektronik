@@ -213,7 +213,7 @@ GameObject:
   - component: {fileID: 5829776152139082288}
   - component: {fileID: 8326908998703595765}
   - component: {fileID: 3501008677083231536}
-  - component: {fileID: 828569441326064196}
+  - component: {fileID: 2327661491237448548}
   m_Layer: 0
   m_Name: RecentFileListBoxItem
   m_TagString: Untagged
@@ -301,17 +301,20 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
+    m_SelectedTrigger: Highlighted
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 5829776152139082288}
@@ -340,7 +343,7 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &828569441326064196
+--- !u!114 &2327661491237448548
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -349,7 +352,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7950228242653682484}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65ef338c17985274bbfcda4bde6b4434, type: 3}
+  m_Script: {fileID: 11500000, guid: b882823821728d84f91a37734a07cd50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   path: {fileID: 1127870537839046895}
@@ -415,3 +418,5 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
