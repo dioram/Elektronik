@@ -1,8 +1,7 @@
 ﻿using Elektronik.Common.Containers;
-using Elektronik.Common.Data;
+using Elektronik.Common.Data.PackageObjects;
+using Elektronik.Common.Data.Packages;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using UnityEngine;
 
 namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
