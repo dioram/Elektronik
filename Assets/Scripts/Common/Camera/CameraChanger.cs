@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Elektronik.Common.Camera
+namespace Elektronik.Common.Cameras
 {
     public class CameraChanger : MonoBehaviour
     {

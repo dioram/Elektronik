@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.XR;
 
-namespace Elektronik.Common.Camera
+namespace Elektronik.Common.Cameras
 {
     [RequireComponent(typeof(UnityEngine.Camera))]
     public class DisableAutoXR : MonoBehaviour

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Elektronik.Common.Camera
+namespace Elektronik.Common.Cameras
 {
     [AddComponentMenu("Camera-Control/Mouse Orbit with zoom")]
     public class OrbitalCameraForPointInSpace : MonoBehaviour

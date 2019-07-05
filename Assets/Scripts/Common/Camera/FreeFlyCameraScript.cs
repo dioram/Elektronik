@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Elektronik.Common.Camera
+namespace Elektronik.Common.Cameras
 {
     public class FreeFlyCameraScript : MonoBehaviour
     {

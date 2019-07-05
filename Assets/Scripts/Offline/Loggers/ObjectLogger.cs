@@ -1,5 +1,5 @@
 ﻿using Elektronik.Offline.UI;
-using Elektronik.Common.Camera;
+using Elektronik.Common.Cameras;
 using UnityEngine;
 
 namespace Elektronik.Offline.Loggers
