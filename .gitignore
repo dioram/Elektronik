@@ -1,13 +1,13 @@
 # Unity files
 
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-./[Pp]ackages/
-Assets/AssetStoreTools*
-UIElementsSchema/
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Pp]ackages/
+/Assets/AssetStoreTools*
+/UIElementsSchema/
 
 # Visual Studio 2015 cache directory
 /.vs/
@@ -37,4 +37,4 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
-/Logs
+/Logs/
