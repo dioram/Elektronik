@@ -152,6 +152,7 @@ Transform:
   - {fileID: 553730107}
   - {fileID: 2060962917}
   - {fileID: 842380028}
+  - {fileID: 2113464580}
   m_Father: {fileID: 2049829130}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -429,6 +430,9 @@ MonoBehaviour:
   - {fileID: 748506907}
   presenters:
   - {fileID: 1891367727}
+  maps:
+  - {fileID: 842380027}
+  - {fileID: 2113464579}
 --- !u!1 &72189911
 GameObject:
   m_ObjectHideFlags: 0
@@ -3322,7 +3326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b65d0ff358624ba47bee708f908f5446, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPrefab: {fileID: 2493525998455891125, guid: 3e2237835a46eb04f8f70331130e91e8,
+  itemPrefab: {fileID: 732501305419627393, guid: 3e2237835a46eb04f8f70331130e91e8,
     type: 3}
 --- !u!114 &543542292
 MonoBehaviour:
@@ -3390,9 +3394,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 553730107}
-  - component: {fileID: 553730108}
-  - component: {fileID: 553730109}
   - component: {fileID: 553730110}
+  - component: {fileID: 553730109}
+  - component: {fileID: 553730108}
   m_Layer: 0
   m_Name: VRMode
   m_TagString: Untagged
@@ -3427,81 +3431,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 553730106}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fd5915fba73132419186360ed977e67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: 27
-  myEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 553730109}
-        m_MethodName: Raise
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: Elektronik.Common.KeyPressedEventInvoker+KeyPressedEvent, Assembly-CSharp,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
---- !u!114 &553730109
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 553730106}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b30841b0f0fed84469755f38b5bbc3af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectWithDesiredState: {fileID: 932238033}
-  invokeIfTrue:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 932238033}
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: Elektronik.Common.ObjectStateConditionalEventInvoker+ObjectStateConditionalEvent,
-      Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-  invokeIfFalse:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 932238033}
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-    m_TypeName: Elektronik.Common.ObjectStateConditionalEventInvoker+ObjectStateConditionalEvent,
-      Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
---- !u!114 &553730110
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 553730106}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fd5915fba73132419186360ed977e67, type: 3}
+  m_Script: {fileID: 11500000, guid: 12e0409a3bd36004baae1e66d0508df1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   key: 293
@@ -3530,7 +3460,81 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-    m_TypeName: Elektronik.Common.KeyPressedEventInvoker+KeyPressedEvent, Assembly-CSharp,
+    m_TypeName: Elektronik.Common.Events.KeyPressedEventInvoker+KeyPressedEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+--- !u!114 &553730109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553730106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 727a4e2e6c8fcff41a43466ac7017272, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectWithDesiredState: {fileID: 932238033}
+  invokeIfTrue:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 932238033}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: Elektronik.Common.Events.ObjectStateConditionalEventInvoker+ObjectStateConditionalEvent,
+      Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  invokeIfFalse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 932238033}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+    m_TypeName: Elektronik.Common.Events.ObjectStateConditionalEventInvoker+ObjectStateConditionalEvent,
+      Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+--- !u!114 &553730110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553730106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12e0409a3bd36004baae1e66d0508df1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: 27
+  myEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 553730109}
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: Elektronik.Common.Events.KeyPressedEventInvoker+KeyPressedEvent, Assembly-CSharp,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!1 &574466110
 GameObject:
@@ -3627,7 +3631,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1265329052}
+      - m_Target: {fileID: 0}
         m_MethodName: SetCamera
         m_Mode: 0
         m_Arguments:
@@ -4555,11 +4559,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 748506905}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4683f0a34c73444da0b9558ee9b70f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 1ab3c4e52b9a6594a8452122e94226d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  helmetPrefab: {fileID: 4737761636527125745, guid: e7242bdba7ef60e4e998194434a99785,
-    type: 3}
+  map: {fileID: 2113464579}
 --- !u!1 &750474274
 GameObject:
   m_ObjectHideFlags: 0
@@ -4674,7 +4677,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 752695773}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d2b6c79fc960c5439f76e658cc0343a, type: 3}
+  m_Script: {fileID: 11500000, guid: a3729ff39a15170429c16414c9242e0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   map: {fileID: 842380027}
@@ -4855,7 +4858,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 776814862}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6fe6691d545ea0a46a1d4f4dc336fb02, type: 3}
+  m_Script: {fileID: 11500000, guid: 96c7886be4de628408060fd9298628e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   timelineSlider: {fileID: 1375853872}
@@ -5119,7 +5122,7 @@ MonoBehaviour:
   autoManageVRSettings: 1
   autoLoadSetup: 1
   setups:
-  - {fileID: 183676144}
+  - {fileID: 0}
   excludeTargetGroups: 1b0000001a000000
   persistOnLoad: 0
 --- !u!114 &821947987
@@ -5129,9 +5132,9 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 821947984}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c2682beed0cf0842ae96f70886580f2, type: 3}
+  m_Script: {fileID: 11500000, guid: a743221f0dccf6e4d9482f986f8b9c52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &822769541
@@ -5412,7 +5415,7 @@ GameObject:
   - component: {fileID: 842380028}
   - component: {fileID: 842380027}
   m_Layer: 0
-  m_Name: Map
+  m_Name: Slam Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5427,7 +5430,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 842380026}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28bb27193b9627c419b98df84dabc3af, type: 3}
+  m_Script: {fileID: 11500000, guid: fdd47fbd39f006249b464fec1fef30f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   observationPrefab: {fileID: 3038893354545110125, guid: 7a3fa4516cf7b3f4a8dcd5fa4783592f,
@@ -7119,10 +7122,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1099187785}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba190de1a31f5ad41a4a1f3f570a5c2b, type: 3}
+  m_Script: {fileID: 11500000, guid: cc2de7135738bf5439e25831ac51516a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiTextOfBanner: {fileID: 1015850281}
+  uiTextOfBanner: {fileID: 720662736}
 --- !u!224 &1099187787
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7665,7 +7668,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1140519772}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d31d09541e050dc46977aa489229847e, type: 3}
+  m_Script: {fileID: 11500000, guid: c43af2428f0ce8d4d816dba2b0c1a774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   setup: {fileID: 183676144}
@@ -7682,8 +7685,8 @@ GameObject:
   - component: {fileID: 1143038080}
   - component: {fileID: 1143038083}
   - component: {fileID: 1143038082}
-  - component: {fileID: 1143038081}
   - component: {fileID: 1143038084}
+  - component: {fileID: 1143038081}
   m_Layer: 0
   m_Name: FreeFlyCamera
   m_TagString: Untagged
@@ -7714,14 +7717,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1143038079}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2a24d93d32615b438529d0f72921d88, type: 3}
+  m_Script: {fileID: 11500000, guid: 542e1291263aed74f81e05afd59b79a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraSensitivity: 200
-  climbSpeed: 4
-  normalMoveSpeed: 10
-  slowMoveFactor: 0.25
-  fastMoveFactor: 3
+  default: 0
 --- !u!81 &1143038082
 AudioListener:
   m_ObjectHideFlags: 0
@@ -7782,10 +7781,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1143038079}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 946a45a230daab84c97b8bfaa30eadb3, type: 3}
+  m_Script: {fileID: 11500000, guid: 0d24707a8537fee42a71e5d84b3af314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  default: 0
+  cameraSensitivity: 200
+  climbSpeed: 4
+  normalMoveSpeed: 10
+  slowMoveFactor: 0.25
+  fastMoveFactor: 3
 --- !u!1 &1168532853
 GameObject:
   m_ObjectHideFlags: 0
@@ -8440,11 +8443,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1265329050}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80052042e51f9b3499ef1e709a9c0975, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fee7772ef43b77469f7abda4a29c9f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameras:
-  - {fileID: 1143038079}
+  cameras: []
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -8459,7 +8461,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: Elektronik.Common.CameraChanger+CameraChangerEvent, Assembly-CSharp,
+    m_TypeName: Elektronik.Common.Cameras.CameraChanger+CameraChangerEvent, Assembly-CSharp,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!1 &1271144351
 GameObject:
@@ -9083,18 +9085,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 776814864}
-        m_MethodName: UpdateInfo
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Slider+SliderEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1375853872
@@ -9489,7 +9480,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1437598976}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19be056db0318bd4eb6dba3b3dd54adb, type: 3}
+  m_Script: {fileID: 11500000, guid: fdb9274a731cbc44a8cf78f7eeefe018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   map: {fileID: 842380027}
@@ -9949,7 +9940,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1531181540}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e65b465b998154244802bab3d15f699c, type: 3}
+  m_Script: {fileID: 11500000, guid: 794062a96e6cacf4bb91f5e65721c638, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   arrow: {fileID: 115031378}
@@ -10887,8 +10878,8 @@ GameObject:
   - component: {fileID: 1676763677}
   - component: {fileID: 1676763676}
   - component: {fileID: 1676763675}
-  - component: {fileID: 1676763678}
   - component: {fileID: 1676763679}
+  - component: {fileID: 1676763678}
   m_Layer: 0
   m_Name: To menu
   m_TagString: Untagged
@@ -11007,7 +10998,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1676763673}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de688a6e93d293a4fa03f4c4e02ed0bc, type: 3}
+  m_Script: {fileID: 11500000, guid: f01d30ae7e4608c4f893fb929515da4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1676763679
@@ -11496,7 +11487,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1778431252}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af2ad83f84288ba44aea543a90611adb, type: 3}
+  m_Script: {fileID: 11500000, guid: ef9f8eaa180ae24499fc672c4f8f0fbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   commonIformation: {fileID: 720662736}
@@ -11838,7 +11829,18 @@ PrefabInstance:
       propertyPath: headset
       value: 
       objectReference: {fileID: 1902341832}
-    m_RemovedComponents: []
+    - target: {fileID: 2152671337095555192, guid: 1e9d1ac053dc1e941bba19676218e05a,
+        type: 3}
+      propertyPath: headset
+      value: 
+      objectReference: {fileID: 1902341832}
+    - target: {fileID: 2152671337095555192, guid: 1e9d1ac053dc1e941bba19676218e05a,
+        type: 3}
+      propertyPath: helmetsOwner
+      value: 
+      objectReference: {fileID: 2113464579}
+    m_RemovedComponents:
+    - {fileID: 1243955800413906685, guid: 1e9d1ac053dc1e941bba19676218e05a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 1e9d1ac053dc1e941bba19676218e05a, type: 3}
 --- !u!1 &1833250760 stripped
 GameObject:
@@ -13448,7 +13450,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2006035973}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 202b9d2faa91baf48bfea4edd889b35f, type: 3}
+  m_Script: {fileID: 11500000, guid: 60a5b8b1062fba040b01fb8e3dd80f06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   filePlayer: {fileID: 1561290876}
@@ -13807,7 +13809,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2081663351}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd0a4c2478772cd4aa756d259020684f, type: 3}
+  m_Script: {fileID: 11500000, guid: cd1ded52ea4e2e34f91834a49e9b0aab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   fly2TargetDistanceDelta: 0.25
@@ -13909,7 +13911,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2083610900}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0cea8c73d905d84388b178edb8b09d6, type: 3}
+  m_Script: {fileID: 11500000, guid: 210a59117a456e741a118cfca48d5989, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   helmetPrefab: {fileID: 4737761636527125745, guid: e7242bdba7ef60e4e998194434a99785,
@@ -13960,6 +13962,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scale: 1
   meshObjectPrefab: {fileID: 1902759933}
+--- !u!1 &2113464578
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2113464580}
+  - component: {fileID: 2113464579}
+  m_Layer: 0
+  m_Name: Tracking Map
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2113464579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2113464578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f93d134ef54514e4eae688bc1af0aa13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  helmetPrefab: {fileID: 4737761636527125745, guid: e7242bdba7ef60e4e998194434a99785,
+    type: 3}
+--- !u!4 &2113464580
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2113464578}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 11294688}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2128870675
 GameObject:
   m_ObjectHideFlags: 0

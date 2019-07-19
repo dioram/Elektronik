@@ -1,8 +1,12 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data;
+﻿using Elektronik.Common.Maps;
+using Elektronik.Offline.Commanders;
+using Elektronik.Common.Presenters;
+using Elektronik.Common.Data.Packages;
 using Elektronik.Common.Extensions;
 using Elektronik.Common.PackageViewUpdateCommandPattern;
+using Elektronik.Common.Loggers;
+using Elektronik.Offline.Settings;
+using Elektronik.Common.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,8 +17,9 @@ namespace Elektronik.Offline
     public class SlamEventsManager : MonoBehaviour
     {
         public bool ReadyToPlay { get; private set; }
-        public RepaintablePackageViewUpdateCommander[] commanders;
+        public PackageViewUpdateCommander[] commanders;
         public RepaintablePackagePresenter[] presenters;
+        public RepaintableObject[] maps;
 
         private PackageViewUpdateCommander m_commander;
         private PackagePresenter m_presenter;
@@ -44,8 +49,8 @@ namespace Elektronik.Offline
 
         public void Clear()
         {
-            foreach (var commander in commanders)
-                commander.Clear();
+            foreach (var map in maps)
+                map.Clear();
             foreach (var presenter in presenters)
                 presenter.Clear();
             m_position = 0;
@@ -57,8 +62,8 @@ namespace Elektronik.Offline
 
         public void Repaint()
         {
-            foreach (var commander in commanders)
-                commander.Repaint();
+            foreach (var map in maps)
+                map.Repaint();
             foreach (var presenter in presenters)
                 presenter.Repaint();
         }

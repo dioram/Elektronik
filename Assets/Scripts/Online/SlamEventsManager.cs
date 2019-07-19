@@ -1,5 +1,11 @@
 ﻿using Elektronik.Common;
-using Elektronik.Common.Data;
+using Elektronik.Common.Data.Parsers;
+using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Data.Packages;
+using Elektronik.Common.Presenters;
+using Elektronik.Common.Settings;
+using Elektronik.Online.Settings;
+using Elektronik.Online.Receivers;
 using Elektronik.Common.Extensions;
 using System;
 using System.Collections;

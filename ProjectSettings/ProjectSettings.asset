@@ -314,9 +314,8 @@ PlayerSettings:
     m_Enabled: 0
     m_Devices: []
   - m_BuildTarget: Standalone
-    m_Enabled: 1
-    m_Devices:
-    - OpenVR
+    m_Enabled: 0
+    m_Devices: []
   - m_BuildTarget: Tizen
     m_Enabled: 0
     m_Devices: []
@@ -607,7 +606,8 @@ PlayerSettings:
   scriptingRuntimeVersion: 1
   gcIncremental: 0
   gcWBarrierValidation: 0
-  apiCompatibilityLevelPerPlatform: {}
+  apiCompatibilityLevelPerPlatform:
+    Standalone: 6
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: v5
