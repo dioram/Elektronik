@@ -2,6 +2,7 @@
 
 namespace Elektronik.Common.Settings
 {
+    [Serializable]
     public abstract class Setting : IComparable<Setting>
     {
         public string Name { get; }
@@ -17,6 +18,7 @@ namespace Elektronik.Common.Settings
         }
 
         public Guid UniqueId { get; }
+        
         public DateTime ModificationTime { get; protected set; }
         public Setting<T> As<T>(bool throwException = true)
         {

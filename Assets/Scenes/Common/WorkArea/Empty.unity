@@ -11829,6 +11829,16 @@ PrefabInstance:
       propertyPath: headset
       value: 
       objectReference: {fileID: 1902341832}
+    - target: {fileID: 2152671337095555192, guid: 1e9d1ac053dc1e941bba19676218e05a,
+        type: 3}
+      propertyPath: headset
+      value: 
+      objectReference: {fileID: 1902341832}
+    - target: {fileID: 2152671337095555192, guid: 1e9d1ac053dc1e941bba19676218e05a,
+        type: 3}
+      propertyPath: helmetsOwner
+      value: 
+      objectReference: {fileID: 2113464579}
     m_RemovedComponents:
     - {fileID: 1243955800413906685, guid: 1e9d1ac053dc1e941bba19676218e05a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 1e9d1ac053dc1e941bba19676218e05a, type: 3}
@@ -11844,20 +11854,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1833250759}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1833250762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1833250760}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e06e723a06f46904ea2040ecce4b029e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  helmet: {fileID: 0}
-  headset: {fileID: 1902341832}
 --- !u!1 &1845842495
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using Elektronik.Common.Maps;
+using UnityEngine;
 
 namespace Elektronik.Online.VRHacker
 {
     class VRHacker : MonoBehaviour
     {
-        public Transform helmet;
+        public TracksOwner helmetsOwner;
         public Transform headset;
 
         private void OnEnable()
@@ -21,8 +22,12 @@ namespace Elektronik.Online.VRHacker
 
         private void Update()
         {
-            headset.rotation = helmet.rotation;
-            headset.localPosition = helmet.position + new Vector3(0, 1, 0);
+            if (helmetsOwner.m_helmets.Count > 0)
+            {
+                Helmet helmet = helmetsOwner.m_helmets[0];
+                headset.rotation = helmet.transform.rotation;
+                headset.localPosition = helmet.transform.position + new Vector3(0, 1, 0);
+            }
         }
     }
 }
