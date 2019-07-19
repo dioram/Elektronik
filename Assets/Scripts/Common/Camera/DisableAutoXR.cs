@@ -3,7 +3,7 @@ using UnityEngine.XR;
 
 namespace Elektronik.Common.Cameras
 {
-    [RequireComponent(typeof(UnityEngine.Camera))]
+    [RequireComponent(typeof(Camera))]
     public class DisableAutoXR : MonoBehaviour
     {
         public bool @default;
@@ -17,7 +17,7 @@ namespace Elektronik.Common.Cameras
         public void DisableXR(bool disable)
         {
             m_current = disable;
-            XRDevice.DisableAutoXRCameraTracking(GetComponent<UnityEngine.Camera>(), disable);
+            XRDevice.DisableAutoXRCameraTracking(GetComponent<Camera>(), disable);
         }
 
         void OnEnable()

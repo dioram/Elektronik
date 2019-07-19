@@ -70,8 +70,7 @@ namespace Elektronik.Common.Cameras
         {
             gameObject.SetActive(false);
             CurrentState = State.Inactive;
-            if (OnSwitchOff != null)
-                OnSwitchOff();
+            OnSwitchOff?.Invoke();
             OnSwitchOff = delegate { };
         }
 
