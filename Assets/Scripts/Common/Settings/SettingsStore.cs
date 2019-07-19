@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using UnityEngine;
 
 namespace Elektronik.Common.Settings
@@ -11,7 +15,7 @@ namespace Elektronik.Common.Settings
         where T : IComparable<T>
     {
         public int maxCountOfRecentFiles = 20;
-
+        
         public List<T> Recent { get; private set; }
 
         private void Awake()
@@ -34,28 +38,48 @@ namespace Elektronik.Common.Settings
         public void Deserialize(string filename)
         {
             string pathToAppData = Path.Combine(Application.persistentDataPath, filename);
-            FileInfo fi = new FileInfo(pathToAppData);
-            IFormatter formatter = new BinaryFormatter();
+            var fi = new FileInfo(pathToAppData);
+            
             if (fi.Directory.Exists && File.Exists(pathToAppData))
             {
-                using (var file = File.Open(pathToAppData, FileMode.Open))
+                string str = File.ReadAllText(pathToAppData);
+                using (var sw = new StringReader(str))
+                using (var reader = new JsonTextReader(sw))
                 {
-                    Recent = (List<T>)formatter.Deserialize(file);
+                    var settings = new JsonSerializerSettings();
+                    settings.NullValueHandling = NullValueHandling.Ignore;
+                    settings.TypeNameHandling = TypeNameHandling.Auto;
+                    settings.Formatting = Formatting.Indented;
+                    settings.Converters.Add(new IPAddressConverter());
+                    settings.Converters.Add(new IPEndPointConverter());
+                    Recent = JsonConvert.DeserializeObject<List<T>>(str, settings);
                 }
+            }
+            else
+            {
+                Recent = new List<T>();
             }
         }
 
         public void Serialize(string filename)
         {
             string pathToAppData = Path.Combine(Application.persistentDataPath, filename);
-            FileInfo fi = new FileInfo(pathToAppData);
+            var fi = new FileInfo(pathToAppData);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
             Debug.Log($"Serialization to:{Environment.NewLine}{pathToAppData}");
-            IFormatter formatter = new BinaryFormatter();
-            using (var file = File.Open(pathToAppData, FileMode.OpenOrCreate))
+            
+            using (var file = File.Open(pathToAppData, FileMode.Create))
+            using (var writer = new StreamWriter(file))
             {
-                formatter.Serialize(file, Recent);
+                var settings = new JsonSerializerSettings();
+                settings.NullValueHandling = NullValueHandling.Ignore;
+                settings.TypeNameHandling = TypeNameHandling.Auto;
+                settings.Formatting = Formatting.Indented;
+                settings.Converters.Add(new IPAddressConverter());
+                settings.Converters.Add(new IPEndPointConverter());
+                string json = JsonConvert.SerializeObject(Recent, settings);
+                writer.Write(json);
             }
         }
     }

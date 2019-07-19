@@ -2,7 +2,6 @@
 
 namespace Elektronik.Common.Settings
 {
-    [Serializable]
     public abstract class Setting : IComparable<Setting>
     {
         public string Name { get; }
