@@ -3326,7 +3326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b65d0ff358624ba47bee708f908f5446, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPrefab: {fileID: 2493525998455891125, guid: 3e2237835a46eb04f8f70331130e91e8,
+  itemPrefab: {fileID: 732501305419627393, guid: 3e2237835a46eb04f8f70331130e91e8,
     type: 3}
 --- !u!114 &543542292
 MonoBehaviour:
@@ -8461,7 +8461,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: Elektronik.Common.Camera.CameraChanger+CameraChangerEvent, Assembly-CSharp,
+    m_TypeName: Elektronik.Common.Cameras.CameraChanger+CameraChangerEvent, Assembly-CSharp,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!1 &1271144351
 GameObject:
