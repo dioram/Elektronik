@@ -1,5 +1,7 @@
 # Elektronik-Tools-2.0
 
+![](https://user-images.githubusercontent.com/29245436/61538805-da631200-aa42-11e9-8431-44feb81fdbb3.png)
+
 [![Build Status](https://elevir.visualstudio.com/Elektronik%20tool%202.0%20pipelines/_apis/build/status/Elektronik%20tool%202.0%20pipelines-CI?branchName=version_2_0_2)](https://elevir.visualstudio.com/Elektronik%20tool%202.0%20pipelines/_build/latest?definitionId=4&branchName=version_2_0_2)
 
 ### English language
