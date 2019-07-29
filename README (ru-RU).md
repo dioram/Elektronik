@@ -1,4 +1,4 @@
-# Elektronik-Tools-2.0
+# Elektronik Tools 2.0
 Инструмент для тестирования и отладки SLAM.
 
 ![](https://user-images.githubusercontent.com/29245436/61538805-da631200-aa42-11e9-8431-44feb81fdbb3.png)
