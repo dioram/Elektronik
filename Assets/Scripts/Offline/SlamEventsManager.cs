@@ -1,97 +1,89 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.Events;
-using Elektronik.Common.SlamEventsCommandPattern;
+﻿using Elektronik.Common.Maps;
+using Elektronik.Offline.Commanders;
+using Elektronik.Common.Presenters;
+using Elektronik.Common.Data.Packages;
+using Elektronik.Common.Extensions;
+using Elektronik.Common.PackageViewUpdateCommandPattern;
+using Elektronik.Common.Loggers;
+using Elektronik.Offline.Settings;
+using Elektronik.Common.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data;
-using Elektronik.Common.Clouds;
 
 namespace Elektronik.Offline
 {
     public class SlamEventsManager : MonoBehaviour
     {
         public bool ReadyToPlay { get; private set; }
+        public PackageViewUpdateCommander[] commanders;
+        public RepaintablePackagePresenter[] presenters;
+        public RepaintableObject[] maps;
 
-        public float scale;
+        private PackageViewUpdateCommander m_commander;
+        private PackagePresenter m_presenter;
 
-        Package[] m_packages;
-        List<ISlamEventCommand> m_commands;
-        List<Package> m_extendedEvents;
+        private IPackage[] m_packages;
+        private DataSource m_dataSource;
 
-        public SlamObservationsGraph observationsGraph;
-        //public FastPointCloud fastPointCloud;
-        public FastTrianglesCloud fastTrianglesCloud;
-        public FastLinesCloud fastLineCloud;
-        public Helmet helmet;
+        private LinkedListNode<IPackageViewUpdateCommand> m_currentCommand;
+        private LinkedList<IPackageViewUpdateCommand> m_commands;
+        private Dictionary<IPackageViewUpdateCommand, IPackage> m_extendedEvents;
+        private int m_position = 0;
+        
 
-        private ISlamContainer<SlamLine> m_linesContainer;
-        private ISlamContainer<SlamPoint> m_pointsContainer;
-
-        private int m_position = -1;
-
-        void Awake()
+        private void Awake()
         {
-            m_extendedEvents = new List<Package>();
-            m_commands = new List<ISlamEventCommand>();
-            m_linesContainer = new SlamLinesContainer(fastLineCloud);
-            m_pointsContainer = new SlamTetrahedronPointsContainer(fastTrianglesCloud);
+            m_extendedEvents = new Dictionary<IPackageViewUpdateCommand, IPackage>();
+            m_commands = new LinkedList<IPackageViewUpdateCommand>();
+            m_dataSource = new DataSource();
         }
 
-        void Start()
+        private void Start()
         {
-            IPackageCSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * FileModeSettings.Current.Scaling));
-            m_packages = PackagesReader.AnalyzeFile(FileModeSettings.Current.Path, converter);
+            m_commander = commanders.BuildChain();
+            m_presenter = presenters.BuildChain();
             StartCoroutine(ProcessEvents());
         }
 
         public void Clear()
         {
-            m_position = -1;
-            observationsGraph.Clear();
-            m_pointsContainer.Clear();
-            m_linesContainer.Clear();
-            helmet.ResetHelmet();
+            foreach (var map in maps)
+                map.Clear();
+            foreach (var presenter in presenters)
+                presenter.Clear();
+            m_position = 0;
+            m_currentCommand = m_commands.First;
+            m_currentCommand.Value.Execute();
+            m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
+            Repaint();
         }
 
         public void Repaint()
         {
-            observationsGraph.Repaint();
-            m_pointsContainer.Repaint();
-            m_linesContainer.Repaint();
+            foreach (var map in maps)
+                map.Repaint();
+            foreach (var presenter in presenters)
+                presenter.Repaint();
         }
 
-        public int GetLength()
-        {
-            return m_commands.Count;
-        }
+        public int GetLength() => m_commands.Count;
 
-        public int GetCurrentEventPosition()
-        {
-            return m_position;
-        }
+        public int GetCurrentEventPosition() => m_position;
 
-        public Package GetCurrentEvent()
-        {
-            if (m_position == -1) // до свершения какого либо события
-                return null;
-            return m_extendedEvents[m_position];
-        }
+        public IPackage GetCurrentEvent() => m_position == -1 ? null : m_extendedEvents[m_currentCommand.Value];
 
-        public void SetPosition(int pos)
+        public void SetPosition(int pos, Action whenPositionWasSet)
         {
             if (!ReadyToPlay)
                 return;
             int maxLength = GetLength();
             Debug.AssertFormat(pos >= 0 && pos < maxLength, "[SlamEventsManger.SetPosition] out of range pos == {0}, but range is [0,{1})", pos, maxLength);
-            StartCoroutine(MoveToPostion(pos));
+            StartCoroutine(MoveToPostion(pos, whenPositionWasSet));
         }
 
-        IEnumerator MoveToPostion(int pos)
+        private IEnumerator MoveToPostion(int pos, Action whenPositionWasSet)
         {
             ReadyToPlay = false;
             while (m_position != pos)
@@ -103,6 +95,7 @@ namespace Elektronik.Offline
                 if (m_position % 10 == 0)
                     yield return null;
             }
+            whenPositionWasSet();
             Repaint();
             ReadyToPlay = true;
             yield return null;
@@ -110,9 +103,12 @@ namespace Elektronik.Offline
 
         public bool Next(bool needRepaint = true)
         {
-            if (m_position < m_commands.Count - 1)
+            if (m_currentCommand.Next != null)
             {
-                m_commands[++m_position].Execute();
+                ++m_position;
+                m_currentCommand = m_currentCommand.Next;
+                m_currentCommand.Value.Execute();
+                m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
                 if (needRepaint)
                 {
                     Repaint();
@@ -127,9 +123,12 @@ namespace Elektronik.Offline
 
         public bool Previous(bool needRepaint = true)
         {
-            if (m_position != 0)
+            if (m_currentCommand.Previous != null)
             {
-                m_commands[m_position--].UnExecute();
+                --m_position;
+                m_currentCommand.Value.UnExecute();
+                m_currentCommand = m_currentCommand.Previous;
+                m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
                 if (needRepaint)
                 {
                     Repaint();
@@ -142,91 +141,80 @@ namespace Elektronik.Offline
             }
         }
 
-        private int FindNextKeyEventIdx(int srcIdx)
+        /// <summary>
+        /// We need this check because we do not want to switch iterations and come back if there is no any key event
+        /// </summary>
+        /// <param name="switchCommand">function that define Next or Previous event we need</param>
+        /// <returns>true - if key event is found; false - otherwise</returns>
+        private bool KeyEventIsFound(Func<LinkedListNode<IPackageViewUpdateCommand>, LinkedListNode<IPackageViewUpdateCommand>> switchCommand)
         {
-            for (int i = srcIdx; i < m_extendedEvents.Count; ++i)
+            var command = switchCommand(m_currentCommand);
+            bool isKey = false;
+            while (!isKey && command != null)
             {
-                if (m_extendedEvents[i].IsKeyEvent && (m_commands[i] is UpdateCommand))
+                if (isKey = m_extendedEvents[command.Value].IsKey)
                 {
-                    return i;
+                    break;
                 }
+                command = switchCommand(command);
             }
-            return -1;
+            return isKey;
         }
 
         public bool NextKeyEvent()
         {
-            int idxOfKeyEvent = FindNextKeyEventIdx(m_position + 1);
-            if (idxOfKeyEvent == -1)
-                return false;
-            while (m_position != idxOfKeyEvent)
+            if (KeyEventIsFound(c => c.Next))
             {
-                Next(needRepaint: false);
+                while (Next(needRepaint: false) && !m_extendedEvents[m_currentCommand.Value].IsKey) { }
+                Repaint();
+                return true;
             }
-            Repaint();
-            return true;
-        }
-
-        private int FindPrevKeyEventIdx(int srcIdx)
-        {
-            for (int i = srcIdx; i >= 0; --i)
-            {
-                if (m_extendedEvents[i].IsKeyEvent && (m_commands[i] is UpdateCommand))
-                {
-                    return i;
-                }
-            }
-            return -1;
+            return false;
         }
 
         public bool PrevKeyEvent()
         {
-            if (m_position == GetLength())
-                Previous(needRepaint: false);
-            int idxOfKeyEvent = FindPrevKeyEventIdx(m_position - 1);
-            if (idxOfKeyEvent == -1)
-                return false;
-            while (m_position != idxOfKeyEvent)
+            if (KeyEventIsFound(c => c.Previous))
             {
-                Previous(needRepaint: false);
+                while (Previous(needRepaint: false) && !m_extendedEvents[m_currentCommand.Value].IsKey) { }
+                Repaint();
+                return true;
             }
-            Repaint();
-            return true;
+            return false;
         }
 
-        IEnumerator ProcessEvents()
+        private IEnumerator ProcessEvents()
         {
-            Debug.Log("PROCESSING STARTED");
-
+            ElektronikLogger.OpenLog();
+            Application.logMessageReceived += ElektronikLogger.Log;
+            Debug.Log("ANALYSIS STARTED");
+            m_packages = m_dataSource.Parse(SettingsBag.Current[SettingName.Path].As<string>());
+            Debug.Log("PROCESSING FINISHED");
             for (int i = 0; i < m_packages.Length; ++i)
             {
-                Debug.Log(m_packages[i].Summary());
-                if (m_packages[i].Timestamp == -1)
-                {
-                    m_commands.Add(new ClearCommand(m_pointsContainer, m_linesContainer, observationsGraph));
-                    m_extendedEvents.Add(m_packages[i]);
-                    Next(false);
-                    continue;
-                }
-                m_commands.Add(new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, m_packages[i]));
-                m_extendedEvents.Add(m_packages[i]);
-                Next(false);
-                m_commands.Add(new UpdateCommand(m_pointsContainer, observationsGraph, helmet, m_packages[i]));
-                m_extendedEvents.Add(m_packages[i]);
-                Next(false);
-                m_commands.Add(new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, m_packages[i]));
-                m_extendedEvents.Add(m_packages[i]);
-                Next(false);
+                Debug.Log(m_packages[i]);
 
-                if (i % 10 == 0)
+                LinkedList<IPackageViewUpdateCommand> pkgCommands = null;
+                try
                 {
-                    yield return null;
+                    pkgCommands = m_commander.GetCommands(m_packages[i]);
                 }
+                catch (Exception e)
+                {
+                    Debug.LogWarning(e.Message);
+                    break;
+                }
+                foreach (var pkgCommand in pkgCommands)
+                    m_extendedEvents[pkgCommand] = m_packages[i];
+                m_commands.MoveFrom(pkgCommands);
+                if (i % 10 == 0) yield return null;
             }
+            Debug.Log("PROCESSING FINISHED");
             Clear();
             Repaint();
             ReadyToPlay = true;
-            Debug.Log("PROCESSING FINISHED");
+            Application.logMessageReceived -= ElektronikLogger.Log;
+            ElektronikLogger.CloseLog();
             yield return null;
         }
     }

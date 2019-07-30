@@ -1,4 +1,4 @@
-﻿#if CSHARP_7_OR_LATER
+﻿#if CSHARP_7_OR_LATER || (UNITY_2018_3_OR_NEWER && (NET_STANDARD_2_0 || NET_4_6))
 
 using System;
 using UnityEngine;
@@ -128,7 +128,7 @@ namespace UniRx.Async.Internal
                     tail = i; // loop end
                     break; // LOOP END
 
-                    NEXT_LOOP:
+                NEXT_LOOP:
                     continue;
                 }
 

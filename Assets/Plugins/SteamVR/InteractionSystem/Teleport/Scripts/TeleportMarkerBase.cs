@@ -8,50 +8,50 @@ using UnityEngine;
 
 namespace Valve.VR.InteractionSystem
 {
-	//-------------------------------------------------------------------------
-	public abstract class TeleportMarkerBase : MonoBehaviour
-	{
-		public bool locked = false;
-		public bool markerActive = true;
+    //-------------------------------------------------------------------------
+    public abstract class TeleportMarkerBase : MonoBehaviour
+    {
+        public bool locked = false;
+        public bool markerActive = true;
 
-		//-------------------------------------------------
-		public virtual bool showReticle
-		{
-			get
-			{
-				return true;
-			}
-		}
-
-
-		//-------------------------------------------------
-		public void SetLocked( bool locked )
-		{
-			this.locked = locked;
-
-			UpdateVisuals();
-		}
+        //-------------------------------------------------
+        public virtual bool showReticle
+        {
+            get
+            {
+                return true;
+            }
+        }
 
 
-		//-------------------------------------------------
-		public virtual void TeleportPlayer( Vector3 pointedAtPosition )
-		{
-		}
+        //-------------------------------------------------
+        public void SetLocked(bool locked)
+        {
+            this.locked = locked;
+
+            UpdateVisuals();
+        }
 
 
-		//-------------------------------------------------
-		public abstract void UpdateVisuals();
+        //-------------------------------------------------
+        public virtual void TeleportPlayer(Vector3 pointedAtPosition)
+        {
+        }
 
-		//-------------------------------------------------
-		public abstract void Highlight( bool highlight );
 
-		//-------------------------------------------------
-		public abstract void SetAlpha( float tintAlpha, float alphaPercent );
+        //-------------------------------------------------
+        public abstract void UpdateVisuals();
 
-		//-------------------------------------------------
-		public abstract bool ShouldActivate( Vector3 playerPosition );
+        //-------------------------------------------------
+        public abstract void Highlight(bool highlight);
 
-		//-------------------------------------------------
-		public abstract bool ShouldMovePlayer();
-	}
+        //-------------------------------------------------
+        public abstract void SetAlpha(float tintAlpha, float alphaPercent);
+
+        //-------------------------------------------------
+        public abstract bool ShouldActivate(Vector3 playerPosition);
+
+        //-------------------------------------------------
+        public abstract bool ShouldMovePlayer();
+    }
 }

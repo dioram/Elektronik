@@ -5,47 +5,46 @@
 //=============================================================================
 
 using UnityEngine;
-using System.Collections;
 
 namespace Valve.VR.InteractionSystem
 {
-	//-------------------------------------------------------------------------
-	public class LinearBlendshape : MonoBehaviour
-	{
-		public LinearMapping linearMapping;
-		public SkinnedMeshRenderer skinnedMesh;
+    //-------------------------------------------------------------------------
+    public class LinearBlendshape : MonoBehaviour
+    {
+        public LinearMapping linearMapping;
+        public SkinnedMeshRenderer skinnedMesh;
 
-		private float lastValue;
-
-
-		//-------------------------------------------------
-		void Awake()
-		{
-			if ( skinnedMesh == null )
-			{
-				skinnedMesh = GetComponent<SkinnedMeshRenderer>();
-			}
-
-			if ( linearMapping == null )
-			{
-				linearMapping = GetComponent<LinearMapping>();
-			}
-		}
+        private float lastValue;
 
 
-		//-------------------------------------------------
-		void Update()
-		{
-			float value = linearMapping.value;
+        //-------------------------------------------------
+        void Awake()
+        {
+            if (skinnedMesh == null)
+            {
+                skinnedMesh = GetComponent<SkinnedMeshRenderer>();
+            }
 
-			//No need to set the blend if our value hasn't changed.
-			if ( value != lastValue )
-			{
-				float blendValue = Util.RemapNumberClamped( value, 0f, 1f, 1f, 100f );
-				skinnedMesh.SetBlendShapeWeight( 0, blendValue );
-			}
+            if (linearMapping == null)
+            {
+                linearMapping = GetComponent<LinearMapping>();
+            }
+        }
 
-			lastValue = value;
-		}
-	}
+
+        //-------------------------------------------------
+        void Update()
+        {
+            float value = linearMapping.value;
+
+            //No need to set the blend if our value hasn't changed.
+            if (value != lastValue)
+            {
+                float blendValue = Util.RemapNumberClamped(value, 0f, 1f, 1f, 100f);
+                skinnedMesh.SetBlendShapeWeight(0, blendValue);
+            }
+
+            lastValue = value;
+        }
+    }
 }

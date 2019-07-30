@@ -1,12 +1,16 @@
 ﻿using Elektronik.Common;
-using Elektronik.Common.Clouds;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data;
-using Elektronik.Common.SlamEventsCommandPattern;
+using Elektronik.Common.Data.Parsers;
+using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Data.Packages;
+using Elektronik.Common.Presenters;
+using Elektronik.Common.Settings;
+using Elektronik.Online.Settings;
+using Elektronik.Online.Receivers;
+using Elektronik.Common.Extensions;
 using System;
 using System.Collections;
 using System.Linq;
-using System.Text;
+using System.Net;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,77 +23,86 @@ namespace Elektronik.Online
         public Button clear;
         public Button reconnect;
 
-        TCPPackagesReceiver m_receiver;
-
-        public FastLinesCloud linesCloud;
-        public FastPointCloud pointCloud;
-        public SlamObservationsGraph observationsGraph;
-        public Helmet helmet;
-
         public int connectionTries = 10;
+        public RepaintablePackagePresenter[] presenters;
 
-        private ISlamContainer<SlamPoint> m_pointsContainer;
-        private ISlamContainer<SlamLine> m_linesContainer;
-        private IPackageCSConverter m_converter;
-        private bool m_cancelCoroutine = false;
+        private IDisposable m_mapUpdate;
+        private IDisposable m_mapRepaint;
         private bool m_connecting = false;
-
-        private void OnDestroy()
-        {
-            m_cancelCoroutine = true;
-            if (m_receiver != null)
-                m_receiver.Dispose();
-        }
+        private TCPPackagesReceiver m_receiver;
+        private DataParser m_parser;
+        private PackagePresenter m_presenter;
 
         private void Awake()
         {
-            m_converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * OnlineModeSettings.Current.Scaling));
-            m_receiver = new TCPPackagesReceiver();
-            m_pointsContainer = new SlamPointsContainer(pointCloud);
-            m_linesContainer = new SlamLinesContainer(linesCloud);
+            ICSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>()));
+            m_parser = new IChainable<DataParser>[]
+            {
+                new SlamPackageParser(converter),
+                new TrackingPackageParser(converter),
+            }.BuildChain();
+            m_presenter = presenters.BuildChain();
+            m_receiver = new TCPPackagesReceiver(m_parser);
         }
 
         private void Start()
         {
-            clear.onClick.AddListener(Clear);
-            reconnect.onClick.AddListener(Reconnect);
+            clear.OnClickAsObservable().Subscribe(_ => Clear());
+            reconnect.OnClickAsObservable().Subscribe(_ => Reconnect());
             status.color = Color.red;
             status.text = "Not connected...";
-            var handler =
-                Observable.EveryFixedUpdate()
-                .Where(_ => m_receiver.Connected)
-                .Select(_ => m_receiver.GetPackage())
-                .Where(package => package != null)
-                .Do(pkg => m_converter.Convert(ref pkg))
-                .Do(pkg => Debug.Log(pkg.Timestamp))
-                .Do(pkg => new AddCommand(m_pointsContainer, m_linesContainer, observationsGraph, pkg).Execute())
-                .Do(pkg => new UpdateCommand(m_pointsContainer, observationsGraph, helmet, pkg).Execute())
-                .Do(pkg => new PostProcessingCommand(m_pointsContainer, m_linesContainer, observationsGraph, helmet, pkg).Execute())
-                .Do(_ => m_pointsContainer.Repaint())
-                .Do(_ => m_linesContainer.Repaint())
-                .Do(_ => observationsGraph.Repaint())
-                .Subscribe();
         }
 
+        private void OnDestroy()
+        {
+            if (m_mapUpdate != null)
+                m_mapUpdate.Dispose();
+            if (m_mapRepaint != null)
+                m_mapRepaint.Dispose();
+            StopAllCoroutines();
+        }
 
+        private void SubscribeToIncome()
+        {
+            var pkgSrc = new Subject<SlamPackage>();
+            m_mapUpdate = Observable.Interval(TimeSpan.FromMilliseconds(0))
+                .TakeWhile(_ => m_receiver.Connected)
+                .Select(_ => SafeReadPackage())
+                .Where(package => package != null)
+                .Do(m_presenter.Present)
+                .Subscribe();
+
+            m_mapRepaint = Observable.EveryFixedUpdate().Do(_ => Repaint()).Subscribe();
+        }
+
+        private IPackage SafeReadPackage()
+        {
+            IPackage package = null;
+            lock (m_receiver)
+            {
+                if (m_receiver.Connected)
+                    package = m_receiver.GetPackage();
+            }
+            return package;
+        }
+
+        private void Repaint()
+        {
+            foreach (var presenter in presenters)
+                presenter.Repaint();
+        }
         private void Clear()
         {
-            m_pointsContainer.Clear();
-            m_linesContainer.Clear();
-            observationsGraph.Clear();
-            helmet.ResetHelmet();
+            Disconnect();
+            foreach (var presenter in presenters)
+                presenter.Clear();
         }
 
         private void Reconnect()
         {
             if (m_connecting)
                 return;
-            Observable
-                .FromEvent(action => m_receiver.OnDisconnect += () => action(), action => m_receiver.OnDisconnect -= () => action())
-                .ObserveOnMainThread()
-                .Do(_ => status.color = Color.red)
-                .Do(_ => status.text = "Disconnected!")
-                .Subscribe();
+            m_connecting = true;
             status.color = Color.blue;
             Disconnect();
             StartCoroutine(WaitForConnection(connectionTries));
@@ -97,26 +110,41 @@ namespace Elektronik.Online
 
         private void Disconnect()
         {
-            m_receiver.Dispose();
-            m_receiver = new TCPPackagesReceiver();
+            if (m_mapUpdate != null)
+                m_mapUpdate.Dispose();
+            if (m_mapRepaint != null)
+                m_mapRepaint.Dispose();
+            lock (m_receiver)
+            {
+                if (m_receiver != null)
+                    m_receiver.Dispose();
+                m_receiver = new TCPPackagesReceiver(m_parser);
+            }
         }
 
         IEnumerator WaitForConnection(int tries)
         {
-            m_connecting = true;
             status.color = Color.blue;
             for (int i = 0; i < tries; ++i)
             {
-                status.text = String.Format("New connection try... ({0} from {1})", i + 1, tries);
+                status.text = $"New connection try... ({i + 1} from {tries})";
                 yield return null;
-                if (m_receiver.Connect(OnlineModeSettings.Current.Address, OnlineModeSettings.Current.Port))
+                if (m_receiver.Connect(SettingsBag.Current[SettingName.IPAddress].As<IPAddress>(), SettingsBag.Current[SettingName.Port].As<int>()))
                 {
                     status.color = Color.green;
                     status.text = "Connected!";
+                    Observable
+                        .FromEvent(action => m_receiver.OnDisconnect += () => action(), action => m_receiver.OnDisconnect -= () => action())
+                        .ObserveOnMainThread()
+                        .Do(_ => status.color = Color.red)
+                        .Do(_ => status.text = "Disconnected!")
+                        .Do(_ => Disconnect())
+                        .Subscribe();
+                    SubscribeToIncome();
                     m_connecting = false;
                     yield break;
                 }
-                yield return null /*new WaitForSeconds(1)*/;
+                yield return null;
             }
             status.color = Color.red;
             status.text = "Not connected...";

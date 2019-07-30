@@ -9,11 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/Common/Main menu.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/Offline/Offline settings.unity
-    guid: 79c188cefec78ba49bf9527640e00581
-  - enabled: 1
     path: Assets/Scenes/Online/Online settings.unity
     guid: b28774e31682def4ea9148e2b70b490c
+  - enabled: 1
+    path: Assets/Scenes/Offline/Offline settings.unity
+    guid: 79c188cefec78ba49bf9527640e00581
   - enabled: 1
     path: Assets/Scenes/Common/WorkArea/Empty.unity
     guid: af1b4d763a885d140bf10ab6705445ff

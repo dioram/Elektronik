@@ -1,16 +1,16 @@
 ﻿namespace SimpleFileBrowser
 {
-	public delegate void OnItemClickedHandler( ListItem item );
+    public delegate void OnItemClickedHandler(ListItem item);
 
-	public interface IListViewAdapter
-	{
-		OnItemClickedHandler OnItemClicked { get; set; }
+    public interface IListViewAdapter
+    {
+        OnItemClickedHandler OnItemClicked { get; set; }
 
-		int Count { get; }
-		float ItemHeight { get; }
+        int Count { get; }
+        float ItemHeight { get; }
 
-		ListItem CreateItem();
+        ListItem CreateItem();
 
-		void SetItemContent( ListItem item );
-	}
+        void SetItemContent(ListItem item);
+    }
 }

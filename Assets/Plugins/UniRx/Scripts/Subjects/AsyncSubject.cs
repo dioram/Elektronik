@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UniRx.InternalUtil;
 
 #if (NET_4_6 || NET_STANDARD_2_0)
@@ -243,7 +242,7 @@ namespace UniRx
             OnCompleted(continuation, true);
         }
 
-         void OnCompleted(Action continuation, bool originalContext)
+        void OnCompleted(Action continuation, bool originalContext)
         {
             //
             // [OK] Use of unsafe Subscribe: this type's Subscribe implementation is safe.

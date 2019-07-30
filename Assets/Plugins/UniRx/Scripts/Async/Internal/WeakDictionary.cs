@@ -1,4 +1,4 @@
-﻿#if CSHARP_7_OR_LATER
+﻿#if CSHARP_7_OR_LATER || (UNITY_2018_3_OR_NEWER && (NET_STANDARD_2_0 || NET_4_6))
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 using System;
@@ -84,7 +84,7 @@ namespace UniRx.Async.Internal
         {
             var nextCapacity = CalculateCapacity(size + 1, loadFactor);
 
-            TRY_ADD_AGAIN:
+        TRY_ADD_AGAIN:
             if (buckets.Length < nextCapacity)
             {
                 // rehash
@@ -116,7 +116,7 @@ namespace UniRx.Async.Internal
             var h = keyHash;
             var hashIndex = h & (targetBuckets.Length - 1);
 
-            TRY_ADD_AGAIN:
+        TRY_ADD_AGAIN:
             if (targetBuckets[hashIndex] == null)
             {
                 targetBuckets[hashIndex] = new Entry

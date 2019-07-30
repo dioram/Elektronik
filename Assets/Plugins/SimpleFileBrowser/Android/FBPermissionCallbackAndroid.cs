@@ -1,9 +1,6 @@
-﻿using System.Threading;
-using UnityEngine;
-
-namespace SimpleFileBrowser
+﻿namespace SimpleFileBrowser
 {
-	public class FBPermissionCallbackAndroid
+    public class FBPermissionCallbackAndroid
 #if UNITY_ANDROID
 	: AndroidJavaProxy
 	{
@@ -27,6 +24,6 @@ namespace SimpleFileBrowser
 		}
 	}
 #else
-	{ }
+    { }
 #endif
 }

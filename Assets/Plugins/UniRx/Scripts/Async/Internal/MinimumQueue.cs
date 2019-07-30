@@ -1,4 +1,6 @@
-﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+﻿#if CSHARP_7_OR_LATER || (UNITY_2018_3_OR_NEWER && (NET_STANDARD_2_0 || NET_4_6))
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#endif
 
 using System;
 using System.Runtime.CompilerServices;
@@ -26,7 +28,7 @@ namespace UniRx.Async.Internal
         public int Count
         {
 #if NET_4_6 || NET_STANDARD_2_0
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
             get { return size; }
         }

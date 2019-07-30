@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4058315034449389461}
   - component: {fileID: 3561336539772840911}
   - component: {fileID: 8862314076629996663}
-  - component: {fileID: 7746879887481435546}
+  - component: {fileID: 3196890091568745049}
   m_Layer: 0
   m_Name: Triangles mesh object
   m_TagString: Untagged
@@ -78,7 +78,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5376353029113288073}
   m_Mesh: {fileID: 0}
---- !u!114 &7746879887481435546
+--- !u!114 &3196890091568745049
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,7 +87,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 5376353029113288073}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f9854120eee6844abff036a2376255b, type: 3}
+  m_Script: {fileID: 11500000, guid: c851d3c2b065a2142ba237d487bfb503, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   sideSize: 0.1
+  needOrientation: 0

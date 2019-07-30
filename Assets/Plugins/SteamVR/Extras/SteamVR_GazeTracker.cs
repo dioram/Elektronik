@@ -1,6 +1,5 @@
 ﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 using UnityEngine;
-using System.Collections;
 
 public struct GazeEventArgs
 {
@@ -20,11 +19,11 @@ public class SteamVR_GazeTracker : MonoBehaviour
     // Contains a HMD tracked object that we can use to find the user's gaze
     Transform hmdTrackedObject = null;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start()
     {
-	
-	}
+
+    }
 
     public virtual void OnGazeOn(GazeEventArgs e)
     {
@@ -39,7 +38,7 @@ public class SteamVR_GazeTracker : MonoBehaviour
     }
 
     // Update is called once per frame
-	void Update ()
+    void Update()
     {
         // If we haven't set up hmdTrackedObject find what the user is looking at
         if (hmdTrackedObject == null)
