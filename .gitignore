@@ -7,6 +7,7 @@
 /[Bb]uilds/
 /[Pp]ackages/
 /Assets/AssetStoreTools*
+/ProjectSettings/ProjectVersion.txt
 /UIElementsSchema/
 
 # Visual Studio 2015 cache directory
