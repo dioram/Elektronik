@@ -3,7 +3,7 @@
 
 ![](https://user-images.githubusercontent.com/29245436/61538805-da631200-aa42-11e9-8431-44feb81fdbb3.png)
 
-[![Build Status](https://elevir.visualstudio.com/Elektronik%20tool%202.0%20pipelines/_apis/build/status/Elektronik%20tool%202.0%20pipelines-CI?branchName=version_2_0_2)](https://elevir.visualstudio.com/Elektronik%20tool%202.0%20pipelines/_build/latest?definitionId=4&branchName=version_2_0_2)
+[![Build Status](https://elevir.visualstudio.com/Elektronik%20tool%202.0%20pipelines/_apis/build/status/Elektronik%20tool%202.0%20pipelines-CI?branchName=master)](https://elevir.visualstudio.com/Elektronik%20tool%202.0%20pipelines/_build/latest?definitionId=4&branchName=master)
 
 Elektronik Tools 2.0 - это инструмент на базе движка Unity, который активно используется командой разработчиков Dioram при разработке алгоритмов трекинга и  SLAM. Данное программное обеспечение позволяет визуально отслеживать изменения облака точек и графа связности наблюдений в карте, построенной при помощи алгоритма SLAM; также эта программа позволяет наблюдать траектории движения отслеживаемых объектов (например, траекторию VR шлема и эталонную траекторию). Это значительно упрощает процесс отладки режима построения карты, режима релокализации и многого другого связанного с алгоритмами трекинга и SLAM.
 
