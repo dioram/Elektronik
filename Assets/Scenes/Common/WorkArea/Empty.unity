@@ -4562,7 +4562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ab3c4e52b9a6594a8452122e94226d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  map: {fileID: 2113464579}
+  tracks: {fileID: 2113464579}
 --- !u!1 &750474274
 GameObject:
   m_ObjectHideFlags: 0
@@ -9639,10 +9639,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 289725687}
     m_Modifications:
-    - target: {fileID: 1013427539586658, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
-      propertyPath: m_Name
-      value: Lines mesh object
-      objectReference: {fileID: 0}
     - target: {fileID: 4534342212751386, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -9686,6 +9682,10 @@ PrefabInstance:
     - target: {fileID: 4534342212751386, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1013427539586658, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
+      propertyPath: m_Name
+      value: Lines mesh object
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
@@ -12572,10 +12572,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2096468160}
     m_Modifications:
-    - target: {fileID: 1013427539586658, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
-      propertyPath: m_Name
-      value: Lines mesh object
-      objectReference: {fileID: 0}
     - target: {fileID: 4534342212751386, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -12619,6 +12615,10 @@ PrefabInstance:
     - target: {fileID: 4534342212751386, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1013427539586658, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
+      propertyPath: m_Name
+      value: Lines mesh object
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 62ec3e443b6597e4f8dfc1f8750f3261, type: 3}
@@ -13973,7 +13973,7 @@ GameObject:
   - component: {fileID: 2113464580}
   - component: {fileID: 2113464579}
   m_Layer: 0
-  m_Name: Tracking Map
+  m_Name: Tracks owner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

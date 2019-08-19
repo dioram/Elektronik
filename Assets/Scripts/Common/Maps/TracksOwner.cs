@@ -5,21 +5,22 @@ namespace Elektronik.Common.Maps
     public class TracksOwner : RepaintableObject
     {
         public Helmet helmetPrefab;
-        public ObjectPool m_helmetsPool;
-        public IList<Helmet> m_helmets;
+
+        public ObjectPool HelmetsPool { get; private set; }
+        public IList<Helmet> Helmets { get; private set; }
         private void Awake()
         {
-            m_helmets = new List<Helmet>();
-            m_helmetsPool = new ObjectPool(helmetPrefab.gameObject);
+            Helmets = new List<Helmet>();
+            HelmetsPool = new ObjectPool(helmetPrefab.gameObject);
         }
         public override void Clear()
         {
-            foreach (var helmet in m_helmets)
+            foreach (var helmet in Helmets)
             {
                 helmet.ResetHelmet();
-                m_helmetsPool.Despawn(helmet.gameObject);
+                HelmetsPool.Despawn(helmet.gameObject);
             }
-            m_helmets.Clear();
+            Helmets.Clear();
         }
         public override void Repaint()
         {

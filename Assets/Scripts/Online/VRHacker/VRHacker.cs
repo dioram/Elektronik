@@ -22,9 +22,9 @@ namespace Elektronik.Online.VRHacker
 
         private void Update()
         {
-            if (helmetsOwner.m_helmets.Count > 0)
+            if (helmetsOwner.Helmets.Count > 0)
             {
-                Helmet helmet = helmetsOwner.m_helmets[0];
+                Helmet helmet = helmetsOwner.Helmets[0];
                 headset.rotation = helmet.transform.rotation;
                 headset.localPosition = helmet.transform.position + new Vector3(0, 1, 0);
             }
