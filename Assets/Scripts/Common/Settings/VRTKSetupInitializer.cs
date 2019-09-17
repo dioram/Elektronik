@@ -9,7 +9,7 @@ namespace Elektronik.Common.Settings
         public VRTKManagerInitializer m_managerInitializer;
         public Transform VRMode;
 
-        private void Start()
+        private void Awake()
         {
             m_managerInitializer.Setup = setup;
             transform.parent = VRMode;
