@@ -30,15 +30,8 @@ namespace Elektronik.Common.Settings
             return (T)UnknownValue;
         }
 
-        protected Setting(string name, object value, Type type)
-        {
-            Name = name;
-            Type = type;
-            UnknownValue = value;
-        }
-
         [JsonConstructor]
-        private Setting(object unknownValue, string name, Type type)
+        private Setting(string name, object unknownValue, Type type)
         {
             UnknownValue = unknownValue;
             Name = name;
