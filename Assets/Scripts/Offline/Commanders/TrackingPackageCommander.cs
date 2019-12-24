@@ -10,13 +10,13 @@ namespace Elektronik.Offline.Commanders
     public class TrackingPackageCommander : PackageViewUpdateCommander
     {
         public TracksOwner tracks;
-        public override LinkedList<IPackageViewUpdateCommand> GetCommands(IPackage pkg)
+        public override void GetCommands(IPackage pkg, in LinkedList<IPackageViewUpdateCommand> commands)
         {
-            var commands = new LinkedList<IPackageViewUpdateCommand>();
-            if (pkg.Type != PackageType.TrackingPackage)
-                return m_commander?.GetCommands(pkg) ?? commands;
-            commands.AddLast(new UpdateCommand(tracks.Helmets, pkg as TrackingPackage, tracks.HelmetsPool));
-            return commands;
+            if (pkg.Type == PackageType.TrackingPackage)
+            {
+                commands.AddLast(new UpdateCommand(tracks.Helmets, pkg as TrackingPackage, tracks.HelmetsPool));
+            }
+            base.GetCommands(pkg, in commands);
         }
 
     }

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace UniRx.Operators
 {
@@ -22,7 +25,7 @@ namespace UniRx.Operators
         protected override IDisposable SubscribeCore(IObserver<EventPattern<TEventArgs>> observer, IDisposable cancel)
         {
             var fe = new FromEventPattern(this, observer);
-            return fe.Register() ? fe : Disposable.Empty;
+            return fe.Register() ?  fe : Disposable.Empty;
         }
 
         class FromEventPattern : IDisposable
@@ -85,7 +88,7 @@ namespace UniRx.Operators
         protected override IDisposable SubscribeCore(IObserver<Unit> observer, IDisposable cancel)
         {
             var fe = new FromEvent(this, observer);
-            return fe.Register() ? fe : Disposable.Empty;
+            return fe.Register() ?  fe : Disposable.Empty;
         }
 
         class FromEvent : IDisposable
@@ -149,7 +152,7 @@ namespace UniRx.Operators
         protected override IDisposable SubscribeCore(IObserver<TEventArgs> observer, IDisposable cancel)
         {
             var fe = new FromEvent(this, observer);
-            return fe.Register() ? fe : Disposable.Empty;
+            return fe.Register() ?  fe : Disposable.Empty;
         }
 
         class FromEvent : IDisposable
@@ -211,7 +214,7 @@ namespace UniRx.Operators
         protected override IDisposable SubscribeCore(IObserver<Unit> observer, IDisposable cancel)
         {
             var fe = new FromEvent(this, observer);
-            return fe.Register() ? fe : Disposable.Empty;
+            return fe.Register() ?  fe : Disposable.Empty;
         }
 
         class FromEvent : IDisposable
@@ -272,7 +275,7 @@ namespace UniRx.Operators
         protected override IDisposable SubscribeCore(IObserver<T> observer, IDisposable cancel)
         {
             var fe = new FromEvent(this, observer);
-            return fe.Register() ? fe : Disposable.Empty;
+            return fe.Register() ?  fe : Disposable.Empty;
         }
 
         class FromEvent : IDisposable

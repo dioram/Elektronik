@@ -29,7 +29,7 @@ namespace UniRx.Operators
 
             public IDisposable Run()
             {
-                return parent.source.Subscribe(this);
+                return parent.source.Subscribe(this); 
             }
 
             public override void OnNext(Notification<T> value)

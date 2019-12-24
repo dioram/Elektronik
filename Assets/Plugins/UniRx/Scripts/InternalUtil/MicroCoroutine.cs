@@ -147,7 +147,7 @@ namespace UniRx.InternalUtil
                     tail = i; // loop end
                     break; // LOOP END
 
-                NEXT_LOOP:
+                    NEXT_LOOP:
                     continue;
                 }
 

@@ -16,14 +16,13 @@ namespace Elektronik.Online.Presenters
 
         public override void Present(IPackage package)
         {
-            if (package.Type != PackageType.SLAMPackage)
+            if (package.Type == PackageType.SLAMPackage)
             {
-                m_presenter?.Present(package);
-                return;
+                SlamPackage slamPkg = package as SlamPackage;
+                UpdateMaps(slamPkg);
+                PostProcessMaps(slamPkg);
             }
-            SlamPackage slamPkg = package as SlamPackage;
-            UpdateMaps(slamPkg);
-            PostProcessMaps(slamPkg);
+            m_presenter?.Present(package);
         }
 
         private void UpdateMaps(SlamPackage pkg)

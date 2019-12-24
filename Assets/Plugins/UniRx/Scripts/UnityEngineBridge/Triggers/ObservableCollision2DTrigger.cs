@@ -9,7 +9,7 @@ namespace UniRx.Triggers
         Subject<Collision2D> onCollisionEnter2D;
 
         /// <summary>Sent when an incoming collider makes contact with this object's collider (2D physics only).</summary>
-        void OnCollisionEnter2D(Collision2D coll)
+         void OnCollisionEnter2D(Collision2D coll)
         {
             if (onCollisionEnter2D != null) onCollisionEnter2D.OnNext(coll);
         }
@@ -23,7 +23,7 @@ namespace UniRx.Triggers
         Subject<Collision2D> onCollisionExit2D;
 
         /// <summary>Sent when a collider on another object stops touching this object's collider (2D physics only).</summary>
-        void OnCollisionExit2D(Collision2D coll)
+         void OnCollisionExit2D(Collision2D coll)
         {
             if (onCollisionExit2D != null) onCollisionExit2D.OnNext(coll);
         }
@@ -37,7 +37,7 @@ namespace UniRx.Triggers
         Subject<Collision2D> onCollisionStay2D;
 
         /// <summary>Sent each frame where a collider on another object is touching this object's collider (2D physics only).</summary>
-        void OnCollisionStay2D(Collision2D coll)
+         void OnCollisionStay2D(Collision2D coll)
         {
             if (onCollisionStay2D != null) onCollisionStay2D.OnNext(coll);
         }

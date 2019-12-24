@@ -20,22 +20,20 @@ namespace Elektronik.Online.Presenters
 
         public override void Present(IPackage package)
         {
-            if (package.Type != PackageType.TrackingPackage)
+            if (package.Type == PackageType.TrackingPackage)
             {
-                m_presenter.Present(package);
-                return;
-            }
-            var pkg = package as TrackingPackage;
-            foreach (var track in pkg.Tracks)
-            {
-                if (!m_helmets.ContainsKey(track.id))
+                var pkg = package as TrackingPackage;
+                foreach (var track in pkg.Tracks)
                 {
-                    m_helmets[track.id] = m_helmetsPool.Spawn().GetComponent<Helmet>();
+                    if (!m_helmets.ContainsKey(track.id))
+                    {
+                        m_helmets[track.id] = m_helmetsPool.Spawn().GetComponent<Helmet>();
+                    }
+                    m_helmets[track.id].color = track.color;
+                    m_helmets[track.id].ReplaceAbs(track.position, track.rotation);
                 }
-                m_helmets[track.id].color = track.color;
-                m_helmets[track.id].ReplaceAbs(track.position, track.rotation);
             }
-
+            m_presenter.Present(package);
         }
 
         public override void Repaint()

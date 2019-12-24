@@ -69,10 +69,17 @@ namespace Elektronik.Common.Data.Packages
                 int actionsSize = 0;
                 for (int actionIdx = 0; actionIdx < actionsCount; ++actionIdx)
                 {
-                    actionsSize +=
-                        objectType == ObjectType.SlamPoint
-                        ? SlamPointsPackageObject.GetSizeOfActionInBytes((ActionType)rawPackage[offset + actionsSize])
-                        : SlamObservationPackageObject.GetSizeOfActionInBytes((ActionType)rawPackage[offset + actionsSize]);
+                    switch (objectType)
+                    {
+                        case ObjectType.SlamPoint:
+                            actionsSize += SlamPointsPackageObject.GetSizeOfActionInBytes((ActionType)rawPackage[offset + actionsSize]);
+                            break;
+                        case ObjectType.SlamObservation:
+                            actionsSize += SlamObservationPackageObject.GetSizeOfActionInBytes((ActionType)rawPackage[offset + actionsSize]);
+                            break;
+                        default:
+                            throw new ArgumentException($"Unknown object type ({objectType})");
+                    }
                     ++actionsSize; // type byte
                 }
                 byte[] actions = new byte[actionsSize];

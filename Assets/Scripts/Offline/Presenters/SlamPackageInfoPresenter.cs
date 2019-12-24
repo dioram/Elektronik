@@ -17,7 +17,7 @@ namespace Elektronik.Offline.Presenters
         {
             if (package.Type != PackageType.SLAMPackage)
             {
-                m_presenter?.SetSuccessor(m_presenter);
+                m_presenter?.Present(package);
                 return;
             }
             if (!package.IsKey)

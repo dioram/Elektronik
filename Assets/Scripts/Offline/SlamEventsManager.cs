@@ -193,20 +193,19 @@ namespace Elektronik.Offline
             for (int i = 0; i < m_packages.Length; ++i)
             {
                 Debug.Log(m_packages[i]);
-
-                LinkedList<IPackageViewUpdateCommand> pkgCommands = null;
+                var commands = new LinkedList<IPackageViewUpdateCommand>();
                 try
                 {
-                    pkgCommands = m_commander.GetCommands(m_packages[i]);
+                    m_commander.GetCommands(m_packages[i], in commands);
                 }
                 catch (Exception e)
                 {
                     Debug.LogWarning(e.Message);
                     break;
                 }
-                foreach (var pkgCommand in pkgCommands)
-                    m_extendedEvents[pkgCommand] = m_packages[i];
-                m_commands.MoveFrom(pkgCommands);
+                foreach (var command in commands)
+                    m_extendedEvents[command] = m_packages[i];
+                m_commands.MoveFrom(commands);
                 if (i % 10 == 0) yield return null;
             }
             Debug.Log("PROCESSING FINISHED");

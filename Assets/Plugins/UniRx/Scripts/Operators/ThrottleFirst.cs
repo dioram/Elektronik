@@ -8,7 +8,7 @@ namespace UniRx.Operators
         readonly TimeSpan dueTime;
         readonly IScheduler scheduler;
 
-        public ThrottleFirstObservable(IObservable<T> source, TimeSpan dueTime, IScheduler scheduler)
+        public ThrottleFirstObservable(IObservable<T> source, TimeSpan dueTime, IScheduler scheduler) 
             : base(scheduler == Scheduler.CurrentThread || source.IsRequiredSubscribeOnCurrentThread())
         {
             this.source = source;

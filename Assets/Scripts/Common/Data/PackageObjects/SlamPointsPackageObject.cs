@@ -14,7 +14,7 @@ namespace Elektronik.Common.Data.PackageObjects
             switch (actionType)
             {
                 case ActionType.Create:
-                    return sizeof(float) * 3 + sizeof(byte) * 3; // Vector3
+                    return sizeof(float) * 3 + sizeof(byte) * 3; // Vector3 + color
                 case ActionType.Tint:
                     return sizeof(byte) * 3; // color
                 case ActionType.Move:

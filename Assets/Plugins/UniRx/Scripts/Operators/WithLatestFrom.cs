@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace UniRx.Operators
 {
@@ -38,7 +41,7 @@ namespace UniRx.Operators
             {
                 var l = parent.left.Subscribe(new LeftObserver(this));
                 var rSubscription = new SingleAssignmentDisposable();
-                rSubscription.Disposable = parent.right.Subscribe(new RightObserver(this, rSubscription));
+                rSubscription.Disposable  = parent.right.Subscribe(new RightObserver(this, rSubscription));
 
                 return StableCompositeDisposable.Create(l, rSubscription);
             }

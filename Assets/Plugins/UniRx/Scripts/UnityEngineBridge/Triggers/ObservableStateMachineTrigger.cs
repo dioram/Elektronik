@@ -69,7 +69,7 @@ namespace UniRx.Triggers
 
         public override void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (onStateIK != null) onStateIK.OnNext(new OnStateInfo(animator, stateInfo, layerIndex));
+            if(onStateIK !=null) onStateIK.OnNext(new OnStateInfo(animator, stateInfo, layerIndex));
         }
 
         public IObservable<OnStateInfo> OnStateIKAsObservable()
