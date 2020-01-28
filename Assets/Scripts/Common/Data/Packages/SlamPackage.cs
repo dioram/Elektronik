@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Data.Packages
 {
+    [Obsolete]
     public class SlamPackage : IPackage
     {
         private enum ObjectType : byte
@@ -15,7 +16,7 @@ namespace Elektronik.Common.Data.Packages
             SlamPoint = 0,
             SlamObservation = 1,
         }
-        public PackageType Type { get => PackageType.SLAMPackage; }
+        public PackageType PackageType { get => PackageType.SLAMPackage; }
         public int Timestamp { get; private set; }
         public bool IsKey { get; private set; }
         public List<SlamObservation> Observations { get; private set; }

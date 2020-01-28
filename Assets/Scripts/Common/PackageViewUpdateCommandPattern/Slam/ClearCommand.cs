@@ -3,42 +3,19 @@ using Elektronik.Common.Data.PackageObjects;
 
 namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
-    public class ClearCommand : IPackageViewUpdateCommand
+    public class ClearCommand<T> : IPackageViewUpdateCommand
     {
-        private readonly ICloudObjectsContainer<SlamPoint> m_pointsContainer;
-        private readonly ICloudObjectsContainer<SlamLine> m_linesContainer;
-        private readonly ICloudObjectsContainer<SlamObservation> m_observationsContainer;
+        private readonly IContainer<T> m_container;
 
-        private readonly SlamLine[] m_undoLines;
-        private readonly SlamPoint[] m_undoPoints;
-        private readonly SlamObservation[] m_undoObservations;
-
-        public ClearCommand(
-            ICloudObjectsContainer<SlamPoint> pointsContainer,
-            ICloudObjectsContainer<SlamLine> linesContainer,
-            ICloudObjectsContainer<SlamObservation> observationsContainer)
+        private readonly T[] m_undoObjects;
+        public ClearCommand(IContainer<T> container)
         {
-            m_pointsContainer = pointsContainer;
-            m_linesContainer = linesContainer;
-            m_observationsContainer = observationsContainer;
-
-            m_undoLines = m_linesContainer.GetAll();
-            m_undoPoints = m_pointsContainer.GetAll();
-            m_undoObservations = m_observationsContainer.GetAll();
+            m_container = container;
+            m_undoObjects = m_container.GetAll();
         }
 
-        public void Execute()
-        {
-            m_pointsContainer.Clear();
-            m_linesContainer.Clear();
-            m_observationsContainer.Clear();
-        }
+        public void Execute() => m_container.Clear();
 
-        public void UnExecute()
-        {
-            m_observationsContainer.AddRange(m_undoObservations);
-            m_linesContainer.AddRange(m_undoLines);
-            m_pointsContainer.AddRange(m_undoPoints);
-        }
+        public void UnExecute() => m_container.Add(m_undoObjects);
     }
 }

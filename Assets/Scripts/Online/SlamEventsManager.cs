@@ -30,13 +30,14 @@ namespace Elektronik.Online
         private IDisposable m_mapRepaint;
         private bool m_connecting = false;
         private TCPPackagesReceiver m_receiver;
-        private DataParser m_parser;
+        private IParser m_parser;
         private PackagePresenter m_presenter;
 
         private void Awake()
         {
-            ICSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>()));
-            m_parser = new IChainable<DataParser>[]
+            //ICSConverter converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>()));
+            ICSConverter converter = new EmptyPackageConverter();
+            m_parser = new DataParser[]
             {
                 new SlamPackageParser(converter),
                 new TrackingPackageParser(converter),
@@ -64,7 +65,7 @@ namespace Elektronik.Online
 
         private void SubscribeToIncome()
         {
-            var pkgSrc = new Subject<SlamPackage>();
+            var pkgSrc = new Subject<IPackage>();
             m_mapUpdate = Observable.Interval(TimeSpan.FromMilliseconds(0))
                 .TakeWhile(_ => m_receiver.Connected)
                 .Select(_ => SafeReadPackage())

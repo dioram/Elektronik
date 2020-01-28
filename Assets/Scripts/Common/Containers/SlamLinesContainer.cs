@@ -1,5 +1,6 @@
 ﻿using Elektronik.Common.Clouds;
 using Elektronik.Common.Data.PackageObjects;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
+    [Obsolete]
     public class SlamLinesContainer : ISlamLinesContainer<SlamLine>
     {
         private readonly FastLinesCloud m_linesCloud;
@@ -17,6 +19,8 @@ namespace Elektronik.Common.Containers
         private int m_added = 0;
         private int m_removed = 0;
         private int m_diff = 0;
+
+        public int Count { get => m_lines.Count; }
 
         public SlamLine this[SlamLine obj]
         {
@@ -48,7 +52,7 @@ namespace Elektronik.Common.Containers
             m_linesCloud = cloud;
         }
 
-        public int Add(SlamLine line)
+        public void Add(SlamLine line, out int id)
         {
             ++m_diff;
             ++m_added;
@@ -57,8 +61,10 @@ namespace Elektronik.Common.Containers
             m_longId2Id.Add(longId, lineId);
             m_lines.Add(lineId, line);
             m_linesCloud.SetLine(lineId, line.vert1, line.vert2, line.color1);
-            return lineId;
+            id = lineId;
         }
+
+        public void Add(SlamLine line) => Add(line, out _);
 
         public void Remove(SlamLine line)
         {
@@ -79,7 +85,7 @@ namespace Elektronik.Common.Containers
 
         public void Remove(int lineId) => Remove(m_lines[lineId]);
 
-        public void AddRange(SlamLine[] lines)
+        public void Add(IEnumerable<SlamLine> lines)
         {
             foreach (var line in lines)
             {
@@ -185,5 +191,35 @@ namespace Elektronik.Common.Containers
         public IEnumerator<SlamLine> GetEnumerator() => m_lines.Select(kv => kv.Value).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => m_lines.Select(kv => kv.Value).GetEnumerator();
+
+        public bool TryGetAsPoint(int idx, out SlamPoint point)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryGetAsPoint(SlamLine obj, out SlamPoint point)
+        {
+            point = new SlamPoint();
+            if (TryGet(obj, out var result))
+            {
+                point.color = result.color1;
+                point.id = result.pointId1;
+                point.position = result.vert1;
+                return true;
+            }
+            return false;
+        }
+
+        public void Update(IEnumerable<SlamLine> objs)
+        {
+            foreach (var obj in objs)
+                Update(obj);
+        }
+
+        public void Remove(IEnumerable<SlamLine> objs)
+        {
+            foreach (var obj in objs)
+                Remove(obj);
+        }
     }
 }

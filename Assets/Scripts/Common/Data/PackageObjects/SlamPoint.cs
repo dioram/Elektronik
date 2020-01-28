@@ -12,7 +12,6 @@ namespace Elektronik.Common.Data.PackageObjects
         public bool isRemoved;
         public bool isNew;
         public string message;
-
         public override string ToString()
         {
             return message ?? "SlamPoint";

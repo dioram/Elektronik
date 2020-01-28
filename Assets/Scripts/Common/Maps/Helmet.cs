@@ -8,21 +8,19 @@ namespace Elektronik.Common.Maps
 {
     public class Helmet : MonoBehaviour
     {
-        private ICloudObjectsContainer<SlamLine> m_linesContainer;
-        private int m_lastLineId;
+        private IConnectionsContainer<SlamLine2> m_linesContainer;
         private int m_lineSegmentIdx;
         private Stack<Pose> m_poseHistory;
-        private Stack<int> m_lineIdsHistory;
+        private Stack<SlamLine2> m_linesHistory;
 
         public Color color = Color.red;
         public int id;
 
         private void Awake()
         {
-            m_lastLineId = -1;
-            m_linesContainer = new SlamLinesContainer(GetComponentInChildren<FastLinesCloud>());
+            m_linesContainer = new SlamLinesContainer2(GetComponentInChildren<FastLinesCloud>());
             m_poseHistory = new Stack<Pose>();
-            m_lineIdsHistory = new Stack<int>();
+            m_linesHistory = new Stack<SlamLine2>();
         }
 
         public void TurnBack()
@@ -33,33 +31,29 @@ namespace Elektronik.Common.Maps
                 transform.position = lastPose.position;
                 transform.rotation = lastPose.rotation;
             }
-            if (m_lineIdsHistory.Count > 0)
+            if (m_linesHistory.Count > 0)
             {
-                int lastLineId = m_lineIdsHistory.Pop();
-                if (lastLineId != -1)
-                    m_linesContainer.Remove(lastLineId);
+                SlamLine2 lastLineId = m_linesHistory.Pop();
+                m_linesContainer.Remove(lastLineId);
                 m_linesContainer.Repaint();
             }
         }
 
         private void ContinueTrack(Vector3 vert1, Vector3 vert2)
         {
-            if (vert1 == vert2)
+            var pt1 = new SlamPoint()
             {
-                m_lineIdsHistory.Push(-1);
-                return;
-            }
-            SlamLine line = new SlamLine()
-            {
-                color1 = color,
+                id = m_lineSegmentIdx,
+                color = color,
                 isRemoved = false,
-                pointId1 = m_lineSegmentIdx,
-                pointId2 = ++m_lineSegmentIdx,
-                vert1 = vert1,
-                vert2 = vert2,
+                position = vert1,
             };
-            m_lastLineId = m_linesContainer.Add(line);
-            m_lineIdsHistory.Push(m_lastLineId);
+            SlamPoint pt2 = pt1;
+            pt2.id = ++m_lineSegmentIdx;
+            pt2.position = vert2;
+            var connection = new SlamLine2(pt1, pt2);
+            m_linesContainer.Add(connection);
+            m_linesHistory.Push(connection);
             m_linesContainer.Repaint();
         }
 
@@ -87,9 +81,8 @@ namespace Elektronik.Common.Maps
         {
             transform.position = Vector3.zero;
             transform.rotation = Quaternion.identity;
-            m_lastLineId = -1;
             m_lineSegmentIdx = 0;
-            m_lineIdsHistory.Clear();
+            m_linesHistory.Clear();
             m_linesContainer.Clear();
             m_poseHistory.Clear();
         }

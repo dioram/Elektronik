@@ -139,8 +139,8 @@ namespace Elektronik.Common.Clouds.Meshes
                 m_mesh.colors = m_colors;
                 m_mesh.RecalculateNormals();
                 m_mesh.RecalculateBounds();
+                m_needRepaint = false;
             }
-            m_needRepaint = false;
         }
 
         public void GetAll(out Vector3[] tetrahedronsCGs, out Color[] colors)
@@ -162,6 +162,7 @@ namespace Elektronik.Common.Clouds.Meshes
 
         public void Clear()
         {
+            m_needRepaint = true;
             for (int i = 0; i < m_vertices.Length; ++i)
             {
                 m_vertices[i] = Vector3.zero;

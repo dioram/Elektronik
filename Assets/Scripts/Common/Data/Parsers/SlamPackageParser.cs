@@ -4,45 +4,32 @@ using UnityEngine;
 using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Packages;
 using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Data.Parsers.Slam;
+using Elektronik.Common.Extensions;
 
 namespace Elektronik.Common.Data.Parsers
 {
     public class SlamPackageParser : DataParser
     {
-        public SlamPackageParser(ICSConverter converter) : base(converter) { }
-
-        private void Convert(ref SlamPackage pkg)
+        private IParser parsersChain;
+        public SlamPackageParser(ICSConverter converter) : base(converter) 
         {
-            List<SlamObservation> observations = pkg.Observations;
-            Parallel.For(0, pkg.Observations.Count, (i) =>
+            parsersChain = new DataParser[]
             {
-                SlamPoint point = observations[i];
-                Quaternion rot = observations[i].Orientation;
-                m_converter.Convert(ref point.position, ref rot);
-                observations[i].Point = point;
-                observations[i].Orientation = rot;
-            });
-            List<SlamPoint> points = pkg.Points;
-            Parallel.For(0, pkg.Points.Count, (i) =>
-            {
-                SlamPoint pt = points[i];
-                Quaternion stub = Quaternion.identity;
-                m_converter.Convert(ref pt.position, ref stub);
-                points[i] = pt;
-            });
+                new SlamPointsParser(converter),
+                new SlamLinesParser(converter),
+                new SlamMessageParser(converter),
+                new SlamObservationsParser(converter),
+            }.BuildChain();
         }
 
-        public override int Parse(byte[] data, int startIdx, out IPackage result)
+        public override IPackage Parse(byte[] data, int startIdx, ref int offset)
         {
-            result = null;
             if ((PackageType)data[startIdx] != PackageType.SLAMPackage)
             {
-                return m_successor?.Parse(data, startIdx, out result) ?? 0;
+                return m_successor?.Parse(data, startIdx, ref offset);
             }
-            int readBytes = SlamPackage.Parse(data, startIdx, out SlamPackage slamPkg);
-            Convert(ref slamPkg);
-            result = slamPkg;
-            return readBytes;
+            return parsersChain.Parse(data, startIdx, ref offset);
         }
     }
 }

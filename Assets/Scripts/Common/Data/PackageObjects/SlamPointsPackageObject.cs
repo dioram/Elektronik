@@ -25,6 +25,8 @@ namespace Elektronik.Common.Data.PackageObjects
                     return sizeof(int) + sizeof(byte) * 6; // id + color1 + color2
                 case ActionType.Message:
                     return sizeof(int) + sizeof(byte) * MAX_MESSAGE_LENGTH_IN_BYTES; // size + message bytes
+                case ActionType.Connect:
+                    return sizeof(int);
                 default:
                     throw new ArgumentException(String.Format("Bad action type ({0})", actionType));
             }
@@ -62,7 +64,7 @@ namespace Elektronik.Common.Data.PackageObjects
                     point.color = Color.red;
                     point.isRemoved = true;
                 }
-                if (type == ActionType.Fuse)
+                if (type == ActionType.Fuse || type == ActionType.Connect)
                 {
                     point.color = Color.magenta;
                     SlamLine fuseLine = new SlamLine()

@@ -15,7 +15,7 @@ namespace Elektronik.Offline.Presenters
 
         public override void Present(IPackage package)
         {
-            if (package.Type != PackageType.SLAMPackage)
+            if (package.PackageType != PackageType.SLAMPackage)
             {
                 m_presenter?.Present(package);
                 return;

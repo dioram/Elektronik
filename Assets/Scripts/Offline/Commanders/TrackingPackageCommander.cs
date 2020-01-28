@@ -12,7 +12,7 @@ namespace Elektronik.Offline.Commanders
         public TracksOwner tracks;
         public override void GetCommands(IPackage pkg, in LinkedList<IPackageViewUpdateCommand> commands)
         {
-            if (pkg.Type == PackageType.TrackingPackage)
+            if (pkg.PackageType == PackageType.TrackingPackage)
             {
                 commands.AddLast(new UpdateCommand(tracks.Helmets, pkg as TrackingPackage, tracks.HelmetsPool));
             }

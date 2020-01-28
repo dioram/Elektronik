@@ -1,5 +1,6 @@
 ﻿using Elektronik.Common.Clouds;
 using Elektronik.Common.Data.PackageObjects;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +17,15 @@ namespace Elektronik.Common.Containers
         private int m_removed = 0;
         private int m_diff = 0;
 
+        public int Count => m_points.Count;
+
         public SlamPointsContainer(IFastPointsCloud cloud)
         {
             m_points = new SortedDictionary<int, SlamPoint>();
             m_pointsCloud = cloud;
         }
 
-        public int Add(SlamPoint point)
+        public void Add(SlamPoint point)
         {
             //Debug.Assert(
             //    !m_points.ContainsKey(point.id),
@@ -33,10 +36,9 @@ namespace Elektronik.Common.Containers
             ++m_added;
             m_pointsCloud.Set(point.id, Matrix4x4.Translate(point.position), point.color);
             m_points.Add(point.id, point);
-            return point.id;
         }
 
-        public void AddRange(SlamPoint[] points)
+        public void Add(IEnumerable<SlamPoint> points)
         {
             foreach (var point in points)
             {
@@ -51,12 +53,12 @@ namespace Elektronik.Common.Containers
             //    $"[SlamPointsContainer.Update] Container doesn't contain point with id {point.id}");
             if (!m_points.ContainsKey(point.id))
                 throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.Update] Container doesn't contain point with id {point.id}");
-            Matrix4x4 to = Matrix4x4.Translate(point.position);
+            Matrix4x4 translationMat = Matrix4x4.Translate(point.position);
             SlamPoint currentPoint = m_points[point.id];
             currentPoint.position = point.position;
             currentPoint.color = point.color;
             m_points[point.id] = currentPoint;
-            m_pointsCloud.Set(point.id, to, point.color);
+            m_pointsCloud.Set(point.id, translationMat, point.color);
         }
 
         public void ChangeColor(SlamPoint point)
@@ -84,9 +86,9 @@ namespace Elektronik.Common.Containers
             m_pointsCloud.Set(pointId, Matrix4x4.identity, new Color(0, 0, 0, 0));
             m_points.Remove(pointId);
         }
-
+        
         public void Remove(SlamPoint point) => Remove(point.id);
-
+        
         public void Clear()
         {
             int[] pointsIds = m_points.Keys.ToArray();
@@ -150,5 +152,21 @@ namespace Elektronik.Common.Containers
         public IEnumerator<SlamPoint> GetEnumerator() => m_points.Select(kv => kv.Value).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => m_points.Select(kv => kv.Value).GetEnumerator();
+
+        public bool TryGetAsPoint(SlamPoint obj, out SlamPoint point) => TryGet(obj, out point);
+
+        public bool TryGetAsPoint(int idx, out SlamPoint point) => TryGet(idx, out point);
+
+        public void Update(IEnumerable<SlamPoint> objs)
+        {
+            foreach (var obj in objs)
+                Update(obj);
+        }
+
+        public void Remove(IEnumerable<SlamPoint> objs)
+        {
+            foreach (var obj in objs)
+                Remove(obj);
+        }
     }
 }

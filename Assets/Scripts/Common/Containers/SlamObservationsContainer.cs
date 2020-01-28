@@ -1,4 +1,5 @@
 ﻿using Elektronik.Common.Data.PackageObjects;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,30 +9,11 @@ namespace Elektronik.Common.Containers
 {
     public class SlamObservationsContainer : ICloudObjectsContainer<SlamObservation>
     {
-        private readonly List<SlamObservation> m_nodes;
-        private readonly Dictionary<int, GameObject> m_gameObjects;
-
-        private struct Connection
-        {
-            public readonly SlamObservation first;
-            public readonly SlamObservation second;
-            public readonly int lineId;
-            public readonly int obsId1;
-            public readonly int obsId2;
-
-            public Connection(int obsId1, int obsId2, SlamObservation first = null, SlamObservation second = null, int lineId = -1)
-            {
-                this.first = first;
-                this.second = second;
-                this.lineId = lineId;
-                this.obsId1 = obsId1;
-                this.obsId2 = obsId2;
-            }
-        }
-        private readonly List<Connection> m_connections;
-
+        private readonly SortedDictionary<int, SlamObservation> m_nodes;
+        private readonly SortedDictionary<int, GameObject> m_gameObjects;
         public ObjectPool ObservationsPool { get; private set; }
-        private readonly ICloudObjectsContainer<SlamLine> m_lines;
+
+        public int Count => m_nodes.Count;
 
         /// <summary>
         /// Get clone of node or Set obj with same id as argument id
@@ -40,18 +22,8 @@ namespace Elektronik.Common.Containers
         /// <returns>Clone of SlamObservation from graph</returns>
         public SlamObservation this[SlamObservation obj]
         {
-            get
-            {
-                if (obj == null)
-                    Debug.LogWarning("[SlamObservationsContainer.Get] Null observation");
-                return this[obj.Point.id];
-            }
-            set
-            {
-                if (obj == null)
-                    Debug.LogWarning("[SlamObservationsContainer.Get] Null observation");
-                this[obj.Point.id] = value;
-            }
+            get => this[obj.Point.id];
+            set => this[obj.Point.id] = value;
         }
 
         /// <summary>
@@ -68,7 +40,7 @@ namespace Elektronik.Common.Containers
                 //    $"[SlamObservationsContainer.Get] Graph doesn't contain observation with id {id}");
                 if (!Exists(id))
                     throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Get] Graph doesn't contain observation with id {id}");
-                return new SlamObservation(m_nodes.Find(obs => obs.Point.id == id));
+                return m_nodes[id];
             }
             set
             {
@@ -76,131 +48,13 @@ namespace Elektronik.Common.Containers
             }
         }
 
-        private void DisconnectFromAll(SlamObservation observation)
-        {
-            foreach (var connection in m_connections)
-            {
-                if ((connection.first == observation || connection.second == observation) && connection.lineId != -1)
-                {
-                    m_lines.Remove(connection.lineId);
-                }
-            }
-            m_connections.RemoveAll(c => c.first == observation || c.second == observation);
-        }
-
-        private void MakeConnectionsAndConnectionPlaceholdersFor(SlamObservation observation)
-        {
-            foreach (var covisible in observation.CovisibleInfos)
-            {
-                int connectionIdx = m_connections.FindIndex(c =>
-                    c.obsId1 == observation.Point.id && c.obsId2 == covisible.id ||
-                    c.obsId2 == observation.Point.id && c.obsId1 == covisible.id);
-                if (connectionIdx == -1)
-                {
-                    connectionIdx = m_connections.Count;
-                    m_connections.Add(new Connection(observation.Point.id, covisible.id, observation));
-                }
-
-                var connection = m_connections[connectionIdx];
-                SlamObservation covisibleObs = m_nodes.FirstOrDefault(node => node.Point.id == covisible.id);
-                if (
-                    /*already in map*/ covisibleObs != null &&
-                    /*is placeholder*/ covisibleObs.Point.id == connection.obsId2 && connection.lineId == -1)
-                {
-                    SlamLine line = new SlamLine()
-                    {
-                        vert1 = observation.Point.position,
-                        vert2 = covisibleObs.Point.position,
-                        pointId1 = observation.Point.id,
-                        pointId2 = covisibleObs.Point.id,
-                        color1 = observation.Point.color,
-                        color2 = covisibleObs.Point.color,
-                        isRemoved = false
-                    };
-                    m_connections[connectionIdx] = new Connection(
-                        connection.obsId1, connection.obsId2,
-                        observation, covisibleObs,
-                        m_lines.Add(line));
-                }
-                //Debug.Assert(m_connections[connectionIdx].first != null || m_connections[connectionIdx].second != null,
-                //    $"[SlamObservationsContainer.UpdateConnectionsOf] connection.first == connection.second == null for " +
-                //    $"id1 = {m_connections[connectionIdx].obsId1}, " +
-                //    $"id2 = {m_connections[connectionIdx].obsId2}");
-                if (!(m_connections[connectionIdx].first != null || m_connections[connectionIdx].second != null))
-                    throw new InvalidSlamContainerOperationException(
-                      $"[SlamObservationsContainer.UpdateConnectionsOf] connection.first == connection.second == null for " +
-                      $"id1 = {m_connections[connectionIdx].obsId1}, " +
-                      $"id2 = {m_connections[connectionIdx].obsId2}");
-            }
-        }
-
-        private void ReplaceConnectionPlaceholdersFor(SlamObservation observation)
-        {
-            for (int i = 0; i < m_connections.Count; ++i)
-            {
-                if (m_connections[i].obsId2 == observation.Point.id && m_connections[i].second == null)
-                {
-                    SlamLine line = new SlamLine()
-                    {
-                        vert1 = m_connections[i].first.Point.position,
-                        vert2 = observation.Point.position,
-                        pointId1 = m_connections[i].first.Point.id,
-                        pointId2 = observation.Point.id,
-                        color1 = m_connections[i].first.Point.color,
-                        color2 = observation.Point.color,
-                        isRemoved = false
-                    };
-                    m_connections[i] = new Connection(
-                            m_connections[i].obsId1, m_connections[i].obsId2,
-                            m_connections[i].first, observation,
-                            m_lines.Add(line));
-                }
-            }
-        }
-
-        private void UpdateConnectionVerticesFor(SlamObservation observation)
-        {
-            var allConnectionsOfArg = m_connections.Where(con => (con.first == observation || con.second == observation) && con.lineId != -1);
-            foreach (var connection in allConnectionsOfArg)
-            {
-                SlamLine line = m_lines[connection.lineId];
-                if (connection.first == observation)
-                {
-                    line.vert1 = connection.first.Point.position;
-                    line.vert2 = connection.second.Point.position;
-                }
-                else
-                {
-                    line.vert2 = connection.second.Point.position;
-                    line.vert1 = connection.first.Point.position;
-                }
-                m_lines.Update(line);
-            }
-        }
-
-        private void UpdateConnectionsFor(SlamObservation observation)
-        {
-            MakeConnectionsAndConnectionPlaceholdersFor(observation);
-            ReplaceConnectionPlaceholdersFor(observation);
-            UpdateConnectionVerticesFor(observation);
-        }
-
-        private void UpdateGameobjectFor(SlamObservation observation)
-        {
-            var objectTransform = m_gameObjects[observation.Point.id].transform;
-            objectTransform.position = observation.Point.position;
-            objectTransform.rotation = observation.Orientation;
-        }
-
         /// <param name="prefab">Desired prefab of observation</param>
         /// <param name="lines">Lines cloud objects for connections drawing</param>
-        public SlamObservationsContainer(GameObject prefab, ICloudObjectsContainer<SlamLine> lines)
+        public SlamObservationsContainer(GameObject prefab)
         {
-            m_nodes = new List<SlamObservation>();
-            m_gameObjects = new Dictionary<int, GameObject>();
+            m_nodes = new SortedDictionary<int, SlamObservation>();
+            m_gameObjects = new SortedDictionary<int, GameObject>();
             ObservationsPool = new ObjectPool(prefab);
-            m_lines = lines;
-            m_connections = new List<Connection>();
         }
 
         /// <summary>
@@ -209,29 +63,24 @@ namespace Elektronik.Common.Containers
         /// </summary>
         /// <param name="observation"></param>
         /// <returns>Id of observation</returns>
-        public int Add(SlamObservation observation)
+        public void Add(SlamObservation observation)
         {
-            if (observation == null)
-                Debug.LogWarning("[SlamObservationsContainer.Add] Null observation");
             //Debug.Assert(
             //    !Exists(observation),
             //    $"[SlamObservationsContainer.Add] Graph already contains observation with id {observation.Point.id}");
             if (Exists(observation))
                 throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Add] Graph already contains observation with id {observation.Point.id}");
-            int last = m_nodes.Count;
-            m_nodes.Add(new SlamObservation(observation));
-            m_gameObjects[m_nodes[last].Point.id] = ObservationsPool.Spawn(observation.Point.position, observation.Orientation);
-            UpdateConnectionsFor(m_nodes[last]);
+            m_nodes[observation.Point.id] = observation;
+            m_gameObjects[observation.Point.id] = ObservationsPool.Spawn(observation.Point.position, observation.Orientation);
             Debug.Log(
-                $"[SlamObservationsContainer.Add] Added observation with id {m_nodes[last].Point.id}; count of covisible nodes {m_nodes[last].CovisibleInfos.Count}");
-            return observation.Point.id;
+                $"[SlamObservationsContainer.Add] Added observation with id {observation.Point.id}; count of covisible nodes {observation.CovisibleInfos.Count}");
         }
 
         /// <summary>
         /// Look at the summary of Add
         /// </summary>
         /// <param name="objects"></param>
-        public void AddRange(SlamObservation[] objects)
+        public void Add(IEnumerable<SlamObservation> objects)
         {
             foreach (var observation in objects)
             {
@@ -245,14 +94,12 @@ namespace Elektronik.Common.Containers
         /// <param name="obj"></param>
         public void ChangeColor(SlamObservation obj)
         {
-            if (obj == null)
-                Debug.LogWarning("[SlamObservationsContainer.ChangeColor] Null observation");
             //Debug.Assert(
             //    Exists(obj),
             //    $"[SlamObservationsContainer.ChangeColor] Graph doesn't contain observation with id {obj.Point.id}");
             if (!Exists(obj))
                 throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.ChangeColor] Graph doesn't contain observation with id {obj.Point.id}");
-            SlamObservation node = m_nodes.First(n => obj.Point.id == n.Point.id);
+            SlamObservation node = m_nodes[obj.Point.id];
             SlamPoint point = node.Point;
             point.color = obj.Point.color;
             node.Point = point;
@@ -264,8 +111,6 @@ namespace Elektronik.Common.Containers
         public void Clear()
         {
             ObservationsPool.DespawnAllActiveObjects();
-            m_lines.Clear();
-            m_connections.Clear();
             m_nodes.Clear();
         }
 
@@ -274,25 +119,20 @@ namespace Elektronik.Common.Containers
         /// </summary>
         /// <param name="objId"></param>
         /// <returns>true if exists, otherwise false</returns>
-        public bool Exists(SlamObservation obj)
-        {
-            if (obj == null)
-                Debug.LogWarning("[SlamObservationsContainer.Exists] Null observation");
-            return Exists(obj.Point.id);
-        }
+        public bool Exists(SlamObservation obj) => Exists(obj.Point.id);
 
         /// <summary>
         /// Check existing of node by id
         /// </summary>
         /// <param name="objId"></param>
         /// <returns>true if exists, otherwise false</returns>
-        public bool Exists(int objId) => m_nodes.Any(obs => obs.Point.id == objId);
+        public bool Exists(int objId) => m_nodes.ContainsKey(objId);
 
         /// <summary>
         /// Get clones of observations from graph
         /// </summary>
         /// <returns></returns>
-        public SlamObservation[] GetAll() => m_nodes.Select(node => new SlamObservation(node)).ToArray();
+        public SlamObservation[] GetAll() => m_nodes.Values.ToArray();
 
         /// <summary>
         /// Remove by id
@@ -306,30 +146,23 @@ namespace Elektronik.Common.Containers
             if (!Exists(id))
                 throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Remove] Graph doesn't contain observation with id {id}");
 
-            var node = m_nodes.First(obs => obs.Point.id == id);
             Debug.Log(
-                $"[SlamObservationsContainer.Remove] Removing observation with id {id}; count of covisible nodes {node.CovisibleInfos.Count}");
-            DisconnectFromAll(node);
+                $"[SlamObservationsContainer.Remove] Removing observation with id {id}; count of covisible nodes {m_nodes[id].CovisibleInfos.Count}");
             ObservationsPool.Despawn(m_gameObjects[id]);
             m_gameObjects.Remove(id);
-            m_nodes.Remove(node);
+            m_nodes.Remove(id);
         }
 
         /// <summary>
         /// Remove by SlamObservation object
         /// </summary>
         /// <param name="obj"></param>
-        public void Remove(SlamObservation obj)
-        {
-            if (obj == null)
-                Debug.LogWarning("[SlamObservationsContainer.Remove] Null observation");
-            Remove(obj.Point.id);
-        }
+        public void Remove(SlamObservation obj) => Remove(obj.Point.id);
 
         /// <summary>
         /// Repaint connections
         /// </summary>
-        public void Repaint() => m_lines.Repaint();
+        public void Repaint() {}
 
         /// <summary>
         /// Try get observation from graph
@@ -337,18 +170,9 @@ namespace Elektronik.Common.Containers
         /// <param name="obj">Slam observation you want to find</param>
         /// <param name="current">Clone of observation in graph or null if doesn't exist</param>
         /// <returns>Returns false if observation with given id from obj exists, otherwise true.</returns>
-        public bool TryGet(SlamObservation obj, out SlamObservation current)
-        {
-            if (obj == null)
-                Debug.LogWarning("[SlamObservationsContainer.TryGet] Null observation");
-            return TryGet(obj.Point.id, out current);
-        }
+        public bool TryGet(SlamObservation obj, out SlamObservation current) => TryGet(obj.Point.id, out current);
 
-        public bool TryGet(int idx, out SlamObservation current)
-        {
-            current = new SlamObservation(m_nodes.FirstOrDefault(o => o.Point.id == idx));
-            return current == null;
-        }
+        public bool TryGet(int idx, out SlamObservation current) => m_nodes.TryGetValue(idx, out current);
 
         /// <summary>
         /// Copy data from obj.
@@ -356,27 +180,49 @@ namespace Elektronik.Common.Containers
         /// <param name="obj"></param>
         public void Update(SlamObservation obj)
         {
-            if (obj == null)
-                Debug.LogWarning("[SlamObservationsContainer.Update] Null observation");
             //Debug.Assert(
             //    Exists(obj.Point.id),
             //    $"[SlamObservationsContainer.Update] Graph doesn't contain observation with id {obj.Point.id}");
             if (!Exists(obj.Point.id))
                 throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Update] Graph doesn't contain observation with id {obj.Point.id}");
-            SlamObservation node = m_nodes.First(obs => obs.Point.id == obj.Point.id);
-
+            SlamObservation node = m_nodes[obj.Point.id];
             node.Statistics = obj.Statistics;
             node.Point = obj.Point;
             node.Orientation = obj.Orientation;
-            UpdateGameobjectFor(node);
-            UpdateConnectionsFor(node);
-
+            var objectTransform = m_gameObjects[node.Point.id].transform;
+            objectTransform.position = node.Point.position;
+            objectTransform.rotation = node.Orientation;
             Debug.Log(
                 $"[SlamObservationsContainer.Update] Updated observation with id {node.Point.id}; count of covisible nodes {node.CovisibleInfos.Count}");
         }
+        
+        public IEnumerator<SlamObservation> GetEnumerator() => m_nodes.Values.GetEnumerator();
+        
+        IEnumerator IEnumerable.GetEnumerator() => m_nodes.Values.GetEnumerator();
 
-        public IEnumerator<SlamObservation> GetEnumerator() => m_nodes.GetEnumerator();
+        public bool TryGetAsPoint(SlamObservation obj, out SlamPoint point) => TryGetAsPoint(obj.Point.id, out point);
 
-        IEnumerator IEnumerable.GetEnumerator() => m_nodes.GetEnumerator();
+        public bool TryGetAsPoint(int idx, out SlamPoint point)
+        {
+            point = new SlamPoint();
+            if (TryGet(idx, out var result))
+            {
+                point = result;
+                return true;
+            }
+            return false;
+        }
+
+        public void Update(IEnumerable<SlamObservation> objs)
+        {
+            foreach (var obj in objs)
+                Update(obj);
+        }
+
+        public void Remove(IEnumerable<SlamObservation> objs)
+        {
+            foreach (var obj in objs)
+                Remove(obj);
+        }
     }
 }

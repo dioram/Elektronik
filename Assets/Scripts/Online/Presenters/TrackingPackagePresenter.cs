@@ -20,7 +20,7 @@ namespace Elektronik.Online.Presenters
 
         public override void Present(IPackage package)
         {
-            if (package.Type == PackageType.TrackingPackage)
+            if (package.PackageType == PackageType.TrackingPackage)
             {
                 var pkg = package as TrackingPackage;
                 foreach (var track in pkg.Tracks)
@@ -33,7 +33,7 @@ namespace Elektronik.Online.Presenters
                     m_helmets[track.id].ReplaceAbs(track.position, track.rotation);
                 }
             }
-            m_presenter.Present(package);
+            m_presenter?.Present(package);
         }
 
         public override void Repaint()

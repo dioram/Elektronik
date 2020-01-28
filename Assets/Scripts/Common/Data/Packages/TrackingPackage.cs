@@ -13,7 +13,7 @@ namespace Elektronik.Common.Data.Packages
             public int id;
             public Color color;
         }
-        public PackageType Type { get => PackageType.TrackingPackage; }
+        public PackageType PackageType { get => PackageType.TrackingPackage; }
         public int Timestamp { get; private set; }
         public bool IsKey { get; private set; }
         public IList<TrackingUnit> Tracks { get; private set; }

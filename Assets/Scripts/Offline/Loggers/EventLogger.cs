@@ -27,8 +27,8 @@ namespace Elektronik.Offline.Loggers
 
         public void UpdateInfo(
             SlamPackage package,
-            ICloudObjectsContainer<SlamPoint> pointsMap,
-            ICloudObjectsContainer<SlamObservation> graph)
+            IContainer<SlamPoint> pointsMap,
+            IContainer<SlamObservation> graph)
         {
             listBoxWithSpecializedObjects.Clear();
             if (package == null)

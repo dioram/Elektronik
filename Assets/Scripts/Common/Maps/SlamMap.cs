@@ -10,33 +10,43 @@ namespace Elektronik.Common.Maps
     {
         public GameObject observationPrefab;
         public FastPointCloud fastPointCloud;
-        public FastLinesCloud fusionLinesCloud;
-        public FastLinesCloud graphConnectionLinesCloud;
+        public FastLinesCloud pointsLinesCloud;
+        public FastLinesCloud observationsLinesCloud;
+        public FastLinesCloud linesCloud;
 
         private SlamObservationsContainer m_observationsContainer;
+        public IConnectionsContainer<SlamLine2> LinesContainer { get; private set; }
         public ICloudObjectsContainer<SlamObservation> ObservationsContainer { get => m_observationsContainer; }
-        public ICloudObjectsContainer<SlamLine> LinesContainer { get; private set; }
+        public IConnectionsContainer<SlamLine2> ObservationsConnections { get; private set; }
         public ICloudObjectsContainer<SlamPoint> PointsContainer { get; private set; }
+        public IConnectionsContainer<SlamLine2> PointsConnections { get; private set; }
 
         private void Awake()
         {
-            LinesContainer = new SlamLinesContainer(fusionLinesCloud);
-            m_observationsContainer = new SlamObservationsContainer(
-                observationPrefab,
-                new SlamLinesContainer(graphConnectionLinesCloud));
+            LinesContainer = new SlamLinesContainer2(linesCloud);
+            
+            m_observationsContainer = new SlamObservationsContainer(observationPrefab);
+            ObservationsConnections = new SlamLinesContainer2(observationsLinesCloud);
+
             PointsContainer = new SlamPointsContainer(fastPointCloud);
+            PointsConnections = new SlamLinesContainer2(pointsLinesCloud);
         }
 
         public void SetActivePointCloud(bool value)
         {
             fastPointCloud.SetActive(value);
-            fusionLinesCloud.SetActive(value);
+            pointsLinesCloud.SetActive(value);
         }
         public void SetActiveObservationsGraph(bool value)
         {
             var obsGraphPool = m_observationsContainer.ObservationsPool;
             obsGraphPool.SetActive(value);
-            graphConnectionLinesCloud.SetActive(value);
+            observationsLinesCloud.SetActive(value);
+        }
+
+        public void SetActiveLinesCloud(bool value)
+        {
+            linesCloud.SetActive(value);
         }
 
         public override void Repaint()
@@ -44,13 +54,17 @@ namespace Elektronik.Common.Maps
             ObservationsContainer.Repaint();
             LinesContainer.Repaint();
             PointsContainer.Repaint();
+            ObservationsConnections.Repaint();
+            PointsConnections.Repaint();
         }
 
         public override void Clear()
         {
             PointsContainer.Clear();
+            PointsConnections.Clear();
             LinesContainer.Clear();
             ObservationsContainer.Clear();
+            ObservationsConnections.Clear();
         }
     }
 }

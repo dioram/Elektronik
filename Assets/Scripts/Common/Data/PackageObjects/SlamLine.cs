@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Data.PackageObjects
 {
+    [Obsolete]
     public struct SlamLine
     {
         public Vector3 vert1;

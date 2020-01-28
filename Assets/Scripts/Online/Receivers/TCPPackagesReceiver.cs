@@ -21,14 +21,14 @@ namespace Elektronik.Online.Receivers
         private bool m_stop;
         private IPGlobalProperties m_ipProperties;
         private TcpConnectionInformation[] m_tcpConnections;
-        private DataParser m_parser;
+        private IParser m_parser;
 
         public delegate void TCPPackagesReceiverHandler();
         public event TCPPackagesReceiverHandler OnDisconnect;
 
         public bool Connected { get { return m_network.Connected; } }
 
-        public TCPPackagesReceiver(DataParser parser)
+        public TCPPackagesReceiver(IParser parser)
         {
             m_network = new TcpClient();
             m_network.ReceiveBufferSize = 64 * 1024;
@@ -83,7 +83,7 @@ namespace Elektronik.Online.Receivers
                         if (m_stop)
                             return;
                     } while (readBytes != countOfBytes);
-                    m_parser.Parse(rawPackage, 0, out receivedPackage);
+                    receivedPackage = m_parser.Parse(rawPackage, 0, ref readBytes);
                     if (receivedPackage.Timestamp != m_packageNum)
                     {
                         m_packagesBuffer.Add(receivedPackage);
