@@ -1,5 +1,4 @@
 ﻿using Elektronik.Common.Data.PackageObjects;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,7 +72,7 @@ namespace Elektronik.Common.Containers
             m_nodes[observation.Point.id] = observation;
             m_gameObjects[observation.Point.id] = ObservationsPool.Spawn(observation.Point.position, observation.Orientation);
             Debug.Log(
-                $"[SlamObservationsContainer.Add] Added observation with id {observation.Point.id}; count of covisible nodes {observation.CovisibleInfos.Count}");
+                $"[SlamObservationsContainer.Add] Added observation with id {observation.Point.id}" /*; count of covisible nodes {observation.CovisibleInfos.Count}"*/);
         }
 
         /// <summary>
@@ -147,7 +146,7 @@ namespace Elektronik.Common.Containers
                 throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Remove] Graph doesn't contain observation with id {id}");
 
             Debug.Log(
-                $"[SlamObservationsContainer.Remove] Removing observation with id {id}; count of covisible nodes {m_nodes[id].CovisibleInfos.Count}");
+                $"[SlamObservationsContainer.Remove] Removing observation with id {id}"/*; count of covisible nodes {m_nodes[id].CovisibleInfos.Count}"*/);
             ObservationsPool.Despawn(m_gameObjects[id]);
             m_gameObjects.Remove(id);
             m_nodes.Remove(id);
@@ -192,8 +191,9 @@ namespace Elektronik.Common.Containers
             var objectTransform = m_gameObjects[node.Point.id].transform;
             objectTransform.position = node.Point.position;
             objectTransform.rotation = node.Orientation;
+            m_nodes[obj.Point.id] = node;
             Debug.Log(
-                $"[SlamObservationsContainer.Update] Updated observation with id {node.Point.id}; count of covisible nodes {node.CovisibleInfos.Count}");
+                $"[SlamObservationsContainer.Update] Updated observation with id {node.Point.id}"/*; count of covisible nodes {node.CovisibleInfos.Count}"*/);
         }
         
         public IEnumerator<SlamObservation> GetEnumerator() => m_nodes.Values.GetEnumerator();

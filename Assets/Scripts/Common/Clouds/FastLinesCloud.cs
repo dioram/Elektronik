@@ -49,12 +49,26 @@ namespace Elektronik.Common.Clouds
             m_meshObjects[meshId].GetLine(lineId, out position1, out position2, out color);
         }
 
+        public void SetLine(int idx, Vector3 position1, Vector3 position2, Color color1, Color color2)
+        {
+            CheckMesh(idx, out int meshId, out int lineId);
+            position1.Scale(scale * Vector3.one);
+            position2.Scale(scale * Vector3.one);
+            m_meshObjects[meshId].SetLine(lineId, position1, position2, color1, color2);
+        }
+
         public void SetLine(int idx, Vector3 position1, Vector3 position2, Color color)
         {
             CheckMesh(idx, out int meshId, out int lineId);
             position1.Scale(scale * Vector3.one);
             position2.Scale(scale * Vector3.one);
             m_meshObjects[meshId].SetLine(lineId, position1, position2, color);
+        }
+
+        public void SetLineColor(int idx, Color color1, Color color2)
+        {
+            CheckMesh(idx, out int meshId, out int lineId);
+            m_meshObjects[meshId].SetLineColor(lineId, color1, color2);
         }
 
         public void SetLineColor(int idx, Color color)

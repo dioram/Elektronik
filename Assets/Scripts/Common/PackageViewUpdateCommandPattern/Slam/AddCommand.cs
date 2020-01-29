@@ -3,6 +3,7 @@ using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Packages;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
@@ -13,20 +14,17 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         public AddCommand(
             IContainer<T> container,
-            ActionDataPackage<T> slamEvent)
+            IEnumerable<T> objects)
         {
             m_container = container;
-            m_addedObjects = slamEvent.Objects;
+            m_addedObjects = objects.ToArray();
         }
 
         public void Execute()
         {
             if (m_addedObjects != null)
             {
-                foreach (var obj in m_addedObjects)
-                {
-                    m_container.Add(obj);
-                }
+                m_container.Add(m_addedObjects);
             }
         }
 
@@ -34,10 +32,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
         {
             if (m_addedObjects != null)
             {
-                foreach (var obj in m_addedObjects)
-                {
-                    m_container.Remove(obj);
-                }
+                m_container.Remove(m_addedObjects);
             }
         }
     }

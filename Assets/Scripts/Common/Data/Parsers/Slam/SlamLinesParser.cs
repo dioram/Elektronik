@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Elektronik.Common.Data.Parsers.Slam
 {
@@ -21,7 +22,7 @@ namespace Elektronik.Common.Data.Parsers.Slam
             if (header.ObjectType == ObjectType.Line || header.ActionType == ActionType.Connect)
             {
                 int connectionsCount = BitConverterEx.ToInt32(data, offset, ref offset);
-                var connections = new SlamLine2[connectionsCount];
+                var connections = new SlamLine[connectionsCount];
                 bool isCreateOrConnect = header.ActionType == ActionType.Create || header.ActionType == ActionType.Connect;
                 for (int i = 0; i < connectionsCount; ++i)
                 {
@@ -43,10 +44,14 @@ namespace Elektronik.Common.Data.Parsers.Slam
                         pt2.defaultColor = BitConverterEx.ToRGBColor(data, offset, ref offset);
                     if (isCreateOrConnect  || header.ActionType == ActionType.Tint)
                         pt2.color = BitConverterEx.ToRGBColor(data, offset, ref offset);
-                    
-                    connections[i] = new SlamLine2(pt1, pt2);
+                    if (header.ActionType == ActionType.Remove)
+                    {
+                        pt1.color = Color.red;
+                        pt2.color = Color.red;
+                    }
+                    connections[i] = new SlamLine(pt1, pt2);
                 }
-                return new ActionDataPackage<SlamLine2>(
+                return new ActionDataPackage<SlamLine>(
                     header.ObjectType,
                     header.ActionType,
                     header.PackageType,

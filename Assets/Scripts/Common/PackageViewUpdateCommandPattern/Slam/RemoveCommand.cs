@@ -4,6 +4,7 @@ using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Packages;
 using System.Linq;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
@@ -13,12 +14,12 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         private readonly IContainer<T> m_container;
 
-        public RemoveCommand(IContainer<T> container, ActionDataPackage<T> slamEvent)
+        public RemoveCommand(IContainer<T> container, IEnumerable<T> objects)
         {
             m_container = container;
-            if (slamEvent.Objects != null)
+            if (objects != null)
             {
-                m_objs2Remove = slamEvent.Objects
+                m_objs2Remove = objects
                     .Select(p => m_container[p])
                     .ToArray();
             }
@@ -28,10 +29,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
         {
             if (m_objs2Remove != null)
             {
-                foreach (var obj in m_objs2Remove)
-                {
-                    m_container.Remove(obj);
-                }
+                m_container.Remove(m_objs2Remove);
             }
         }
 
@@ -39,10 +37,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
         {
             if (m_objs2Remove != null)
             {
-                foreach (var obj in m_objs2Remove)
-                {
-                    m_container.Add(obj);
-                }
+                m_container.Add(m_objs2Remove);
             }
         }
     }

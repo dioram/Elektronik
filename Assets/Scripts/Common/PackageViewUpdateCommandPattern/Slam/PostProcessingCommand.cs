@@ -9,12 +9,12 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
     public class PostProcessingCommand<T> : MacroCommand
     {
-        public PostProcessingCommand(IContainer<T> container, ActionDataPackage<T> slamEvent)
+        public PostProcessingCommand(IContainer<T> container, IEnumerable<T> objects)
         {
-            if (slamEvent.Objects != null)
+            if (objects != null)
             {
-                m_commands.Add(new UpdateCommand<T>(container, slamEvent));
-                m_commands.Add(new RemoveCommand<T>(container, slamEvent));
+                m_commands.Add(new UpdateCommand<T>(container, objects));
+                m_commands.Add(new RemoveCommand<T>(container, objects));
             }
         }
     }

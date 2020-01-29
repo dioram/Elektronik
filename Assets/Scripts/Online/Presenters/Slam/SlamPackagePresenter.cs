@@ -48,7 +48,7 @@ namespace Elektronik.Online.Presenters.Slam
                 case ObjectType.Line:
                     lock (map.LinesContainer)
                         UpdateMap(
-                            (slamPkg as ActionDataPackage<SlamLine2>).Objects,
+                            (slamPkg as ActionDataPackage<SlamLine>).Objects,
                             map.LinesContainer,
                             pkg.ActionType);
                     break;
@@ -81,7 +81,7 @@ namespace Elektronik.Online.Presenters.Slam
                 case ObjectType.Line:
                     lock (map.LinesContainer)
                         UpdateMap(
-                          (pkg as ActionDataPackage<SlamLine2>).Objects,
+                          (pkg as ActionDataPackage<SlamLine>).Objects,
                           map.LinesContainer,
                           ActionType.Tint);
                     break;

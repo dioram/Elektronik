@@ -8,19 +8,19 @@ namespace Elektronik.Common.Maps
 {
     public class Helmet : MonoBehaviour
     {
-        private IConnectionsContainer<SlamLine2> m_linesContainer;
+        private IConnectionsContainer<SlamLine> m_linesContainer;
         private int m_lineSegmentIdx;
         private Stack<Pose> m_poseHistory;
-        private Stack<SlamLine2> m_linesHistory;
+        private Stack<SlamLine> m_linesHistory;
 
         public Color color = Color.red;
         public int id;
 
         private void Awake()
         {
-            m_linesContainer = new SlamLinesContainer2(GetComponentInChildren<FastLinesCloud>());
+            m_linesContainer = new SlamLinesContainer(GetComponentInChildren<FastLinesCloud>());
             m_poseHistory = new Stack<Pose>();
-            m_linesHistory = new Stack<SlamLine2>();
+            m_linesHistory = new Stack<SlamLine>();
         }
 
         public void TurnBack()
@@ -33,7 +33,7 @@ namespace Elektronik.Common.Maps
             }
             if (m_linesHistory.Count > 0)
             {
-                SlamLine2 lastLineId = m_linesHistory.Pop();
+                SlamLine lastLineId = m_linesHistory.Pop();
                 m_linesContainer.Remove(lastLineId);
                 m_linesContainer.Repaint();
             }
@@ -45,13 +45,12 @@ namespace Elektronik.Common.Maps
             {
                 id = m_lineSegmentIdx,
                 color = color,
-                isRemoved = false,
                 position = vert1,
             };
             SlamPoint pt2 = pt1;
             pt2.id = ++m_lineSegmentIdx;
             pt2.position = vert2;
-            var connection = new SlamLine2(pt1, pt2);
+            var connection = new SlamLine(pt1, pt2);
             m_linesContainer.Add(connection);
             m_linesHistory.Push(connection);
             m_linesContainer.Repaint();

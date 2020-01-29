@@ -34,7 +34,6 @@ namespace Elektronik.Common.Data.Parsers.Slam
                     }
                     if (header.ActionType == ActionType.Create)
                     {
-                        points[i].isNew = true;
                         points[i].defaultColor = BitConverterEx.ToRGBColor32(data, offset, ref offset);
                         points[i].color = BitConverterEx.ToRGBColor32(data, offset, ref offset);
                     }

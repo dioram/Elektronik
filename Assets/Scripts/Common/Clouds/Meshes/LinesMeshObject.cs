@@ -51,11 +51,27 @@ namespace Elektronik.Common.Clouds.Meshes
             color = m_colors[2 * idx];
         }
 
+        public void SetLine(int idx, Vector3 position1, Vector3 position2, Color color1, Color color2)
+        {
+            Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
+            SetLineColor(idx, color1, color2);
+            SetLinePositions(idx, position1, position2);
+            m_needRepaint = true;
+        }
+
         public void SetLine(int idx, Vector3 position1, Vector3 position2, Color color)
         {
             Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
             SetLineColor(idx, color);
             SetLinePositions(idx, position1, position2);
+            m_needRepaint = true;
+        }
+
+        public void SetLineColor(int idx, Color color1, Color color2)
+        {
+            Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
+            m_colors[2 * idx] = color1;
+            m_colors[2 * idx + 1] = color2;
             m_needRepaint = true;
         }
 

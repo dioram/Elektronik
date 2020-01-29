@@ -9,9 +9,9 @@ namespace Elektronik.Common.Containers
 {
     public class ConnectionsManager<T>
     {
-        private readonly IContainer<SlamLine2> m_connections;
+        private readonly IContainer<SlamLine> m_connections;
         private readonly ICloudObjectsContainer<T> m_objects;
-        public ConnectionsManager(IContainer<SlamLine2> connections, ICloudObjectsContainer<T> objects)
+        public ConnectionsManager(IContainer<SlamLine> connections, ICloudObjectsContainer<T> objects)
         {
             m_connections = connections;
             m_objects = objects;
@@ -23,7 +23,7 @@ namespace Elektronik.Common.Containers
                 if (m_objects.TryGetAsPoint(connection.pt1.id, out var pt1) &&
                     m_objects.TryGetAsPoint(connection.pt2.id, out var pt2))
                 {
-                    var updatedConn = new SlamLine2(pt1, pt2);
+                    var updatedConn = new SlamLine(pt1, pt2);
                     m_connections.Update(updatedConn);
                 }
                 else

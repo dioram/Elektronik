@@ -1,7 +1,5 @@
 ﻿using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Data.Packages;
-using Elektronik.Common.Data.Packages.SlamActionPackages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
-    public class UpdateConnectionsCommand : IPackageViewUpdateCommand
+    public class RemoveFromConnectionsCommand : IPackageViewUpdateCommand
     {
+        private readonly int[] m_ptIds;
         private readonly SlamLine[] m_connections2Restore;
-        private readonly SlamPoint[] m_pts;
         private readonly IConnectionsContainer<SlamLine> m_connections;
 
         private class ConnectionsComparer : IEqualityComparer<SlamLine>
@@ -24,12 +22,13 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
             public int GetHashCode(SlamLine obj) => obj.GetHashCode();
         }
 
-        public UpdateConnectionsCommand(IConnectionsContainer<SlamLine> connections, IEnumerable<SlamPoint> changedObjs)
+        public RemoveFromConnectionsCommand(IConnectionsContainer<SlamLine> connections, IEnumerable<SlamPoint> removedVertices)
         {
-            m_pts = changedObjs.ToArray();
             m_connections = connections;
+            m_ptIds = removedVertices.Select(pt => pt.id).ToArray();
+
             IEnumerable<SlamLine> connections2Restore = Enumerable.Empty<SlamLine>();
-            foreach (var pckgPt in m_pts)
+            foreach (var pckgPt in m_ptIds)
             {
                 connections2Restore = connections2Restore.Concat(m_connections[pckgPt]);
             }
@@ -38,12 +37,18 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         public void Execute()
         {
-            m_connections.Update(m_pts);
+            if (m_ptIds != null)
+            {
+                m_connections.Remove(m_ptIds);
+            }
         }
 
         public void UnExecute()
         {
-            m_connections.Update(m_connections2Restore);
+            if (m_connections2Restore != null)
+            {
+                m_connections.Add(m_connections2Restore);
+            }
         }
     }
 }

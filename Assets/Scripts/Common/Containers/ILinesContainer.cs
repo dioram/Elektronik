@@ -9,11 +9,13 @@ namespace Elektronik.Common.Containers
 {
     public interface IConnectionsContainer<T> : IRepaintableContainer<T>
     {
-        SlamLine2[] this[int id] { get; }
+        SlamLine[] this[int id] { get; }
 
-        SlamLine2[] this[SlamPoint pt] { get; }
+        SlamLine[] this[SlamPoint pt] { get; }
 
         void Remove(int id);
+        void Remove(IEnumerable<int> ids);
+        void Remove(IEnumerable<SlamPoint> pts);
         void Update(SlamPoint obj);
         void Update(IEnumerable<SlamPoint> objs);
     }

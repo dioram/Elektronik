@@ -64,11 +64,10 @@ namespace Elektronik.Online.Presenters.Slam
                     break;
                 case ActionType.Remove:
                     var removedPts = package as ActionDataPackage<SlamPoint>;
-                    foreach (var pt in removedPts.Objects)
-                        map.PointsConnections.Remove(pt.id);
+                    map.PointsConnections.Remove(removedPts.Objects);
                     break;
                 case ActionType.Connect:
-                    var connections = package as ActionDataPackage<SlamLine2>;
+                    var connections = package as ActionDataPackage<SlamLine>;
                     map.PointsConnections.Add(connections.Objects);
                     break;
                 case ActionType.Clear:

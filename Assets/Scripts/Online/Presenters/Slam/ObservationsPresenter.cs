@@ -46,11 +46,10 @@ namespace Elektronik.Online.Presenters.Slam
                     break;
                 case ActionType.Remove:
                     var removedObs = package as ActionDataPackage<SlamObservation>;
-                    foreach (var ob in removedObs.Objects)
-                        map.ObservationsConnections.Remove(ob.Point.id);
+                    map.ObservationsConnections.Remove(removedObs.Objects.Select(o => o.Point.id));
                     break;
                 case ActionType.Connect:
-                    var connections = package as ActionDataPackage<SlamLine2>;
+                    var connections = package as ActionDataPackage<SlamLine>;
                     map.ObservationsConnections.Add(connections.Objects);
                     break;
                 case ActionType.Clear:

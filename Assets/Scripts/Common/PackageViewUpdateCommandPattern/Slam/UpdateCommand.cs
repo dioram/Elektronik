@@ -15,30 +15,26 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 
         private readonly IContainer<T> m_container;
 
-        public UpdateCommand(IContainer<T> container, ActionDataPackage<T> slamEvent)
+        public UpdateCommand(IContainer<T> container, IEnumerable<T> objects)
         {
             m_container = container;
-            if (slamEvent.Objects != null)
+            if (objects != null)
             {
-                m_objs2Restore = slamEvent.Objects.Select(p => container[p]).ToArray();
-                m_objs2Update = slamEvent.Objects;
+                m_objs2Restore = objects.Select(p => container[p]).ToArray();
+                m_objs2Update = objects.ToArray();
             }
         }
 
         public void Execute()
         {
-            foreach (var obj in m_objs2Update)
-            {
-                m_container.Update(obj);
-            }
+            if (m_objs2Update != null)
+                m_container.Update(m_objs2Update);
         }
 
         public void UnExecute()
         {
-            foreach (var obj in m_objs2Restore)
-            {
-                m_container.Update(obj);
-            }
+            if (m_objs2Restore != null)
+                m_container.Update(m_objs2Restore);
         }
     }
 }

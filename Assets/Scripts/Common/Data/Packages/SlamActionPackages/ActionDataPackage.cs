@@ -1,10 +1,4 @@
-﻿using Elektronik.Common.Data;
-using Elektronik.Common.Data.Packages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Elektronik.Common.Data.Packages.SlamActionPackages
 {
@@ -36,10 +30,11 @@ namespace Elektronik.Common.Data.Packages.SlamActionPackages
         public override string ToString()
         {
             return 
+                $"Timestamp: {Timestamp}{Environment.NewLine}" + 
                 $"Package type: {PackageType}{Environment.NewLine}" +
                 $"Action type: {ActionType}{Environment.NewLine}" +
                 $"Object type: {ObjectType}{Environment.NewLine}" +
-                $"Count of {ObjectType}s ({nameof(T)}): {Objects.Length}{Environment.NewLine}";
+                $"Count of {ObjectType}s ({typeof(T).Name}): {Objects.Length}{Environment.NewLine}";
         }
     }
 }

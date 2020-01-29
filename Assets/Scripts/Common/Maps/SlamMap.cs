@@ -15,21 +15,21 @@ namespace Elektronik.Common.Maps
         public FastLinesCloud linesCloud;
 
         private SlamObservationsContainer m_observationsContainer;
-        public IConnectionsContainer<SlamLine2> LinesContainer { get; private set; }
+        public IConnectionsContainer<SlamLine> LinesContainer { get; private set; }
         public ICloudObjectsContainer<SlamObservation> ObservationsContainer { get => m_observationsContainer; }
-        public IConnectionsContainer<SlamLine2> ObservationsConnections { get; private set; }
+        public IConnectionsContainer<SlamLine> ObservationsConnections { get; private set; }
         public ICloudObjectsContainer<SlamPoint> PointsContainer { get; private set; }
-        public IConnectionsContainer<SlamLine2> PointsConnections { get; private set; }
+        public IConnectionsContainer<SlamLine> PointsConnections { get; private set; }
 
         private void Awake()
         {
-            LinesContainer = new SlamLinesContainer2(linesCloud);
+            LinesContainer = new SlamLinesContainer(linesCloud);
             
             m_observationsContainer = new SlamObservationsContainer(observationPrefab);
-            ObservationsConnections = new SlamLinesContainer2(observationsLinesCloud);
+            ObservationsConnections = new SlamLinesContainer(observationsLinesCloud);
 
             PointsContainer = new SlamPointsContainer(fastPointCloud);
-            PointsConnections = new SlamLinesContainer2(pointsLinesCloud);
+            PointsConnections = new SlamLinesContainer(pointsLinesCloud);
         }
 
         public void SetActivePointCloud(bool value)
