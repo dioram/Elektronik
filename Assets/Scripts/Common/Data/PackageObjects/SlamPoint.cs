@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
+using System.Runtime.Serialization;
 
 namespace Elektronik.Common.Data.PackageObjects
 {
     public struct SlamPoint
     {
-        public Vector3 position;
         public int id;
-        public Color defaultColor;
+        public Vector3 position;
         public Color color;
         public string message;
+        public Color defaultColor;
         public override string ToString()
         {
             return message ?? "SlamPoint";

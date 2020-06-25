@@ -51,20 +51,20 @@ namespace Elektronik.Common.Maps
 
         public override void Repaint()
         {
-            ObservationsContainer.Repaint();
-            LinesContainer.Repaint();
-            PointsContainer.Repaint();
-            ObservationsConnections.Repaint();
-            PointsConnections.Repaint();
+            lock (ObservationsContainer) ObservationsContainer.Repaint();
+            lock (LinesContainer) LinesContainer.Repaint();
+            lock (PointsContainer) PointsContainer.Repaint();
+            lock (ObservationsConnections) ObservationsConnections.Repaint();
+            lock (PointsConnections) PointsConnections.Repaint();
         }
 
         public override void Clear()
         {
-            PointsContainer.Clear();
-            PointsConnections.Clear();
-            LinesContainer.Clear();
-            ObservationsContainer.Clear();
-            ObservationsConnections.Clear();
+            lock (ObservationsContainer) ObservationsContainer.Clear();
+            lock (LinesContainer) LinesContainer.Clear();
+            lock (PointsContainer) PointsContainer.Clear();
+            lock (ObservationsConnections) ObservationsConnections.Clear();
+            lock (PointsConnections) PointsConnections.Clear();
         }
     }
 }
