@@ -1,35 +1,50 @@
 ﻿using Elektronik.Common.Clouds;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
+using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Extensions;
 using UnityEngine;
 
 namespace Elektronik.Common.Maps
 {
-    public class SlamMap : RepaintableObject
+    public class SlamMap : MonoBehaviour
     {
+        public Helmet helmetPrefab;
+
+        private ObjectPool m_observationsPool;
         public GameObject observationPrefab;
         public FastPointCloud fastPointCloud;
         public FastLinesCloud pointsLinesCloud;
         public FastLinesCloud observationsLinesCloud;
         public FastLinesCloud linesCloud;
 
-        private SlamObservationsContainer m_observationsContainer;
         public IConnectionsContainer<SlamLine> LinesContainer { get; private set; }
-        public ICloudObjectsContainer<SlamObservation> ObservationsContainer { get => m_observationsContainer; }
         public IConnectionsContainer<SlamLine> ObservationsConnections { get; private set; }
-        public ICloudObjectsContainer<SlamPoint> PointsContainer { get; private set; }
         public IConnectionsContainer<SlamLine> PointsConnections { get; private set; }
+        public ICloudObjectsContainer<SlamPoint> PointsContainer { get; private set; }
+        public GameObjectsContainer<TrackedObjPb> TrackedObjsContainer { get; private set; }
+        public GameObjectsContainer<SlamObservation> ObservationsContainer { get; private set; }
 
         private void Awake()
         {
+            TrackedObjsContainer = new TrackedObjectsContainer(helmetPrefab);
+
             LinesContainer = new SlamLinesContainer(linesCloud);
             
-            m_observationsContainer = new SlamObservationsContainer(observationPrefab);
+            var observationsContainer = new SlamObservationsContainer(observationPrefab);
+            ObservationsContainer = observationsContainer;
+            m_observationsPool = observationsContainer.ObservationsPool;
+
             ObservationsConnections = new SlamLinesContainer(observationsLinesCloud);
 
             PointsContainer = new SlamPointsContainer(fastPointCloud);
             PointsConnections = new SlamLinesContainer(pointsLinesCloud);
+        }
+
+        private void Update()
+        {
+            TrackedObjsContainer.Repaint();
+            ObservationsContainer.Repaint();
         }
 
         public void SetActivePointCloud(bool value)
@@ -39,32 +54,20 @@ namespace Elektronik.Common.Maps
         }
         public void SetActiveObservationsGraph(bool value)
         {
-            var obsGraphPool = m_observationsContainer.ObservationsPool;
-            obsGraphPool.SetActive(value);
+            m_observationsPool.SetActive(value);
             observationsLinesCloud.SetActive(value);
         }
 
-        public void SetActiveLinesCloud(bool value)
-        {
-            linesCloud.SetActive(value);
-        }
+        public void SetActiveLinesCloud(bool value) => linesCloud.SetActive(value);
 
-        public override void Repaint()
+        public void Clear()
         {
-            lock (ObservationsContainer) ObservationsContainer.Repaint();
-            lock (LinesContainer) LinesContainer.Repaint();
-            lock (PointsContainer) PointsContainer.Repaint();
-            lock (ObservationsConnections) ObservationsConnections.Repaint();
-            lock (PointsConnections) PointsConnections.Repaint();
-        }
-
-        public override void Clear()
-        {
-            lock (ObservationsContainer) ObservationsContainer.Clear();
-            lock (LinesContainer) LinesContainer.Clear();
-            lock (PointsContainer) PointsContainer.Clear();
-            lock (ObservationsConnections) ObservationsConnections.Clear();
-            lock (PointsConnections) PointsConnections.Clear();
+            TrackedObjsContainer.Clear();
+            ObservationsContainer.Clear();
+            LinesContainer.Clear();
+            PointsContainer.Clear();
+            ObservationsConnections.Clear();
+            PointsConnections.Clear();
         }
     }
 }

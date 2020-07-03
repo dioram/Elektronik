@@ -1,6 +1,7 @@
 ﻿using Elektronik.Common.Clouds;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,7 +36,6 @@ namespace Elektronik.Common.Maps
             {
                 SlamLine lastLineId = m_linesHistory.Pop();
                 m_linesContainer.Remove(lastLineId);
-                m_linesContainer.Repaint();
             }
         }
 
@@ -53,7 +53,6 @@ namespace Elektronik.Common.Maps
             var connection = new SlamLine(pt1, pt2);
             m_linesContainer.Add(connection);
             m_linesHistory.Push(connection);
-            m_linesContainer.Repaint();
         }
 
         public void ReplaceAbs(Vector3 position, Quaternion rotation)
@@ -72,8 +71,21 @@ namespace Elektronik.Common.Maps
             Vector3 newPosition = newPose.GetColumn(3);
             Quaternion newRotation = Quaternion.LookRotation(newPose.GetColumn(2), newPose.GetColumn(1));
             ContinueTrack(transform.position, position);
-            transform.position = newPosition;
-            transform.rotation = newRotation;
+            transform.SetPositionAndRotation(newPosition, newRotation);
+        }
+
+        public void Update()
+        {
+            if (transform.hasChanged)
+            {
+                transform.hasChanged = false;
+                var currentPose = new Pose(transform.position, transform.rotation);
+                if (m_poseHistory.Count != 0)
+                {
+                    ContinueTrack(m_poseHistory.Peek().position, currentPose.position);
+                }
+                m_poseHistory.Push(currentPose);
+            }
         }
 
         public void ResetHelmet()
@@ -82,8 +94,8 @@ namespace Elektronik.Common.Maps
             transform.rotation = Quaternion.identity;
             m_lineSegmentIdx = 0;
             m_linesHistory.Clear();
-            m_linesContainer.Clear();
             m_poseHistory.Clear();
+            m_linesContainer.Clear();
         }
     }
 }

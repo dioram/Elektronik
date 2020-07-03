@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Elektronik.Common.Containers
 {
-    public interface IConnectionsContainer<T> : IRepaintableContainer<T>
+    public interface IConnectionsContainer<T> : IContainer<T>
     {
         SlamLine[] this[int id] { get; }
 

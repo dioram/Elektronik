@@ -33,7 +33,12 @@ namespace Elektronik.Common.UI
 
         void Browse()
         {
-            FileBrowser.ShowLoadDialog((path) => ifFilePath.text = path, () => { }, folderMode, initialPath, title, buttonText);
+            FileBrowser.ShowLoadDialog(
+                path => ifFilePath.text = path[0], 
+                () => { }, 
+                initialPath: initialPath, 
+                title: title, 
+                loadButtonText: buttonText);
         }
     }
 }

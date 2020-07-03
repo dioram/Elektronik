@@ -4,9 +4,8 @@ using System.Collections.Generic;
 
 namespace Elektronik.Common.Containers
 {
-    public interface ICloudObjectsContainer<T> : IRepaintableContainer<T>
+    public interface ICloudObjectsContainer<T> : IContainer<T>
     {
-        void ChangeColor(T obj);
         bool Exists(int objId);
         T this[int id] { get; set; }
         void Remove(int id);

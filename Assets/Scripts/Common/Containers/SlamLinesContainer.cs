@@ -56,34 +56,13 @@ namespace Elektronik.Common.Containers
                 connectionId = m_maxId++;
             }
             m_connections[connectionId] = obj;
-            m_linesCloud.SetLine(connectionId, obj.pt1.position, obj.pt2.position, obj.pt1.color, obj.pt2.color);
+            m_linesCloud.Set(connectionId, obj.pt1.position, obj.pt2.position, obj.pt1.color, obj.pt2.color);
         }
         public void Add(IEnumerable<SlamLine> objects)
         {
             foreach (var obj in objects)
             {
                 Add(obj);
-            }
-        }
-        public void ChangeColor(SlamPoint obj)
-        {
-            IEnumerable<int> connectionIds = m_connections
-                .Where(kv => kv.Value.pt1.id == obj.id || kv.Value.pt2.id == obj.id)
-                .Select(kv => kv.Key);
-            foreach (var connectionId in connectionIds)
-            {
-                m_linesCloud.SetLineColor(connectionId, obj.color);
-            }
-        }
-        public void ChangeColor(SlamLine obj)
-        {
-            if (TryGet(obj.pt1.id, obj.pt2.id, out KeyValuePair<int, SlamLine> kv))
-            {
-                m_linesCloud.SetLineColor(kv.Key, obj.pt1.color, obj.pt2.color);
-                SlamLine line = kv.Value;
-                SlamPoint pt1 = line.pt1;
-                SlamPoint pt2 = line.pt2;
-                m_connections[kv.Key] = new SlamLine(pt1, pt2);
             }
         }
         public void Clear()
@@ -104,7 +83,7 @@ namespace Elektronik.Common.Containers
                 .Select(kv => kv.Key).ToArray();
             foreach (var connectionId2Remove in connectionIds2Remove)
             {
-                m_linesCloud.SetLine(connectionId2Remove, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
+                m_linesCloud.Set(connectionId2Remove, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
                 m_freeIds.Enqueue(connectionId2Remove);
                 m_connections.Remove(connectionId2Remove);
             }
@@ -135,12 +114,11 @@ namespace Elektronik.Common.Containers
             if (TryGet(id1, id2, out KeyValuePair<int, SlamLine> kv))
             {
                 m_freeIds.Enqueue(kv.Key);
-                m_linesCloud.SetLine(kv.Key, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
+                m_linesCloud.Set(kv.Key, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
                 m_connections.Remove(kv.Key);
             }
         }
         public void Remove(SlamLine obj) => Remove(obj.pt1.id, obj.pt2.id);
-        public void Repaint() => m_linesCloud.Repaint();
         private bool TryGet(int idx1, int idx2, out KeyValuePair<int, SlamLine> kv)
         {
             bool isFound = false;
@@ -198,7 +176,7 @@ namespace Elektronik.Common.Containers
             foreach (var kv in changes)
             {
                 m_connections[kv.Key] = changes[kv.Key];
-                m_linesCloud.SetLine(kv.Key, 
+                m_linesCloud.Set(kv.Key, 
                     m_connections[kv.Key].pt1.position, m_connections[kv.Key].pt2.position, 
                     m_connections[kv.Key].pt1.color, m_connections[kv.Key].pt2.color);
             }
@@ -236,7 +214,7 @@ namespace Elektronik.Common.Containers
             foreach (var kv in changes)
             {
                 m_connections[kv.Key] = changes[kv.Key];
-                m_linesCloud.SetLine(kv.Key, 
+                m_linesCloud.Set(kv.Key, 
                     m_connections[kv.Key].pt1.position, m_connections[kv.Key].pt2.position, 
                     m_connections[kv.Key].pt1.color, m_connections[kv.Key].pt2.color);
             }
@@ -247,11 +225,11 @@ namespace Elektronik.Common.Containers
             {
                 if (obj.pt1.id == conn.Value.pt1.id && obj.pt2.id == conn.Value.pt2.id)
                 {
-                    m_linesCloud.SetLine(conn.Key, obj.pt1.position, obj.pt2.position, obj.pt1.color, obj.pt2.color);
+                    m_linesCloud.Set(conn.Key, obj.pt1.position, obj.pt2.position, obj.pt1.color, obj.pt2.color);
                 }
                 else
                 {
-                    m_linesCloud.SetLine(conn.Key, obj.pt2.position, obj.pt1.position, obj.pt2.color, obj.pt1.color);
+                    m_linesCloud.Set(conn.Key, obj.pt2.position, obj.pt1.position, obj.pt2.color, obj.pt1.color);
                 }
                 m_connections[conn.Key] = obj;
             }

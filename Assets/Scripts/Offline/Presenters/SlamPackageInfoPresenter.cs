@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Packages.SlamActionPackages;
 using System.Linq;
+using Elektronik.Common.Data.Pb;
+using System;
+using TMPro;
 
 namespace Elektronik.Offline.Presenters
 {
@@ -15,66 +18,44 @@ namespace Elektronik.Offline.Presenters
         public EventInfoBanner info;
         public SlamMap map;
 
-        private ISlamActionPackage m_pkg;
+        private PacketPb m_packet;
         private SlamPoint[] m_objects;
 
-        private IEnumerable<SlamPoint> pkg2pts(ISlamActionPackage pkg)
+        private IEnumerable<SlamPoint> pkg2pts(PacketPb packet)
         {
-            switch (pkg.ObjectType)
+            switch (packet.DataCase)
             {
-                case ObjectType.Point:
-                    return (pkg as ActionDataPackage<SlamPoint>).Objects
-                        .Select(pt => 
-                        {
-                            var mapPt = map.PointsContainer[pt];
-                            mapPt.message = pt.message;
-                            return mapPt;
-                        });
-                case ObjectType.Observation:
-                    return (pkg as ActionDataPackage<SlamObservation>).Objects
-                        .Select(obs =>
-                        {
-                            SlamPoint mapPt = map.ObservationsContainer[obs];
-                            mapPt.message = obs.Point.message;
-                            return mapPt;
-                        }); 
-                case ObjectType.Line:
-                    return (pkg as ActionDataPackage<SlamLine>).Objects
-                        .Select(l =>
-                        {
-                            var mapLine = map.LinesContainer[l];
-                            SlamPoint pt1 = mapLine.pt1;
-                            pt1.message = l.pt1.message;
-                            return pt1;
-                        });
+                case PacketPb.DataOneofCase.PointsPacket:
+                    return packet.PointsPacket.Points.Select(p => 
+                        new SlamPoint(p.Id, map.PointsContainer[p].position, color: default, message: p.Message));
+                case PacketPb.DataOneofCase.ObservationsPacket:
+                    return packet.ObservationsPacket.Observations.Select(o =>
+                        new SlamPoint(o.Point.Id, map.ObservationsContainer[o].Point.position, color: default, message: o.Point.Message));
                 default:
                     return null;
             }
         }
-        public override void Present(IPackage package)
+        public override void Present(PacketPb packet)
         {
-            if (package.PackageType == PackageType.SLAMPackage)
+            if (!packet.Special)
+                return;
+            m_packet = packet;
+            if (m_packet.Action == PacketPb.Types.ActionType.Info)
             {
-                if (!package.IsKey)
-                    return;
-                m_pkg = package as ISlamActionPackage;
-                if (m_pkg.ActionType == ActionType.Message)
-                {
-                    m_objects = pkg2pts(m_pkg).ToArray();
-                }
+                m_objects = pkg2pts(m_packet).ToArray();
             }
-            m_presenter?.Present(package);
+            m_presenter?.Present(packet);
             return;
         }
         public override void Clear() => info.Clear();
         public override void Repaint()
         {
-            if (m_pkg.IsKey)
+            if (m_packet != null && m_packet.Special)
             {
                 info.Clear();
-                info.UpdateCommonInfo(m_pkg.ToString());
-                if (m_pkg.ActionType == ActionType.Message)
-                    info.UpdateExtraInfo(m_pkg.ObjectType.ToString(), m_objects);
+                info.UpdateCommonInfo(m_packet.Message);
+                if (m_packet.Action == PacketPb.Types.ActionType.Info)
+                    info.UpdateExtraInfo(m_packet.DataCase.ToString(), m_objects);
             }
         }
     }

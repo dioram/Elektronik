@@ -11,13 +11,13 @@ GameObject:
   - component: {fileID: 4058315034449389461}
   - component: {fileID: 3561336539772840911}
   - component: {fileID: 8862314076629996663}
-  - component: {fileID: 3196890091568745049}
+  - component: {fileID: 6878610383672646492}
   m_Layer: 0
   m_Name: Triangles mesh object
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &4058315034449389461
 Transform:
@@ -47,6 +47,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -58,6 +59,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -78,7 +80,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5376353029113288073}
   m_Mesh: {fileID: 0}
---- !u!114 &3196890091568745049
+--- !u!114 &6878610383672646492
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,7 +89,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5376353029113288073}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c851d3c2b065a2142ba237d487bfb503, type: 3}
+  m_Script: {fileID: 11500000, guid: 77b8be8036977ee41b936eb49d85f72a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   sideSize: 0.1

@@ -1,12 +1,23 @@
 *
 
-!./Assets/
-!./Assets/**
-!./ProjectSettings/
-!./ProjectSettings/**
-!./.gitignore
-!./.gitattributes
-!./LICENSE.md
-!./README*
+!/Examples/
+!/Examples/**
+/Examples/**/[Bb]in/
+/Examples/**/[Oo]bj/
 
-*.meta
+!/Assets/
+!/Assets/**
+!/ProjectSettings/
+!/ProjectSettings/**
+!/.gitignore
+!/.gitattributes
+!/LICENSE.md
+!/README*
+
+/Assets/generatedFiles/
+/Assets/Packages/
+
+# Unity3D generated meta files
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta

@@ -13,10 +13,6 @@ namespace Elektronik.Common.Containers
         private readonly SortedDictionary<int, SlamPoint> m_points;
         private readonly IFastPointsCloud m_pointsCloud;
 
-        private int m_added = 0;
-        private int m_removed = 0;
-        private int m_diff = 0;
-
         public int Count => m_points.Count;
 
         public SlamPointsContainer(IFastPointsCloud cloud)
@@ -27,14 +23,9 @@ namespace Elektronik.Common.Containers
 
         public void Add(SlamPoint point)
         {
-            //Debug.Assert(
-            //    !m_points.ContainsKey(point.id),
-            //    $"[SlamPointsContainer.Add] Point with id {point.id} already in dictionary!");
             if (m_points.ContainsKey(point.id))
                 throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.Add] Point with id {point.id} already in dictionary!");
-            ++m_diff;
-            ++m_added;
-            m_pointsCloud.Set(point.id, Matrix4x4.Translate(point.position), point.color);
+            m_pointsCloud.Set(new CloudPoint(point.id, Matrix4x4.Translate(point.position), point.color));
             m_points.Add(point.id, point);
         }
 
@@ -42,15 +33,15 @@ namespace Elektronik.Common.Containers
         {
             foreach (var point in points)
             {
-                Add(point);
+                if (m_points.ContainsKey(point.id))
+                    throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.Add] Point with id {point.id} already in dictionary!");
+                m_points.Add(point.id, point);
             }
+            m_pointsCloud.Set(points.Select(p => new CloudPoint(p.id, Matrix4x4.Translate(p.position), p.color)));
         }
 
         public void Update(SlamPoint point)
         {
-            //Debug.Assert(
-            //    m_points.ContainsKey(point.id),
-            //    $"[SlamPointsContainer.Update] Container doesn't contain point with id {point.id}");
             if (!m_points.ContainsKey(point.id))
                 throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.Update] Container doesn't contain point with id {point.id}");
             Matrix4x4 translationMat = Matrix4x4.Translate(point.position);
@@ -58,48 +49,48 @@ namespace Elektronik.Common.Containers
             currentPoint.position = point.position;
             currentPoint.color = point.color;
             m_points[point.id] = currentPoint;
-            m_pointsCloud.Set(point.id, translationMat, point.color);
+            m_pointsCloud.Set(new CloudPoint(point.id, translationMat, point.color));
         }
 
-        public void ChangeColor(SlamPoint point)
+        public void Update(IEnumerable<SlamPoint> points)
         {
-            //Debug.Assert(
-            //    m_points.ContainsKey(point.id),
-            //    $"[SlamPointsContainer.ChangeColor] Container doesn't contain point with id {point.id}");
-            if (!m_points.ContainsKey(point.id))
-                throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.ChangeColor] Container doesn't contain point with id {point.id}");
-            m_pointsCloud.Set(point.id, point.color);
-            SlamPoint currentPoint = m_points[point.id];
-            currentPoint.color = point.color;
-            m_points[point.id] = currentPoint;
+            foreach (var point in points)
+            {
+                if (!m_points.ContainsKey(point.id))
+                    throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.Update] Container doesn't contain point with id {point.id}");
+                SlamPoint currentPoint = m_points[point.id];
+                currentPoint.position = point.position;
+                currentPoint.color = point.color;
+                m_points[point.id] = currentPoint;
+            }
+            m_pointsCloud.Set(points.Select(p => new CloudPoint(p.id, Matrix4x4.Translate(p.position), p.color)));
         }
 
         public void Remove(int pointId)
         {
-            --m_diff;
-            ++m_removed;
-            //Debug.Assert(
-            //    m_points.ContainsKey(pointId),
-            //    $"[SlamPointsContainer.Remove] Container doesn't contain point with id {pointId}");
             if (!m_points.ContainsKey(pointId))
                 throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.Remove] Container doesn't contain point with id {pointId}");
-            m_pointsCloud.Set(pointId, Matrix4x4.identity, new Color(0, 0, 0, 0));
+            m_pointsCloud.Set(new CloudPoint(pointId, Matrix4x4.identity, new Color(0, 0, 0, 0)));
             m_points.Remove(pointId);
         }
         
         public void Remove(SlamPoint point) => Remove(point.id);
-        
+
+        public void Remove(IEnumerable<SlamPoint> points)
+        {
+            foreach (var point in points)
+            {
+                if (!m_points.ContainsKey(point.id))
+                    throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.Remove] Container doesn't contain point with id {point.id}");
+                m_points.Remove(point.id);
+            }
+            m_pointsCloud.Set(points.Select(p => new CloudPoint(p.id, Matrix4x4.identity, new Color(0, 0, 0, 0))));
+        }
+
         public void Clear()
         {
-            int[] pointsIds = m_points.Keys.ToArray();
-            for (int i = 0; i < pointsIds.Length; ++i)
-                Remove(pointsIds[i]);
             m_points.Clear();
             m_pointsCloud.Clear();
-            Repaint();
-            Debug.Log($"[SlamPointsContainer.Clear] Added points: {m_added}; Removed points: {m_removed}; Diff: {m_diff}");
-            m_added = 0;
-            m_removed = 0;
         }
 
         public SlamPoint[] GetAll() => m_points.Select(kv => kv.Value).ToArray();
@@ -114,9 +105,6 @@ namespace Elektronik.Common.Containers
         {
             get
             {
-                //Debug.Assert(
-                //    m_points.ContainsKey(id),
-                //    $"[SlamPointsContainer.Get] Container doesn't contain point with id {id}");
                 if (!m_points.ContainsKey(id))
                     throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.Get] Container doesn't contain point with id {id}");
                 return m_points[id];
@@ -147,8 +135,6 @@ namespace Elektronik.Common.Containers
 
         public bool TryGet(SlamPoint point, out SlamPoint current) => TryGet(point.id, out current);
 
-        public void Repaint() => m_pointsCloud.Repaint();
-
         public IEnumerator<SlamPoint> GetEnumerator() => m_points.Select(kv => kv.Value).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => m_points.Select(kv => kv.Value).GetEnumerator();
@@ -156,17 +142,5 @@ namespace Elektronik.Common.Containers
         public bool TryGetAsPoint(SlamPoint obj, out SlamPoint point) => TryGet(obj, out point);
 
         public bool TryGetAsPoint(int idx, out SlamPoint point) => TryGet(idx, out point);
-
-        public void Update(IEnumerable<SlamPoint> objs)
-        {
-            foreach (var obj in objs)
-                Update(obj);
-        }
-
-        public void Remove(IEnumerable<SlamPoint> objs)
-        {
-            foreach (var obj in objs)
-                Remove(obj);
-        }
     }
 }

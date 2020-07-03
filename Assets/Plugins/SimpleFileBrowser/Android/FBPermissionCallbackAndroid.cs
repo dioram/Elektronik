@@ -1,8 +1,10 @@
-﻿namespace SimpleFileBrowser
+﻿#if !UNITY_EDITOR && UNITY_ANDROID
+using System.Threading;
+using UnityEngine;
+
+namespace SimpleFileBrowser
 {
-    public class FBPermissionCallbackAndroid
-#if UNITY_ANDROID
-	: AndroidJavaProxy
+	public class FBPermissionCallbackAndroid : AndroidJavaProxy
 	{
 		private object threadLock;
 		public int Result { get; private set; }
@@ -23,7 +25,5 @@
 			}
 		}
 	}
-#else
-    { }
-#endif
 }
+#endif

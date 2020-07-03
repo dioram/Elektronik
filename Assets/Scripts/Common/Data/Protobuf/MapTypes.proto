@@ -1,0 +1,95 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Elektronik.Common.Data.Pb";
+
+message Vector3Pb {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+message Vector4Pb {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+    double w = 4;
+}
+
+message ColorPb {
+    int32 r = 1;
+    int32 g = 2;
+    int32 b = 3;
+}
+
+message PointPb {
+    int32 id = 1;
+    Vector3Pb position = 2;
+    ColorPb color = 3;
+    string message = 16;
+}
+
+message ObservationPb {
+    message Stats {
+        reserved 1 to 4;
+	}
+    PointPb point = 1;
+    Vector4Pb orientation = 2;
+    Stats stats = 16;
+}
+
+message ConnectionPb {
+    PointPb pt1 = 1;
+    PointPb pt2 = 2;
+}
+
+message TrackedObjPb {
+    int32 id = 1;
+    Vector3Pb translation = 2;
+    Vector4Pb rotation = 3;
+    ColorPb trackColor = 4;
+    string message = 5;
+}
+
+message PacketPb {
+    enum ActionType {
+        add = 0;
+        update = 1;
+        remove = 2;
+        clear = 3;
+        info = 4;
+	}
+
+    message PointsPacket {
+        repeated PointPb points = 1;
+	}
+
+    message ObservationsPacket {
+        repeated ObservationPb observations = 1;
+	}
+
+    message ConnectionsPacket {
+        enum MapType {
+            points = 0;
+            observations = 1;
+	    }
+        
+        repeated ConnectionPb connections = 1;
+        MapType map = 2;
+	}
+
+    message TrackedObjsPacket {
+        repeated TrackedObjPb trackedObjs = 1;
+	}
+
+    ActionType action = 1;
+    int32 timestamp = 2;
+    bool special = 3;
+    string message = 4;
+    
+    oneof Data {
+        TrackedObjsPacket trackedObjsPacket = 12;
+        PointsPacket pointsPacket = 13;
+        ObservationsPacket observationsPacket = 14;
+        ConnectionsPacket connectionsPacket = 15;
+	}
+}
