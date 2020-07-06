@@ -27,11 +27,12 @@ namespace Elektronik.Common.Maps
 
         private void Awake()
         {
-            TrackedObjsContainer = new TrackedObjectsContainer(helmetPrefab);
+            var invoker = FindObjectOfType<MainThreadInvoker>();
+            TrackedObjsContainer = new TrackedObjectsContainer(helmetPrefab, invoker);
 
             LinesContainer = new SlamLinesContainer(linesCloud);
             
-            var observationsContainer = new SlamObservationsContainer(observationPrefab);
+            var observationsContainer = new SlamObservationsContainer(observationPrefab, invoker);
             ObservationsContainer = observationsContainer;
             m_observationsPool = observationsContainer.ObservationsPool;
 
@@ -39,12 +40,6 @@ namespace Elektronik.Common.Maps
 
             PointsContainer = new SlamPointsContainer(fastPointCloud);
             PointsConnections = new SlamLinesContainer(pointsLinesCloud);
-        }
-
-        private void Update()
-        {
-            TrackedObjsContainer.Repaint();
-            ObservationsContainer.Repaint();
         }
 
         public void SetActivePointCloud(bool value)

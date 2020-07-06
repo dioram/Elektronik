@@ -9,27 +9,17 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public abstract class GameObjectsContainer<T> : ICloudObjectsContainer<T>, IRepaintable
+    public abstract class GameObjectsContainer<T> : ICloudObjectsContainer<T>
     {
         protected abstract int GetObjectId(T obj);
         protected abstract Pose GetObjectPose(T obj);
         protected abstract void UpdateGameObject(T @object, GameObject gameObject);
-        protected virtual void GameObjectDespawn(GameObject gameObject)
-        {
+        protected virtual void GameObjectDespawn(GameObject gameObject) { }
 
-        }
         protected abstract SlamPoint AsPoint(T obj);
         protected abstract T Update(T current, T @new);
 
-        protected enum ActionType
-        {
-            Add,
-            Update,
-            Remove,
-            Clear,
-        }
-        protected readonly Queue<(T, ActionType)> m_mainTreadActions;
-
+        protected readonly MainThreadInvoker m_invoker;
         protected readonly SortedDictionary<int, T> m_objects;
         protected readonly SortedDictionary<int, GameObject> m_gameObjects;
         public ObjectPool ObservationsPool { get; private set; }
@@ -68,11 +58,12 @@ namespace Elektronik.Common.Containers
 
         /// <param name="prefab">Desired prefab of observation</param>
         /// <param name="lines">Lines cloud objects for connections drawing</param>
-        public GameObjectsContainer(GameObject prefab)
+        public GameObjectsContainer(GameObject prefab, MainThreadInvoker invoker)
         {
             m_objects = new SortedDictionary<int, T>();
             m_gameObjects = new SortedDictionary<int, GameObject>();
-            m_mainTreadActions = new Queue<(T, ActionType)>();
+            m_invoker = invoker;
+            // m_mainTreadActions = new Queue<(T, ActionType)>();
             ObservationsPool = new ObjectPool(prefab);
             ObservationsPool.OnObjectDeSpawn += (o, s) => GameObjectDespawn(o);
         }
@@ -89,7 +80,9 @@ namespace Elektronik.Common.Containers
             if (Exists(obj))
                 throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Add] Graph already contains {typeof(T).Name} with id {id}");
             m_objects[id] = obj;
-            lock (m_mainTreadActions) m_mainTreadActions.Enqueue((obj, ActionType.Add));
+
+            Pose pose = GetObjectPose(obj);
+            m_invoker.Enqueue(() => m_gameObjects[GetObjectId(obj)] = ObservationsPool.Spawn(pose.position, pose.rotation));
             Debug.Log($"[SlamObservationsContainer.Add] Added {typeof(T).Name} with id {id}");
         }
 
@@ -110,8 +103,9 @@ namespace Elektronik.Common.Containers
         /// </summary>
         public void Clear()
         {
-            lock (m_mainTreadActions) m_mainTreadActions.Enqueue((default, ActionType.Clear));
+            m_gameObjects.Clear();
             m_objects.Clear();
+            m_invoker.Enqueue(() => ObservationsPool.DespawnAllActiveObjects());
         }
 
         /// <summary>
@@ -142,7 +136,9 @@ namespace Elektronik.Common.Containers
         {
             if (!Exists(id))
                 throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Remove] Graph doesn't contain observation with id {id}");
-            lock (m_mainTreadActions) m_mainTreadActions.Enqueue((m_objects[id], ActionType.Remove));
+            var object2Remove = m_gameObjects[id];
+            m_invoker.Enqueue(() => ObservationsPool.Despawn(object2Remove));
+            m_gameObjects.Remove(id);
             m_objects.Remove(id);
             Debug.Log($"[SlamObservationsContainer.Remove] Removing observation with id {id}");
         }
@@ -153,36 +149,15 @@ namespace Elektronik.Common.Containers
         /// <param name="obj"></param>
         public void Remove(T obj) => Remove(GetObjectId(obj));
 
-        /// <summary>
-        /// Repaint map. Note: this method must be invoked from Unity main thread.
-        /// </summary>
-        public void Repaint()
+        public bool TryGet(T obj, out GameObject gameObject)
         {
-            lock (m_mainTreadActions)
+            gameObject = null;
+            if (Exists(GetObjectId(obj)))
             {
-                while (m_mainTreadActions.Count != 0)
-                {
-                    (T obj, ActionType action) = m_mainTreadActions.Dequeue();
-                    switch (action)
-                    {
-                        case ActionType.Add:
-                            Pose pose = GetObjectPose(obj);
-                            m_gameObjects[GetObjectId(obj)] = ObservationsPool.Spawn(pose.position, pose.rotation);
-                            break;
-                        case ActionType.Update:
-                            UpdateGameObject(obj, m_gameObjects[GetObjectId(obj)]);
-                            break;
-                        case ActionType.Remove:
-                            ObservationsPool.Despawn(m_gameObjects[GetObjectId(obj)]);
-                            m_gameObjects.Remove(GetObjectId(obj));
-                            break;
-                        case ActionType.Clear:
-                            ObservationsPool.DespawnAllActiveObjects();
-                            m_gameObjects.Clear();
-                            break;
-                    }
-                }
+                gameObject = m_gameObjects[GetObjectId(obj)];
+                return true;
             }
+            return false;
         }
 
         /// <summary>
@@ -204,7 +179,8 @@ namespace Elektronik.Common.Containers
             if (!Exists(GetObjectId(obj)))
                 throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Update] Graph doesn't contain {typeof(T).Name} with id {GetObjectId(obj)}");
             m_objects[GetObjectId(obj)] = Update(m_objects[GetObjectId(obj)], obj);
-            lock (m_mainTreadActions) m_mainTreadActions.Enqueue((obj, ActionType.Update));
+            var object2Update = m_gameObjects[GetObjectId(obj)];
+            m_invoker.Enqueue(() => UpdateGameObject(obj, object2Update));
             Debug.Log($"[SlamObservationsContainer.Update] Updated {typeof(T).Name} with id {GetObjectId(obj)}");
         }
 

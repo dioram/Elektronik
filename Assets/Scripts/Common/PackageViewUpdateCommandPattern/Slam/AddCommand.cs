@@ -9,18 +9,18 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
     public class AddCommand<T> : IPackageViewUpdateCommand
     {
-        private readonly T[] m_addedObjects;
-        private readonly IContainer<T> m_container;
-
+        protected readonly T[] m_addedObjects;
+        protected readonly IContainer<T> m_container;
+        
         public AddCommand(
             IContainer<T> container,
             IEnumerable<T> objects)
         {
             m_container = container;
             m_addedObjects = objects.ToArray();
-        }
+        }        
 
-        public void Execute()
+        public virtual void Execute()
         {
             if (m_addedObjects != null)
             {
@@ -28,7 +28,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
             }
         }
 
-        public void UnExecute()
+        public virtual void UnExecute()
         {
             if (m_addedObjects != null)
             {

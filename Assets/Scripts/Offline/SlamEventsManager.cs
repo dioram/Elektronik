@@ -204,7 +204,7 @@ namespace Elektronik.Offline
                         m_extendedEvents[command] = packet;
                     m_commands.MoveFrom(commands);
                     ++i;
-                    if (i % 10 == 0) yield return null;
+                    yield return null;
                 }
             }
             Debug.Log("Parsing file... OK!");

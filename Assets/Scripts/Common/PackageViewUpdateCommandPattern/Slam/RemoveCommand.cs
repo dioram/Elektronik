@@ -10,9 +10,8 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
     public class RemoveCommand<T> : IPackageViewUpdateCommand
     {
-        private readonly T[] m_objs2Remove;
-
-        private readonly IContainer<T> m_container;
+        protected readonly T[] m_objs2Remove;
+        protected readonly IContainer<T> m_container;
 
         public RemoveCommand(IContainer<T> container, IEnumerable<T> objects)
         {
@@ -25,7 +24,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
             }
         }
 
-        public void Execute()
+        public virtual void Execute()
         {
             if (m_objs2Remove != null)
             {
@@ -33,7 +32,7 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
             }
         }
 
-        public void UnExecute()
+        public virtual void UnExecute()
         {
             if (m_objs2Remove != null)
             {

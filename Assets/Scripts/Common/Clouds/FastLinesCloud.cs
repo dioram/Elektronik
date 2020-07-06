@@ -6,77 +6,16 @@ using UnityEngine;
 
 namespace Elektronik.Common.Clouds
 {
-    public class FastLinesCloud : MonoBehaviour, IFastLinesCloud
+    public class FastLinesCloud : FastCloud<ILinesMeshData, LinesMeshObjectBase>, IFastLinesCloud
     {
-        public float scale = 1;
-
-        public LinesMeshObjectBase meshObjectPrefab;
-        private ObjectPool m_meshObjectPool;
-        private Dictionary<int, ILinesMeshData> m_data;
-        private Dictionary<ILinesMeshData, MeshObjectBase<ILinesMeshData>> m_meshObjects;
-        private Queue<MeshDataBase<ILinesMeshData>> m_newMeshQueue;
-        private Queue<ILinesMeshData> m_removedMeshQueue;
-        private int m_maxLinesCount;
-
-        private void Awake()
-        {
-            m_meshObjectPool = new ObjectPool(meshObjectPrefab.gameObject);
-            m_data = new Dictionary<int, ILinesMeshData>();
-            m_meshObjects = new Dictionary<ILinesMeshData, MeshObjectBase<ILinesMeshData>>();
-            m_newMeshQueue = new Queue<MeshDataBase<ILinesMeshData>>();
-            m_removedMeshQueue = new Queue<ILinesMeshData>();
-            m_maxLinesCount = meshObjectPrefab.MaxObjectsCount;
-        }
-
-        private void CheckMesh(int srcLineIdx, out int meshIdx, out int lineIdx)
-        {
-            meshIdx = srcLineIdx / m_maxLinesCount;
-            if (!m_data.ContainsKey(meshIdx))
-            {
-                var data = meshObjectPrefab.CreateMeshData();
-                m_data[meshIdx] = data.Data;
-                lock (m_newMeshQueue) m_newMeshQueue.Enqueue(data);
-            }
-            lineIdx = srcLineIdx % m_maxLinesCount;
-        }
-
-        public void Clear()
-        {
-            foreach (var meshData in m_data)
-            {
-                lock (m_removedMeshQueue) m_removedMeshQueue.Enqueue(meshData.Value);
-            }
-            m_data.Clear();
-        }
-
-        private void Update()
-        {
-            lock (m_newMeshQueue)
-            {
-                while (m_newMeshQueue.Count != 0)
-                {
-                    var meshDataBase = m_newMeshQueue.Dequeue();
-                    m_meshObjects[meshDataBase.Data] = m_meshObjectPool.Spawn().GetComponent<MeshObjectBase<ILinesMeshData>>();
-                    m_meshObjects[meshDataBase.Data].Initialize(meshDataBase);
-                }
-            }
-            lock (m_removedMeshQueue)
-            {
-                while (m_removedMeshQueue.Count != 0)
-                {
-                    var meshDataBase = m_removedMeshQueue.Dequeue();
-                    m_meshObjectPool.Despawn(m_meshObjects[meshDataBase].gameObject);
-                    m_meshObjects.Remove(meshDataBase);
-                }
-            }
-        }
+        private int MaxLinesCount { get => meshObjectPrefab.MaxObjectsCount; }
 
         public bool Exists(int lineIdx)
         {
-            int meshIdx = lineIdx / m_maxLinesCount;
+            int meshIdx = lineIdx / MaxLinesCount;
             if (m_data.ContainsKey(meshIdx))
             {
-                return m_data[meshIdx].Exists(lineIdx % m_maxLinesCount);
+                return m_data[meshIdx].Exists(lineIdx % MaxLinesCount);
             }
             else
             {
@@ -135,9 +74,6 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-        public void SetActive(bool value)
-        {
-            m_meshObjectPool.SetActive(value);
-        }
+        
     }
 }

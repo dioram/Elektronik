@@ -12,7 +12,7 @@ namespace Elektronik.Common.Containers
     {
         /// <param name="prefab">Desired prefab of observation</param>
         /// <param name="lines">Lines cloud objects for connections drawing</param>
-        public SlamObservationsContainer(GameObject prefab) : base(prefab)
+        public SlamObservationsContainer(GameObject prefab, MainThreadInvoker invoker) : base(prefab, invoker)
         {
         }
 

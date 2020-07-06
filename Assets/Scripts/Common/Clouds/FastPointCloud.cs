@@ -8,77 +8,16 @@ using UnityEngine;
 
 namespace Elektronik.Common.Clouds
 {
-    public class FastPointCloud : MonoBehaviour, IFastPointsCloud
+    public class FastPointCloud : FastCloud<IPointsMeshData, PointsMeshObjectBase>, IFastPointsCloud
     {
-        public float scale = 1;
-
-        public PointsMeshObjectBase meshObjectPrefab;
-        private ObjectPool m_meshObjectPool;
-        private Dictionary<int, IPointsMeshData> m_data;
-        private Dictionary<IPointsMeshData, MeshObjectBase<IPointsMeshData>> m_meshObjects;
-        private Queue<MeshDataBase<IPointsMeshData>> m_newMeshQueue;
-        private Queue<IPointsMeshData> m_removedMeshQueue;
-        private int m_maxPointsCount;
-
-        private void Awake()
-        {
-            m_meshObjectPool = new ObjectPool(meshObjectPrefab.gameObject);
-            m_data = new Dictionary<int, IPointsMeshData>();
-            m_meshObjects = new Dictionary<IPointsMeshData, MeshObjectBase<IPointsMeshData>>();
-            m_newMeshQueue = new Queue<MeshDataBase<IPointsMeshData>>();
-            m_removedMeshQueue = new Queue<IPointsMeshData>();
-            m_maxPointsCount = meshObjectPrefab.MaxObjectsCount;
-        }
-
-        private void CheckMesh(int srcPointIdx, out int meshIdx, out int pointIdx)
-        {
-            meshIdx = srcPointIdx / m_maxPointsCount;
-            if (!m_data.ContainsKey(meshIdx))
-            {
-                var data = meshObjectPrefab.CreateMeshData();
-                m_data[meshIdx] = data.Data;
-                lock(m_newMeshQueue) m_newMeshQueue.Enqueue(data);
-            }
-            pointIdx = srcPointIdx % m_maxPointsCount;
-        }
-
-        public void Clear()
-        {
-            foreach (var meshData in m_data)
-            {
-                lock(m_removedMeshQueue) m_removedMeshQueue.Enqueue(meshData.Value);
-            }
-            m_data.Clear();
-        }
-
-        private void Update()
-        {
-            lock (m_newMeshQueue)
-            {
-                while (m_newMeshQueue.Count != 0)
-                {
-                    var meshDataBase = m_newMeshQueue.Dequeue();
-                    m_meshObjects[meshDataBase.Data] = m_meshObjectPool.Spawn().GetComponent<MeshObjectBase<IPointsMeshData>>();
-                    m_meshObjects[meshDataBase.Data].Initialize(meshDataBase);
-                }
-            }
-            lock (m_removedMeshQueue)
-            {
-                while (m_removedMeshQueue.Count != 0)
-                {
-                    var meshDataBase = m_removedMeshQueue.Dequeue();
-                    m_meshObjectPool.Despawn(m_meshObjects[meshDataBase].gameObject);
-                    m_meshObjects.Remove(meshDataBase);
-                }
-            }
-        }
+        private int MaxPointsCount { get => meshObjectPrefab.MaxObjectsCount; }
 
         public bool Exists(int idx)
         {
-            int meshIdx = idx / m_maxPointsCount;
+            int meshIdx = idx / MaxPointsCount;
             if (m_data.ContainsKey(meshIdx))
             {
-                int pointIdx = idx % m_maxPointsCount;
+                int pointIdx = idx % MaxPointsCount;
                 return m_data[meshIdx].Exists(pointIdx);
             }
             else
@@ -131,26 +70,21 @@ namespace Elektronik.Common.Clouds
 
         public IEnumerable<CloudPoint> GetAll()
         {
-            var points = new CloudPoint[m_maxPointsCount * m_meshObjects.Count];
+            var points = new CloudPoint[MaxPointsCount * m_meshObjects.Count];
             KeyValuePair<int, IPointsMeshData>[] allMeshes = m_data.Select(kv => kv).ToArray();
             for (int meshNum = 0; meshNum < allMeshes.Length; ++meshNum)
             {
                 var meshPoints = allMeshes[meshNum].Value.GetAll().ToArray();
-                for (int i = 0; i < m_maxPointsCount; ++i)
+                for (int i = 0; i < MaxPointsCount; ++i)
                 {
-                    points[m_maxPointsCount * allMeshes[meshNum].Key + i] = new CloudPoint(
-                        meshPoints[i].idx + meshNum * m_maxPointsCount,
+                    points[MaxPointsCount * allMeshes[meshNum].Key + i] = new CloudPoint(
+                        meshPoints[i].idx + meshNum * MaxPointsCount,
                         meshPoints[i].offset,
                         meshPoints[i].color
                     );
                 }
             }
             return points;
-        }
-
-        public void SetActive(bool value)
-        {
-            m_meshObjectPool.SetActive(value);
         }
     }
 }

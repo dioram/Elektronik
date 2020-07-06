@@ -17,7 +17,6 @@ namespace Elektronik.Common.Maps
         {
             foreach (var helmet in Helmets)
             {
-                helmet.ResetHelmet();
                 HelmetsPool.Despawn(helmet.gameObject);
             }
             Helmets.Clear();

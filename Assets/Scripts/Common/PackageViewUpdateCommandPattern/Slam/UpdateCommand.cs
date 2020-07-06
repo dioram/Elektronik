@@ -10,10 +10,10 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
 {
     public class UpdateCommand<T> : IPackageViewUpdateCommand
     {
-        private readonly T[] m_objs2Restore;
-        private readonly T[] m_objs2Update;
+        protected readonly T[] m_objs2Restore;
+        protected readonly T[] m_objs2Update;
 
-        private readonly IContainer<T> m_container;
+        protected readonly IContainer<T> m_container;
 
         public UpdateCommand(IContainer<T> container, IEnumerable<T> objects)
         {
@@ -25,16 +25,21 @@ namespace Elektronik.Common.PackageViewUpdateCommandPattern.Slam
             }
         }
 
-        public void Execute()
+        public virtual void Execute()
         {
             if (m_objs2Update != null)
+            {
                 m_container.Update(m_objs2Update);
+            }
         }
 
-        public void UnExecute()
+        public virtual void UnExecute()
         {
             if (m_objs2Restore != null)
+            {
                 m_container.Update(m_objs2Restore);
+            }
+                
         }
     }
 }

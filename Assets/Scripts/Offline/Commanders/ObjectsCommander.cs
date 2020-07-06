@@ -1,4 +1,5 @@
-﻿using Elektronik.Common.Containers;
+﻿using Elektronik.Common;
+using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
 using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Packages;
@@ -53,8 +54,6 @@ namespace Elektronik.Offline.Commanders.Slam
                     return GetCommand(map.PointsContainer, packet.PointsPacket.Points.Select(p => (SlamPoint)p), packet.Action);
                 case PacketPb.DataOneofCase.ObservationsPacket:
                     return GetCommand(map.ObservationsContainer, packet.ObservationsPacket.Observations.Select(o => (SlamObservation)o), packet.Action);
-                case PacketPb.DataOneofCase.TrackedObjsPacket:
-                    return GetCommand(map.TrackedObjsContainer, packet.TrackedObjsPacket.TrackedObjs, packet.Action);
                 case PacketPb.DataOneofCase.ConnectionsPacket:
                     if (packet.ConnectionsPacket.Map == PacketPb.Types.ConnectionsPacket.Types.MapType.Points)
                         return GetCommand(map.PointsConnections, packet.ConnectionsPacket.Connections.Select(l => (SlamLine)l), packet.Action);

@@ -12,7 +12,7 @@ namespace Elektronik.Common.Containers
 {
     public class TrackedObjectsContainer : GameObjectsContainer<TrackedObjPb>
     {
-        public TrackedObjectsContainer(Helmet prefab) : base(prefab.gameObject) { }
+        public TrackedObjectsContainer(Helmet prefab, MainThreadInvoker invoker) : base(prefab.gameObject, invoker) { }
 
         protected override int GetObjectId(TrackedObjPb obj) => obj.Id;
 
@@ -22,14 +22,12 @@ namespace Elektronik.Common.Containers
         {
             Helmet helmet = gameObject.GetComponent<Helmet>();
             helmet.color = @object.TrackColor;
-            gameObject.transform.SetPositionAndRotation(@object.Translation, @object.Rotation);
+            helmet.transform.SetPositionAndRotation(@object.Translation, @object.Rotation);
         }
 
         protected override TrackedObjPb Update(TrackedObjPb current, TrackedObjPb @new)
         {
-            current.TrackColor = @new.TrackColor;
-            current.Translation = @new.Translation;
-            current.Rotation = @new.Rotation;
+            current = new TrackedObjPb(@new);
             return current;
         }
 
@@ -40,10 +38,5 @@ namespace Elektronik.Common.Containers
                 id = obj.Id,
                 position = obj.Translation,
             };
-
-        protected override void GameObjectDespawn(GameObject gameObject)
-        {
-            gameObject.GetComponent<Helmet>().ResetHelmet();
-        }
     }
 }

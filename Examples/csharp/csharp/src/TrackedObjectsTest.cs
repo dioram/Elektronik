@@ -39,16 +39,20 @@ namespace csharp
 
         public IEnumerable<PacketPb> Update()
         {
+            var packets = new List<PacketPb>();
             var packet = new PacketPb()
             {
                 Action = PacketPb.Types.ActionType.Update,
                 TrackedObjsPacket = new PacketPb.Types.TrackedObjsPacket(),
             };
-            m_objects[0].Translation.X += .5;
-            m_objects[1].Translation.Z += .5;
-            m_objects[2].Rotation = new Vector4Pb() { X = 1, };
-            packet.TrackedObjsPacket.TrackedObjs.Add(m_objects);
-            return new[] { packet };
+            for (int i = 0; i < 5; ++i)
+            {
+                packet.TrackedObjsPacket.TrackedObjs.Clear();
+                m_objects[0].Translation.Z += 0.5;
+                packet.TrackedObjsPacket.TrackedObjs.Add(m_objects[0]);
+                packets.Add(new PacketPb(packet));
+            }
+            return packets;
         }
 
         public IEnumerable<PacketPb> Remove()
