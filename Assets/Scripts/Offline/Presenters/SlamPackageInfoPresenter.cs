@@ -25,12 +25,12 @@ namespace Elektronik.Offline.Presenters
         {
             switch (packet.DataCase)
             {
-                case PacketPb.DataOneofCase.PointsPacket:
-                    return packet.PointsPacket.Points.Select(p => 
-                        new SlamPoint(p.Id, map.PointsContainer[p].position, color: default, message: p.Message));
-                case PacketPb.DataOneofCase.ObservationsPacket:
-                    return packet.ObservationsPacket.Observations.Select(o =>
-                        new SlamPoint(o.Point.Id, map.ObservationsContainer[o].Point.position, color: default, message: o.Point.Message));
+                case PacketPb.DataOneofCase.Points:
+                    return packet.Points.Data.Select(p => 
+                        new SlamPoint(p.Id, map.Points[p].position, color: default, message: p.Message));
+                case PacketPb.DataOneofCase.Observations:
+                    return packet.Observations.Data.Select(o =>
+                        new SlamPoint(o.Point.Id, map.Observations[o].Point.position, color: default, message: o.Point.Message));
                 default:
                     return null;
             }

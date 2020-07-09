@@ -10,9 +10,9 @@ namespace Elektronik.Common.Clouds
     public struct CloudPoint
     {
         public readonly int idx;
-        public readonly Matrix4x4 offset;
+        public readonly Vector3 offset;
         public readonly Color color;
-        public CloudPoint(int idx, Matrix4x4 offset, Color color)
+        public CloudPoint(int idx, Vector3 offset, Color color)
         {
             this.idx = idx;
             this.offset = offset;

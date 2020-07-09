@@ -11,19 +11,19 @@ using UnityEngine;
 
 namespace Elektronik.Online.GrpcServices
 {
-    public class ObservationsMapManager : MapManager<SlamObservation>
+    public class ObservationsMapManager : ConnectableObjectsMapManager<SlamObservation>
     {
-        public ObservationsMapManager(IContainer<SlamObservation> map) : base(map)
+        public ObservationsMapManager(IConnectableObjectsContainer<SlamObservation> map) : base(map)
         {
         }
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             Debug.Log("[ObservationsMapManager.Handle]");
-            if (request.DataCase == PacketPb.DataOneofCase.ObservationsPacket)
+            if (request.DataCase == PacketPb.DataOneofCase.Observations)
             {
-                var obs = request.ObservationsPacket.Observations.Select(p => (SlamObservation)p);
-                return Handle(request.Action, obs);
+                var obs = request.Observations.Data.Select(p => (SlamObservation)p).ToList();
+                return HandleConnections(request, Handle(request.Action, obs));
             }
 
             return base.Handle(request, context);

@@ -29,7 +29,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public bool Exists(int idx)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
+#endif
                 Get(idx, out Vector3 pos1, out Vector3 pos2, out Color color);
                 bool res = false;
                 try
@@ -46,7 +48,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Get(int idx, out Vector3 position1, out Vector3 position2, out Color color)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
+#endif
                 try
                 {
                     Sync.EnterReadLock();
@@ -62,7 +66,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Set(int idx, Vector3 position1, Vector3 position2, Color color1, Color color2)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
+#endif
                 Set(idx, color1, color2);
                 Set(idx, position1, position2);
                 MarkAsChanged();
@@ -70,7 +76,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Set(int idx, Vector3 position1, Vector3 position2, Color color)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
+#endif
                 Set(idx, color);
                 Set(idx, position1, position2);
                 MarkAsChanged();
@@ -78,7 +86,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Set(int idx, Color color1, Color color2)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
+#endif
                 try
                 {
                     Sync.EnterWriteLock();
@@ -94,7 +104,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Set(int idx, Color color)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
+#endif
                 try
                 {
                     Sync.EnterWriteLock();
@@ -110,7 +122,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Set(int idx, Vector3 position1, Vector3 position2)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
+#endif
                 try
                 {
                     Sync.EnterWriteLock();

@@ -12,7 +12,7 @@ namespace Elektronik.Common.Containers
 {
     public class TrackedObjectsContainer : GameObjectsContainer<TrackedObjPb>
     {
-        public TrackedObjectsContainer(Helmet prefab, MainThreadInvoker invoker) : base(prefab.gameObject, invoker) { }
+        public TrackedObjectsContainer(Helmet prefab) : base(prefab.gameObject) { }
 
         protected override int GetObjectId(TrackedObjPb obj) => obj.Id;
 

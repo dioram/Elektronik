@@ -6,15 +6,12 @@ using Grpc.Core;
 using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Extensions;
 using Elektronik.Common.Maps;
-using Assets.Scripts.Online.GrpcServices;
 using Elektronik.Common;
 using Elektronik.Online.Settings;
 using Elektronik.Common.Settings;
 using UnityEngine.UI;
 using System.Net;
 using System;
-using Grpc.Core.Utils;
-using System.Threading.Tasks;
 
 namespace Elektronik.Online
 {
@@ -35,11 +32,10 @@ namespace Elektronik.Online
             GrpcEnvironment.SetLogger(new UnityLogger());
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
-                new PointsMapManager(slamMaps.PointsContainer),
-                new ObservationsMapManager(slamMaps.ObservationsContainer),
-                new ConnectionsMapManager(slamMaps.PointsConnections, PacketPb.Types.ConnectionsPacket.Types.MapType.Points),
-                new ConnectionsMapManager(slamMaps.ObservationsConnections, PacketPb.Types.ConnectionsPacket.Types.MapType.Observations),
-                new TrackedObjsMapManager(slamMaps.TrackedObjsContainer),
+                new PointsMapManager(slamMaps.Points),
+                new ObservationsMapManager(slamMaps.Observations),
+                new TrackedObjsMapManager(slamMaps.TrackedObjsGO, slamMaps.TrackedObjs),
+                new LinesMapManager(slamMaps.Lines),
             }.BuildChain();
 
             Debug.Log($"{SettingsBag.Current[SettingName.IPAddress].As<IPAddress>()}:{SettingsBag.Current[SettingName.Port].As<int>()}");

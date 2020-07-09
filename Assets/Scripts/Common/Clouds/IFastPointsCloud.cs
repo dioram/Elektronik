@@ -11,7 +11,7 @@ namespace Elektronik.Common.Clouds
         IEnumerable<CloudPoint> GetAll();
         void Set(CloudPoint point);
         void Set(int idx, Color color);
-        void Set(int idx, Matrix4x4 translation);
+        void Set(int idx, Vector3 translation);
         void Set(IEnumerable<CloudPoint> points);
         void SetActive(bool value);
     }

@@ -38,6 +38,11 @@ message ObservationPb {
 }
 
 message ConnectionPb {
+    int32 id1 = 1;
+    int32 id2 = 2;
+}
+
+message LinePb {
     PointPb pt1 = 1;
     PointPb pt2 = 2;
 }
@@ -58,38 +63,38 @@ message PacketPb {
         clear = 3;
         info = 4;
 	}
-
-    message PointsPacket {
-        repeated PointPb points = 1;
+    message Points {
+        repeated PointPb data = 1;
 	}
-
-    message ObservationsPacket {
-        repeated ObservationPb observations = 1;
+    message Observations {
+        repeated ObservationPb data = 1;
 	}
-
-    message ConnectionsPacket {
-        enum MapType {
-            points = 0;
-            observations = 1;
-	    }
-        
-        repeated ConnectionPb connections = 1;
-        MapType map = 2;
+    message Lines {
+        repeated LinePb data = 1;
 	}
-
-    message TrackedObjsPacket {
-        repeated TrackedObjPb trackedObjs = 1;
+    message TrackedObjs {
+        repeated TrackedObjPb data = 1;
+	}
+    message Connections {
+        enum Action {
+            unknown = 0;
+            add = 1;
+            remove = 2;
+		}
+        Action action = 1;
+        repeated ConnectionPb data = 2;
 	}
 
     ActionType action = 1;
     int32 timestamp = 2;
     bool special = 3;
     string message = 4;
+    Connections connections = 5;
     
     oneof Data {
-        TrackedObjsPacket trackedObjsPacket = 12;
-        PointsPacket pointsPacket = 13;
-        ObservationsPacket observationsPacket = 14;
-        ConnectionsPacket connectionsPacket = 15;
+        TrackedObjs trackedObjs = 12;
+        Points points = 13;
+        Observations observations = 14;
+        Lines lines = 15;
 	}
 }

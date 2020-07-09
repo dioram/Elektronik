@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,12 +20,13 @@ namespace Elektronik.Common.Containers
         protected abstract SlamPoint AsPoint(T obj);
         protected abstract T Update(T current, T @new);
 
-        protected readonly MainThreadInvoker m_invoker;
         protected readonly SortedDictionary<int, T> m_objects;
         protected readonly SortedDictionary<int, GameObject> m_gameObjects;
         public ObjectPool ObservationsPool { get; private set; }
 
         public int Count => m_objects.Count;
+
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Get clone of node or Set obj with same id as argument id
@@ -44,12 +46,7 @@ namespace Elektronik.Common.Containers
         /// <returns>Clone of SlamObservation from graph</returns>
         public T this[int id]
         {
-            get
-            {
-                if (!Exists(id))
-                    throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Get] Graph doesn't contain observation with id {id}");
-                return m_objects[id];
-            }
+            get => m_objects[id];
             set
             {
                 if (!TryGet(id, out _)) Add(value); else Update(value);
@@ -58,14 +55,12 @@ namespace Elektronik.Common.Containers
 
         /// <param name="prefab">Desired prefab of observation</param>
         /// <param name="lines">Lines cloud objects for connections drawing</param>
-        public GameObjectsContainer(GameObject prefab, MainThreadInvoker invoker)
+        public GameObjectsContainer(GameObject prefab)
         {
             m_objects = new SortedDictionary<int, T>();
             m_gameObjects = new SortedDictionary<int, GameObject>();
-            m_invoker = invoker;
-            // m_mainTreadActions = new Queue<(T, ActionType)>();
             ObservationsPool = new ObjectPool(prefab);
-            ObservationsPool.OnObjectDeSpawn += (o, s) => GameObjectDespawn(o);
+            ObservationsPool.OnObjectDeSpawn += (o, s) => GameObjectDespawn(o.GetComponent<GameObject>());
         }
 
         /// <summary>
@@ -77,24 +72,22 @@ namespace Elektronik.Common.Containers
         public void Add(T obj)
         {
             int id = GetObjectId(obj);
-            if (Exists(obj))
-                throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Add] Graph already contains {typeof(T).Name} with id {id}");
             m_objects[id] = obj;
 
             Pose pose = GetObjectPose(obj);
-            m_invoker.Enqueue(() => m_gameObjects[GetObjectId(obj)] = ObservationsPool.Spawn(pose.position, pose.rotation));
-            Debug.Log($"[SlamObservationsContainer.Add] Added {typeof(T).Name} with id {id}");
+            MainThreadInvoker.Instance.Enqueue(() => m_gameObjects[GetObjectId(obj)] = ObservationsPool.Spawn(pose.position, pose.rotation));
+            Debug.Log($"[GameObjectsContainer.Add] Added {typeof(T).Name} with id {id}");
         }
 
         /// <summary>
         /// Look at the summary of Add
         /// </summary>
         /// <param name="objects"></param>
-        public void Add(IEnumerable<T> objects)
+        public void Add(ReadOnlyCollection<T> objects)
         {
-            foreach (var observation in objects)
+            for (int i = 0; i < objects.Count; ++i)
             {
-                Add(observation);
+                Add(objects[i]);
             }
         }
 
@@ -105,7 +98,8 @@ namespace Elektronik.Common.Containers
         {
             m_gameObjects.Clear();
             m_objects.Clear();
-            m_invoker.Enqueue(() => ObservationsPool.DespawnAllActiveObjects());
+            MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.DespawnAllActiveObjects());
+            Debug.Log($"[GameObjectsContainer.Clear]");
         }
 
         /// <summary>
@@ -113,46 +107,50 @@ namespace Elektronik.Common.Containers
         /// </summary>
         /// <param name="objId"></param>
         /// <returns>true if exists, otherwise false</returns>
-        public bool Exists(T obj) => Exists(GetObjectId(obj));
+        public bool Contains(T obj) => Contains(GetObjectId(obj));
 
         /// <summary>
         /// Check existing of node by id
         /// </summary>
         /// <param name="objId"></param>
         /// <returns>true if exists, otherwise false</returns>
-        public bool Exists(int objId) => m_objects.ContainsKey(objId);
+        public bool Contains(int objId) => m_objects.ContainsKey(objId);
 
         /// <summary>
         /// Get clones of observations from graph
         /// </summary>
         /// <returns></returns>
-        public T[] GetAll() => m_objects.Values.ToArray();
+        public IList<T> GetAll() => m_objects.Values.ToList();
 
         /// <summary>
         /// Remove by id
         /// </summary>
         /// <param name="id"></param>
-        public void Remove(int id)
+        public bool Remove(int id)
         {
-            if (!Exists(id))
-                throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Remove] Graph doesn't contain observation with id {id}");
-            var object2Remove = m_gameObjects[id];
-            m_invoker.Enqueue(() => ObservationsPool.Despawn(object2Remove));
-            m_gameObjects.Remove(id);
-            m_objects.Remove(id);
-            Debug.Log($"[SlamObservationsContainer.Remove] Removing observation with id {id}");
+            if (m_gameObjects.TryGetValue(id, out GameObject object2Remove))
+            {
+                MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.Despawn(object2Remove));
+                m_gameObjects.Remove(id);
+                m_objects.Remove(id);
+                Debug.Log($"[GameObjectsContainer.Remove] Removing {typeof(T).Name} with id {id}");
+                return true;
+            }
+            return false;
         }
+
+        public void RemoveAt(int id) => Remove(id);
 
         /// <summary>
         /// Remove by SlamObservation object
         /// </summary>
         /// <param name="obj"></param>
-        public void Remove(T obj) => Remove(GetObjectId(obj));
+        public bool Remove(T obj) => Remove(GetObjectId(obj));
 
         public bool TryGet(T obj, out GameObject gameObject)
         {
             gameObject = null;
-            if (Exists(GetObjectId(obj)))
+            if (Contains(GetObjectId(obj)))
             {
                 gameObject = m_gameObjects[GetObjectId(obj)];
                 return true;
@@ -176,12 +174,16 @@ namespace Elektronik.Common.Containers
         /// <param name="obj"></param>
         public void Update(T obj)
         {
-            if (!Exists(GetObjectId(obj)))
-                throw new InvalidSlamContainerOperationException($"[SlamObservationsContainer.Update] Graph doesn't contain {typeof(T).Name} with id {GetObjectId(obj)}");
             m_objects[GetObjectId(obj)] = Update(m_objects[GetObjectId(obj)], obj);
             var object2Update = m_gameObjects[GetObjectId(obj)];
-            m_invoker.Enqueue(() => UpdateGameObject(obj, object2Update));
-            Debug.Log($"[SlamObservationsContainer.Update] Updated {typeof(T).Name} with id {GetObjectId(obj)}");
+            MainThreadInvoker.Instance.Enqueue(() => UpdateGameObject(obj, object2Update));
+            Debug.Log($"[GameObjectsContainer.Update] Updated {typeof(T).Name} with id {GetObjectId(obj)}");
+        }
+
+        public void Update(ReadOnlyCollection<T> objs)
+        {
+            for (int i = 0; i < objs.Count; ++i)
+                Update(objs[i]);
         }
 
         public IEnumerator<T> GetEnumerator() => m_objects.Values.GetEnumerator();
@@ -201,16 +203,21 @@ namespace Elektronik.Common.Containers
             return false;
         }
 
-        public void Update(IEnumerable<T> objs)
+        public void Remove(ReadOnlyCollection<T> objs)
         {
-            foreach (var obj in objs)
-                Update(obj);
+            for (int i = 0; i < objs.Count; ++i)
+            {
+                Remove(objs[i]);
+            }
         }
 
-        public void Remove(IEnumerable<T> objs)
+        public int IndexOf(T item) => GetObjectId(item);
+
+        public void Insert(int index, T item) => Add(item);
+
+        public void CopyTo(T[] array, int arrayIndex)
         {
-            foreach (var obj in objs)
-                Remove(obj);
+            m_objects.Values.CopyTo(array, arrayIndex);
         }
     }
 }

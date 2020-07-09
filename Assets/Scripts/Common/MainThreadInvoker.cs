@@ -11,6 +11,8 @@ namespace Elektronik.Common
 {
     public class MainThreadInvoker : MonoBehaviour
     {
+        public static MainThreadInvoker Instance { get; private set; }
+
         private Thread m_mainThread;
 
         public AutoResetEvent Sync { get; private set; }
@@ -22,6 +24,23 @@ namespace Elektronik.Common
             m_mainThread = Thread.CurrentThread;
             m_actions = new Queue<Action>();
             Sync = new AutoResetEvent(false);
+        }
+
+        private void Start()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                throw new Exception("there can't be more than one MainThreadInvoker in each scene");
+            }
+        }
+
+        private void OnDestroy()
+        {
+            Instance = null;
         }
 
         public void Enqueue(Action action)

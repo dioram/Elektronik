@@ -13,7 +13,7 @@ namespace Elektronik.Common.Clouds.Meshes
         void Set(CloudPoint point);
         void Set(IEnumerable<CloudPoint> points);
         void Set(int idx, Color color);
-        void Set(int idx, Matrix4x4 offset);
+        void Set(int idx, Vector3 offset);
         bool Exists(int idx);
         IEnumerable<CloudPoint> GetAll();
         void Clear();

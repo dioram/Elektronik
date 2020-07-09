@@ -31,11 +31,12 @@ namespace Elektronik.Common.Data.Pb
         public static implicit operator SlamPoint(PointPb p)
             => p != null ? new SlamPoint() { id = p.id_, position = p.position_, color = p.color_, message = p.message_ } : default;
     }
-    public partial class ConnectionPb
+    public partial class LinePb
     {
-        public static implicit operator SlamLine(ConnectionPb c)
+        public static implicit operator SlamLine(LinePb c)
             => c != null ? new SlamLine(c.pt1_, c.pt2_) : default;
     }
+
     public partial class ObservationPb
     {
         public partial class Types

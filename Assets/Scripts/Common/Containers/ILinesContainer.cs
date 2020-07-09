@@ -1,22 +1,10 @@
-﻿using Elektronik.Common.Data.PackageObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Elektronik.Common.Containers
+﻿namespace Elektronik.Common.Containers
 {
-    public interface IConnectionsContainer<T> : IContainer<T>
+    public interface ILinesContainer<T> : IContainer<T>
     {
-        SlamLine[] this[int id] { get; }
-
-        SlamLine[] this[SlamPoint pt] { get; }
-
-        void Remove(int id);
-        void Remove(IEnumerable<int> ids);
-        void Remove(IEnumerable<SlamPoint> pts);
-        void Update(SlamPoint obj);
-        void Update(IEnumerable<SlamPoint> objs);
+        bool Exists(int id1, int id2);
+        T Get(int id1, int id2);
+        bool TryGet(int id1, int id2, out T line);
+        bool Remove(int id1, int id2);
     }
 }

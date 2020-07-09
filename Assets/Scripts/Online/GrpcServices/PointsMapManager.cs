@@ -11,19 +11,19 @@ using UnityEngine;
 
 namespace Elektronik.Online.GrpcServices
 {
-    public class PointsMapManager : MapManager<SlamPoint>
+    public class PointsMapManager : ConnectableObjectsMapManager<SlamPoint>
     {
-        public PointsMapManager(IContainer<SlamPoint> map) : base(map)
+        public PointsMapManager(IConnectableObjectsContainer<SlamPoint> map) : base(map)
         {
         }
         
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             Debug.Log("[PointsMapManager.Handle]");
-            if (request.DataCase == PacketPb.DataOneofCase.PointsPacket)
+            if (request.DataCase == PacketPb.DataOneofCase.Points)
             {
-                var pts = request.PointsPacket.Points.Select(p => (SlamPoint)p);
-                return Handle(request.Action, pts);
+                var pts = request.Points.Data.Select(p => (SlamPoint)p).ToList();
+                return HandleConnections(request, Handle(request.Action, pts));
             }
 
             return base.Handle(request, context);

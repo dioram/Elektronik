@@ -5,7 +5,7 @@ namespace Elektronik.Online.VRHacker
 {
     class VRHacker : MonoBehaviour
     {
-        public TracksOwner helmetsOwner;
+        public SlamMap map;
         public Transform headset;
 
         private void OnEnable()
@@ -22,11 +22,11 @@ namespace Elektronik.Online.VRHacker
 
         private void Update()
         {
-            if (helmetsOwner.Helmets.Count > 0)
+            if (map.TrackedObjs.Count > 0)
             {
-                Helmet helmet = helmetsOwner.Helmets[0];
-                headset.rotation = helmet.transform.rotation;
-                headset.localPosition = helmet.transform.position + new Vector3(0, 1, 0);
+                var obj = map.TrackedObjs[0];
+                headset.rotation = obj.Rotation;
+                headset.localPosition = obj.Translation + new Vector3(0, 1, 0);
             }
         }
     }

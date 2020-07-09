@@ -23,12 +23,7 @@ namespace Elektronik.Common.Maps
             Track = new SlamLinesContainer(GetComponentInChildren<FastLinesCloud>());
         }
 
-        private void OnDisable()
-        {
-            ResetHelmet();
-        }
-
-        private void ResetHelmet()
+        private void UnsafeResetHelmet()
         {
             transform.position = Vector3.zero;
             transform.rotation = Quaternion.identity;
@@ -37,6 +32,9 @@ namespace Elektronik.Common.Maps
             m_currentPosition = transform.position;
             Track.Clear();
         }
+
+        public void ResetHelmet() =>
+            MainThreadInvoker.Instance.Enqueue(UnsafeResetHelmet);
 
         bool CheckTransformChanged()
         {
@@ -50,7 +48,7 @@ namespace Elektronik.Common.Maps
             return false;
         }
 
-        public void IncrementTrack()
+        private void UnsafeIncrementTrack()
         {
             CheckTransformChanged();
             var line = new SlamLine(
@@ -59,7 +57,10 @@ namespace Elektronik.Common.Maps
             Track.Add(line);
         }
 
-        public void DecrementTrack()
+        public void IncrementTrack() => 
+            MainThreadInvoker.Instance.Enqueue(UnsafeIncrementTrack);
+
+        private void UnsafeDecrementTrack()
         {
             CheckTransformChanged();
             int prevStepId = m_trackStep - 1;
@@ -68,22 +69,24 @@ namespace Elektronik.Common.Maps
             --m_trackStep;
         }
 
+        public void DecrementTrack() =>
+            MainThreadInvoker.Instance.Enqueue(UnsafeDecrementTrack);
 
         // Memento pattern
-        public SlamLine[] GetTrackState() => Track.GetAll();
+        public IList<SlamLine> GetTrackState() => Track.GetAll();
 
-        public void RestoreTrackState(SlamLine[] track)
+        public void RestoreTrackState(IList<SlamLine> track)
         {
             Track.Clear();
-            if (track != null && track.Length != 0)
+            if (track != null && track.Count != 0)
             {
                 foreach (var l in track)
                 {
                     Track.Add(l);
                 }
-                m_lastPosition = track[track.Length - 1].pt1.position;
-                m_lastPosition = track[track.Length - 1].pt2.position;
-                m_trackStep = track[track.Length - 1].pt2.id;
+                m_lastPosition = track[track.Count - 1].pt1.position;
+                m_lastPosition = track[track.Count - 1].pt2.position;
+                m_trackStep = track[track.Count - 1].pt2.id;
             }
         }
     }

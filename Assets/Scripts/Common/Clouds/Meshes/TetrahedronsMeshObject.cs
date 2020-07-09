@@ -38,7 +38,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public bool Exists(int idx)
             {
-                Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
+#if DEBUG
+                Debug.Assert(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, $"Wrong idx ({idx})");
+#endif
                 bool notExists = true;
                 try
                 {
@@ -57,7 +59,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public CloudPoint Get(int idx)
             {
-                Debug.AssertFormat(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, "Wrong idx ({0})", idx.ToString());
+#if DEBUG
+                Debug.Assert(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, $"Wrong idx ({idx})");
+#endif
                 var tetrahedronCG = new Vector3();
                 CloudPoint point;
                 try
@@ -68,7 +72,7 @@ namespace Elektronik.Common.Clouds.Meshes
                         tetrahedronCG += Vertices[idx * INDICES_PER_THETRAHEDRON + i];
                     }
                     tetrahedronCG /= INDICES_PER_THETRAHEDRON;
-                    point = new CloudPoint(idx, Matrix4x4.Translate(tetrahedronCG), Colors[idx * INDICES_PER_THETRAHEDRON]);
+                    point = new CloudPoint(idx, tetrahedronCG, Colors[idx * INDICES_PER_THETRAHEDRON]);
                 }
                 finally
                 {
@@ -79,7 +83,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             private void PureSet(int idx, Color color)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, $"Wrong idx ({idx})");
+#endif
                 int init = m_needOrientation ? 3 : 0;
                 for (int i = init; i < INDICES_PER_THETRAHEDRON; ++i)
                 {
@@ -87,9 +93,11 @@ namespace Elektronik.Common.Clouds.Meshes
                 }
             }
 
-            private void PureSet(int idx, Matrix4x4 offset)
+            private void PureSet(int idx, Vector3 offset)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, $"Wrong idx ({idx})");
+#endif
                 float halfHeight = 0.86603f * m_sideSize / 2;
                 float halfSide = m_sideSize / 2f;
                 Vector3 toCenter = new Vector3(-halfSide, -halfHeight, -halfHeight);
@@ -116,22 +124,23 @@ namespace Elektronik.Common.Clouds.Meshes
 
                 for (int i = 0; i < INDICES_PER_THETRAHEDRON; ++i)
                 {
-                    var t = Matrix4x4.Translate(Vertices[idx * INDICES_PER_THETRAHEDRON + i]);
-                    Vertices[idx * INDICES_PER_THETRAHEDRON + i] = (offset * t).GetPosition();
+                    var t = Vertices[idx * INDICES_PER_THETRAHEDRON + i];
+                    Vertices[idx * INDICES_PER_THETRAHEDRON + i] = t + offset;
                 }
             }
 
             public void Set(IEnumerable<CloudPoint> points)
             {
-                var points_ = points.ToArray();
+                // var points_ = points.ToArray();
                 try
                 {
                     Sync.EnterWriteLock();
-                    Parallel.For(0, points_.Length, i =>
+                    //Parallel.For(0, points_.Length, i =>
+                    foreach(var pt in points)
                     {
-                        PureSet(points_[i].idx, points_[i].offset);
-                        PureSet(points_[i].idx, points_[i].color);
-                    });
+                        PureSet(pt.idx, pt.offset);
+                        PureSet(pt.idx, pt.color);
+                    }//);
                 }
                 finally
                 {
@@ -157,7 +166,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Set(int idx, Color color)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, $"Wrong idx ({idx})");
+#endif
                 int init = m_needOrientation ? 3 : 0;
                 try
                 {
@@ -171,7 +182,7 @@ namespace Elektronik.Common.Clouds.Meshes
                 MarkAsChanged();
             }
 
-            public void Set(int idx, Matrix4x4 offset)
+            public void Set(int idx, Vector3 offset)
             {
                 try
                 {

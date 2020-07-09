@@ -11,58 +11,59 @@ namespace Elektronik.Common.Maps
     {
         public Helmet helmetPrefab;
 
-        private ObjectPool m_observationsPool;
         public GameObject observationPrefab;
         public FastPointCloud fastPointCloud;
-        public FastLinesCloud pointsLinesCloud;
-        public FastLinesCloud observationsLinesCloud;
+        public FastLinesCloud pointsConnectionsCloud;
+        public FastLinesCloud observationsConnectionsCloud;
+        public FastLinesCloud trackedObjsConnectionsCloud;
         public FastLinesCloud linesCloud;
 
-        public IConnectionsContainer<SlamLine> LinesContainer { get; private set; }
-        public IConnectionsContainer<SlamLine> ObservationsConnections { get; private set; }
-        public IConnectionsContainer<SlamLine> PointsConnections { get; private set; }
-        public ICloudObjectsContainer<SlamPoint> PointsContainer { get; private set; }
-        public GameObjectsContainer<TrackedObjPb> TrackedObjsContainer { get; private set; }
-        public GameObjectsContainer<SlamObservation> ObservationsContainer { get; private set; }
+        public IConnectableObjectsContainer<SlamPoint> Points { get; private set; }
+        public GameObjectsContainer<SlamObservation> ObservationsGO { get; private set; }
+        public GameObjectsContainer<TrackedObjPb> TrackedObjsGO { get; private set; }
+
+        public IConnectableObjectsContainer<SlamObservation> Observations { get; private set; }
+        public IConnectableObjectsContainer<TrackedObjPb> TrackedObjs { get; private set; }
+
+        public ILinesContainer<SlamLine> Lines { get; private set; }
 
         private void Awake()
         {
-            var invoker = FindObjectOfType<MainThreadInvoker>();
-            TrackedObjsContainer = new TrackedObjectsContainer(helmetPrefab, invoker);
+            var trackedObjs = new TrackedObjectsContainer(helmetPrefab);
+            TrackedObjs = new ConnectableObjectsContainer<TrackedObjPb>(
+                trackedObjs,
+                new SlamLinesContainer(trackedObjsConnectionsCloud));
+            TrackedObjsGO = trackedObjs;
 
-            LinesContainer = new SlamLinesContainer(linesCloud);
-            
-            var observationsContainer = new SlamObservationsContainer(observationPrefab, invoker);
-            ObservationsContainer = observationsContainer;
-            m_observationsPool = observationsContainer.ObservationsPool;
+            var observations = new SlamObservationsContainer(observationPrefab);
+            Observations = new ConnectableObjectsContainer<SlamObservation>(
+                observations,
+                new SlamLinesContainer(observationsConnectionsCloud));
+            ObservationsGO = observations;
 
-            ObservationsConnections = new SlamLinesContainer(observationsLinesCloud);
+            Points = new ConnectableObjectsContainer<SlamPoint>(
+                new SlamPointsContainer(fastPointCloud),
+                new SlamLinesContainer(pointsConnectionsCloud));
 
-            PointsContainer = new SlamPointsContainer(fastPointCloud);
-            PointsConnections = new SlamLinesContainer(pointsLinesCloud);
+            Lines = new SlamLinesContainer(linesCloud);
         }
 
         public void SetActivePointCloud(bool value)
         {
             fastPointCloud.SetActive(value);
-            pointsLinesCloud.SetActive(value);
+            pointsConnectionsCloud.SetActive(value);
         }
         public void SetActiveObservationsGraph(bool value)
         {
-            m_observationsPool.SetActive(value);
-            observationsLinesCloud.SetActive(value);
+            ObservationsGO.ObservationsPool.SetActive(value);
+            observationsConnectionsCloud.SetActive(value);
         }
-
-        public void SetActiveLinesCloud(bool value) => linesCloud.SetActive(value);
 
         public void Clear()
         {
-            TrackedObjsContainer.Clear();
-            ObservationsContainer.Clear();
-            LinesContainer.Clear();
-            PointsContainer.Clear();
-            ObservationsConnections.Clear();
-            PointsConnections.Clear();
+            TrackedObjs.Clear();
+            Observations.Clear();
+            Points.Clear();
         }
     }
 }

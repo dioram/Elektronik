@@ -56,7 +56,7 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-        public void Set(int idx, Matrix4x4 offset)
+        public void Set(int idx, Vector3 offset)
         {
             CheckMesh(idx, out int meshId, out int pointId);
             m_data[meshId].Set(pointId, offset);

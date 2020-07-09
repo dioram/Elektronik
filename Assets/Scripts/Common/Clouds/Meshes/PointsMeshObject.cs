@@ -29,12 +29,14 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public CloudPoint Get(int idx)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
+#endif
                 CloudPoint result;
                 try
                 {
                     Sync.EnterReadLock();
-                    result = new CloudPoint(idx, Matrix4x4.Translate(Vertices[idx]), Colors[idx]);
+                    result = new CloudPoint(idx, Vertices[idx], Colors[idx]);
                 }
                 finally
                 {
@@ -45,15 +47,16 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Set(IEnumerable<CloudPoint> points)
             {
-                var points_ = points.ToArray();
+                //var points_ = points.ToArray();
                 try
                 {
                     Sync.EnterWriteLock();
-                    Parallel.For(0, points_.Length, i =>
+                    //Parallel.For(0, points_.Length, i =>
+                    foreach(var pt in points)
                     {
-                        Colors[points_[i].idx] = points_[i].color;
-                        Vertices[points_[i].idx] = points_[i].offset.GetPosition();
-                    });
+                        Colors[pt.idx] = pt.color;
+                        Vertices[pt.idx] = pt.offset;
+                    }//);
                 }
                 finally
                 {
@@ -64,12 +67,14 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Set(CloudPoint point)
             {
+#if DEBUG
                 Debug.Assert(point.idx >= 0 && point.idx < MAX_VERTICES_COUNT, $"Wrong idx ({point.idx})");
+#endif
                 try
                 {
                     Sync.EnterWriteLock();
                     Colors[point.idx] = point.color;
-                    Vertices[point.idx] = point.offset.GetPosition();
+                    Vertices[point.idx] = point.offset;
                 }
                 finally
                 {
@@ -80,7 +85,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Set(int idx, Color color)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
+#endif
                 try
                 {
                     Sync.EnterWriteLock();
@@ -93,13 +100,15 @@ namespace Elektronik.Common.Clouds.Meshes
                 MarkAsChanged();
             }
 
-            public void Set(int idx, Matrix4x4 position)
+            public void Set(int idx, Vector3 position)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
+#endif
                 try
                 {
                     Sync.EnterWriteLock();
-                    Vertices[idx] = position.GetPosition();
+                    Vertices[idx] = position;
                 }
                 finally
                 {
@@ -148,7 +157,9 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public bool Exists(int idx)
             {
+#if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
+#endif
                 bool res = false;
                 try
                 {

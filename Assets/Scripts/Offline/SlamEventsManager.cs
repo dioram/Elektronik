@@ -1,9 +1,7 @@
 ﻿using Elektronik.Common.Maps;
-using Elektronik.Offline.Commanders;
 using Elektronik.Common.Presenters;
-using Elektronik.Common.Data.Packages;
 using Elektronik.Common.Extensions;
-using Elektronik.Common.PackageViewUpdateCommandPattern;
+using Elektronik.Common.Commands;
 using Elektronik.Common.Loggers;
 using Elektronik.Offline.Settings;
 using Elektronik.Common.Settings;
@@ -13,30 +11,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using Elektronik.Common.Data.Pb;
 using System.IO;
-using System.Linq;
 
 namespace Elektronik.Offline
 {
     public class SlamEventsManager : MonoBehaviour
     {
         public bool ReadyToPlay { get; private set; }
-        public PackageViewUpdateCommander[] commanders;
+        public Commander[] commanders;
         public RepaintablePackagePresenter[] presenters;
         public SlamMap map;
 
-        private PackageViewUpdateCommander m_commander;
+        private Commander m_commander;
         private PackagePresenter m_presenter;
 
-        private LinkedListNode<IPackageViewUpdateCommand> m_currentCommand;
-        private LinkedList<IPackageViewUpdateCommand> m_commands;
-        private Dictionary<IPackageViewUpdateCommand, PacketPb> m_extendedEvents;
+        private LinkedListNode<ICommand> m_currentCommand;
+        private LinkedList<ICommand> m_commands;
+        private Dictionary<ICommand, PacketPb> m_extendedEvents;
         private int m_position = 0;
         
 
         private void Awake()
         {
-            m_extendedEvents = new Dictionary<IPackageViewUpdateCommand, PacketPb>();
-            m_commands = new LinkedList<IPackageViewUpdateCommand>();
+            m_extendedEvents = new Dictionary<ICommand, PacketPb>();
+            m_commands = new LinkedList<ICommand>();
         }
 
         private void Start()
@@ -142,7 +139,7 @@ namespace Elektronik.Offline
         /// </summary>
         /// <param name="switchCommand">function that define Next or Previous event we need</param>
         /// <returns>true - if key event is found; false - otherwise</returns>
-        private bool KeyEventIsFound(Func<LinkedListNode<IPackageViewUpdateCommand>, LinkedListNode<IPackageViewUpdateCommand>> switchCommand)
+        private bool KeyEventIsFound(Func<LinkedListNode<ICommand>, LinkedListNode<ICommand>> switchCommand)
         {
             var command = switchCommand(m_currentCommand);
             bool isKey = false;
@@ -187,7 +184,7 @@ namespace Elektronik.Offline
             using (var input = File.OpenRead(SettingsBag.Current[SettingName.Path].As<string>()))
             {
                 int i = 0;
-                var commands = new LinkedList<IPackageViewUpdateCommand>();
+                var commands = new LinkedList<ICommand>();
                 while (input.Position != input.Length)
                 {
                     var packet = PacketPb.Parser.ParseDelimitedFrom(input);
