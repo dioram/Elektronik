@@ -32,12 +32,10 @@ namespace Elektronik.Common.Containers
             m_points.Add(point.id, point);
         }
 
-        public void Add(ReadOnlyCollection<SlamPoint> points)
+        public void Add(IEnumerable<SlamPoint> points)
         {
-            for (int i = 0; i < points.Count; ++i)
-            {
-                m_points.Add(points[i].id, points[i]);
-            }
+            foreach (var pt in points)
+                m_points[pt.id] = pt;
             m_pointsCloud.Set(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
         }
 
@@ -50,14 +48,14 @@ namespace Elektronik.Common.Containers
             m_pointsCloud.Set(new CloudPoint(point.id, point.position, point.color));
         }
 
-        public void Update(ReadOnlyCollection<SlamPoint> points)
+        public void Update(IEnumerable<SlamPoint> points)
         {
-            foreach (var point in points)
+            foreach (var pt in points)
             {
-                SlamPoint currentPoint = m_points[point.id];
-                currentPoint.position = point.position;
-                currentPoint.color = point.color;
-                m_points[point.id] = currentPoint;
+                SlamPoint currentPoint = m_points[pt.id];
+                currentPoint.position = pt.position;
+                currentPoint.color = pt.color;
+                m_points[pt.id] = currentPoint;
             }
             m_pointsCloud.Set(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
         }
@@ -72,12 +70,10 @@ namespace Elektronik.Common.Containers
 
         public bool Remove(SlamPoint point) => Remove(point.id);
 
-        public void Remove(ReadOnlyCollection<SlamPoint> points)
+        public void Remove(IEnumerable<SlamPoint> points)
         {
-            for (int i = 0; i < points.Count; ++i)
-            {
-                m_points.Remove(points[i].id);
-            }
+            foreach (var pt in points)
+                m_points.Remove(pt.id);
             m_pointsCloud.Set(points.Select(p => new CloudPoint(p.id, Vector3.zero, new Color(0, 0, 0, 0))));
         }
 

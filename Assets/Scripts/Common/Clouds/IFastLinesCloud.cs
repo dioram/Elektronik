@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Elektronik.Common.Clouds.Meshes;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Elektronik.Common.Clouds
 {
@@ -6,13 +8,11 @@ namespace Elektronik.Common.Clouds
     {
         void Clear();
         bool Exists(int lineIdx);
-        void Get(int idx, out Vector3 position1, out Vector3 position2, out Color color);
-        void Set(int idx, Color color);
+        CloudLine Get(int idx);
         void Set(int idx, Color color1, Color color2);
         void Set(int idx, Vector3 position1, Vector3 position2);
-        void Set(int idx, Vector3 position1, Vector3 position2, Color color);
-        void Set(int idx, Vector3 position1, Vector3 position2, Color color1, Color color2);
-        void Set(int[] idxs, Vector3[] positions1, Vector3[] positions2, Color[] colors);
+        void Set(CloudLine line);
+        void Set(IEnumerable<CloudLine> lines);
         void SetActive(bool value);
     }
 }

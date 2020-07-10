@@ -12,6 +12,7 @@ namespace Elektronik.Common.Containers
 {
     public partial class ConnectableObjectsContainer<T> : IConnectableObjectsContainer<T>
     {
+        private List<SlamLine> m_linesBuffer;
         private SparseSquareMatrix<bool> m_table;
         private ILinesContainer<SlamLine> m_lines; 
         private ICloudObjectsContainer<T> m_objects;
@@ -20,6 +21,7 @@ namespace Elektronik.Common.Containers
             ICloudObjectsContainer<T> objects,
             ILinesContainer<SlamLine> lines)
         {
+            m_linesBuffer = new List<SlamLine>();
             m_table = new SparseSquareMatrix<bool>();
             m_lines = lines;
             m_objects = objects;
@@ -32,7 +34,7 @@ namespace Elektronik.Common.Containers
         public bool IsReadOnly => false;
 
         public T this[T obj] { get => m_objects[obj]; set => m_objects[obj] = value; }
-        public T this[int id] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public T this[int id] { get => m_objects[id]; set => m_objects[id] = value; }
         public bool Contains(T obj) => m_objects.Contains(obj);
         public bool Contains(int objId) => m_objects.Contains(objId);
         public IList<T> GetAll() => m_objects.GetAll();
@@ -43,9 +45,10 @@ namespace Elektronik.Common.Containers
         public IEnumerator<T> GetEnumerator() => m_objects.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => m_objects.GetEnumerator();
         public void Add(T obj) => m_objects.Add(obj);
-        public void Add(ReadOnlyCollection<T> objects) => m_objects.Add(objects);
-        private void UpdateConnection(T obj)
+        public void Add(IEnumerable<T> objects) => m_objects.Add(objects);
+        public void Update(T obj)
         {
+            m_objects.Update(obj);
             m_objects.TryGetAsPoint(obj, out var pt1);
             foreach (var col in m_table.GetColIndices(pt1.id))
             {
@@ -53,16 +56,21 @@ namespace Elektronik.Common.Containers
                 m_lines.Update(new SlamLine(pt1, pt2));
             }
         }
-        public void Update(T obj)
-        {
-            m_objects.Update(obj);
-            UpdateConnection(obj);
-        }
-        public void Update(ReadOnlyCollection<T> objs)
+        public void Update(IEnumerable<T> objs)
         {
             m_objects.Update(objs);
-            for (int i = 0; i < objs.Count; ++i)
-                UpdateConnection(objs[i]);
+            Debug.Assert(m_linesBuffer.Count == 0);
+            foreach(var obj in objs)
+            {
+                m_objects.TryGetAsPoint(obj, out var pt1);
+                foreach (var col in m_table.GetColIndices(pt1.id))
+                {
+                    m_objects.TryGetAsPoint(col, out var pt2);
+                    m_linesBuffer.Add(new SlamLine(pt1, pt2));
+                }
+            }
+            m_lines.Update(m_linesBuffer);
+            m_linesBuffer.Clear();
         }
         private void RemoveConnections(int id)
         {
@@ -80,22 +88,37 @@ namespace Elektronik.Common.Containers
         }
         public bool Remove(T obj)
         {
-            if (m_objects.TryGetAsPoint(obj, out var pt))
+            int index = m_objects.IndexOf(obj);
+            if (index != -1)
             {
-                RemoveConnections(pt.id);
+                RemoveConnections(index);
                 m_objects.Remove(obj);
                 return true;
             }
             return false;
         }
-        public void Remove(ReadOnlyCollection<T> objs)
+        public void Remove(IEnumerable<T> objs)
         {
-            for (int i = 0; i < objs.Count; ++i)
+            Debug.Assert(m_linesBuffer.Count == 0);
+
+            foreach (var obj in objs)
             {
-                int id = m_objects.IndexOf(objs[i]);
+                int id = m_objects.IndexOf(obj);
                 if (id != -1)
-                    RemoveConnections(id);
+                {
+                    foreach (var col in m_table.GetColIndices(id))
+                    {
+                        m_linesBuffer.Add(
+                            new SlamLine(
+                                new SlamPoint(id, default, default), 
+                                new SlamPoint(col, default, default)));
+                        m_table.Remove(col, id);
+                    }
+                    m_table.RemoveRow(id);
+                }
             }
+            m_lines.Remove(m_linesBuffer);
+            m_linesBuffer.Clear();
             m_objects.Remove(objs);
         }
         public void Clear()
@@ -104,6 +127,22 @@ namespace Elektronik.Common.Containers
             m_lines.Clear();
             m_objects.Clear();
         }
+
+        private bool AddConnection(T obj1, T obj2, Action<SlamLine> adding)
+        {
+            if (m_objects.TryGetAsPoint(obj1, out var pt1) &&
+                m_objects.TryGetAsPoint(obj2, out var pt2))
+            {
+                if (!m_table[pt1.id, pt2.id].HasValue)
+                {
+                    m_table[pt1.id, pt2.id] = m_table[pt2.id, pt1.id] = true;
+                    adding(new SlamLine(pt1, pt2));
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public bool AddConnection(int id1, int id2)
         {
             if (m_objects.TryGet(id1, out var obj1) && 
@@ -113,58 +152,59 @@ namespace Elektronik.Common.Containers
             }
             return false;
         }
-        public bool AddConnection(T obj1, T obj2)
-        {
-            if (m_objects.TryGetAsPoint(obj1, out var pt1) &&
-                m_objects.TryGetAsPoint(obj2, out var pt2))
-            {
-                if (!m_table[pt1.id, pt2.id].HasValue || !m_table[pt1.id, pt2.id].Value)
-                {
-                    m_table[pt1.id, pt2.id] = m_table[pt2.id, pt1.id] = true;
-                    m_lines.Add(new SlamLine(pt1, pt2));
-                    return true;
-                }
-            }
-            return false;
-        }
-        public bool RemoveConnection(int id1, int id2)
+        public bool AddConnection(T obj1, T obj2) => AddConnection(obj1, obj2, m_lines.Add);
+
+        private bool RemoveConnection(int id1, int id2, Action<SlamLine> removing)
         {
             if (id1 != -1 && id2 != -1)
             {
                 if (m_table[id1, id2].HasValue && m_table[id1, id2].Value)
                 {
                     m_table.Remove(id1, id2); m_table.Remove(id2, id1);
-                    m_lines.Remove(id1, id2);
+                    removing(
+                        new SlamLine(
+                            new SlamPoint(id1, default, default),
+                            new SlamPoint(id2, default, default)));
                     return true;
                 }
             }
             return false;
         }
+        public bool RemoveConnection(int id1, int id2)
+            => RemoveConnection(id1, id2, l => m_lines.Remove(l));
         public bool RemoveConnection(T obj1, T obj2) 
             => RemoveConnection(m_objects.IndexOf(obj1), m_objects.IndexOf(obj2));
-        public bool AddConnections(IEnumerable<(int id1, int id2)> connections)
+        public void AddConnections(IEnumerable<(int id1, int id2)> connections)
         {
-            bool result = true;
-            foreach (var c in connections) result = AddConnection(c.id1, c.id2);
-            return result;
+            Debug.Assert(m_linesBuffer.Count == 0);
+            foreach (var c in connections)
+                AddConnection(m_objects[c.id1], m_objects[c.id2], m_linesBuffer.Add);
+            m_lines.Add(m_linesBuffer);
+            m_linesBuffer.Clear();
         }
-        public bool AddConnections(IEnumerable<(T obj1, T obj2)> connections)
+        public void AddConnections(IEnumerable<(T obj1, T obj2)> connections)
         {
-            bool result = true;
-            foreach (var c in connections) result = AddConnection(c.obj1, c.obj2);
-            return result;
+            Debug.Assert(m_linesBuffer.Count == 0);
+            foreach (var c in connections)
+                AddConnection(m_objects[c.obj1], m_objects[c.obj2], m_linesBuffer.Add);
+            m_lines.Add(m_linesBuffer);
+            m_linesBuffer.Clear();
         }
-        public bool RemoveConnections(IEnumerable<(int id1, int id2)> connections)
+        public void RemoveConnections(IEnumerable<(int id1, int id2)> connections)
         {
-            bool result = true;
-            foreach (var c in connections) result = RemoveConnection(c.id1, c.id2);
-            return result;
+            Debug.Assert(m_linesBuffer.Count == 0);
+            foreach (var c in connections)
+                RemoveConnection(c.id1, c.id2, m_linesBuffer.Add);
+            m_lines.Remove(m_linesBuffer);
+            m_linesBuffer.Clear();
         }
-        public bool RemoveConnections(IEnumerable<(T obj1, T obj2)> connections)
+        public void RemoveConnections(IEnumerable<(T obj1, T obj2)> connections)
         {
-            bool result = true;
-            foreach (var c in connections) result = RemoveConnection(c.obj1, c.obj2);
-            return result;
+            Debug.Assert(m_linesBuffer.Count == 0);
+            foreach (var c in connections)
+                RemoveConnection(m_objects.IndexOf(c.obj1), m_objects.IndexOf(c.obj2), m_linesBuffer.Add);
+            m_lines.Remove(m_linesBuffer);
+            m_linesBuffer.Clear();
         }
         public IEnumerable<(int, int)> GetAllConnections(int id)
         {

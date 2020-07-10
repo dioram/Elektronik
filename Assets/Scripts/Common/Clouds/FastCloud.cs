@@ -58,7 +58,8 @@ namespace Elektronik.Common.Clouds
         {
             foreach (var meshData in m_data)
             {
-                m_meshObjects[meshData.Value].gameObject.SetActive(false);
+                if (m_meshObjects[meshData.Value] != null)
+                    m_meshObjects[meshData.Value].gameObject.SetActive(false);
             }
         }
 

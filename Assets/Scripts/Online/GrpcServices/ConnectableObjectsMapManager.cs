@@ -30,15 +30,17 @@ namespace Elektronik.Online.GrpcServices
             if (request.Connections != null && request.Connections.Data.Count != 0)
             {
                 var connections_ = request.Connections.Data.Select(c => (c.Id1, c.Id2));
-                bool result = false;
-                if (request.Connections.Action == PacketPb.Types.Connections.Types.Action.Add)
-                    result = m_map.AddConnections(connections_);
-                if (request.Connections.Action == PacketPb.Types.Connections.Types.Action.Remove)
-                    result = m_map.RemoveConnections(connections_);
-                if (!result)
+                try
+                {
+                    if (request.Connections.Action == PacketPb.Types.Connections.Types.Action.Add)
+                        m_map.AddConnections(connections_);
+                    if (request.Connections.Action == PacketPb.Types.Connections.Types.Action.Remove)
+                        m_map.RemoveConnections(connections_);
+                }
+                catch (Exception e)
                 {
                     status.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Unknown;
-                    status.Message = "Something went wrong while update connections";
+                    status.Message = e.Message;
                 }
             }
             return Task.FromResult(status);

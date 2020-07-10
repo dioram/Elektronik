@@ -83,12 +83,10 @@ namespace Elektronik.Common.Containers
         /// Look at the summary of Add
         /// </summary>
         /// <param name="objects"></param>
-        public void Add(ReadOnlyCollection<T> objects)
+        public void Add(IEnumerable<T> objects)
         {
-            for (int i = 0; i < objects.Count; ++i)
-            {
-                Add(objects[i]);
-            }
+            foreach (var obj in objects)
+                Add(obj);
         }
 
         /// <summary>
@@ -180,10 +178,10 @@ namespace Elektronik.Common.Containers
             Debug.Log($"[GameObjectsContainer.Update] Updated {typeof(T).Name} with id {GetObjectId(obj)}");
         }
 
-        public void Update(ReadOnlyCollection<T> objs)
+        public void Update(IEnumerable<T> objs)
         {
-            for (int i = 0; i < objs.Count; ++i)
-                Update(objs[i]);
+            foreach (var obj in objs)
+                Update(obj);
         }
 
         public IEnumerator<T> GetEnumerator() => m_objects.Values.GetEnumerator();
@@ -203,12 +201,10 @@ namespace Elektronik.Common.Containers
             return false;
         }
 
-        public void Remove(ReadOnlyCollection<T> objs)
+        public void Remove(IEnumerable<T> objs)
         {
-            for (int i = 0; i < objs.Count; ++i)
-            {
-                Remove(objs[i]);
-            }
+            foreach (var obj in objs)
+                Remove(obj);
         }
 
         public int IndexOf(T item) => GetObjectId(item);

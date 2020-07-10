@@ -9,9 +9,10 @@ namespace Elektronik.Common.Clouds
 {
     public struct CloudPoint
     {
-        public readonly int idx;
-        public readonly Vector3 offset;
-        public readonly Color color;
+        public static CloudPoint Empty(int id) => new CloudPoint(id, Vector3.zero, new Color(0, 0, 0, 0));
+        public int idx;
+        public Vector3 offset;
+        public Color color;
         public CloudPoint(int idx, Vector3 offset, Color color)
         {
             this.idx = idx;

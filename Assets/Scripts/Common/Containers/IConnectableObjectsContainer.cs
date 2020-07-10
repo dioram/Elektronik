@@ -12,13 +12,13 @@ namespace Elektronik.Common.Containers
     {
         IEnumerable<SlamLine> Connections { get; }
         bool AddConnection(int id1, int id2);
-        bool AddConnections(IEnumerable<(int id1, int id2)> connections);
+        void AddConnections(IEnumerable<(int id1, int id2)> connections);
         bool AddConnection(T obj1, T obj2);
-        bool AddConnections(IEnumerable<(T obj1, T obj2)> connections);
+        void AddConnections(IEnumerable<(T obj1, T obj2)> connections);
         bool RemoveConnection(int id1, int id2);
-        bool RemoveConnections(IEnumerable<(int id1, int id2)> connections);
+        void RemoveConnections(IEnumerable<(int id1, int id2)> connections);
         bool RemoveConnection(T obj1, T obj2);
-        bool RemoveConnections(IEnumerable<(T obj1, T obj2)> connections);
+        void RemoveConnections(IEnumerable<(T obj1, T obj2)> connections);
         IEnumerable<(int id1, int id2)> GetAllConnections(int id);
         IEnumerable<(int id1, int id2)> GetAllConnections(T obj);
     }

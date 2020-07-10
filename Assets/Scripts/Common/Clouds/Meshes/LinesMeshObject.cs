@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,12 +33,16 @@ namespace Elektronik.Common.Clouds.Meshes
 #if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
 #endif
-                Get(idx, out Vector3 pos1, out Vector3 pos2, out Color color);
+                CloudLine line = Get(idx);
                 bool res = false;
                 try
                 {
                     Sync.EnterReadLock();
-                    res = !(pos1 == Vector3.zero && pos2 == Vector3.zero && color == new Color(0, 0, 0, 0));
+                    res = 
+                        (line.pt1.offset != Vector3.zero) ||
+                        (line.pt2.offset != Vector3.zero) ||
+                        (line.pt1.color != new Color(0, 0, 0, 0)) || 
+                        (line.pt2.color != new Color(0, 0, 0, 0));
                 }
                 finally
                 {
@@ -46,7 +51,7 @@ namespace Elektronik.Common.Clouds.Meshes
                 return res;
             }
 
-            public void Get(int idx, out Vector3 position1, out Vector3 position2, out Color color)
+            public CloudLine Get(int idx)
             {
 #if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
@@ -54,9 +59,11 @@ namespace Elektronik.Common.Clouds.Meshes
                 try
                 {
                     Sync.EnterReadLock();
-                    position1 = Vertices[2 * idx];
-                    position2 = Vertices[2 * idx + 1];
-                    color = Colors[2 * idx];
+                    int vertex1Idx = 2 * idx;
+                    int vertex2Idx = vertex1Idx + 1;
+                    return new CloudLine(idx, 
+                        new CloudPoint(vertex1Idx, Vertices[vertex1Idx], Colors[vertex1Idx]),
+                        new CloudPoint(vertex2Idx, Vertices[vertex2Idx], Colors[vertex2Idx]));
                 }
                 finally
                 {
@@ -64,23 +71,45 @@ namespace Elektronik.Common.Clouds.Meshes
                 }
             }
 
-            public void Set(int idx, Vector3 position1, Vector3 position2, Color color1, Color color2)
+            private void PureSet(CloudLine line)
             {
-#if DEBUG
-                Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
-#endif
-                Set(idx, color1, color2);
-                Set(idx, position1, position2);
+                Colors[2 * line.id] = line.pt1.color;
+                Colors[2 * line.id + 1] = line.pt2.color;
+                Vertices[2 * line.id] = line.pt1.offset;
+                Vertices[2 * line.id + 1] = line.pt2.offset;
+            }
+
+            public void Set(IEnumerable<CloudLine> lines)
+            {
+                try
+                {
+                    Sync.EnterWriteLock();
+                    foreach (var line in lines)
+                    {
+                        PureSet(line);
+                    }
+                }
+                finally
+                {
+                    Sync.ExitWriteLock();
+                }
                 MarkAsChanged();
             }
 
-            public void Set(int idx, Vector3 position1, Vector3 position2, Color color)
+            public void Set(CloudLine line)
             {
 #if DEBUG
-                Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
+                Debug.Assert(line.id >= 0 && line.id < MAX_LINES_COUNT, $"Wrong idx ({line.id})");
 #endif
-                Set(idx, color);
-                Set(idx, position1, position2);
+                try
+                {
+                    Sync.EnterWriteLock();
+                    PureSet(line);
+                }
+                finally
+                {
+                    Sync.ExitWriteLock();
+                }
                 MarkAsChanged();
             }
 
@@ -92,26 +121,12 @@ namespace Elektronik.Common.Clouds.Meshes
                 try
                 {
                     Sync.EnterWriteLock();
-                    Colors[2 * idx] = color1;
-                    Colors[2 * idx + 1] = color2;
-                }
-                finally
-                {
-                    Sync.ExitWriteLock();
-                }
-                MarkAsChanged();
-            }
-
-            public void Set(int idx, Color color)
-            {
-#if DEBUG
-                Debug.Assert(idx >= 0 && idx < MAX_LINES_COUNT, $"Wrong idx ({idx})");
-#endif
-                try
-                {
-                    Sync.EnterWriteLock();
-                    Colors[2 * idx] = color;
-                    Colors[2 * idx + 1] = color;
+                    int index1 = 2 * idx;
+                    int index2 = 2 * idx + 1;
+                    PureSet(new CloudLine(
+                        idx, 
+                        new CloudPoint(index1, Vertices[index1], color1),
+                        new CloudPoint(index2, Vertices[index2], color2)));
                 }
                 finally
                 {
@@ -128,8 +143,12 @@ namespace Elektronik.Common.Clouds.Meshes
                 try
                 {
                     Sync.EnterWriteLock();
-                    Vertices[2 * idx] = position1;
-                    Vertices[2 * idx + 1] = position2;
+                    int index1 = 2 * idx;
+                    int index2 = 2 * idx + 1;
+                    PureSet(new CloudLine(
+                        idx,
+                        new CloudPoint(index1, position1, Colors[index1]),
+                        new CloudPoint(index2, position2, Colors[index2])));
                 }
                 finally
                 {

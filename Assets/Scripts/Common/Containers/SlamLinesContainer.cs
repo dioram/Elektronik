@@ -1,4 +1,5 @@
 ﻿using Elektronik.Common.Clouds;
+using Elektronik.Common.Clouds.Meshes;
 using Elektronik.Common.Data.PackageObjects;
 using System;
 using System.Collections;
@@ -13,6 +14,8 @@ namespace Elektronik.Common.Containers
 {
     public class SlamLinesContainer : ILinesContainer<SlamLine>
     {
+        private List<CloudLine> m_linesBuffer;
+
         private FastLinesCloud m_linesCloud;
         private IDictionary<int, SlamLine> m_connections;
         private IDictionary<SlamLine, int> m_connectionIndices;
@@ -20,7 +23,9 @@ namespace Elektronik.Common.Containers
         private Queue<int> m_freeIds;
         public int Count { get => m_connections.Count; }
         public bool IsReadOnly => false;
-        public SlamLine this[int index] { get => m_connections[index]; set => Update(value); }
+        // getter may be extremely slow, if there are a lot of lines in this container
+        // TODO: increase performance of getter
+        public SlamLine this[int index] { get => m_connections.Values.ElementAt(index); set => Update(value); }
         public SlamLine this[SlamLine obj] 
         {
             get => this[obj.pt1.id, obj.pt2.id];
@@ -41,6 +46,7 @@ namespace Elektronik.Common.Containers
         }
         public SlamLinesContainer(FastLinesCloud linesCloud)
         {
+            m_linesBuffer = new List<CloudLine>();
             m_connections = new SortedDictionary<int, SlamLine>();
             m_connectionIndices = new SortedDictionary<SlamLine, int>();
             m_linesCloud = linesCloud;
@@ -51,12 +57,26 @@ namespace Elektronik.Common.Containers
             int connectionId = m_freeIds.Count > 0 ? m_freeIds.Dequeue() : m_maxId++;
             m_connectionIndices[obj] = connectionId;
             m_connections[connectionId] = obj;
-            m_linesCloud.Set(connectionId, obj.pt1.position, obj.pt2.position, obj.pt1.color, obj.pt2.color);
+            m_linesCloud.Set(
+                new CloudLine(connectionId, 
+                    new CloudPoint(0, obj.pt1.position, obj.pt1.color),
+                    new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
         }
-        public void Add(ReadOnlyCollection<SlamLine> objects)
+        public void Add(IEnumerable<SlamLine> objects)
         {
-            for (int i = 0; i < objects.Count; ++i)
-                Add(objects[i]);
+            Debug.Assert(m_linesBuffer.Count == 0);
+            foreach (var obj in objects)
+            {
+                int connectionId = m_freeIds.Count > 0 ? m_freeIds.Dequeue() : m_maxId++;
+                m_connectionIndices[obj] = connectionId;
+                m_connections[connectionId] = obj;
+                m_linesBuffer.Add(
+                    new CloudLine(connectionId,
+                        new CloudPoint(0, obj.pt1.position, obj.pt1.color),
+                        new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
+            }
+            m_linesCloud.Set(m_linesBuffer);
+            m_linesBuffer.Clear();
         }
         public void Clear()
         {
@@ -69,19 +89,29 @@ namespace Elektronik.Common.Containers
         public bool Exists(int id1, int id2) => TryGet(id1, id2, out SlamLine _);
         public bool Contains(SlamLine obj) => TryGet(obj.pt1.id, obj.pt2.id, out SlamLine _);
         public IList<SlamLine> GetAll() => m_connections.Values.ToList();
-        public void Remove(ReadOnlyCollection<SlamLine> objs)
+        public void Remove(IEnumerable<SlamLine> objs)
         {
-            for (int i = 0; i < objs.Count; ++i)
-                Remove(objs[i]);
+            Debug.Assert(m_linesBuffer.Count == 0);
+            foreach (var l in objs)
+            {
+                int index = m_connectionIndices[l];
+                m_linesBuffer.Add(CloudLine.Empty(index));
+                m_connectionIndices.Remove(l);
+                m_connections.Remove(index);
+                m_freeIds.Enqueue(index);
+            }
+            m_linesCloud.Set(m_linesBuffer);
+            m_linesBuffer.Clear();
         }
         public bool Remove(int id1, int id2)
         {
             if (TryGet(id1, id2, out SlamLine l))
             {
                 int index = m_connectionIndices[l];
+                m_connections.Remove(index);
                 m_connectionIndices.Remove(l);
                 m_freeIds.Enqueue(index);
-                m_linesCloud.Set(index, Vector3.zero, Vector3.zero, new Color(0, 0, 0, 0));
+                m_linesCloud.Set(CloudLine.Empty(index));
                 return true;
             }
             return false;
@@ -95,12 +125,14 @@ namespace Elektronik.Common.Containers
             }
             throw new InvalidSlamContainerOperationException($"[SlamLinesContainer.Get] Line with id[{id1}, {id2}] doesn't exist");
         }
+        private bool TryGet(int idx1, int idx2, out int lineId) 
+            => m_connectionIndices.TryGetValue(new SlamLine(idx1, idx2), out lineId);
         public bool TryGet(int idx1, int idx2, out SlamLine value)
         {
             value = default;
-            if (m_connectionIndices.TryGetValue(new SlamLine(idx1, idx2), out int idx))
+            if (TryGet(idx1, idx2, out int lineId))
             {
-                value = m_connections[idx];
+                value = m_connections[lineId];
                 return true;
             }
             return false;
@@ -108,27 +140,51 @@ namespace Elektronik.Common.Containers
         public bool TryGet(SlamLine obj, out SlamLine current) => TryGet(obj.pt1.id, obj.pt2.id, out current);
         public void Update(SlamLine obj)
         {
-            if (m_connectionIndices.TryGetValue(obj, out int index))
+            int index = m_connectionIndices[obj];
+            SlamLine currentLine = m_connections[index];
+            if (obj.pt1.id == currentLine.pt1.id && obj.pt2.id == currentLine.pt2.id)
             {
+                m_linesCloud.Set(
+                    new CloudLine(index, 
+                        new CloudPoint(0, obj.pt1.position, obj.pt1.color),
+                        new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
+            }
+            else
+            {
+                m_linesCloud.Set(
+                    new CloudLine(index, 
+                        new CloudPoint(0, obj.pt2.position, obj.pt2.color),
+                        new CloudPoint(0, obj.pt1.position, obj.pt1.color)));
+            }
+            m_connections[index] = obj;
+        }
+        public void Update(IEnumerable<SlamLine> objs)
+        {
+            Debug.Assert(m_linesBuffer.Count == 0);
+            foreach (var obj in objs)
+            {
+                int index = m_connectionIndices[obj];
                 SlamLine currentLine = m_connections[index];
                 if (obj.pt1.id == currentLine.pt1.id && obj.pt2.id == currentLine.pt2.id)
                 {
-                    m_linesCloud.Set(index, obj.pt1.position, obj.pt2.position, obj.pt1.color, obj.pt2.color);
+                    m_linesBuffer.Add(
+                        new CloudLine(index,
+                            new CloudPoint(0, obj.pt1.position, obj.pt1.color),
+                            new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
                 }
                 else
                 {
-                    m_linesCloud.Set(index, obj.pt2.position, obj.pt1.position, obj.pt2.color, obj.pt1.color);
+                    m_linesBuffer.Add(
+                        new CloudLine(index,
+                            new CloudPoint(0, obj.pt2.position, obj.pt2.color),
+                            new CloudPoint(0, obj.pt1.position, obj.pt1.color)));
                 }
                 m_connections[index] = obj;
             }
+            m_linesCloud.Set(m_linesBuffer);
         }
-        public void Update(ReadOnlyCollection<SlamLine> objs)
-        {
-            for (int i = 0; i < objs.Count; ++i)
-                Update(objs[i]);
-        }
-        public IEnumerator<SlamLine> GetEnumerator() => m_connections.Values.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => m_connections.Values.GetEnumerator();
+        public IEnumerator<SlamLine> GetEnumerator() => m_connections.Select(kv => kv.Value).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public int IndexOf(SlamLine item)
         {
             foreach (var c in m_connections)
