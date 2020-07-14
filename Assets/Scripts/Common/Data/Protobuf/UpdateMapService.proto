@@ -1,4 +1,6 @@
 ﻿syntax = "proto3";
+
+package Elektronik.Common.Data.Pb;
 option csharp_namespace = "Elektronik.Common.Data.Pb";
 
 import "google/protobuf/empty.proto";

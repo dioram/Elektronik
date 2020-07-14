@@ -1,5 +1,6 @@
 ﻿syntax = "proto3";
 
+package Elektronik.Common.Data.Pb;
 option csharp_namespace = "Elektronik.Common.Data.Pb";
 
 message Vector3Pb {

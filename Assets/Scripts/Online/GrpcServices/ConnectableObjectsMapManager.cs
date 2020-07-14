@@ -39,7 +39,7 @@ namespace Elektronik.Online.GrpcServices
                 }
                 catch (Exception e)
                 {
-                    status.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Unknown;
+                    status.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                     status.Message = e.Message;
                 }
             }
