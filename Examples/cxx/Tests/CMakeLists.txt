@@ -44,9 +44,9 @@ set(GENERATED_FILES ${GENERATED_CPP_FILES} ${GENERATED_CC_FILES})
 set(SOURCE_FILES 
 	source/main.cpp
 	source/ObservationsTests.cpp
-	source/PointsStressTests.cpp
 	source/PointsTests.cpp
-	source/TrackedObjsTests.cpp )
+	source/TrackedObjsTests.cpp  
+	source/OfflineTests.cpp)
 
 add_executable(${TARGET_NAME} ${SOURCE_FILES} ${GENERATED_FILES})
 
