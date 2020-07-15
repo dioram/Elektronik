@@ -51,7 +51,7 @@ namespace Elektronik.Common.Settings
         public void Serialize(string filename)
         {
             string pathToAppData = Path.Combine(Application.persistentDataPath, filename);
-            FileInfo fi = new FileInfo(pathToAppData);
+            var fi = new FileInfo(pathToAppData);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
             Debug.Log($"Serialization to:{Environment.NewLine}{pathToAppData}");

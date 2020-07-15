@@ -61,7 +61,7 @@ namespace Elektronik.Online.Settings
             if (SettingsBag.Current.TryGetValue(SettingName.IPAddress, out Setting ipSetting) &&
                 SettingsBag.Current.TryGetValue(SettingName.Port, out Setting portSetting))
             {
-                bool mapInfoAddressesAreEqual = uiMapInfoAddress.text == ipSetting.As<IPAddress>().ToString();
+                bool mapInfoAddressesAreEqual = uiMapInfoAddress.text == ipSetting.As<string>();
                 bool mapInfoPortsAreEqual = int.Parse(uiMapInfoPort.text) == portSetting.As<int>();
                 return mapInfoAddressesAreEqual && mapInfoPortsAreEqual ? SettingsBag.Current : new SettingsBag();
             }
@@ -81,7 +81,7 @@ namespace Elektronik.Online.Settings
                 .Do(oms => SettingsBag.Current = oms)
                 .Do(_ => SettingsBag.Current.Change(SettingName.Scale,
                     uiMapInfoScalingFactor.text.Length == 0 ? 1f : float.Parse(uiMapInfoScalingFactor.text)))
-                .Do(_ => SettingsBag.Current.Change(SettingName.IPAddress, IPAddress.Parse(uiMapInfoAddress.text)))
+                .Do(_ => SettingsBag.Current.Change(SettingName.IPAddress, uiMapInfoAddress.text))
                 .Do(_ => SettingsBag.Current.Change(SettingName.Port, Int32.Parse(uiMapInfoPort.text)))
                 .Do(_ => store.Add(SettingsBag.Current))
                 .Do(_ => store.Serialize(SETTINGS_FILE))
@@ -95,7 +95,7 @@ namespace Elektronik.Online.Settings
             foreach (var recent in store.Recent)
             {
                 var recentConnectionItem = recentConnectionsListBox.Add() as RecentIPListBoxItem;
-                recentConnectionItem.FullAddress = $"{recent[SettingName.IPAddress].As<IPAddress>()}:{recent[SettingName.Port].As<int>()}";
+                recentConnectionItem.FullAddress = $"{recent[SettingName.IPAddress].As<string>()}:{recent[SettingName.Port].As<int>()}";
                 recentConnectionItem.Time = recent.ModificationTime;
             }
             if (store.Recent.Count > 0)
@@ -112,7 +112,7 @@ namespace Elektronik.Online.Settings
         void RecentIPChanged(object sender, UIListBox.SelectionChangedEventArgs args)
         {
             SettingsBag.Current = store.Recent[args.index];
-            uiMapInfoAddress.text = SettingsBag.Current[SettingName.IPAddress].As<IPAddress>().ToString();
+            uiMapInfoAddress.text = SettingsBag.Current[SettingName.IPAddress].As<string>();
             uiMapInfoPort.text = SettingsBag.Current[SettingName.Port].As<int>().ToString();
             uiMapInfoScalingFactor.text = SettingsBag.Current[SettingName.Scale].As<float>().ToString();
         }

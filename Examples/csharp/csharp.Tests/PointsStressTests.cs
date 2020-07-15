@@ -53,7 +53,6 @@ namespace csharp.Tests
             using var file = File.Open(filename, FileMode.Create);
             packet.WriteDelimitedTo(file);
 
-            Assert.LessOrEqual(t.ElapsedMilliseconds, 40);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -78,7 +77,6 @@ namespace csharp.Tests
             using var file = File.Open(filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
-            Assert.LessOrEqual(t.ElapsedMilliseconds, 40);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -106,7 +104,6 @@ namespace csharp.Tests
             using var file = File.Open(filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
-            Assert.LessOrEqual(t.ElapsedMilliseconds, 40);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -131,7 +128,6 @@ namespace csharp.Tests
             using var file = File.Open(filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
-            Assert.LessOrEqual(t.ElapsedMilliseconds, 40);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -154,7 +150,6 @@ namespace csharp.Tests
             using var file = File.Open(filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
-            Assert.LessOrEqual(t.ElapsedMilliseconds, 40);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
     }

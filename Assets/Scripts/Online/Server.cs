@@ -38,7 +38,7 @@ namespace Elektronik.Online
                 new LinesMapManager(slamMaps.Lines),
             }.BuildChain();
 
-            Debug.Log($"{SettingsBag.Current[SettingName.IPAddress].As<IPAddress>()}:{SettingsBag.Current[SettingName.Port].As<int>()}");
+            Debug.Log($"{SettingsBag.Current[SettingName.IPAddress].As<string>()}:{SettingsBag.Current[SettingName.Port].As<int>()}");
 
             m_server = new GrpcServer()
             {
@@ -50,7 +50,7 @@ namespace Elektronik.Online
                 Ports =
                 {
                     new ServerPort(
-                        SettingsBag.Current[SettingName.IPAddress].As<IPAddress>().ToString(),
+                        SettingsBag.Current[SettingName.IPAddress].As<string>().ToString(),
                         SettingsBag.Current[SettingName.Port].As<int>(), 
                         ServerCredentials.Insecure),
                 },
