@@ -1,8 +1,14 @@
 function(install_3rdparty_cmake_project GIT GIT_TAG PROJECT_NAME CMAKE_ARG_LIST)
+    
+    cmake_parse_arguments("" "" "CMAKELISTS_DIR" "" ${ARGN})
 
     set(INSTALL_DIR "${CMAKE_BINARY_DIR}/third_party/install/${PROJECT_NAME}")
     set(BUILD_DIR "${CMAKE_BINARY_DIR}/third_party/build/${PROJECT_NAME}")
     set(SOURCE_DIR "${CMAKE_BINARY_DIR}/third_party/sources/${PROJECT_NAME}")
+    set(CMAKELISTS_DIR "${SOURCE_DIR}")
+    if (_CMAKELISTS_DIR)
+        set(CMAKELISTS_DIR "${CMAKELISTS_DIR}/${_CMAKELISTS_DIR}")
+    endif()
 
     set(${PROJECT_NAME}_INSTALL_DIR "${INSTALL_DIR}" PARENT_SCOPE)
     set(${PROJECT_NAME}_BUILD_DIR "${BUILD_DIR}" PARENT_SCOPE)
@@ -30,8 +36,9 @@ function(install_3rdparty_cmake_project GIT GIT_TAG PROJECT_NAME CMAKE_ARG_LIST)
         execute_process(COMMAND "${CMAKE_COMMAND}" -E env "PATH=$ENV{PATH}" 
             "${CMAKE_COMMAND}"
             -G "${CMAKE_GENERATOR}" 
-            -S "${SOURCE_DIR}"
+            -S "${CMAKELISTS_DIR}"
             -B "${BUILD_DIR}"
+            "-DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}"
             ${${CMAKE_ARG_LIST}})
         message(STATUS "configure... OK!")

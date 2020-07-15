@@ -2,8 +2,9 @@
 
 !/Examples/
 !/Examples/**
-/Examples/**/[Bb]in/
-/Examples/**/[Oo]bj/
+!/docs/
+!/docs/**
+
 
 !/Assets/
 !/Assets/**

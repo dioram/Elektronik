@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(cxx.Tests)
+project(cxx.Tests C CXX)
 set(TARGET_NAME ${PROJECT_NAME})
 
 ###############################################################
@@ -14,7 +14,7 @@ file(MAKE_DIRECTORY "${GENERATED_SOURCE_FILES_DIR}/Elektronik")
 
 file(GLOB_RECURSE PROTO_FILES "../../../Assets/Scripts/Common/Data/Protobuf/*.proto")
 
-find_package(Protobuf CONFIG REQUIRED)
+find_package(protobuf CONFIG REQUIRED)
 get_target_property(PROTOBUF_INCLUDE_DIR protobuf::libprotobuf INTERFACE_INCLUDE_DIRECTORIES)
 
 foreach(PROTO_FILE IN LISTS PROTO_FILES)
@@ -52,6 +52,8 @@ add_executable(${TARGET_NAME} ${SOURCE_FILES} ${GENERATED_FILES})
 
 target_compile_definitions(${TARGET_NAME} PRIVATE "-D_WIN32_WINNT=0x600")
 target_include_directories(${TARGET_NAME} PRIVATE ${GENERATED_SOURCE_FILES_DIR})
+
+target_compile_options(${TARGET_NAME} PRIVATE -bigobj)
 
 find_package(Protobuf CONFIG REQUIRED)
 target_link_libraries(${TARGET_NAME} PRIVATE protobuf::libprotobuf)

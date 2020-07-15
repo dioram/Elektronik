@@ -1,4 +1,4 @@
-/.vs/
-/.vscode/
-/csharp/[Bb]in/
-/csharp/[Oo]bj/
+.vs/
+.vscode/
+[Bb]in/
+[Oo]bj/
