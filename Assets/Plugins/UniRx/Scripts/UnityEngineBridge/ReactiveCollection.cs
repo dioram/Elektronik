@@ -10,7 +10,7 @@ namespace UniRx
         public T Value { get; private set; }
 
         public CollectionAddEvent(int index, T value)
-            : this()
+            :this()
         {
             Index = index;
             Value = value;
@@ -319,7 +319,7 @@ namespace UniRx
         {
             Dispose(true);
         }
-
+        
         #endregion
     }
 

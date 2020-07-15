@@ -1,17 +1,18 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Elektronik.Common.Clouds
 {
     public interface IFastPointsCloud
     {
-        bool Exists(int idx);
-        void Get(int idx, out Vector3 position, out Color color);
-        void Set(int idx, Matrix4x4 offset, Color color);
-        void Set(int idx, Color color);
-        void Set(int[] idxs, Matrix4x4[] offsets, Color[] colors);
-        void SetActive(bool value);
         void Clear();
-        void Repaint();
-        void GetAll(out int[] indices, out Vector3[] positions, out Color[] colors);
+        bool Exists(int idx);
+        CloudPoint Get(int idx);
+        IEnumerable<CloudPoint> GetAll();
+        void Set(CloudPoint point);
+        void Set(int idx, Color color);
+        void Set(int idx, Vector3 translation);
+        void Set(IEnumerable<CloudPoint> points);
+        void SetActive(bool value);
     }
 }

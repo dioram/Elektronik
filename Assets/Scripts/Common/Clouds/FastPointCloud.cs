@@ -1,44 +1,24 @@
 ﻿using Elektronik.Common.Clouds.Meshes;
 using Elektronik.Common.Extensions;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Elektronik.Common.Clouds
 {
-    public class FastPointCloud : MonoBehaviour, IFastPointsCloud
+    public class FastPointCloud : FastCloud<IPointsMeshData, PointsMeshObjectBase>, IFastPointsCloud
     {
-        public float scale = 1;
-
-        public GameObject meshObjectPrefab;
-        private ObjectPool m_meshObjectPool;
-        private Dictionary<int, IPointsMeshObject> m_meshObjects;
-        private int m_maxPointsCount;
-
-        private void Awake()
-        {
-            m_meshObjects = new Dictionary<int, IPointsMeshObject>();
-            m_maxPointsCount = meshObjectPrefab.GetComponent<IPointsMeshObject>().MaxPointsCount;
-            m_meshObjectPool = new ObjectPool(meshObjectPrefab);
-        }
-
-        private void CheckMesh(int srcPointIdx, out int meshIdx, out int pointIdx)
-        {
-            meshIdx = srcPointIdx / m_maxPointsCount;
-            if (!m_meshObjects.ContainsKey(meshIdx))
-            {
-                AddNewMesh(meshIdx);
-            }
-            pointIdx = srcPointIdx % m_maxPointsCount;
-        }
+        private int MaxPointsCount { get => meshObjectPrefab.MaxObjectsCount; }
 
         public bool Exists(int idx)
         {
-            int meshIdx = idx / m_maxPointsCount;
-            if (m_meshObjects.ContainsKey(meshIdx))
+            int meshIdx = idx / MaxPointsCount;
+            if (m_data.ContainsKey(meshIdx))
             {
-                int pointIdx = idx % m_maxPointsCount;
-                return m_meshObjects[meshIdx].Exists(pointIdx);
+                int pointIdx = idx % MaxPointsCount;
+                return m_data[meshIdx].Exists(pointIdx);
             }
             else
             {
@@ -46,77 +26,65 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-        public void Get(int idx, out Vector3 position, out Color color)
+        public CloudPoint Get(int idx)
         {
             CheckMesh(idx, out int meshId, out int pointId);
-            m_meshObjects[meshId].Get(pointId, out position, out color);
+            return m_data[meshId].Get(pointId);
         }
 
-        public void Set(int idx, Matrix4x4 offset, Color color)
+        public void Set(CloudPoint point)
         {
-            CheckMesh(idx, out int meshId, out int pointId);
-            m_meshObjects[meshId].Set(pointId, offset, color);
+            CheckMesh(point.idx, out int meshId, out int pointId);
+            m_data[meshId].Set(new CloudPoint(pointId, point.offset, point.color));
         }
 
-        public void Set(int[] idxs, Matrix4x4[] offsets, Color[] colors)
+        public void Set(IEnumerable<CloudPoint> points)
         {
-            Debug.Assert((idxs.Length == offsets.Length) && (offsets.Length == colors.Length));
-            for (int i = 0; i < idxs.Length; ++i)
+            var packets = new Dictionary<int, List<CloudPoint>>();
+            foreach (var pt in points)
             {
-                Set(idxs[i], offsets[i], colors[i]);
+                CheckMesh(pt.idx, out var meshIdx, out var pointIdx);
+                if (!packets.ContainsKey(meshIdx))
+                {
+                    packets[meshIdx] = new List<CloudPoint>();
+                }
+                packets[meshIdx].Add(new CloudPoint(pointIdx, pt.offset, pt.color));
             }
+            foreach (var packet in packets)
+            {
+                m_data[packet.Key].Set(packet.Value);
+            }
+        }
+
+        public void Set(int idx, Vector3 offset)
+        {
+            CheckMesh(idx, out int meshId, out int pointId);
+            m_data[meshId].Set(pointId, offset);
         }
 
         public void Set(int idx, Color color)
         {
             CheckMesh(idx, out int meshId, out int pointId);
-            m_meshObjects[meshId].Set(pointId, color);
+            m_data[meshId].Set(pointId, color);
         }
 
-        public void Clear()
+        public IEnumerable<CloudPoint> GetAll()
         {
-            foreach (var meshObject in m_meshObjects)
-            {
-                meshObject.Value.Clear();
-                m_meshObjectPool.Despawn(meshObjectPrefab);
-            }
-            m_meshObjects.Clear();
-        }
-
-        public void Repaint()
-        {
-            foreach (var meshObject in m_meshObjects)
-            {
-                meshObject.Value.Repaint();
-            }
-        }
-
-        public void GetAll(out int[] indices, out Vector3[] positions, out Color[] colors)
-        {
-            indices = Enumerable.Repeat(1, m_maxPointsCount * m_meshObjects.Count).ToArray();
-            positions = new Vector3[m_maxPointsCount * m_meshObjects.Count];
-            colors = new Color[m_maxPointsCount * m_meshObjects.Count];
-            KeyValuePair<int, IPointsMeshObject>[] allMeshes = m_meshObjects.Select(kv => kv).ToArray();
+            var points = new CloudPoint[MaxPointsCount * m_meshObjects.Count];
+            KeyValuePair<int, IPointsMeshData>[] allMeshes = m_data.Select(kv => kv).ToArray();
             for (int meshNum = 0; meshNum < allMeshes.Length; ++meshNum)
             {
-                allMeshes[meshNum].Value.GetAll(out Vector3[] meshObjPositions, out Color[] meshObjColors);
-                for (int i = 0; i < m_maxPointsCount; ++i)
+                var meshPoints = allMeshes[meshNum].Value.GetAll().ToArray();
+                for (int i = 0; i < MaxPointsCount; ++i)
                 {
-                    positions[m_maxPointsCount * allMeshes[meshNum].Key + i] = meshObjPositions[i];
-                    colors[m_maxPointsCount * allMeshes[meshNum].Key + i] = meshObjColors[i];
+                    points[MaxPointsCount * allMeshes[meshNum].Key + i] = new CloudPoint(
+                        meshPoints[i].idx + meshNum * MaxPointsCount,
+                        meshPoints[i].offset,
+                        meshPoints[i].color
+                    );
                 }
             }
-        }
-
-        private void AddNewMesh(int idx)
-        {
-            IPointsMeshObject newMesh = m_meshObjectPool.Spawn().GetComponent<IPointsMeshObject>();
-            m_meshObjects.Add(idx, newMesh);
-        }
-
-        public void SetActive(bool value)
-        {
-            m_meshObjectPool.SetActive(value);
+            return points;
         }
     }
 }

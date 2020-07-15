@@ -32,7 +32,7 @@ namespace UniRx.Operators
             {
                 var sourceSubscription = new SingleAssignmentDisposable();
                 var sourceObserver = new SkipUntil(this, sourceSubscription);
-
+                
                 var otherSubscription = new SingleAssignmentDisposable();
                 var otherObserver = new SkipUntilOther(this, sourceObserver, otherSubscription);
 

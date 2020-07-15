@@ -408,7 +408,7 @@ namespace UniRx
             this.RawErrorMessage = www.error;
             this.ResponseHeaders = www.responseHeaders;
             this.HasResponse = false;
-            this.Text = text;
+            this.Text = text; 
 
             var splitted = RawErrorMessage.Split(' ', ':');
             if (splitted.Length != 0)

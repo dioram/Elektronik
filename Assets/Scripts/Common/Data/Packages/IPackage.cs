@@ -2,7 +2,7 @@
 {
     public interface IPackage
     {
-        PackageType Type { get; }
+        PackageType PackageType { get; }
         int Timestamp { get; }
         bool IsKey { get; }
     }

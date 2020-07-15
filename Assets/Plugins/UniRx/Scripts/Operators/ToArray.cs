@@ -52,7 +52,7 @@ namespace UniRx.Operators
                 {
                     result = list.ToArray();
                 }
-                catch (Exception ex)
+                catch (Exception ex) 
                 {
                     try { observer.OnError(ex); } finally { Dispose(); }
                     return;

@@ -1,98 +1,179 @@
-﻿using System.Linq;
+﻿using Elektronik.Common.Data.PackageObjects;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Elektronik.Common.Clouds.Meshes
 {
     [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
-    public class PointsMeshObject : MonoBehaviour, IPointsMeshObject
+    public partial class PointsMeshObject : PointsMeshObjectBase
     {
-        private const int MAX_VERTICES_COUNT = 65000;
+        public override int MaxObjectsCount => MeshData.MAX_VERTICES_COUNT;
+        public override MeshDataBase<IPointsMeshData> CreateMeshData() => new MeshData();
+        protected override MeshTopology MeshTopology => MeshTopology.Points;
 
-        private MeshFilter m_filter;
-        private Mesh m_mesh;
-
-        private int[] m_indices;
-        private Vector3[] m_vertices;
-        private Color[] m_colors;
-        private bool m_needReapint = false;
-        public int MaxPointsCount => MAX_VERTICES_COUNT;
-
-        private void Awake()
+        public class MeshData : MeshDataBase<IPointsMeshData>, IPointsMeshData
         {
-            m_filter = GetComponent<MeshFilter>();
-            m_indices = Enumerable.Range(0, MAX_VERTICES_COUNT).ToArray();
-            m_vertices = new Vector3[MAX_VERTICES_COUNT];
-            m_colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
-            m_mesh = new Mesh();
-        }
+            public const int MAX_VERTICES_COUNT = 65000;
+            public const int MAX_POINTS_COUNT = MAX_VERTICES_COUNT;
 
-        private void Start()
-        {
-            m_mesh.MarkDynamic();
-            m_mesh.vertices = m_vertices;
-            m_mesh.colors = m_colors;
-            m_mesh.SetIndices(m_indices, MeshTopology.Points, 0);
-            m_filter.mesh = m_mesh;
-        }
-
-        public void Get(int idx, out Vector3 position, out Color color)
-        {
-            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
-            position = m_vertices[idx];
-            color = m_colors[idx];
-        }
-
-        public void Set(int idx, Matrix4x4 position, Color color)
-        {
-            Set(idx, color);
-            Set(idx, position);
-        }
-
-        public void Set(int idx, Color color)
-        {
-            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
-            m_colors[idx] = color;
-            m_needReapint = true;
-        }
-
-        public void Set(int idx, Matrix4x4 position)
-        {
-            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
-            m_vertices[idx] = position.GetPosition();
-            m_needReapint = true;
-        }
-
-        public void Repaint()
-        {
-            if (m_needReapint)
+            public MeshData()
             {
-                m_mesh.vertices = m_vertices;
-                m_mesh.colors = m_colors;
-                m_mesh.RecalculateBounds();
-                m_needReapint = false;
+                Indices = Enumerable.Range(0, MAX_VERTICES_COUNT).ToArray();
+                Vertices = new Vector3[MAX_VERTICES_COUNT];
+                Colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
             }
-        }
 
-        public void GetAll(out Vector3[] positions, out Color[] colors)
-        {
-            positions = m_vertices.Clone() as Vector3[];
-            colors = m_colors.Clone() as Color[];
-        }
-
-        public void Clear()
-        {
-            for (int i = 0; i < m_vertices.Length; ++i)
+            public CloudPoint Get(int idx)
             {
-                m_vertices[i] = Vector3.zero;
-                m_colors[i] = new Color(0, 0, 0, 0);
+#if DEBUG
+                Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
+#endif
+                CloudPoint result;
+                try
+                {
+                    Sync.EnterReadLock();
+                    result = new CloudPoint(idx, Vertices[idx], Colors[idx]);
+                }
+                finally
+                {
+                    Sync.ExitReadLock();
+                }
+                return result;
             }
-            Repaint();
-        }
 
-        public bool Exists(int idx)
-        {
-            Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
-            return !(m_vertices[idx] == Vector3.zero && m_colors[idx] == new Color(0, 0, 0, 0));
+            public void Set(IEnumerable<CloudPoint> points)
+            {
+                //var points_ = points.ToArray();
+                try
+                {
+                    Sync.EnterWriteLock();
+                    //Parallel.For(0, points_.Length, i =>
+                    foreach(var pt in points)
+                    {
+                        Colors[pt.idx] = pt.color;
+                        Vertices[pt.idx] = pt.offset;
+                    }//);
+                }
+                finally
+                {
+                    Sync.ExitWriteLock();
+                }
+                MarkAsChanged();
+            }
+
+            public void Set(CloudPoint point)
+            {
+#if DEBUG
+                Debug.Assert(point.idx >= 0 && point.idx < MAX_VERTICES_COUNT, $"Wrong idx ({point.idx})");
+#endif
+                try
+                {
+                    Sync.EnterWriteLock();
+                    Colors[point.idx] = point.color;
+                    Vertices[point.idx] = point.offset;
+                }
+                finally
+                {
+                    Sync.ExitWriteLock();
+                }
+                MarkAsChanged();
+            }
+
+            public void Set(int idx, Color color)
+            {
+#if DEBUG
+                Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
+#endif
+                try
+                {
+                    Sync.EnterWriteLock();
+                    Colors[idx] = color;
+                }
+                finally
+                {
+                    Sync.ExitWriteLock();
+                }
+                MarkAsChanged();
+            }
+
+            public void Set(int idx, Vector3 position)
+            {
+#if DEBUG
+                Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
+#endif
+                try
+                {
+                    Sync.EnterWriteLock();
+                    Vertices[idx] = position;
+                }
+                finally
+                {
+                    Sync.ExitWriteLock();
+                }
+                MarkAsChanged();
+            }
+
+            public IEnumerable<CloudPoint> GetAll()
+            {
+                var points = new List<CloudPoint>(MAX_POINTS_COUNT);
+                try
+                {
+                    Sync.EnterReadLock();
+                    for (int i = 0; i < MAX_POINTS_COUNT; ++i)
+                    {
+                        if (Exists(i))
+                        {
+                            points.Add(Get(i));
+                        }
+                    }
+                }
+                finally
+                {
+                    Sync.ExitReadLock();
+                }
+                return points;
+            }
+
+            public void Clear()
+            {
+                try
+                {
+                    Sync.EnterWriteLock();
+                    for (int i = 0; i < Vertices.Length; ++i)
+                    {
+                        Vertices[i] = Vector3.zero;
+                        Colors[i] = new Color(0, 0, 0, 0);
+                    }
+                }
+                finally
+                {
+                    Sync.ExitWriteLock();
+                }
+            }
+
+            public bool Exists(int idx)
+            {
+#if DEBUG
+                Debug.Assert(idx >= 0 && idx < MAX_VERTICES_COUNT, $"Wrong idx ({idx})");
+#endif
+                bool res = false;
+                try
+                {
+                    Sync.EnterReadLock();
+                    res = !(Vertices[idx] == Vector3.zero && Colors[idx] == new Color(0, 0, 0, 0));
+                }
+                finally
+                {
+                    Sync.ExitReadLock();
+                }
+                return res;
+            }
+
+            public override IPointsMeshData Data { get => this; }
         }
     }
 }

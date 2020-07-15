@@ -44,7 +44,7 @@ namespace UniRx.Operators
             {
                 sourceSubscription = new SingleAssignmentDisposable();
                 sourceSubscription.Disposable = parent.source.Subscribe(this);
-
+                
                 var scheduling = UnityObservable.IntervalFrame(parent.frameCount, parent.frameCountType)
                     .Subscribe(new SampleFrameTick(this));
 

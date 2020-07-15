@@ -9,7 +9,7 @@ namespace UniRx.Triggers
         Subject<Collision> onCollisionEnter;
 
         /// <summary>OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider.</summary>
-        void OnCollisionEnter(Collision collision)
+         void OnCollisionEnter(Collision collision)
         {
             if (onCollisionEnter != null) onCollisionEnter.OnNext(collision);
         }
@@ -23,7 +23,7 @@ namespace UniRx.Triggers
         Subject<Collision> onCollisionExit;
 
         /// <summary>OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider.</summary>
-        void OnCollisionExit(Collision collisionInfo)
+         void OnCollisionExit(Collision collisionInfo)
         {
             if (onCollisionExit != null) onCollisionExit.OnNext(collisionInfo);
         }
@@ -37,7 +37,7 @@ namespace UniRx.Triggers
         Subject<Collision> onCollisionStay;
 
         /// <summary>OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.</summary>
-        void OnCollisionStay(Collision collisionInfo)
+         void OnCollisionStay(Collision collisionInfo)
         {
             if (onCollisionStay != null) onCollisionStay.OnNext(collisionInfo);
         }

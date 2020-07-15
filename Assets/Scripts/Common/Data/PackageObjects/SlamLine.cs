@@ -1,36 +1,42 @@
 ﻿using System;
-using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEditor;
+
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public struct SlamLine
+    public struct SlamLine : IEquatable<SlamLine>, IComparable<SlamLine>
     {
-        public Vector3 vert1;
-        public Vector3 vert2;
-        public int pointId1;
-        public int pointId2;
-        public Color color1;
-        public Color color2;
-        public bool isRemoved;
-        public SlamLine(Vector3 vert1, Vector3 vert2, int pointId1, int pointId2, Color color1, Color color2)
+        private readonly ulong m_id;
+        public readonly SlamPoint pt1;
+        public readonly SlamPoint pt2;
+
+        public SlamLine(int id1, int id2)
         {
-            this.vert1 = vert1;
-            this.vert2 = vert2;
-            this.pointId1 = pointId1;
-            this.pointId2 = pointId2;
-            this.color1 = color1;
-            this.color2 = color2;
-            this.isRemoved = false;
+            pt1 = new SlamPoint() { id = id1 };
+            pt2 = new SlamPoint() { id = id2 };
+            if (id1 < id2)
+                m_id = ((ulong)id1 << sizeof(int) * 8) + (ulong)id2;
+            else
+                m_id = ((ulong)id2 << sizeof(int) * 8) + (ulong)id1;
         }
 
-        public long GenerateLongId()
+        public SlamLine(SlamPoint pt1, SlamPoint pt2)
         {
-            return GenerateLongId(pointId1, pointId2);
+            this.pt1 = pt1;
+            this.pt2 = pt2;
+            if (pt1.id < pt2.id)
+                m_id = ((ulong)pt1.id << sizeof(int) * 8) + (ulong)pt2.id;
+            else
+                m_id = ((ulong)pt2.id << sizeof(int) * 8) + (ulong)pt1.id;
         }
 
-        public static long GenerateLongId(int pointId1, int pointId2)
-        {
-            return pointId1 * UInt32.MaxValue + pointId2;
-        }
+        public int CompareTo(SlamLine other) => m_id.CompareTo(other.m_id);
+
+        public bool Equals(SlamLine other) => m_id == other.m_id;
     }
 }

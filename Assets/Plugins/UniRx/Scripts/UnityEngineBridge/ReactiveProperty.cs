@@ -538,7 +538,7 @@ namespace UniRx
             // call source.OnError
             var node = root;
             while (node != null)
-            {
+            { 
                 node.OnError(error);
                 node = node.Next;
             }

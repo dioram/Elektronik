@@ -38,7 +38,7 @@ namespace Elektronik.Offline.UI
 
         private void UpdateTime()
         {
-            IPackage currentEvent = eventsManager.GetCurrentEvent();
+            var currentEvent = eventsManager.GetCurrentEvent();
             if (currentEvent != null && currentEvent.Timestamp != -1)
             {
                 timelineLabel.text = TimeSpan.FromMilliseconds(currentEvent.Timestamp).ToString(@"mm\:ss\.fff");

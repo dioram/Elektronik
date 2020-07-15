@@ -26,17 +26,16 @@ namespace Elektronik.Common.Data.Parsers
             }
         }
 
-        public override int Parse(byte[] data, int startIdx, out IPackage result)
+        public override IPackage Parse(byte[] data, int startIdx, ref int offset)
         {
-            result = null;
             if ((PackageType)data[startIdx] != PackageType.TrackingPackage)
             {
-                return m_successor?.Parse(data, startIdx, out result) ?? 0;
+                return m_successor?.Parse(data, startIdx, ref offset);
             }
             int readBytes = TrackingPackage.Parse(data, startIdx, out TrackingPackage trackingPackage);
+            offset += readBytes;
             Convert(ref trackingPackage);
-            result = trackingPackage;
-            return readBytes;
+            return trackingPackage;
         }
     }
 }

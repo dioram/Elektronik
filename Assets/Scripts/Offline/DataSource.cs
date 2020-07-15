@@ -15,12 +15,12 @@ namespace Elektronik.Offline
 {
     public class DataSource
     {
-        private DataParser m_parser;
+        private IParser m_parser;
         public DataSource()
         {
             var converter = new Camera2Unity3dPackageConverter(Matrix4x4.Scale(Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>()));
             m_parser =
-                new IChainable<DataParser>[]
+                new DataParser[]
                 {
                     new SlamPackageParser(converter),
                     new TrackingPackageParser(converter),
@@ -53,8 +53,9 @@ namespace Elektronik.Offline
                         : offsetTable[i + 1] - offsetTable[i];
                     byte[] rawPackage = new byte[(int)packageLength];
                     Buffer.BlockCopy(data, offsetTable[i], rawPackage, 0, (int)packageLength);
-                    int readBytes = m_parser.Parse(rawPackage, 0, out IPackage package);
-                    if (readBytes == 0)
+                    int offset = 0;
+                    IPackage package = m_parser.Parse(rawPackage, 0, ref offset);
+                    if (offset == 0)
                         Debug.LogWarning("No parsers was found");
                     result[i] = package;
                 });

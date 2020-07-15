@@ -47,7 +47,7 @@ namespace UniRx.Triggers
         {
             return onTriggerStay ?? (onTriggerStay = new Subject<Collider>());
         }
-
+        
         protected override void RaiseOnCompletedOnDestroy()
         {
             if (onTriggerEnter != null)

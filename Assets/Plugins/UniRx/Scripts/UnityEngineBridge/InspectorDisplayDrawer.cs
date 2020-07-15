@@ -2,6 +2,7 @@
 using System.Reflection;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using System.Collections;
 using System.Linq;
 
 #if UNITY_EDITOR
@@ -154,7 +155,7 @@ namespace UniRx
                 fldInfo = type.GetField(path, BindingFlags.IgnoreCase | BindingFlags.GetField | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                 if (fldInfo != null ||
-                    type.BaseType == null ||
+                    type.BaseType == null || 
                     type.BaseType.IsSubclassOf(typeof(ReactiveProperty<>))) break;
 
                 // if the field information is missing, it may be in the base class

@@ -1,56 +1,69 @@
 ﻿using Elektronik.Common.Clouds;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
+using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Extensions;
 using UnityEngine;
 
 namespace Elektronik.Common.Maps
 {
-    public class SlamMap : RepaintableObject
+    public class SlamMap : MonoBehaviour
     {
+        public Helmet helmetPrefab;
+
         public GameObject observationPrefab;
         public FastPointCloud fastPointCloud;
-        public FastLinesCloud fusionLinesCloud;
-        public FastLinesCloud graphConnectionLinesCloud;
+        public FastLinesCloud pointsConnectionsCloud;
+        public FastLinesCloud observationsConnectionsCloud;
+        public FastLinesCloud trackedObjsConnectionsCloud;
+        public FastLinesCloud linesCloud;
 
-        private SlamObservationsContainer m_observationsContainer;
-        public ICloudObjectsContainer<SlamObservation> ObservationsContainer { get => m_observationsContainer; }
-        public ICloudObjectsContainer<SlamLine> LinesContainer { get; private set; }
-        public ICloudObjectsContainer<SlamPoint> PointsContainer { get; private set; }
+        public IConnectableObjectsContainer<SlamPoint> Points { get; private set; }
+        public GameObjectsContainer<SlamObservation> ObservationsGO { get; private set; }
+        public GameObjectsContainer<TrackedObjPb> TrackedObjsGO { get; private set; }
+
+        public IConnectableObjectsContainer<SlamObservation> Observations { get; private set; }
+        public IConnectableObjectsContainer<TrackedObjPb> TrackedObjs { get; private set; }
+
+        public ILinesContainer<SlamLine> Lines { get; private set; }
 
         private void Awake()
         {
-            LinesContainer = new SlamLinesContainer(fusionLinesCloud);
-            m_observationsContainer = new SlamObservationsContainer(
-                observationPrefab,
-                new SlamLinesContainer(graphConnectionLinesCloud));
-            PointsContainer = new SlamPointsContainer(fastPointCloud);
+            var trackedObjs = new TrackedObjectsContainer(helmetPrefab);
+            TrackedObjs = new ConnectableObjectsContainer<TrackedObjPb>(
+                trackedObjs,
+                new SlamLinesContainer(trackedObjsConnectionsCloud));
+            TrackedObjsGO = trackedObjs;
+
+            var observations = new SlamObservationsContainer(observationPrefab);
+            Observations = new ConnectableObjectsContainer<SlamObservation>(
+                observations,
+                new SlamLinesContainer(observationsConnectionsCloud));
+            ObservationsGO = observations;
+
+            Points = new ConnectableObjectsContainer<SlamPoint>(
+                new SlamPointsContainer(fastPointCloud),
+                new SlamLinesContainer(pointsConnectionsCloud));
+
+            Lines = new SlamLinesContainer(linesCloud);
         }
 
         public void SetActivePointCloud(bool value)
         {
             fastPointCloud.SetActive(value);
-            fusionLinesCloud.SetActive(value);
+            pointsConnectionsCloud.SetActive(value);
         }
         public void SetActiveObservationsGraph(bool value)
         {
-            var obsGraphPool = m_observationsContainer.ObservationsPool;
-            obsGraphPool.SetActive(value);
-            graphConnectionLinesCloud.SetActive(value);
+            ObservationsGO.ObservationsPool.SetActive(value);
+            observationsConnectionsCloud.SetActive(value);
         }
 
-        public override void Repaint()
+        public void Clear()
         {
-            ObservationsContainer.Repaint();
-            LinesContainer.Repaint();
-            PointsContainer.Repaint();
-        }
-
-        public override void Clear()
-        {
-            PointsContainer.Clear();
-            LinesContainer.Clear();
-            ObservationsContainer.Clear();
+            TrackedObjs.Clear();
+            Observations.Clear();
+            Points.Clear();
         }
     }
 }

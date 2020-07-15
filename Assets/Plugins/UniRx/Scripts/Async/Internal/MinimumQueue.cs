@@ -28,7 +28,7 @@ namespace UniRx.Async.Internal
         public int Count
         {
 #if NET_4_6 || NET_STANDARD_2_0
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
             get { return size; }
         }
