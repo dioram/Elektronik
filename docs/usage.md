@@ -25,7 +25,7 @@ All Elektronik data is represented as data packages. Each package contains:
    * Lines
    * Tracked objects
 
-# Data actions
+## Data actions
 
 There are four actions over data:
 1. Add. This action adds neccesary objects to a map. Note, that without objects adding, you can't interact with them in a future. If you try to apply anything to unexisted object, then an error will raise in Elektronik.
@@ -67,7 +67,7 @@ Any package must have one set of objects of type above.
 
 # C#
 
-You can familiar with Elektronik interaction example in the folder Examples/csharp at the root of repo. The example is implemented as Unit-tests. Before starting tests you should run Elektronik in online mode. After tests was ran, the file PointsStressTests.dat appears in the executable files directory folder which can be used as Elektronik opportunities presentation in offline mode.
+You can familiar with Elektronik interaction example in the folder Examples/csharp at the root of repo. The example is implemented as Unit-tests. Before starting tests you should run Elektronik in online mode. After tests was ran, there will be the file PointsStressTests.dat in the executable files directory folder which can be used as Elektronik opportunities presentation in offline mode.
 
 # C++
 
