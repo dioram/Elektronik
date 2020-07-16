@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Elektronik.Common.Data.Pb;
 using System.IO;
+using Elektronik.Common.Data.Converters;
 
 namespace Elektronik.Offline
 {
@@ -20,6 +21,7 @@ namespace Elektronik.Offline
         public Commander[] commanders;
         public RepaintablePackagePresenter[] presenters;
         public SlamMap map;
+        public CSConverter converter;
 
         private Commander m_commander;
         private PackagePresenter m_presenter;
@@ -39,6 +41,12 @@ namespace Elektronik.Offline
         private void Start()
         {
             m_commander = commanders.BuildChain();
+            converter.SetInitTRS(
+                Vector3.zero,
+                Quaternion.identity,
+                Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>());
+            m_commander.SetConverter(converter);
+
             m_presenter = presenters.BuildChain();
             StartCoroutine(ProcessEvents());
         }

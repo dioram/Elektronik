@@ -12,8 +12,8 @@ namespace Elektronik.Common.Data.PackageObjects
     public struct SlamLine : IEquatable<SlamLine>, IComparable<SlamLine>
     {
         private readonly ulong m_id;
-        public readonly SlamPoint pt1;
-        public readonly SlamPoint pt2;
+        public SlamPoint pt1;
+        public SlamPoint pt2;
 
         public SlamLine(int id1, int id2)
         {

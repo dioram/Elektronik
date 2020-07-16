@@ -3,6 +3,7 @@ using Elektronik.Common.Commands;
 using Elektronik.Common.Commands.Generic;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data;
+using Elektronik.Common.Data.Converters;
 using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Packages;
 using Elektronik.Common.Data.Packages.SlamActionPackages;
@@ -61,9 +62,9 @@ namespace Elektronik.Offline.Commanders
             switch (packet.DataCase)
             {
                 case PacketPb.DataOneofCase.Points:
-                    return GetCommand(map.Points, packet.Points.Data.Select(p => (SlamPoint)p), packet);
+                    return GetCommand(map.Points, packet.ExtractPoints(m_converter).ToList(), packet);
                 case PacketPb.DataOneofCase.Observations:
-                    return GetCommand(map.Observations, packet.Observations.Data.Select(o => (SlamObservation)o), packet);
+                    return GetCommand(map.Observations, packet.ExtractObservations(m_converter).ToList(), packet);
                 default:
                     return null;
             }

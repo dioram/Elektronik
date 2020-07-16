@@ -11,10 +11,8 @@ namespace csharp.Tests
     {
         private TrackedObjPb[] m_objects;
 
-        [SetUp]
-        public override void Setup()
+        public TrackedObjsTests()
         {
-            base.Setup();
             m_objects = Enumerable.Range(0, 3).Select(id => new TrackedObjPb()
             {
                 Id = id,

@@ -1,5 +1,7 @@
 ﻿using Elektronik.Common.Commands;
 using Elektronik.Common.Commands.Generic;
+using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Maps;
 using System.Collections.Generic;
@@ -11,12 +13,12 @@ namespace Elektronik.Offline.Commanders
     {
         public SlamMap map;
         
-        protected virtual ICommand GetCommand(IEnumerable<TrackedObjPb> objs, PacketPb.Types.ActionType action)
+        protected virtual ICommand GetCommand(IEnumerable<SlamTrackedObject> objs, PacketPb.Types.ActionType action)
         {
             switch (action)
             {
                 case PacketPb.Types.ActionType.Add:
-                    return new AddCommand<TrackedObjPb>(map.TrackedObjs, objs);
+                    return new AddCommand<SlamTrackedObject>(map.TrackedObjs, objs);
                 case PacketPb.Types.ActionType.Update:
                     return new UpdateTrackedObjsCommand(map.TrackedObjsGO, objs);
                 case PacketPb.Types.ActionType.Remove:
@@ -31,7 +33,7 @@ namespace Elektronik.Offline.Commanders
         {
             if (pkg.DataCase == PacketPb.DataOneofCase.TrackedObjs)
             {
-                var command = GetCommand(pkg.TrackedObjs.Data, pkg.Action);
+                var command = GetCommand(pkg.ExtractTrackedObjects(m_converter).ToList(), pkg.Action);
                 command.Execute();
                 commands.AddLast(command);
             }

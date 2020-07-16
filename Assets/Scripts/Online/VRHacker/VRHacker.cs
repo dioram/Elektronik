@@ -25,8 +25,8 @@ namespace Elektronik.Online.VRHacker
             if (map.TrackedObjs.Count > 0)
             {
                 var obj = map.TrackedObjs[0];
-                headset.rotation = obj.Rotation;
-                headset.localPosition = obj.Translation + new Vector3(0, 1, 0);
+                headset.rotation = obj.rotation;
+                headset.localPosition = obj.position + new Vector3(0, 1, 0);
             }
         }
     }

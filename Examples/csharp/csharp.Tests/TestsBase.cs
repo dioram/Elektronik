@@ -7,11 +7,11 @@ using System.Text;
 
 namespace csharp.Tests
 {
-    public class TestsBase
+    public abstract class TestsBase
     {
         protected MapsManagerPb.MapsManagerPbClient m_client;
 
-        public virtual void Setup()
+        public TestsBase()
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
@@ -19,6 +19,5 @@ namespace csharp.Tests
             var channel = new Channel("127.0.0.1:5050", ChannelCredentials.Insecure);
             m_client = new MapsManagerPb.MapsManagerPbClient(channel);
         }
-
     }
 }

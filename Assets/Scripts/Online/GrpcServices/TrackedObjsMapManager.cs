@@ -1,5 +1,7 @@
 ﻿using Elektronik.Common;
 using Elektronik.Common.Containers;
+using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Maps;
 using Grpc.Core;
@@ -12,15 +14,18 @@ using UnityEngine;
 
 namespace Elektronik.Online.GrpcServices
 {
-    public class TrackedObjsMapManager : ConnectableObjectsMapManager<TrackedObjPb>
+    public class TrackedObjsMapManager : ConnectableObjectsMapManager<SlamTrackedObject>
     {
-        private GameObjectsContainer<TrackedObjPb> m_gameObjects;
+        private GameObjectsContainer<SlamTrackedObject> m_gameObjects;
+        private ICSConverter m_converter;
 
         public TrackedObjsMapManager(
-            GameObjectsContainer<TrackedObjPb> gameObjects, 
-            IConnectableObjectsContainer<TrackedObjPb> map) : base(map)
+            GameObjectsContainer<SlamTrackedObject> gameObjects, 
+            IConnectableObjectsContainer<SlamTrackedObject> map,
+            ICSConverter converter) : base(map)
         {
             m_gameObjects = gameObjects;
+            m_converter = converter;
         }
 
         private Task<ErrorStatusPb> UpdateTracks(PacketPb request, Task<ErrorStatusPb> status)
@@ -59,7 +64,7 @@ namespace Elektronik.Online.GrpcServices
             Debug.Log("[TrackedObjsMapManager.Handle]");
             if (request.DataCase == PacketPb.DataOneofCase.TrackedObjs)
             {
-                var status = Handle(request.Action, request.TrackedObjs.Data);
+                var status = Handle(request.Action, request.ExtractTrackedObjects(m_converter).ToList());
                 status = UpdateTracks(request, status);
                 status = HandleConnections(request, status);
                 return status;

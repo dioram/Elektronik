@@ -11,13 +11,13 @@ using UnityEngine;
 
 namespace Elektronik.Common.Commands.Generic
 {
-    public class RemoveTrackedObjCommands : RemoveCommand<TrackedObjPb>
+    public class RemoveTrackedObjCommands : RemoveCommand<SlamTrackedObject>
     {
         private Dictionary<int, IList<SlamLine>> m_trackStates;
 
-        private GameObjectsContainer<TrackedObjPb> m_goContainer;
+        private GameObjectsContainer<SlamTrackedObject> m_goContainer;
 
-        public RemoveTrackedObjCommands(GameObjectsContainer<TrackedObjPb> container, IEnumerable<TrackedObjPb> data)
+        public RemoveTrackedObjCommands(GameObjectsContainer<SlamTrackedObject> container, IEnumerable<SlamTrackedObject> data)
             : base(container, data)
         {
             m_goContainer = container;
@@ -27,7 +27,7 @@ namespace Elektronik.Common.Commands.Generic
                 if (container.TryGet(m_objs2Remove[i], out GameObject gameObject))
                 {
                     var helmet = gameObject.GetComponent<Helmet>();
-                    m_trackStates[m_objs2Remove[i].Id] = helmet.GetTrackState();
+                    m_trackStates[m_objs2Remove[i].id] = helmet.GetTrackState();
                 }
             }
         }
@@ -40,9 +40,9 @@ namespace Elektronik.Common.Commands.Generic
                 if (m_goContainer.TryGet(o, out GameObject gameObject))
                 {
                     var helmet = gameObject.GetComponent<Helmet>();
-                    if (m_trackStates.ContainsKey(o.Id))
+                    if (m_trackStates.ContainsKey(o.id))
                     {
-                        helmet.RestoreTrackState(m_trackStates[o.Id]);
+                        helmet.RestoreTrackState(m_trackStates[o.id]);
                     }
                 }
             }

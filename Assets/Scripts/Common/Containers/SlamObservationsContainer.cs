@@ -18,19 +18,19 @@ namespace Elektronik.Common.Containers
 
         protected override SlamPoint AsPoint(SlamObservation obj) => obj;
 
-        protected override int GetObjectId(SlamObservation obj) => obj.Point.id;
+        protected override int GetObjectId(SlamObservation obj) => obj.point.id;
 
-        protected override Pose GetObjectPose(SlamObservation obj) => new Pose(obj.Point.position, obj.Orientation);
+        protected override Pose GetObjectPose(SlamObservation obj) => new Pose(obj.point.position, obj.rotation);
 
         protected override SlamObservation Update(SlamObservation current, SlamObservation @new)
         {
-            current.Statistics = @new.Statistics;
-            current.Point = @new.Point;
-            current.Orientation = @new.Orientation;
+            current.statistics = @new.statistics;
+            current.point = @new.point;
+            current.rotation = @new.rotation;
             return current;
         }
 
         protected override void UpdateGameObject(SlamObservation @object, GameObject gameObject)
-            => gameObject.transform.SetPositionAndRotation(@object.Point.position, @object.Orientation);
+            => gameObject.transform.SetPositionAndRotation(@object.point.position, @object.rotation);
     }
 }

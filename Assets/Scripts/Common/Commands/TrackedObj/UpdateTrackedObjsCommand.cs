@@ -1,4 +1,5 @@
 ﻿using Elektronik.Common.Containers;
+using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Maps;
 using System;
@@ -10,11 +11,11 @@ using UnityEngine;
 
 namespace Elektronik.Common.Commands.Generic
 {
-    public class UpdateTrackedObjsCommand : UpdateCommand<TrackedObjPb>
+    public class UpdateTrackedObjsCommand : UpdateCommand<SlamTrackedObject>
     {
-        private GameObjectsContainer<TrackedObjPb> m_goContainer;
+        private GameObjectsContainer<SlamTrackedObject> m_goContainer;
 
-        public UpdateTrackedObjsCommand(GameObjectsContainer<TrackedObjPb> container, IEnumerable<TrackedObjPb> data)
+        public UpdateTrackedObjsCommand(GameObjectsContainer<SlamTrackedObject> container, IEnumerable<SlamTrackedObject> data)
             : base(container, data)
         {
             m_goContainer = container;

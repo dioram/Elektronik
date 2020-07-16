@@ -17,11 +17,8 @@ namespace csharp.Tests
         private ConnectionPb[] m_connections;
         private string filename = $"{nameof(PointsStressTests)}.dat";
 
-        [SetUp]
-        public override void Setup()
+        public PointsStressTests()
         {
-            base.Setup();
-
             var rand = new Random();
             m_map = Enumerable.Range(0, 20000).Select(id => new PointPb()
             {

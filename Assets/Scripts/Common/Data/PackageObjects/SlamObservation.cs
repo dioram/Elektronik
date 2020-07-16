@@ -12,19 +12,19 @@ namespace Elektronik.Common.Data.PackageObjects
             public byte statistics4;
         }
 
-        public SlamPoint Point { get; set; }
-        public Quaternion Orientation { get; set; }
-        public Stats Statistics { get; set; }
+        public SlamPoint point;
+        public Quaternion rotation;
+        public Stats statistics;
 
         public SlamObservation(SlamPoint pt, Quaternion orientation, Stats stats = new Stats())
         {
-            Point = pt;
-            Orientation = orientation;
-            Statistics = stats;
+            point = pt;
+            rotation = orientation;
+            statistics = stats;
         }
 
-        public static implicit operator SlamPoint(SlamObservation obs) => obs.Point;
+        public static implicit operator SlamPoint(SlamObservation obs) => obs.point;
 
-        public override string ToString() => Point.message ?? "SlamObservation";
+        public override string ToString() => point.message ?? "SlamObservation";
     }
 }

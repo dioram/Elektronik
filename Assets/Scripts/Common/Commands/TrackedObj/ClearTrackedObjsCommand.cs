@@ -11,13 +11,13 @@ using UnityEngine;
 
 namespace Elektronik.Common.Commands.Generic
 {
-    public class ClearTrackedObjsCommand : ClearCommand<TrackedObjPb>
+    public class ClearTrackedObjsCommand : ClearCommand<SlamTrackedObject>
     {
         private Dictionary<int, IList<SlamLine>> m_trackStates;
 
-        private GameObjectsContainer<TrackedObjPb> m_goContainer;
+        private GameObjectsContainer<SlamTrackedObject> m_goContainer;
 
-        public ClearTrackedObjsCommand(GameObjectsContainer<TrackedObjPb> container)
+        public ClearTrackedObjsCommand(GameObjectsContainer<SlamTrackedObject> container)
             : base(container)
         {
             m_goContainer = container;
@@ -27,7 +27,7 @@ namespace Elektronik.Common.Commands.Generic
                 if (container.TryGet(o, out GameObject helmetGO))
                 {
                     var helmet = helmetGO.GetComponent<Helmet>();
-                    m_trackStates[o.Id] = helmet.GetTrackState();
+                    m_trackStates[o.id] = helmet.GetTrackState();
                 }
             }
         }
@@ -40,8 +40,8 @@ namespace Elektronik.Common.Commands.Generic
                 if (m_goContainer.TryGet(o, out GameObject helmetGO))
                 {
                     var helmet = helmetGO.GetComponent<Helmet>();
-                    if (m_trackStates.ContainsKey(o.Id))
-                        helmet.RestoreTrackState(m_trackStates[o.Id]);
+                    if (m_trackStates.ContainsKey(o.id))
+                        helmet.RestoreTrackState(m_trackStates[o.id]);
                 }
             }
         }

@@ -12,6 +12,7 @@ using Elektronik.Common.Settings;
 using UnityEngine.UI;
 using System.Net;
 using System;
+using Elektronik.Common.Data.Converters;
 
 namespace Elektronik.Online
 {
@@ -21,6 +22,8 @@ namespace Elektronik.Online
     {
         public Text status;
         public SlamMap slamMaps;
+        public CSConverter converter;
+
         GrpcServer m_server;
         bool m_serverStarted = false;
 
@@ -30,12 +33,16 @@ namespace Elektronik.Online
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             GrpcEnvironment.SetLogger(new UnityLogger());
+
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity, 
+                Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>());
+
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
-                new PointsMapManager(slamMaps.Points),
-                new ObservationsMapManager(slamMaps.Observations),
-                new TrackedObjsMapManager(slamMaps.TrackedObjsGO, slamMaps.TrackedObjs),
-                new LinesMapManager(slamMaps.Lines),
+                new PointsMapManager(slamMaps.Points, converter),
+                new ObservationsMapManager(slamMaps.Observations, converter),
+                new TrackedObjsMapManager(slamMaps.TrackedObjsGO, slamMaps.TrackedObjs, converter),
+                new LinesMapManager(slamMaps.Lines, converter),
             }.BuildChain();
 
             Debug.Log($"{SettingsBag.Current[SettingName.IPAddress].As<string>()}:{SettingsBag.Current[SettingName.Port].As<int>()}");
@@ -50,7 +57,7 @@ namespace Elektronik.Online
                 Ports =
                 {
                     new ServerPort(
-                        SettingsBag.Current[SettingName.IPAddress].As<string>().ToString(),
+                        SettingsBag.Current[SettingName.IPAddress].As<string>(),
                         SettingsBag.Current[SettingName.Port].As<int>(), 
                         ServerCredentials.Insecure),
                 },

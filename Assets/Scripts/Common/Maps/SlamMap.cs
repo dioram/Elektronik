@@ -20,17 +20,17 @@ namespace Elektronik.Common.Maps
 
         public IConnectableObjectsContainer<SlamPoint> Points { get; private set; }
         public GameObjectsContainer<SlamObservation> ObservationsGO { get; private set; }
-        public GameObjectsContainer<TrackedObjPb> TrackedObjsGO { get; private set; }
+        public GameObjectsContainer<SlamTrackedObject> TrackedObjsGO { get; private set; }
 
         public IConnectableObjectsContainer<SlamObservation> Observations { get; private set; }
-        public IConnectableObjectsContainer<TrackedObjPb> TrackedObjs { get; private set; }
+        public IConnectableObjectsContainer<SlamTrackedObject> TrackedObjs { get; private set; }
 
         public ILinesContainer<SlamLine> Lines { get; private set; }
 
         private void Awake()
         {
             var trackedObjs = new TrackedObjectsContainer(helmetPrefab);
-            TrackedObjs = new ConnectableObjectsContainer<TrackedObjPb>(
+            TrackedObjs = new ConnectableObjectsContainer<SlamTrackedObject>(
                 trackedObjs,
                 new SlamLinesContainer(trackedObjsConnectionsCloud));
             TrackedObjsGO = trackedObjs;

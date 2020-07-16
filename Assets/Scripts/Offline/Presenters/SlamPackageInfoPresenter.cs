@@ -30,7 +30,7 @@ namespace Elektronik.Offline.Presenters
                         new SlamPoint(p.Id, map.Points[p].position, color: default, message: p.Message));
                 case PacketPb.DataOneofCase.Observations:
                     return packet.Observations.Data.Select(o =>
-                        new SlamPoint(o.Point.Id, map.Observations[o].Point.position, color: default, message: o.Point.Message));
+                        new SlamPoint(o.Point.Id, map.Observations[o].point.position, color: default, message: o.Point.Message));
                 default:
                     return null;
             }

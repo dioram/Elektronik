@@ -1,5 +1,4 @@
 ﻿using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Maps;
 using System;
 using System.Collections.Generic;
@@ -10,33 +9,29 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class TrackedObjectsContainer : GameObjectsContainer<TrackedObjPb>
+    public class TrackedObjectsContainer : GameObjectsContainer<SlamTrackedObject>
     {
         public TrackedObjectsContainer(Helmet prefab) : base(prefab.gameObject) { }
 
-        protected override int GetObjectId(TrackedObjPb obj) => obj.Id;
+        protected override int GetObjectId(SlamTrackedObject obj) => obj.id;
 
-        protected override Pose GetObjectPose(TrackedObjPb obj) => new Pose(obj.Translation, obj.Rotation);
+        protected override Pose GetObjectPose(SlamTrackedObject obj) => new Pose(obj.position, obj.rotation);
 
-        protected override void UpdateGameObject(TrackedObjPb @object, GameObject gameObject)
+        protected override void UpdateGameObject(SlamTrackedObject @object, GameObject gameObject)
         {
             Helmet helmet = gameObject.GetComponent<Helmet>();
-            helmet.color = @object.TrackColor;
-            helmet.transform.SetPositionAndRotation(@object.Translation, @object.Rotation);
+            helmet.color = @object.color;
+            helmet.transform.SetPositionAndRotation(@object.position, @object.rotation);
         }
 
-        protected override TrackedObjPb Update(TrackedObjPb current, TrackedObjPb @new)
-        {
-            current = new TrackedObjPb(@new);
-            return current;
-        }
+        protected override SlamTrackedObject Update(SlamTrackedObject current, SlamTrackedObject @new) => @new;
 
-        protected override SlamPoint AsPoint(TrackedObjPb obj)
+        protected override SlamPoint AsPoint(SlamTrackedObject obj)
             => new SlamPoint()
             {
-                color = Color.black,
-                id = obj.Id,
-                position = obj.Translation,
+                color = obj.color,
+                id = obj.id,
+                position = obj.position,
             };
     }
 }

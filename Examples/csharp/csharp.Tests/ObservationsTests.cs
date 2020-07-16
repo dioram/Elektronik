@@ -11,10 +11,8 @@ namespace csharp.Tests
         private ObservationPb[] m_map;
         private ConnectionPb[] m_connections;
 
-        [SetUp]
-        public override void Setup()
+        public ObservationsTests()
         {
-            base.Setup();
             m_map = Enumerable.Range(0, 5).Select(id => new ObservationPb()
             {
                 Point = new PointPb() 

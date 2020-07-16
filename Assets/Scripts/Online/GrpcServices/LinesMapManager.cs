@@ -1,4 +1,5 @@
 ﻿using Elektronik.Common.Containers;
+using Elektronik.Common.Data.Converters;
 using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Pb;
 using Elektronik.Online.GrpcServices;
@@ -14,8 +15,11 @@ namespace Elektronik.Online.GrpcServices
 {
     class LinesMapManager : MapManager<SlamLine>
     {
-        public LinesMapManager(IContainer<SlamLine> map) : base(map)
+        ICSConverter m_converter;
+
+        public LinesMapManager(IContainer<SlamLine> map, ICSConverter converter) : base(map)
         {
+            m_converter = converter;
         }
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
@@ -23,8 +27,7 @@ namespace Elektronik.Online.GrpcServices
             Debug.Log("[ConnectionsMapManager.Handle]");
             if (request.DataCase == PacketPb.DataOneofCase.Lines)
             {
-                var lines = request.Lines.Data.Select(p => (SlamLine)p).ToList();
-                return Handle(request.Action, lines);
+                return Handle(request.Action, request.ExtractLines(m_converter).ToList());
             }
 
             return base.Handle(request, context);
