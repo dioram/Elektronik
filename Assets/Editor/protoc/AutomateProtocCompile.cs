@@ -1,11 +1,9 @@
-﻿using Boo.Lang;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace Elektronik.Editor
@@ -37,8 +35,9 @@ namespace Elektronik.Editor
                 .Where(t => !t.Item1.StartsWith(includeDir))
                 .ToList();
 
+            UnityEngine.Debug.Log($"Protobuf generation started for {changedProtoFiles.Count} files.");
             var options = new StringBuilder();
-
+            
             foreach (var protoFilePath in changedProtoFiles)
             {
                 if (!Directory.Exists(protoFilePath.Item2))
