@@ -11,7 +11,7 @@ namespace Elektronik.Common.Clouds.Meshes
     public abstract class MeshObjectBase<DataInterface> : MonoBehaviour
     {
         private MeshFilter m_filter;
-        private Mesh m_mesh;
+        protected Mesh m_mesh;
 
         private MeshDataBase<DataInterface> m_meshData;
         public DataInterface Data { get => m_meshData.Data; }
@@ -47,9 +47,12 @@ namespace Elektronik.Common.Clouds.Meshes
                     m_meshData.Sync.EnterReadLock();
                     m_mesh.vertices = m_meshData.Vertices;
                     m_mesh.colors = m_meshData.Colors;
+
+                    if (m_meshData.Normals != null) m_mesh.normals = m_meshData.Normals;
+                    
                     if (MeshTopology == MeshTopology.Triangles)
                     {
-                        m_mesh.RecalculateNormals();
+                        m_mesh.RecalculateTangents();
                     }
                     m_mesh.RecalculateBounds();
                 }
