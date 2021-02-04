@@ -30,7 +30,7 @@ namespace Elektronik.Common.Containers
 
         public void Add(SlamInfinitePlane item)
         {
-            m_planes.Add(item.id, item);
+            m_planes[item.id] = item;
             var p = new CloudPlane(item.id, item.offset, item.normal, item.color);
             m_planeCloud.Set(p);
         }

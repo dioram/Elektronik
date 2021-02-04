@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using Elektronik.Common.Data.Pb;
+using Google.Protobuf;
 using NUnit.Framework;
 
 namespace csharp.Tests
@@ -7,6 +9,7 @@ namespace csharp.Tests
     public class InfinitePlanesTests : TestsBase
     {
         private InfinitePlanePb[] m_planes;
+        private string filename = nameof(InfinitePlanesTests);
 
         private readonly ColorPb[] m_colors =
         {
@@ -52,10 +55,14 @@ namespace csharp.Tests
         {
             var packet = new PacketPb()
             {
+                Special = true,
                 Action = PacketPb.Types.ActionType.Add,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
             packet.InfinitePlanes.Data.Add(m_planes);
+            
+            using var file = File.Open(filename, FileMode.Create);
+            packet.WriteDelimitedTo(file);
 
             var response = m_client.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -66,6 +73,7 @@ namespace csharp.Tests
         {
             var packet = new PacketPb()
             {
+                Special = true,
                 Action = PacketPb.Types.ActionType.Update,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
@@ -74,6 +82,9 @@ namespace csharp.Tests
             m_planes[4].Normal = new Vector3Pb {X = 1, Y = 1, Z = 1};
 
             packet.InfinitePlanes.Data.Add(m_planes);
+            
+            using var file = File.Open(filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
 
             var response = m_client.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -84,11 +95,15 @@ namespace csharp.Tests
         {
             var packet = new PacketPb()
             {
+                Special = true,
                 Action = PacketPb.Types.ActionType.Remove,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
 
             packet.InfinitePlanes.Data.Add(new[] { m_planes[1], m_planes[3] });
+            
+            using var file = File.Open(filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
 
             var response = m_client.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -99,10 +114,14 @@ namespace csharp.Tests
         {
             var packet = new PacketPb()
             {
+                Special = true,
                 Action = PacketPb.Types.ActionType.Clear,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
-
+            
+            using var file = File.Open(filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
+            
             var response = m_client.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
