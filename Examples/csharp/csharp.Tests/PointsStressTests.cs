@@ -43,7 +43,7 @@ namespace csharp.Tests
 
             var t = new Stopwatch();
             t.Start();
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
 
@@ -67,7 +67,7 @@ namespace csharp.Tests
 
             var t = new Stopwatch();
             t.Start();
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
 
@@ -94,7 +94,7 @@ namespace csharp.Tests
 
             var t = new Stopwatch();
             t.Start();
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
 
@@ -118,7 +118,7 @@ namespace csharp.Tests
 
             var t = new Stopwatch();
             t.Start();
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
 
@@ -140,7 +140,7 @@ namespace csharp.Tests
 
             var t = new Stopwatch();
             t.Start();
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
 

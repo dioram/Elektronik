@@ -34,7 +34,7 @@ namespace csharp.Tests
             m_objects[2].TrackColor = new ColorPb() { B = 255, };
             packet.TrackedObjs.Data.Add(m_objects);
 
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -54,7 +54,7 @@ namespace csharp.Tests
                 packet.TrackedObjs.Data.Add(m_objects[0]);
                 packets.Add(new PacketPb(packet));
             }
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -67,7 +67,7 @@ namespace csharp.Tests
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
             packet.TrackedObjs.Data.Add(new[] { m_objects[1] });
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -79,7 +79,7 @@ namespace csharp.Tests
                 Action = PacketPb.Types.ActionType.Clear,
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
     }

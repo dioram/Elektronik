@@ -64,7 +64,7 @@ namespace csharp.Tests
             using var file = File.Open(filename, FileMode.Create);
             packet.WriteDelimitedTo(file);
 
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -86,7 +86,7 @@ namespace csharp.Tests
             using var file = File.Open(filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -105,7 +105,7 @@ namespace csharp.Tests
             using var file = File.Open(filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -122,7 +122,7 @@ namespace csharp.Tests
             using var file = File.Open(filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
             
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
     }

@@ -61,7 +61,7 @@ namespace csharp.Tests
             obs[4].Point.Position = new Vector3Pb() { X = .5, Y = 0 };
             packet.Observations.Data.Add(obs);
 
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -79,7 +79,7 @@ namespace csharp.Tests
 
             packet.Observations.Data.Add(m_map);
 
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -96,7 +96,7 @@ namespace csharp.Tests
                 },
             };
             packet.Connections.Data.Add(m_connections);
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -113,7 +113,7 @@ namespace csharp.Tests
                 },
             };
             packet.Connections.Data.Add(new[] { m_connections[0], m_connections[1] });
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -128,7 +128,7 @@ namespace csharp.Tests
 
             packet.Observations.Data.Add(new[] { m_map[1], m_map[3] });
 
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
@@ -141,7 +141,7 @@ namespace csharp.Tests
                 Observations = new PacketPb.Types.Observations(),
             };
 
-            var response = m_client.Handle(packet);
+            var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
     }

@@ -12,6 +12,7 @@ using Elektronik.Common.Settings;
 using UnityEngine.UI;
 using System.Net;
 using System;
+using Elektronik.Common.Cameras;
 using Elektronik.Common.Data.Converters;
 
 namespace Elektronik.Online
@@ -23,6 +24,7 @@ namespace Elektronik.Online
         public Text status;
         public SlamMap slamMaps;
         public CSConverter converter;
+        public CameraImageRenderer imageRenderTarget;
 
         GrpcServer m_server;
         bool m_serverStarted = false;
@@ -54,6 +56,7 @@ namespace Elektronik.Online
                 { 
                     MapsManagerPb.BindService(servicesChain), 
                     SceneManagerPb.BindService(new SceneManager(slamMaps)),
+                    ImageManagerPb.BindService(new ImageManager(imageRenderTarget))
                 },
                 Ports =
                 {
