@@ -63,6 +63,11 @@ namespace Elektronik.Common.Maps
             observationsConnectionsCloud.SetActive(value);
         }
 
+        public void SetActivePlaneCloud(bool value)
+        {
+            planeCloud.SetActive(value);
+        }
+
         public void Clear()
         {
             TrackedObjs.Clear();
