@@ -17,6 +17,7 @@ namespace Elektronik.Common.Clouds.Meshes
         public int[] Indices { get; protected set; }
         public Vector3[] Vertices { get; protected set; }
         public Color[] Colors { get; protected set; }
+        public Vector3[] Normals { get; protected set; }
         public abstract T Data { get; }
     }
 }

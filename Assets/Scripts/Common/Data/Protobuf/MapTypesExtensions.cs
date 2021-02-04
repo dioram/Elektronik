@@ -24,7 +24,8 @@ namespace Elektronik.Common.Data.Pb
             }
         }
 
-        public static IEnumerable<SlamObservation> ExtractObservations(this PacketPb packet, ICSConverter converter = null)
+        public static IEnumerable<SlamObservation> ExtractObservations(this PacketPb packet,
+            ICSConverter converter = null)
         {
             Debug.Assert(packet.DataCase == PacketPb.DataOneofCase.Observations);
             foreach (var o in packet.Observations.Data)
@@ -35,7 +36,8 @@ namespace Elektronik.Common.Data.Pb
             }
         }
 
-        public static IEnumerable<SlamTrackedObject> ExtractTrackedObjects(this PacketPb packet, ICSConverter converter = null)
+        public static IEnumerable<SlamTrackedObject> ExtractTrackedObjects(this PacketPb packet,
+            ICSConverter converter = null)
         {
             Debug.Assert(packet.DataCase == PacketPb.DataOneofCase.TrackedObjs);
             foreach (var o in packet.TrackedObjs.Data)
@@ -58,30 +60,51 @@ namespace Elektronik.Common.Data.Pb
                 yield return line;
             }
         }
+
+        public static IEnumerable<SlamInfinitePlane> ExtractInfinitePlanes(this PacketPb packet,
+            ICSConverter converter = null)
+        {
+            Debug.Assert(packet.DataCase == PacketPb.DataOneofCase.InfinitePlanes);
+            var stub = Quaternion.identity;
+            foreach (var p in packet.InfinitePlanes.Data)
+            {
+                SlamInfinitePlane plane = p;
+                converter?.Convert(ref plane.offset, ref stub);
+                converter?.Convert(ref plane.normal, ref stub);
+                yield return plane;
+            }
+        }
     }
 
     public partial class Vector3Pb
     {
-        public static implicit operator Vector3(Vector3Pb v) 
-            => v != null ? new Vector3((float)v.X, (float)v.Y, (float)v.Z) : Vector3.zero;
+        public static implicit operator Vector3(Vector3Pb v)
+            => v != null ? new Vector3((float) v.X, (float) v.Y, (float) v.Z) : Vector3.zero;
     }
+
     public partial class Vector4Pb
     {
         public static implicit operator Quaternion(Vector4Pb v)
-            => v != null ? new Quaternion((float)v.X, (float)v.Y, (float)v.Z, (float)v.W) : Quaternion.identity;
+            => v != null ? new Quaternion((float) v.X, (float) v.Y, (float) v.Z, (float) v.W) : Quaternion.identity;
     }
+
     public partial class ColorPb
     {
         public static implicit operator Color32(ColorPb c)
-            => c != null ? new Color32((byte)c.R, (byte)c.G, (byte)c.B, 255) : new Color32(0, 0, 0, 255);
-        public static implicit operator Color(ColorPb c) 
-            => (Color32)c;
+            => c != null ? new Color32((byte) c.R, (byte) c.G, (byte) c.B, 255) : new Color32(0, 0, 0, 255);
+
+        public static implicit operator Color(ColorPb c)
+            => (Color32) c;
     }
+
     public partial class PointPb
     {
         public static implicit operator SlamPoint(PointPb p)
-            => p != null ? new SlamPoint() { id = p.id_, position = p.position_, color = p.color_, message = p.message_ } : default;
+            => p != null
+                ? new SlamPoint() {id = p.id_, position = p.position_, color = p.color_, message = p.message_}
+                : default;
     }
+
     public partial class LinePb
     {
         public static implicit operator SlamLine(LinePb c)
@@ -107,5 +130,14 @@ namespace Elektronik.Common.Data.Pb
     {
         public static implicit operator SlamTrackedObject(TrackedObjPb o)
             => o != null ? new SlamTrackedObject(o.id_, o.trackColor_, o.translation_, o.rotation_) : default;
+    }
+
+    public partial class InfinitePlanePb
+    {
+        public static implicit operator SlamInfinitePlane(InfinitePlanePb p)
+            => p != null
+                ? new SlamInfinitePlane
+                    {color = p.Color, id = p.Id, message = p.Message, normal = p.Normal, offset = p.Offset}
+                : default;
     }
 }

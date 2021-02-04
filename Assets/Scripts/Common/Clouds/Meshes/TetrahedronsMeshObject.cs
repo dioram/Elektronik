@@ -20,7 +20,7 @@ namespace Elektronik.Common.Clouds.Meshes
 
         public class MeshData : MeshDataBase<IPointsMeshData>, IPointsMeshData
         {
-            public const int INDICES_PER_THETRAHEDRON = 12;
+            public const int INDICES_PER_THETRAHEDRON = 4;
             public const int MAX_VERTICES_COUNT = 64992;
             public const int MAX_THETRAHEDRONS_COUNT = MAX_VERTICES_COUNT / INDICES_PER_THETRAHEDRON;
 
@@ -31,7 +31,17 @@ namespace Elektronik.Common.Clouds.Meshes
             {
                 m_sideSize = sideSize;
                 m_needOrientation = needOrientation;
-                Indices = Enumerable.Range(0, MAX_VERTICES_COUNT).ToArray();
+                var thetrahedron = new []
+                {
+                    3, 2, 1,
+                    1, 2, 0,
+                    2, 3, 0,
+                    0, 3, 1,
+                };
+                Indices = Enumerable
+                    .Range(0, MAX_THETRAHEDRONS_COUNT)
+                    .SelectMany(idx => thetrahedron.Select(i => i + idx * INDICES_PER_THETRAHEDRON))
+                    .ToArray();
                 Vertices = new Vector3[MAX_VERTICES_COUNT];
                 Colors = Enumerable.Repeat(new Color(0, 0, 0, 0), MAX_VERTICES_COUNT).ToArray();
             }
@@ -45,7 +55,7 @@ namespace Elektronik.Common.Clouds.Meshes
                 try
                 {
                     Sync.EnterReadLock();
-                    for (int i = 0; i < MAX_VERTICES_COUNT; ++i)
+                    for (int i = 0; i < INDICES_PER_THETRAHEDRON; ++i)
                     {
                         notExists = notExists && (Colors[idx * INDICES_PER_THETRAHEDRON + i] == new Color(0, 0, 0, 0));
                     }
@@ -98,49 +108,33 @@ namespace Elektronik.Common.Clouds.Meshes
 #if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, $"Wrong idx ({idx})");
 #endif
-                float halfHeight = 0.86603f * m_sideSize / 2;
+                float height = 0.86603f * m_sideSize;
+                float halfHeight = height / 2;
                 float halfSide = m_sideSize / 2f;
-                Vector3 toCenter = new Vector3(-halfSide, -halfHeight, -halfHeight);
-                Vector3 v0 = new Vector3(0, 0, 0.86603f * m_sideSize) + toCenter;
-                Vector3 v1 = new Vector3(halfSide, 0.86603f * m_sideSize, 0.86603f * m_sideSize) + toCenter;
-                Vector3 v2 = new Vector3(m_sideSize, 0, 0.86603f * m_sideSize) + toCenter;
-                Vector3 v3 = new Vector3(halfSide, halfHeight, 0) + toCenter;
+                float x = Mathf.Sqrt(m_sideSize * m_sideSize - height * height);
+                float triangleHeight = Mathf.Sqrt(3f / 4) * m_sideSize;
+                             
+                var v0 = new Vector3(0, halfHeight, 0);
+                var v1 = new Vector3(-x, -halfHeight, 0);
+                var v2 = new Vector3(triangleHeight - x, -halfHeight, halfSide);
+                var v3 = new Vector3(triangleHeight - x, -halfHeight, -halfSide);
 
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 0] = v2;
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 1] = v1;
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 2] = v0;
-
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 3] = v3;
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 4] = v2;
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 5] = v0;
-
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 6] = v3;
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 7] = v1;
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 8] = v2;
-
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 9] = v1;
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 10] = v3;
-                Vertices[idx * INDICES_PER_THETRAHEDRON + 11] = v0;
-
-                for (int i = 0; i < INDICES_PER_THETRAHEDRON; ++i)
-                {
-                    var t = Vertices[idx * INDICES_PER_THETRAHEDRON + i];
-                    Vertices[idx * INDICES_PER_THETRAHEDRON + i] = t + offset;
-                }
+                Vertices[idx * INDICES_PER_THETRAHEDRON + 0] = v0 + offset;
+                Vertices[idx * INDICES_PER_THETRAHEDRON + 1] = v1 + offset;
+                Vertices[idx * INDICES_PER_THETRAHEDRON + 2] = v2 + offset;
+                Vertices[idx * INDICES_PER_THETRAHEDRON + 3] = v3 + offset;
             }
 
             public void Set(IEnumerable<CloudPoint> points)
             {
-                // var points_ = points.ToArray();
                 try
                 {
                     Sync.EnterWriteLock();
-                    //Parallel.For(0, points_.Length, i =>
                     foreach(var pt in points)
                     {
                         PureSet(pt.idx, pt.offset);
                         PureSet(pt.idx, pt.color);
-                    }//);
+                    }
                 }
                 finally
                 {
@@ -169,7 +163,6 @@ namespace Elektronik.Common.Clouds.Meshes
 #if DEBUG
                 Debug.Assert(idx >= 0 && idx < MAX_THETRAHEDRONS_COUNT, $"Wrong idx ({idx})");
 #endif
-                int init = m_needOrientation ? 3 : 0;
                 try
                 {
                     Sync.EnterWriteLock();

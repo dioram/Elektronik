@@ -17,6 +17,7 @@ namespace Elektronik.Common.Maps
         public FastLinesCloud observationsConnectionsCloud;
         public FastLinesCloud trackedObjsConnectionsCloud;
         public FastLinesCloud linesCloud;
+        public FastPlaneCloud planeCloud;
 
         public IConnectableObjectsContainer<SlamPoint> Points { get; private set; }
         public GameObjectsContainer<SlamObservation> ObservationsGO { get; private set; }
@@ -24,6 +25,8 @@ namespace Elektronik.Common.Maps
 
         public IConnectableObjectsContainer<SlamObservation> Observations { get; private set; }
         public IConnectableObjectsContainer<SlamTrackedObject> TrackedObjs { get; private set; }
+        
+        public SlamInfinitePlanesContainer InfinitePlanes { get; private set; }
 
         public ILinesContainer<SlamLine> Lines { get; private set; }
 
@@ -46,6 +49,7 @@ namespace Elektronik.Common.Maps
                 new SlamLinesContainer(pointsConnectionsCloud));
 
             Lines = new SlamLinesContainer(linesCloud);
+            InfinitePlanes = new SlamInfinitePlanesContainer(planeCloud);
         }
 
         public void SetActivePointCloud(bool value)
@@ -57,6 +61,11 @@ namespace Elektronik.Common.Maps
         {
             ObservationsGO.ObservationsPool.SetActive(value);
             observationsConnectionsCloud.SetActive(value);
+        }
+
+        public void SetActivePlaneCloud(bool value)
+        {
+            planeCloud.SetActive(value);
         }
 
         public void Clear()
