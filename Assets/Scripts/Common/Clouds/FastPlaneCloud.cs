@@ -7,8 +7,6 @@ namespace Elektronik.Common.Clouds
 {
     public class FastPlaneCloud : FastCloud<IPlanesMeshData, PlanesMeshObjectBase>, IFastPlanesCloud
     {
-        public Camera ActiveCamera;
-
         private int MaxPlanesCount => meshObjectPrefab.MaxObjectsCount;
 
         public bool Exists(int idx)

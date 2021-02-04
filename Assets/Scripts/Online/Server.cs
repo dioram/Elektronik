@@ -43,6 +43,7 @@ namespace Elektronik.Online
                 new ObservationsMapManager(slamMaps.Observations, converter),
                 new TrackedObjsMapManager(slamMaps.TrackedObjsGO, slamMaps.TrackedObjs, converter),
                 new LinesMapManager(slamMaps.Lines, converter),
+                new InfinitePlanesMapManager(slamMaps.InfinitePlanes, converter)
             }.BuildChain();
 
             Debug.Log($"{SettingsBag.Current[SettingName.IPAddress].As<string>()}:{SettingsBag.Current[SettingName.Port].As<int>()}");

@@ -40,7 +40,7 @@ Shader "Elektronik/Plane Shader"
 
             half4 frag(v2f i) : SV_Target
             {
-                float camDist = length(i.worldPos);
+                float camDist = clamp(length(i.worldPos), 0, 100);
                 return float4(i.color, 1) / camDist;
             }
             ENDCG

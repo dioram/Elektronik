@@ -21,6 +21,8 @@ namespace Elektronik.Common.Clouds.Meshes
             public const int MAX_VERTICES_COUNT = 64992;
             public const int MAX_PLANES_COUNT = MAX_VERTICES_COUNT / INDICES_PER_PLANE;
 
+            public static readonly Color DEFAULT_COLOR = Color.red;
+
             private float m_sideSize;
             
             
@@ -71,6 +73,11 @@ namespace Elektronik.Common.Clouds.Meshes
 
             private void PureSet(int idx, Vector3 offset, Vector3 normal)
             {
+                if (Colors[idx * INDICES_PER_PLANE] == new Color(0, 0, 0, 0))
+                {
+                    PureSet(idx, DEFAULT_COLOR);
+                }
+                
                 float halfSide = m_sideSize / 2;
                 var v1 = new Vector3(-halfSide, 0, -halfSide);
                 var v2 = new Vector3(halfSide, 0, -halfSide);
