@@ -9,7 +9,6 @@ using Elektronik.Common.Data.Packages.SlamActionPackages;
 using System.Linq;
 using Elektronik.Common.Data.Pb;
 using System;
-using TMPro;
 
 namespace Elektronik.Offline.Presenters
 {
@@ -44,7 +43,7 @@ namespace Elektronik.Offline.Presenters
             {
                 m_objects = pkg2pts(m_packet).ToArray();
             }
-            m_presenter?.Present(packet);
+            m_successor?.Present(packet);
             return;
         }
         public override void Clear() => info.Clear();

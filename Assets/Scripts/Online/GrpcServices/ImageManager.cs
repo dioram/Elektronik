@@ -22,7 +22,7 @@ namespace Elektronik.Online.GrpcServices
             };
             try
             {
-                m_renderer.DrawImage(request.Width, request.Height, request.ImageData.ToByteArray());
+                m_renderer.DrawImage(request.ImageData.ToByteArray());
             }
             catch(Exception e)
             {

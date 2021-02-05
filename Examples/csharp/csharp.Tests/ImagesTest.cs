@@ -9,31 +9,43 @@ namespace csharp.Tests
 {
     public class ImagesTest : TestsBase
     {
-        void Send(byte[] array, int width, int height)
-        {
-            var packet = new ImagePacketPb
-            {
-                Height = height,
-                Width = width,
-                ImageData = ByteString.CopyFrom(array, 0, array.Length),
-            };
+        private string filename = $"{nameof(ImagesTest)}.dat";
 
-            var response = m_imageClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
-        }
-        
-        [Test, Order(1)]
-        public void SendImage()
+        [Test]
+        public void OnlineImage()
         {
-            int width = 500;
-            int height = 500;
-
             for (int i = 1; i < 4; i++)
             {
                 byte[] array = File.ReadAllBytes($"{i}.png");
-                Send(array, width, height);
+                
+                var packet = new ImagePacketPb
+                {
+                    ImageData = ByteString.CopyFrom(array, 0, array.Length),
+                };
+
+                var response = m_imageClient.Handle(packet);
+                Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
             
                 Thread.Sleep(1000);
+            }
+        }
+
+        [Test]
+        public void OfflineImage()
+        {
+            var f = File.Open(filename, FileMode.Create);
+
+            var packets = Enumerable.Range(1, 4).Select(i => new PacketPb
+            {
+                Special = true,
+                Timestamp = i,
+                Action = PacketPb.Types.ActionType.Clear,
+                Points = new PacketPb.Types.Points(),
+            });
+
+            foreach (var packet in packets)
+            {
+                packet.WriteDelimitedTo(f);
             }
         }
     }
