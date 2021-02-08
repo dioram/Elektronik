@@ -56,6 +56,19 @@ namespace Elektronik.Common.Clouds
             }
         }
 
+        public void Remove(int idx)
+        {
+            Set(idx, new Color(0, 0, 0, 0));
+        }
+
+        public void Remove(IEnumerable<int> pointsIds)
+        {
+            foreach (var id in pointsIds)
+            {
+                Remove(id);
+            }
+        }
+
         public void Set(int idx, Vector3 offset)
         {
             CheckMesh(idx, out int meshId, out int pointId);

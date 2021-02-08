@@ -12,7 +12,7 @@ namespace Elektronik.Common.Maps
         public Helmet helmetPrefab;
 
         public GameObject observationPrefab;
-        public FastPointCloud fastPointCloud;
+        public FastPointCloudV2 fastPointCloud;
         public FastLinesCloud pointsConnectionsCloud;
         public FastLinesCloud observationsConnectionsCloud;
         public FastLinesCloud trackedObjsConnectionsCloud;

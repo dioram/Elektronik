@@ -62,7 +62,7 @@ namespace Elektronik.Common.Containers
 
         public bool Remove(int pointId)
         {
-            m_pointsCloud.Set(new CloudPoint(pointId, Vector3.zero, new Color(0, 0, 0, 0)));
+            m_pointsCloud.Remove(pointId);
             return m_points.Remove(pointId);
         }
 
@@ -74,7 +74,7 @@ namespace Elektronik.Common.Containers
         {
             foreach (var pt in points)
                 m_points.Remove(pt.id);
-            m_pointsCloud.Set(points.Select(p => new CloudPoint(p.id, Vector3.zero, new Color(0, 0, 0, 0))));
+            m_pointsCloud.Remove(points.Select(p => p.id));
         }
 
         public void Clear()

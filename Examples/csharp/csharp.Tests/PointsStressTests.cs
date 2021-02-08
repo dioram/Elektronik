@@ -25,6 +25,7 @@ namespace csharp.Tests
                 Id = id,
                 Message = $"{id}",
                 Position = new Vector3Pb() { X = rand.NextDouble(), Y = rand.NextDouble(), Z = rand.NextDouble(), },
+                Color = new ColorPb {B = rand.Next(255), G = rand.Next(255), R = rand.Next(255)},
             }).ToArray();
 
             m_connections = Enumerable.Range(0, 5000).Select(_ => new ConnectionPb() { Id1 = rand.Next(0, 19999), Id2 = rand.Next(0, 19999), }).ToArray();
