@@ -15,12 +15,16 @@ namespace Elektronik.Common.Data.PackageObjects
         public SlamPoint point;
         public Quaternion rotation;
         public Stats statistics;
+        public string message;
+        public string fileName;
 
-        public SlamObservation(SlamPoint pt, Quaternion orientation, Stats stats = new Stats())
+        public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName, Stats stats = new Stats())
         {
             point = pt;
             rotation = orientation;
             statistics = stats;
+            this.message = message;
+            this.fileName = fileName;
         }
 
         public static implicit operator SlamPoint(SlamObservation obs) => obs.point;

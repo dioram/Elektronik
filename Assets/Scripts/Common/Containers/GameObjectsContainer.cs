@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Elektronik.Common.Clouds;
 using UnityEngine;
 
 namespace Elektronik.Common.Containers
@@ -75,7 +76,15 @@ namespace Elektronik.Common.Containers
             m_objects[id] = obj;
 
             Pose pose = GetObjectPose(obj);
-            MainThreadInvoker.Instance.Enqueue(() => m_gameObjects[GetObjectId(obj)] = ObservationsPool.Spawn(pose.position, pose.rotation));
+            MainThreadInvoker.Instance.Enqueue(() =>
+            {
+                var go = ObservationsPool.Spawn(pose.position, pose.rotation);
+                m_gameObjects[GetObjectId(obj)] = go;
+
+                var idc = go.GetComponent<IdContainer>();
+                if (idc == null) idc = go.AddComponent<IdContainer>();
+                idc.Id = id;
+            });
             Debug.Log($"[GameObjectsContainer.Add] Added {typeof(T).Name} with id {id}");
         }
 

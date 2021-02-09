@@ -43,8 +43,9 @@ namespace Elektronik.Common.UI
         void Browse()
         {
             FileBrowser.ShowLoadDialog(
-                path => ifFilePath.text = path[0], 
-                () => { }, 
+                path => ifFilePath.text = path[0],
+                () => { },
+                folderMode,
                 initialPath: initialPath, 
                 title: title, 
                 loadButtonText: buttonText);

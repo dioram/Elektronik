@@ -52,7 +52,7 @@ namespace Elektronik.Common.Data.Parsers.Slam
                         offset += sizeof(byte) * countOfMsgBytes;
                     }
                     m_converter.Convert(ref pt.position, ref rot);
-                    observations[i] = new SlamObservation(pt, rot);
+                    observations[i] = new SlamObservation(pt, rot, "", "");
                 }
 
                 return new ActionDataPackage<SlamObservation>(

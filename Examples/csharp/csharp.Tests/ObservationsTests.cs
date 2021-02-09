@@ -1,7 +1,9 @@
 ﻿using Elektronik.Common.Data.Pb;
 using NUnit.Framework;
 using System;
+using System.IO;
 using System.Linq;
+using Google.Protobuf;
 
 
 namespace csharp.Tests
@@ -10,6 +12,8 @@ namespace csharp.Tests
     {
         private ObservationPb[] m_map;
         private ConnectionPb[] m_connections;
+        
+        private string filename = $"{nameof(ObservationsTests)}.dat";
 
         public ObservationsTests()
         {
@@ -52,7 +56,9 @@ namespace csharp.Tests
                 {
                     Id = id,
                     Message = $"{id}",
-                }
+                },
+                Message = $"Observation #{id}",
+                Filename = $"{id}.png"
             }).ToArray();
             obs[0].Point.Position = new Vector3Pb() { X = 0, Y = .5 };
             obs[1].Point.Position = new Vector3Pb() { X = .5, Y = -.5 };
@@ -60,6 +66,9 @@ namespace csharp.Tests
             obs[3].Point.Position = new Vector3Pb() { X = -.5, Y = 0 };
             obs[4].Point.Position = new Vector3Pb() { X = .5, Y = 0 };
             packet.Observations.Data.Add(obs);
+            
+            using var file = File.Open(filename, FileMode.Create);
+            packet.WriteDelimitedTo(file);
 
             var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -77,7 +86,15 @@ namespace csharp.Tests
             m_map[2].Point.Position.Z += .5;
             m_map[4].Point.Position.Z += .5;
 
+            foreach (var pb in m_map)
+            {
+                pb.Message = $"{pb.Point.Position.X}";
+            }
+
             packet.Observations.Data.Add(m_map);
+            
+            using var file = File.Open(filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
 
             var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -96,6 +113,10 @@ namespace csharp.Tests
                 },
             };
             packet.Connections.Data.Add(m_connections);
+            
+            using var file = File.Open(filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
+            
             var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
@@ -113,6 +134,10 @@ namespace csharp.Tests
                 },
             };
             packet.Connections.Data.Add(new[] { m_connections[0], m_connections[1] });
+            
+            using var file = File.Open(filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
+            
             var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
@@ -127,6 +152,9 @@ namespace csharp.Tests
             };
 
             packet.Observations.Data.Add(new[] { m_map[1], m_map[3] });
+            
+            using var file = File.Open(filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
 
             var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -140,6 +168,9 @@ namespace csharp.Tests
                 Action = PacketPb.Types.ActionType.Clear,
                 Observations = new PacketPb.Types.Observations(),
             };
+            
+            using var file = File.Open(filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
 
             var response = m_mapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);

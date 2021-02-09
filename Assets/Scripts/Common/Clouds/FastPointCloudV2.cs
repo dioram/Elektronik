@@ -99,7 +99,7 @@ namespace Elektronik.Common.Clouds
 
         public void SetActive(bool value)
         {
-           SetActive(value);
+            gameObject.SetActive(value);
         }
     }
 }

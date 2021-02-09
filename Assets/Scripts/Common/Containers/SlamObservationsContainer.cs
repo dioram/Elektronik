@@ -27,6 +27,8 @@ namespace Elektronik.Common.Containers
             current.statistics = @new.statistics;
             current.point = @new.point;
             current.rotation = @new.rotation;
+            current.message = @new.message;
+            current.fileName = @new.fileName;
             return current;
         }
 

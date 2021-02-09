@@ -123,7 +123,7 @@ namespace Elektronik.Common.Data.Pb
         }
 
         public static implicit operator SlamObservation(ObservationPb o)
-            => o != null ? new SlamObservation(o.point_, o.orientation_, o.stats_) : default;
+            => o != null ? new SlamObservation(o.point_, o.orientation_, o.message_, o.filename_, o.stats_) : default;
     }
 
     public partial class TrackedObjPb

@@ -189,7 +189,7 @@ namespace Elektronik.Offline
             ElektronikLogger.OpenLog();
             Application.logMessageReceived += ElektronikLogger.Log;
             Debug.Log("Parsing file...");
-            using (var input = File.OpenRead(SettingsBag.Current[SettingName.Path].As<string>()))
+            using (var input = File.OpenRead(SettingsBag.Current[SettingName.FilePath].As<string>()))
             {
                 int i = 0;
                 var commands = new LinkedList<ICommand>();

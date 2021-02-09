@@ -35,6 +35,8 @@ message ObservationPb {
   }
   PointPb point = 1;
   Vector4Pb orientation = 2;
+  string message = 3;
+  string filename = 4;
   Stats stats = 16;
 }
 
