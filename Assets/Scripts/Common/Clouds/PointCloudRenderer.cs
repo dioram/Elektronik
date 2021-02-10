@@ -15,10 +15,6 @@ namespace Elektronik.Common.Clouds
         private bool toUpdate;
         private Texture2D texColor;
         private Texture2D texPosScale;
-        private int particleCount;
-        private int textureResolution = 1024;
-        private Vector3 center;
-        private Vector3 size;
         private VisualEffect m_renderer;
         private Color[] pixelColors;
         private Color[] pixelPosSize;
@@ -35,15 +31,17 @@ namespace Elektronik.Common.Clouds
                 256 * 256,
                 512 * 512,
                 1024 * 1024,
-                2048 * 2048,
-                4096 * 4096
+                2048 * 2048
         };
 
         private int _currentResolution;
         private int _currentAmount;
         private int _currentReserved;
         private readonly Dictionary<int, int> _pointsIds = new Dictionary<int, int>();
-        private bool _dontReinit;
+
+        private readonly Dictionary<int, (Texture2D, Texture2D)> _textures =
+                new Dictionary<int, (Texture2D, Texture2D)>();
+
         private bool _resolutionChanged;
         private Vector3 minBound;
         private Vector3 maxBound;
@@ -60,14 +58,23 @@ namespace Elektronik.Common.Clouds
 
         private void Update()
         {
-            if (toUpdate) {
+            if (toUpdate)
+            {
                 toUpdate = false;
-                
+
                 int texSide = (int) Mathf.Sqrt(_currentResolution);
                 if (_resolutionChanged)
                 {
-                    texColor = new Texture2D(texSide, texSide, TextureFormat.RGBAFloat, false);
-                    texPosScale = new Texture2D(texSide, texSide, TextureFormat.RGBAFloat, false);
+                    
+                    if (!_textures.ContainsKey(_currentResolution))
+                    {
+                        _textures.Add(_currentResolution,
+                                      (new Texture2D(texSide, texSide, TextureFormat.RGBAFloat, false),
+                                       new Texture2D(texSide, texSide, TextureFormat.RGBAFloat, false)));
+                    }
+
+                    texColor = _textures[_currentResolution].Item1;
+                    texPosScale = _textures[_currentResolution].Item2;
                     _resolutionChanged = false;
                 }
 
@@ -89,7 +96,7 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-        
+
         private void OnPointsAdded(IList<CloudPoint> points)
         {
             if (_currentReserved + points.Count > _currentResolution)
@@ -101,9 +108,9 @@ namespace Elektronik.Common.Clouds
             for (int i = 0; i < points.Count; i++)
             {
                 pixelPosSize[_currentAmount + i] = new Color(points[i].offset.x,
-                        points[i].offset.y,
-                        points[i].offset.z,
-                        PointSize);
+                                                             points[i].offset.y,
+                                                             points[i].offset.z,
+                                                             PointSize);
                 pixelColors[_currentAmount + i] = points[i].color;
                 _pointsIds[points[i].idx] = _currentAmount + i;
                 CalculateBounds(points[i].offset);
@@ -125,7 +132,6 @@ namespace Elektronik.Common.Clouds
                 CalculateBounds(point.offset);
             }
 
-            _dontReinit = true;
             toUpdate = true;
         }
 
@@ -144,7 +150,6 @@ namespace Elektronik.Common.Clouds
                 _pointsIds.Remove(pointId);
             }
 
-            _dontReinit = true;
             toUpdate = true;
         }
 
@@ -181,11 +186,11 @@ namespace Elektronik.Common.Clouds
         private void CalculateBounds(Vector3 point)
         {
             minBound = new Vector3(Mathf.Min(point.x, minBound.x),
-                    Mathf.Min(point.y, minBound.y),
-                    Mathf.Min(point.z, minBound.z));
+                                   Mathf.Min(point.y, minBound.y),
+                                   Mathf.Min(point.z, minBound.z));
             maxBound = new Vector3(Mathf.Max(point.x, maxBound.x),
-                    Mathf.Max(point.y, maxBound.y),
-                    Mathf.Max(point.z, maxBound.z));
+                                   Mathf.Max(point.y, maxBound.y),
+                                   Mathf.Max(point.z, maxBound.z));
         }
 
         private int LowerResolution()

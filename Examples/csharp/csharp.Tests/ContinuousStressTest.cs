@@ -19,7 +19,7 @@ namespace csharp.Tests
         }
 
         [Test]
-        public void Run()
+        public void CycleTest()
         {
             for (int i = 0; i < 1000; i++)
             {
@@ -33,12 +33,36 @@ namespace csharp.Tests
                 {
                     packet.Points.Data.Add(movie[i % commands.Count]);
                 }
+                
+                TestContext.WriteLine($"Command: {commands[i % commands.Count]}");
+                var response = m_mapClient.Handle(packet);
+                Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+                Thread.Sleep(250);
+            }
+        }
+        [Test]
+        public void OverflowTest()
+        {
+            int i = 0;
+            int packetSize = 50000;
+            int resolution = 3;
+            while (true)
+            {
+                var packet = new PacketPb()
+                {
+                        Special = true,
+                        Action = PacketPb.Types.ActionType.Add,
+                        Points = new PacketPb.Types.Points(),
+                };
+                packet.Points.Data.Add(MovieGenerator.CreatePoints(packetSize, resolution, out PointPb[] _, i));
+                i += packetSize;
                 var response = m_mapClient.Handle(packet);
                 Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
                 Thread.Sleep(250);
             }
         }
     }
+    
     
     public static class MovieGenerator
     {
@@ -89,7 +113,7 @@ namespace csharp.Tests
         }
 
 
-        static PointPb[] CreatePoints(int amount, float resolution, out PointPb[] after, int minId = 0)
+        public static PointPb[] CreatePoints(int amount, float resolution, out PointPb[] after, int minId = 0)
         {
             var result = new PointPb[amount];
             var rand = new Random();
