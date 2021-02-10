@@ -49,35 +49,47 @@ namespace csharp.Tests
             points = new List<PointPb[]>();
             commands = new List<PacketPb.Types.ActionType>();
 
-            points.Add(CreatePoints(40000, resolution));
+            PointPb[] allPoints;
+
+            points.Add(CreatePoints(100000, resolution, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Add);
             
-            points.Add(AddPoints(20000, resolution, points.Last()));
+            points.Add(AddPoints(100000, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Add);
             
-            points.Add(RemovePoints(15000, points.Last()));
+            points.Add(RemovePoints(60000, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Remove);
             
-            points.Add(AddPoints(5000, resolution, points.Last()));
+            points.Add(AddPoints(30000, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Add);
             
-            points.Add(UpdatePoints(30000, resolution, points.Last()));
+            points.Add(UpdatePoints(80000, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Update);
             
-            points.Add(AddPoints(40000, resolution, points.Last()));
+            points.Add(AddPoints(90000, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Add);
             
-            points.Add(RemovePoints(40000, points.Last()));
+            points.Add(RemovePoints(90000, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Remove);
             
-            points.Add(UpdatePoints(20000, resolution, points.Last()));
-            commands.Add(PacketPb.Types.ActionType.Clear);
+            points.Add(AddPoints(90000, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Add);
+            
+            points.Add(UpdatePoints(60000, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Update);
+            
+            points.Add(UpdatePoints(20000, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Update);
+            
+            points.Add(UpdatePoints(100000, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Update);
             
             points.Add(Clear());
+            commands.Add(PacketPb.Types.ActionType.Clear);
         }
 
 
-        static PointPb[] CreatePoints(int amount, float resolution, int minId = 0)
+        static PointPb[] CreatePoints(int amount, float resolution, out PointPb[] after, int minId = 0)
         {
             var result = new PointPb[amount];
             var rand = new Random();
@@ -88,23 +100,25 @@ namespace csharp.Tests
                 result[i] = CreatePoint(x, y, i + minId, resolution);
             }
 
+            after = result;
             return result;
         }
 
-        static PointPb[] AddPoints(int amount, float resolution, PointPb[] before)
+        static PointPb[] AddPoints(int amount, float resolution, PointPb[] before, out PointPb[] after)
         {
-            var newPoints = CreatePoints(amount, resolution, before.Last().Id + 1);
-            var result = new PointPb[before.Length + newPoints.Length];
-            Array.Copy(before, 0, result, 0, before.Length);
-            Array.Copy(newPoints, 0, result, before.Length, newPoints.Length);
-            return result;
+            var newPoints = CreatePoints(amount, resolution, out PointPb[] _, before.Last().Id + 1);
+            after = new PointPb[before.Length + newPoints.Length];
+            Array.Copy(before, 0, after, 0, before.Length);
+            Array.Copy(newPoints, 0, after, before.Length, newPoints.Length);
+            return newPoints;
         }
 
-        static PointPb[] UpdatePoints(int amount, float resolution, PointPb[] before)
+        static PointPb[] UpdatePoints(int amount, float resolution, PointPb[] before, out PointPb[] after)
         {
             var rand = new Random();
-            var result = new PointPb[before.Length];
-            before.CopyTo(result, 0);
+            var result = new List<PointPb>();
+            after = new PointPb[before.Length];
+            before.CopyTo(after, 0);
 
             HashSet<int> indexes2update = new HashSet<int>();
             for (int i = 0; i < amount; i++)
@@ -112,18 +126,20 @@ namespace csharp.Tests
                 indexes2update.Add(rand.Next(before.Length));
             }
 
-            for (int i = 0; i < result.Length; i++)
+            for (int i = 0; i < after.Length; i++)
             {
-                if (indexes2update.Contains(result[i].Id))
+                if (indexes2update.Contains(after[i].Id))
                 {
-                    result[i] = CreatePoint(result[i].Position.X, result[i].Position.Y, result[i].Id, resolution);
+                    var newPoint = CreatePoint(after[i].Position.X, after[i].Position.Y, after[i].Id, resolution);
+                    after[i] = newPoint;
+                    result.Add(newPoint);
                 }
             }
 
-            return result;
+            return result.ToArray();
         }
 
-        static PointPb[] RemovePoints(int amount, PointPb[] before)
+        static PointPb[] RemovePoints(int amount, PointPb[] before, out PointPb[] after)
         {
             var rand = new Random();
             HashSet<int> indexes2remove = new HashSet<int>();
@@ -131,7 +147,8 @@ namespace csharp.Tests
             {
                 indexes2remove.Add(rand.Next(before.Length));
             }
-            return before.Where((p, i) => !indexes2remove.Contains(i)).ToArray();
+            after = before.Where((p, i) => !indexes2remove.Contains(i)).ToArray();
+            return before.Where((p, i) => indexes2remove.Contains(i)).ToArray();
         }
 
         static PointPb[] Clear()

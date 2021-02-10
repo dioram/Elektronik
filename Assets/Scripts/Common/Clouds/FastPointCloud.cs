@@ -32,13 +32,18 @@ namespace Elektronik.Common.Clouds
             return m_data[meshId].Get(pointId);
         }
 
-        public void Set(CloudPoint point)
+        public void Add(IEnumerable<CloudPoint> points)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void UpdatePoint(CloudPoint point)
         {
             CheckMesh(point.idx, out int meshId, out int pointId);
             m_data[meshId].Set(new CloudPoint(pointId, point.offset, point.color));
         }
 
-        public void Set(IEnumerable<CloudPoint> points)
+        public void UpdatePoints(IEnumerable<CloudPoint> points)
         {
             var packets = new Dictionary<int, List<CloudPoint>>();
             foreach (var pt in points)
@@ -98,6 +103,11 @@ namespace Elektronik.Common.Clouds
                 }
             }
             return points;
+        }
+
+        public void Add(CloudPoint point)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

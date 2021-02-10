@@ -28,7 +28,7 @@ namespace Elektronik.Common.Containers
 
         public void Add(SlamPoint point)
         {
-            m_pointsCloud.Set(new CloudPoint(point.id, point.position, point.color));
+            m_pointsCloud.Add(new CloudPoint(point.id, point.position, point.color));
             m_points.Add(point.id, point);
         }
 
@@ -36,7 +36,7 @@ namespace Elektronik.Common.Containers
         {
             foreach (var pt in points)
                 m_points[pt.id] = pt;
-            m_pointsCloud.Set(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
+            m_pointsCloud.Add(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
         }
 
         public void Update(SlamPoint point)
@@ -45,7 +45,7 @@ namespace Elektronik.Common.Containers
             currentPoint.position = point.position;
             currentPoint.color = point.color;
             m_points[point.id] = currentPoint;
-            m_pointsCloud.Set(new CloudPoint(point.id, point.position, point.color));
+            m_pointsCloud.UpdatePoint(new CloudPoint(point.id, point.position, point.color));
         }
 
         public void Update(IEnumerable<SlamPoint> points)
@@ -57,7 +57,7 @@ namespace Elektronik.Common.Containers
                 currentPoint.color = pt.color;
                 m_points[pt.id] = currentPoint;
             }
-            m_pointsCloud.Set(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
+            m_pointsCloud.UpdatePoints(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
         }
 
         public bool Remove(int pointId)

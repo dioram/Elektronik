@@ -1,18 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Elektronik.Common.Clouds
 {
     public class FastPointCloudV2 : MonoBehaviour, IFastPointsCloud
     {
-        public event Action CloudUpdated;
-        private Dictionary<int, CloudPoint> m_points = new Dictionary<int, CloudPoint>();
+        public event Action<IList<CloudPoint>> PointsAdded;
         
+        public event Action<IList<CloudPoint>> PointsUpdated;
+        
+        public event Action<IList<int>> PointsRemoved;
+
+        public event Action PointsCleared; 
+
+        private Dictionary<int, CloudPoint> m_points = new Dictionary<int, CloudPoint>();
+
+        public int Count => m_points.Count();
+
         public void Clear()
         {
             m_points.Clear();
-            CloudUpdated?.Invoke();
+            PointsCleared?.Invoke();
         }
 
         public bool Exists(int idx)
@@ -30,51 +40,34 @@ namespace Elektronik.Common.Clouds
             return m_points.Values;
         }
 
-        public void Set(CloudPoint point)
+        public void Add(CloudPoint point)
         {
-            PureSet(point);
-            CloudUpdated?.Invoke();
+            m_points.Add(point.idx, point);
+            PointsAdded?.Invoke(new []{point});
         }
 
-        public void Set(int idx, Color color)
-        {
-            CloudPoint point;
-            if (Exists(idx))
-            {
-                point = m_points[idx];
-                point.color = color;
-            }
-            else
-            {
-                point = new CloudPoint(idx, Vector3.zero, color);
-            }
-            PureSet(point);
-            CloudUpdated?.Invoke();
-        }
-
-        public void Set(int idx, Vector3 translation)
-        {
-            CloudPoint point;
-            if (Exists(idx))
-            {
-                point = m_points[idx];
-                point.offset = translation;
-            }
-            else
-            {
-                point = new CloudPoint(idx, translation, Color.black);
-            }
-            PureSet(point);
-            CloudUpdated?.Invoke();
-        }
-
-        public void Set(IEnumerable<CloudPoint> points)
+        public void Add(IEnumerable<CloudPoint> points)
         {
             foreach (var point in points)
             {
-                PureSet(point);
+                m_points.Add(point.idx, point);
             }
-            CloudUpdated?.Invoke();
+            PointsAdded?.Invoke(points.ToList());
+        }
+
+        public void UpdatePoint(CloudPoint point)
+        {
+            m_points[point.idx] = point;
+            PointsUpdated?.Invoke(new []{point});
+        }
+
+        public void UpdatePoints(IEnumerable<CloudPoint> points)
+        {
+            foreach (var point in points)
+            {
+                m_points[point.idx] = point;
+            }
+            PointsUpdated?.Invoke(points.ToList());
         }
 
         private void PureSet(CloudPoint point)
@@ -85,7 +78,7 @@ namespace Elektronik.Common.Clouds
         public void Remove(int idx)
         {
             m_points.Remove(idx);
-            CloudUpdated?.Invoke();
+            PointsRemoved?.Invoke(new []{idx});
         }
 
         public void Remove(IEnumerable<int> pointsIds)
@@ -94,7 +87,7 @@ namespace Elektronik.Common.Clouds
             {
                 m_points.Remove(id);
             }
-            CloudUpdated?.Invoke();
+            PointsRemoved?.Invoke(pointsIds.ToList());
         }
 
         public void SetActive(bool value)

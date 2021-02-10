@@ -9,10 +9,10 @@ namespace Elektronik.Common.Clouds
         bool Exists(int idx);
         CloudPoint Get(int idx);
         IEnumerable<CloudPoint> GetAll();
-        void Set(CloudPoint point);
-        void Set(int idx, Color color);
-        void Set(int idx, Vector3 translation);
-        void Set(IEnumerable<CloudPoint> points);
+        void Add(CloudPoint point);
+        void Add(IEnumerable<CloudPoint> points);
+        void UpdatePoint(CloudPoint point);
+        void UpdatePoints(IEnumerable<CloudPoint> points);
         void Remove(int idx);
         void Remove(IEnumerable<int> pointsIds);
         void SetActive(bool value);
