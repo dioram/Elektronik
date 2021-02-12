@@ -49,7 +49,7 @@ namespace csharp.Tests
 
         public ContinuousStressTest()
         {
-            MovieGenerator.CreateMovie(3, out movie, out commands);
+            MovieGenerator.CreateMovie(100, out movie, out commands);
         }
 
         [Test]
@@ -80,7 +80,7 @@ namespace csharp.Tests
         {
             int i = 0;
             int defaultPacketSize = 50000;
-            int resolution = 10;
+            int resolution = 200;
             var rand = new Random();
             var center = new Vector3Pb {X = 0, Y = 0, Z = 0};
             while (true)
@@ -96,7 +96,7 @@ namespace csharp.Tests
                 i += packetSize;
                 var response = m_mapClient.Handle(packet);
                 Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
-                Thread.Sleep(500);
+                Thread.Sleep(75);
             }
         }
 
@@ -124,7 +124,7 @@ namespace csharp.Tests
                                                                        index * 1024 * 1024 + i));
                     var response = m_mapClient.Handle(packet);
                     Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
-                    Thread.Sleep(250);
+                    Thread.Sleep(75);
                 }
             }
         }

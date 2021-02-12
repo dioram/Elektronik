@@ -1,77 +1,59 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.VFX;
 
 namespace Elektronik.Common.Clouds
 {
-    [RequireComponent(typeof(VisualEffect))]
     public class PointCloudBlock : MonoBehaviour
     {
-        public const int Resolution = 1024;
-        public const int Capacity = Resolution * Resolution;
-        public VisualEffectAsset VFXAssetPrefab;
+        public const int Capacity = 1024 * 1024;
+        public Shader PointCloudShader;
         public bool Updated;
-        public Color[] PixelColors;
-        public Color[] PixelPosSize;
+        public CloudPointV2[] Points;
         public int PointsCount;
+        public bool ToClear;
+        
+        public float PointSize = 1f;
+        private static readonly int PointBuffer = Shader.PropertyToID("_PointBuffer");
+        private static readonly int Size = Shader.PropertyToID("_PointSize");
+        private Material _renderMaterial;
+        private ComputeBuffer _pointsBuffer;
 
-        private VisualEffect _vfxRenderer;
-        private Texture2D _texColor;
-        private Texture2D _texPosSize;
-        private Vector3 _minBound;
-        private Vector3 _maxBound;
-
-        public void CalculateBounds(Vector3 point)
+        private void Awake()
         {
-            _minBound = new Vector3(Mathf.Min(point.x, _minBound.x),
-                                    Mathf.Min(point.y, _minBound.y),
-                                    Mathf.Min(point.z, _minBound.z));
-            _maxBound = new Vector3(Mathf.Max(point.x, _maxBound.x),
-                                    Mathf.Max(point.y, _maxBound.y),
-                                    Mathf.Max(point.z, _maxBound.z));
+            Points = Enumerable.Range(0, Capacity).Select(_ => CloudPointV2.Empty()).ToArray();
+            _pointsBuffer = new ComputeBuffer(Points.Length, CloudPointV2.Size);
         }
 
         private void Start()
         {
-            _vfxRenderer = GetComponent<VisualEffect>();
-            _vfxRenderer.visualEffectAsset = VFXAssetPrefab;
-            _texColor = new Texture2D(Resolution, Resolution, TextureFormat.RGBAFloat, false);
-            _texPosSize = new Texture2D(Resolution, Resolution, TextureFormat.RGBAFloat, false);
-            PixelColors = new Color[Capacity];
-            PixelPosSize = new Color[Capacity];
+            _renderMaterial = new Material(PointCloudShader);
+            _renderMaterial.hideFlags = HideFlags.DontSave;
+            _renderMaterial.EnableKeyword("_COMPUTE_BUFFER");
         }
 
         private void Update()
         {
+            if (ToClear)
+            {
+                Points = Enumerable.Range(0, Capacity).Select(_ => CloudPointV2.Empty()).ToArray();
+                ToClear = false;
+                Updated = true;
+            }
+            
             if (!Updated) return;
-
-            _texColor.SetPixels(PixelColors);
-            _texPosSize.SetPixels(PixelPosSize);
-            _texColor.Apply();
-            _texPosSize.Apply();
-
-            Vector3 center;
-            Vector3 size;
-            if (PointsCount == 0)
-            {
-                center = Vector3.zero;
-                size = Vector3.one;
-            }
-            else
-            {
-                center = (_minBound + _maxBound) / 2;
-                size = _maxBound - _minBound;
-            }
-
-            _vfxRenderer.Reinit();
-            _vfxRenderer.SetUInt(Shader.PropertyToID("particleCount"), (uint) PointsCount);
-            _vfxRenderer.SetTexture(Shader.PropertyToID("texColor"), _texColor);
-            _vfxRenderer.SetTexture(Shader.PropertyToID("texPosScale"), _texPosSize);
-            _vfxRenderer.SetUInt(Shader.PropertyToID("resolution"), (uint) Resolution);
-            _vfxRenderer.SetVector3(Shader.PropertyToID("boundsCenter"), center);
-            _vfxRenderer.SetVector3(Shader.PropertyToID("boundsSize"), size);
+            
+            _pointsBuffer.SetData(Points);
 
             Updated = false;
+        }
+
+        private void OnRenderObject()
+        {
+            _renderMaterial.SetPass(0);
+            _renderMaterial.SetBuffer(PointBuffer, _pointsBuffer);
+            _renderMaterial.SetFloat(Size, PointSize);
+            Graphics.DrawProceduralNow(MeshTopology.Points, _pointsBuffer.count, 1);
         }
     }
 }

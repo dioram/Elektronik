@@ -12,10 +12,11 @@ namespace Elektronik.Common.Clouds
     {
         public FastPointCloudV2 PointsCloud;
         public float PointSize = 0.1f;
-        public VisualEffectAsset VFXAssetPrefab;
+        public Shader PointCloudShader;
 
         private List<PointCloudBlock> _blocks = new List<PointCloudBlock>();
         private bool _needNewBlock;
+        private bool _toClear;
 
         private void Start()
         {
@@ -33,7 +34,7 @@ namespace Elektronik.Common.Clouds
                 var go = new GameObject($"Point cloud block {_blocks.Count}");
                 go.transform.SetParent(transform);
                 var block = go.AddComponent<PointCloudBlock>();
-                block.VFXAssetPrefab = VFXAssetPrefab;
+                block.PointCloudShader = PointCloudShader;
                 block.Updated = true;
                 _blocks.Add(block);
                 _needNewBlock = false;
@@ -52,10 +53,7 @@ namespace Elektronik.Common.Clouds
             {
                 int layer = point.idx / PointCloudBlock.Capacity;
                 int inLayerId = point.idx % PointCloudBlock.Capacity;
-                var posSizeColor = new Color(point.offset.x, point.offset.y, point.offset.z, PointSize);
-                _blocks[layer].PixelColors[inLayerId] = point.color;
-                _blocks[layer].PixelPosSize[inLayerId] = posSizeColor;
-                _blocks[layer].CalculateBounds(point.offset);
+                _blocks[layer].Points[inLayerId] = new CloudPointV2(point);
                 _blocks[layer].PointsCount++;
                 _blocks[layer].Updated = true;
             }
@@ -68,9 +66,7 @@ namespace Elektronik.Common.Clouds
                 int layer = point.idx / PointCloudBlock.Capacity;
                 int inLayerId = point.idx % PointCloudBlock.Capacity;
                 var posSizeColor = new Color(point.offset.x, point.offset.y, point.offset.z, PointSize);
-                _blocks[layer].PixelColors[inLayerId] = point.color;
-                _blocks[layer].PixelColors[inLayerId] = posSizeColor;
-                _blocks[layer].CalculateBounds(point.offset);
+                _blocks[layer].Points[inLayerId] = new CloudPointV2(point);
                 _blocks[layer].Updated = true;
             }
         }
@@ -81,7 +77,7 @@ namespace Elektronik.Common.Clouds
             {
                 int layer = pointId / PointCloudBlock.Capacity;
                 int inLayerId = pointId % PointCloudBlock.Capacity;
-                _blocks[layer].PixelColors[inLayerId] = new Color(0, 0, 0, 0);
+                _blocks[layer].Points[inLayerId] = CloudPointV2.Empty();
                 _blocks[layer].Updated = true;
             }
         }
@@ -90,7 +86,7 @@ namespace Elektronik.Common.Clouds
         {
             foreach (var block in _blocks)
             {
-                Destroy(block);
+                block.ToClear = true;
             }
         }
     }
