@@ -5,24 +5,24 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Elektronik.Common.Clouds.V2;
 using UnityEngine;
+using CloudPoint = Elektronik.Common.Clouds.CloudPoint;
 
 namespace Elektronik.Common.Containers
 {
     public class SlamPointsContainer : ICloudObjectsContainer<SlamPoint>
     {
         private readonly BatchedDictionary<SlamPoint> m_points;
-        //private readonly SortedDictionary<int, SlamPoint> m_points;
-        private readonly IFastPointsCloud m_pointsCloud;
+        private readonly FastPointCloudV2 m_pointsCloud;
 
         public int Count => m_points.Count;
 
         public bool IsReadOnly => false;
 
-        public SlamPointsContainer(IFastPointsCloud cloud)
+        public SlamPointsContainer(FastPointCloudV2 cloud)
         {
             m_points = new BatchedDictionary<SlamPoint>();
-            //m_points = new SortedDictionary<int, SlamPoint>();
             m_pointsCloud = cloud;
         }
 
@@ -36,7 +36,7 @@ namespace Elektronik.Common.Containers
         {
             foreach (var pt in points)
                 m_points[pt.id] = pt;
-            m_pointsCloud.Add(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
+            m_pointsCloud.AddRange(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
         }
 
         public void Update(SlamPoint point)
@@ -45,7 +45,7 @@ namespace Elektronik.Common.Containers
             currentPoint.position = point.position;
             currentPoint.color = point.color;
             m_points[point.id] = currentPoint;
-            m_pointsCloud.UpdatePoint(new CloudPoint(point.id, point.position, point.color));
+            m_pointsCloud.UpdateItem(new CloudPoint(point.id, point.position, point.color));
         }
 
         public void Update(IEnumerable<SlamPoint> points)
@@ -57,12 +57,12 @@ namespace Elektronik.Common.Containers
                 currentPoint.color = pt.color;
                 m_points[pt.id] = currentPoint;
             }
-            m_pointsCloud.UpdatePoints(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
+            m_pointsCloud.UpdateItems(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
         }
 
         public bool Remove(int pointId)
         {
-            m_pointsCloud.Remove(pointId);
+            m_pointsCloud.RemoveAt(pointId);
             return m_points.Remove(pointId);
         }
 
@@ -74,7 +74,7 @@ namespace Elektronik.Common.Containers
         {
             foreach (var pt in points)
                 m_points.Remove(pt.id);
-            m_pointsCloud.Remove(points.Select(p => p.id));
+            m_pointsCloud.RemoveAt(points.Select(p => p.id));
         }
 
         public void Clear()

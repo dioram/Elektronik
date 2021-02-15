@@ -34,7 +34,7 @@ namespace Elektronik.Common.Clouds
                 for (int i = 0; i < MaxPlanesCount; ++i)
                 {
                     planes[MaxPlanesCount * allMeshes[meshNum].Key + i] = new CloudPlane(
-                        meshPlanes[i].idx + meshNum * MaxPlanesCount,
+                        meshPlanes[i].Id + meshNum * MaxPlanesCount,
                         meshPlanes[i].offset,
                         meshPlanes[i].normal,
                         meshPlanes[i].color
@@ -47,7 +47,7 @@ namespace Elektronik.Common.Clouds
 
         public void Set(CloudPlane plane)
         {
-            CheckMesh(plane.idx, out int meshId, out int pointId);
+            CheckMesh(plane.Id, out int meshId, out int pointId);
             m_data[meshId].Set(new CloudPlane(pointId, plane.offset, plane.normal, plane.color));
         }
 
@@ -68,7 +68,7 @@ namespace Elektronik.Common.Clouds
             var packets = new Dictionary<int, List<CloudPlane>>();
             foreach (var plane in planes)
             {
-                CheckMesh(plane.idx, out var meshIdx, out var pointIdx);
+                CheckMesh(plane.Id, out var meshIdx, out var pointIdx);
                 if (!packets.ContainsKey(meshIdx))
                 {
                     packets[meshIdx] = new List<CloudPlane>();

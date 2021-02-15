@@ -1,4 +1,4 @@
-Shader "Elektronik/PointCloudShader"
+Shader "Elektronik/LineCloudShader"
 {
     Properties
     {
@@ -19,7 +19,6 @@ Shader "Elektronik/PointCloudShader"
             }
             CGPROGRAM
             #pragma vertex Vertex
-            #pragma geometry Geometry
             #pragma fragment Fragment
             #pragma multi_compile _ _COMPUTE_BUFFER
             
@@ -53,7 +52,7 @@ Shader "Elektronik/PointCloudShader"
             {
                 VertexOutput o;
                 float4 pt = _ItemsBuffer[input.vertexID];
-                if (distance(pt.xyz, float3(0, 0, 0)) < 0.001f)
+                if (distance(pt.xyz, float3(0, 0, 0)) < 0.01f)
                 {
                     o.position = float4(10000, 10000, 10000, 1);
                 }
@@ -63,41 +62,6 @@ Shader "Elektronik/PointCloudShader"
                 }
                 o.color = DecodeColor(asuint(pt.w));
                 return o;
-            }
-
-            [maxvertexcount(16)]
-            void Geometry(point VertexOutput input[1], inout TriangleStream<VertexOutput> outStream)
-            {
-                float4 origin = input[0].position;
-                float2 extent = abs(UNITY_MATRIX_P._11_22 * _Size);
-
-                int slices = 8;
-                // Top
-                VertexOutput o = input[0];
-                o.position.y = origin.y + extent.y;
-                o.position.xzw = origin.xzw;
-                outStream.Append(o);
-
-                UNITY_LOOP for (uint i = 1; i < slices; i++)
-                {
-                    float sn, cs;
-                    sincos(UNITY_PI / slices * i, sn, cs);
-
-                    // Right side vertex
-                    o.position.xy = origin.xy + extent * float2(sn, cs);
-                    outStream.Append(o);
-
-                    // Left side vertex
-                    o.position.x = origin.x - extent.x * sn;
-                    outStream.Append(o);
-                }
-
-                // Bottom vertex
-                o.position.x = origin.x;
-                o.position.y = origin.y - extent.y;
-                outStream.Append(o);
-
-                outStream.RestartStrip();
             }
 
             half3 Fragment(VertexOutput input) : SV_Target

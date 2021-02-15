@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Common.Clouds;
 using Elektronik.Common.Clouds.Meshes;
+using Elektronik.Common.Clouds.V2;
 using Elektronik.Common.Data.PackageObjects;
 
 namespace Elektronik.Common.Containers
@@ -11,9 +12,9 @@ namespace Elektronik.Common.Containers
     public class SlamInfinitePlanesContainer : IContainer<SlamInfinitePlane>
     {
         private Dictionary<int, SlamInfinitePlane> m_planes = new Dictionary<int, SlamInfinitePlane>();
-        private IFastPlanesCloud m_planeCloud;
+        private FastPlaneCloudV2 m_planeCloud;
 
-        public SlamInfinitePlanesContainer(IFastPlanesCloud planesCloud)
+        public SlamInfinitePlanesContainer(FastPlaneCloudV2 planesCloud)
         {
             m_planeCloud = planesCloud;
         }
@@ -32,7 +33,7 @@ namespace Elektronik.Common.Containers
         {
             m_planes[item.id] = item;
             var p = new CloudPlane(item.id, item.offset, item.normal, item.color);
-            m_planeCloud.Set(p);
+            m_planeCloud.Add(p);
         }
 
         public void Clear()
@@ -53,7 +54,7 @@ namespace Elektronik.Common.Containers
 
         public bool Remove(SlamInfinitePlane item)
         {
-            m_planeCloud.Set(CloudPlane.Empty(item.id));
+            m_planeCloud.RemoveAt(item.id);
             return m_planes.Remove(item.id);
         }
 
@@ -71,7 +72,7 @@ namespace Elektronik.Common.Containers
 
         public void RemoveAt(int index)
         {
-            m_planeCloud.Set(CloudPlane.Empty(index));
+            m_planeCloud.RemoveAt(index);
             m_planes.Remove(index);
         }
 
@@ -123,7 +124,7 @@ namespace Elektronik.Common.Containers
         public void Update(SlamInfinitePlane obj)
         {
             var p = new CloudPlane(obj.id, obj.offset, obj.normal, obj.color);
-            m_planeCloud.Set(p);
+            m_planeCloud.UpdateItem(p);
             m_planes[obj.id] = obj;
         }
 

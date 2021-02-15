@@ -132,8 +132,8 @@ namespace Elektronik.Common.Clouds.Meshes
                     Sync.EnterWriteLock();
                     foreach(var pt in points)
                     {
-                        PureSet(pt.idx, pt.offset);
-                        PureSet(pt.idx, pt.color);
+                        PureSet(pt.Id, pt.offset);
+                        PureSet(pt.Id, pt.color);
                     }
                 }
                 finally
@@ -148,8 +148,8 @@ namespace Elektronik.Common.Clouds.Meshes
                 try
                 {
                     Sync.EnterWriteLock();
-                    PureSet(point.idx, point.offset);
-                    PureSet(point.idx, point.color);
+                    PureSet(point.Id, point.offset);
+                    PureSet(point.Id, point.color);
                 }
                 finally
                 {

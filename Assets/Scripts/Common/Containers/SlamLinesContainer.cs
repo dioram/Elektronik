@@ -8,7 +8,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Elektronik.Common.Clouds.V2;
 using UnityEngine;
+using CloudPoint = Elektronik.Common.Clouds.CloudPoint;
 
 namespace Elektronik.Common.Containers
 {
@@ -16,7 +18,7 @@ namespace Elektronik.Common.Containers
     {
         private List<CloudLine> m_linesBuffer;
 
-        private FastLinesCloud m_linesCloud;
+        private FastLineCloudV2 m_linesCloud;
         private IDictionary<int, SlamLine> m_connections;
         private IDictionary<SlamLine, int> m_connectionIndices;
         private int m_maxId = 0;
@@ -44,7 +46,7 @@ namespace Elektronik.Common.Containers
                 Update(value);
             }
         }
-        public SlamLinesContainer(FastLinesCloud linesCloud)
+        public SlamLinesContainer(FastLineCloudV2 linesCloud)
         {
             m_linesBuffer = new List<CloudLine>();
             m_connections = new SortedDictionary<int, SlamLine>();
@@ -57,7 +59,7 @@ namespace Elektronik.Common.Containers
             int connectionId = m_freeIds.Count > 0 ? m_freeIds.Dequeue() : m_maxId++;
             m_connectionIndices[obj] = connectionId;
             m_connections[connectionId] = obj;
-            m_linesCloud.Set(
+            m_linesCloud.Add(
                 new CloudLine(connectionId, 
                     new CloudPoint(0, obj.pt1.position, obj.pt1.color),
                     new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
@@ -75,7 +77,7 @@ namespace Elektronik.Common.Containers
                         new CloudPoint(0, obj.pt1.position, obj.pt1.color),
                         new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
             }
-            m_linesCloud.Set(m_linesBuffer);
+            m_linesCloud.AddRange(m_linesBuffer);
             m_linesBuffer.Clear();
         }
         public void Clear()
@@ -100,7 +102,7 @@ namespace Elektronik.Common.Containers
                 m_connections.Remove(index);
                 m_freeIds.Enqueue(index);
             }
-            m_linesCloud.Set(m_linesBuffer);
+            m_linesCloud.RemoveAt(m_linesBuffer.Select(l => l.Id));
             m_linesBuffer.Clear();
         }
         public bool Remove(int id1, int id2)
@@ -111,7 +113,7 @@ namespace Elektronik.Common.Containers
                 m_connections.Remove(index);
                 m_connectionIndices.Remove(l);
                 m_freeIds.Enqueue(index);
-                m_linesCloud.Set(CloudLine.Empty(index));
+                m_linesCloud.RemoveAt(index);
                 return true;
             }
             return false;
@@ -144,14 +146,14 @@ namespace Elektronik.Common.Containers
             SlamLine currentLine = m_connections[index];
             if (obj.pt1.id == currentLine.pt1.id && obj.pt2.id == currentLine.pt2.id)
             {
-                m_linesCloud.Set(
+                m_linesCloud.UpdateItem(
                     new CloudLine(index, 
                         new CloudPoint(0, obj.pt1.position, obj.pt1.color),
                         new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
             }
             else
             {
-                m_linesCloud.Set(
+                m_linesCloud.UpdateItem(
                     new CloudLine(index, 
                         new CloudPoint(0, obj.pt2.position, obj.pt2.color),
                         new CloudPoint(0, obj.pt1.position, obj.pt1.color)));
@@ -181,7 +183,7 @@ namespace Elektronik.Common.Containers
                 }
                 m_connections[index] = obj;
             }
-            m_linesCloud.Set(m_linesBuffer);
+            m_linesCloud.UpdateItems(m_linesBuffer);
         }
         public IEnumerator<SlamLine> GetEnumerator() => m_connections.Select(kv => kv.Value).GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

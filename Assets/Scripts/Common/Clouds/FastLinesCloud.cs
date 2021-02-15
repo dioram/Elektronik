@@ -36,9 +36,39 @@ namespace Elektronik.Common.Clouds
             return m_data[meshId].Get(lineId);
         }
 
+        public void Add(CloudPoint point)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Add(IEnumerable<CloudPoint> points)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void UpdatePoint(CloudPoint point)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void UpdatePoints(IEnumerable<CloudPoint> points)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Remove(int idx)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Remove(IEnumerable<int> pointsIds)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void Set(CloudLine line)
         {
-            CheckMesh(line.id, out int meshId, out int lineId);
+            CheckMesh(line.Id, out int meshId, out int lineId);
             line.pt1.offset.Scale(scale * Vector3.one);
             line.pt2.offset.Scale(scale * Vector3.one);
             var meshLine = new CloudLine(lineId, line.pt1, line.pt2);
@@ -64,7 +94,7 @@ namespace Elektronik.Common.Clouds
             Debug.Assert(m_linesBuffer.Count == 0);
             foreach (var line in lines)
             {
-                CheckMesh(line.id, out var meshIdx, out var lineId);
+                CheckMesh(line.Id, out var meshIdx, out var lineId);
                 if (!m_linesBuffer.ContainsKey(meshIdx))
                 {
                     m_linesBuffer[meshIdx] = new List<CloudLine>();

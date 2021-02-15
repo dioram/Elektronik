@@ -73,10 +73,10 @@ namespace Elektronik.Common.Clouds.Meshes
 
             private void PureSet(CloudLine line)
             {
-                Colors[2 * line.id] = line.pt1.color;
-                Colors[2 * line.id + 1] = line.pt2.color;
-                Vertices[2 * line.id] = line.pt1.offset;
-                Vertices[2 * line.id + 1] = line.pt2.offset;
+                Colors[2 * line.Id] = line.pt1.color;
+                Colors[2 * line.Id + 1] = line.pt2.color;
+                Vertices[2 * line.Id] = line.pt1.offset;
+                Vertices[2 * line.Id + 1] = line.pt2.offset;
             }
 
             public void Set(IEnumerable<CloudLine> lines)
@@ -99,7 +99,7 @@ namespace Elektronik.Common.Clouds.Meshes
             public void Set(CloudLine line)
             {
 #if DEBUG
-                Debug.Assert(line.id >= 0 && line.id < MAX_LINES_COUNT, $"Wrong idx ({line.id})");
+                Debug.Assert(line.Id >= 0 && line.Id < MAX_LINES_COUNT, $"Wrong idx ({line.Id})");
 #endif
                 try
                 {

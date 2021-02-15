@@ -1,4 +1,5 @@
 ﻿using Elektronik.Common.Clouds;
+using Elektronik.Common.Clouds.V2;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Pb;
@@ -13,11 +14,11 @@ namespace Elektronik.Common.Maps
 
         public GameObject observationPrefab;
         public FastPointCloudV2 fastPointCloud;
-        public FastLinesCloud pointsConnectionsCloud;
-        public FastLinesCloud observationsConnectionsCloud;
-        public FastLinesCloud trackedObjsConnectionsCloud;
-        public FastLinesCloud linesCloud;
-        public FastPlaneCloud planeCloud;
+        public FastLineCloudV2 pointsConnectionsCloud;
+        public FastLineCloudV2 observationsConnectionsCloud;
+        public FastLineCloudV2 trackedObjsConnectionsCloud;
+        public FastLineCloudV2 linesCloud;
+        public FastPlaneCloudV2 planeCloud;
 
         public IConnectableObjectsContainer<SlamPoint> Points { get; private set; }
         public GameObjectsContainer<SlamObservation> ObservationsGO { get; private set; }

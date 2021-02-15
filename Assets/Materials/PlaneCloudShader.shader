@@ -1,4 +1,4 @@
-Shader "Elektronik/PointCloudShader"
+Shader "Elektronik/PlaneCloudShader"
 {
     Properties
     {
@@ -19,20 +19,19 @@ Shader "Elektronik/PointCloudShader"
             }
             CGPROGRAM
             #pragma vertex Vertex
-            #pragma geometry Geometry
             #pragma fragment Fragment
             #pragma multi_compile _ _COMPUTE_BUFFER
-            
+
             #include "UnityCG.cginc"
             #define MAX_BRIGHTNESS 16
 
             half _Size;
-            StructuredBuffer<float4> _ItemsBuffer;
-            
+            StructuredBuffer<float4> _VertsBuffer;
+
             half3 DecodeColor(uint data)
             {
-                half r = (data      ) & 0xff;
-                half g = (data >>  8) & 0xff;
+                half r = (data) & 0xff;
+                half g = (data >> 8) & 0xff;
                 half b = (data >> 16) & 0xff;
                 half a = (data >> 24) & 0xff;
                 return half3(r, g, b) * a * MAX_BRIGHTNESS / (255 * 255);
@@ -46,13 +45,14 @@ Shader "Elektronik/PointCloudShader"
             struct VertexOutput
             {
                 float4 position : SV_POSITION;
+                float3 viewPos : TEXTCOORD;
                 half3 color : COLOR0;
             };
 
             VertexOutput Vertex(VertexInput input)
             {
                 VertexOutput o;
-                float4 pt = _ItemsBuffer[input.vertexID];
+                float4 pt = _VertsBuffer[input.vertexID];
                 if (distance(pt.xyz, float3(0, 0, 0)) < 0.001f)
                 {
                     o.position = float4(10000, 10000, 10000, 1);
@@ -62,49 +62,15 @@ Shader "Elektronik/PointCloudShader"
                     o.position = UnityObjectToClipPos(float4(pt.xyz, 1));
                 }
                 o.color = DecodeColor(asuint(pt.w));
+                o.viewPos = UnityObjectToViewPos(o.position);
                 return o;
-            }
-
-            [maxvertexcount(16)]
-            void Geometry(point VertexOutput input[1], inout TriangleStream<VertexOutput> outStream)
-            {
-                float4 origin = input[0].position;
-                float2 extent = abs(UNITY_MATRIX_P._11_22 * _Size);
-
-                int slices = 8;
-                // Top
-                VertexOutput o = input[0];
-                o.position.y = origin.y + extent.y;
-                o.position.xzw = origin.xzw;
-                outStream.Append(o);
-
-                UNITY_LOOP for (uint i = 1; i < slices; i++)
-                {
-                    float sn, cs;
-                    sincos(UNITY_PI / slices * i, sn, cs);
-
-                    // Right side vertex
-                    o.position.xy = origin.xy + extent * float2(sn, cs);
-                    outStream.Append(o);
-
-                    // Left side vertex
-                    o.position.x = origin.x - extent.x * sn;
-                    outStream.Append(o);
-                }
-
-                // Bottom vertex
-                o.position.x = origin.x;
-                o.position.y = origin.y - extent.y;
-                outStream.Append(o);
-
-                outStream.RestartStrip();
             }
 
             half3 Fragment(VertexOutput input) : SV_Target
             {
-                return input.color;
+                float camDist = length(input.viewPos) / 10;
+                return float4(input.color, 1) / camDist;
             }
-
             ENDCG
         }
     }

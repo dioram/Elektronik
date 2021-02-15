@@ -3,6 +3,7 @@ using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
 using System;
 using System.Collections.Generic;
+using Elektronik.Common.Clouds.V2;
 using UnityEngine;
 
 namespace Elektronik.Common.Maps
@@ -20,7 +21,7 @@ namespace Elektronik.Common.Maps
 
         private void Awake()
         {
-            Track = new SlamLinesContainer(GetComponentInChildren<FastLinesCloud>());
+            Track = new SlamLinesContainer(GetComponentInChildren<FastLineCloudV2>());
         }
 
         private void UnsafeResetHelmet()

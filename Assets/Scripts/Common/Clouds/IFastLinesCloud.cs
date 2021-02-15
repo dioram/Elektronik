@@ -9,10 +9,11 @@ namespace Elektronik.Common.Clouds
         void Clear();
         bool Exists(int lineIdx);
         CloudLine Get(int idx);
-        void Set(int idx, Color color1, Color color2);
-        void Set(int idx, Vector3 position1, Vector3 position2);
-        void Set(CloudLine line);
-        void Set(IEnumerable<CloudLine> lines);
-        void SetActive(bool value);
+        void Add(CloudPoint point);
+        void Add(IEnumerable<CloudPoint> points);
+        void UpdatePoint(CloudPoint point);
+        void UpdatePoints(IEnumerable<CloudPoint> points);
+        void Remove(int idx);
+        void Remove(IEnumerable<int> pointsIds);
     }
 }

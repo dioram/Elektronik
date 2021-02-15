@@ -54,8 +54,8 @@ namespace Elektronik.Common.Clouds.Meshes
                     //Parallel.For(0, points_.Length, i =>
                     foreach(var pt in points)
                     {
-                        Colors[pt.idx] = pt.color;
-                        Vertices[pt.idx] = pt.offset;
+                        Colors[pt.Id] = pt.color;
+                        Vertices[pt.Id] = pt.offset;
                     }//);
                 }
                 finally
@@ -68,13 +68,13 @@ namespace Elektronik.Common.Clouds.Meshes
             public void Set(CloudPoint point)
             {
 #if DEBUG
-                Debug.Assert(point.idx >= 0 && point.idx < MAX_VERTICES_COUNT, $"Wrong idx ({point.idx})");
+                Debug.Assert(point.Id >= 0 && point.Id < MAX_VERTICES_COUNT, $"Wrong idx ({point.Id})");
 #endif
                 try
                 {
                     Sync.EnterWriteLock();
-                    Colors[point.idx] = point.color;
-                    Vertices[point.idx] = point.offset;
+                    Colors[point.Id] = point.color;
+                    Vertices[point.Id] = point.offset;
                 }
                 finally
                 {

@@ -39,7 +39,7 @@ namespace Elektronik.Common.Clouds
 
         public void UpdatePoint(CloudPoint point)
         {
-            CheckMesh(point.idx, out int meshId, out int pointId);
+            CheckMesh(point.Id, out int meshId, out int pointId);
             m_data[meshId].Set(new CloudPoint(pointId, point.offset, point.color));
         }
 
@@ -48,7 +48,7 @@ namespace Elektronik.Common.Clouds
             var packets = new Dictionary<int, List<CloudPoint>>();
             foreach (var pt in points)
             {
-                CheckMesh(pt.idx, out var meshIdx, out var pointIdx);
+                CheckMesh(pt.Id, out var meshIdx, out var pointIdx);
                 if (!packets.ContainsKey(meshIdx))
                 {
                     packets[meshIdx] = new List<CloudPoint>();
@@ -96,7 +96,7 @@ namespace Elektronik.Common.Clouds
                 for (int i = 0; i < MaxPointsCount; ++i)
                 {
                     points[MaxPointsCount * allMeshes[meshNum].Key + i] = new CloudPoint(
-                        meshPoints[i].idx + meshNum * MaxPointsCount,
+                        meshPoints[i].Id + meshNum * MaxPointsCount,
                         meshPoints[i].offset,
                         meshPoints[i].color
                     );

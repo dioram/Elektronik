@@ -107,8 +107,8 @@ namespace Elektronik.Common.Clouds.Meshes
 
             public void Set(CloudPlane plane)
             {
-                PureSet(plane.idx, plane.offset, plane.normal);
-                PureSet(plane.idx, plane.color);
+                PureSet(plane.Id, plane.offset, plane.normal);
+                PureSet(plane.Id, plane.color);
                 MarkAsChanged();
             }
             
@@ -117,8 +117,8 @@ namespace Elektronik.Common.Clouds.Meshes
             {
                 foreach(var plane in planes)
                 {
-                    PureSet(plane.idx, plane.offset, plane.normal);
-                    PureSet(plane.idx, plane.color);
+                    PureSet(plane.Id, plane.offset, plane.normal);
+                    PureSet(plane.Id, plane.color);
                 }
                 MarkAsChanged();
             }
