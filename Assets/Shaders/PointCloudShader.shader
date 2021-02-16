@@ -65,13 +65,13 @@ Shader "Elektronik/PointCloudShader"
                 return o;
             }
 
-            [maxvertexcount(16)]
+            [maxvertexcount(8)]
             void Geometry(point VertexOutput input[1], inout TriangleStream<VertexOutput> outStream)
             {
                 float4 origin = input[0].position;
                 float2 extent = abs(UNITY_MATRIX_P._11_22 * _Size);
 
-                int slices = 8;
+                int slices = 4;
                 // Top
                 VertexOutput o = input[0];
                 o.position.y = origin.y + extent.y;

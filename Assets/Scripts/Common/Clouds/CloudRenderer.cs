@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
@@ -14,6 +15,16 @@ namespace Elektronik.Common.Clouds
         public Shader CloudShader;
 
         public float ItemSize;
+        
+        public void SetSize(float newSize)
+        {
+            ItemSize = newSize;
+
+            foreach (var block in _blocks)
+            {
+                block.ItemSize = ItemSize;
+            }
+        }
 
         #region Unity events
 
