@@ -1,9 +1,5 @@
-﻿using Elektronik.Common.Data.Packages.SlamActionPackages;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Data.Packages;
+﻿using Elektronik.Common.Containers;
 using System.Linq;
-using UnityEngine;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -21,6 +17,6 @@ namespace Elektronik.Common.Commands.Generic
         }
 
         public virtual void Execute() => m_container.Remove(m_objs2Remove);
-        public virtual void UnExecute() => m_container.Add(m_objs2Remove);
+        public virtual void UnExecute() => m_container.AddRange(m_objs2Remove);
     }
 }

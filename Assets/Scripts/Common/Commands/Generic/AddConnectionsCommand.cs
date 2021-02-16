@@ -1,13 +1,11 @@
 ﻿using Elektronik.Common.Containers;
-using Elektronik.Common.Data.PackageObjects;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Elektronik.Common.Clouds;
 
 namespace Elektronik.Common.Commands.Generic
 {
-    public class AddConnectionsCommand<T> : ICommand
+    public class AddConnectionsCommand<T> : ICommand where T: ICloudItem
     {
         protected readonly IList<(int, int)> m_connections;
         protected readonly IConnectableObjectsContainer<T> m_container;

@@ -1,34 +1,30 @@
 ﻿using Elektronik.Common.Clouds.Meshes;
 using Elektronik.Common.Extensions;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Elektronik.Common.Clouds
 {
-    public abstract class FastCloud<IMeshData, MeshObjectBase> : MonoBehaviour 
-        where MeshObjectBase : MeshObjectBase<IMeshData>
+    public abstract class FastCloud<TMeshData, TMeshObjectBase> : MonoBehaviour 
+        where TMeshObjectBase : MeshObjectBase<TMeshData>
     {
         public float scale = 1;
-        public MeshObjectBase meshObjectPrefab;
+        public TMeshObjectBase meshObjectPrefab;
         
-        protected Dictionary<int, IMeshData> m_data;
-        protected Dictionary<IMeshData, MeshObjectBase<IMeshData>> m_meshObjects;
+        protected Dictionary<int, TMeshData> m_data;
+        protected Dictionary<TMeshData, MeshObjectBase<TMeshData>> m_meshObjects;
 
         private ObjectPool m_meshObjectPool;
-        private Queue<MeshDataBase<IMeshData>> m_newMeshQueue;
-        private Queue<IMeshData> m_removedMeshQueue;
+        private Queue<MeshDataBase<TMeshData>> m_newMeshQueue;
+        private Queue<TMeshData> m_removedMeshQueue;
 
         protected virtual void Awake()
         {
             m_meshObjectPool = new ObjectPool(meshObjectPrefab.gameObject);
-            m_data = new Dictionary<int, IMeshData>();
-            m_meshObjects = new Dictionary<IMeshData, MeshObjectBase<IMeshData>>();
-            m_newMeshQueue = new Queue<MeshDataBase<IMeshData>>();
-            m_removedMeshQueue = new Queue<IMeshData>();
+            m_data = new Dictionary<int, TMeshData>();
+            m_meshObjects = new Dictionary<TMeshData, MeshObjectBase<TMeshData>>();
+            m_newMeshQueue = new Queue<MeshDataBase<TMeshData>>();
+            m_removedMeshQueue = new Queue<TMeshData>();
         }
 
         protected void CheckMesh(int srcLineIdx, out int meshIdx, out int lineIdx)
@@ -79,7 +75,7 @@ namespace Elektronik.Common.Clouds
                 while (m_newMeshQueue.Count != 0)
                 {
                     var meshDataBase = m_newMeshQueue.Dequeue();
-                    m_meshObjects[meshDataBase.Data] = m_meshObjectPool.Spawn().GetComponent<MeshObjectBase<IMeshData>>();
+                    m_meshObjects[meshDataBase.Data] = m_meshObjectPool.Spawn().GetComponent<MeshObjectBase<TMeshData>>();
                     m_meshObjects[meshDataBase.Data].Initialize(meshDataBase);
                 }
             }

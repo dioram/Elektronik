@@ -1,4 +1,4 @@
-﻿using Elektronik.Common.Extensions;
+﻿using Elektronik.Common.Data.PackageObjects;
 using UnityEngine;
 
 namespace Elektronik.Common.Clouds.V2
@@ -9,10 +9,10 @@ namespace Elektronik.Common.Clouds.V2
             
         public Vector3 Position;
         public uint Color;
-
-        public GPUItem(CloudPoint cp)
+        
+        public GPUItem(SlamPoint cp)
         {
-            Position = cp.offset;
+            Position = cp.position;
             Color = EncodeColor(cp.color);
         }
 

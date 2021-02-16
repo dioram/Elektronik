@@ -2,7 +2,7 @@ Shader "Elektronik/PointCloudShader"
 {
     Properties
     {
-        _PointSize("Point Size", Float) = 0.05
+        _Size("Point Size", Float) = 0.05
     }
     SubShader
     {
@@ -53,14 +53,14 @@ Shader "Elektronik/PointCloudShader"
             {
                 VertexOutput o;
                 float4 pt = _ItemsBuffer[input.vertexID];
-                if (distance(pt.xyz, float3(0, 0, 0)) < 0.001f)
-                {
-                    o.position = float4(10000, 10000, 10000, 1);
-                }
-                else
-                {
+                // if (distance(pt.xyz, float3(0, 0, 0)) < 0.001f)
+                // {
+                //     o.position = float4(10000, 10000, 10000, 1);
+                // }
+                // else
+                // {
                     o.position = UnityObjectToClipPos(float4(pt.xyz, 1));
-                }
+                // }
                 o.color = DecodeColor(asuint(pt.w));
                 return o;
             }

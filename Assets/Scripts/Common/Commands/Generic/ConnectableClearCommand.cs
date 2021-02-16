@@ -1,13 +1,10 @@
 ﻿using Elektronik.Common.Containers;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Elektronik.Common.Clouds;
 
 namespace Elektronik.Common.Commands.Generic
 {
-    public class ConnectableClearCommand<T> : ClearCommand<T>
+    public class ConnectableClearCommand<T> : ClearCommand<T> where T: ICloudItem
     {
         private readonly (int, int)[] m_connections;
         private readonly IConnectableObjectsContainer<T> m_container;

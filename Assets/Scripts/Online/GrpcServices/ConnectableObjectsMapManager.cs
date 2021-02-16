@@ -1,15 +1,13 @@
 ﻿using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Pb;
-using Grpc.Core;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Elektronik.Common.Clouds;
 
 namespace Elektronik.Online.GrpcServices
 {
-    public abstract class ConnectableObjectsMapManager<T> : MapManager<T>
+    public abstract class ConnectableObjectsMapManager<T> : MapManager<T> where T: ICloudItem
     {
         private IConnectableObjectsContainer<T> m_map;
         public ConnectableObjectsMapManager(IConnectableObjectsContainer<T> map) : base(map)

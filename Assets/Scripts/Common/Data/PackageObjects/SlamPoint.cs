@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using System.Runtime.Serialization;
+using Elektronik.Common.Clouds;
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public struct SlamPoint
+    public struct SlamPoint : ICloudItem
     {
         public int id;
         public Vector3 position;
@@ -32,6 +32,12 @@ namespace Elektronik.Common.Data.PackageObjects
         public override string ToString()
         {
             return message ?? "SlamPoint";
+        }
+
+        public int Id
+        {
+            get => id;
+            set => id = value;
         }
     }
 }

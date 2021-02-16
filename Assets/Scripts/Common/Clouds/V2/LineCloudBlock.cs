@@ -7,6 +7,21 @@ namespace Elektronik.Common.Clouds.V2
     {
         public GPUItem[] Points;
 
+        public override void Clear()
+        {
+            ClearArray(Points);
+            base.Clear();
+        }
+
+        #region Unity events
+
+        private void OnDestroy()
+        {
+            _pointsBuffer.Release();
+        }
+
+        #endregion
+
         protected override void Init()
         {
             Points = Enumerable.Repeat(default(GPUItem), Capacity * 2).ToArray();
@@ -16,10 +31,6 @@ namespace Elektronik.Common.Clouds.V2
         protected override void SendData(Material renderMaterial)
         {
             renderMaterial.SetBuffer(_pointsBufferShaderProp, _pointsBuffer);
-        }
-
-        protected override void Clear()
-        {
         }
 
         protected override void OnUpdated()

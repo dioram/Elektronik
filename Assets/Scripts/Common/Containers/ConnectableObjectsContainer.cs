@@ -2,15 +2,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Elektronik.Common.Clouds;
 using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public partial class ConnectableObjectsContainer<T> : IConnectableObjectsContainer<T>
+    public partial class ConnectableObjectsContainer<T> : IConnectableObjectsContainer<T> where T: ICloudItem
     {
         private List<SlamLine> m_linesBuffer;
         private SparseSquareMatrix<bool> m_table;
@@ -33,11 +31,14 @@ namespace Elektronik.Common.Containers
 
         public bool IsReadOnly => false;
 
+        public event Action<IEnumerable<T>> ItemsAdded;
+        public event Action<IEnumerable<T>> ItemsUpdated;
+        public event Action<IEnumerable<int>> ItemsRemoved;
+        public event Action ItemsCleared;
         public T this[T obj] { get => m_objects[obj]; set => m_objects[obj] = value; }
         public T this[int id] { get => m_objects[id]; set => m_objects[id] = value; }
         public bool Contains(T obj) => m_objects.Contains(obj);
         public bool Contains(int objId) => m_objects.Contains(objId);
-        public IList<T> GetAll() => m_objects.GetAll();
         public bool TryGet(T obj, out T current) => m_objects.TryGet(obj, out current);
         public bool TryGet(int idx, out T current) => m_objects.TryGet(idx, out current);
         public bool TryGetAsPoint(int idx, out SlamPoint point) => m_objects.TryGetAsPoint(idx, out point);
@@ -45,20 +46,20 @@ namespace Elektronik.Common.Containers
         public IEnumerator<T> GetEnumerator() => m_objects.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => m_objects.GetEnumerator();
         public void Add(T obj) => m_objects.Add(obj);
-        public void Add(IEnumerable<T> objects) => m_objects.Add(objects);
-        public void Update(T obj)
+        public void AddRange(IEnumerable<T> objects) => m_objects.AddRange(objects);
+        public void UpdateItem(T obj)
         {
-            m_objects.Update(obj);
+            m_objects.UpdateItem(obj);
             m_objects.TryGetAsPoint(obj, out var pt1);
             foreach (var col in m_table.GetColIndices(pt1.id))
             {
                 m_objects.TryGetAsPoint(col, out var pt2);
-                m_lines.Update(new SlamLine(pt1, pt2));
+                m_lines.UpdateItem(new SlamLine(pt1, pt2));
             }
         }
-        public void Update(IEnumerable<T> objs)
+        public void UpdateItems(IEnumerable<T> objs)
         {
-            m_objects.Update(objs);
+            m_objects.UpdateItems(objs);
             Debug.Assert(m_linesBuffer.Count == 0);
             foreach(var obj in objs)
             {
@@ -69,7 +70,7 @@ namespace Elektronik.Common.Containers
                     m_linesBuffer.Add(new SlamLine(pt1, pt2));
                 }
             }
-            m_lines.Update(m_linesBuffer);
+            m_lines.UpdateItems(m_linesBuffer);
             m_linesBuffer.Clear();
         }
         private void RemoveConnections(int id)
@@ -160,11 +161,9 @@ namespace Elektronik.Common.Containers
             {
                 if (m_table[id1, id2].HasValue && m_table[id1, id2].Value)
                 {
-                    m_table.Remove(id1, id2); m_table.Remove(id2, id1);
-                    removing(
-                        new SlamLine(
-                            new SlamPoint(id1, default, default),
-                            new SlamPoint(id2, default, default)));
+                    m_table.Remove(id1, id2); 
+                    m_table.Remove(id2, id1);
+                    removing(new SlamLine(id1, id2));
                     return true;
                 }
             }
@@ -178,16 +177,16 @@ namespace Elektronik.Common.Containers
         {
             Debug.Assert(m_linesBuffer.Count == 0);
             foreach (var c in connections)
-                AddConnection(m_objects[c.id1], m_objects[c.id2], m_linesBuffer.Add);
-            m_lines.Add(m_linesBuffer);
+                AddConnection(m_objects[c.id1], m_objects[c.id2], line => m_linesBuffer.Add(line));
+            m_lines.AddRange(m_linesBuffer);
             m_linesBuffer.Clear();
         }
         public void AddConnections(IEnumerable<(T obj1, T obj2)> connections)
         {
             Debug.Assert(m_linesBuffer.Count == 0);
             foreach (var c in connections)
-                AddConnection(m_objects[c.obj1], m_objects[c.obj2], m_linesBuffer.Add);
-            m_lines.Add(m_linesBuffer);
+                AddConnection(m_objects[c.obj1], m_objects[c.obj2], line => m_linesBuffer.Add(line));
+            m_lines.AddRange(m_linesBuffer);
             m_linesBuffer.Clear();
         }
         public void RemoveConnections(IEnumerable<(int id1, int id2)> connections)
@@ -202,7 +201,7 @@ namespace Elektronik.Common.Containers
         {
             Debug.Assert(m_linesBuffer.Count == 0);
             foreach (var c in connections)
-                RemoveConnection(m_objects.IndexOf(c.obj1), m_objects.IndexOf(c.obj2), m_linesBuffer.Add);
+                RemoveConnection(m_objects.IndexOf(c.obj1), m_objects.IndexOf(c.obj2), line => m_linesBuffer.Add(line));
             m_lines.Remove(m_linesBuffer);
             m_linesBuffer.Clear();
         }

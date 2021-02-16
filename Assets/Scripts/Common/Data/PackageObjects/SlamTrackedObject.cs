@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Elektronik.Common.Clouds;
 using UnityEngine;
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public struct SlamTrackedObject
+    public struct SlamTrackedObject: ICloudItem
     {
         public int id;
         public Color color;
@@ -20,6 +16,12 @@ namespace Elektronik.Common.Data.PackageObjects
             this.color = color;
             this.position = position;
             this.rotation = rotation;
+        }
+
+        public int Id
+        {
+            get => id;
+            set => id = value;
         }
     }
 }

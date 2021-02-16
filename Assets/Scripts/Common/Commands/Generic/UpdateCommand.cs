@@ -1,11 +1,7 @@
 ﻿using Elektronik.Common.Containers;
-using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Data.Packages;
-using Elektronik.Common.Data.Packages.SlamActionPackages;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using UnityEngine;
 
 namespace Elektronik.Common.Commands.Generic
 {
@@ -23,7 +19,7 @@ namespace Elektronik.Common.Commands.Generic
             m_objs2Update = new ReadOnlyCollection<T>(objects.ToList());
         }
 
-        public virtual void Execute() => m_container.Update(m_objs2Update);
-        public virtual void UnExecute() => m_container.Update(m_objs2Restore);
+        public virtual void Execute() => m_container.UpdateItems(m_objs2Update);
+        public virtual void UnExecute() => m_container.UpdateItems(m_objs2Restore);
     }
 }

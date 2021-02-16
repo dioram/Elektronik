@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Elektronik.Online.GrpcServices;
 using Grpc.Core;
 using Elektronik.Common.Data.Pb;
@@ -10,9 +8,9 @@ using Elektronik.Common;
 using Elektronik.Online.Settings;
 using Elektronik.Common.Settings;
 using UnityEngine.UI;
-using System.Net;
 using System;
 using Elektronik.Common.Cameras;
+using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Converters;
 
 namespace Elektronik.Online
@@ -25,6 +23,7 @@ namespace Elektronik.Online
         public SlamMap slamMaps;
         public CSConverter converter;
         public CameraImageRenderer imageRenderTarget;
+        public SlamInfinitePlanesContainer InfinitePlanesContainer;
 
         GrpcServer m_server;
         bool m_serverStarted = false;
@@ -45,7 +44,7 @@ namespace Elektronik.Online
                 new ObservationsMapManager(slamMaps.Observations, converter),
                 new TrackedObjsMapManager(slamMaps.TrackedObjsGO, slamMaps.TrackedObjs, converter),
                 new LinesMapManager(slamMaps.Lines, converter),
-                new InfinitePlanesMapManager(slamMaps.InfinitePlanes, converter)
+                new InfinitePlanesMapManager(InfinitePlanesContainer, converter)
             }.BuildChain();
 
             Debug.Log($"{SettingsBag.Current[SettingName.IPAddress].As<string>()}:{SettingsBag.Current[SettingName.Port].As<int>()}");

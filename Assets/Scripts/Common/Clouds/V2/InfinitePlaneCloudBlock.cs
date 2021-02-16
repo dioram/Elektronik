@@ -7,6 +7,21 @@ namespace Elektronik.Common.Clouds.V2
     {
         public GPUItem[] Planes;
 
+        public override void Clear()
+        {
+            ClearArray(Planes);
+            base.Clear();
+        }
+
+        #region Unity events
+
+        private void OnDestroy()
+        {
+            _vertsBuffer.Release();
+        }
+
+        #endregion
+
         #region Protected definitions
 
         protected override void Init()
@@ -18,11 +33,6 @@ namespace Elektronik.Common.Clouds.V2
         protected override void SendData(Material renderMaterial)
         {
             renderMaterial.SetBuffer(_vertsBufferShaderProp, _vertsBuffer);
-        }
-
-        protected override void Clear()
-        {
-            Planes = Enumerable.Repeat(default(GPUItem), Planes.Length).ToArray();
         }
 
         protected override void OnUpdated()
@@ -38,7 +48,7 @@ namespace Elektronik.Common.Clouds.V2
         #endregion
 
         #region Private definitions
-        
+
         private readonly int _vertsBufferShaderProp = Shader.PropertyToID("_VertsBuffer");
         private ComputeBuffer _vertsBuffer;
 

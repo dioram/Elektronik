@@ -2,16 +2,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Elektronik.Common.Clouds;
 using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public abstract class GameObjectsContainer<T> : ICloudObjectsContainer<T>
+    public abstract class GameObjectsContainer<T> : ICloudObjectsContainer<T> where T: ICloudItem
     {
         protected abstract int GetObjectId(T obj);
         protected abstract Pose GetObjectPose(T obj);
@@ -28,6 +24,11 @@ namespace Elektronik.Common.Containers
         public int Count => m_objects.Count;
 
         public bool IsReadOnly => false;
+
+        public event Action<IEnumerable<T>> ItemsAdded;
+        public event Action<IEnumerable<T>> ItemsUpdated;
+        public event Action<IEnumerable<int>> ItemsRemoved;
+        public event Action ItemsCleared;
 
         /// <summary>
         /// Get clone of node or Set obj with same id as argument id
@@ -50,7 +51,7 @@ namespace Elektronik.Common.Containers
             get => m_objects[id];
             set
             {
-                if (!TryGet(id, out _)) Add(value); else Update(value);
+                if (!TryGet(id, out _)) Add(value); else UpdateItem(value);
             }
         }
 
@@ -92,7 +93,7 @@ namespace Elektronik.Common.Containers
         /// Look at the summary of Add
         /// </summary>
         /// <param name="objects"></param>
-        public void Add(IEnumerable<T> objects)
+        public void AddRange(IEnumerable<T> objects)
         {
             foreach (var obj in objects)
                 Add(obj);
@@ -122,12 +123,6 @@ namespace Elektronik.Common.Containers
         /// <param name="objId"></param>
         /// <returns>true if exists, otherwise false</returns>
         public bool Contains(int objId) => m_objects.ContainsKey(objId);
-
-        /// <summary>
-        /// Get clones of observations from graph
-        /// </summary>
-        /// <returns></returns>
-        public IList<T> GetAll() => m_objects.Values.ToList();
 
         /// <summary>
         /// Remove by id
@@ -179,7 +174,7 @@ namespace Elektronik.Common.Containers
         /// Copy data from obj.
         /// </summary>
         /// <param name="obj"></param>
-        public void Update(T obj)
+        public void UpdateItem(T obj)
         {
             m_objects[GetObjectId(obj)] = Update(m_objects[GetObjectId(obj)], obj);
             var object2Update = m_gameObjects[GetObjectId(obj)];
@@ -187,10 +182,10 @@ namespace Elektronik.Common.Containers
             Debug.Log($"[GameObjectsContainer.Update] Updated {typeof(T).Name} with id {GetObjectId(obj)}");
         }
 
-        public void Update(IEnumerable<T> objs)
+        public void UpdateItems(IEnumerable<T> objs)
         {
             foreach (var obj in objs)
-                Update(obj);
+                UpdateItem(obj);
         }
 
         public IEnumerator<T> GetEnumerator() => m_objects.Values.GetEnumerator();

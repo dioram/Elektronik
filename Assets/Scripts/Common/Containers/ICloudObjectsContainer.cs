@@ -1,10 +1,9 @@
 ﻿using Elektronik.Common.Data.PackageObjects;
-using System.Collections;
-using System.Collections.Generic;
+using Elektronik.Common.Clouds;
 
 namespace Elektronik.Common.Containers
 {
-    public interface ICloudObjectsContainer<T> : IContainer<T>
+    public interface ICloudObjectsContainer<T> : IContainer<T> where T: ICloudItem
     {
         bool Contains(int objId);
         bool TryGet(int idx, out T current);

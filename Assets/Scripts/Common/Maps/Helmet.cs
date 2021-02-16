@@ -1,16 +1,14 @@
-﻿using Elektronik.Common.Clouds;
-using Elektronik.Common.Containers;
+﻿using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
-using System;
 using System.Collections.Generic;
-using Elektronik.Common.Clouds.V2;
+using System.Linq;
 using UnityEngine;
 
 namespace Elektronik.Common.Maps
 {
     public class Helmet : MonoBehaviour
     {
-        private SlamLinesContainer Track { get; set; }
+        public SlamLinesContainer Track;
 
         public Color color = Color.red;
         public int id;
@@ -18,11 +16,6 @@ namespace Elektronik.Common.Maps
         Vector3 m_lastPosition;
         Vector3 m_currentPosition;
         int m_trackStep;
-
-        private void Awake()
-        {
-            Track = new SlamLinesContainer(GetComponentInChildren<FastLineCloudV2>());
-        }
 
         private void UnsafeResetHelmet()
         {
@@ -74,7 +67,7 @@ namespace Elektronik.Common.Maps
             MainThreadInvoker.Instance.Enqueue(UnsafeDecrementTrack);
 
         // Memento pattern
-        public IList<SlamLine> GetTrackState() => Track.GetAll();
+        public SlamLine[] GetTrackState() => Track.ToArray();
 
         public void RestoreTrackState(IList<SlamLine> track)
         {

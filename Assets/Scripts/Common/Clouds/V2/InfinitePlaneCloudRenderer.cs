@@ -1,11 +1,13 @@
-﻿using UnityEngine;
+﻿using Elektronik.Common.Data.PackageObjects;
+using UnityEngine;
 
 namespace Elektronik.Common.Clouds.V2
 {
-    public class InfinitePlaneCloudRenderer : CloudRenderer<CloudPlane, InfinitePlaneCloudBlock>
+    public class InfinitePlaneCloudRenderer : CloudRenderer<SlamInfinitePlane, InfinitePlaneCloudBlock>
     {
-        protected override void ProcessItem(InfinitePlaneCloudBlock block, CloudPlane item)
+        protected override void ProcessItem(InfinitePlaneCloudBlock block, SlamInfinitePlane item)
         {
+            var inBlockId = (item.Id % InfinitePlaneCloudBlock.Capacity);
             float halfSide = ItemSize / 2;
             var v1 = new Vector3(-halfSide, 0, -halfSide);
             var v2 = new Vector3(halfSide, 0, -halfSide);
@@ -27,7 +29,16 @@ namespace Elektronik.Common.Clouds.V2
             };
             for (int i = 0; i < 8; i++)
             {
-                block.Planes[item.Id * CloudBlock.Capacity + i] = new GPUItem(vertices[i], item.color);
+                block.Planes[inBlockId + i] = new GPUItem(vertices[i], item.color);
+            }
+        }
+
+        protected override void RemoveItem(InfinitePlaneCloudBlock block, int id)
+        {
+            var inBlockId = (id % InfinitePlaneCloudBlock.Capacity);
+            for (int i = 0; i < 8; i++)
+            {
+                block.Planes[inBlockId + i] = default;
             }
         }
     }

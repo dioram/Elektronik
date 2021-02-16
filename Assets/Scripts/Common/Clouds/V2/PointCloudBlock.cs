@@ -6,6 +6,21 @@ namespace Elektronik.Common.Clouds.V2
     public class PointCloudBlock : CloudBlock
     {
         public GPUItem[] Points;
+
+        public override void Clear()
+        {
+            ClearArray(Points);
+            base.Clear();
+        }
+
+        #region Unity events
+
+        private void OnDestroy()
+        {
+            _pointsBuffer.Release();
+        }
+
+        #endregion
         
         #region Protected definitions
 
@@ -19,12 +34,6 @@ namespace Elektronik.Common.Clouds.V2
         {
             renderMaterial.SetBuffer(_pointsBufferShaderProp, _pointsBuffer);
         }
-
-        protected override void Clear()
-        {
-            Points = Enumerable.Repeat(default(GPUItem), Capacity).ToArray();
-        }
-
         protected override void OnUpdated()
         {
             _pointsBuffer.SetData(Points);

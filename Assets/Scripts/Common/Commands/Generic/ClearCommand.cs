@@ -1,6 +1,6 @@
 ﻿using Elektronik.Common.Containers;
-using Elektronik.Common.Data.PackageObjects;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Elektronik.Common.Commands.Generic
 {
@@ -12,11 +12,11 @@ namespace Elektronik.Common.Commands.Generic
         public ClearCommand(IContainer<T> container)
         {
             m_container = container;
-            m_undoObjects = new ReadOnlyCollection<T>(m_container.GetAll());
+            m_undoObjects = new ReadOnlyCollection<T>(m_container.ToArray());
         }
 
         public virtual void Execute() => m_container.Clear();
 
-        public virtual void UnExecute() => m_container.Add(m_undoObjects);
+        public virtual void UnExecute() => m_container.AddRange(m_undoObjects);
     }
 }

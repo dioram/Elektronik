@@ -1,26 +1,21 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.Commands;
+﻿using Elektronik.Common.Commands;
 using Elektronik.Common.Commands.Generic;
 using Elektronik.Common.Containers;
-using Elektronik.Common.Data;
-using Elektronik.Common.Data.Converters;
-using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Data.Packages;
-using Elektronik.Common.Data.Packages.SlamActionPackages;
 using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Maps;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx.Async;
+using Elektronik.Common.Clouds;
 
 namespace Elektronik.Offline.Commanders
 {
     public class ObjectsCommander : Commander
     {
         public SlamMap map;
+        public SlamInfinitePlanesContainer InfinitePlanesContainer;
 
         private ICommand GetCommandForConnectableObjects<T>(IConnectableObjectsContainer<T> map_,
-            IEnumerable<T> objects, PacketPb packet)
+            IEnumerable<T> objects, PacketPb packet) where T: ICloudItem
         {
             switch (packet.Action)
             {
@@ -88,7 +83,7 @@ namespace Elektronik.Offline.Commanders
                     return GetCommandForConnectableObjects(map.Observations,
                         packet.ExtractObservations(m_converter).ToList(), packet);
                 case PacketPb.DataOneofCase.InfinitePlanes:
-                    return GetCommand(map.InfinitePlanes,
+                    return GetCommand(InfinitePlanesContainer,
                         packet.ExtractInfinitePlanes(m_converter).ToList(), packet);
                 default:
                     return null;

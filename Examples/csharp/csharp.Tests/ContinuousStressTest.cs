@@ -55,7 +55,7 @@ namespace csharp.Tests
         [Test]
         public void CycleTest()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < commands.Count() * 10; i++)
             {
                 var packet = new PacketPb()
                 {
@@ -75,11 +75,11 @@ namespace csharp.Tests
             }
         }
 
-        [Test]
+        [Test, Explicit]
         public void OverflowTest()
         {
             int i = 0;
-            int defaultPacketSize = 50000;
+            int defaultPacketSize = 20000;
             int resolution = 200;
             var rand = new Random();
             var center = new Vector3Pb {X = 0, Y = 0, Z = 0};
@@ -100,13 +100,13 @@ namespace csharp.Tests
             }
         }
 
-        [Test]
+        [Test, Explicit]
         public void SpreadedBlocksOverflowTest()
         {
             for (var index = 0; index < centers.Length; index++)
             {
                 var c = centers[index];
-                int packetSize = 65536;
+                int packetSize = 20000;
                 int resolution = 100;
                 var center = new Vector3Pb {X = c.X * resolution, Y = c.Y * resolution, Z = c.Z * resolution,};
                 for (int i = 0; i < 1024 * 1024; i += packetSize)
@@ -144,37 +144,37 @@ namespace csharp.Tests
 
             PointPb[] allPoints;
 
-            points.Add(CreatePoints(100000, center, resolution, out allPoints));
+            points.Add(CreatePoints(10000, center, resolution, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Add);
 
-            points.Add(AddPoints(100000, center, resolution, allPoints, out allPoints));
+            points.Add(AddPoints(10000, center, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Add);
 
-            points.Add(RemovePoints(60000, allPoints, out allPoints));
+            points.Add(RemovePoints(6000, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Remove);
 
-            points.Add(AddPoints(30000, center, resolution, allPoints, out allPoints));
+            points.Add(AddPoints(3000, center, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Add);
 
-            points.Add(UpdatePoints(80000, resolution, allPoints, out allPoints));
+            points.Add(UpdatePoints(8000, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Update);
 
-            points.Add(AddPoints(90000, center, resolution, allPoints, out allPoints));
+            points.Add(AddPoints(9000, center, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Add);
 
-            points.Add(RemovePoints(90000, allPoints, out allPoints));
+            points.Add(RemovePoints(9000, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Remove);
 
-            points.Add(AddPoints(90000, center, resolution, allPoints, out allPoints));
+            points.Add(AddPoints(9000, center, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Add);
 
-            points.Add(UpdatePoints(60000, resolution, allPoints, out allPoints));
+            points.Add(UpdatePoints(6000, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Update);
 
-            points.Add(UpdatePoints(20000, resolution, allPoints, out allPoints));
+            points.Add(UpdatePoints(2000, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Update);
 
-            points.Add(UpdatePoints(100000, resolution, allPoints, out allPoints));
+            points.Add(UpdatePoints(10000, resolution, allPoints, out allPoints));
             commands.Add(PacketPb.Types.ActionType.Update);
 
             points.Add(Clear());

@@ -3,13 +3,10 @@ using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Pb;
 using Grpc.Core;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace Elektronik.Online.GrpcServices
 {
@@ -59,10 +56,10 @@ namespace Elektronik.Online.GrpcServices
                     switch (action)
                     {
                         case PacketPb.Types.ActionType.Add:
-                            m_map.Add(readOnlyData);
+                            m_map.AddRange(readOnlyData);
                             break;
                         case PacketPb.Types.ActionType.Update:
-                            m_map.Update(readOnlyData);
+                            m_map.UpdateItems(readOnlyData);
                             break;
                         case PacketPb.Types.ActionType.Remove:
                             m_map.Remove(readOnlyData);

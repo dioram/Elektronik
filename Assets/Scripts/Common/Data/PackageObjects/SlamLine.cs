@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEditor;
+using Elektronik.Common.Clouds;
 
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public struct SlamLine : IEquatable<SlamLine>, IComparable<SlamLine>
+    public struct SlamLine : IEquatable<SlamLine>, IComparable<SlamLine>, ICloudItem
     {
         private readonly ulong m_id;
         public SlamPoint pt1;
@@ -23,6 +18,7 @@ namespace Elektronik.Common.Data.PackageObjects
                 m_id = ((ulong)id1 << sizeof(int) * 8) + (ulong)id2;
             else
                 m_id = ((ulong)id2 << sizeof(int) * 8) + (ulong)id1;
+            Id = 0;
         }
 
         public SlamLine(SlamPoint pt1, SlamPoint pt2)
@@ -33,10 +29,13 @@ namespace Elektronik.Common.Data.PackageObjects
                 m_id = ((ulong)pt1.id << sizeof(int) * 8) + (ulong)pt2.id;
             else
                 m_id = ((ulong)pt2.id << sizeof(int) * 8) + (ulong)pt1.id;
+            Id = 0;
         }
 
         public int CompareTo(SlamLine other) => m_id.CompareTo(other.m_id);
 
         public bool Equals(SlamLine other) => m_id == other.m_id;
+
+        public int Id { get; set; }
     }
 }

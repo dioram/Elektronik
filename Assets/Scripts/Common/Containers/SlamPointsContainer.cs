@@ -1,138 +1,161 @@
-﻿using Elektronik.Common.Clouds;
-using Elektronik.Common.Data.PackageObjects;
+﻿using Elektronik.Common.Data.PackageObjects;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Elektronik.Common.Clouds.V2;
 using UnityEngine;
-using CloudPoint = Elektronik.Common.Clouds.CloudPoint;
 
 namespace Elektronik.Common.Containers
 {
-    public class SlamPointsContainer : ICloudObjectsContainer<SlamPoint>
+    public class SlamPointsContainer : MonoBehaviour, ICloudObjectsContainer<SlamPoint>
     {
-        private readonly BatchedDictionary<SlamPoint> m_points;
-        private readonly FastPointCloudV2 m_pointsCloud;
-
-        public int Count => m_points.Count;
-
-        public bool IsReadOnly => false;
-
-        public SlamPointsContainer(FastPointCloudV2 cloud)
+        public PointCloudRenderer Renderer;
+        
+        public SlamPoint this[int id]
         {
-            m_points = new BatchedDictionary<SlamPoint>();
-            m_pointsCloud = cloud;
-        }
-
-        public void Add(SlamPoint point)
-        {
-            m_pointsCloud.Add(new CloudPoint(point.id, point.position, point.color));
-            m_points.Add(point.id, point);
-        }
-
-        public void Add(IEnumerable<SlamPoint> points)
-        {
-            foreach (var pt in points)
-                m_points[pt.id] = pt;
-            m_pointsCloud.AddRange(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
-        }
-
-        public void Update(SlamPoint point)
-        {
-            SlamPoint currentPoint = m_points[point.id];
-            currentPoint.position = point.position;
-            currentPoint.color = point.color;
-            m_points[point.id] = currentPoint;
-            m_pointsCloud.UpdateItem(new CloudPoint(point.id, point.position, point.color));
-        }
-
-        public void Update(IEnumerable<SlamPoint> points)
-        {
-            foreach (var pt in points)
+            get => _points[id];
+            set
             {
-                SlamPoint currentPoint = m_points[pt.id];
-                currentPoint.position = pt.position;
-                currentPoint.color = pt.color;
-                m_points[pt.id] = currentPoint;
+                if (!TryGet(id, out _)) Add(value); else UpdateItem(value);
             }
-            m_pointsCloud.UpdateItems(points.Select(p => new CloudPoint(p.id, p.position, p.color)));
         }
 
-        public bool Remove(int pointId)
+        #region Unity events
+
+        private void Start()
         {
-            m_pointsCloud.RemoveAt(pointId);
-            return m_points.Remove(pointId);
+            if (Renderer == null)
+            {
+                Debug.LogWarning($"No renderer set for {name}({GetType()})");
+            }
+            else
+            {
+                ItemsAdded += Renderer.OnItemsAdded;
+                ItemsUpdated += Renderer.OnItemsUpdated;
+                ItemsRemoved += Renderer.OnItemsRemoved;
+                ItemsCleared += Renderer.OnItemsCleared;
+            }
         }
 
-        public void RemoveAt(int pointId) => Remove(pointId);
+        #endregion
 
-        public bool Remove(SlamPoint point) => Remove(point.id);
+        #region IContainer implementation
 
-        public void Remove(IEnumerable<SlamPoint> points)
-        {
-            foreach (var pt in points)
-                m_points.Remove(pt.id);
-            m_pointsCloud.RemoveAt(points.Select(p => p.id));
-        }
+        public event Action<IEnumerable<SlamPoint>> ItemsAdded;
+        public event Action<IEnumerable<SlamPoint>> ItemsUpdated;
+        public event Action<IEnumerable<int>> ItemsRemoved;
+        public event Action ItemsCleared;
+        
+        public IEnumerator<SlamPoint> GetEnumerator() => _points.Select(kv => kv.Value).GetEnumerator();
 
-        public void Clear()
-        {
-            m_points.Clear();
-            m_pointsCloud.Clear();
-        }
-
-        public IList<SlamPoint> GetAll() => m_points.Values.ToList();
+        IEnumerator IEnumerable.GetEnumerator() => _points.Select(kv => kv.Value).GetEnumerator();
 
         public SlamPoint this[SlamPoint obj]
         {
             get => this[obj.id];
             set => this[obj.id] = value;
         }
+        
+        public int Count => _points.Count;
 
-        public SlamPoint this[int id]
-        {
-            get => m_points[id];
-            set
-            {
-                if (!TryGet(id, out _)) Add(value); else Update(value);
-            }
-        }
-
-        public bool Contains(int pointId) => m_points.ContainsKey(pointId);
+        public bool IsReadOnly => false;
+        
+        public void CopyTo(SlamPoint[] array, int arrayIndex) => _points.Values.CopyTo(array, arrayIndex);
+        
+        public int IndexOf(SlamPoint item) => item.id;
 
         public bool Contains(SlamPoint point) => Contains(point.id);
+        
+        public bool TryGet(SlamPoint point, out SlamPoint current) => TryGet(point.id, out current);
+        
+        public void Add(SlamPoint point)
+        {
+            _points.Add(point.id, point);
+            ItemsAdded?.Invoke(new []{point});
+        }
+
+        public void AddRange(IEnumerable<SlamPoint> points)
+        {
+            foreach (var pt in points)
+                _points.Add(pt.id, pt);
+            ItemsAdded?.Invoke(points);
+        }
+        
+        public void Insert(int index, SlamPoint item) => Add(item);
+
+        public void UpdateItem(SlamPoint point)
+        {
+            SlamPoint currentPoint = _points[point.id];
+            currentPoint.position = point.position;
+            currentPoint.color = point.color;
+            _points[point.id] = currentPoint;
+            ItemsUpdated?.Invoke(new []{point});
+        }
+
+        public void UpdateItems(IEnumerable<SlamPoint> points)
+        {
+            foreach (var pt in points)
+            {
+                SlamPoint currentPoint = _points[pt.id];
+                currentPoint.position = pt.position;
+                currentPoint.color = pt.color;
+                _points[pt.id] = currentPoint;
+            }
+            ItemsUpdated?.Invoke(points);
+        }
+
+        public void RemoveAt(int pointId)
+        {
+            _points.Remove(pointId);
+            ItemsRemoved?.Invoke(new []{pointId});
+        }
+
+        public bool Remove(SlamPoint point)
+        {
+            var res = _points.Remove(point.id);
+            ItemsRemoved?.Invoke(new []{point.id});
+            return res;
+        }
+
+        public void Remove(IEnumerable<SlamPoint> points)
+        {
+            foreach (var pt in points)
+                _points.Remove(pt.id);
+            ItemsRemoved?.Invoke(points.Select(p => p.id));
+        }
+        
+        public void Clear()
+        {
+            _points.Clear();
+           ItemsCleared?.Invoke();
+        }
+
+        #endregion
+
+        #region ICloudObjectsContainer implementation
+        
+        public bool Contains(int pointId) => _points.ContainsKey(pointId);
 
         public bool TryGet(int idx, out SlamPoint current)
         {
             current = new SlamPoint();
-            if (Contains(idx))
-            {
-                current = this[idx];
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            if (!Contains(idx)) return false;
+            current = this[idx];
+            return true;
+
         }
-
-        public bool TryGet(SlamPoint point, out SlamPoint current) => TryGet(point.id, out current);
-
-        public IEnumerator<SlamPoint> GetEnumerator() => m_points.Select(kv => kv.Value).GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => m_points.Select(kv => kv.Value).GetEnumerator();
 
         public bool TryGetAsPoint(SlamPoint obj, out SlamPoint point) => TryGet(obj, out point);
 
         public bool TryGetAsPoint(int idx, out SlamPoint point) => TryGet(idx, out point);
 
-        public int IndexOf(SlamPoint item) => item.id;
+        #endregion
 
-        public void Insert(int index, SlamPoint item) => Add(item);
+        #region Private definitions
+        
+        private readonly BatchedDictionary<SlamPoint> _points = new BatchedDictionary<SlamPoint>();
 
-        public void CopyTo(SlamPoint[] array, int arrayIndex)
-            => m_points.Values.CopyTo(array, arrayIndex);
+        #endregion
     }
 }

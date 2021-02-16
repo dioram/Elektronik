@@ -1,13 +1,11 @@
 ﻿using Elektronik.Common.Containers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Elektronik.Common.Clouds;
 
 namespace Elektronik.Common.Commands.Generic
 {
-    public class RemoveConnectionsCommand<T> : ICommand
+    public class RemoveConnectionsCommand<T> : ICommand where T: ICloudItem
     {
         IList<(int, int)> m_connections;
         IConnectableObjectsContainer<T> m_container;

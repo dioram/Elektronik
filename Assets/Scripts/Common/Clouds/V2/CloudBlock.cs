@@ -1,15 +1,19 @@
-﻿using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Elektronik.Common.Clouds.V2
 {
     public abstract class CloudBlock : MonoBehaviour
     {
-        public const int Capacity = 1024 * 1024;
+        public const int Capacity = 256 * 256;
         public Shader CloudShader;
         public bool Updated;
         public bool ToClear;
         public float ItemSize = 1f;
+
+        public virtual void Clear()
+        {
+            Updated = true;
+        }
         
         #region Unity events
 
@@ -27,13 +31,6 @@ namespace Elektronik.Common.Clouds.V2
 
         protected virtual void Update()
         {
-            if (ToClear)
-            {
-                Clear();
-                ToClear = false;
-                Updated = true;
-            }
-            
             if (!Updated) return;
             
             OnUpdated();
@@ -57,12 +54,18 @@ namespace Elektronik.Common.Clouds.V2
 
         protected abstract void SendData(Material renderMaterial);
 
-        protected abstract void Clear();
-
 
         protected abstract void OnUpdated();
 
         protected abstract void Draw();
+
+        protected void ClearArray(GPUItem[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] = default;
+            }
+        }
 
         #endregion
 

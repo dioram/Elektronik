@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Elektronik.Common.Clouds.V2
 {
     public abstract class CloudRenderer<TCloudItem, TCloudBlock>
             : MonoBehaviour
-            where TCloudItem : Clouds.ICloudItem, new()
+            where TCloudItem : ICloudItem, new()
             where TCloudBlock : CloudBlock
     {
-        public FastCloud<TCloudItem> Container;
         public Shader CloudShader;
 
         public float ItemSize;
@@ -17,10 +17,6 @@ namespace Elektronik.Common.Clouds.V2
 
         private void Start()
         {
-            Container.ItemsAdded += OnItemsAdded;
-            Container.ItemsUpdated += OnItemsUpdated;
-            Container.ItemsRemoved += OnItemsRemoved;
-            Container.ItemsCleared += OnItemsCleared;
             _needNewBlock = true;
         }
 
@@ -28,7 +24,7 @@ namespace Elektronik.Common.Clouds.V2
         {
             if (_needNewBlock)
             {
-                var go = new GameObject($"Item cloud block {_blocks.Count}");
+                var go = new GameObject($"{GetType().ToString().Split('.').Last()} {_blocks.Count}");
                 go.transform.SetParent(transform);
                 var block = go.AddComponent<TCloudBlock>();
                 block.CloudShader = CloudShader;
@@ -47,9 +43,9 @@ namespace Elektronik.Common.Clouds.V2
 
         #region Container changes handlers
 
-        private void OnItemsAdded(IEnumerable<TCloudItem> items)
+        public void OnItemsAdded(IEnumerable<TCloudItem> items)
         {
-            if (Container.Count > (_blocks.Count - 1) * CloudBlock.Capacity)
+            if (AmountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
             {
                 _needNewBlock = true;
             }
@@ -60,9 +56,11 @@ namespace Elektronik.Common.Clouds.V2
                 ProcessItem(_blocks[layer], item);
                 _blocks[layer].Updated = true;
             }
+
+            AmountOfItems += items.Count();
         }
 
-        private void OnItemsUpdated(IEnumerable<TCloudItem> items)
+        public void OnItemsUpdated(IEnumerable<TCloudItem> items)
         {
             foreach (var item in items)
             {
@@ -72,22 +70,26 @@ namespace Elektronik.Common.Clouds.V2
             }
         }
 
-        private void OnItemsRemoved(IEnumerable<int> removedItemsIds)
+        public void OnItemsRemoved(IEnumerable<int> removedItemsIds)
         {
             foreach (var itemId in removedItemsIds)
             {
                 int layer = itemId / CloudBlock.Capacity;
-                ProcessItem(_blocks[layer], new TCloudItem {Id = itemId});
+                RemoveItem(_blocks[layer], itemId);
                 _blocks[layer].Updated = true;
             }
+
+            AmountOfItems -= removedItemsIds.Count();
         }
 
-        private void OnItemsCleared()
+        public void OnItemsCleared()
         {
             foreach (var block in _blocks)
             {
-                block.ToClear = true;
+                block.Clear();
             }
+
+            AmountOfItems = 0;
         }
 
         #endregion
@@ -96,12 +98,15 @@ namespace Elektronik.Common.Clouds.V2
 
         protected abstract void ProcessItem(TCloudBlock block, TCloudItem item);
 
+        protected abstract void RemoveItem(TCloudBlock block, int id);
+
         #endregion
 
         #region Private definitions
 
         private readonly List<TCloudBlock> _blocks = new List<TCloudBlock>();
         private bool _needNewBlock;
+        private int AmountOfItems;
 
         #endregion
     }

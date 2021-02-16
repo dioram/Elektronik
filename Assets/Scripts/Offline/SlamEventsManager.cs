@@ -81,10 +81,10 @@ namespace Elektronik.Offline
                 return;
             int maxLength = GetLength();
             Debug.AssertFormat(pos >= 0 && pos < maxLength, "[SlamEventsManger.SetPosition] out of range pos == {0}, but range is [0,{1})", pos, maxLength);
-            StartCoroutine(MoveToPostion(pos, whenPositionWasSet));
+            StartCoroutine(MoveToPosition(pos, whenPositionWasSet));
         }
 
-        private IEnumerator MoveToPostion(int pos, Action whenPositionWasSet)
+        private IEnumerator MoveToPosition(int pos, Action whenPositionWasSet)
         {
             ReadyToPlay = false;
             while (m_position != pos)
@@ -186,6 +186,9 @@ namespace Elektronik.Offline
 
         private IEnumerator ProcessEvents()
         {
+            // Let other objects initialize
+            yield return new WaitForSeconds(0.5f);
+            
             ElektronikLogger.OpenLog();
             Application.logMessageReceived += ElektronikLogger.Log;
             Debug.Log("Parsing file...");
@@ -202,7 +205,7 @@ namespace Elektronik.Offline
                     }
                     catch (Exception e)
                     {
-                        Debug.LogWarning(e.Message);
+                        Debug.LogError(e.Message);
                         break;
                     }
                     foreach (var command in commands)

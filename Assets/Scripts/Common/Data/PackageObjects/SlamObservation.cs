@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Elektronik.Common.Clouds;
+using UnityEngine;
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public struct SlamObservation
+    public struct SlamObservation : ICloudItem
     {
         public struct Stats
         {
@@ -30,5 +31,11 @@ namespace Elektronik.Common.Data.PackageObjects
         public static implicit operator SlamPoint(SlamObservation obs) => obs.point;
 
         public override string ToString() => point.message ?? "SlamObservation";
+
+        public int Id
+        {
+            get => point.id;
+            set => point.id = value;
+        }
     }
 }
