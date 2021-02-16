@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Common.Containers;
+using Elektronik.Common.Data.PackageObjects;
 using UnityEngine;
 
-namespace Elektronik.Common.Clouds.V2
+namespace Elektronik.Common.Clouds
 {
     public abstract class CloudRenderer<TCloudItem, TCloudBlock>
             : MonoBehaviour

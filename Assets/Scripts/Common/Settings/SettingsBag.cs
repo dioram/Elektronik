@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace Elektronik.Common.Settings
@@ -35,7 +36,7 @@ namespace Elektronik.Common.Settings
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("ModificationTime", ModificationTime.ToString());
+            info.AddValue("ModificationTime", ModificationTime.ToString(CultureInfo.CurrentCulture));
             info.AddValue("UniqueId", UniqueId);
             info.AddValue("Settings", m_settings);
         }

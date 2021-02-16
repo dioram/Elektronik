@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Globalization;
+using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using System.Linq;
@@ -78,7 +79,7 @@ namespace Elektronik.Offline.Settings
             SettingsBag.Current = store.Recent[e.index];
             filePathField.text = SettingsBag.Current[SettingName.FilePath].As<string>();
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
-            scalingField.text = SettingsBag.Current[SettingName.Scale].As<float>().ToString();
+            scalingField.text = SettingsBag.Current[SettingName.Scale].As<float>().ToString(CultureInfo.CurrentCulture);
         }
 
         private void RecentImageChanged(object sender, UIListBox.SelectionChangedEventArgs e)
@@ -101,7 +102,7 @@ namespace Elektronik.Offline.Settings
             buLoad.OnClickAsObservable()
                 .Select(_ =>
                 {
-                    if (SettingsBag.Current.TryGetValue(SettingName.FilePath, out Setting pathSetting))
+                    if (SettingsBag.Current.TryGetValue(SettingName.FilePath, out Setting _))
                     {
                         var currentFilePath = SettingsBag.Current[SettingName.FilePath].As<string>();
                         var currentImagePath = SettingsBag.Current[SettingName.ImagePath].As<string>();

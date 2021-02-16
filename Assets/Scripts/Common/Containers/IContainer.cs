@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Elektronik.Common.Containers
 {
-    public interface IContainer<T> : IList<T>
+    public interface IContainer<T> : IList<T>, IClearable
     {
         public event Action<IContainer<T>, IEnumerable<T>> ItemsAdded;
         public event Action<IContainer<T>, IEnumerable<T>> ItemsUpdated;
@@ -15,5 +15,6 @@ namespace Elektronik.Common.Containers
         bool TryGet(T obj, out T current);
         void UpdateItem(T obj);
         void UpdateItems(IEnumerable<T> objs);
+        new void Clear();
     }
 }

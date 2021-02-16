@@ -1,7 +1,7 @@
 ﻿using Elektronik.Common.Data.PackageObjects;
 using UnityEngine;
 
-namespace Elektronik.Common.Clouds.V2
+namespace Elektronik.Common.Clouds
 {
     public struct GPUItem
     {

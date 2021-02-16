@@ -1,5 +1,4 @@
-﻿using Elektronik.Common.Data.Packages;
-using Elektronik.Common.UI;
+﻿using Elektronik.Common.UI;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -13,9 +12,7 @@ namespace Elektronik.Offline.UI
 
         public UITimelineSlider timelineSlider;
         public Text timelineLabel;
-
         public SlamEventsManager eventsManager;
-
 
         private void Start()
         {

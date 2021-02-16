@@ -6,6 +6,11 @@ namespace Elektronik.Common.Settings
     {
         public float lengthOfAxis = 0.05f;
         static Material lineMaterial;
+        private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
+        private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
+        private static readonly int Cull = Shader.PropertyToID("_Cull");
+        private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
+
         static void CreateLineMaterial()
         {
             if (!lineMaterial)
@@ -16,12 +21,12 @@ namespace Elektronik.Common.Settings
                 lineMaterial = new Material(shader);
                 lineMaterial.hideFlags = HideFlags.HideAndDontSave;
                 // Turn on alpha blending
-                lineMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                lineMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                lineMaterial.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                lineMaterial.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                 // Turn backface culling off
-                lineMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+                lineMaterial.SetInt(Cull, (int)UnityEngine.Rendering.CullMode.Off);
                 // Turn off depth writes
-                lineMaterial.SetInt("_ZWrite", 0);
+                lineMaterial.SetInt(ZWrite, 0);
             }
         }
 

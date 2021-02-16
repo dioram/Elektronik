@@ -1,22 +1,20 @@
 ﻿using Elektronik.Common.Data.Pb;
-using Elektronik.Common.Maps;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Elektronik.Common.Containers;
+using UnityEngine;
 
 namespace Elektronik.Online.GrpcServices
 {
     public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {
-        SlamMap m_map;
+        private GameObject _containers;
 
-        public SceneManager(SlamMap slamMap)
+        public SceneManager(GameObject containers)
         {
-            m_map = slamMap;
+            _containers = containers;
         }
 
         public override Task<ErrorStatusPb> Clear(Empty request, ServerCallContext context)
@@ -27,7 +25,10 @@ namespace Elektronik.Online.GrpcServices
             };
             try
             {
-                m_map.Clear();
+                foreach (var container in _containers.GetComponentsInChildren<IClearable>())
+                {
+                    container.Clear();
+                }
             }
             catch(Exception e)
             {

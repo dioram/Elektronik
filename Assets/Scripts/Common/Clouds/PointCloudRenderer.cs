@@ -1,6 +1,6 @@
 ﻿using Elektronik.Common.Data.PackageObjects;
 
-namespace Elektronik.Common.Clouds.V2
+namespace Elektronik.Common.Clouds
 {
     public class PointCloudRenderer : CloudRenderer<SlamPoint, PointCloudBlock>
     {

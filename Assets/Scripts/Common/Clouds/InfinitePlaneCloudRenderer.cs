@@ -1,7 +1,7 @@
 ﻿using Elektronik.Common.Data.PackageObjects;
 using UnityEngine;
 
-namespace Elektronik.Common.Clouds.V2
+namespace Elektronik.Common.Clouds
 {
     public class InfinitePlaneCloudRenderer : CloudRenderer<SlamInfinitePlane, InfinitePlaneCloudBlock>
     {
@@ -28,7 +28,7 @@ namespace Elektronik.Common.Clouds.V2
             };
             for (int i = 0; i < 8; i++)
             {
-                block.Planes[inBlockId + i] = new GPUItem(vertices[i], item.color);
+                block.Planes[inBlockId * 8 + i] = new GPUItem(vertices[i], item.color);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Elektronik.Common.Clouds.V2
         {
             for (int i = 0; i < 8; i++)
             {
-                block.Planes[inBlockId + i] = default;
+                block.Planes[inBlockId * 8 + i] = default;
             }
         }
     }

@@ -3,7 +3,7 @@ using Elektronik.Common.Data.Pb;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Elektronik.Common.Clouds;
+using Elektronik.Common.Data.PackageObjects;
 
 namespace Elektronik.Online.GrpcServices
 {
@@ -27,13 +27,13 @@ namespace Elektronik.Online.GrpcServices
 
             if (request.Connections != null && request.Connections.Data.Count != 0)
             {
-                var connections_ = request.Connections.Data.Select(c => (c.Id1, c.Id2));
+                var connections = request.Connections.Data.Select(c => (c.Id1, c.Id2));
                 try
                 {
                     if (request.Connections.Action == PacketPb.Types.Connections.Types.Action.Add)
-                        m_map.AddConnections(connections_);
+                        m_map.AddConnections(connections);
                     if (request.Connections.Action == PacketPb.Types.Connections.Types.Action.Remove)
-                        m_map.RemoveConnections(connections_);
+                        m_map.RemoveConnections(connections);
                 }
                 catch (Exception e)
                 {

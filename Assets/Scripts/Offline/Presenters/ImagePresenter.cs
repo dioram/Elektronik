@@ -4,7 +4,6 @@ using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Presenters;
 using Elektronik.Common.Settings;
 using Elektronik.Offline.Settings;
-using UnityEngine;
 
 namespace Elektronik.Offline.Presenters
 {
@@ -19,7 +18,7 @@ namespace Elektronik.Offline.Presenters
             if (!File.Exists(fullPath)) return;
             
             m_currentImage = File.ReadAllBytes(fullPath);
-            m_successor?.Present(package);
+            if (m_successor != null) m_successor.Present(package);
         }
 
         public override void Repaint()

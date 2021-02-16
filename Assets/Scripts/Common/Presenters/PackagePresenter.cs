@@ -1,5 +1,4 @@
-﻿using Elektronik.Common.Data.Packages;
-using Elektronik.Common.Data.Pb;
+﻿using Elektronik.Common.Data.Pb;
 using UnityEngine;
 
 namespace Elektronik.Common.Presenters

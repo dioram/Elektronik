@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Common.Clouds;
-using Elektronik.Common.Clouds.V2;
 using Elektronik.Common.Data.PackageObjects;
 using UnityEngine;
 
@@ -157,7 +156,6 @@ namespace Elektronik.Common.Containers
 
         public void UpdateItem(SlamInfinitePlane obj)
         {
-            var p = new CloudPlane(obj.id, obj.offset, obj.normal, obj.color);
             _planes[obj.id] = obj;
             ItemsUpdated?.Invoke(this, new []{obj});
         }
@@ -166,7 +164,6 @@ namespace Elektronik.Common.Containers
         {
             foreach (var plane in objs)
             {
-                var p = new CloudPlane(plane.id, plane.offset, plane.normal, plane.color);
                 _planes[plane.id] = plane;
             }
             ItemsUpdated?.Invoke(this, objs);

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-namespace Elektronik.Common.Clouds.V2
+namespace Elektronik.Common.Clouds
 {
     public class PointCloudBlock : CloudBlock
     {
@@ -41,7 +41,7 @@ namespace Elektronik.Common.Clouds.V2
 
         protected override void Draw()
         {
-            Graphics.DrawProceduralNow(MeshTopology.Points, _pointsBuffer.count, 1);
+            Graphics.DrawProceduralNow(MeshTopology.Points, _pointsBuffer.count);
         }
 
         #endregion

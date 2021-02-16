@@ -39,6 +39,7 @@ namespace Common.UI
             m_message.text = observation.message;
 
             if (currentFileName == observation.fileName) return;
+            currentFileName = observation.fileName;
             var path = SettingsBag.Mode == Mode.Online
                     ? Directory.GetCurrentDirectory()
                     : SettingsBag.Current[SettingName.ImagePath].As<string>();

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Elektronik.Common.Clouds.V2
+namespace Elektronik.Common.Clouds
 {
     public abstract class CloudBlock : MonoBehaviour
     {

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-namespace Elektronik.Common.Clouds.V2
+namespace Elektronik.Common.Clouds
 {
     public class LineCloudBlock : CloudBlock
     {
@@ -40,7 +40,7 @@ namespace Elektronik.Common.Clouds.V2
 
         protected override void Draw()
         {
-            Graphics.DrawProceduralNow(MeshTopology.Lines, _pointsBuffer.count, 1);
+            Graphics.DrawProceduralNow(MeshTopology.Lines, _pointsBuffer.count);
         }
 
         #region Private definitions

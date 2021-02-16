@@ -1,4 +1,4 @@
-﻿namespace Elektronik.Common.Clouds
+﻿namespace Elektronik.Common.Data.PackageObjects
 {
     public interface ICloudItem
     {

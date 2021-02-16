@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-namespace Elektronik.Common.Clouds.V2
+namespace Elektronik.Common.Clouds
 {
     public class InfinitePlaneCloudBlock : CloudBlock
     {
@@ -42,7 +42,7 @@ namespace Elektronik.Common.Clouds.V2
 
         protected override void Draw()
         {
-            Graphics.DrawProceduralNow(MeshTopology.Quads, _vertsBuffer.count, 1);
+            Graphics.DrawProceduralNow(MeshTopology.Quads, _vertsBuffer.count);
         }
 
         #endregion

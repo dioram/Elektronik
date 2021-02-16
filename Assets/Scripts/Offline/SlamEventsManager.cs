@@ -1,5 +1,4 @@
-﻿using Elektronik.Common.Maps;
-using Elektronik.Common.Presenters;
+﻿using Elektronik.Common.Presenters;
 using Elektronik.Common.Extensions;
 using Elektronik.Common.Commands;
 using Elektronik.Common.Loggers;
@@ -11,6 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Elektronik.Common.Data.Pb;
 using System.IO;
+using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Converters;
 
 namespace Elektronik.Offline
@@ -20,8 +20,8 @@ namespace Elektronik.Offline
         public bool ReadyToPlay { get; private set; }
         public Commander[] commanders;
         public RepaintablePackagePresenter[] presenters;
-        public SlamMap map;
         public CSConverter converter;
+        public GameObject Containers;
 
         private Commander m_commander;
         private PackagePresenter m_presenter;
@@ -30,7 +30,6 @@ namespace Elektronik.Offline
         private LinkedList<ICommand> m_commands;
         private Dictionary<ICommand, PacketPb> m_extendedEvents;
         private int m_position = 0;
-        
 
         private void Awake()
         {
@@ -53,7 +52,10 @@ namespace Elektronik.Offline
 
         public void Clear()
         {
-            map.Clear();
+            foreach (var container in Containers.GetComponentsInChildren<IClearable>())
+            {
+                container.Clear();
+            }
             foreach (var presenter in presenters)
                 presenter.Clear();
             m_position = 0;
@@ -153,6 +155,7 @@ namespace Elektronik.Offline
             bool isKey = false;
             while (!isKey && command != null)
             {
+                // ReSharper disable once AssignmentInConditionalExpression
                 if (isKey = m_extendedEvents[command.Value].Special)
                 {
                     break;
@@ -194,7 +197,6 @@ namespace Elektronik.Offline
             Debug.Log("Parsing file...");
             using (var input = File.OpenRead(SettingsBag.Current[SettingName.FilePath].As<string>()))
             {
-                int i = 0;
                 var commands = new LinkedList<ICommand>();
                 while (input.Position != input.Length)
                 {
@@ -211,7 +213,6 @@ namespace Elektronik.Offline
                     foreach (var command in commands)
                         m_extendedEvents[command] = packet;
                     m_commands.MoveFrom(commands);
-                    ++i;
                     yield return null;
                 }
             }

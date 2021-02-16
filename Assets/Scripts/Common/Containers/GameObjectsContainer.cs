@@ -52,11 +52,6 @@ namespace Elektronik.Common.Containers
             set => this[GetObjectId(obj)] = value;
         }
         
-        /// <summary>
-        /// Get clone of node or Set obj with same id as argument id
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns>Clone of SlamObservation from graph</returns>
         public T this[int id]
         {
             get => Objects[id];
@@ -93,11 +88,6 @@ namespace Elektronik.Common.Containers
 
         public void CopyTo(T[] array, int arrayIndex) => Objects.Values.CopyTo(array, arrayIndex);
 
-        /// <summary>
-        /// Check node existence by SlamObservation object
-        /// </summary>
-        /// <param name="objId"></param>
-        /// <returns>true if exists, otherwise false</returns>
         public bool Contains(T obj) => Contains(GetObjectId(obj));
         
         /// <summary>

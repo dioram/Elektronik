@@ -3,7 +3,6 @@ using Elektronik.Online.GrpcServices;
 using Grpc.Core;
 using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Extensions;
-using Elektronik.Common.Maps;
 using Elektronik.Common;
 using Elektronik.Online.Settings;
 using Elektronik.Common.Settings;
@@ -21,7 +20,6 @@ namespace Elektronik.Online
     public partial class Server : MonoBehaviour
     {
         public Text status;
-        public SlamMap slamMaps;
         public CSConverter converter;
         public CameraImageRenderer imageRenderTarget;
         public SlamInfinitePlanesContainer InfinitePlanesContainer;
@@ -29,7 +27,16 @@ namespace Elektronik.Online
         public ConnectableObjectsContainer<SlamObservation> ConnectableObservationsContainer;
         public ConnectableTrackedObjsContainer ConnectableTrackedObjsContainer;
         public SlamLinesContainer LinesContainer;
+        public GameObject Containers;
 
+        public void ClearAll()
+        {
+            foreach (var container in Containers.GetComponentsInChildren<IClearable>())
+            {
+                container.Clear();
+            }
+        }
+        
         GrpcServer m_server;
         bool m_serverStarted = false;
 
@@ -59,7 +66,7 @@ namespace Elektronik.Online
                 Services = 
                 { 
                     MapsManagerPb.BindService(servicesChain), 
-                    SceneManagerPb.BindService(new SceneManager(slamMaps)),
+                    SceneManagerPb.BindService(new SceneManager(Containers)),
                     ImageManagerPb.BindService(new ImageManager(imageRenderTarget))
                 },
                 Ports =

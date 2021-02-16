@@ -40,8 +40,8 @@ namespace Elektronik.Offline.Presenters
             {
                 m_objects = pkg2pts(m_packet).ToArray();
             }
-            m_successor?.Present(packet);
-            return;
+
+            if (m_successor != null) m_successor.Present(packet);
         }
         public override void Clear() => info.Clear();
         public override void Repaint()
