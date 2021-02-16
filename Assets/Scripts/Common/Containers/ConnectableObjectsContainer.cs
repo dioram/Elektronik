@@ -25,6 +25,11 @@ namespace Elektronik.Common.Containers
             }
         }
 
+        private void OnDestroy()
+        {
+            Clear();
+        }
+
         #endregion
         
         #region IContainer implementation

@@ -8,27 +8,27 @@ namespace Elektronik.Common.Maps
 {
     public class SlamMap : MonoBehaviour
     {
-        public Helmet helmetPrefab;
+        // public Helmet helmetPrefab;
 
-        public GameObject observationPrefab;
+        // public GameObject observationPrefab;
         // public FastLineCloudV2 pointsConnectionsCloud;
         // public FastLineCloudV2 observationsConnectionsCloud;
-        public FastLineCloudV2 trackedObjsConnectionsCloud;
-        public FastLineCloudV2 linesCloud;
+        // public FastLineCloudV2 trackedObjsConnectionsCloud;
+        // public FastLineCloudV2 linesCloud;
 
         // public SlamPointsContainer PointsContainer;
         // public SlamLinesContainer PointsConnections;
         // public SlamLinesContainer ObservationConnections;
-        public SlamLinesContainer TrackedObjsConnections;
+        // public SlamLinesContainer TrackedObjsConnections;
 
         // public IConnectableObjectsContainer<SlamPoint> Points { get; private set; }
         // public GameObjectsContainer<SlamObservation> ObservationsGO { get; private set; }
-        public GameObjectsContainer<SlamTrackedObject> TrackedObjsGO { get; private set; }
+        // public GameObjectsContainer<SlamTrackedObject> TrackedObjsGO { get; private set; }
 
         // public IConnectableObjectsContainer<SlamObservation> Observations { get; private set; }
-        public IConnectableObjectsContainer<SlamTrackedObject> TrackedObjs { get; private set; }
+        // public IConnectableObjectsContainer<SlamTrackedObject> TrackedObjs { get; private set; }
 
-        public ILinesContainer<SlamLine> Lines { get; private set; }
+        // public ILinesContainer<SlamLine> Lines { get; private set; }
 
         private void Awake()
         {

@@ -2,6 +2,7 @@
 using Elektronik.Common.Data.PackageObjects;
 using System.Collections.Generic;
 using System.Linq;
+using Elektronik.Common.Clouds.V2;
 using UnityEngine;
 
 namespace Elektronik.Common.Maps
@@ -16,6 +17,24 @@ namespace Elektronik.Common.Maps
         Vector3 m_lastPosition;
         Vector3 m_currentPosition;
         int m_trackStep;
+
+        private void Awake()
+        {
+            Track.Renderer = LineCloudRenderer.StaticRenderer;
+        }
+
+        private void OnEnable()
+        {
+            m_trackStep = 0;
+            m_lastPosition = transform.position;
+            m_currentPosition = transform.position;
+            Track.Clear();
+        }
+
+        private void OnDisable()
+        {
+            ResetHelmet();
+        }
 
         private void UnsafeResetHelmet()
         {

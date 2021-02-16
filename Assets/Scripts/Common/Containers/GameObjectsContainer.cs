@@ -19,6 +19,11 @@ namespace Elektronik.Common.Containers
             ObservationsPool.OnObjectDeSpawn += (o, s) => GameObjectDespawn(o.GetComponent<GameObject>());
         }
 
+        private void OnDestroy()
+        {
+            Clear();
+        }
+
         #endregion
         
         #region IContainer implementation

@@ -27,6 +27,8 @@ namespace Elektronik.Online
         public SlamInfinitePlanesContainer InfinitePlanesContainer;
         public ConnectableObjectsContainer<SlamPoint> ConnectablePointsContainer;
         public ConnectableObjectsContainer<SlamObservation> ConnectableObservationsContainer;
+        public ConnectableTrackedObjsContainer ConnectableTrackedObjsContainer;
+        public SlamLinesContainer LinesContainer;
 
         GrpcServer m_server;
         bool m_serverStarted = false;
@@ -45,8 +47,8 @@ namespace Elektronik.Online
             {
                 new PointsMapManager(ConnectablePointsContainer, converter),
                 new ObservationsMapManager(ConnectableObservationsContainer, converter),
-                new TrackedObjsMapManager(slamMaps.TrackedObjsGO, slamMaps.TrackedObjs, converter),
-                new LinesMapManager(slamMaps.Lines, converter),
+                new TrackedObjsMapManager(ConnectableTrackedObjsContainer.TrackedObjsContainer, ConnectableTrackedObjsContainer, converter),
+                new LinesMapManager(LinesContainer, converter),
                 new InfinitePlanesMapManager(InfinitePlanesContainer, converter)
             }.BuildChain();
 
