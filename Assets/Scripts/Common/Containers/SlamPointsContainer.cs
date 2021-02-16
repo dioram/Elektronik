@@ -28,6 +28,16 @@ namespace Elektronik.Common.Containers
             }
         }
 
+        private void OnEnable()
+        {
+            ItemsAdded?.Invoke(this, this);
+        }
+
+        private void OnDisable()
+        {
+            ItemsRemoved?.Invoke(this, _points.Keys);
+        }
+
         private void OnDestroy()
         {
             Clear();
@@ -56,8 +66,8 @@ namespace Elektronik.Common.Containers
         
         public SlamPoint this[SlamPoint obj]
         {
-            get => this[obj.id];
-            set => this[obj.id] = value;
+            get => this[obj.Id];
+            set => this[obj.Id] = value;
         }
         
         public int Count => _points.Count;
@@ -66,22 +76,22 @@ namespace Elektronik.Common.Containers
         
         public void CopyTo(SlamPoint[] array, int arrayIndex) => _points.Values.CopyTo(array, arrayIndex);
         
-        public int IndexOf(SlamPoint item) => item.id;
+        public int IndexOf(SlamPoint item) => item.Id;
 
-        public bool Contains(SlamPoint point) => Contains(point.id);
+        public bool Contains(SlamPoint point) => Contains(point.Id);
         
-        public bool TryGet(SlamPoint point, out SlamPoint current) => TryGet(point.id, out current);
+        public bool TryGet(SlamPoint point, out SlamPoint current) => TryGet(point.Id, out current);
         
         public void Add(SlamPoint point)
         {
-            _points.Add(point.id, point);
+            _points.Add(point.Id, point);
             ItemsAdded?.Invoke(this, new []{point});
         }
 
         public void AddRange(IEnumerable<SlamPoint> points)
         {
             foreach (var pt in points)
-                _points.Add(pt.id, pt);
+                _points.Add(pt.Id, pt);
             ItemsAdded?.Invoke(this, points);
         }
         
@@ -89,10 +99,10 @@ namespace Elektronik.Common.Containers
 
         public void UpdateItem(SlamPoint point)
         {
-            SlamPoint currentPoint = _points[point.id];
+            SlamPoint currentPoint = _points[point.Id];
             currentPoint.position = point.position;
             currentPoint.color = point.color;
-            _points[point.id] = currentPoint;
+            _points[point.Id] = currentPoint;
             ItemsUpdated?.Invoke(this, new []{point});
         }
 
@@ -100,10 +110,10 @@ namespace Elektronik.Common.Containers
         {
             foreach (var pt in points)
             {
-                SlamPoint currentPoint = _points[pt.id];
+                SlamPoint currentPoint = _points[pt.Id];
                 currentPoint.position = pt.position;
                 currentPoint.color = pt.color;
-                _points[pt.id] = currentPoint;
+                _points[pt.Id] = currentPoint;
             }
             ItemsUpdated?.Invoke(this, points);
         }
@@ -116,16 +126,16 @@ namespace Elektronik.Common.Containers
 
         public bool Remove(SlamPoint point)
         {
-            var res = _points.Remove(point.id);
-            ItemsRemoved?.Invoke(this, new []{point.id});
+            var res = _points.Remove(point.Id);
+            ItemsRemoved?.Invoke(this, new []{point.Id});
             return res;
         }
 
         public void Remove(IEnumerable<SlamPoint> points)
         {
             foreach (var pt in points)
-                _points.Remove(pt.id);
-            ItemsRemoved?.Invoke(this, points.Select(p => p.id));
+                _points.Remove(pt.Id);
+            ItemsRemoved?.Invoke(this, points.Select(p => p.Id));
         }
         
         public void Clear()

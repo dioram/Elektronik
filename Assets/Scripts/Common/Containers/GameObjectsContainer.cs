@@ -19,6 +19,24 @@ namespace Elektronik.Common.Containers
             ObservationsPool.OnObjectDeSpawn += (o, s) => GameObjectDespawn(o.GetComponent<GameObject>());
         }
 
+        protected virtual void OnEnable()
+        {
+            foreach (var o in ObservationsPool.ActiveObject)
+            {
+                var meshRenderer = o.GetComponent<MeshRenderer>();
+                meshRenderer.enabled = true;
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            foreach (var o in ObservationsPool.ActiveObject)
+            {
+                var meshRenderer = o.GetComponent<MeshRenderer>();
+                meshRenderer.enabled = false;
+            }
+        }
+
         private void OnDestroy()
         {
             Clear();

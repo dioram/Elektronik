@@ -3,6 +3,7 @@ using Elektronik.Common.Data.PackageObjects;
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Common.Clouds;
+using Elektronik.Common.Settings;
 using UnityEngine;
 
 namespace Elektronik.Common.Maps
@@ -17,6 +18,13 @@ namespace Elektronik.Common.Maps
         Vector3 m_lastPosition;
         Vector3 m_currentPosition;
         int m_trackStep;
+
+        public void SetActive(bool active)
+        {
+            GetComponent<XYZAxis>().enabled = active;
+            GetComponent<MeshRenderer>().enabled = active;
+            Track.enabled = active;
+        }
 
         private void Awake()
         {
@@ -99,7 +107,7 @@ namespace Elektronik.Common.Maps
                 }
                 m_lastPosition = track[track.Count - 1].pt1.position;
                 m_lastPosition = track[track.Count - 1].pt2.position;
-                m_trackStep = track[track.Count - 1].pt2.id;
+                m_trackStep = track[track.Count - 1].pt2.Id;
             }
         }
     }

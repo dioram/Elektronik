@@ -10,8 +10,8 @@ namespace Elektronik.Common.Data.PackageObjects
 
         public SlamLine(int id1, int id2)
         {
-            pt1 = new SlamPoint() { id = id1 };
-            pt2 = new SlamPoint() { id = id2 };
+            pt1 = new SlamPoint() { Id = id1 };
+            pt2 = new SlamPoint() { Id = id2 };
             if (id1 < id2)
                 m_id = ((ulong)id1 << sizeof(int) * 8) + (ulong)id2;
             else
@@ -23,10 +23,10 @@ namespace Elektronik.Common.Data.PackageObjects
         {
             this.pt1 = pt1;
             this.pt2 = pt2;
-            if (pt1.id < pt2.id)
-                m_id = ((ulong)pt1.id << sizeof(int) * 8) + (ulong)pt2.id;
+            if (pt1.Id < pt2.Id)
+                m_id = ((ulong)pt1.Id << sizeof(int) * 8) + (ulong)pt2.Id;
             else
-                m_id = ((ulong)pt2.id << sizeof(int) * 8) + (ulong)pt1.id;
+                m_id = ((ulong)pt2.Id << sizeof(int) * 8) + (ulong)pt1.Id;
             Id = 0;
         }
 

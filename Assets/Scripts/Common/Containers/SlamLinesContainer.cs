@@ -28,6 +28,16 @@ namespace Elektronik.Common.Containers
             }
         }
 
+        private void OnEnable()
+        {
+            ItemsAdded?.Invoke(this, this);
+        }
+
+        private void OnDisable()
+        {
+            ItemsRemoved?.Invoke(this, _connections.Keys);
+        }
+
         private void OnDestroy()
         {
             Clear();
@@ -47,11 +57,11 @@ namespace Elektronik.Common.Containers
 
         public bool IsReadOnly => false;
 
-        public bool TryGet(SlamLine obj, out SlamLine current) => TryGet(obj.pt1.id, obj.pt2.id, out current);
+        public bool TryGet(SlamLine obj, out SlamLine current) => TryGet(obj.pt1.Id, obj.pt2.Id, out current);
 
         public bool Contains(int id1, int id2) => TryGet(id1, id2, out SlamLine _);
 
-        public bool Contains(SlamLine obj) => TryGet(obj.pt1.id, obj.pt2.id, out SlamLine _);
+        public bool Contains(SlamLine obj) => TryGet(obj.pt1.Id, obj.pt2.Id, out SlamLine _);
 
         public IEnumerator<SlamLine> GetEnumerator() => _connections.Select(kv => kv.Value).GetEnumerator();
 
@@ -63,8 +73,8 @@ namespace Elektronik.Common.Containers
         {
             foreach (var c in _connections)
             {
-                if (c.Value.pt1.id == item.pt1.id && c.Value.pt2.id == item.pt2.id ||
-                    c.Value.pt2.id == item.pt1.id && c.Value.pt1.id == item.pt2.id)
+                if (c.Value.pt1.Id == item.pt1.Id && c.Value.pt2.Id == item.pt2.Id ||
+                    c.Value.pt2.Id == item.pt1.Id && c.Value.pt1.Id == item.pt2.Id)
                 {
                     return c.Key;
                 }
@@ -75,8 +85,8 @@ namespace Elektronik.Common.Containers
 
         public SlamLine this[SlamLine obj]
         {
-            get => this[obj.pt1.id, obj.pt2.id];
-            set => this[obj.pt1.id, obj.pt2.id] = value;
+            get => this[obj.pt1.Id, obj.pt2.Id];
+            set => this[obj.pt1.Id, obj.pt2.Id] = value;
         }
         
         [Obsolete("Don't use this getter. You can't get valid index outside the container anyway." +
@@ -135,7 +145,7 @@ namespace Elektronik.Common.Containers
             _linesBuffer.Clear();
         }
 
-        public bool Remove(SlamLine obj) => Remove(obj.pt1.id, obj.pt2.id);
+        public bool Remove(SlamLine obj) => Remove(obj.pt1.Id, obj.pt2.Id);
 
         public void Remove(IEnumerable<SlamLine> objs)
         {

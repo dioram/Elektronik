@@ -9,7 +9,7 @@ namespace Elektronik.Common.Containers
 
         protected override SlamPoint AsPoint(SlamObservation obj) => obj;
 
-        protected override int GetObjectId(SlamObservation obj) => obj.point.id;
+        protected override int GetObjectId(SlamObservation obj) => obj.point.Id;
 
         protected override Pose GetObjectPose(SlamObservation obj) => new Pose(obj.point.position, obj.rotation);
 

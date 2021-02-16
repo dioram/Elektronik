@@ -6,6 +6,26 @@ namespace Elektronik.Common.Containers
 {
     public class TrackedObjectsContainer : GameObjectsContainer<SlamTrackedObject>
     {
+        #region Unity events
+        
+        protected override void OnEnable()
+        {
+            foreach (var o in ObservationsPool.ActiveObject)
+            {
+                o.GetComponent<Helmet>().SetActive(true);
+            }
+        }
+
+        protected override void OnDisable()
+        {
+            foreach (var o in ObservationsPool.ActiveObject)
+            {
+                o.GetComponent<Helmet>().SetActive(false);
+            }
+        }
+
+        #endregion
+        
         #region GameObjectsContainer implementation
 
         protected override int GetObjectId(SlamTrackedObject obj) => obj.id;
@@ -25,7 +45,7 @@ namespace Elektronik.Common.Containers
             => new SlamPoint()
             {
                     color = obj.color,
-                    id = obj.id,
+                    Id = obj.id,
                     position = obj.position,
             };
 

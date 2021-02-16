@@ -28,6 +28,16 @@ namespace Elektronik.Common.Containers
             }
         }
 
+        private void OnEnable()
+        {
+            ItemsAdded?.Invoke(this, this);
+        }
+
+        private void OnDisable()
+        {
+            ItemsRemoved?.Invoke(this, _planes.Keys);
+        }
+
         private void OnDestroy()
         {
             Clear();
@@ -55,10 +65,10 @@ namespace Elektronik.Common.Containers
 
         public SlamInfinitePlane this[SlamInfinitePlane obj]
         {
-            get => _planes[obj.id];
+            get => _planes[obj.Id];
             set
             {
-                _planes[obj.id] = value;
+                _planes[obj.Id] = value;
                 ItemsUpdated?.Invoke(this, new []{value});
             }
         }
@@ -79,12 +89,12 @@ namespace Elektronik.Common.Containers
         
         public int IndexOf(SlamInfinitePlane item)
         {
-            return item.id;
+            return item.Id;
         }
 
         public bool Contains(SlamInfinitePlane item)
         {
-            return _planes.ContainsKey(item.id);
+            return _planes.ContainsKey(item.Id);
         }
 
         public void CopyTo(SlamInfinitePlane[] array, int arrayIndex)
@@ -94,7 +104,7 @@ namespace Elektronik.Common.Containers
 
         public void Add(SlamInfinitePlane item)
         {
-            _planes[item.id] = item;
+            _planes[item.Id] = item;
             ItemsAdded?.Invoke(this, new []{item});
         }
 
@@ -102,7 +112,7 @@ namespace Elektronik.Common.Containers
         {
             foreach (var plane in objects)
             {
-                _planes.Add(plane.id, plane);
+                _planes.Add(plane.Id, plane);
             }
             ItemsAdded?.Invoke(this, objects);
         }
@@ -122,8 +132,8 @@ namespace Elektronik.Common.Containers
 
         public bool Remove(SlamInfinitePlane item)
         {
-            var res = _planes.Remove(item.id);
-            ItemsRemoved?.Invoke(this, new [] {item.id});
+            var res = _planes.Remove(item.Id);
+            ItemsRemoved?.Invoke(this, new [] {item.Id});
             return res;
         }
 
@@ -137,16 +147,16 @@ namespace Elektronik.Common.Containers
         {
             foreach (var plane in objs)
             {
-                _planes.Remove(plane.id);
+                _planes.Remove(plane.Id);
             }
-            ItemsRemoved?.Invoke(this, objs.Select(o => o.id));
+            ItemsRemoved?.Invoke(this, objs.Select(o => o.Id));
         }
 
         public bool TryGet(SlamInfinitePlane obj, out SlamInfinitePlane current)
         {
-            if (_planes.ContainsKey(obj.id))
+            if (_planes.ContainsKey(obj.Id))
             {
-                current = _planes[obj.id];
+                current = _planes[obj.Id];
                 return true;
             }
 
@@ -156,7 +166,7 @@ namespace Elektronik.Common.Containers
 
         public void UpdateItem(SlamInfinitePlane obj)
         {
-            _planes[obj.id] = obj;
+            _planes[obj.Id] = obj;
             ItemsUpdated?.Invoke(this, new []{obj});
         }
 
@@ -164,7 +174,7 @@ namespace Elektronik.Common.Containers
         {
             foreach (var plane in objs)
             {
-                _planes[plane.id] = plane;
+                _planes[plane.Id] = plane;
             }
             ItemsUpdated?.Invoke(this, objs);
         }

@@ -80,7 +80,7 @@ namespace Elektronik.Common.Containers
         {
             Objects.UpdateItem(obj);
             Objects.TryGetAsPoint(obj, out var pt1);
-            foreach (var col in _table.GetColIndices(pt1.id))
+            foreach (var col in _table.GetColIndices(pt1.Id))
             {
                 Objects.TryGetAsPoint(col, out var pt2);
                 Connects.UpdateItem(new SlamLine(pt1, pt2));
@@ -94,7 +94,7 @@ namespace Elektronik.Common.Containers
             foreach (var obj in objs)
             {
                 Objects.TryGetAsPoint(obj, out var pt1);
-                foreach (var col in _table.GetColIndices(pt1.id))
+                foreach (var col in _table.GetColIndices(pt1.Id))
                 {
                     Objects.TryGetAsPoint(col, out var pt2);
                     _linesBuffer.Add(new SlamLine(pt1, pt2));
@@ -181,9 +181,9 @@ namespace Elektronik.Common.Containers
             if (Objects.TryGetAsPoint(obj1, out var pt1) &&
                 Objects.TryGetAsPoint(obj2, out var pt2))
             {
-                if (!_table[pt1.id, pt2.id].HasValue)
+                if (!_table[pt1.Id, pt2.Id].HasValue)
                 {
-                    _table[pt1.id, pt2.id] = _table[pt2.id, pt1.id] = true;
+                    _table[pt1.Id, pt2.Id] = _table[pt2.Id, pt1.Id] = true;
                     adding(new SlamLine(pt1, pt2));
                     return true;
                 }

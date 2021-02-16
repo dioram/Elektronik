@@ -96,7 +96,7 @@ namespace Elektronik.Common.Data.Pb
     {
         public static implicit operator SlamPoint(PointPb p)
             => p != null
-                ? new SlamPoint() {id = p.id_, position = p.position_, color = p.color_, message = p.message_}
+                ? new SlamPoint() {Id = p.id_, position = p.position_, color = p.color_, message = p.message_}
                 : default;
     }
 
@@ -132,7 +132,7 @@ namespace Elektronik.Common.Data.Pb
         public static implicit operator SlamInfinitePlane(InfinitePlanePb p)
             => p != null
                 ? new SlamInfinitePlane
-                    {color = p.Color, id = p.Id, message = p.Message, normal = p.Normal, offset = p.Offset}
+                    {color = p.Color, Id = p.Id, message = p.Message, normal = p.Normal, offset = p.Offset}
                 : default;
     }
 }

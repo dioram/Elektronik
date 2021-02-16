@@ -33,7 +33,7 @@ namespace Elektronik.Offline.Loggers
             foreach (var obj in objects)
             {
                 var item = listBoxWithSpecializedObjects.Add() as SpecialInfoListBoxItem;
-                item.SetObject(obj.id, objectType, obj.position, obj.message);
+                item.SetObject(obj.Id, objectType, obj.position, obj.message);
             }
         }
 

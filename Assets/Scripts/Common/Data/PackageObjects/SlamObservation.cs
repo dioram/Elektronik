@@ -33,8 +33,8 @@ namespace Elektronik.Common.Data.PackageObjects
 
         public int Id
         {
-            get => point.id;
-            set => point.id = value;
+            get => point.Id;
+            set => point.Id = value;
         }
     }
 }

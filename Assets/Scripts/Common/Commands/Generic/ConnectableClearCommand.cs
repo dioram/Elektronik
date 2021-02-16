@@ -12,7 +12,7 @@ namespace Elektronik.Common.Commands.Generic
         public ConnectableClearCommand(IConnectableObjectsContainer<T> container) : base(container)
         {
             m_container = container;
-            m_connections = container.Connections.Select(l => (l.pt1.id, l.pt2.id)).ToArray();
+            m_connections = container.Connections.Select(l => (l.pt1.Id, l.pt2.Id)).ToArray();
         }
 
         public override void UnExecute()
