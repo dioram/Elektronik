@@ -31,7 +31,7 @@ jobs:
           restore-keys: |
             Library-${{ matrix.projectPath }}-
             Library-
-      - uses: game-ci/unity-builde@v2.0-alpha-6
+      - uses: game-ci/unity-build@v2.0-alpha-6
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
