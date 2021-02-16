@@ -9,11 +9,16 @@ namespace Elektronik.Online.GrpcServices
 {
     public abstract class ConnectableObjectsMapManager<T> : MapManager<T> where T: ICloudItem
     {
-        private IConnectableObjectsContainer<T> m_map;
-        public ConnectableObjectsMapManager(IConnectableObjectsContainer<T> map) : base(map)
+        public ConnectableObjectsContainer<T> ObjectsContainer;
+
+        #region Unity events
+
+        protected virtual void Awake()
         {
-            m_map = map;
+            Container = ObjectsContainer;
         }
+
+        #endregion
 
         protected virtual Task<ErrorStatusPb> HandleConnections(PacketPb request, Task<ErrorStatusPb> baseStatus)
         {
@@ -31,9 +36,9 @@ namespace Elektronik.Online.GrpcServices
                 try
                 {
                     if (request.Connections.Action == PacketPb.Types.Connections.Types.Action.Add)
-                        m_map.AddConnections(connections);
+                        ObjectsContainer.AddConnections(connections);
                     if (request.Connections.Action == PacketPb.Types.Connections.Types.Action.Remove)
-                        m_map.RemoveConnections(connections);
+                        ObjectsContainer.RemoveConnections(connections);
                 }
                 catch (Exception e)
                 {

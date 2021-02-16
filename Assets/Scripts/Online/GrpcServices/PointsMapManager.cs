@@ -1,5 +1,4 @@
-﻿using Elektronik.Common.Containers;
-using Elektronik.Common.Data.PackageObjects;
+﻿using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Converters;
 using Elektronik.Common.Data.Pb;
 using Grpc.Core;
@@ -11,19 +10,14 @@ namespace Elektronik.Online.GrpcServices
 {
     public class PointsMapManager : ConnectableObjectsMapManager<SlamPoint>
     {
-        ICSConverter m_converter;
-
-        public PointsMapManager(IConnectableObjectsContainer<SlamPoint> map, ICSConverter converter) : base(map)
-        {
-            m_converter = converter;
-        }
+        public CSConverter Converter;
         
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             Debug.Log("[PointsMapManager.Handle]");
             if (request.DataCase == PacketPb.DataOneofCase.Points)
             {
-                var pts = request.ExtractPoints(m_converter).ToList();
+                var pts = request.ExtractPoints(Converter).ToList();
                 return HandleConnections(request, Handle(request.Action, pts));
             }
 

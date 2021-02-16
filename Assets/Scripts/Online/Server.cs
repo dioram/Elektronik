@@ -8,10 +8,10 @@ using Elektronik.Online.Settings;
 using Elektronik.Common.Settings;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 using Elektronik.Common.Cameras;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Converters;
-using Elektronik.Common.Data.PackageObjects;
 
 namespace Elektronik.Online
 {
@@ -22,12 +22,9 @@ namespace Elektronik.Online
         public Text status;
         public CSConverter converter;
         public CameraImageRenderer imageRenderTarget;
-        public SlamInfinitePlanesContainer InfinitePlanesContainer;
-        public ConnectableObjectsContainer<SlamPoint> ConnectablePointsContainer;
-        public ConnectableObjectsContainer<SlamObservation> ConnectableObservationsContainer;
-        public ConnectableTrackedObjsContainer ConnectableTrackedObjsContainer;
-        public SlamLinesContainer LinesContainer;
         public GameObject Containers;
+
+        public MapsManagerPb.MapsManagerPbBase[] MapManagers;
 
         public void ClearAll()
         {
@@ -50,14 +47,7 @@ namespace Elektronik.Online
             converter.SetInitTRS(Vector3.zero, Quaternion.identity, 
                 Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>());
 
-            var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
-            {
-                new PointsMapManager(ConnectablePointsContainer, converter),
-                new ObservationsMapManager(ConnectableObservationsContainer, converter),
-                new TrackedObjsMapManager(ConnectableTrackedObjsContainer.TrackedObjsContainer, ConnectableTrackedObjsContainer, converter),
-                new LinesMapManager(LinesContainer, converter),
-                new InfinitePlanesMapManager(InfinitePlanesContainer, converter)
-            }.BuildChain();
+            var servicesChain = MapManagers.Select(m => m as IChainable<MapsManagerPb.MapsManagerPbBase>).BuildChain();
 
             Debug.Log($"{SettingsBag.Current[SettingName.IPAddress].As<string>()}:{SettingsBag.Current[SettingName.Port].As<int>()}");
 

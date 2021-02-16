@@ -34,14 +34,8 @@ namespace Elektronik.Online.GrpcServices
                 });
             return status;
         }
-            
-
-        IContainer<T> m_map;
-
-        protected MapManager(IContainer<T> map)
-        {
-            m_map = map;
-        }
+        
+        protected IContainer<T> Container;
 
         protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, IList<T> data)
         {
@@ -51,21 +45,21 @@ namespace Elektronik.Online.GrpcServices
             ErrorStatusPb errorStatus = new ErrorStatusPb() { ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded };
             try
             {
-                lock(m_map)
+                lock(Container)
                 {
                     switch (action)
                     {
                         case PacketPb.Types.ActionType.Add:
-                            m_map.AddRange(readOnlyData);
+                            Container.AddRange(readOnlyData);
                             break;
                         case PacketPb.Types.ActionType.Update:
-                            m_map.UpdateItems(readOnlyData);
+                            Container.UpdateItems(readOnlyData);
                             break;
                         case PacketPb.Types.ActionType.Remove:
-                            m_map.Remove(readOnlyData);
+                            Container.Remove(readOnlyData);
                             break;
                         case PacketPb.Types.ActionType.Clear:
-                            m_map.Clear();
+                            Container.Clear();
                             break;
                     }
                 }

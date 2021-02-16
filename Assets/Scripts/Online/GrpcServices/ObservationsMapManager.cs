@@ -11,19 +11,14 @@ namespace Elektronik.Online.GrpcServices
 {
     public class ObservationsMapManager : ConnectableObjectsMapManager<SlamObservation>
     {
-        ICSConverter m_converter;
-
-        public ObservationsMapManager(IConnectableObjectsContainer<SlamObservation> map, ICSConverter converter) : base(map)
-        {
-            m_converter = converter;
-        }
+        public CSConverter Converter;
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             Debug.Log("[ObservationsMapManager.Handle]");
             if (request.DataCase == PacketPb.DataOneofCase.Observations)
             {
-                var obs = request.ExtractObservations(m_converter).ToList();
+                var obs = request.ExtractObservations(Converter).ToList();
                 return HandleConnections(request, Handle(request.Action, obs));
             }
 
