@@ -23,6 +23,6 @@ jobs:
       - name: Expose as artifact
         uses: actions/upload-artifact@v1
         with:
-          name: ${{ steps.getManualLicenseFile.outputs.filePath }}
-          path: ${{ steps.getManualLicenseFile.outputs.filePath }}
+          name: ${{ steps.RequestLicense.outputs.filePath }}
+          path: ${{ steps.RequestLicense.outputs.filePath }}
 
