@@ -5,9 +5,8 @@ namespace Elektronik.Common.Clouds.V2
 {
     public class InfinitePlaneCloudRenderer : CloudRenderer<SlamInfinitePlane, InfinitePlaneCloudBlock>
     {
-        protected override void ProcessItem(InfinitePlaneCloudBlock block, SlamInfinitePlane item)
+        protected override void ProcessItem(InfinitePlaneCloudBlock block, SlamInfinitePlane item, int inBlockId)
         {
-            var inBlockId = (item.Id % InfinitePlaneCloudBlock.Capacity);
             float halfSide = ItemSize / 2;
             var v1 = new Vector3(-halfSide, 0, -halfSide);
             var v2 = new Vector3(halfSide, 0, -halfSide);
@@ -33,9 +32,8 @@ namespace Elektronik.Common.Clouds.V2
             }
         }
 
-        protected override void RemoveItem(InfinitePlaneCloudBlock block, int id)
+        protected override void RemoveItem(InfinitePlaneCloudBlock block, int inBlockId)
         {
-            var inBlockId = (id % InfinitePlaneCloudBlock.Capacity);
             for (int i = 0; i < 8; i++)
             {
                 block.Planes[inBlockId + i] = default;

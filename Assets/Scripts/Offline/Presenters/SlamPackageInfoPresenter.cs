@@ -1,21 +1,18 @@
 ﻿using Elektronik.Offline.Loggers;
-using Elektronik.Common.Data.Packages;
 using Elektronik.Common.Presenters;
-using Elektronik.Common.Data;
-using Elektronik.Common.Maps;
 using System.Collections.Generic;
 using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Data.Packages.SlamActionPackages;
 using System.Linq;
 using Elektronik.Common.Data.Pb;
-using System;
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Offline.Presenters
 {
     public class SlamPackageInfoPresenter : RepaintablePackagePresenter
     {
         public EventInfoBanner info;
-        public SlamMap map;
+        public ConnectableObjectsContainer<SlamPoint> ConnectablePoints;
+        public ConnectableObjectsContainer<SlamObservation> ConnectableObservations;
 
         private PacketPb m_packet;
         private SlamPoint[] m_objects;
@@ -26,10 +23,10 @@ namespace Elektronik.Offline.Presenters
             {
                 case PacketPb.DataOneofCase.Points:
                     return packet.Points.Data.Select(p => 
-                        new SlamPoint(p.Id, map.Points[p].position, color: default, message: p.Message));
+                        new SlamPoint(p.Id, ConnectablePoints[p].position, color: default, message: p.Message));
                 case PacketPb.DataOneofCase.Observations:
                     return packet.Observations.Data.Select(o =>
-                        new SlamPoint(o.Point.Id, map.Observations[o].point.position, color: default, message: o.Point.Message));
+                        new SlamPoint(o.Point.Id, ConnectableObservations[o].point.position, color: default, message: o.Point.Message));
                 default:
                     return null;
             }

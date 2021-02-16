@@ -12,6 +12,7 @@ using System;
 using Elektronik.Common.Cameras;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Data.PackageObjects;
 
 namespace Elektronik.Online
 {
@@ -24,6 +25,8 @@ namespace Elektronik.Online
         public CSConverter converter;
         public CameraImageRenderer imageRenderTarget;
         public SlamInfinitePlanesContainer InfinitePlanesContainer;
+        public ConnectableObjectsContainer<SlamPoint> ConnectablePointsContainer;
+        public ConnectableObjectsContainer<SlamObservation> ConnectableObservationsContainer;
 
         GrpcServer m_server;
         bool m_serverStarted = false;
@@ -40,8 +43,8 @@ namespace Elektronik.Online
 
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
-                new PointsMapManager(slamMaps.Points, converter),
-                new ObservationsMapManager(slamMaps.Observations, converter),
+                new PointsMapManager(ConnectablePointsContainer, converter),
+                new ObservationsMapManager(ConnectableObservationsContainer, converter),
                 new TrackedObjsMapManager(slamMaps.TrackedObjsGO, slamMaps.TrackedObjs, converter),
                 new LinesMapManager(slamMaps.Lines, converter),
                 new InfinitePlanesMapManager(InfinitePlanesContainer, converter)

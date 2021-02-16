@@ -11,7 +11,7 @@ namespace Elektronik.Common.Containers
 {
     public class TrackedObjectsContainer : GameObjectsContainer<SlamTrackedObject>
     {
-        public TrackedObjectsContainer(Helmet prefab) : base(prefab.gameObject) { }
+        #region GameObjectsContainer implementation
 
         protected override int GetObjectId(SlamTrackedObject obj) => obj.id;
 
@@ -24,14 +24,16 @@ namespace Elektronik.Common.Containers
             helmet.transform.SetPositionAndRotation(@object.position, @object.rotation);
         }
 
-        protected override SlamTrackedObject Update(SlamTrackedObject current, SlamTrackedObject @new) => @new;
+        protected override SlamTrackedObject UpdateItem(SlamTrackedObject current, SlamTrackedObject @new) => @new;
 
         protected override SlamPoint AsPoint(SlamTrackedObject obj)
             => new SlamPoint()
             {
-                color = obj.color,
-                id = obj.id,
-                position = obj.position,
+                    color = obj.color,
+                    id = obj.id,
+                    position = obj.position,
             };
+
+        #endregion
     }
 }

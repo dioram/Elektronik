@@ -26,7 +26,6 @@ namespace Elektronik.Common.Containers
                 ItemsAdded += Renderer.OnItemsAdded;
                 ItemsUpdated += Renderer.OnItemsUpdated;
                 ItemsRemoved += Renderer.OnItemsRemoved;
-                ItemsCleared += Renderer.OnItemsCleared;
             }
         }
 
@@ -34,13 +33,11 @@ namespace Elektronik.Common.Containers
 
         #region IContainer implementation
         
-        public event Action<IEnumerable<SlamInfinitePlane>> ItemsAdded;
+        public event Action<IContainer<SlamInfinitePlane>, IEnumerable<SlamInfinitePlane>> ItemsAdded;
         
-        public event Action<IEnumerable<SlamInfinitePlane>> ItemsUpdated;
+        public event Action<IContainer<SlamInfinitePlane>, IEnumerable<SlamInfinitePlane>> ItemsUpdated;
         
-        public event Action<IEnumerable<int>> ItemsRemoved;
-        
-        public event Action ItemsCleared;
+        public event Action<IContainer<SlamInfinitePlane>, IEnumerable<int>> ItemsRemoved;
 
         public SlamInfinitePlane this[int index]
         {
@@ -48,7 +45,7 @@ namespace Elektronik.Common.Containers
             set
             {
                 _planes[index] = value;
-                ItemsUpdated?.Invoke(new []{value});
+                ItemsUpdated?.Invoke(this, new []{value});
             }
         }
 
@@ -58,7 +55,7 @@ namespace Elektronik.Common.Containers
             set
             {
                 _planes[obj.id] = value;
-                ItemsUpdated?.Invoke(new []{value});
+                ItemsUpdated?.Invoke(this, new []{value});
             }
         }
 
@@ -94,7 +91,7 @@ namespace Elektronik.Common.Containers
         public void Add(SlamInfinitePlane item)
         {
             _planes[item.id] = item;
-            ItemsAdded?.Invoke(new []{item});
+            ItemsAdded?.Invoke(this, new []{item});
         }
 
         public void AddRange(IEnumerable<SlamInfinitePlane> objects)
@@ -103,32 +100,33 @@ namespace Elektronik.Common.Containers
             {
                 _planes.Add(plane.id, plane);
             }
-            ItemsAdded?.Invoke(objects);
+            ItemsAdded?.Invoke(this, objects);
         }
 
         public void Insert(int index, SlamInfinitePlane item)
         {
             _planes[index] = item;
-            ItemsAdded?.Invoke(new []{item});
+            ItemsAdded?.Invoke(this, new []{item});
         }
 
         public void Clear()
         {
+            var ids = _planes.Keys.ToArray();
             _planes.Clear();
-            ItemsCleared?.Invoke();
+            ItemsRemoved?.Invoke(this, ids);
         }
 
         public bool Remove(SlamInfinitePlane item)
         {
             var res = _planes.Remove(item.id);
-            ItemsRemoved?.Invoke(new [] {item.id});
+            ItemsRemoved?.Invoke(this, new [] {item.id});
             return res;
         }
 
         public void RemoveAt(int index)
         {
             _planes.Remove(index);
-            ItemsRemoved?.Invoke(new []{index});
+            ItemsRemoved?.Invoke(this, new []{index});
         }
 
         public void Remove(IEnumerable<SlamInfinitePlane> objs)
@@ -137,7 +135,7 @@ namespace Elektronik.Common.Containers
             {
                 _planes.Remove(plane.id);
             }
-            ItemsRemoved?.Invoke(objs.Select(o => o.id));
+            ItemsRemoved?.Invoke(this, objs.Select(o => o.id));
         }
 
         public bool TryGet(SlamInfinitePlane obj, out SlamInfinitePlane current)
@@ -156,7 +154,7 @@ namespace Elektronik.Common.Containers
         {
             var p = new CloudPlane(obj.id, obj.offset, obj.normal, obj.color);
             _planes[obj.id] = obj;
-            ItemsUpdated?.Invoke(new []{obj});
+            ItemsUpdated?.Invoke(this, new []{obj});
         }
 
         public void UpdateItems(IEnumerable<SlamInfinitePlane> objs)
@@ -166,7 +164,7 @@ namespace Elektronik.Common.Containers
                 var p = new CloudPlane(plane.id, plane.offset, plane.normal, plane.color);
                 _planes[plane.id] = plane;
             }
-            ItemsUpdated?.Invoke(objs);
+            ItemsUpdated?.Invoke(this, objs);
         }
 
         #endregion

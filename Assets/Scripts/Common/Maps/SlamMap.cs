@@ -11,21 +11,21 @@ namespace Elektronik.Common.Maps
         public Helmet helmetPrefab;
 
         public GameObject observationPrefab;
-        public FastLineCloudV2 pointsConnectionsCloud;
-        public FastLineCloudV2 observationsConnectionsCloud;
+        // public FastLineCloudV2 pointsConnectionsCloud;
+        // public FastLineCloudV2 observationsConnectionsCloud;
         public FastLineCloudV2 trackedObjsConnectionsCloud;
         public FastLineCloudV2 linesCloud;
 
-        public SlamPointsContainer PointsContainer;
-        public SlamLinesContainer PointsConnections;
-        public SlamLinesContainer ObservationConnections;
+        // public SlamPointsContainer PointsContainer;
+        // public SlamLinesContainer PointsConnections;
+        // public SlamLinesContainer ObservationConnections;
         public SlamLinesContainer TrackedObjsConnections;
 
-        public IConnectableObjectsContainer<SlamPoint> Points { get; private set; }
-        public GameObjectsContainer<SlamObservation> ObservationsGO { get; private set; }
+        // public IConnectableObjectsContainer<SlamPoint> Points { get; private set; }
+        // public GameObjectsContainer<SlamObservation> ObservationsGO { get; private set; }
         public GameObjectsContainer<SlamTrackedObject> TrackedObjsGO { get; private set; }
 
-        public IConnectableObjectsContainer<SlamObservation> Observations { get; private set; }
+        // public IConnectableObjectsContainer<SlamObservation> Observations { get; private set; }
         public IConnectableObjectsContainer<SlamTrackedObject> TrackedObjs { get; private set; }
 
         public ILinesContainer<SlamLine> Lines { get; private set; }
@@ -44,9 +44,9 @@ namespace Elektronik.Common.Maps
             //     ObservationConnections);
             // ObservationsGO = observations;
 
-            Points = new ConnectableObjectsContainer<SlamPoint>(
-                PointsContainer,
-                PointsConnections);
+            // Points = new ConnectableObjectsContainer<SlamPoint>(
+            //     PointsContainer,
+            //     PointsConnections);
 
             // Lines = new SlamLinesContainer(linesCloud);
         }
@@ -54,12 +54,12 @@ namespace Elektronik.Common.Maps
         public void SetActivePointCloud(bool value)
         {
             // fastPointCloud.SetActive(value);
-            pointsConnectionsCloud.SetActive(value);
+            // pointsConnectionsCloud.SetActive(value);
         }
         public void SetActiveObservationsGraph(bool value)
         {
-            ObservationsGO.ObservationsPool.SetActive(value);
-            observationsConnectionsCloud.SetActive(value);
+            // ObservationsGO.ObservationsPool.SetActive(value);
+            // observationsConnectionsCloud.SetActive(value);
         }
 
         public void SetActivePlaneCloud(bool value)
@@ -70,7 +70,7 @@ namespace Elektronik.Common.Maps
         {
         //     TrackedObjs.Clear();
         //     Observations.Clear();
-            Points.Clear();
+            // Points.Clear();
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
+using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Maps;
 using Elektronik.Common.Settings;
@@ -14,6 +14,7 @@ namespace Common.UI
         public SlamMap slamMap;
         public RawImage m_image;
         public Text m_message;
+        public GameObjectsContainer<SlamObservation> Observations;
 
         private int m_observationId;
         private string currentFileName;
@@ -36,7 +37,7 @@ namespace Common.UI
 
         void SetData()
         {
-            SlamObservation observation = slamMap.ObservationsGO[m_observationId];
+            SlamObservation observation = Observations[m_observationId];
             m_message.text = observation.message;
             
             if (currentFileName == observation.fileName) return;

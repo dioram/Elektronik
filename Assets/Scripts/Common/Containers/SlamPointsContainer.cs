@@ -11,15 +11,6 @@ namespace Elektronik.Common.Containers
     public class SlamPointsContainer : MonoBehaviour, ICloudObjectsContainer<SlamPoint>
     {
         public PointCloudRenderer Renderer;
-        
-        public SlamPoint this[int id]
-        {
-            get => _points[id];
-            set
-            {
-                if (!TryGet(id, out _)) Add(value); else UpdateItem(value);
-            }
-        }
 
         #region Unity events
 
@@ -34,7 +25,6 @@ namespace Elektronik.Common.Containers
                 ItemsAdded += Renderer.OnItemsAdded;
                 ItemsUpdated += Renderer.OnItemsUpdated;
                 ItemsRemoved += Renderer.OnItemsRemoved;
-                ItemsCleared += Renderer.OnItemsCleared;
             }
         }
 
@@ -42,15 +32,23 @@ namespace Elektronik.Common.Containers
 
         #region IContainer implementation
 
-        public event Action<IEnumerable<SlamPoint>> ItemsAdded;
-        public event Action<IEnumerable<SlamPoint>> ItemsUpdated;
-        public event Action<IEnumerable<int>> ItemsRemoved;
-        public event Action ItemsCleared;
+        public event Action<IContainer<SlamPoint>, IEnumerable<SlamPoint>> ItemsAdded;
+        public event Action<IContainer<SlamPoint>, IEnumerable<SlamPoint>> ItemsUpdated;
+        public event Action<IContainer<SlamPoint>, IEnumerable<int>> ItemsRemoved;
         
         public IEnumerator<SlamPoint> GetEnumerator() => _points.Select(kv => kv.Value).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => _points.Select(kv => kv.Value).GetEnumerator();
 
+        public SlamPoint this[int id]
+        {
+            get => _points[id];
+            set
+            {
+                if (!TryGet(id, out _)) Add(value); else UpdateItem(value);
+            }
+        }
+        
         public SlamPoint this[SlamPoint obj]
         {
             get => this[obj.id];
@@ -72,14 +70,14 @@ namespace Elektronik.Common.Containers
         public void Add(SlamPoint point)
         {
             _points.Add(point.id, point);
-            ItemsAdded?.Invoke(new []{point});
+            ItemsAdded?.Invoke(this, new []{point});
         }
 
         public void AddRange(IEnumerable<SlamPoint> points)
         {
             foreach (var pt in points)
                 _points.Add(pt.id, pt);
-            ItemsAdded?.Invoke(points);
+            ItemsAdded?.Invoke(this, points);
         }
         
         public void Insert(int index, SlamPoint item) => Add(item);
@@ -90,7 +88,7 @@ namespace Elektronik.Common.Containers
             currentPoint.position = point.position;
             currentPoint.color = point.color;
             _points[point.id] = currentPoint;
-            ItemsUpdated?.Invoke(new []{point});
+            ItemsUpdated?.Invoke(this, new []{point});
         }
 
         public void UpdateItems(IEnumerable<SlamPoint> points)
@@ -102,19 +100,19 @@ namespace Elektronik.Common.Containers
                 currentPoint.color = pt.color;
                 _points[pt.id] = currentPoint;
             }
-            ItemsUpdated?.Invoke(points);
+            ItemsUpdated?.Invoke(this, points);
         }
 
         public void RemoveAt(int pointId)
         {
             _points.Remove(pointId);
-            ItemsRemoved?.Invoke(new []{pointId});
+            ItemsRemoved?.Invoke(this, new []{pointId});
         }
 
         public bool Remove(SlamPoint point)
         {
             var res = _points.Remove(point.id);
-            ItemsRemoved?.Invoke(new []{point.id});
+            ItemsRemoved?.Invoke(this, new []{point.id});
             return res;
         }
 
@@ -122,13 +120,14 @@ namespace Elektronik.Common.Containers
         {
             foreach (var pt in points)
                 _points.Remove(pt.id);
-            ItemsRemoved?.Invoke(points.Select(p => p.id));
+            ItemsRemoved?.Invoke(this, points.Select(p => p.id));
         }
         
         public void Clear()
         {
+            var ids = _points.Keys.ToArray();
             _points.Clear();
-           ItemsCleared?.Invoke();
+           ItemsRemoved?.Invoke(this, ids);
         }
 
         #endregion

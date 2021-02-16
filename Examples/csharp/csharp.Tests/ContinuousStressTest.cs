@@ -68,7 +68,6 @@ namespace csharp.Tests
                     packet.Points.Data.Add(movie[i % commands.Count]);
                 }
 
-                TestContext.WriteLine($"Command: {commands[i % commands.Count]}");
                 var response = m_mapClient.Handle(packet);
                 Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
                 Thread.Sleep(250);

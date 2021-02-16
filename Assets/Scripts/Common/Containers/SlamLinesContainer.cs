@@ -11,14 +11,6 @@ namespace Elektronik.Common.Containers
     public class SlamLinesContainer : MonoBehaviour, ILinesContainer<SlamLine>
     {
         public LineCloudRenderer Renderer;
-        
-        [Obsolete("Don't use this getter. You can't get valid index outside the container anyway." +
-                  "It exists only as implementation of IList interface")]
-        public SlamLine this[int index]
-        {
-            get => _connections.Values.ElementAt(index);
-            set => UpdateItem(value);
-        }
 
         #region Unity events
 
@@ -33,7 +25,6 @@ namespace Elektronik.Common.Containers
                 ItemsAdded += Renderer.OnItemsAdded;
                 ItemsUpdated += Renderer.OnItemsUpdated;
                 ItemsRemoved += Renderer.OnItemsRemoved;
-                ItemsCleared += Renderer.OnItemsCleared;
             }
         }
 
@@ -41,13 +32,11 @@ namespace Elektronik.Common.Containers
 
         #region IContaitner implementation
 
-        public event Action<IEnumerable<SlamLine>> ItemsAdded;
+        public event Action<IContainer<SlamLine>, IEnumerable<SlamLine>> ItemsAdded;
 
-        public event Action<IEnumerable<SlamLine>> ItemsUpdated;
+        public event Action<IContainer<SlamLine>, IEnumerable<SlamLine>> ItemsUpdated;
 
-        public event Action<IEnumerable<int>> ItemsRemoved;
-
-        public event Action ItemsCleared;
+        public event Action<IContainer<SlamLine>, IEnumerable<int>> ItemsRemoved;
 
         public int Count => _connections.Count;
 
@@ -84,13 +73,21 @@ namespace Elektronik.Common.Containers
             get => this[obj.pt1.id, obj.pt2.id];
             set => this[obj.pt1.id, obj.pt2.id] = value;
         }
+        
+        [Obsolete("Don't use this getter. You can't get valid index outside the container anyway." +
+                  "It exists only as implementation of IList interface")]
+        public SlamLine this[int index]
+        {
+            get => _connections.Values.ElementAt(index);
+            set => UpdateItem(value);
+        }
 
         public void Add(SlamLine obj)
         {
             obj.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
             _connectionsIndices[obj] = obj.Id;
             _connections[obj.Id] = obj;
-            ItemsAdded?.Invoke(new[] {obj});
+            ItemsAdded?.Invoke(this, new[] {obj});
         }
 
         public void Insert(int index, SlamLine item) => Add(item);
@@ -102,11 +99,11 @@ namespace Elektronik.Common.Containers
             {
                 var line = obj;
                 line.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
-                _connections[obj.Id] = obj;
-                _connectionsIndices[obj] = line.Id;
+                _connections[line.Id] = line;
+                _connectionsIndices[line] = line.Id;
                 _linesBuffer.Add(line);
             }
-            ItemsAdded?.Invoke(_linesBuffer);
+            ItemsAdded?.Invoke(this, _linesBuffer);
             _linesBuffer.Clear();
         }
 
@@ -115,7 +112,7 @@ namespace Elektronik.Common.Containers
             int index = _connectionsIndices[obj];
             obj.Id = index;
             _connections[obj.Id] = obj;
-            ItemsUpdated?.Invoke(new[] {obj});
+            ItemsUpdated?.Invoke(this, new[] {obj});
         }
 
         public void UpdateItems(IEnumerable<SlamLine> objs)
@@ -129,7 +126,7 @@ namespace Elektronik.Common.Containers
                 _linesBuffer.Add(line);
             }
 
-            ItemsUpdated?.Invoke(_linesBuffer);
+            ItemsUpdated?.Invoke(this, _linesBuffer);
             _linesBuffer.Clear();
         }
 
@@ -137,7 +134,6 @@ namespace Elektronik.Common.Containers
 
         public void Remove(IEnumerable<SlamLine> objs)
         {
-            Debug.Assert(_linesBuffer.Count == 0);
             List<int> ids = new List<int>();
             foreach (var l in objs)
             {
@@ -147,7 +143,12 @@ namespace Elektronik.Common.Containers
                 _freeIds.Enqueue(index);
             }
 
-            ItemsRemoved?.Invoke(ids);
+            foreach (var line in objs)
+            {
+                _connectionsIndices.Remove(line);
+            }
+
+            ItemsRemoved?.Invoke(this, ids);
         }
 
         public void RemoveAt(int index)
@@ -158,10 +159,12 @@ namespace Elektronik.Common.Containers
 
         public void Clear()
         {
+            var ids = _connections.Keys.ToArray();
             _connections.Clear();
+            _connectionsIndices.Clear();
             _freeIds.Clear();
             _maxId = 0;
-            ItemsCleared?.Invoke();
+            ItemsRemoved?.Invoke(this, ids);
         }
 
         #endregion
@@ -197,7 +200,7 @@ namespace Elektronik.Common.Containers
             {
                 _connections.Remove(l.Id);
                 _freeIds.Enqueue(l.Id);
-                ItemsRemoved?.Invoke(new[] {l.Id});
+                ItemsRemoved?.Invoke(this, new[] {l.Id});
                 return true;
             }
 
