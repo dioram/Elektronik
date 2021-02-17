@@ -9,7 +9,9 @@ on:
   workflow_dispatch:
   
 env:
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  UNITY_USERNAME: ${{ secrets.UNITY_USERNAME }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
 jobs:
   buildForSomePlatforms:
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
@@ -32,13 +34,14 @@ jobs:
           restore-keys: |
             Library-${{ matrix.projectPath }}-
             Library-
-      - uses: game-ci/unity-builder@v2.0-alpha-6
+      - uses: yukiarrr/unity-build-action@v0.6.1
         with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          targetPlatform: ${{ matrix.targetPlatform }}
-          versioning: None
+          unity-version: 2020.2.2f1
+          unity-username: ${{ secrets.UNITY_USERNAME }}
+          unity-password: ${{ secrets.UNITY_PASSWORD }}
+          unity-serial: ${{ secrets.UNITY_SERIAL }}
+          build-target: Windows
       - uses: actions/upload-artifact@v1
         with:
-          name: Build
-          path: build
+          name: Output
+          path: Output
