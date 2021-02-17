@@ -19,7 +19,7 @@ jobs:
         with:
           lfs: true
       - name: Build unity player
-        run: .\build.bat     
+        run: .\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
       - uses: actions/upload-artifact@v1
         with:
           name: Build
