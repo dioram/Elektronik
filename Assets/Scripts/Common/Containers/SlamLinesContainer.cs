@@ -57,11 +57,11 @@ namespace Elektronik.Common.Containers
 
         public bool IsReadOnly => false;
 
-        public bool TryGet(SlamLine obj, out SlamLine current) => TryGet(obj.pt1.Id, obj.pt2.Id, out current);
+        public bool TryGet(SlamLine obj, out SlamLine current) => TryGet(obj.Point1.Id, obj.Point2.Id, out current);
 
         public bool Contains(int id1, int id2) => TryGet(id1, id2, out SlamLine _);
 
-        public bool Contains(SlamLine obj) => TryGet(obj.pt1.Id, obj.pt2.Id, out SlamLine _);
+        public bool Contains(SlamLine obj) => TryGet(obj.Point1.Id, obj.Point2.Id, out SlamLine _);
 
         public IEnumerator<SlamLine> GetEnumerator() => _connections.Select(kv => kv.Value).GetEnumerator();
 
@@ -73,8 +73,8 @@ namespace Elektronik.Common.Containers
         {
             foreach (var c in _connections)
             {
-                if (c.Value.pt1.Id == item.pt1.Id && c.Value.pt2.Id == item.pt2.Id ||
-                    c.Value.pt2.Id == item.pt1.Id && c.Value.pt1.Id == item.pt2.Id)
+                if (c.Value.Point1.Id == item.Point1.Id && c.Value.Point2.Id == item.Point2.Id ||
+                    c.Value.Point2.Id == item.Point1.Id && c.Value.Point1.Id == item.Point2.Id)
                 {
                     return c.Key;
                 }
@@ -85,8 +85,8 @@ namespace Elektronik.Common.Containers
 
         public SlamLine this[SlamLine obj]
         {
-            get => this[obj.pt1.Id, obj.pt2.Id];
-            set => this[obj.pt1.Id, obj.pt2.Id] = value;
+            get => this[obj.Point1.Id, obj.Point2.Id];
+            set => this[obj.Point1.Id, obj.Point2.Id] = value;
         }
         
         [Obsolete("Don't use this getter. You can't get valid index outside the container anyway." +
@@ -145,7 +145,7 @@ namespace Elektronik.Common.Containers
             _linesBuffer.Clear();
         }
 
-        public bool Remove(SlamLine obj) => Remove(obj.pt1.Id, obj.pt2.Id);
+        public bool Remove(SlamLine obj) => Remove(obj.Point1.Id, obj.Point2.Id);
 
         public void Remove(IEnumerable<SlamLine> objs)
         {

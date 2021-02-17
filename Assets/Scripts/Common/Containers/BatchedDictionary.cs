@@ -171,8 +171,8 @@ namespace Elektronik.Common.Containers
             if (m_batchNum2offset.TryGetValue(batchNum, out var offset))
             {
                 int keyOffset = key % m_batchSize;
-                int key_ = m_keys[offset][keyOffset];
-                if (key_ != -1)
+                int tmpKey = m_keys[offset][keyOffset];
+                if (tmpKey != -1)
                 {
                     value = m_values[offset][keyOffset];
                     return true;

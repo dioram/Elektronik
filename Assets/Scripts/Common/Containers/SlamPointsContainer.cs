@@ -100,8 +100,8 @@ namespace Elektronik.Common.Containers
         public void UpdateItem(SlamPoint point)
         {
             SlamPoint currentPoint = _points[point.Id];
-            currentPoint.position = point.position;
-            currentPoint.color = point.color;
+            currentPoint.Position = point.Position;
+            currentPoint.Color = point.Color;
             _points[point.Id] = currentPoint;
             ItemsUpdated?.Invoke(this, new []{point});
         }
@@ -111,8 +111,8 @@ namespace Elektronik.Common.Containers
             foreach (var pt in points)
             {
                 SlamPoint currentPoint = _points[pt.Id];
-                currentPoint.position = pt.position;
-                currentPoint.color = pt.color;
+                currentPoint.Position = pt.Position;
+                currentPoint.Color = pt.Color;
                 _points[pt.Id] = currentPoint;
             }
             ItemsUpdated?.Invoke(this, points);

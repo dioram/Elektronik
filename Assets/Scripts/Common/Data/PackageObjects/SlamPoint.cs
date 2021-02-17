@@ -5,32 +5,29 @@ namespace Elektronik.Common.Data.PackageObjects
     public struct SlamPoint : ICloudItem
     {
         public int Id { get; set; }
-        public Vector3 position;
-        public Color color;
-        public string message;
-        public Color defaultColor;
+        public Vector3 Position;
+        public Color Color;
+        public string Message;
 
-        public SlamPoint(int id, Vector3 position, Color color, Color defaultColor = default, string message = null)
+        public SlamPoint(int id, Vector3 position, Color color, string message = null)
         {
             Id = id;
-            this.position = position;
-            this.color = color;
-            this.defaultColor = defaultColor;
-            this.message = message;
+            Position = position;
+            Color = color;
+            Message = message;
         }
 
         public SlamPoint(SlamPoint point)
         {
             Id = point.Id;
-            position = point.position;
-            color = point.color;
-            message = point.message;
-            defaultColor = point.defaultColor;
+            Position = point.Position;
+            Color = point.Color;
+            Message = point.Message;
         }
 
         public override string ToString()
         {
-            return message ?? "SlamPoint";
+            return Message ?? "SlamPoint";
         }
     }
 }

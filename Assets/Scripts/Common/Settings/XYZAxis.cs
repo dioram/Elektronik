@@ -5,7 +5,7 @@ namespace Elektronik.Common.Settings
     public class XYZAxis : MonoBehaviour
     {
         public float lengthOfAxis = 0.05f;
-        static Material lineMaterial;
+        private static Material _lineMaterial;
         private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
         private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
         private static readonly int Cull = Shader.PropertyToID("_Cull");
@@ -13,20 +13,20 @@ namespace Elektronik.Common.Settings
 
         static void CreateLineMaterial()
         {
-            if (!lineMaterial)
+            if (!_lineMaterial)
             {
                 // Unity has a built-in shader that is useful for drawing
                 // simple colored things.
                 Shader shader = Shader.Find("Hidden/Internal-Colored");
-                lineMaterial = new Material(shader);
-                lineMaterial.hideFlags = HideFlags.HideAndDontSave;
+                _lineMaterial = new Material(shader);
+                _lineMaterial.hideFlags = HideFlags.HideAndDontSave;
                 // Turn on alpha blending
-                lineMaterial.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                lineMaterial.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                _lineMaterial.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                _lineMaterial.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                 // Turn backface culling off
-                lineMaterial.SetInt(Cull, (int)UnityEngine.Rendering.CullMode.Off);
+                _lineMaterial.SetInt(Cull, (int)UnityEngine.Rendering.CullMode.Off);
                 // Turn off depth writes
-                lineMaterial.SetInt(ZWrite, 0);
+                _lineMaterial.SetInt(ZWrite, 0);
             }
         }
 
@@ -35,7 +35,7 @@ namespace Elektronik.Common.Settings
         {
             CreateLineMaterial();
             // Apply the line material
-            lineMaterial.SetPass(0);
+            _lineMaterial.SetPass(0);
 
             GL.PushMatrix();
             // Set transformation matrix for drawing to

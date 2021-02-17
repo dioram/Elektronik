@@ -6,20 +6,20 @@ namespace Elektronik.Common.UI
 {
     public class UIMainMenu : MonoBehaviour
     {
-        Button m_bOnlineMode;
-        Button m_bOfflineMode;
-        Button m_bExit;
+        private Button _onlineModeButton;
+        private Button _offlineModeButton;
+        private Button _exitButton;
 
         private void Start()
         {
-            m_bOnlineMode = GameObject.Find("Online mode").GetComponent<Button>();
-            m_bOnlineMode.onClick.AddListener(Move2OnlineSettingsScene);
+            _onlineModeButton = GameObject.Find("Online mode").GetComponent<Button>();
+            _onlineModeButton.onClick.AddListener(Move2OnlineSettingsScene);
 
-            m_bOfflineMode = GameObject.Find("Offline mode").GetComponent<Button>();
-            m_bOfflineMode.onClick.AddListener(Move2OfflineSettingsScene);
+            _offlineModeButton = GameObject.Find("Offline mode").GetComponent<Button>();
+            _offlineModeButton.onClick.AddListener(Move2OfflineSettingsScene);
 
-            m_bExit = GameObject.Find("Exit").GetComponent<Button>();
-            m_bExit.onClick.AddListener(Exit);
+            _exitButton = GameObject.Find("Exit").GetComponent<Button>();
+            _exitButton.onClick.AddListener(Exit);
         }
 
         private void Move2OnlineSettingsScene()

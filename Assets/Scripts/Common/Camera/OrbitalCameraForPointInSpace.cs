@@ -6,8 +6,8 @@ namespace Elektronik.Common.Cameras
     [AddComponentMenu("Camera-Control/Mouse Orbit with zoom")]
     public class OrbitalCameraForPointInSpace : MonoBehaviour
     {
-        private Vector3 m_targetPosition;
-        private Quaternion m_targetRotation;
+        private Vector3 _targetPosition;
+        private Quaternion _targetRotation;
         public float fly2TargetDistanceDelta = .25f;
 
         public float distance = 10.0f;
@@ -20,8 +20,8 @@ namespace Elektronik.Common.Cameras
         public float distanceMin = .5f;
         public float distanceMax = 15f;
 
-        float x = 0.0f;
-        float y = 0.0f;
+        float _x = 0.0f;
+        float _y = 0.0f;
 
         public event Action OnSwitchOff;
 
@@ -48,7 +48,7 @@ namespace Elektronik.Common.Cameras
             if (CurrentState == State.Inactive)
             {
                 CurrentState = State.FlyingToPosition;
-                m_targetPosition = to;
+                _targetPosition = to;
                 transform.position = from.position;
                 transform.rotation = from.rotation;
                 gameObject.SetActive(true);
@@ -59,7 +59,7 @@ namespace Elektronik.Common.Cameras
         {
             if (CurrentState == State.FlyingToPosition)
             {
-                if (Vector3.Distance(transform.position, m_targetPosition) < 1.0f)
+                if (Vector3.Distance(transform.position, _targetPosition) < 1.0f)
                 {
                     CurrentState = State.Active;
                 }
@@ -85,15 +85,15 @@ namespace Elektronik.Common.Cameras
             }
             if (CurrentState == State.FlyingToPosition)
             {
-                float currentDistance = Vector3.Distance(transform.position, m_targetPosition);
-                m_targetRotation = Quaternion.LookRotation((m_targetPosition - transform.position).normalized);
-                transform.position = Vector3.MoveTowards(transform.position, m_targetPosition, fly2TargetDistanceDelta * currentDistance * .05f);
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, m_targetRotation, fly2TargetDistanceDelta + (1 / currentDistance));
+                float currentDistance = Vector3.Distance(transform.position, _targetPosition);
+                _targetRotation = Quaternion.LookRotation((_targetPosition - transform.position).normalized);
+                transform.position = Vector3.MoveTowards(transform.position, _targetPosition, fly2TargetDistanceDelta * currentDistance * .05f);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, _targetRotation, fly2TargetDistanceDelta + (1 / currentDistance));
                 if (currentDistance <= distance)
                 {
                     CurrentState = State.Active;
-                    x = transform.rotation.eulerAngles.y;
-                    y = transform.rotation.eulerAngles.x;
+                    _x = transform.rotation.eulerAngles.y;
+                    _y = transform.rotation.eulerAngles.x;
                 }
             }
             if (CurrentState == State.Active)
@@ -107,20 +107,20 @@ namespace Elektronik.Common.Cameras
 
                 if (Input.GetMouseButton(1))
                 {
-                    x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
-                    y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
-                    y = ClampAngle(y, yMinLimit, yMaxLimit);
+                    _x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
+                    _y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
+                    _y = ClampAngle(_y, yMinLimit, yMaxLimit);
                 }
 
-                Quaternion rotation = Quaternion.Euler(y, x, 0);
+                Quaternion rotation = Quaternion.Euler(_y, _x, 0);
                 distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 5, distanceMin, distanceMax);
                 RaycastHit hit;
-                if (Physics.Linecast(m_targetPosition, transform.position, out hit))
+                if (Physics.Linecast(_targetPosition, transform.position, out hit))
                 {
                     distance -= hit.distance;
                 }
                 Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
-                Vector3 position = rotation * negDistance + m_targetPosition;
+                Vector3 position = rotation * negDistance + _targetPosition;
                 transform.rotation = rotation;
                 transform.position = position;
             }

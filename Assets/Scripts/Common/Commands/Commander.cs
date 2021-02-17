@@ -8,12 +8,12 @@ namespace Elektronik.Common.Commands
     public abstract class Commander : MonoBehaviour, IChainable<Commander>
     {
         protected Commander Successor;
-        protected ICSConverter m_converter;
+        protected ICSConverter Converter;
         public IChainable<Commander> SetSuccessor(IChainable<Commander> commander) => Successor = commander as Commander;
 
         public virtual void SetConverter(ICSConverter converter)
         {
-            m_converter = converter;
+            Converter = converter;
             if (Successor != null) Successor.SetConverter(converter);
         }
             

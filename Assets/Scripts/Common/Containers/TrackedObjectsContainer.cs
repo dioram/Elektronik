@@ -28,15 +28,15 @@ namespace Elektronik.Common.Containers
         
         #region GameObjectsContainer implementation
 
-        protected override int GetObjectId(SlamTrackedObject obj) => obj.id;
+        protected override int GetObjectId(SlamTrackedObject obj) => obj.Id;
 
-        protected override Pose GetObjectPose(SlamTrackedObject obj) => new Pose(obj.position, obj.rotation);
+        protected override Pose GetObjectPose(SlamTrackedObject obj) => new Pose(obj.Position, obj.Rotation);
 
         protected override void UpdateGameObject(SlamTrackedObject @object, GameObject gameObject)
         {
             Helmet helmet = gameObject.GetComponent<Helmet>();
-            helmet.color = @object.color;
-            helmet.transform.SetPositionAndRotation(@object.position, @object.rotation);
+            helmet.Color = @object.Color;
+            helmet.transform.SetPositionAndRotation(@object.Position, @object.Rotation);
         }
 
         protected override SlamTrackedObject UpdateItem(SlamTrackedObject current, SlamTrackedObject @new) => @new;
@@ -44,9 +44,9 @@ namespace Elektronik.Common.Containers
         protected override SlamPoint AsPoint(SlamTrackedObject obj)
             => new SlamPoint()
             {
-                    color = obj.color,
-                    Id = obj.id,
-                    position = obj.position,
+                    Color = obj.Color,
+                    Id = obj.Id,
+                    Position = obj.Position,
             };
 
         #endregion

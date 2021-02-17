@@ -13,22 +13,22 @@ namespace Elektronik.Common.Clouds
             var v3 = new Vector3(halfSide, 0, halfSide);
             var v4 = new Vector3(-halfSide, 0, halfSide);
 
-            var rotation = Quaternion.FromToRotation(Vector3.up, item.normal);
+            var rotation = Quaternion.FromToRotation(Vector3.up, item.Normal);
             
             var vertices = new []
             {
-                    rotation * v1 + item.offset,
-                    rotation * v2 + item.offset,
-                    rotation * v3 + item.offset,
-                    rotation * v4 + item.offset,
-                    rotation * v4 + item.offset,
-                    rotation * v3 + item.offset,
-                    rotation * v2 + item.offset,
-                    rotation * v1 + item.offset,
+                    rotation * v1 + item.Offset,
+                    rotation * v2 + item.Offset,
+                    rotation * v3 + item.Offset,
+                    rotation * v4 + item.Offset,
+                    rotation * v4 + item.Offset,
+                    rotation * v3 + item.Offset,
+                    rotation * v2 + item.Offset,
+                    rotation * v1 + item.Offset,
             };
             for (int i = 0; i < 8; i++)
             {
-                block.Planes[inBlockId * 8 + i] = new GPUItem(vertices[i], item.color);
+                block.Planes[inBlockId * 8 + i] = new GPUItem(vertices[i], item.Color);
             }
         }
 

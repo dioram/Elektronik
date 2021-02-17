@@ -22,7 +22,7 @@ namespace Elektronik.Common.Commands.Generic
                 if (container.TryGet(o, out GameObject helmetGO))
                 {
                     var helmet = helmetGO.GetComponent<Helmet>();
-                    m_trackStates[o.id] = helmet.GetTrackState();
+                    m_trackStates[o.Id] = helmet.GetTrackState();
                 }
             }
         }
@@ -30,13 +30,13 @@ namespace Elektronik.Common.Commands.Generic
         public override void UnExecute()
         {
             base.UnExecute();
-            foreach (var o in m_undoObjects)
+            foreach (var o in UndoObjects)
             {
                 if (m_goContainer.TryGet(o, out GameObject helmetGO))
                 {
                     var helmet = helmetGO.GetComponent<Helmet>();
-                    if (m_trackStates.ContainsKey(o.id))
-                        helmet.RestoreTrackState(m_trackStates[o.id]);
+                    if (m_trackStates.ContainsKey(o.Id))
+                        helmet.RestoreTrackState(m_trackStates[o.Id]);
                 }
             }
         }

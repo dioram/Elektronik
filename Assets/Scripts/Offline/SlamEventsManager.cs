@@ -23,30 +23,30 @@ namespace Elektronik.Offline
         public CSConverter converter;
         public GameObject Containers;
 
-        private Commander m_commander;
-        private PackagePresenter m_presenter;
+        private Commander _commander;
+        private PackagePresenter _presenter;
 
-        private LinkedListNode<ICommand> m_currentCommand;
-        private LinkedList<ICommand> m_commands;
-        private Dictionary<ICommand, PacketPb> m_extendedEvents;
-        private int m_position = 0;
+        private LinkedListNode<ICommand> _currentCommand;
+        private LinkedList<ICommand> _commands;
+        private Dictionary<ICommand, PacketPb> _extendedEvents;
+        private int _position = 0;
 
         private void Awake()
         {
-            m_extendedEvents = new Dictionary<ICommand, PacketPb>();
-            m_commands = new LinkedList<ICommand>();
+            _extendedEvents = new Dictionary<ICommand, PacketPb>();
+            _commands = new LinkedList<ICommand>();
         }
 
         private void Start()
         {
-            m_commander = commanders.BuildChain();
+            _commander = commanders.BuildChain();
             converter.SetInitTRS(
                 Vector3.zero,
                 Quaternion.identity,
                 Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>());
-            m_commander.SetConverter(converter);
+            _commander.SetConverter(converter);
 
-            m_presenter = presenters.BuildChain();
+            _presenter = presenters.BuildChain();
             StartCoroutine(ProcessEvents());
         }
 
@@ -58,10 +58,10 @@ namespace Elektronik.Offline
             }
             foreach (var presenter in presenters)
                 presenter.Clear();
-            m_position = 0;
-            m_currentCommand = m_commands.First;
-            m_currentCommand.Value.Execute();
-            m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
+            _position = 0;
+            _currentCommand = _commands.First;
+            _currentCommand.Value.Execute();
+            _presenter.Present(_extendedEvents[_currentCommand.Value]);
             Repaint();
         }
 
@@ -71,11 +71,11 @@ namespace Elektronik.Offline
                 presenter.Repaint();
         }
 
-        public int GetLength() => m_commands.Count;
+        public int GetLength() => _commands.Count;
 
-        public int GetCurrentEventPosition() => m_position;
+        public int GetCurrentEventPosition() => _position;
 
-        public PacketPb GetCurrentEvent() => m_position == -1 ? null : m_extendedEvents[m_currentCommand.Value];
+        public PacketPb GetCurrentEvent() => _position == -1 ? null : _extendedEvents[_currentCommand.Value];
 
         public void SetPosition(int pos, Action whenPositionWasSet)
         {
@@ -89,13 +89,13 @@ namespace Elektronik.Offline
         private IEnumerator MoveToPosition(int pos, Action whenPositionWasSet)
         {
             ReadyToPlay = false;
-            while (m_position != pos)
+            while (_position != pos)
             {
-                if (pos > m_position)
+                if (pos > _position)
                     Next(false);
-                if (pos < m_position)
+                if (pos < _position)
                     Previous(false);
-                if (m_position % 10 == 0)
+                if (_position % 10 == 0)
                     yield return null;
             }
             whenPositionWasSet();
@@ -106,12 +106,12 @@ namespace Elektronik.Offline
 
         public bool Next(bool needRepaint = true)
         {
-            if (m_currentCommand.Next != null)
+            if (_currentCommand.Next != null)
             {
-                ++m_position;
-                m_currentCommand = m_currentCommand.Next;
-                m_currentCommand.Value.Execute();
-                m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
+                ++_position;
+                _currentCommand = _currentCommand.Next;
+                _currentCommand.Value.Execute();
+                _presenter.Present(_extendedEvents[_currentCommand.Value]);
                 if (needRepaint)
                 {
                     Repaint();
@@ -126,12 +126,12 @@ namespace Elektronik.Offline
 
         public bool Previous(bool needRepaint = true)
         {
-            if (m_currentCommand.Previous != null)
+            if (_currentCommand.Previous != null)
             {
-                --m_position;
-                m_currentCommand.Value.UnExecute();
-                m_currentCommand = m_currentCommand.Previous;
-                m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
+                --_position;
+                _currentCommand.Value.UnExecute();
+                _currentCommand = _currentCommand.Previous;
+                _presenter.Present(_extendedEvents[_currentCommand.Value]);
                 if (needRepaint)
                 {
                     Repaint();
@@ -151,12 +151,12 @@ namespace Elektronik.Offline
         /// <returns>true - if key event is found; false - otherwise</returns>
         private bool KeyEventIsFound(Func<LinkedListNode<ICommand>, LinkedListNode<ICommand>> switchCommand)
         {
-            var command = switchCommand(m_currentCommand);
+            var command = switchCommand(_currentCommand);
             bool isKey = false;
             while (!isKey && command != null)
             {
                 // ReSharper disable once AssignmentInConditionalExpression
-                if (isKey = m_extendedEvents[command.Value].Special)
+                if (isKey = _extendedEvents[command.Value].Special)
                 {
                     break;
                 }
@@ -169,7 +169,7 @@ namespace Elektronik.Offline
         {
             if (KeyEventIsFound(c => c.Next))
             {
-                while (Next(needRepaint: false) && !m_extendedEvents[m_currentCommand.Value].Special) { }
+                while (Next(needRepaint: false) && !_extendedEvents[_currentCommand.Value].Special) { }
                 Repaint();
                 return true;
             }
@@ -180,7 +180,7 @@ namespace Elektronik.Offline
         {
             if (KeyEventIsFound(c => c.Previous))
             {
-                while (Previous(needRepaint: false) && !m_extendedEvents[m_currentCommand.Value].Special) { }
+                while (Previous(needRepaint: false) && !_extendedEvents[_currentCommand.Value].Special) { }
                 Repaint();
                 return true;
             }
@@ -203,7 +203,7 @@ namespace Elektronik.Offline
                     var packet = PacketPb.Parser.ParseDelimitedFrom(input);
                     try
                     {
-                        m_commander.GetCommands(packet, in commands);
+                        _commander.GetCommands(packet, in commands);
                     }
                     catch (Exception e)
                     {
@@ -211,8 +211,8 @@ namespace Elektronik.Offline
                         break;
                     }
                     foreach (var command in commands)
-                        m_extendedEvents[command] = packet;
-                    m_commands.MoveFrom(commands);
+                        _extendedEvents[command] = packet;
+                    _commands.MoveFrom(commands);
                     yield return null;
                 }
             }

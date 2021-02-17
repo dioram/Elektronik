@@ -9,23 +9,23 @@ namespace Elektronik.Common.Containers
 
         protected override SlamPoint AsPoint(SlamObservation obj) => obj;
 
-        protected override int GetObjectId(SlamObservation obj) => obj.point.Id;
+        protected override int GetObjectId(SlamObservation obj) => obj.Point.Id;
 
-        protected override Pose GetObjectPose(SlamObservation obj) => new Pose(obj.point.position, obj.rotation);
+        protected override Pose GetObjectPose(SlamObservation obj) => new Pose(obj.Point.Position, obj.Rotation);
 
         protected override SlamObservation UpdateItem(SlamObservation current, SlamObservation @new)
         {
-            current.statistics = @new.statistics;
-            current.point = @new.point;
-            current.rotation = @new.rotation;
-            current.message = @new.message;
-            current.fileName = @new.fileName;
+            current.Statistics = @new.Statistics;
+            current.Point = @new.Point;
+            current.Rotation = @new.Rotation;
+            current.Message = @new.Message;
+            current.FileName = @new.FileName;
             return current;
         }
 
         protected override void UpdateGameObject(SlamObservation @object, GameObject gameObject)
         {
-            gameObject.transform.SetPositionAndRotation(@object.point.position, @object.rotation);
+            gameObject.transform.SetPositionAndRotation(@object.Point.Position, @object.Rotation);
         }
 
         #endregion

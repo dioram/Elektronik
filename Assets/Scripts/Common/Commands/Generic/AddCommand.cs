@@ -7,18 +7,18 @@ namespace Elektronik.Common.Commands.Generic
 {
     public class AddCommand<T> : ICommand
     {
-        protected readonly ReadOnlyCollection<T> m_addedObjects;
-        protected readonly IContainer<T> m_container;
+        protected readonly ReadOnlyCollection<T> AddedObjects;
+        protected readonly IContainer<T> Container;
         
         public AddCommand(
             IContainer<T> container,
             IEnumerable<T> objects)
         {
-            m_container = container;
-            m_addedObjects = new ReadOnlyCollection<T>(objects.ToList());
+            Container = container;
+            AddedObjects = new ReadOnlyCollection<T>(objects.ToList());
         }        
 
-        public virtual void Execute() => m_container.AddRange(m_addedObjects);
-        public virtual void UnExecute() => m_container.Remove(m_addedObjects);
+        public virtual void Execute() => Container.AddRange(AddedObjects);
+        public virtual void UnExecute() => Container.Remove(AddedObjects);
     }
 }

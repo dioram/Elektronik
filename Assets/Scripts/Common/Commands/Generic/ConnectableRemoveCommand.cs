@@ -7,21 +7,21 @@ namespace Elektronik.Common.Commands.Generic
 {
     public class ConnectableRemoveCommand<T> : RemoveCommand<T> where T: ICloudItem
     {
-        private IList<(int, int)> m_connections;
-        private IConnectableObjectsContainer<T> m_container;
+        private readonly IList<(int, int)> _connections;
+        private readonly IConnectableObjectsContainer<T> _container;
 
         public ConnectableRemoveCommand(IConnectableObjectsContainer<T> container, IEnumerable<T> objects) : base(container, objects)
         {
-            m_container = container;
-            m_connections = objects.SelectMany(o => m_container.GetAllConnections(o)).ToList();
+            _container = container;
+            _connections = objects.SelectMany(o => _container.GetAllConnections(o)).ToList();
         }
 
         public override void UnExecute()
         {
             base.UnExecute();
-            if (m_connections != null)
+            if (_connections != null)
             {
-                m_container.AddConnections(m_connections);
+                _container.AddConnections(_connections);
             }
         }
     }

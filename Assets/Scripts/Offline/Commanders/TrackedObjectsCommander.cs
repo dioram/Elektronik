@@ -32,7 +32,7 @@ namespace Elektronik.Offline.Commanders
         {
             if (pkg.DataCase == PacketPb.DataOneofCase.TrackedObjs)
             {
-                var command = GetCommand(pkg.ExtractTrackedObjects(m_converter).ToList(), pkg.Action);
+                var command = GetCommand(pkg.ExtractTrackedObjects(Converter).ToList(), pkg.Action);
                 command.Execute();
                 commands.AddLast(command);
             }

@@ -34,8 +34,8 @@ namespace Elektronik.Online
             }
         }
         
-        GrpcServer m_server;
-        bool m_serverStarted = false;
+        GrpcServer _server;
+        bool _serverStarted = false;
 
         // Start is called before the first frame update
         void Start()
@@ -51,7 +51,7 @@ namespace Elektronik.Online
 
             Debug.Log($"{SettingsBag.Current[SettingName.IPAddress].As<string>()}:{SettingsBag.Current[SettingName.Port].As<int>()}");
 
-            m_server = new GrpcServer()
+            _server = new GrpcServer()
             {
                 Services = 
                 { 
@@ -73,20 +73,20 @@ namespace Elektronik.Online
         private void StartServer()
         {
             StopServer();
-            m_server.Start();
+            _server.Start();
             status.color = Color.green;
             status.text = "gRPC server started";
-            m_serverStarted = true;
+            _serverStarted = true;
         }
 
         private void StopServer()
         {
-            if (m_serverStarted)
+            if (_serverStarted)
             {
-                m_server.ShutdownAsync().Wait();
+                _server.ShutdownAsync().Wait();
                 status.color = Color.red;
                 status.text = "gRPC server stopped";
-                m_serverStarted = false;
+                _serverStarted = false;
             }
         }
 

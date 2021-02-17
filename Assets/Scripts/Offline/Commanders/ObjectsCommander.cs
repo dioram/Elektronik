@@ -79,14 +79,14 @@ namespace Elektronik.Offline.Commanders
             {
             case PacketPb.DataOneofCase.Points:
                 return GetCommandForConnectableObjects(ConnectablePointsContainer,
-                                                       packet.ExtractPoints(m_converter).ToList(),
+                                                       packet.ExtractPoints(Converter).ToList(),
                                                        packet);
             case PacketPb.DataOneofCase.Observations:
                 return GetCommandForConnectableObjects(ConnectableObservationsContainer,
-                                                       packet.ExtractObservations(m_converter).ToList(), packet);
+                                                       packet.ExtractObservations(Converter).ToList(), packet);
             case PacketPb.DataOneofCase.InfinitePlanes:
                 return GetCommand(InfinitePlanesContainer,
-                                  packet.ExtractInfinitePlanes(m_converter).ToList(), packet);
+                                  packet.ExtractInfinitePlanes(Converter).ToList(), packet);
             default:
                 return null;
             }

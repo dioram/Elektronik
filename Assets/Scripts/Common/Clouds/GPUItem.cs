@@ -12,8 +12,8 @@ namespace Elektronik.Common.Clouds
         
         public GPUItem(SlamPoint cp)
         {
-            Position = cp.position;
-            Color = EncodeColor(cp.color);
+            Position = cp.Position;
+            Color = EncodeColor(cp.Color);
         }
 
         public GPUItem(Vector3 offset, Color color)

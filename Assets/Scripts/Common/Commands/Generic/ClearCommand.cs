@@ -6,17 +6,17 @@ namespace Elektronik.Common.Commands.Generic
 {
     public class ClearCommand<T> : ICommand
     {
-        protected readonly ReadOnlyCollection<T> m_undoObjects;
-        private readonly IContainer<T> m_container;
+        protected readonly ReadOnlyCollection<T> UndoObjects;
+        private readonly IContainer<T> _container;
 
         public ClearCommand(IContainer<T> container)
         {
-            m_container = container;
-            m_undoObjects = new ReadOnlyCollection<T>(m_container.ToArray());
+            _container = container;
+            UndoObjects = new ReadOnlyCollection<T>(_container.ToArray());
         }
 
-        public virtual void Execute() => m_container.Clear();
+        public virtual void Execute() => _container.Clear();
 
-        public virtual void UnExecute() => m_container.AddRange(m_undoObjects);
+        public virtual void UnExecute() => _container.AddRange(UndoObjects);
     }
 }

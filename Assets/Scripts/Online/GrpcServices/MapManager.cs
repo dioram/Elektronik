@@ -13,19 +13,19 @@ namespace Elektronik.Online.GrpcServices
     using UnityDebug = UnityEngine.Debug;
     public abstract class MapManager<T> : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
     {
-        MapsManagerPb.MapsManagerPbBase m_link;
+        MapsManagerPb.MapsManagerPbBase _link;
         public IChainable<MapsManagerPb.MapsManagerPbBase> SetSuccessor(IChainable<MapsManagerPb.MapsManagerPbBase> link)
         {
             UnityDebug.Assert(link != this, "[DataParser.SetSuccessor] Cyclic reference!");
-            m_link = link as MapsManagerPb.MapsManagerPbBase;
+            _link = link as MapsManagerPb.MapsManagerPbBase;
             return link;
         }
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             Task<ErrorStatusPb> status;
-            if (m_link != null)
-                status = m_link.Handle(request, context);
+            if (_link != null)
+                status = _link.Handle(request, context);
             else
                 status = Task.FromResult(new ErrorStatusPb() 
                 {

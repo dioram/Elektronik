@@ -17,8 +17,8 @@ namespace Elektronik.Common.Clouds
         
         protected override void ProcessItem(LineCloudBlock block, SlamLine item, int inBlockId)
         {
-            block.Points[inBlockId * 2 + 0] = new GPUItem(item.pt1);
-            block.Points[inBlockId * 2 + 1] = new GPUItem(item.pt2);
+            block.Points[inBlockId * 2 + 0] = new GPUItem(item.Point1);
+            block.Points[inBlockId * 2 + 1] = new GPUItem(item.Point2);
         }
 
         protected override void RemoveItem(LineCloudBlock block, int inBlockId)

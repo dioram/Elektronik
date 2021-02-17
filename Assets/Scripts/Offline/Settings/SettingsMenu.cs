@@ -12,7 +12,7 @@ namespace Elektronik.Offline.Settings
 {
     public class SettingsMenu : MonoBehaviour
     {
-        const string SETTINGS_FILE = @"offline\settings.dat";
+        const string SettingsFile = @"offline\settings.dat";
 
         public UIListBox lbRecentFiles;
         public UIListBox lbRecentImages;
@@ -30,7 +30,7 @@ namespace Elektronik.Offline.Settings
         // Use this for initialization
         void Start()
         {
-            store.Deserialize(SETTINGS_FILE);
+            store.Deserialize(SettingsFile);
             AttachBehavior2FileInput();
             AttachBehavior2Cancel();
             AttachBehavior2Load();
@@ -76,7 +76,7 @@ namespace Elektronik.Offline.Settings
 
         private void RecentFileChanged(object sender, UIListBox.SelectionChangedEventArgs e)
         {
-            SettingsBag.Current = store.Recent[e.index];
+            SettingsBag.Current = store.Recent[e.Index];
             filePathField.text = SettingsBag.Current[SettingName.FilePath].As<string>();
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
             scalingField.text = SettingsBag.Current[SettingName.Scale].As<float>().ToString(CultureInfo.CurrentCulture);
@@ -84,7 +84,7 @@ namespace Elektronik.Offline.Settings
 
         private void RecentImageChanged(object sender, UIListBox.SelectionChangedEventArgs e)
         {
-            SettingsBag.Current = store.Recent[e.index];
+            SettingsBag.Current = store.Recent[e.Index];
             imagePathField.text = SettingsBag.Current[SettingName.ImagePath].As<string>();
         }
 
@@ -115,7 +115,7 @@ namespace Elektronik.Offline.Settings
                 .Do(_ => SettingsBag.Current.Change(SettingName.FilePath, filePathField.text))
                 .Do(_ => SettingsBag.Current.Change(SettingName.ImagePath, imagePathField.text))
                 .Do(_ => store.Add(SettingsBag.Current))
-                .Do(_ => store.Serialize(SETTINGS_FILE))
+                .Do(_ => store.Serialize(SettingsFile))
                 .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Empty", UnityEngine.SceneManagement.LoadSceneMode.Single))
                 .Subscribe();
         }

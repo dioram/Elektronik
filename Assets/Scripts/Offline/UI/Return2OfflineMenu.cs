@@ -8,15 +8,15 @@ namespace Elektronik.Offline.UI
 {
     public class Return2OfflineMenu : MonoBehaviour
     {
-        Button m_button;
+        private Button _button;
         private void Awake()
         {
-            m_button = GetComponent<Button>();
+            _button = GetComponent<Button>();
         }
 
         void Start()
         {
-            m_button.onClick.AddListener(OnBackToMenuClick);
+            _button.onClick.AddListener(OnBackToMenuClick);
         }
 
         void OnBackToMenuClick()

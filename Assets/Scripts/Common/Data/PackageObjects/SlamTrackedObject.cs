@@ -4,23 +4,18 @@ namespace Elektronik.Common.Data.PackageObjects
 {
     public struct SlamTrackedObject: ICloudItem
     {
-        public int id;
-        public Color color;
-        public Vector3 position;
-        public Quaternion rotation;
+        public int Id { get; set; }
+        public Color Color;
+        public Vector3 Position;
+        public Quaternion Rotation;
 
         public SlamTrackedObject(int id, Color color = default, Vector3 position = default, Quaternion rotation = default)
         {
-            this.id = id;
-            this.color = color;
-            this.position = position;
-            this.rotation = rotation;
+            Id = id;
+            Color = color;
+            Position = position;
+            Rotation = rotation;
         }
 
-        public int Id
-        {
-            get => id;
-            set => id = value;
-        }
     }
 }

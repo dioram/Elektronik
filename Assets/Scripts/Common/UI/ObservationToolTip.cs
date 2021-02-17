@@ -11,18 +11,18 @@ namespace Common.UI
         public ObservationViewer pinnedViewer;
         public GameObjectsContainer<SlamObservation> Observations;
         
-        private Camera m_camera;
+        private Camera _camera;
 
         void Start()
         {
-            m_camera = Camera.main;
+            _camera = Camera.main;
             floatingViewer.Observations = Observations;
             pinnedViewer.Observations = Observations;
         }
 
         private void Update()
         {
-            var ray = m_camera.ScreenPointToRay(Input.mousePosition);
+            var ray = _camera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hitInfo) && hitInfo.transform.CompareTag("Observation"))
             {
                 var id = hitInfo.transform.GetComponent<IdContainer>().Id;

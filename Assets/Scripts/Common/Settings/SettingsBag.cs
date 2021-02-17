@@ -11,13 +11,13 @@ namespace Elektronik.Common.Settings
         public static Mode Mode { get; set; }
         public static SettingsBag Current { get; set; }
 
-        private Dictionary<string, Setting> m_settings;
+        private Dictionary<string, Setting> _settings;
         public Guid UniqueId { get; private set; }
         public DateTime ModificationTime { get; private set; }
         public SettingsBag()
         {
             UniqueId = Guid.NewGuid();
-            m_settings = new Dictionary<string, Setting>();
+            _settings = new Dictionary<string, Setting>();
         }
         public void Change<T>(string name, T value)
         {
@@ -29,7 +29,7 @@ namespace Elektronik.Common.Settings
         {
             ModificationTime = DateTime.Parse(info.GetString("ModificationTime"));
             UniqueId = (Guid)info.GetValue("UniqueId", typeof(Guid));
-            m_settings = (Dictionary<string, Setting>)info.GetValue("Settings", typeof(Dictionary<string, Setting>));
+            _settings = (Dictionary<string, Setting>)info.GetValue("Settings", typeof(Dictionary<string, Setting>));
         }
 
         public int CompareTo(SettingsBag other) => UniqueId.CompareTo(other.UniqueId);
@@ -38,18 +38,18 @@ namespace Elektronik.Common.Settings
         {
             info.AddValue("ModificationTime", ModificationTime.ToString(CultureInfo.CurrentCulture));
             info.AddValue("UniqueId", UniqueId);
-            info.AddValue("Settings", m_settings);
+            info.AddValue("Settings", _settings);
         }
 
         public Setting this[string name]
         {
-            get => m_settings[name];
-            private set => m_settings[name] = value;
+            get => _settings[name];
+            private set => _settings[name] = value;
         }
 
         public bool TryGetValue(string name, out Setting setting)
         {
-            return m_settings.TryGetValue(name, out setting);
+            return _settings.TryGetValue(name, out setting);
         }
     }
 }

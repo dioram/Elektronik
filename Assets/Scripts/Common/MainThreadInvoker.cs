@@ -9,16 +9,16 @@ namespace Elektronik.Common
     {
         public static MainThreadInvoker Instance { get; private set; }
 
-        private Thread m_mainThread;
+        private Thread _mainThread;
 
         public AutoResetEvent Sync { get; private set; }
 
-        private Queue<Action> m_actions;
+        private Queue<Action> _actions;
 
         private void Awake()
         {
-            m_mainThread = Thread.CurrentThread;
-            m_actions = new Queue<Action>();
+            _mainThread = Thread.CurrentThread;
+            _actions = new Queue<Action>();
             Sync = new AutoResetEvent(false);
         }
 
@@ -41,11 +41,11 @@ namespace Elektronik.Common
 
         public void Enqueue(Action action)
         {
-            if (Thread.CurrentThread != m_mainThread)
+            if (Thread.CurrentThread != _mainThread)
             {
-                lock (m_actions)
+                lock (_actions)
                 {
-                    m_actions.Enqueue(action);
+                    _actions.Enqueue(action);
                 }
             }
             else
@@ -56,11 +56,11 @@ namespace Elektronik.Common
 
         private void Update()
         {
-            lock(m_actions)
+            lock(_actions)
             {
-                while (m_actions.Count != 0)
+                while (_actions.Count != 0)
                 {
-                    m_actions.Dequeue()();
+                    _actions.Dequeue()();
                 }
             }
             Sync.Set();

@@ -21,8 +21,8 @@ namespace Elektronik.Online.GrpcServices
             var container = (Container as ConnectableTrackedObjsContainer)?.TrackedObjsContainer;
             if (container == null) throw new InvalidCastException();
             
-            var status_ = status.Result;
-            if (status_.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded &&
+            var tmpStatus = status.Result;
+            if (tmpStatus.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded &&
                 request.Action == PacketPb.Types.ActionType.Update)
             {
                 bool result = true;
@@ -43,8 +43,8 @@ namespace Elektronik.Online.GrpcServices
                 }
                 if (!result)
                 {
-                    status_.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Unknown;
-                    status_.Message = "[TrackedObjsMapManager.Handle] something went wrong when updating tracked objects";
+                    tmpStatus.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Unknown;
+                    tmpStatus.Message = "[TrackedObjsMapManager.Handle] something went wrong when updating tracked objects";
                 }
             }
             return status;

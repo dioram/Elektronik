@@ -12,13 +12,13 @@ namespace Elektronik.Common.Settings
         public int maxCountOfRecentFiles = 20;
         public List<T> Recent { get; private set; }
 
-        private JsonSerializerSettings m_settings;
+        private JsonSerializerSettings _settings;
 
         private void Awake()
         {
             Recent = new List<T>(maxCountOfRecentFiles + 1); // +1 because of first add and second remove
-            m_settings = new JsonSerializerSettings();
-            m_settings.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
+            _settings = new JsonSerializerSettings();
+            _settings.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
         }
 
         public void Add(T recent)
@@ -39,7 +39,7 @@ namespace Elektronik.Common.Settings
             var fi = new FileInfo(pathToAppData);
             if (fi.Directory.Exists && File.Exists(pathToAppData))
             {
-                Recent = JsonConvert.DeserializeObject<List<T>>(File.ReadAllText(pathToAppData), m_settings);
+                Recent = JsonConvert.DeserializeObject<List<T>>(File.ReadAllText(pathToAppData), _settings);
             }
             else
             {
@@ -55,7 +55,7 @@ namespace Elektronik.Common.Settings
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
             Debug.Log($"Serialization to:{Environment.NewLine}{pathToAppData}");
-            File.WriteAllText(pathToAppData, JsonConvert.SerializeObject(Recent, m_settings));
+            File.WriteAllText(pathToAppData, JsonConvert.SerializeObject(Recent, _settings));
         }
     }
 }

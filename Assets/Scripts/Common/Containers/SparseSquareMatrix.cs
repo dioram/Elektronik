@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace Elektronik.Common.Containers
 {
-    public class SparseSquareMatrix<ElemType> where ElemType : struct
+    public class SparseSquareMatrix<TElemType> where TElemType : struct
     {
-        private IDictionary<int, IDictionary<int, ElemType>> m_table;
+        private IDictionary<int, IDictionary<int, TElemType>> m_table;
         public void Remove(int row, int col)
         {
             if (m_table.ContainsKey(row))
@@ -14,11 +14,11 @@ namespace Elektronik.Common.Containers
             }
         }
 
-        public IEnumerable<ElemType> GetRow(int row)
+        public IEnumerable<TElemType> GetRow(int row)
         {
             if (m_table.ContainsKey(row))
                 return m_table[row].Values;
-            return Enumerable.Empty<ElemType>();
+            return Enumerable.Empty<TElemType>();
         }
         public IEnumerable<int> GetColIndices(int row)
         {
@@ -30,17 +30,17 @@ namespace Elektronik.Common.Containers
 
         public SparseSquareMatrix()
         {
-            m_table = new SortedDictionary<int, IDictionary<int, ElemType>>();
+            m_table = new SortedDictionary<int, IDictionary<int, TElemType>>();
         }
 
-        private void Set(int row, int col, ElemType value)
+        private void Set(int row, int col, TElemType value)
         {
             if (!m_table.ContainsKey(row))
-                m_table[row] = new SortedDictionary<int, ElemType>();
+                m_table[row] = new SortedDictionary<int, TElemType>();
             m_table[row][col] = value;
         }
 
-        public ElemType? this[int row, int col]
+        public TElemType? this[int row, int col]
         {
             get
             {
