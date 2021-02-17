@@ -13,7 +13,7 @@ env:
 jobs:
   buildForSomePlatforms:
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
-    runs-on: windows-2019
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
