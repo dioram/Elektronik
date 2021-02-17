@@ -25,7 +25,7 @@ jobs:
       - name: Build unity player
         run: .\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
       - name: Zip artifact
-        run: powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.', 'build.zip'); }"
+        run: powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\Build', 'build.zip'); }"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
