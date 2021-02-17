@@ -40,7 +40,7 @@ jobs:
           unity-username: ${{ secrets.UNITY_USERNAME }}
           unity-password: ${{ secrets.UNITY_PASSWORD }}
           unity-serial: ${{ secrets.UNITY_SERIAL }}
-          build-target: Windows
+          build-target: unity
       - uses: actions/upload-artifact@v1
         with:
           name: Output
