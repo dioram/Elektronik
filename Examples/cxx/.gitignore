@@ -1,0 +1,10 @@
+*
+
+!/Tests/
+!/Tests/**
+!/CMake/
+!/CMake/**
+!/third_party/
+!/third_party/**
+!/.gitignore
+!/CMakeLists.txt

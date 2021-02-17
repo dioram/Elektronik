@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace Elektronik.Common.Settings
 {
@@ -11,12 +10,15 @@ namespace Elektronik.Common.Settings
         where T : IComparable<T>
     {
         public int maxCountOfRecentFiles = 20;
-
         public List<T> Recent { get; private set; }
+
+        private JsonSerializerSettings _settings;
 
         private void Awake()
         {
             Recent = new List<T>(maxCountOfRecentFiles + 1); // +1 because of first add and second remove
+            _settings = new JsonSerializerSettings();
+            _settings.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
         }
 
         public void Add(T recent)
@@ -34,33 +36,26 @@ namespace Elektronik.Common.Settings
         public void Deserialize(string filename)
         {
             string pathToAppData = Path.Combine(Application.persistentDataPath, filename);
-            FileInfo fi = new FileInfo(pathToAppData);
-            IFormatter formatter = new BinaryFormatter();
+            var fi = new FileInfo(pathToAppData);
             if (fi.Directory.Exists && File.Exists(pathToAppData))
             {
-                using (var file = File.Open(pathToAppData, FileMode.Open))
-                {
-                    Recent = (List<T>)formatter.Deserialize(file);
-                }
+                Recent = JsonConvert.DeserializeObject<List<T>>(File.ReadAllText(pathToAppData), _settings);
             }
             else
             {
                 Recent = new List<T>();
             }
+            Debug.Log(Recent.GetType());
         }
 
         public void Serialize(string filename)
         {
             string pathToAppData = Path.Combine(Application.persistentDataPath, filename);
-            FileInfo fi = new FileInfo(pathToAppData);
+            var fi = new FileInfo(pathToAppData);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
             Debug.Log($"Serialization to:{Environment.NewLine}{pathToAppData}");
-            IFormatter formatter = new BinaryFormatter();
-            using (var file = File.Open(pathToAppData, FileMode.OpenOrCreate))
-            {
-                formatter.Serialize(file, Recent);
-            }
+            File.WriteAllText(pathToAppData, JsonConvert.SerializeObject(Recent, _settings));
         }
     }
 }

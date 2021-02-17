@@ -1,36 +1,39 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public struct SlamLine
+    public struct SlamLine : IEquatable<SlamLine>, IComparable<SlamLine>, ICloudItem
     {
-        public Vector3 vert1;
-        public Vector3 vert2;
-        public int pointId1;
-        public int pointId2;
-        public Color color1;
-        public Color color2;
-        public bool isRemoved;
-        public SlamLine(Vector3 vert1, Vector3 vert2, int pointId1, int pointId2, Color color1, Color color2)
+        public int Id { get; set; }
+        public string Message { get; set; }
+        public SlamPoint Point1;
+        public SlamPoint Point2;
+
+        public SlamLine(int id1, int id2)
         {
-            this.vert1 = vert1;
-            this.vert2 = vert2;
-            this.pointId1 = pointId1;
-            this.pointId2 = pointId2;
-            this.color1 = color1;
-            this.color2 = color2;
-            this.isRemoved = false;
+            Point1 = new SlamPoint() { Id = id1 };
+            Point2 = new SlamPoint() { Id = id2 };
+            Id = 0;
+            Message = "";
         }
 
-        public long GenerateLongId()
+        public SlamLine(SlamPoint point1, SlamPoint point2)
         {
-            return GenerateLongId(pointId1, pointId2);
+            Point1 = point1;
+            Point2 = point2;
+            Id = 0;
+            Message = "";
         }
 
-        public static long GenerateLongId(int pointId1, int pointId2)
+        public int CompareTo(SlamLine other) => GetInternalID().CompareTo(other.GetInternalID());
+
+        public bool Equals(SlamLine other) => GetInternalID() == other.GetInternalID();
+
+        private ulong GetInternalID()
         {
-            return pointId1 * UInt32.MaxValue + pointId2;
+            if (Point1.Id < Point2.Id)
+                return ((ulong)Point1.Id << sizeof(int) * 8) + (ulong)Point2.Id;
+            return ((ulong)Point2.Id << sizeof(int) * 8) + (ulong)Point1.Id;
         }
     }
 }

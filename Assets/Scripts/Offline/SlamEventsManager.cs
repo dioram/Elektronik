@@ -1,9 +1,6 @@
-﻿using Elektronik.Common.Maps;
-using Elektronik.Offline.Commanders;
-using Elektronik.Common.Presenters;
-using Elektronik.Common.Data.Packages;
+﻿using Elektronik.Common.Presenters;
 using Elektronik.Common.Extensions;
-using Elektronik.Common.PackageViewUpdateCommandPattern;
+using Elektronik.Common.Commands;
 using Elektronik.Common.Loggers;
 using Elektronik.Offline.Settings;
 using Elektronik.Common.Settings;
@@ -11,68 +8,74 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Elektronik.Common.Data.Pb;
+using System.IO;
+using Elektronik.Common.Containers;
+using Elektronik.Common.Data.Converters;
 
 namespace Elektronik.Offline
 {
     public class SlamEventsManager : MonoBehaviour
     {
         public bool ReadyToPlay { get; private set; }
-        public PackageViewUpdateCommander[] commanders;
+        public Commander[] commanders;
         public RepaintablePackagePresenter[] presenters;
-        public RepaintableObject[] maps;
+        public CSConverter converter;
+        public GameObject Containers;
 
-        private PackageViewUpdateCommander m_commander;
-        private PackagePresenter m_presenter;
+        private Commander _commander;
+        private PackagePresenter _presenter;
 
-        private IPackage[] m_packages;
-        private DataSource m_dataSource;
-
-        private LinkedListNode<IPackageViewUpdateCommand> m_currentCommand;
-        private LinkedList<IPackageViewUpdateCommand> m_commands;
-        private Dictionary<IPackageViewUpdateCommand, IPackage> m_extendedEvents;
-        private int m_position = 0;
-        
+        private LinkedListNode<ICommand> _currentCommand;
+        private LinkedList<ICommand> _commands;
+        private Dictionary<ICommand, PacketPb> _extendedEvents;
+        private int _position = 0;
 
         private void Awake()
         {
-            m_extendedEvents = new Dictionary<IPackageViewUpdateCommand, IPackage>();
-            m_commands = new LinkedList<IPackageViewUpdateCommand>();
-            m_dataSource = new DataSource();
+            _extendedEvents = new Dictionary<ICommand, PacketPb>();
+            _commands = new LinkedList<ICommand>();
         }
 
         private void Start()
         {
-            m_commander = commanders.BuildChain();
-            m_presenter = presenters.BuildChain();
+            _commander = commanders.BuildChain();
+            converter.SetInitTRS(
+                Vector3.zero,
+                Quaternion.identity,
+                Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>());
+            _commander.SetConverter(converter);
+
+            _presenter = presenters.BuildChain();
             StartCoroutine(ProcessEvents());
         }
 
         public void Clear()
         {
-            foreach (var map in maps)
-                map.Clear();
+            foreach (var container in Containers.GetComponentsInChildren<IClearable>())
+            {
+                container.Clear();
+            }
             foreach (var presenter in presenters)
                 presenter.Clear();
-            m_position = 0;
-            m_currentCommand = m_commands.First;
-            m_currentCommand.Value.Execute();
-            m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
+            _position = 0;
+            _currentCommand = _commands.First;
+            _currentCommand.Value.Execute();
+            _presenter.Present(_extendedEvents[_currentCommand.Value]);
             Repaint();
         }
 
         public void Repaint()
         {
-            foreach (var map in maps)
-                map.Repaint();
             foreach (var presenter in presenters)
                 presenter.Repaint();
         }
 
-        public int GetLength() => m_commands.Count;
+        public int GetLength() => _commands.Count;
 
-        public int GetCurrentEventPosition() => m_position;
+        public int GetCurrentEventPosition() => _position;
 
-        public IPackage GetCurrentEvent() => m_position == -1 ? null : m_extendedEvents[m_currentCommand.Value];
+        public PacketPb GetCurrentEvent() => _position == -1 ? null : _extendedEvents[_currentCommand.Value];
 
         public void SetPosition(int pos, Action whenPositionWasSet)
         {
@@ -80,19 +83,19 @@ namespace Elektronik.Offline
                 return;
             int maxLength = GetLength();
             Debug.AssertFormat(pos >= 0 && pos < maxLength, "[SlamEventsManger.SetPosition] out of range pos == {0}, but range is [0,{1})", pos, maxLength);
-            StartCoroutine(MoveToPostion(pos, whenPositionWasSet));
+            StartCoroutine(MoveToPosition(pos, whenPositionWasSet));
         }
 
-        private IEnumerator MoveToPostion(int pos, Action whenPositionWasSet)
+        private IEnumerator MoveToPosition(int pos, Action whenPositionWasSet)
         {
             ReadyToPlay = false;
-            while (m_position != pos)
+            while (_position != pos)
             {
-                if (pos > m_position)
+                if (pos > _position)
                     Next(false);
-                if (pos < m_position)
+                if (pos < _position)
                     Previous(false);
-                if (m_position % 10 == 0)
+                if (_position % 10 == 0)
                     yield return null;
             }
             whenPositionWasSet();
@@ -103,32 +106,30 @@ namespace Elektronik.Offline
 
         public bool Next(bool needRepaint = true)
         {
-            if (m_currentCommand.Next != null)
+            if (_currentCommand.Next != null)
             {
-                ++m_position;
-                m_currentCommand = m_currentCommand.Next;
-                m_currentCommand.Value.Execute();
-                m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
+                ++_position;
+                _currentCommand = _currentCommand.Next;
+                _currentCommand.Value.Execute();
+                _presenter.Present(_extendedEvents[_currentCommand.Value]);
                 if (needRepaint)
                 {
                     Repaint();
                 }
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public bool Previous(bool needRepaint = true)
         {
-            if (m_currentCommand.Previous != null)
+            if (_currentCommand.Previous != null)
             {
-                --m_position;
-                m_currentCommand.Value.UnExecute();
-                m_currentCommand = m_currentCommand.Previous;
-                m_presenter.Present(m_extendedEvents[m_currentCommand.Value]);
+                --_position;
+                _currentCommand.Value.UnExecute();
+                _currentCommand = _currentCommand.Previous;
+                _presenter.Present(_extendedEvents[_currentCommand.Value]);
                 if (needRepaint)
                 {
                     Repaint();
@@ -146,13 +147,14 @@ namespace Elektronik.Offline
         /// </summary>
         /// <param name="switchCommand">function that define Next or Previous event we need</param>
         /// <returns>true - if key event is found; false - otherwise</returns>
-        private bool KeyEventIsFound(Func<LinkedListNode<IPackageViewUpdateCommand>, LinkedListNode<IPackageViewUpdateCommand>> switchCommand)
+        private bool KeyEventIsFound(Func<LinkedListNode<ICommand>, LinkedListNode<ICommand>> switchCommand)
         {
-            var command = switchCommand(m_currentCommand);
+            var command = switchCommand(_currentCommand);
             bool isKey = false;
             while (!isKey && command != null)
             {
-                if (isKey = m_extendedEvents[command.Value].IsKey)
+                // ReSharper disable once AssignmentInConditionalExpression
+                if (isKey = _extendedEvents[command.Value].Special)
                 {
                     break;
                 }
@@ -165,7 +167,7 @@ namespace Elektronik.Offline
         {
             if (KeyEventIsFound(c => c.Next))
             {
-                while (Next(needRepaint: false) && !m_extendedEvents[m_currentCommand.Value].IsKey) { }
+                while (Next(needRepaint: false) && !_extendedEvents[_currentCommand.Value].Special) { }
                 Repaint();
                 return true;
             }
@@ -176,7 +178,7 @@ namespace Elektronik.Offline
         {
             if (KeyEventIsFound(c => c.Previous))
             {
-                while (Previous(needRepaint: false) && !m_extendedEvents[m_currentCommand.Value].IsKey) { }
+                while (Previous(needRepaint: false) && !_extendedEvents[_currentCommand.Value].Special) { }
                 Repaint();
                 return true;
             }
@@ -185,30 +187,34 @@ namespace Elektronik.Offline
 
         private IEnumerator ProcessEvents()
         {
+            // Let other objects initialize
+            yield return new WaitForSeconds(0.5f);
+            
             ElektronikLogger.OpenLog();
             Application.logMessageReceived += ElektronikLogger.Log;
-            Debug.Log("ANALYSIS STARTED");
-            m_packages = m_dataSource.Parse(SettingsBag.Current[SettingName.Path].As<string>());
-            Debug.Log("PROCESSING FINISHED");
-            for (int i = 0; i < m_packages.Length; ++i)
+            Debug.Log("Parsing file...");
+            using (var input = File.OpenRead(SettingsBag.Current[SettingName.FilePath].As<string>()))
             {
-                Debug.Log(m_packages[i]);
-                var commands = new LinkedList<IPackageViewUpdateCommand>();
-                try
+                var commands = new LinkedList<ICommand>();
+                while (input.Position != input.Length)
                 {
-                    m_commander.GetCommands(m_packages[i], in commands);
+                    var packet = PacketPb.Parser.ParseDelimitedFrom(input);
+                    try
+                    {
+                        _commander.GetCommands(packet, in commands);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e.Message);
+                        break;
+                    }
+                    foreach (var command in commands)
+                        _extendedEvents[command] = packet;
+                    _commands.MoveFrom(commands);
+                    yield return null;
                 }
-                catch (Exception e)
-                {
-                    Debug.LogWarning(e.Message);
-                    break;
-                }
-                foreach (var command in commands)
-                    m_extendedEvents[command] = m_packages[i];
-                m_commands.MoveFrom(commands);
-                if (i % 10 == 0) yield return null;
             }
-            Debug.Log("PROCESSING FINISHED");
+            Debug.Log("Parsing file... OK!");
             Clear();
             Repaint();
             ReadyToPlay = true;

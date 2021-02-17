@@ -9,13 +9,13 @@ namespace Elektronik.Online.UI
         public Text fullAddress;
         public Text dateTime;
 
-        private string m_fullAddress = "";
+        private string _fullAddress = "";
         public string FullAddress
         {
-            get { return m_fullAddress; }
+            get { return _fullAddress; }
             set
             {
-                m_fullAddress = value;
+                _fullAddress = value;
                 fullAddress.text = value;
                 string[] tokens = value.Split(new[] { ':' });
                 IP = tokens[0];

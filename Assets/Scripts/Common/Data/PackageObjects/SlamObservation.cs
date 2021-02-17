@@ -1,51 +1,40 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public class SlamObservation
+    public struct SlamObservation : ICloudItem
     {
-        public SlamPoint Point { get; set; }
-        public Quaternion Orientation { get; set; }
-
         public struct Stats
         {
-            public byte statistics1;
-            public byte statistics2;
-            public byte statistics3;
-            public byte statistics4;
-        }
-        public Stats Statistics { get; set; }
-
-        public struct CovisibleInfo
-        {
-            public int id;
-            public int sharedPointsCount;
-        }
-        public ReadOnlyCollection<CovisibleInfo> CovisibleInfos { get; private set; }
-
-        public SlamObservation(List<CovisibleInfo> covisibleObservationsInfo)
-        {
-            CovisibleInfos = new ReadOnlyCollection<CovisibleInfo>(covisibleObservationsInfo);
+            public byte Statistics1;
+            public byte Statistics2;
+            public byte Statistics3;
+            public byte Statistics4;
         }
 
-        public SlamObservation(SlamObservation src)
+        public SlamPoint Point;
+        public Quaternion Rotation;
+        public Stats Statistics;
+        public string Message { get; set; }
+        public string FileName;
+
+        public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName, Stats stats = new Stats())
         {
-            Point = src.Point;
-            Orientation = src.Orientation;
-            Statistics = src.Statistics;
-            CovisibleInfos = src.CovisibleInfos;
+            Point = pt;
+            Rotation = orientation;
+            Statistics = stats;
+            Message = message;
+            FileName = fileName;
         }
 
-        public static implicit operator SlamPoint(SlamObservation obs)
-        {
-            return obs.Point;
-        }
+        public static implicit operator SlamPoint(SlamObservation obs) => obs.Point;
 
-        public override string ToString()
+        public override string ToString() => Point.Message ?? "SlamObservation";
+
+        public int Id
         {
-            return Point.message ?? "SlamObservation";
+            get => Point.Id;
+            set => Point.Id = value;
         }
     }
 }

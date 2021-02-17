@@ -3,65 +3,94 @@ using UnityEngine.EventSystems;
 
 namespace SimpleFileBrowser
 {
-    public class FileBrowserMovement : MonoBehaviour
-    {
-        #region Variables
-        [SerializeField]
-        private RectTransform canvas;
+	public class FileBrowserMovement : MonoBehaviour
+	{
+		#region Variables
+#pragma warning disable 0649
+		private FileBrowser fileBrowser;
+		private RectTransform canvasTR;
+		private Camera canvasCam;
 
-        [SerializeField]
-        private RectTransform window;
+		[SerializeField]
+		private RectTransform window;
+		
+		[SerializeField]
+		private RecycledListView listView;
+#pragma warning restore 0649
 
-        [SerializeField]
-        private RectTransform dragGizmo;
+		private Vector2 initialTouchPos = Vector2.zero;
+		private Vector2 initialAnchoredPos, initialSizeDelta;
+		#endregion
 
-        [SerializeField]
-        private FileBrowser fileBrowser;
+		#region Initialization Functions
+		public void Initialize( FileBrowser fileBrowser )
+		{
+			this.fileBrowser = fileBrowser;
+			canvasTR = fileBrowser.GetComponent<RectTransform>();
+		}
+		#endregion
 
-        [SerializeField]
-        private RecycledListView listView;
+		#region Pointer Events
+		public void OnDragStarted( BaseEventData data )
+		{
+			PointerEventData pointer = (PointerEventData) data;
 
-        private Vector2 movePointerOffset = Vector2.zero;
-        #endregion
+			canvasCam = pointer.pressEventCamera;
+			RectTransformUtility.ScreenPointToLocalPointInRectangle( window, pointer.pressPosition, canvasCam, out initialTouchPos );
+		}
 
-        #region Pointer Events
-        public void OnDragStarted(BaseEventData data)
-        {
-            PointerEventData pointer = (PointerEventData)data;
+		public void OnDrag( BaseEventData data )
+		{
+			PointerEventData pointer = (PointerEventData) data;
 
-            movePointerOffset = (Vector2)window.position - pointer.position;
-        }
+			Vector2 touchPos;
+			RectTransformUtility.ScreenPointToLocalPointInRectangle( window, pointer.position, canvasCam, out touchPos );
+			window.anchoredPosition += touchPos - initialTouchPos;
+		}
 
-        public void OnDrag(BaseEventData data)
-        {
-            PointerEventData pointer = (PointerEventData)data;
+		public void OnEndDrag( BaseEventData data )
+		{
+			fileBrowser.EnsureWindowIsWithinBounds();
+		}
 
-            window.position = pointer.position + movePointerOffset;
-        }
+		public void OnResizeStarted( BaseEventData data )
+		{
+			PointerEventData pointer = (PointerEventData) data;
 
-        public void OnResize(BaseEventData data)
-        {
-            PointerEventData pointer = (PointerEventData)data;
+			canvasCam = pointer.pressEventCamera;
+			initialAnchoredPos = window.anchoredPosition;
+			initialSizeDelta = window.sizeDelta;
+			RectTransformUtility.ScreenPointToLocalPointInRectangle( canvasTR, pointer.pressPosition, canvasCam, out initialTouchPos );
+		}
 
-            Vector2 deltaSize = pointer.position - (Vector2)dragGizmo.position;
-            deltaSize.y = -deltaSize.y;
+		public void OnResize( BaseEventData data )
+		{
+			PointerEventData pointer = (PointerEventData) data;
 
-            Vector2 newSize = window.sizeDelta + deltaSize / canvas.localScale.x;
+			Vector2 touchPos;
+			RectTransformUtility.ScreenPointToLocalPointInRectangle( canvasTR, pointer.position, canvasCam, out touchPos );
 
-            if (newSize.x < fileBrowser.minWidth) newSize.x = fileBrowser.minWidth;
-            if (newSize.y < fileBrowser.minHeight) newSize.y = fileBrowser.minHeight;
+			Vector2 delta = touchPos - initialTouchPos;
+			Vector2 newSize = initialSizeDelta + new Vector2( delta.x, -delta.y );
 
-            newSize.x = (int)newSize.x;
-            newSize.y = (int)newSize.y;
+			if( newSize.x < fileBrowser.minWidth ) newSize.x = fileBrowser.minWidth;
+			if( newSize.y < fileBrowser.minHeight ) newSize.y = fileBrowser.minHeight;
 
-            deltaSize = newSize - window.sizeDelta;
-            deltaSize.y = -deltaSize.y;
+			newSize.x = (int) newSize.x;
+			newSize.y = (int) newSize.y;
 
-            window.sizeDelta = newSize;
-            window.anchoredPosition += deltaSize * 0.5f;
+			delta = newSize - initialSizeDelta;
 
-            listView.OnViewportDimensionsChanged();
-        }
-        #endregion
-    }
+			window.anchoredPosition = initialAnchoredPos + new Vector2( delta.x * 0.5f, delta.y * -0.5f );
+			window.sizeDelta = newSize;
+
+			listView.OnViewportDimensionsChanged();
+		}
+
+		public void OnEndResize( BaseEventData data )
+		{
+			fileBrowser.EnsureWindowIsWithinBounds();
+		}
+		#endregion
+	}
 }

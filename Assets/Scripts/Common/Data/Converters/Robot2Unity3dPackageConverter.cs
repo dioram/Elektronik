@@ -1,17 +1,16 @@
 ﻿using System;
 using UnityEngine;
-using Elektronik.Common.Data.Packages;
 
 namespace Elektronik.Common.Data.Converters
 {
-    public class Robot2Unity3dSlamEventConverter : ICSConverter
+    public class Robot2Unity3dSlamEventConverter : CSConverter
     {
-        public void Convert(ref SlamPackage srcEvent)
+        public override void Convert(ref Vector3 pos, ref Quaternion rot)
         {
             throw new NotImplementedException();
         }
 
-        public void Convert(ref Vector3 pos, ref Quaternion rot)
+        public override void SetInitTRS(Vector3 pos, Quaternion rot, Vector3 scale)
         {
             throw new NotImplementedException();
         }
