@@ -8,6 +8,7 @@ namespace Elektronik.Common.Data.PackageObjects
         public Color Color;
         public Vector3 Position;
         public Quaternion Rotation;
+        public string Message { get; set; }
 
         public SlamTrackedObject(int id, Color color = default, Vector3 position = default, Quaternion rotation = default)
         {
@@ -15,6 +16,7 @@ namespace Elektronik.Common.Data.PackageObjects
             Color = color;
             Position = position;
             Rotation = rotation;
+            Message = "";
         }
 
     }

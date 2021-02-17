@@ -7,7 +7,7 @@ namespace Elektronik.Common.Data.PackageObjects
         public int Id { get; set; }
         public Vector3 Position;
         public Color Color;
-        public string Message;
+        public string Message { get; set; }
 
         public SlamPoint(int id, Vector3 position, Color color, string message = null)
         {

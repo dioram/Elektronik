@@ -118,10 +118,8 @@ namespace Elektronik.Offline
                 }
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public bool Previous(bool needRepaint = true)

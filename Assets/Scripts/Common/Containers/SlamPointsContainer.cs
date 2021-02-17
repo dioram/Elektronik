@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class SlamPointsContainer : MonoBehaviour, ICloudObjectsContainer<SlamPoint>
+    public class SlamPointsContainer : MonoBehaviour, IClearable, ICloudObjectsContainer<SlamPoint>
     {
         public PointCloudRenderer Renderer;
 
@@ -142,7 +142,7 @@ namespace Elektronik.Common.Containers
         {
             var ids = _points.Keys.ToArray();
             _points.Clear();
-           ItemsRemoved?.Invoke(this, ids);
+            ItemsRemoved?.Invoke(this, ids);
         }
 
         #endregion

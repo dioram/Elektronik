@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class ConnectableObjectsContainer<T> : MonoBehaviour, IConnectableObjectsContainer<T> where T : ICloudItem
+    public class ConnectableObjectsContainer<T> : MonoBehaviour, IClearable, IConnectableObjectsContainer<T> where T : ICloudItem
     {
         #region Unity events
 

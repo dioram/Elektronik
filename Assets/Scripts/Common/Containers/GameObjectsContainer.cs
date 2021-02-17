@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public abstract class GameObjectsContainer<T> : MonoBehaviour, ICloudObjectsContainer<T> where T: ICloudItem
+    public abstract class GameObjectsContainer<T> : MonoBehaviour, IClearable, ICloudObjectsContainer<T> where T: ICloudItem
     {
         public GameObject ObservationPrefab;
         

@@ -5,6 +5,7 @@ namespace Elektronik.Common.Data.PackageObjects
     public struct SlamLine : IEquatable<SlamLine>, IComparable<SlamLine>, ICloudItem
     {
         public int Id { get; set; }
+        public string Message { get; set; }
         public SlamPoint Point1;
         public SlamPoint Point2;
 
@@ -13,6 +14,7 @@ namespace Elektronik.Common.Data.PackageObjects
             Point1 = new SlamPoint() { Id = id1 };
             Point2 = new SlamPoint() { Id = id2 };
             Id = 0;
+            Message = "";
         }
 
         public SlamLine(SlamPoint point1, SlamPoint point2)
@@ -20,6 +22,7 @@ namespace Elektronik.Common.Data.PackageObjects
             Point1 = point1;
             Point2 = point2;
             Id = 0;
+            Message = "";
         }
 
         public int CompareTo(SlamLine other) => GetInternalID().CompareTo(other.GetInternalID());

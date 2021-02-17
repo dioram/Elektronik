@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class SlamInfinitePlanesContainer : MonoBehaviour, IContainer<SlamInfinitePlane>
+    public class SlamInfinitePlanesContainer : MonoBehaviour, IClearable, IContainer<SlamInfinitePlane>
     {
         public InfinitePlaneCloudRenderer Renderer;
         

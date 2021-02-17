@@ -8,6 +8,6 @@ namespace Elektronik.Common.Data.PackageObjects
         public Vector3 Offset;
         public Vector3 Normal;
         public Color Color;
-        public string Message;
+        public string Message { get; set; }
     }
 }

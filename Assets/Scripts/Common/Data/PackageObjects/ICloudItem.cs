@@ -3,5 +3,6 @@
     public interface ICloudItem
     {
         int Id { get; set; }
+        string Message { get; set; }
     }
 }

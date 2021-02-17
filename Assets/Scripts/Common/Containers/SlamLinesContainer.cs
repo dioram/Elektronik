@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class SlamLinesContainer : MonoBehaviour, ILinesContainer<SlamLine>
+    public class SlamLinesContainer : MonoBehaviour, IClearable, ILinesContainer<SlamLine>
     {
         public LineCloudRenderer Renderer;
 

@@ -90,6 +90,8 @@ namespace Elektronik.Common.Clouds
         {
             foreach (var itemId in removedItemsIds)
             {
+                if (!_pointPlaces.ContainsKey((container.GetHashCode(), itemId))) continue;
+                
                 var index = _pointPlaces[(container.GetHashCode(), itemId)];
                 _pointPlaces.Remove((container.GetHashCode(), itemId));
                 if (index == _maxPlace - 1) _maxPlace--;
