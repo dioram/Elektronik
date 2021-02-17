@@ -7,11 +7,11 @@ namespace Elektronik.Common.Cameras
         [SerializeField]
         private Material postprocessMaterial;
 
-        private Camera cam;
+        private Camera _cam;
 
         private void Start(){
-            cam = GetComponent<Camera>();
-            cam.depthTextureMode = cam.depthTextureMode | DepthTextureMode.DepthNormals;
+            _cam = GetComponent<Camera>();
+            _cam.depthTextureMode = _cam.depthTextureMode | DepthTextureMode.DepthNormals;
         }
 
         private void OnRenderImage(RenderTexture source, RenderTexture destination){

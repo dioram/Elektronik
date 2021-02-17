@@ -2,29 +2,39 @@
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public struct SlamObservation
+    public struct SlamObservation : ICloudItem
     {
         public struct Stats
         {
-            public byte statistics1;
-            public byte statistics2;
-            public byte statistics3;
-            public byte statistics4;
+            public byte Statistics1;
+            public byte Statistics2;
+            public byte Statistics3;
+            public byte Statistics4;
         }
 
-        public SlamPoint point;
-        public Quaternion rotation;
-        public Stats statistics;
+        public SlamPoint Point;
+        public Quaternion Rotation;
+        public Stats Statistics;
+        public string Message { get; set; }
+        public string FileName;
 
-        public SlamObservation(SlamPoint pt, Quaternion orientation, Stats stats = new Stats())
+        public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName, Stats stats = new Stats())
         {
-            point = pt;
-            rotation = orientation;
-            statistics = stats;
+            Point = pt;
+            Rotation = orientation;
+            Statistics = stats;
+            Message = message;
+            FileName = fileName;
         }
 
-        public static implicit operator SlamPoint(SlamObservation obs) => obs.point;
+        public static implicit operator SlamPoint(SlamObservation obs) => obs.Point;
 
-        public override string ToString() => point.message ?? "SlamObservation";
+        public override string ToString() => Point.Message ?? "SlamObservation";
+
+        public int Id
+        {
+            get => Point.Id;
+            set => Point.Id = value;
+        }
     }
 }

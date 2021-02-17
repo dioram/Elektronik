@@ -1,21 +1,24 @@
 ﻿using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Pb;
-using Grpc.Core;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Elektronik.Common.Data.PackageObjects;
 
 namespace Elektronik.Online.GrpcServices
 {
-    public abstract class ConnectableObjectsMapManager<T> : MapManager<T>
+    public abstract class ConnectableObjectsMapManager<T> : MapManager<T> where T: ICloudItem
     {
-        private IConnectableObjectsContainer<T> m_map;
-        public ConnectableObjectsMapManager(IConnectableObjectsContainer<T> map) : base(map)
+        public ConnectableObjectsContainer<T> ObjectsContainer;
+
+        #region Unity events
+
+        protected virtual void Awake()
         {
-            m_map = map;
+            Container = ObjectsContainer;
         }
+
+        #endregion
 
         protected virtual Task<ErrorStatusPb> HandleConnections(PacketPb request, Task<ErrorStatusPb> baseStatus)
         {
@@ -29,13 +32,13 @@ namespace Elektronik.Online.GrpcServices
 
             if (request.Connections != null && request.Connections.Data.Count != 0)
             {
-                var connections_ = request.Connections.Data.Select(c => (c.Id1, c.Id2));
+                var connections = request.Connections.Data.Select(c => (c.Id1, c.Id2));
                 try
                 {
                     if (request.Connections.Action == PacketPb.Types.Connections.Types.Action.Add)
-                        m_map.AddConnections(connections_);
+                        ObjectsContainer.AddConnections(connections);
                     if (request.Connections.Action == PacketPb.Types.Connections.Types.Action.Remove)
-                        m_map.RemoveConnections(connections_);
+                        ObjectsContainer.RemoveConnections(connections);
                 }
                 catch (Exception e)
                 {

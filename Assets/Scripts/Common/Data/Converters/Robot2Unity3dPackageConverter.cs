@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using Elektronik.Common.Data.Packages;
 
 namespace Elektronik.Common.Data.Converters
 {

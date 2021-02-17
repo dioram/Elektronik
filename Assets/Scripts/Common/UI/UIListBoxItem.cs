@@ -9,16 +9,16 @@ namespace Elektronik.Common.UI
     {
         public event EventHandler OnClick;
 
-        private Button m_button;
+        private Button _button;
 
         private void Awake()
         {
-            m_button = GetComponent<Button>();
+            _button = GetComponent<Button>();
         }
 
         private void Start()
         {
-            m_button.onClick.AddListener(() => { if (OnClick != null) OnClick(this, null); });
+            _button.onClick.AddListener(() => { if (OnClick != null) OnClick(this, null); });
         }
 
 

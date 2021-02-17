@@ -1,11 +1,6 @@
 ﻿using Elektronik.Common.Data.Converters;
 using Elektronik.Common.Data.PackageObjects;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UniRx.Operators;
 using UnityEngine;
 
 namespace Elektronik.Common.Data.Pb
@@ -19,7 +14,7 @@ namespace Elektronik.Common.Data.Pb
             foreach (var p in packet.Points.Data)
             {
                 SlamPoint point = p;
-                converter?.Convert(ref point.position, ref stub);
+                converter?.Convert(ref point.Position, ref stub);
                 yield return point;
             }
         }
@@ -31,7 +26,7 @@ namespace Elektronik.Common.Data.Pb
             foreach (var o in packet.Observations.Data)
             {
                 SlamObservation observation = o;
-                converter?.Convert(ref observation.point.position, ref observation.rotation);
+                converter?.Convert(ref observation.Point.Position, ref observation.Rotation);
                 yield return observation;
             }
         }
@@ -43,7 +38,7 @@ namespace Elektronik.Common.Data.Pb
             foreach (var o in packet.TrackedObjs.Data)
             {
                 SlamTrackedObject trackedObject = o;
-                converter?.Convert(ref trackedObject.position, ref trackedObject.rotation);
+                converter?.Convert(ref trackedObject.Position, ref trackedObject.Rotation);
                 yield return trackedObject;
             }
         }
@@ -55,8 +50,8 @@ namespace Elektronik.Common.Data.Pb
             foreach (var l in packet.Lines.Data)
             {
                 SlamLine line = l;
-                converter?.Convert(ref line.pt1.position, ref stub);
-                converter?.Convert(ref line.pt2.position, ref stub);
+                converter?.Convert(ref line.Point1.Position, ref stub);
+                converter?.Convert(ref line.Point2.Position, ref stub);
                 yield return line;
             }
         }
@@ -69,8 +64,8 @@ namespace Elektronik.Common.Data.Pb
             foreach (var p in packet.InfinitePlanes.Data)
             {
                 SlamInfinitePlane plane = p;
-                converter?.Convert(ref plane.offset, ref stub);
-                converter?.Convert(ref plane.normal, ref stub);
+                converter?.Convert(ref plane.Offset, ref stub);
+                converter?.Convert(ref plane.Normal, ref stub);
                 yield return plane;
             }
         }
@@ -101,7 +96,7 @@ namespace Elektronik.Common.Data.Pb
     {
         public static implicit operator SlamPoint(PointPb p)
             => p != null
-                ? new SlamPoint() {id = p.id_, position = p.position_, color = p.color_, message = p.message_}
+                ? new SlamPoint() {Id = p.id_, Position = p.position_, Color = p.color_, Message = p.message_}
                 : default;
     }
 
@@ -123,7 +118,7 @@ namespace Elektronik.Common.Data.Pb
         }
 
         public static implicit operator SlamObservation(ObservationPb o)
-            => o != null ? new SlamObservation(o.point_, o.orientation_, o.stats_) : default;
+            => o != null ? new SlamObservation(o.point_, o.orientation_, o.message_, o.filename_, o.stats_) : default;
     }
 
     public partial class TrackedObjPb
@@ -137,7 +132,15 @@ namespace Elektronik.Common.Data.Pb
         public static implicit operator SlamInfinitePlane(InfinitePlanePb p)
             => p != null
                 ? new SlamInfinitePlane
-                    {color = p.Color, id = p.Id, message = p.Message, normal = p.Normal, offset = p.Offset}
+                    {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset}
                 : default;
+    }
+
+    public partial class MapsManagerPb
+    {
+        public partial class MapsManagerPbBase : MonoBehaviour
+        {
+            
+        }
     }
 }

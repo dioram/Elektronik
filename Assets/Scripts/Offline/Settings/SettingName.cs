@@ -2,7 +2,8 @@
 {
     public static class SettingName
     {
-        public const string Path = "Path";
+        public const string FilePath = "FilePath";
+        public const string ImagePath = "ImagePath";
         public const string Scale = "Scale";
     }
 }

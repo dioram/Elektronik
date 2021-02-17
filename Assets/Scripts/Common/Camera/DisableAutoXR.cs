@@ -7,7 +7,7 @@ namespace Elektronik.Common.Cameras
     public class DisableAutoXR : MonoBehaviour
     {
         public bool @default;
-        private bool m_current;
+        private bool _current;
 
         void Start()
         {
@@ -16,13 +16,13 @@ namespace Elektronik.Common.Cameras
 
         public void DisableXR(bool disable)
         {
-            m_current = disable;
+            _current = disable;
             XRDevice.DisableAutoXRCameraTracking(GetComponent<Camera>(), disable);
         }
 
         void OnEnable()
         {
-            DisableXR(m_current);
+            DisableXR(_current);
         }
     }
 }

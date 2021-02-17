@@ -8,7 +8,7 @@ namespace Elektronik.Common.UI
 {
     public class InputWithBrowse : MonoBehaviour
     {
-        private Button m_buBrowse;
+        private Button _browseButton;
 
         [HideInInspector]
         public InputField ifFilePath;
@@ -24,8 +24,8 @@ namespace Elektronik.Common.UI
         // Use this for initialization
         void Start()
         {
-            m_buBrowse = GetComponentInChildren<Button>();
-            m_buBrowse.OnClickAsObservable().Subscribe(_ => Browse());
+            _browseButton = GetComponentInChildren<Button>();
+            _browseButton.OnClickAsObservable().Subscribe(_ => Browse());
 
             ifFilePath = GetComponentInChildren<InputField>();
 
@@ -43,8 +43,9 @@ namespace Elektronik.Common.UI
         void Browse()
         {
             FileBrowser.ShowLoadDialog(
-                path => ifFilePath.text = path[0], 
-                () => { }, 
+                path => ifFilePath.text = path[0],
+                () => { },
+                folderMode,
                 initialPath: initialPath, 
                 title: title, 
                 loadButtonText: buttonText);

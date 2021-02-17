@@ -1,27 +1,24 @@
 ﻿using Elektronik.Common.Containers;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Elektronik.Common.Data.PackageObjects;
 
 namespace Elektronik.Common.Commands.Generic
 {
-    public class ConnectableClearCommand<T> : ClearCommand<T>
+    public class ConnectableClearCommand<T> : ClearCommand<T> where T: ICloudItem
     {
-        private readonly (int, int)[] m_connections;
-        private readonly IConnectableObjectsContainer<T> m_container;
+        private readonly (int, int)[] _connections;
+        private readonly IConnectableObjectsContainer<T> _container;
 
         public ConnectableClearCommand(IConnectableObjectsContainer<T> container) : base(container)
         {
-            m_container = container;
-            m_connections = container.Connections.Select(l => (l.pt1.id, l.pt2.id)).ToArray();
+            _container = container;
+            _connections = container.Connections.Select(l => (l.Point1.Id, l.Point2.Id)).ToArray();
         }
 
         public override void UnExecute()
         {
             base.UnExecute();
-            m_container.AddConnections(m_connections);
+            _container.AddConnections(_connections);
         }
     }
 }

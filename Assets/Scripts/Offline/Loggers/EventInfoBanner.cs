@@ -1,12 +1,8 @@
-﻿using Elektronik.Common.Containers;
-using Elektronik.Common.Data.PackageObjects;
+﻿using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.UI;
-using Elektronik.Common.Data.Packages;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using Elektronik.Common.Data;
 
 namespace Elektronik.Offline.Loggers
 {
@@ -37,13 +33,13 @@ namespace Elektronik.Offline.Loggers
             foreach (var obj in objects)
             {
                 var item = listBoxWithSpecializedObjects.Add() as SpecialInfoListBoxItem;
-                item.SetObject(obj.id, objectType, obj.position, obj.message);
+                item.SetObject(obj.Id, objectType, obj.Position, obj.Message);
             }
         }
 
         private void ObjectInfoSelectionChanged(object sender, UIListBox.SelectionChangedEventArgs e)
         {
-            var item = listBoxWithSpecializedObjects[e.index] as SpecialInfoListBoxItem;
+            var item = listBoxWithSpecializedObjects[e.Index] as SpecialInfoListBoxItem;
             loggerForSpecialInformation.ShowObjectInformation(item.Message, item.Position);
         }
     }

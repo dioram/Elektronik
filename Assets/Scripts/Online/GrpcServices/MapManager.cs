@@ -3,32 +3,29 @@ using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Pb;
 using Grpc.Core;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace Elektronik.Online.GrpcServices
 {
     using UnityDebug = UnityEngine.Debug;
     public abstract class MapManager<T> : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
     {
-        MapsManagerPb.MapsManagerPbBase m_link;
+        MapsManagerPb.MapsManagerPbBase _link;
         public IChainable<MapsManagerPb.MapsManagerPbBase> SetSuccessor(IChainable<MapsManagerPb.MapsManagerPbBase> link)
         {
             UnityDebug.Assert(link != this, "[DataParser.SetSuccessor] Cyclic reference!");
-            m_link = link as MapsManagerPb.MapsManagerPbBase;
+            _link = link as MapsManagerPb.MapsManagerPbBase;
             return link;
         }
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             Task<ErrorStatusPb> status;
-            if (m_link != null)
-                status = m_link.Handle(request, context);
+            if (_link != null)
+                status = _link.Handle(request, context);
             else
                 status = Task.FromResult(new ErrorStatusPb() 
                 {
@@ -37,14 +34,8 @@ namespace Elektronik.Online.GrpcServices
                 });
             return status;
         }
-            
-
-        IContainer<T> m_map;
-
-        protected MapManager(IContainer<T> map)
-        {
-            m_map = map;
-        }
+        
+        protected IContainer<T> Container;
 
         protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, IList<T> data)
         {
@@ -54,21 +45,21 @@ namespace Elektronik.Online.GrpcServices
             ErrorStatusPb errorStatus = new ErrorStatusPb() { ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded };
             try
             {
-                lock(m_map)
+                lock(Container)
                 {
                     switch (action)
                     {
                         case PacketPb.Types.ActionType.Add:
-                            m_map.Add(readOnlyData);
+                            Container.AddRange(readOnlyData);
                             break;
                         case PacketPb.Types.ActionType.Update:
-                            m_map.Update(readOnlyData);
+                            Container.UpdateItems(readOnlyData);
                             break;
                         case PacketPb.Types.ActionType.Remove:
-                            m_map.Remove(readOnlyData);
+                            Container.Remove(readOnlyData);
                             break;
                         case PacketPb.Types.ActionType.Clear:
-                            m_map.Clear();
+                            Container.Clear();
                             break;
                     }
                 }

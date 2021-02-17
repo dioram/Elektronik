@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public struct SlamTrackedObject
+    public struct SlamTrackedObject: ICloudItem
     {
-        public int id;
-        public Color color;
-        public Vector3 position;
-        public Quaternion rotation;
+        public int Id { get; set; }
+        public Color Color;
+        public Vector3 Position;
+        public Quaternion Rotation;
+        public string Message { get; set; }
 
         public SlamTrackedObject(int id, Color color = default, Vector3 position = default, Quaternion rotation = default)
         {
-            this.id = id;
-            this.color = color;
-            this.position = position;
-            this.rotation = rotation;
+            Id = id;
+            Color = color;
+            Position = position;
+            Rotation = rotation;
+            Message = "";
         }
+
     }
 }

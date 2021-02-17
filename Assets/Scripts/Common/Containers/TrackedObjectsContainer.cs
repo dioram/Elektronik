@@ -1,37 +1,54 @@
 ﻿using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Maps;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
     public class TrackedObjectsContainer : GameObjectsContainer<SlamTrackedObject>
     {
-        public TrackedObjectsContainer(Helmet prefab) : base(prefab.gameObject) { }
+        #region Unity events
+        
+        protected override void OnEnable()
+        {
+            foreach (var o in ObservationsPool.ActiveObject)
+            {
+                o.GetComponent<Helmet>().SetActive(true);
+            }
+        }
 
-        protected override int GetObjectId(SlamTrackedObject obj) => obj.id;
+        protected override void OnDisable()
+        {
+            foreach (var o in ObservationsPool.ActiveObject)
+            {
+                o.GetComponent<Helmet>().SetActive(false);
+            }
+        }
 
-        protected override Pose GetObjectPose(SlamTrackedObject obj) => new Pose(obj.position, obj.rotation);
+        #endregion
+        
+        #region GameObjectsContainer implementation
+
+        protected override int GetObjectId(SlamTrackedObject obj) => obj.Id;
+
+        protected override Pose GetObjectPose(SlamTrackedObject obj) => new Pose(obj.Position, obj.Rotation);
 
         protected override void UpdateGameObject(SlamTrackedObject @object, GameObject gameObject)
         {
             Helmet helmet = gameObject.GetComponent<Helmet>();
-            helmet.color = @object.color;
-            helmet.transform.SetPositionAndRotation(@object.position, @object.rotation);
+            helmet.Color = @object.Color;
+            helmet.transform.SetPositionAndRotation(@object.Position, @object.Rotation);
         }
 
-        protected override SlamTrackedObject Update(SlamTrackedObject current, SlamTrackedObject @new) => @new;
+        protected override SlamTrackedObject UpdateItem(SlamTrackedObject current, SlamTrackedObject @new) => @new;
 
         protected override SlamPoint AsPoint(SlamTrackedObject obj)
             => new SlamPoint()
             {
-                color = obj.color,
-                id = obj.id,
-                position = obj.position,
+                    Color = obj.Color,
+                    Id = obj.Id,
+                    Position = obj.Position,
             };
+
+        #endregion
     }
 }

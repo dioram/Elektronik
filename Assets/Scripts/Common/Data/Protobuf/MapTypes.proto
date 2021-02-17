@@ -35,6 +35,8 @@ message ObservationPb {
   }
   PointPb point = 1;
   Vector4Pb orientation = 2;
+  string message = 3;
+  string filename = 4;
   Stats stats = 16;
 }
 
@@ -110,4 +112,8 @@ message PacketPb {
     Lines lines = 15;
     InfinitePlanes infinitePlanes = 16;
   }
+}
+
+message ImagePacketPb {
+  bytes image_data = 1;
 }

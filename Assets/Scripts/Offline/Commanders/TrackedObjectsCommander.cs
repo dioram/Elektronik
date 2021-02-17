@@ -1,30 +1,29 @@
 ﻿using Elektronik.Common.Commands;
 using Elektronik.Common.Commands.Generic;
-using Elektronik.Common.Data.Converters;
 using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Pb;
-using Elektronik.Common.Maps;
 using System.Collections.Generic;
 using System.Linq;
+using Elektronik.Common.Containers;
 
 namespace Elektronik.Offline.Commanders
 {
     public class TrackedObjectsCommander : Commander
     {
-        public SlamMap map;
+        public ConnectableTrackedObjsContainer Container;
         
         protected virtual ICommand GetCommand(IEnumerable<SlamTrackedObject> objs, PacketPb.Types.ActionType action)
         {
             switch (action)
             {
                 case PacketPb.Types.ActionType.Add:
-                    return new AddCommand<SlamTrackedObject>(map.TrackedObjs, objs);
+                    return new AddCommand<SlamTrackedObject>(Container, objs);
                 case PacketPb.Types.ActionType.Update:
-                    return new UpdateTrackedObjsCommand(map.TrackedObjsGO, objs);
+                    return new UpdateTrackedObjsCommand(Container.TrackedObjsContainer, objs);
                 case PacketPb.Types.ActionType.Remove:
-                    return new RemoveTrackedObjCommands(map.TrackedObjsGO, objs);
+                    return new RemoveTrackedObjCommands(Container.TrackedObjsContainer, objs);
                 case PacketPb.Types.ActionType.Clear:
-                    return new ClearTrackedObjsCommand(map.TrackedObjsGO);
+                    return new ClearTrackedObjsCommand(Container.TrackedObjsContainer);
                 default: return null;
             }
         }
@@ -33,7 +32,7 @@ namespace Elektronik.Offline.Commanders
         {
             if (pkg.DataCase == PacketPb.DataOneofCase.TrackedObjs)
             {
-                var command = GetCommand(pkg.ExtractTrackedObjects(m_converter).ToList(), pkg.Action);
+                var command = GetCommand(pkg.ExtractTrackedObjects(Converter).ToList(), pkg.Action);
                 command.Execute();
                 commands.AddLast(command);
             }

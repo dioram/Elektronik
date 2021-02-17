@@ -9,7 +9,8 @@ namespace csharp.Tests
 {
     public abstract class TestsBase
     {
-        protected MapsManagerPb.MapsManagerPbClient m_client;
+        protected MapsManagerPb.MapsManagerPbClient m_mapClient;
+        protected ImageManagerPb.ImageManagerPbClient m_imageClient;
 
         public TestsBase()
         {
@@ -17,7 +18,8 @@ namespace csharp.Tests
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
 
             var channel = new Channel("127.0.0.1:5050", ChannelCredentials.Insecure);
-            m_client = new MapsManagerPb.MapsManagerPbClient(channel);
+            m_mapClient = new MapsManagerPb.MapsManagerPbClient(channel);
+            m_imageClient = new ImageManagerPb.ImageManagerPbClient(channel);
         }
     }
 }

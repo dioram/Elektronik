@@ -1,17 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Elektronik.Online.GrpcServices;
 using Grpc.Core;
 using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Extensions;
-using Elektronik.Common.Maps;
 using Elektronik.Common;
 using Elektronik.Online.Settings;
 using Elektronik.Common.Settings;
 using UnityEngine.UI;
-using System.Net;
 using System;
+using System.Linq;
+using Elektronik.Common.Cameras;
+using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Converters;
 
 namespace Elektronik.Online
@@ -21,11 +20,22 @@ namespace Elektronik.Online
     public partial class Server : MonoBehaviour
     {
         public Text status;
-        public SlamMap slamMaps;
         public CSConverter converter;
+        public CameraImageRenderer imageRenderTarget;
+        public GameObject Containers;
 
-        GrpcServer m_server;
-        bool m_serverStarted = false;
+        public MapsManagerPb.MapsManagerPbBase[] MapManagers;
+
+        public void ClearAll()
+        {
+            foreach (var container in Containers.GetComponentsInChildren<IClearable>())
+            {
+                container.Clear();
+            }
+        }
+        
+        GrpcServer _server;
+        bool _serverStarted = false;
 
         // Start is called before the first frame update
         void Start()
@@ -37,23 +47,17 @@ namespace Elektronik.Online
             converter.SetInitTRS(Vector3.zero, Quaternion.identity, 
                 Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>());
 
-            var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
-            {
-                new PointsMapManager(slamMaps.Points, converter),
-                new ObservationsMapManager(slamMaps.Observations, converter),
-                new TrackedObjsMapManager(slamMaps.TrackedObjsGO, slamMaps.TrackedObjs, converter),
-                new LinesMapManager(slamMaps.Lines, converter),
-                new InfinitePlanesMapManager(slamMaps.InfinitePlanes, converter)
-            }.BuildChain();
+            var servicesChain = MapManagers.Select(m => m as IChainable<MapsManagerPb.MapsManagerPbBase>).BuildChain();
 
             Debug.Log($"{SettingsBag.Current[SettingName.IPAddress].As<string>()}:{SettingsBag.Current[SettingName.Port].As<int>()}");
 
-            m_server = new GrpcServer()
+            _server = new GrpcServer()
             {
                 Services = 
                 { 
                     MapsManagerPb.BindService(servicesChain), 
-                    SceneManagerPb.BindService(new SceneManager(slamMaps)),
+                    SceneManagerPb.BindService(new SceneManager(Containers)),
+                    ImageManagerPb.BindService(new ImageManager(imageRenderTarget))
                 },
                 Ports =
                 {
@@ -69,20 +73,20 @@ namespace Elektronik.Online
         private void StartServer()
         {
             StopServer();
-            m_server.Start();
+            _server.Start();
             status.color = Color.green;
             status.text = "gRPC server started";
-            m_serverStarted = true;
+            _serverStarted = true;
         }
 
         private void StopServer()
         {
-            if (m_serverStarted)
+            if (_serverStarted)
             {
-                m_server.ShutdownAsync().Wait();
+                _server.ShutdownAsync().Wait();
                 status.color = Color.red;
                 status.text = "gRPC server stopped";
-                m_serverStarted = false;
+                _serverStarted = false;
             }
         }
 
