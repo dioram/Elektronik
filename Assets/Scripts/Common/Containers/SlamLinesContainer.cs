@@ -22,20 +22,20 @@ namespace Elektronik.Common.Containers
             }
             else
             {
-                ItemsAdded += Renderer.OnItemsAdded;
-                ItemsUpdated += Renderer.OnItemsUpdated;
-                ItemsRemoved += Renderer.OnItemsRemoved;
+                OnAdded += Renderer.OnItemsAdded;
+                OnUpdated += Renderer.OnItemsUpdated;
+                OnRemoved += Renderer.OnItemsRemoved;
             }
         }
 
         private void OnEnable()
         {
-            ItemsAdded?.Invoke(this, this);
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
         }
 
         private void OnDisable()
         {
-            ItemsRemoved?.Invoke(this, _connections.Keys);
+            OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys));
         }
 
         private void OnDestroy()
@@ -47,11 +47,11 @@ namespace Elektronik.Common.Containers
 
         #region IContaitner implementation
 
-        public event Action<IContainer<SlamLine>, IEnumerable<SlamLine>> ItemsAdded;
+        public event Action<IContainer<SlamLine>, AddedEventArgs<SlamLine>> OnAdded;
 
-        public event Action<IContainer<SlamLine>, IEnumerable<SlamLine>> ItemsUpdated;
+        public event Action<IContainer<SlamLine>, UpdatedEventArgs<SlamLine>> OnUpdated;
 
-        public event Action<IContainer<SlamLine>, IEnumerable<int>> ItemsRemoved;
+        public event Action<IContainer<SlamLine>, RemovedEventArgs> OnRemoved;
 
         public int Count => _connections.Count;
 
@@ -102,7 +102,7 @@ namespace Elektronik.Common.Containers
             obj.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
             _connectionsIndices[obj] = obj.Id;
             _connections[obj.Id] = obj;
-            ItemsAdded?.Invoke(this, new[] {obj});
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {obj}));
         }
 
         public void Insert(int index, SlamLine item) => Add(item);
@@ -118,7 +118,7 @@ namespace Elektronik.Common.Containers
                 _connectionsIndices[line] = line.Id;
                 _linesBuffer.Add(line);
             }
-            ItemsAdded?.Invoke(this, _linesBuffer);
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(_linesBuffer));
             _linesBuffer.Clear();
         }
 
@@ -127,7 +127,7 @@ namespace Elektronik.Common.Containers
             int index = _connectionsIndices[obj];
             obj.Id = index;
             _connections[obj.Id] = obj;
-            ItemsUpdated?.Invoke(this, new[] {obj});
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {obj}));
         }
 
         public void UpdateItems(IEnumerable<SlamLine> objs)
@@ -141,7 +141,7 @@ namespace Elektronik.Common.Containers
                 _linesBuffer.Add(line);
             }
 
-            ItemsUpdated?.Invoke(this, _linesBuffer);
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(_linesBuffer));
             _linesBuffer.Clear();
         }
 
@@ -163,7 +163,7 @@ namespace Elektronik.Common.Containers
                 _connectionsIndices.Remove(line);
             }
 
-            ItemsRemoved?.Invoke(this, ids);
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
         }
 
         public void RemoveAt(int index)
@@ -179,7 +179,7 @@ namespace Elektronik.Common.Containers
             _connectionsIndices.Clear();
             _freeIds.Clear();
             _maxId = 0;
-            ItemsRemoved?.Invoke(this, ids);
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
         }
 
         #endregion
@@ -215,7 +215,7 @@ namespace Elektronik.Common.Containers
             {
                 _connections.Remove(l.Id);
                 _freeIds.Enqueue(l.Id);
-                ItemsRemoved?.Invoke(this, new[] {l.Id});
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {l.Id}));
                 return true;
             }
 
