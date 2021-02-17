@@ -24,10 +24,8 @@ jobs:
           lfs: true
       - name: Build unity player
         run: .\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
-      - uses: actions/upload-artifact@v1
-        with:
-          name: Build
-          path: build
+      - name: Zip artifact
+        run: powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('build.zip', '.'); }"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -47,5 +45,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: build.zip
-          asset_name: Build.zip
+          asset_name: release-${{ github.ref }}.zip
           asset_content_type: application/zip
