@@ -25,7 +25,8 @@ jobs:
       - name: compile protobuf 2
         run: .\Assets\Editor\protoc\bin\windows-x64\protoc.exe -I .\Assets\Editor\protoc\include -I .\Assets\Scripts\Common\Data\Protobuf --csharp_out=.\Assets\generatedFiles\Scripts\Common\Data\Protobuf --grpc_out=.\Assets\generatedFiles\Scripts\Common\Data\Protobuf --plugin=protoc-gen-grpc=.\Assets\Editor\protoc\bin\windows-x64\grpc_csharp_plugin.exe .\Assets\Scripts\Common\Data\Protobuf\UpdateMapService.proto
       - name: Build unity player
-        run: 'C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe' -quit -accept-apiupdate -batchmode -serial F4-X8VG-AMQS-HB73-646U-8YPY -username 'p.krasnov@dioram.ai' -password 'USSEnterprise1701' -projectPath D:\Elektronik-Tools-2.0\ -buildWindows64Player .\Build\Elektronik.exe
+        run: |
+        'C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe' -quit -accept-apiupdate -batchmode -serial F4-X8VG-AMQS-HB73-646U-8YPY -username 'p.krasnov@dioram.ai' -password 'USSEnterprise1701' -projectPath D:\Elektronik-Tools-2.0\ -buildWindows64Player .\Build\Elektronik.exe
       - uses: actions/upload-artifact@v1
         with:
           name: Build
