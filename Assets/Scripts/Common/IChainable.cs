@@ -1,5 +1,7 @@
 ﻿namespace Elektronik.Common
 {
+    /// <summary> Interface for handlers in pattern "Chain of responsibility" </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IChainable<T>
     {
         /// <summary> Sets next command to perform after this. </summary>

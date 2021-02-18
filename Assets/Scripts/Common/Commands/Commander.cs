@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Elektronik.Common.Commands
 {
+    /// <summary>
+    /// Base class for handle data in offline mode. Used in pattern "Chain of responsibility".
+    /// </summary>
     public abstract class Commander : MonoBehaviour, IChainable<Commander>
     {
         protected Commander Successor;

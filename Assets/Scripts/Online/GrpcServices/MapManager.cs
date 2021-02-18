@@ -11,6 +11,11 @@ using System.Threading.Tasks;
 namespace Elektronik.Online.GrpcServices
 {
     using UnityDebug = UnityEngine.Debug;
+    
+    /// <summary> 
+    /// Base class for handle data in online mode. Used in pattern "Chain of responsibility".
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class MapManager<T> : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
     {
         MapsManagerPb.MapsManagerPbBase _link;

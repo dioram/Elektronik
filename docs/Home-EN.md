@@ -1,4 +1,6 @@
-﻿Elektronik Tools 2.0 is a tool that is actively used by the Dioram development team in developing tracking algorithms and SLAM.
+﻿## Elektronik Tools 2.0 
+
+is a tool that is actively used by the Dioram development team in developing tracking algorithms and SLAM.
 This software allows you to visually track changes in the point cloud and the connectivity graph of observations in a map
 constructed using the SLAM algorithm; also, this program allows you to observe the tracks of motion of the tracked objects
 (for example, the track of the VR helmet and the reference track).
@@ -9,4 +11,17 @@ This documentation will help you to get familiar with the interface of the appli
 
 Choose a section:
 - [Usage](Usage-EN.md)
-- [API](https://github.com/dioram/Elektronik-Tools-2.0/wiki/API-Documentation)
+- [Data transfer format](Data-EN.md)
+- [Internal API](API-EN.md)
+
+### Update from 2.0 on 3.0 and above
+
+Since version 3.0 Elektronik uses [google protocol buffers](https://developers.google.com/protocol-buffers/?hl=en) 
+and [gRPC](https://grpc.io/).
+
+If you used version 2.0 before you need to delete directory:
+
+C:\\Users\\<user_name>\\AppData\\LocalLow\\Dioram\\Elektronik tools 2_0
+
+This directory contains history of last opened files and connections.
+Format of this data has been changed on 3.0 and will cause errors.

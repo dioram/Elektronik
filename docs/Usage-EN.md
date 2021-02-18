@@ -1,74 +1,116 @@
-# Introduction
+### The work with Elektronik Tools 2.0 starts from the main menu.
+![MainMenu](MainMenu.png)
 
-Starting with version 3.0 the Elektronik uses [google protocol buffers](https://developers.google.com/protocol-buffers/?hl=en) data exchange format and [gRPC](https://grpc.io/). You can familiar with documentation for these frameworks by presented references.
+In the main menu you can select one of the modes of interaction with the Electronics.
+1. [Online mode](#Online) - data is transferred via TCP connection.
+2. [Offline mode](#Offline) - data is read from a file.
 
-If you've used the version 2 of Elektronik before, then you must remove the folder:
+You can view the format of the input data on [this page](Data-EN.md).
 
-C:\\Users\\<user_name>\\AppData\\LocalLow\\Dioram\\Elektronik tools 2_0
+# Offline
 
-That folder contains a history of recently opened files and recent connections addresses. A storage format of such information has been changed and old format will lead to errors. A new storage format is a json, and, if you need, it allows to add quick access addresses manually.
+When you select the offline mode you will see the settings window.
+![offline mode settings](OfflineMenu.png)
 
-All Elektronik data is represented as data packages. Each package contains:
-1. Data action:
-   * add
-   * update
-   * remove
-   * clear
-   * info
-2. Timestamp
-3. Special package flag (special)
-4. Message
-5. Connections set
-6. Data:
-   * Points
-   * Observations
-   * Lines
-   * Tracked objects
+In this window you can select a file, specify the directory with images form camera (not necessary)
+and the scaling factor which will be applied to read data.
+After the file selection it is necessary to click Load button. 
+If Load button is disabled it means that the file has not been found and you have to check the path to it.
 
-## Data actions
+After the successful file loading you will see the following window.
 
-There are four actions over data:
-1. Add. This action adds neccesary objects to a map. Note, that without objects adding, you can't interact with them in a future. If you try to apply anything to unexisted object, then an error will raise in Elektronik.
-2. Update. This action changes object parameters according to received data.
-3. Remove. Removes an object from a map.
-4. Clear. Clear a map corresponding an object type.
+![offline mode user interface](OfflineMode.png)
 
-## Timestamp
+If the file is large enough it is necessary to wait until it is processed.
 
-Timestamp is used by the Elektronik offline mode, it is displayed on an actions rewinding slider in the right-bottom corner of a window. Online mode doesn't display this information.
+The picture above indicates the following controls and display information:
 
-## Special package flag
+1. Return to the offline mode settings menu.
+2. [Settings](#Settings)
+3. Event information window.
+4. Objects with "special" information will be listed in this area. 
+   Enumerations will be presented in the form of buttons. 
+   After clicking them the camera will move to the object and information 
+   about this object will appear in the upper part of the screen.
+5. Start playing events from file. For a fast rewind use the slider (see p.10).
+6. Pause playback.
+7. Stop playback. It stops playing and clears the scene. Also you can use it just to clean scene.
+8. Rewind to the previous key event. (hotkey `[`)
+9. Rewind to the next key event. (hotkey `]`)
+10. Event rewind slider. With this slider you can rewind events. 
+    During the rewind, the information is not drawn for each of the rewinded events. 
+    Redrawing occurs only for the event to which you want to rewind. 
+    
+# Online
 
-Special package flag is used by offline mode, it is intended to skip non interesting actions by clicking rewinding buttons to jump to nearest special package.
+When you select the online mode you will see the settings window.
 
-## Message
+![Online mode settings](OnlineMenu.png)
 
-A message is displayed for all special packages in the right-top corner of window in offline mode.
+At this window you can see the following settings:
 
-## Connections set
+1. IP address of TCP server from which the data will be recieved.
+2. TCP Server port from which the data will be recieved.
+3. Scaling factor of input data.
 
-A connections set is intended to display lines between objects such as points or observations. A connection is a tuple of two integer values which contain ids of connecting objects. At the moment it is possible to setup connections just between same type objects, e.g. there is no possibility to connect a point with an observation. Note, that a connection will be updated automatically while object updating.
+After setting all required settings it is necessary to click the Load button.
+If the button is disabled check the IP address and port. Note that connection 
+is not established immediately by pressing the Load button, therefore you can load scene even if the server does not work yet.
 
-Besides connections, a set also contains an action. It may be one of two following actions:
-  * Add
-  * Remove
+After that you will go to the next scene.
 
-In both cases an action can be done just over existing objects in a map, but connections have an effect just while objects updating. For example, to add (remove) connections between two points, you should send a package with an "update" action for points and an "add" ("remove") action for connections. Also connections can be added and without actual update for objects, e.g. you can create a package which will contain an empty set of objects and non empty set of connections.
+![Online mode](OnlineMode.png)
 
-## Data
+Unlike the offline mode, there is no playback control in online mode and also some UI elements are missing for improved performance.
 
-At the moment there are four types of data:
-1. Points
-2. Observations
-3. Lines
-4. Tracked objects
+Management in the online mode is as follows:
 
-Any package must have one set of objects of type above.
+1. Return to connection settings.
+2. [Settings](#Settings)
+3. Clearing the scene. Do not use it while receiving the data! 
+   Updating the map takes place incrementally so premature cleaning will result in an error.
+4. Connection status.
 
-# C#
+# Settings
 
-You can familiar with Elektronik interaction example in the folder Examples/csharp at the root of repo. The example is implemented as Unit-tests. Before starting tests you should run Elektronik in online mode. After tests was ran, there will be the file PointsStressTests.dat in the executable files directory folder which can be used as Elektronik opportunities presentation in offline mode.
+![Common settings](CommonSettings.png)
 
-# C++
+Common settings for both modes.
 
-You can familiar with Elektronik interaction example in the folder Examples/cxx at the root of repo. The example is implemented as google tests Unit-tests. To build this example we recommend to use [vcpkg](https://github.com/Microsoft/vcpkg).
+1. Turn on/off display of the cloud points. Adding points to the cloud does not turn off.
+2. Slider for changing point size,
+3. Turn on/off display of the tracks.
+4. Turn on/off display of the observations. Adding observations to the visibility graph does not turn off.
+5. Turn on/off display of planes.
+6. Turn on/off images form camera.
+7. Switch of camera type (presently implemented only free camera).
+11. Switch to VR mode (see [VR mode](#VR-mode)).
+
+# Observations
+
+![Observations images](Observations.png)
+
+Elektronik can show additional information about observation.
+If you hover mouse over observation object you will see floating window.
+You can pin this window by clicking on observation.
+In online mode you will see only text information about observation.
+In offline you can also see images taken at moment of observation if images directory has been set.
+You can learn more about this function [here](Data-EN.md#Observations)
+
+# Images form camera.
+
+If "Camera view" setting is turned on you will see window in bottom-right corner.
+Here will be shown actual images from camera.
+If you want to know how to send images check [here](Data-EN.md#Image-package).
+This function works in both modes, but in offline you should set images directory.
+
+# VR Mode
+This mode works only if you have connected a VR helmet and it is supported by Unity (
+for example, if it is supported in SteamVR). In the VR mode you will see the scene from VR helmet 
+and watch the process of building a map.
+
+In this mode you can bind the position of the connected helmet or replace this position with coordinates 
+that are generated by your algorithm. In "VR Settings" you can switch between 
+[online mode](#Оnline) and [offline mode](#Offline).
+
+[<- Start page](Home-EN.md) | [Data transfer format ->](Data-EN.md)
