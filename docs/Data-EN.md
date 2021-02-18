@@ -95,7 +95,7 @@ Point object contains:
 3. Color
 4. Message
 
-### Observation
+### Observations
 
 Observation object contains:
 1. Point
