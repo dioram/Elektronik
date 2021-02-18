@@ -43,13 +43,13 @@ namespace Elektronik.Online
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             GrpcEnvironment.SetLogger(new UnityLogger());
+            var currentSettings = OnlineSettingsBag.GetCurrent();
 
-            converter.SetInitTRS(Vector3.zero, Quaternion.identity, 
-                Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>());
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * currentSettings.Scale);
 
             var servicesChain = MapManagers.Select(m => m as IChainable<MapsManagerPb.MapsManagerPbBase>).BuildChain();
 
-            Debug.Log($"{SettingsBag.Current[SettingName.IPAddress].As<string>()}:{SettingsBag.Current[SettingName.Port].As<int>()}");
+            Debug.Log($"{currentSettings.IPAddress}:{currentSettings.Port}");
 
             _server = new GrpcServer()
             {
@@ -61,10 +61,7 @@ namespace Elektronik.Online
                 },
                 Ports =
                 {
-                    new ServerPort(
-                        SettingsBag.Current[SettingName.IPAddress].As<string>(),
-                        SettingsBag.Current[SettingName.Port].As<int>(), 
-                        ServerCredentials.Insecure),
+                    new ServerPort(currentSettings.IPAddress, currentSettings.Port, ServerCredentials.Insecure),
                 },
             };
             StartServer();

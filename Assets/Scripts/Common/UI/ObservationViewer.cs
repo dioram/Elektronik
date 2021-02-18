@@ -42,7 +42,7 @@ namespace Common.UI
             _currentFileName = observation.FileName;
             var path = SettingsBag.Mode == Mode.Online
                     ? Directory.GetCurrentDirectory()
-                    : SettingsBag.Current[SettingName.ImagePath].As<string>();
+                    : OfflineSettingsBag.GetCurrent().ImagePath;
             path = Path.Combine(path, observation.FileName);
             if (File.Exists(path))
             {

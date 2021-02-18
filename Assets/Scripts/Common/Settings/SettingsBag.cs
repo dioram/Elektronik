@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 namespace Elektronik.Common.Settings
 {
     [Serializable]
-    public class SettingsBag : IComparable<SettingsBag>, ISerializable
+    public abstract class SettingsBag : IComparable<SettingsBag>, ISerializable
     {
         public static Mode Mode { get; set; }
         public static SettingsBag Current { get; set; }
@@ -18,7 +18,9 @@ namespace Elektronik.Common.Settings
         {
             UniqueId = Guid.NewGuid();
             _settings = new Dictionary<string, Setting>();
+            ModificationTime = DateTime.Now;
         }
+        
         public void Change<T>(string name, T value)
         {
             this[name] = Setting.Create(name, value);
@@ -41,15 +43,38 @@ namespace Elektronik.Common.Settings
             info.AddValue("Settings", _settings);
         }
 
+        public bool ContainsKey(string key) => _settings.ContainsKey(key);
+
         public Setting this[string name]
         {
             get => _settings[name];
-            private set => _settings[name] = value;
+            protected set => _settings[name] = value;
         }
 
         public bool TryGetValue(string name, out Setting setting)
         {
             return _settings.TryGetValue(name, out setting);
+        }
+
+        protected abstract bool Equals(SettingsBag other);
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((SettingsBag) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (_settings != null ? _settings.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ UniqueId.GetHashCode();
+                hashCode = (hashCode * 397) ^ ModificationTime.GetHashCode();
+                return hashCode;
+            }
         }
     }
 }
