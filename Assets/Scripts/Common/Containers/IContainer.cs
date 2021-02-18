@@ -5,9 +5,9 @@ namespace Elektronik.Common.Containers
 {
     public interface IContainer<T> : IList<T>
     {
-        public event Action<IContainer<T>, IEnumerable<T>> ItemsAdded;
-        public event Action<IContainer<T>, IEnumerable<T>> ItemsUpdated;
-        public event Action<IContainer<T>, IEnumerable<int>> ItemsRemoved;
+        public event Action<IContainer<T>, AddedEventArgs<T>> OnAdded;
+        public event Action<IContainer<T>, UpdatedEventArgs<T>> OnUpdated;
+        public event Action<IContainer<T>, RemovedEventArgs> OnRemoved;
 
         T this[T obj] { get; set; }
         void AddRange(IEnumerable<T> objects);

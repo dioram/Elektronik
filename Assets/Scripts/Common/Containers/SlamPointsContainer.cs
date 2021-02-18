@@ -22,20 +22,20 @@ namespace Elektronik.Common.Containers
             }
             else
             {
-                ItemsAdded += Renderer.OnItemsAdded;
-                ItemsUpdated += Renderer.OnItemsUpdated;
-                ItemsRemoved += Renderer.OnItemsRemoved;
+                OnAdded += Renderer.OnItemsAdded;
+                OnUpdated += Renderer.OnItemsUpdated;
+                OnRemoved += Renderer.OnItemsRemoved;
             }
         }
 
         private void OnEnable()
         {
-            ItemsAdded?.Invoke(this, this);
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamPoint>(this));
         }
 
         private void OnDisable()
         {
-            ItemsRemoved?.Invoke(this, _points.Keys);
+            OnRemoved?.Invoke(this, new RemovedEventArgs(_points.Keys));
         }
 
         private void OnDestroy()
@@ -47,9 +47,9 @@ namespace Elektronik.Common.Containers
 
         #region IContainer implementation
 
-        public event Action<IContainer<SlamPoint>, IEnumerable<SlamPoint>> ItemsAdded;
-        public event Action<IContainer<SlamPoint>, IEnumerable<SlamPoint>> ItemsUpdated;
-        public event Action<IContainer<SlamPoint>, IEnumerable<int>> ItemsRemoved;
+        public event Action<IContainer<SlamPoint>, AddedEventArgs<SlamPoint>> OnAdded;
+        public event Action<IContainer<SlamPoint>, UpdatedEventArgs<SlamPoint>> OnUpdated;
+        public event Action<IContainer<SlamPoint>, RemovedEventArgs> OnRemoved;
         
         public IEnumerator<SlamPoint> GetEnumerator() => _points.Select(kv => kv.Value).GetEnumerator();
 
@@ -85,14 +85,14 @@ namespace Elektronik.Common.Containers
         public void Add(SlamPoint point)
         {
             _points.Add(point.Id, point);
-            ItemsAdded?.Invoke(this, new []{point});
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamPoint>(new []{point}));
         }
 
         public void AddRange(IEnumerable<SlamPoint> points)
         {
             foreach (var pt in points)
                 _points.Add(pt.Id, pt);
-            ItemsAdded?.Invoke(this, points);
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamPoint>(points));
         }
         
         public void Insert(int index, SlamPoint item) => Add(item);
@@ -103,7 +103,7 @@ namespace Elektronik.Common.Containers
             currentPoint.Position = point.Position;
             currentPoint.Color = point.Color;
             _points[point.Id] = currentPoint;
-            ItemsUpdated?.Invoke(this, new []{point});
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamPoint>(new []{point}));
         }
 
         public void UpdateItems(IEnumerable<SlamPoint> points)
@@ -115,19 +115,19 @@ namespace Elektronik.Common.Containers
                 currentPoint.Color = pt.Color;
                 _points[pt.Id] = currentPoint;
             }
-            ItemsUpdated?.Invoke(this, points);
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamPoint>(points));
         }
 
         public void RemoveAt(int pointId)
         {
             _points.Remove(pointId);
-            ItemsRemoved?.Invoke(this, new []{pointId});
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{pointId}));
         }
 
         public bool Remove(SlamPoint point)
         {
             var res = _points.Remove(point.Id);
-            ItemsRemoved?.Invoke(this, new []{point.Id});
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{point.Id}));
             return res;
         }
 
@@ -135,14 +135,14 @@ namespace Elektronik.Common.Containers
         {
             foreach (var pt in points)
                 _points.Remove(pt.Id);
-            ItemsRemoved?.Invoke(this, points.Select(p => p.Id));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(points.Select(p => p.Id)));
         }
         
         public void Clear()
         {
             var ids = _points.Keys.ToArray();
             _points.Clear();
-            ItemsRemoved?.Invoke(this, ids);
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
         }
 
         #endregion

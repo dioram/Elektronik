@@ -55,18 +55,18 @@ namespace Elektronik.Common.Clouds
 
         #region Container changes handlers
 
-        public void OnItemsAdded(IContainer<TCloudItem> container, IEnumerable<TCloudItem> items)
+        public void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e)
         {
-            _amountOfItems += items.Count();
+            _amountOfItems += e.AddedItems.Count();
             if (_amountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
             {
                 _needNewBlock = true;
             }
             
-            foreach (var item in items)
+            foreach (var item in e.AddedItems)
             {
                 var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
-                _pointPlaces.Add((container.GetHashCode(), item.Id), index);
+                _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
                 int layer = index / CloudBlock.Capacity;
                 int inLayerId = index % CloudBlock.Capacity;
                 ProcessItem(_blocks[layer], item, inLayerId);
@@ -74,11 +74,11 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-        public void OnItemsUpdated(IContainer<TCloudItem> container, IEnumerable<TCloudItem> items)
+        public void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e)
         {
-            foreach (var item in items)
+            foreach (var item in e.UpdatedItems)
             {
-                var index = _pointPlaces[(container.GetHashCode(), item.Id)];
+                var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
                 int layer = index / CloudBlock.Capacity;
                 int inLayerId = index % CloudBlock.Capacity;
                 ProcessItem(_blocks[layer], item, inLayerId);
@@ -86,14 +86,14 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-        public void OnItemsRemoved(IContainer<TCloudItem> container, IEnumerable<int> removedItemsIds)
+        public void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e)
         {
-            foreach (var itemId in removedItemsIds)
+            foreach (var itemId in e.RemovedIds)
             {
-                if (!_pointPlaces.ContainsKey((container.GetHashCode(), itemId))) continue;
+                if (!_pointPlaces.ContainsKey((sender.GetHashCode(), itemId))) continue;
                 
-                var index = _pointPlaces[(container.GetHashCode(), itemId)];
-                _pointPlaces.Remove((container.GetHashCode(), itemId));
+                var index = _pointPlaces[(sender.GetHashCode(), itemId)];
+                _pointPlaces.Remove((sender.GetHashCode(), itemId));
                 if (index == _maxPlace - 1) _maxPlace--;
                 else _freePlaces.Enqueue(index);
                 
@@ -103,7 +103,7 @@ namespace Elektronik.Common.Clouds
                 _blocks[layer].Updated = true;
             }
 
-            _amountOfItems -= removedItemsIds.Count();
+            _amountOfItems -= e.RemovedIds.Count();
         }
 
         #endregion

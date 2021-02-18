@@ -34,13 +34,13 @@ namespace Elektronik.Common.Containers
         #region IContainer implementation
 
         [Obsolete("Never raised for now.")] 
-        public event Action<IContainer<T>, IEnumerable<T>> ItemsAdded;
+        public event Action<IContainer<T>, AddedEventArgs<T>> OnAdded;
 
         [Obsolete("Never raised for now.")] 
-        public event Action<IContainer<T>, IEnumerable<T>> ItemsUpdated;
+        public event Action<IContainer<T>, UpdatedEventArgs<T>> OnUpdated;
 
         [Obsolete("Never raised for now.")] 
-        public event Action<IContainer<T>, IEnumerable<int>> ItemsRemoved;
+        public event Action<IContainer<T>, RemovedEventArgs> OnRemoved;
 
         public int Count => Objects.Count;
 
