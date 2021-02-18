@@ -27,7 +27,7 @@ IChainable<T> SetSuccessor(IChainable<T> link);
 /// <param name="request"> Packet to handle. </param>
 /// <param name="context"> Server call context </param>
 /// <returns> Async error status </returns>
-public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
+public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context);
 ```
 
 ## [Commander](../Assets/Scripts/Common/Commands/Commander.cs)
@@ -43,12 +43,12 @@ public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext c
 ```c#
 /// <summary> Sets converter for this commander and its successors. </summary>
 /// <param name="converter"> Converter to set. </param>
-public virtual void SetConverter(ICSConverter converter)
+public virtual void SetConverter(ICSConverter converter);
     
 /// <summary> Extracts commands form packet. </summary>
 /// <param name="pkg"> Packet with commands. </param>
 /// <param name="commands"> List where new commands will be added to. </param>
-public virtual void GetCommands(PacketPb pkg, in LinkedList<ICommand> commands)
+public virtual void GetCommands(PacketPb pkg, in LinkedList<ICommand> commands);
 ```
 
 ## [ICommand](../Assets/Scripts/Common/Commands/ICommand.cs)
@@ -151,10 +151,10 @@ IEnumerable<(int id1, int id2)> GetAllConnections(T obj);
 ```c#
 public Shader CloudShader;
 public float ItemSize;
-public void SetSize(float newSize)
-public void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e)
-public void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e)
-public void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e)
+public void SetSize(float newSize);
+public void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e);
+public void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e);
+public void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e);
 ```
 
 ## [CloudBlock](../Assets/Scripts/Common/Clouds/CloudBlock.cs)
