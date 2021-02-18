@@ -15,6 +15,5 @@ namespace Elektronik.Common.Containers
         bool TryGet(T obj, out T current);
         void UpdateItem(T obj);
         void UpdateItems(IEnumerable<T> objs);
-        new void Clear();
     }
 }

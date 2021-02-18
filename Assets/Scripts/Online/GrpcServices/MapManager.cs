@@ -21,6 +21,10 @@ namespace Elektronik.Online.GrpcServices
             return link;
         }
 
+        /// <summary> Handles gRPC request. </summary>
+        /// <param name="request"> Packet to handle. </param>
+        /// <param name="context"> Server call context </param>
+        /// <returns> Async error status </returns>
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             Task<ErrorStatusPb> status;
