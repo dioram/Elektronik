@@ -1,9 +1,5 @@
-﻿using Elektronik.Common.Data.Packages.SlamActionPackages;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Data.Packages;
+﻿using Elektronik.Common.Containers;
 using System.Linq;
-using UnityEngine;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -11,16 +7,16 @@ namespace Elektronik.Common.Commands.Generic
 {
     public class RemoveCommand<T> : ICommand
     {
-        protected readonly ReadOnlyCollection<T> m_objs2Remove;
-        private readonly IContainer<T> m_container;
+        protected readonly ReadOnlyCollection<T> Objs2Remove;
+        private readonly IContainer<T> _container;
 
         public RemoveCommand(IContainer<T> container, IEnumerable<T> objects)
         {
-            m_container = container;
-            m_objs2Remove = new ReadOnlyCollection<T>(objects.Select(p => m_container[p]).ToList());
+            _container = container;
+            Objs2Remove = new ReadOnlyCollection<T>(objects.Select(p => _container[p]).ToList());
         }
 
-        public virtual void Execute() => m_container.Remove(m_objs2Remove);
-        public virtual void UnExecute() => m_container.Add(m_objs2Remove);
+        public virtual void Execute() => _container.Remove(Objs2Remove);
+        public virtual void UnExecute() => _container.AddRange(Objs2Remove);
     }
 }

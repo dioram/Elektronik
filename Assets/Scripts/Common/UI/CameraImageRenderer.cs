@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,43 +7,41 @@ namespace Elektronik.Common.Cameras
     [RequireComponent(typeof(RawImage))]
     public class CameraImageRenderer : MonoBehaviour
     {
-        private RawImage m_target;
-        private bool m_imageChanged;
-        private int m_width;
-        private int m_height;
-        private bool m_clearImage;
-        private byte[] m_array;
-        private ReaderWriterLockSlim Sync = new ReaderWriterLockSlim();
+        private RawImage _target;
+        private bool _imageChanged;
+        private bool _clearImage;
+        private byte[] _array;
+        private readonly ReaderWriterLockSlim _sync = new ReaderWriterLockSlim();
 
         private void Start()
         {
-            m_target = GetComponent<RawImage>();
-            m_target.texture = Texture2D.whiteTexture;
+            _target = GetComponent<RawImage>();
+            _target.texture = Texture2D.whiteTexture;
         }
         
         private void Update()
         {
-            if (m_clearImage)
+            if (_clearImage)
             {
-                m_clearImage = false;
-                m_imageChanged = false;
-                m_target.texture = Texture2D.whiteTexture;
+                _clearImage = false;
+                _imageChanged = false;
+                _target.texture = Texture2D.whiteTexture;
                 return;
             }
             
-            if (!m_imageChanged) return;
-            m_imageChanged = false;
+            if (!_imageChanged) return;
+            _imageChanged = false;
 
             try
             {
-                Sync.EnterReadLock();
+                _sync.EnterReadLock();
                 Texture2D texture2D = Texture2D.blackTexture;
-                texture2D.LoadImage(m_array);
-                m_target.texture = texture2D;
+                texture2D.LoadImage(_array);
+                _target.texture = texture2D;
             }
             finally
             {
-                Sync.ExitReadLock();
+                _sync.ExitReadLock();
             }
         }
         
@@ -52,19 +49,19 @@ namespace Elektronik.Common.Cameras
         {
             try
             {
-                Sync.EnterWriteLock();
-                m_array = array;
-                m_imageChanged = true;
+                _sync.EnterWriteLock();
+                _array = array;
+                _imageChanged = true;
             }
             finally
             {
-                Sync.ExitWriteLock();
+                _sync.ExitWriteLock();
             }
         }
 
         public void ClearImage()
         {
-            m_clearImage = true;
+            _clearImage = true;
         }
     }
 }

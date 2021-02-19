@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
+using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Maps;
 using Elektronik.Common.Settings;
 using Elektronik.Offline.Settings;
 using UnityEngine;
@@ -11,12 +10,12 @@ namespace Common.UI
 {
     public class ObservationViewer : MonoBehaviour
     {
-        public SlamMap slamMap;
         public RawImage m_image;
         public Text m_message;
+        public GameObjectsContainer<SlamObservation> Observations;
 
-        private int m_observationId;
-        private string currentFileName;
+        private int _observationId;
+        private string _currentFileName;
 
         private void Start()
         {
@@ -31,17 +30,20 @@ namespace Common.UI
         public void ShowObservation(int observation)
         {
             gameObject.SetActive(true);
-            m_observationId = observation;
+            _observationId = observation;
         }
 
         void SetData()
         {
-            SlamObservation observation = slamMap.ObservationsGO[m_observationId];
-            m_message.text = observation.message;
-            
-            if (currentFileName == observation.fileName) return;
-            
-            var path = Path.Combine(SettingsBag.Current[SettingName.ImagePath].As<string>(), observation.fileName);
+            SlamObservation observation = Observations[_observationId];
+            m_message.text = observation.Message;
+
+            if (_currentFileName == observation.FileName) return;
+            _currentFileName = observation.FileName;
+            var path = SettingsBag.Mode == Mode.Online
+                    ? Directory.GetCurrentDirectory()
+                    : OfflineSettingsBag.GetCurrent().ImagePath;
+            path = Path.Combine(path, observation.FileName);
             if (File.Exists(path))
             {
                 Texture2D texture = new Texture2D(1024, 1024);

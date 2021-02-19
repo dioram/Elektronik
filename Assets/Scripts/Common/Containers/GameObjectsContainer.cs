@@ -2,30 +2,60 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Elektronik.Common.Clouds;
 using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public abstract class GameObjectsContainer<T> : ICloudObjectsContainer<T>
+    public abstract class GameObjectsContainer<T> : MonoBehaviour, IClearable, ICloudObjectsContainer<T> where T: ICloudItem
     {
-        protected abstract int GetObjectId(T obj);
-        protected abstract Pose GetObjectPose(T obj);
-        protected abstract void UpdateGameObject(T @object, GameObject gameObject);
-        protected virtual void GameObjectDespawn(GameObject gameObject) { }
+        public GameObject ObservationPrefab;
+        
+        #region Unity events
 
-        protected abstract SlamPoint AsPoint(T obj);
-        protected abstract T Update(T current, T @new);
+        private void Awake()
+        {
+            ObservationsPool = new ObjectPool(ObservationPrefab);
+            ObservationsPool.OnObjectDeSpawn += (o, s) => GameObjectDespawn(o.GetComponent<GameObject>());
+        }
 
-        protected readonly SortedDictionary<int, T> m_objects;
-        protected readonly SortedDictionary<int, GameObject> m_gameObjects;
-        public ObjectPool ObservationsPool { get; private set; }
+        protected virtual void OnEnable()
+        {
+            foreach (var o in ObservationsPool.ActiveObject)
+            {
+                var meshRenderer = o.GetComponent<MeshRenderer>();
+                meshRenderer.enabled = true;
+            }
+        }
 
-        public int Count => m_objects.Count;
+        protected virtual void OnDisable()
+        {
+            foreach (var o in ObservationsPool.ActiveObject)
+            {
+                var meshRenderer = o.GetComponent<MeshRenderer>();
+                meshRenderer.enabled = false;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            Clear();
+        }
+
+        #endregion
+        
+        #region IContainer implementation
+
+        [Obsolete("Never raised for now.")]
+        public event Action<IContainer<T>, AddedEventArgs<T>> OnAdded;
+        
+        [Obsolete("Never raised for now.")]
+        public event Action<IContainer<T>, UpdatedEventArgs<T>> OnUpdated;
+        
+        [Obsolete("Never raised for now.")]
+        public event Action<IContainer<T>, RemovedEventArgs> OnRemoved;
+
+        public int Count => Objects.Count;
 
         public bool IsReadOnly => false;
 
@@ -33,37 +63,51 @@ namespace Elektronik.Common.Containers
         /// Get clone of node or Set obj with same id as argument id
         /// </summary>
         /// <param name="obj"></param>
-        /// <returns>Clone of SlamObservation from graph</returns>
+        /// <returns >Clone of SlamObservation from graph </returns>
         public T this[T obj]
         {
             get => this[GetObjectId(obj)];
             set => this[GetObjectId(obj)] = value;
         }
-
-        /// <summary>
-        /// Get clone of node or Set obj with same id as argument id
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns>Clone of SlamObservation from graph</returns>
+        
         public T this[int id]
         {
-            get => m_objects[id];
+            get => Objects[id];
             set
             {
-                if (!TryGet(id, out _)) Add(value); else Update(value);
+                if (!TryGet(id, out _)) Add(value); else UpdateItem(value);
             }
         }
 
-        /// <param name="prefab">Desired prefab of observation</param>
-        /// <param name="lines">Lines cloud objects for connections drawing</param>
-        public GameObjectsContainer(GameObject prefab)
+        public bool TryGet(T obj, out GameObject gameObject)
         {
-            m_objects = new SortedDictionary<int, T>();
-            m_gameObjects = new SortedDictionary<int, GameObject>();
-            ObservationsPool = new ObjectPool(prefab);
-            ObservationsPool.OnObjectDeSpawn += (o, s) => GameObjectDespawn(o.GetComponent<GameObject>());
+            gameObject = null;
+            if (Contains(GetObjectId(obj)))
+            {
+                gameObject = GameObjects[GetObjectId(obj)];
+                return true;
+            }
+            return false;
         }
 
+        /// <summary>
+        /// Try get observation from graph
+        /// </summary>
+        /// <param name="obj">Slam observation you want to find</param>
+        /// <param name="current">Clone of observation in graph or null if doesn't exist</param>
+        /// <returns>Returns false if observation with given id from obj exists, otherwise true.</returns>
+        public bool TryGet(T obj, out T current) => TryGet(GetObjectId(obj), out current);
+
+        public IEnumerator<T> GetEnumerator() => Objects.Values.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => Objects.Values.GetEnumerator();
+
+        public int IndexOf(T item) => GetObjectId(item);
+
+        public void CopyTo(T[] array, int arrayIndex) => Objects.Values.CopyTo(array, arrayIndex);
+
+        public bool Contains(T obj) => Contains(GetObjectId(obj));
+        
         /// <summary>
         /// Add ref of observation into the graph. Make sure that you don't use it anywhere!
         /// Pass the clone of observation if you are not sure.
@@ -73,13 +117,13 @@ namespace Elektronik.Common.Containers
         public void Add(T obj)
         {
             int id = GetObjectId(obj);
-            m_objects[id] = obj;
+            Objects[id] = obj;
 
             Pose pose = GetObjectPose(obj);
             MainThreadInvoker.Instance.Enqueue(() =>
             {
                 var go = ObservationsPool.Spawn(pose.position, pose.rotation);
-                m_gameObjects[GetObjectId(obj)] = go;
+                GameObjects[GetObjectId(obj)] = go;
 
                 var idc = go.GetComponent<IdContainer>();
                 if (idc == null) idc = go.AddComponent<IdContainer>();
@@ -88,58 +132,47 @@ namespace Elektronik.Common.Containers
             Debug.Log($"[GameObjectsContainer.Add] Added {typeof(T).Name} with id {id}");
         }
 
+        public void Insert(int index, T item) => Add(item);
+
         /// <summary>
         /// Look at the summary of Add
         /// </summary>
         /// <param name="objects"></param>
-        public void Add(IEnumerable<T> objects)
+        public void AddRange(IEnumerable<T> objects)
         {
             foreach (var obj in objects)
                 Add(obj);
         }
-
+        
         /// <summary>
-        /// Clear graph
+        /// Copy data from obj.
         /// </summary>
-        public void Clear()
+        /// <param name="obj"></param>
+        public void UpdateItem(T obj)
         {
-            m_gameObjects.Clear();
-            m_objects.Clear();
-            MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.DespawnAllActiveObjects());
-            Debug.Log($"[GameObjectsContainer.Clear]");
+            Objects[GetObjectId(obj)] = UpdateItem(Objects[GetObjectId(obj)], obj);
+            var object2Update = GameObjects[GetObjectId(obj)];
+            MainThreadInvoker.Instance.Enqueue(() => UpdateGameObject(obj, object2Update));
+            Debug.Log($"[GameObjectsContainer.Update] Updated {typeof(T).Name} with id {GetObjectId(obj)}");
         }
 
-        /// <summary>
-        /// Check node existence by SlamObservation object
-        /// </summary>
-        /// <param name="objId"></param>
-        /// <returns>true if exists, otherwise false</returns>
-        public bool Contains(T obj) => Contains(GetObjectId(obj));
-
-        /// <summary>
-        /// Check existing of node by id
-        /// </summary>
-        /// <param name="objId"></param>
-        /// <returns>true if exists, otherwise false</returns>
-        public bool Contains(int objId) => m_objects.ContainsKey(objId);
-
-        /// <summary>
-        /// Get clones of observations from graph
-        /// </summary>
-        /// <returns></returns>
-        public IList<T> GetAll() => m_objects.Values.ToList();
-
+        public void UpdateItems(IEnumerable<T> objs)
+        {
+            foreach (var obj in objs)
+                UpdateItem(obj);
+        }
+        
         /// <summary>
         /// Remove by id
         /// </summary>
         /// <param name="id"></param>
         public bool Remove(int id)
         {
-            if (m_gameObjects.TryGetValue(id, out GameObject object2Remove))
+            if (GameObjects.TryGetValue(id, out GameObject object2Remove))
             {
                 MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.Despawn(object2Remove));
-                m_gameObjects.Remove(id);
-                m_objects.Remove(id);
+                GameObjects.Remove(id);
+                Objects.Remove(id);
                 Debug.Log($"[GameObjectsContainer.Remove] Removing {typeof(T).Name} with id {id}");
                 return true;
             }
@@ -154,49 +187,31 @@ namespace Elektronik.Common.Containers
         /// <param name="obj"></param>
         public bool Remove(T obj) => Remove(GetObjectId(obj));
 
-        public bool TryGet(T obj, out GameObject gameObject)
-        {
-            gameObject = null;
-            if (Contains(GetObjectId(obj)))
-            {
-                gameObject = m_gameObjects[GetObjectId(obj)];
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Try get observation from graph
-        /// </summary>
-        /// <param name="obj">Slam observation you want to find</param>
-        /// <param name="current">Clone of observation in graph or null if doesn't exist</param>
-        /// <returns>Returns false if observation with given id from obj exists, otherwise true.</returns>
-        public bool TryGet(T obj, out T current) => TryGet(GetObjectId(obj), out current);
-
-        public bool TryGet(int idx, out T current) => m_objects.TryGetValue(idx, out current);
-
-        /// <summary>
-        /// Copy data from obj.
-        /// </summary>
-        /// <param name="obj"></param>
-        public void Update(T obj)
-        {
-            m_objects[GetObjectId(obj)] = Update(m_objects[GetObjectId(obj)], obj);
-            var object2Update = m_gameObjects[GetObjectId(obj)];
-            MainThreadInvoker.Instance.Enqueue(() => UpdateGameObject(obj, object2Update));
-            Debug.Log($"[GameObjectsContainer.Update] Updated {typeof(T).Name} with id {GetObjectId(obj)}");
-        }
-
-        public void Update(IEnumerable<T> objs)
+        public void Remove(IEnumerable<T> objs)
         {
             foreach (var obj in objs)
-                Update(obj);
+                Remove(obj);
         }
 
-        public IEnumerator<T> GetEnumerator() => m_objects.Values.GetEnumerator();
+        /// <summary>
+        /// Clear graph
+        /// </summary>
+        public void Clear()
+        {
+            GameObjects.Clear();
+            Objects.Clear();
+            MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.DespawnAllActiveObjects());
+            Debug.Log($"[GameObjectsContainer.Clear]");
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => m_objects.Values.GetEnumerator();
+        #endregion
 
+        #region ICloudObjectsContainer implementation
+        
+        public bool Contains(int objId) => Objects.ContainsKey(objId);
+        
+        public bool TryGet(int idx, out T current) => Objects.TryGetValue(idx, out current);
+        
         public bool TryGetAsPoint(T obj, out SlamPoint point) => TryGetAsPoint(GetObjectId(obj), out point);
 
         public bool TryGetAsPoint(int idx, out SlamPoint point)
@@ -209,20 +224,29 @@ namespace Elektronik.Common.Containers
             }
             return false;
         }
+        
+        #endregion
 
-        public void Remove(IEnumerable<T> objs)
-        {
-            foreach (var obj in objs)
-                Remove(obj);
-        }
+        #region Protected definitions
+        
+        protected abstract int GetObjectId(T obj);
+        
+        protected abstract Pose GetObjectPose(T obj);
+        
+        protected abstract void UpdateGameObject(T @object, GameObject gameObject);
+        
+        protected virtual void GameObjectDespawn(GameObject gameObject) { }
 
-        public int IndexOf(T item) => GetObjectId(item);
+        protected abstract SlamPoint AsPoint(T obj);
+        
+        protected abstract T UpdateItem(T current, T @new);
 
-        public void Insert(int index, T item) => Add(item);
+        protected readonly SortedDictionary<int, T> Objects = new SortedDictionary<int, T>();
+        
+        protected readonly SortedDictionary<int, GameObject> GameObjects = new SortedDictionary<int, GameObject>();
 
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            m_objects.Values.CopyTo(array, arrayIndex);
-        }
+        protected ObjectPool ObservationsPool;
+
+        #endregion
     }
 }

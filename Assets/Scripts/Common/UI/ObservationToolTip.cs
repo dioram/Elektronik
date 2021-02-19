@@ -1,8 +1,7 @@
-﻿using System;
-using Elektronik.Common.Clouds;
-using Elektronik.Common.Maps;
+﻿using Elektronik.Common.Clouds;
+using Elektronik.Common.Containers;
+using Elektronik.Common.Data.PackageObjects;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Common.UI
 {
@@ -10,17 +9,20 @@ namespace Common.UI
     {
         public ObservationViewer floatingViewer;
         public ObservationViewer pinnedViewer;
+        public GameObjectsContainer<SlamObservation> Observations;
         
-        private Camera m_camera;
+        private Camera _camera;
 
         void Start()
         {
-            m_camera = Camera.main;
+            _camera = Camera.main;
+            floatingViewer.Observations = Observations;
+            pinnedViewer.Observations = Observations;
         }
 
         private void Update()
         {
-            var ray = m_camera.ScreenPointToRay(Input.mousePosition);
+            var ray = _camera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hitInfo) && hitInfo.transform.CompareTag("Observation"))
             {
                 var id = hitInfo.transform.GetComponent<IdContainer>().Id;

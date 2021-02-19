@@ -11,19 +11,24 @@ namespace Elektronik.Online.GrpcServices
 {
     public class InfinitePlanesMapManager : MapManager<SlamInfinitePlane>
     {
-        ICSConverter m_converter;
+        public CSConverter Converter;
+        public SlamInfinitePlanesContainer PlanesContainer;
 
-        public InfinitePlanesMapManager(IContainer<SlamInfinitePlane> map, ICSConverter converter) : base(map)
+        #region Unity events
+
+        protected virtual void Awake()
         {
-            m_converter = converter;
+            Container = PlanesContainer;
         }
+
+        #endregion
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             Debug.Log("[ConnectionsMapManager.Handle]");
             if (request.DataCase == PacketPb.DataOneofCase.InfinitePlanes)
             {
-                return Handle(request.Action, request.ExtractInfinitePlanes(m_converter).ToList());
+                return Handle(request.Action, request.ExtractInfinitePlanes(Converter).ToList());
             }
 
             return base.Handle(request, context);

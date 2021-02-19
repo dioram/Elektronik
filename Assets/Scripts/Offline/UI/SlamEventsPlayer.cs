@@ -1,5 +1,4 @@
-﻿using Elektronik.Common.Data.Packages;
-using Elektronik.Common.UI;
+﻿using Elektronik.Common.UI;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -9,13 +8,11 @@ namespace Elektronik.Offline.UI
 {
     public class SlamEventsPlayer : MonoBehaviour
     {
-        private bool m_play = false;
+        private bool _play = false;
 
         public UITimelineSlider timelineSlider;
         public Text timelineLabel;
-
         public SlamEventsManager eventsManager;
-
 
         private void Start()
         {
@@ -50,9 +47,9 @@ namespace Elektronik.Offline.UI
         {
             if (eventsManager.ReadyToPlay)
             {
-                if (m_play)
+                if (_play)
                 {
-                    m_play = eventsManager.Next();
+                    _play = eventsManager.Next();
                     UpdateTime();
                 }
                 if (Input.GetKeyDown(KeyCode.LeftBracket))
@@ -72,18 +69,18 @@ namespace Elektronik.Offline.UI
         {
             if (eventsManager.ReadyToPlay)
             {
-                m_play = true;
+                _play = true;
             }
         }
 
         public void Pause()
         {
-            m_play = false;
+            _play = false;
         }
 
         public void Stop()
         {
-            m_play = false;
+            _play = false;
             eventsManager.Clear();
             UpdateTime();
         }

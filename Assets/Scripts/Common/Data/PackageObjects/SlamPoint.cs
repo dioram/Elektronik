@@ -1,37 +1,33 @@
 ﻿using UnityEngine;
-using System.Runtime.Serialization;
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public struct SlamPoint
+    public struct SlamPoint : ICloudItem
     {
-        public int id;
-        public Vector3 position;
-        public Color color;
-        public string message;
-        public Color defaultColor;
+        public int Id { get; set; }
+        public Vector3 Position;
+        public Color Color;
+        public string Message { get; set; }
 
-        public SlamPoint(int id, Vector3 position, Color color, Color defaultColor = default, string message = null)
+        public SlamPoint(int id, Vector3 position, Color color, string message = null)
         {
-            this.id = id;
-            this.position = position;
-            this.color = color;
-            this.defaultColor = defaultColor;
-            this.message = message;
+            Id = id;
+            Position = position;
+            Color = color;
+            Message = message;
         }
 
         public SlamPoint(SlamPoint point)
         {
-            id = point.id;
-            position = point.position;
-            color = point.color;
-            message = point.message;
-            defaultColor = point.defaultColor;
+            Id = point.Id;
+            Position = point.Position;
+            Color = point.Color;
+            Message = point.Message;
         }
 
         public override string ToString()
         {
-            return message ?? "SlamPoint";
+            return Message ?? "SlamPoint";
         }
     }
 }

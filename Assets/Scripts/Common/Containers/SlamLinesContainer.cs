@@ -1,212 +1,266 @@
-﻿using Elektronik.Common.Clouds;
-using Elektronik.Common.Clouds.Meshes;
-using Elektronik.Common.Data.PackageObjects;
+﻿using Elektronik.Common.Data.PackageObjects;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Elektronik.Common.Clouds.V2;
+using Elektronik.Common.Clouds;
 using UnityEngine;
-using CloudPoint = Elektronik.Common.Clouds.CloudPoint;
 
 namespace Elektronik.Common.Containers
 {
-    public class SlamLinesContainer : ILinesContainer<SlamLine>
+    public class SlamLinesContainer : MonoBehaviour, IClearable, ILinesContainer<SlamLine>
     {
-        private List<CloudLine> m_linesBuffer;
+        public LineCloudRenderer Renderer;
 
-        private FastLineCloudV2 m_linesCloud;
-        private IDictionary<int, SlamLine> m_connections;
-        private IDictionary<SlamLine, int> m_connectionIndices;
-        private int m_maxId = 0;
-        private Queue<int> m_freeIds;
-        public int Count { get => m_connections.Count; }
-        public bool IsReadOnly => false;
-        // getter may be extremely slow, if there are a lot of lines in this container
-        // TODO: increase performance of getter
-        public SlamLine this[int index] { get => m_connections.Values.ElementAt(index); set => Update(value); }
-        public SlamLine this[SlamLine obj] 
+        #region Unity events
+
+        private void Start()
         {
-            get => this[obj.pt1.id, obj.pt2.id];
-            set => this[obj.pt1.id, obj.pt2.id] = value;
+            if (Renderer == null)
+            {
+                Debug.LogWarning($"No renderer set for {name}({GetType()})");
+            }
+            else
+            {
+                OnAdded += Renderer.OnItemsAdded;
+                OnUpdated += Renderer.OnItemsUpdated;
+                OnRemoved += Renderer.OnItemsRemoved;
+            }
         }
-        public SlamLine this[int id1, int id2] 
+
+        private void OnEnable()
+        {
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+        }
+
+        private void OnDisable()
+        {
+            OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys));
+        }
+
+        private void OnDestroy()
+        {
+            Clear();
+        }
+
+        #endregion
+
+        #region IContaitner implementation
+
+        public event Action<IContainer<SlamLine>, AddedEventArgs<SlamLine>> OnAdded;
+
+        public event Action<IContainer<SlamLine>, UpdatedEventArgs<SlamLine>> OnUpdated;
+
+        public event Action<IContainer<SlamLine>, RemovedEventArgs> OnRemoved;
+
+        public int Count => _connections.Count;
+
+        public bool IsReadOnly => false;
+
+        public bool TryGet(SlamLine obj, out SlamLine current) => TryGet(obj.Point1.Id, obj.Point2.Id, out current);
+
+        public bool Contains(int id1, int id2) => TryGet(id1, id2, out SlamLine _);
+
+        public bool Contains(SlamLine obj) => TryGet(obj.Point1.Id, obj.Point2.Id, out SlamLine _);
+
+        public IEnumerator<SlamLine> GetEnumerator() => _connections.Select(kv => kv.Value).GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public void CopyTo(SlamLine[] array, int arrayIndex) => _connections.Values.CopyTo(array, arrayIndex);
+
+        public int IndexOf(SlamLine item)
+        {
+            foreach (var c in _connections)
+            {
+                if (c.Value.Point1.Id == item.Point1.Id && c.Value.Point2.Id == item.Point2.Id ||
+                    c.Value.Point2.Id == item.Point1.Id && c.Value.Point1.Id == item.Point2.Id)
+                {
+                    return c.Key;
+                }
+            }
+
+            return -1;
+        }
+
+        public SlamLine this[SlamLine obj]
+        {
+            get => this[obj.Point1.Id, obj.Point2.Id];
+            set => this[obj.Point1.Id, obj.Point2.Id] = value;
+        }
+        
+        [Obsolete("Don't use this getter. You can't get valid index outside the container anyway." +
+                  "It exists only as implementation of IList interface")]
+        public SlamLine this[int index]
+        {
+            get => _connections.Values.ElementAt(index);
+            set => UpdateItem(value);
+        }
+
+        public void Add(SlamLine obj)
+        {
+            obj.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
+            _connectionsIndices[obj] = obj.Id;
+            _connections[obj.Id] = obj;
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {obj}));
+        }
+
+        public void Insert(int index, SlamLine item) => Add(item);
+
+        public void AddRange(IEnumerable<SlamLine> objects)
+        {
+            Debug.Assert(_linesBuffer.Count == 0);
+            foreach (var obj in objects)
+            {
+                var line = obj;
+                line.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
+                _connections[line.Id] = line;
+                _connectionsIndices[line] = line.Id;
+                _linesBuffer.Add(line);
+            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(_linesBuffer));
+            _linesBuffer.Clear();
+        }
+
+        public void UpdateItem(SlamLine obj)
+        {
+            int index = _connectionsIndices[obj];
+            obj.Id = index;
+            _connections[obj.Id] = obj;
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {obj}));
+        }
+
+        public void UpdateItems(IEnumerable<SlamLine> objs)
+        {
+            Debug.Assert(_linesBuffer.Count == 0);
+            foreach (var obj in objs)
+            {
+                var line = obj;
+                line.Id = _connectionsIndices[line];
+                _connections[line.Id] = line;
+                _linesBuffer.Add(line);
+            }
+
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(_linesBuffer));
+            _linesBuffer.Clear();
+        }
+
+        public bool Remove(SlamLine obj) => Remove(obj.Point1.Id, obj.Point2.Id);
+
+        public void Remove(IEnumerable<SlamLine> objs)
+        {
+            List<int> ids = new List<int>();
+            foreach (var l in objs)
+            {
+                var index = _connectionsIndices[l];
+                ids.Add(index);
+                _connections.Remove(index);
+                _freeIds.Enqueue(index);
+            }
+
+            foreach (var line in objs)
+            {
+                _connectionsIndices.Remove(line);
+            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+        }
+
+        public void RemoveAt(int index)
+        {
+            var line = _connections[index];
+            Remove(line);
+        }
+
+        public void Clear()
+        {
+            var ids = _connections.Keys.ToArray();
+            _connections.Clear();
+            _connectionsIndices.Clear();
+            _freeIds.Clear();
+            _maxId = 0;
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+        }
+
+        #endregion
+
+        #region ILinesContainer implementation
+
+        public SlamLine this[int id1, int id2]
         {
             get
             {
                 if (!TryGet(id1, id2, out SlamLine conn))
-                    throw new InvalidSlamContainerOperationException($"[SlamPointsContainer.Get] Container doesn't contain point with id1({id1}) and id2({id2})");
+                    throw new InvalidSlamContainerOperationException(
+                            $"[SlamPointsContainer.Get] Container doesn't contain point with id1({id1}) and id2({id2})");
                 return conn;
             }
-            set
-            {
-                Update(value);
-            }
+            set => UpdateItem(value);
         }
-        public SlamLinesContainer(FastLineCloudV2 linesCloud)
-        {
-            m_linesBuffer = new List<CloudLine>();
-            m_connections = new SortedDictionary<int, SlamLine>();
-            m_connectionIndices = new SortedDictionary<SlamLine, int>();
-            m_linesCloud = linesCloud;
-            m_freeIds = new Queue<int>();
-        }
-        public void Add(SlamLine obj)
-        {
-            int connectionId = m_freeIds.Count > 0 ? m_freeIds.Dequeue() : m_maxId++;
-            m_connectionIndices[obj] = connectionId;
-            m_connections[connectionId] = obj;
-            m_linesCloud.Add(
-                new CloudLine(connectionId, 
-                    new CloudPoint(0, obj.pt1.position, obj.pt1.color),
-                    new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
-        }
-        public void Add(IEnumerable<SlamLine> objects)
-        {
-            Debug.Assert(m_linesBuffer.Count == 0);
-            foreach (var obj in objects)
-            {
-                int connectionId = m_freeIds.Count > 0 ? m_freeIds.Dequeue() : m_maxId++;
-                m_connectionIndices[obj] = connectionId;
-                m_connections[connectionId] = obj;
-                m_linesBuffer.Add(
-                    new CloudLine(connectionId,
-                        new CloudPoint(0, obj.pt1.position, obj.pt1.color),
-                        new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
-            }
-            m_linesCloud.AddRange(m_linesBuffer);
-            m_linesBuffer.Clear();
-        }
-        public void Clear()
-        {
-            m_linesCloud.Clear();
-            m_connections.Clear();
-            m_connectionIndices.Clear();
-            m_freeIds.Clear();
-            m_maxId = 0;
-        }
-        public bool Exists(int id1, int id2) => TryGet(id1, id2, out SlamLine _);
-        public bool Contains(SlamLine obj) => TryGet(obj.pt1.id, obj.pt2.id, out SlamLine _);
-        public IList<SlamLine> GetAll() => m_connections.Values.ToList();
-        public void Remove(IEnumerable<SlamLine> objs)
-        {
-            Debug.Assert(m_linesBuffer.Count == 0);
-            foreach (var l in objs)
-            {
-                int index = m_connectionIndices[l];
-                m_linesBuffer.Add(CloudLine.Empty(index));
-                m_connectionIndices.Remove(l);
-                m_connections.Remove(index);
-                m_freeIds.Enqueue(index);
-            }
-            m_linesCloud.RemoveAt(m_linesBuffer.Select(l => l.Id));
-            m_linesBuffer.Clear();
-        }
-        public bool Remove(int id1, int id2)
-        {
-            if (TryGet(id1, id2, out SlamLine l))
-            {
-                int index = m_connectionIndices[l];
-                m_connections.Remove(index);
-                m_connectionIndices.Remove(l);
-                m_freeIds.Enqueue(index);
-                m_linesCloud.RemoveAt(index);
-                return true;
-            }
-            return false;
-        }
-        public bool Remove(SlamLine obj) => Remove(obj.pt1.id, obj.pt2.id);
+
         public SlamLine Get(int id1, int id2)
         {
             if (TryGet(id1, id2, out SlamLine line))
             {
                 return line;
             }
-            throw new InvalidSlamContainerOperationException($"[SlamLinesContainer.Get] Line with id[{id1}, {id2}] doesn't exist");
+
+            throw new InvalidSlamContainerOperationException(
+                    $"[SlamLinesContainer.Get] Line with id[{id1}, {id2}] doesn't exist");
         }
-        private bool TryGet(int idx1, int idx2, out int lineId) 
-            => m_connectionIndices.TryGetValue(new SlamLine(idx1, idx2), out lineId);
+
+        public bool Remove(int id1, int id2)
+        {
+            if (TryGet(id1, id2, out SlamLine l))
+            {
+                _connections.Remove(l.Id);
+                _freeIds.Enqueue(l.Id);
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {l.Id}));
+                return true;
+            }
+
+            return false;
+        }
+
         public bool TryGet(int idx1, int idx2, out SlamLine value)
         {
             value = default;
             if (TryGet(idx1, idx2, out int lineId))
             {
-                value = m_connections[lineId];
+                value = _connections[lineId];
                 return true;
             }
+
             return false;
         }
-        public bool TryGet(SlamLine obj, out SlamLine current) => TryGet(obj.pt1.id, obj.pt2.id, out current);
-        public void Update(SlamLine obj)
+
+        #endregion
+
+        #region Private definitions
+
+        private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
+
+        private readonly IDictionary<int, SlamLine> _connections = new SortedDictionary<int, SlamLine>();
+        private readonly IDictionary<SlamLine, int> _connectionsIndices = new SortedDictionary<SlamLine, int>();
+
+        private int _maxId = 0;
+        private readonly Queue<int> _freeIds = new Queue<int>();
+
+        private bool TryGet(int idx1, int idx2, out int lineId)
         {
-            int index = m_connectionIndices[obj];
-            SlamLine currentLine = m_connections[index];
-            if (obj.pt1.id == currentLine.pt1.id && obj.pt2.id == currentLine.pt2.id)
+            foreach (var pair in _connections)
             {
-                m_linesCloud.UpdateItem(
-                    new CloudLine(index, 
-                        new CloudPoint(0, obj.pt1.position, obj.pt1.color),
-                        new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
-            }
-            else
-            {
-                m_linesCloud.UpdateItem(
-                    new CloudLine(index, 
-                        new CloudPoint(0, obj.pt2.position, obj.pt2.color),
-                        new CloudPoint(0, obj.pt1.position, obj.pt1.color)));
-            }
-            m_connections[index] = obj;
-        }
-        public void Update(IEnumerable<SlamLine> objs)
-        {
-            Debug.Assert(m_linesBuffer.Count == 0);
-            foreach (var obj in objs)
-            {
-                int index = m_connectionIndices[obj];
-                SlamLine currentLine = m_connections[index];
-                if (obj.pt1.id == currentLine.pt1.id && obj.pt2.id == currentLine.pt2.id)
+                if (pair.Value.Equals(new SlamLine(idx1, idx2)))
                 {
-                    m_linesBuffer.Add(
-                        new CloudLine(index,
-                            new CloudPoint(0, obj.pt1.position, obj.pt1.color),
-                            new CloudPoint(0, obj.pt2.position, obj.pt2.color)));
+                    lineId = pair.Value.Id;
+                    return true;
                 }
-                else
-                {
-                    m_linesBuffer.Add(
-                        new CloudLine(index,
-                            new CloudPoint(0, obj.pt2.position, obj.pt2.color),
-                            new CloudPoint(0, obj.pt1.position, obj.pt1.color)));
-                }
-                m_connections[index] = obj;
             }
-            m_linesCloud.UpdateItems(m_linesBuffer);
+
+            lineId = -1;
+            return false;
         }
-        public IEnumerator<SlamLine> GetEnumerator() => m_connections.Select(kv => kv.Value).GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        public int IndexOf(SlamLine item)
-        {
-            foreach (var c in m_connections)
-            {
-                if (c.Value.pt1.id == item.pt1.id && c.Value.pt2.id == item.pt2.id ||
-                    c.Value.pt2.id == item.pt1.id && c.Value.pt1.id == item.pt2.id)
-                {
-                    return c.Key;
-                }    
-            }
-            return -1;
-        }
-        public void Insert(int index, SlamLine item)
-            => throw new NotImplementedException();
-        public void RemoveAt(int index)
-        {
-            var line = m_connections[index];
-            Remove(line);
-        }
-        public void CopyTo(SlamLine[] array, int arrayIndex) 
-            => m_connections.Values.CopyTo(array, arrayIndex);
+
+        #endregion
     }
 }

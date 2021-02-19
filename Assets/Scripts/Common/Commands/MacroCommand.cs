@@ -5,21 +5,21 @@ namespace Elektronik.Common.Commands
 {
     public class MacroCommand : ICommand
     {
-        protected IEnumerable<ICommand> m_commands;
+        protected readonly IEnumerable<ICommand> Commands;
 
         public MacroCommand()
         {
-            m_commands = new List<ICommand>();
+            Commands = new List<ICommand>();
         }
 
         public MacroCommand(IEnumerable<ICommand> commands)
         {
-            m_commands = commands;
+            Commands = commands;
         }
 
         public virtual void Execute()
         {
-            foreach (var command in m_commands)
+            foreach (var command in Commands)
             {
                 command.Execute();
             }
@@ -27,7 +27,7 @@ namespace Elektronik.Common.Commands
 
         public virtual void UnExecute()
         {
-            foreach (var command in m_commands.Reverse())
+            foreach (var command in Commands.Reverse())
             {
                 command.UnExecute();
             }

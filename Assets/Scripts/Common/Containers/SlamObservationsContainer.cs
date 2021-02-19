@@ -1,38 +1,33 @@
 ﻿using Elektronik.Common.Data.PackageObjects;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
     public class SlamObservationsContainer : GameObjectsContainer<SlamObservation>
     {
-        /// <param name="prefab">Desired prefab of observation</param>
-        /// <param name="lines">Lines cloud objects for connections drawing</param>
-        public SlamObservationsContainer(GameObject prefab) : base(prefab)
-        {
-        }
+        #region GameObjetcsContainer implementation
 
         protected override SlamPoint AsPoint(SlamObservation obj) => obj;
 
-        protected override int GetObjectId(SlamObservation obj) => obj.point.id;
+        protected override int GetObjectId(SlamObservation obj) => obj.Point.Id;
 
-        protected override Pose GetObjectPose(SlamObservation obj) => new Pose(obj.point.position, obj.rotation);
+        protected override Pose GetObjectPose(SlamObservation obj) => new Pose(obj.Point.Position, obj.Rotation);
 
-        protected override SlamObservation Update(SlamObservation current, SlamObservation @new)
+        protected override SlamObservation UpdateItem(SlamObservation current, SlamObservation @new)
         {
-            current.statistics = @new.statistics;
-            current.point = @new.point;
-            current.rotation = @new.rotation;
-            current.message = @new.message;
-            current.fileName = @new.fileName;
+            current.Statistics = @new.Statistics;
+            current.Point = @new.Point;
+            current.Rotation = @new.Rotation;
+            current.Message = @new.Message;
+            current.FileName = @new.FileName;
             return current;
         }
 
         protected override void UpdateGameObject(SlamObservation @object, GameObject gameObject)
-            => gameObject.transform.SetPositionAndRotation(@object.point.position, @object.rotation);
+        {
+            gameObject.transform.SetPositionAndRotation(@object.Point.Position, @object.Rotation);
+        }
+
+        #endregion
     }
 }

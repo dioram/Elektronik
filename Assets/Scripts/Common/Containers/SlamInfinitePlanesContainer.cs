@@ -3,25 +3,79 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Common.Clouds;
-using Elektronik.Common.Clouds.Meshes;
-using Elektronik.Common.Clouds.V2;
 using Elektronik.Common.Data.PackageObjects;
+using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class SlamInfinitePlanesContainer : IContainer<SlamInfinitePlane>
+    public class SlamInfinitePlanesContainer : MonoBehaviour, IClearable, IContainer<SlamInfinitePlane>
     {
-        private Dictionary<int, SlamInfinitePlane> m_planes = new Dictionary<int, SlamInfinitePlane>();
-        private FastPlaneCloudV2 m_planeCloud;
-
-        public SlamInfinitePlanesContainer(FastPlaneCloudV2 planesCloud)
-        {
-            m_planeCloud = planesCloud;
-        }
+        public InfinitePlaneCloudRenderer Renderer;
         
+        #region Unity events
+
+        private void Start()
+        {
+            if (Renderer == null)
+            {
+                Debug.LogWarning($"No renderer set for {name}({GetType()})");
+            }
+            else
+            {
+                OnAdded += Renderer.OnItemsAdded;
+                OnUpdated += Renderer.OnItemsUpdated;
+                OnRemoved += Renderer.OnItemsRemoved;
+            }
+        }
+
+        private void OnEnable()
+        {
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamInfinitePlane>(this));
+        }
+
+        private void OnDisable()
+        {
+            OnRemoved?.Invoke(this, new RemovedEventArgs(_planes.Keys));
+        }
+
+        private void OnDestroy()
+        {
+            Clear();
+        }
+
+        #endregion
+
+        #region IContainer implementation
+        
+        public event Action<IContainer<SlamInfinitePlane>, AddedEventArgs<SlamInfinitePlane>> OnAdded;
+        
+        public event Action<IContainer<SlamInfinitePlane>, UpdatedEventArgs<SlamInfinitePlane>> OnUpdated;
+        
+        public event Action<IContainer<SlamInfinitePlane>, RemovedEventArgs> OnRemoved;
+
+        public SlamInfinitePlane this[int index]
+        {
+            get => _planes[index];
+            set
+            {
+                _planes[index] = value;
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamInfinitePlane>(new []{value}));
+            }
+        }
+
+        public SlamInfinitePlane this[SlamInfinitePlane obj]
+        {
+            get => _planes[obj.Id];
+            set
+            {
+                _planes[obj.Id] = value;
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamInfinitePlane>(new []{value}));
+            }
+        }
+
         public IEnumerator<SlamInfinitePlane> GetEnumerator()
         {
-            return m_planes.Values.GetEnumerator();
+            return _planes.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -29,91 +83,80 @@ namespace Elektronik.Common.Containers
             return GetEnumerator();
         }
 
-        public void Add(SlamInfinitePlane item)
+        public int Count => _planes.Count;
+        
+        public bool IsReadOnly => false;
+        
+        public int IndexOf(SlamInfinitePlane item)
         {
-            m_planes[item.id] = item;
-            var p = new CloudPlane(item.id, item.offset, item.normal, item.color);
-            m_planeCloud.Add(p);
-        }
-
-        public void Clear()
-        {
-            m_planes.Clear();
-            m_planeCloud.Clear();
+            return item.Id;
         }
 
         public bool Contains(SlamInfinitePlane item)
         {
-            return m_planes.ContainsKey(item.id);
+            return _planes.ContainsKey(item.Id);
         }
 
         public void CopyTo(SlamInfinitePlane[] array, int arrayIndex)
         {
-            m_planes.Values.CopyTo(array, arrayIndex);
+            _planes.Values.CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(SlamInfinitePlane item)
+        public void Add(SlamInfinitePlane item)
         {
-            m_planeCloud.RemoveAt(item.id);
-            return m_planes.Remove(item.id);
+            _planes[item.Id] = item;
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamInfinitePlane>(new []{item}));
         }
 
-        public int Count => m_planes.Count;
-        public bool IsReadOnly => false;
-        public int IndexOf(SlamInfinitePlane item)
+        public void AddRange(IEnumerable<SlamInfinitePlane> objects)
         {
-            return item.id;
+            foreach (var plane in objects)
+            {
+                _planes.Add(plane.Id, plane);
+            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamInfinitePlane>(objects));
         }
 
         public void Insert(int index, SlamInfinitePlane item)
         {
-            m_planes[index] = item;
+            _planes[index] = item;
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamInfinitePlane>(new []{item}));
+        }
+
+        public void Clear()
+        {
+            var ids = _planes.Keys.ToArray();
+            _planes.Clear();
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+        }
+
+        public bool Remove(SlamInfinitePlane item)
+        {
+            var res = _planes.Remove(item.Id);
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new [] {item.Id}));
+            return res;
         }
 
         public void RemoveAt(int index)
         {
-            m_planeCloud.RemoveAt(index);
-            m_planes.Remove(index);
-        }
-
-        public SlamInfinitePlane this[int index]
-        {
-            get => m_planes[index];
-            set => m_planes[index] = value;
-        }
-
-        public SlamInfinitePlane this[SlamInfinitePlane obj]
-        {
-            get => m_planes[obj.id];
-            set => m_planes[obj.id] = value;
-        }
-
-        public void Add(IEnumerable<SlamInfinitePlane> objects)
-        {
-            foreach (var plane in objects)
-            {
-                Add(plane);
-            }
-        }
-
-        public IList<SlamInfinitePlane> GetAll()
-        {
-            return m_planes.Values.ToList();
+            _planes.Remove(index);
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{index}));
         }
 
         public void Remove(IEnumerable<SlamInfinitePlane> objs)
         {
             foreach (var plane in objs)
             {
-                Remove(plane);
+                _planes.Remove(plane.Id);
             }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(objs.Select(o => o.Id)));
         }
 
         public bool TryGet(SlamInfinitePlane obj, out SlamInfinitePlane current)
         {
-            if (m_planes.ContainsKey(obj.id))
+            if (_planes.ContainsKey(obj.Id))
             {
-                current = m_planes[obj.id];
+                current = _planes[obj.Id];
                 return true;
             }
 
@@ -121,19 +164,27 @@ namespace Elektronik.Common.Containers
             return false;
         }
 
-        public void Update(SlamInfinitePlane obj)
+        public void UpdateItem(SlamInfinitePlane obj)
         {
-            var p = new CloudPlane(obj.id, obj.offset, obj.normal, obj.color);
-            m_planeCloud.UpdateItem(p);
-            m_planes[obj.id] = obj;
+            _planes[obj.Id] = obj;
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamInfinitePlane>(new []{obj}));
         }
 
-        public void Update(IEnumerable<SlamInfinitePlane> objs)
+        public void UpdateItems(IEnumerable<SlamInfinitePlane> objs)
         {
             foreach (var plane in objs)
             {
-                Update(plane);
+                _planes[plane.Id] = plane;
             }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamInfinitePlane>(objs));
         }
+
+        #endregion
+        
+        #region Private definitions
+        
+        private readonly Dictionary<int, SlamInfinitePlane> _planes = new Dictionary<int, SlamInfinitePlane>();
+        
+        #endregion
     }
 }

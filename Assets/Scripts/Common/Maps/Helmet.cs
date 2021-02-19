@@ -1,36 +1,56 @@
-﻿using Elektronik.Common.Clouds;
-using Elektronik.Common.Containers;
+﻿using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
-using System;
 using System.Collections.Generic;
-using Elektronik.Common.Clouds.V2;
+using System.Linq;
+using Elektronik.Common.Clouds;
+using Elektronik.Common.Settings;
 using UnityEngine;
 
 namespace Elektronik.Common.Maps
 {
     public class Helmet : MonoBehaviour
     {
-        private SlamLinesContainer Track { get; set; }
+        public SlamLinesContainer Track;
 
-        public Color color = Color.red;
-        public int id;
+        public Color Color = Color.red;
+        public int ID;
 
-        Vector3 m_lastPosition;
-        Vector3 m_currentPosition;
-        int m_trackStep;
+        private Vector3 _lastPosition;
+        private Vector3 _currentPosition;
+        private int _trackStep;
+
+        public void SetActive(bool active)
+        {
+            GetComponent<XYZAxis>().enabled = active;
+            GetComponent<MeshRenderer>().enabled = active;
+            Track.enabled = active;
+        }
 
         private void Awake()
         {
-            Track = new SlamLinesContainer(GetComponentInChildren<FastLineCloudV2>());
+            Track.Renderer = LineCloudRenderer.StaticRenderer;
+        }
+
+        private void OnEnable()
+        {
+            _trackStep = 0;
+            _lastPosition = transform.position;
+            _currentPosition = transform.position;
+            Track.Clear();
+        }
+
+        private void OnDisable()
+        {
+            ResetHelmet();
         }
 
         private void UnsafeResetHelmet()
         {
             transform.position = Vector3.zero;
             transform.rotation = Quaternion.identity;
-            m_trackStep = 0;
-            m_lastPosition = transform.position;
-            m_currentPosition = transform.position;
+            _trackStep = 0;
+            _lastPosition = transform.position;
+            _currentPosition = transform.position;
             Track.Clear();
         }
 
@@ -41,8 +61,8 @@ namespace Elektronik.Common.Maps
         {
             if (transform.hasChanged)
             {
-                m_lastPosition = m_currentPosition;
-                m_currentPosition = transform.position;
+                _lastPosition = _currentPosition;
+                _currentPosition = transform.position;
                 transform.hasChanged = false;
                 return true;
             }
@@ -53,8 +73,8 @@ namespace Elektronik.Common.Maps
         {
             CheckTransformChanged();
             var line = new SlamLine(
-                new SlamPoint(m_trackStep, m_lastPosition, color),
-                new SlamPoint(++m_trackStep, m_currentPosition, color));
+                new SlamPoint(_trackStep, _lastPosition, Color),
+                new SlamPoint(++_trackStep, _currentPosition, Color));
             Track.Add(line);
         }
 
@@ -64,17 +84,17 @@ namespace Elektronik.Common.Maps
         private void UnsafeDecrementTrack()
         {
             CheckTransformChanged();
-            int prevStepId = m_trackStep - 1;
-            int currentStepId = m_trackStep;
+            int prevStepId = _trackStep - 1;
+            int currentStepId = _trackStep;
             Track.Remove(prevStepId, currentStepId);
-            --m_trackStep;
+            --_trackStep;
         }
 
         public void DecrementTrack() =>
             MainThreadInvoker.Instance.Enqueue(UnsafeDecrementTrack);
 
         // Memento pattern
-        public IList<SlamLine> GetTrackState() => Track.GetAll();
+        public SlamLine[] GetTrackState() => Track.ToArray();
 
         public void RestoreTrackState(IList<SlamLine> track)
         {
@@ -85,9 +105,9 @@ namespace Elektronik.Common.Maps
                 {
                     Track.Add(l);
                 }
-                m_lastPosition = track[track.Count - 1].pt1.position;
-                m_lastPosition = track[track.Count - 1].pt2.position;
-                m_trackStep = track[track.Count - 1].pt2.id;
+                _lastPosition = track[track.Count - 1].Point1.Position;
+                _lastPosition = track[track.Count - 1].Point2.Position;
+                _trackStep = track[track.Count - 1].Point2.Id;
             }
         }
     }

@@ -4,28 +4,27 @@ using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Presenters;
 using Elektronik.Common.Settings;
 using Elektronik.Offline.Settings;
-using UnityEngine;
 
 namespace Elektronik.Offline.Presenters
 {
     public class ImagePresenter : RepaintablePackagePresenter
     {
         public CameraImageRenderer Target;
-        private byte[] m_currentImage;
+        private byte[] _currentImage;
         
         public override void Present(PacketPb package)
         {
-            var fullPath = Path.Combine(SettingsBag.Current[SettingName.ImagePath].As<string>(), $"{package.Timestamp}.png");
+            var fullPath = Path.Combine(OfflineSettingsBag.GetCurrent().ImagePath, $"{package.Timestamp}.png");
             if (!File.Exists(fullPath)) return;
             
-            m_currentImage = File.ReadAllBytes(fullPath);
-            m_successor?.Present(package);
+            _currentImage = File.ReadAllBytes(fullPath);
+            if (Successor != null) Successor.Present(package);
         }
 
         public override void Repaint()
         {
-            if (m_currentImage == null) return;
-            Target.DrawImage(m_currentImage);
+            if (_currentImage == null) return;
+            Target.DrawImage(_currentImage);
         }
 
         public override void Clear()
