@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Elektronik.Common.Clouds
 {
+    /// <summary> Base class for rendering object clouds. Such as point cloud, line cloud, etc. </summary>
+    /// <typeparam name="TCloudItem"></typeparam>
+    /// <typeparam name="TCloudBlock"></typeparam>
     public abstract class CloudRenderer<TCloudItem, TCloudBlock>
             : MonoBehaviour
             where TCloudItem : ICloudItem, new()

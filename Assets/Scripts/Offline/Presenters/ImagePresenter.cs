@@ -14,7 +14,7 @@ namespace Elektronik.Offline.Presenters
         
         public override void Present(PacketPb package)
         {
-            var fullPath = Path.Combine(SettingsBag.Current[SettingName.ImagePath].As<string>(), $"{package.Timestamp}.png");
+            var fullPath = Path.Combine(OfflineSettingsBag.GetCurrent().ImagePath, $"{package.Timestamp}.png");
             if (!File.Exists(fullPath)) return;
             
             _currentImage = File.ReadAllBytes(fullPath);

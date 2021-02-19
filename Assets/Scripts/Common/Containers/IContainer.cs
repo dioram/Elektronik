@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace Elektronik.Common.Containers
 {
+    /// <summary>
+    /// Interface of container that allows batched adding, updating, and removing of its elements.
+    /// Also rises events on adding, updating, and removing.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IContainer<T> : IList<T>
     {
         public event Action<IContainer<T>, AddedEventArgs<T>> OnAdded;
@@ -15,6 +20,5 @@ namespace Elektronik.Common.Containers
         bool TryGet(T obj, out T current);
         void UpdateItem(T obj);
         void UpdateItems(IEnumerable<T> objs);
-        new void Clear();
     }
 }
