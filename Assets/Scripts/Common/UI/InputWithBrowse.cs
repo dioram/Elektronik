@@ -1,4 +1,5 @@
-﻿using SimpleFileBrowser;
+﻿using System;
+using SFB;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,10 +8,9 @@ namespace Elektronik.Common.UI
 {
     public class InputWithBrowse : MonoBehaviour
     {
-        private Button m_buBrowse;
+        private Button _browseButton;
 
-        [HideInInspector]
-        public InputField ifFilePath;
+        [HideInInspector] public InputField ifFilePath;
 
         public bool folderMode = false;
         public string initialPath = null;
@@ -23,17 +23,37 @@ namespace Elektronik.Common.UI
         // Use this for initialization
         void Start()
         {
-            m_buBrowse = GetComponentInChildren<Button>();
-            m_buBrowse.OnClickAsObservable().Subscribe(_ => Browse());
+            _browseButton = GetComponentInChildren<Button>();
+            _browseButton.OnClickAsObservable().Subscribe(_ => Browse());
 
             ifFilePath = GetComponentInChildren<InputField>();
 
-            FileBrowser.SetFilters(showAllFiles, filters);
+            string[] args = Environment.GetCommandLineArgs();
+
+            if (args.Length > 1)
+            {
+                Debug.Log(args[1]);
+                ifFilePath.text = args[1];
+            }
         }
 
         void Browse()
         {
-            FileBrowser.ShowLoadDialog((path) => ifFilePath.text = path, () => { }, folderMode, initialPath, title, buttonText);
+            if (folderMode)
+            {
+                StandaloneFileBrowser.OpenFolderPanelAsync("Open file",
+                                                           initialPath,
+                                                           false,
+                                                           path => ifFilePath.text = path[0]);
+            }
+            else
+            {
+                StandaloneFileBrowser.OpenFilePanelAsync("Open file",
+                                                         initialPath,
+                                                         "",
+                                                         false,
+                                                         path => ifFilePath.text = path[0]);
+            }
         }
     }
 }

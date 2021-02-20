@@ -9,5 +9,6 @@
         Fuse = 4,
         Connect = 5,
         Message = 6,
+        Clear = 7,
     }
 }

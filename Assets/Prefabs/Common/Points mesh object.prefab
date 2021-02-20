@@ -11,13 +11,13 @@ GameObject:
   - component: {fileID: 4534342212751386}
   - component: {fileID: 23058964129612076}
   - component: {fileID: 33678617464425682}
-  - component: {fileID: 3962017238983857290}
+  - component: {fileID: 4961733880469367416}
   m_Layer: 0
   m_Name: Points mesh object
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &4534342212751386
 Transform:
@@ -47,6 +47,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -58,6 +59,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -78,7 +80,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013427539586658}
   m_Mesh: {fileID: 0}
---- !u!114 &3962017238983857290
+--- !u!114 &4961733880469367416
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,6 +89,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1013427539586658}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 577f00948bb53874f97efbd55914ee37, type: 3}
+  m_Script: {fileID: 11500000, guid: 09ba215ee3dbfd241837b2377aae2ebe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

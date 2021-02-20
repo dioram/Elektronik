@@ -7,8 +7,8 @@ namespace Elektronik.Common.UI
 {
     public class PlayerUIInitializer : MonoBehaviour
     {
-        Button m_VRModeButton;
-        KeyPressedEventInvoker m_VRModeKeyPressedEvent;
+        private Button _vrModeButton;
+        private KeyPressedEventInvoker _vrModeKeyPressedEvent;
 
         public GameObject VRMode;
         public GameObject NonVRMode;
@@ -21,18 +21,18 @@ namespace Elektronik.Common.UI
         // Start is called before the first frame update
         void Start()
         {
-            m_VRModeButton = NonVRMode.transform
+            _vrModeButton = NonVRMode.transform
                 .Find(@"UIControls/Control panel/Control elements/VR Mode Button")
                 .GetComponent<Button>();
-            m_VRModeKeyPressedEvent = VRMode.GetComponents<KeyPressedEventInvoker>().First(@event => @event.key == KeyCode.F12);
-            m_VRModeKeyPressedEvent.myEvent.AddListener(InverseActive);
-            m_VRModeButton.onClick.AddListener(InverseActive);
+            _vrModeKeyPressedEvent = VRMode.GetComponents<KeyPressedEventInvoker>().First(@event => @event.key == KeyCode.F12);
+            _vrModeKeyPressedEvent.myEvent.AddListener(InverseActive);
+            _vrModeButton.onClick.AddListener(InverseActive);
         }
 
         void OnDestroy()
         {
-            m_VRModeButton.onClick.RemoveListener(InverseActive);
-            m_VRModeKeyPressedEvent.myEvent.RemoveListener(InverseActive);
+            _vrModeButton.onClick.RemoveListener(InverseActive);
+            _vrModeKeyPressedEvent.myEvent.RemoveListener(InverseActive);
         }
     }
 }

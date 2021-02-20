@@ -1,60 +1,61 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Runtime.Serialization;
 
 namespace Elektronik.Common.Settings
 {
     [Serializable]
-    public abstract class Setting : IComparable<Setting>
+    public class Setting : ISerializable
     {
+        public object UnknownValue
+        {
+            get;
+            private set;
+        }
         public string Name { get; }
+        public Type Type { get; }
 
-        private Type Type { get; }
-
-        [NonSerialized]
-        bool m_isModified;
-        public bool IsModified
+        /// <summary>
+        /// This method may cause boxing/unboxing operations, don't use it frequently.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="throwException"></param>
+        /// <returns></returns>
+        public T As<T>(bool throwException = true)
         {
-            get => m_isModified;
-            protected set => m_isModified = value;
-        }
-
-        public Guid UniqueId { get; }
-        
-        public DateTime ModificationTime { get; protected set; }
-        public Setting<T> As<T>(bool throwException = true)
-        {
-            if (throwException && !(this is Setting<T>))
+            if (throwException && !(Type.IsEquivalentTo(typeof(T))))
             {
-                throw new InvalidCastException($"Cannot cast Setting<{Type.Name}> to Setting<{nameof(T)}>");
+                throw new InvalidCastException($"Cannot cast {Type.Name} to {nameof(T)}");
             }
-            return this as Setting<T>;
+            return (T)UnknownValue;
         }
-        public int CompareTo(Setting other) => UniqueId.CompareTo(other);
-        public Setting(string name, Type type)
+
+        [JsonConstructor]
+        private Setting(string name, object unknownValue, Type type)
         {
-            IsModified = false;
+            UnknownValue = unknownValue;
             Name = name;
             Type = type;
-            UniqueId = Guid.NewGuid();
-            ModificationTime = DateTime.Now;
         }
-    }
 
-    [Serializable]
-    public class Setting<T> : Setting
-    {
-        private T m_value;
-        public T Value
+        protected Setting(SerializationInfo info, StreamingContext context)
         {
-            get => m_value;
-            set
-            {
-                m_value = value;
-                IsModified = true;
-                ModificationTime = DateTime.Now;
-            }
+            Name = info.GetString("Name");
+            Type = (Type)info.GetValue("Type", typeof(Type));
+            UnknownValue = info.GetValue("Value", Type);
         }
-        public Setting(string name, T value) : base(name, typeof(T)) => Value = value;
-        public static implicit operator T(Setting<T> setting) => setting.Value;
-        public override string ToString() => Value.ToString();
+
+        virtual public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("Name", Name);
+            info.AddValue("Type", Type);
+            info.AddValue("Value", UnknownValue, Type);
+        }
+
+        public override string ToString() => UnknownValue.ToString();
+        public static Setting Create<T>(string name, T value)
+        {
+            return new Setting(name, value, typeof(T));
+        }
     }
 }
