@@ -7,7 +7,6 @@ using Elektronik.Common.UI;
 using System.IO;
 using System.Linq;
 using Elektronik.Offline.UI;
-using Elektronik.Online.Settings;
 
 namespace Elektronik.Offline.Settings
 {
@@ -61,7 +60,7 @@ namespace Elektronik.Offline.Settings
             }
             else
             {
-                SettingsBag.Current = new OnlineSettingsBag();
+                SettingsBag.Current = new OfflineSettingsBag();
             }
             lbRecentFiles.OnSelectionChanged += RecentFileChanged;
         }
