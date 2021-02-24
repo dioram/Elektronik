@@ -11,12 +11,13 @@ namespace Elektronik.Offline.Presenters
     {
         public CameraImageRenderer Target;
         private byte[] _currentImage;
-        
+
         public override void Present(PacketPb package)
         {
-            var fullPath = Path.Combine(SettingsBag.Current[SettingName.ImagePath].As<string>(), $"{package.Timestamp}.png");
+            var fullPath = Path.Combine(SettingsBag.GetCurrent<OfflineSettingsBag>().ImagePath,
+                                        $"{package.Timestamp}.png");
             if (!File.Exists(fullPath)) return;
-            
+
             _currentImage = File.ReadAllBytes(fullPath);
             if (Successor != null) Successor.Present(package);
         }

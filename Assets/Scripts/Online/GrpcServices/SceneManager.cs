@@ -10,9 +10,9 @@ namespace Elektronik.Online.GrpcServices
 {
     public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {
-        private GameObject _containers;
+        private IContainerTree[] _containers;
 
-        public SceneManager(GameObject containers)
+        public SceneManager(IContainerTree[] containers)
         {
             _containers = containers;
         }
@@ -25,7 +25,7 @@ namespace Elektronik.Online.GrpcServices
             };
             try
             {
-                foreach (var container in _containers.GetComponentsInChildren<IClearable>())
+                foreach (var container in _containers)
                 {
                     container.Clear();
                 }

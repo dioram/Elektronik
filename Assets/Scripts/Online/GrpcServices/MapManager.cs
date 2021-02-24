@@ -11,6 +11,11 @@ using System.Threading.Tasks;
 namespace Elektronik.Online.GrpcServices
 {
     using UnityDebug = UnityEngine.Debug;
+    
+    /// <summary> 
+    /// Base class for handle data in online mode. Used in pattern "Chain of responsibility".
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class MapManager<T> : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
     {
         MapsManagerPb.MapsManagerPbBase _link;
@@ -21,6 +26,10 @@ namespace Elektronik.Online.GrpcServices
             return link;
         }
 
+        /// <summary> Handles gRPC request. </summary>
+        /// <param name="request"> Packet to handle. </param>
+        /// <param name="context"> Server call context </param>
+        /// <returns> Async error status </returns>
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             Task<ErrorStatusPb> status;

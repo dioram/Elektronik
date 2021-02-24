@@ -2,42 +2,41 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
-using System.Linq;
 using Elektronik.Common.Settings;
 using Elektronik.Common.UI;
 using System.IO;
+using System.Linq;
 using Elektronik.Offline.UI;
 
 namespace Elektronik.Offline.Settings
 {
     public class SettingsMenu : MonoBehaviour
     {
-        const string SettingsFile = @"offline\settings.dat";
-
         public UIListBox lbRecentFiles;
-        public UIListBox lbRecentImages;
         public Button buCancel;
         public Button buLoad;
-        public SettingsBagStore store;
         public InputField filePathField;
         public InputField imagePathField;
+        public int MaxCountOfRecentFiles = 10;
+        
+        private SettingsHistory<OfflineSettingsBag> _settingsHistory;
 
-        void Awake()
+        private void Awake()
         {
-            SettingsBag.Mode = Mode.Offline;
+            ModeSelector.Mode = Mode.Offline;
         }
 
         // Use this for initialization
-        void Start()
+        private void Start()
         {
-            store.Deserialize(SettingsFile);
+            _settingsHistory = new SettingsHistory<OfflineSettingsBag>(MaxCountOfRecentFiles);
             AttachBehavior2FileInput();
             AttachBehavior2Cancel();
             AttachBehavior2Load();
             AttachBehavior2RecentFiles();
         }
 
-        void AttachBehavior2FileInput()
+        private void AttachBehavior2FileInput()
         {
             filePathField
                 .ObserveEveryValueChanged(o => o.text)
@@ -45,77 +44,54 @@ namespace Elektronik.Offline.Settings
                 .Subscribe();
         }
 
-        void AttachBehavior2RecentFiles()
+        private void AttachBehavior2RecentFiles()
         {
-            foreach (var recentFile in store.Recent)
+            foreach (var recentFile in _settingsHistory.Recent)
             {
                 var recentFileItem = lbRecentFiles.Add() as RecentFileListBoxItem;
-                var recentImageItem = lbRecentImages.Add() as RecentFileListBoxItem;
-                if (recentFile.TryGetValue(SettingName.FilePath, out Setting fileSetting))
-                {
-                    recentFileItem.Path = fileSetting.As<string>();
-                    recentFileItem.DateTime = recentFile.ModificationTime;
-                }
-                if (recentFile.TryGetValue(SettingName.ImagePath, out Setting imageSetting))
-                {
-                    recentImageItem.Path = imageSetting.As<string>();
-                    recentImageItem.DateTime = recentFile.ModificationTime;
-                }
+                recentFileItem.Path = $"{recentFile.FilePath}\n{recentFile.ImagePath}";
+                recentFileItem.DateTime = recentFile.ModificationTime;
             }
-            if (store.Recent.Count > 0)
+            if (_settingsHistory.Recent.Count > 0)
             {
-                SettingsBag.Current = store.Recent.First();
+                SettingsBag.SetCurrent(_settingsHistory.Recent.First());
             }
             else
             {
-                SettingsBag.Current = new SettingsBag();
+                SettingsBag.SetCurrent(new OfflineSettingsBag());
             }
             lbRecentFiles.OnSelectionChanged += RecentFileChanged;
-            lbRecentImages.OnSelectionChanged += RecentImageChanged;
         }
 
         private void RecentFileChanged(object sender, UIListBox.SelectionChangedEventArgs e)
         {
-            SettingsBag.Current = store.Recent[e.Index];
-            filePathField.text = SettingsBag.Current[SettingName.FilePath].As<string>();
+            var current = _settingsHistory.Recent[e.Index];
+            SettingsBag.SetCurrent(current);
+            filePathField.text = current.FilePath;
+            imagePathField.text = current.ImagePath;
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
-            scalingField.text = SettingsBag.Current[SettingName.Scale].As<float>().ToString(CultureInfo.CurrentCulture);
+            scalingField.text = current.Scale.ToString(CultureInfo.CurrentCulture);
         }
 
-        private void RecentImageChanged(object sender, UIListBox.SelectionChangedEventArgs e)
-        {
-            SettingsBag.Current = store.Recent[e.Index];
-            imagePathField.text = SettingsBag.Current[SettingName.ImagePath].As<string>();
-        }
-
-        void AttachBehavior2Cancel()
+        private void AttachBehavior2Cancel()
         {
             buCancel.OnClickAsObservable()
-                .Do(_ => SettingsBag.Current = null)
+                .Do(_ => SettingsBag.RemoveCurrent(typeof(OfflineSettingsBag)))
                 .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Main menu", UnityEngine.SceneManagement.LoadSceneMode.Single))
                 .Subscribe();
         }
 
-        void AttachBehavior2Load()
+        private void AttachBehavior2Load()
         {
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
             buLoad.OnClickAsObservable()
-                .Select(_ =>
-                {
-                    if (SettingsBag.Current.TryGetValue(SettingName.FilePath, out Setting _))
-                    {
-                        var currentFilePath = SettingsBag.Current[SettingName.FilePath].As<string>();
-                        var currentImagePath = SettingsBag.Current[SettingName.ImagePath].As<string>();
-                        return filePathField.text == currentFilePath && imagePathField.text == currentImagePath ? SettingsBag.Current : new SettingsBag();
-                    }
-                    return new SettingsBag();
-                })
-                .Do(fms => SettingsBag.Current = fms)
-                .Do(_ => SettingsBag.Current.Change(SettingName.Scale, scalingField.text.Length == 0 ? 1.0f : float.Parse(scalingField.text)))
-                .Do(_ => SettingsBag.Current.Change(SettingName.FilePath, filePathField.text))
-                .Do(_ => SettingsBag.Current.Change(SettingName.ImagePath, imagePathField.text))
-                .Do(_ => store.Add(SettingsBag.Current))
-                .Do(_ => store.Serialize(SettingsFile))
+                .Select(_ => new OfflineSettingsBag())
+                .Do(SettingsBag.SetCurrent)
+                .Do(ofb => ofb.Scale = scalingField.text.Length == 0 ? 1.0f : float.Parse(scalingField.text))
+                .Do(ofb => ofb.FilePath = filePathField.text)
+                .Do(ofb => ofb.ImagePath = imagePathField.text)
+                .Do(ofb => _settingsHistory.Add(ofb))
+                .Do(_ => _settingsHistory.Save())
                 .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Empty", UnityEngine.SceneManagement.LoadSceneMode.Single))
                 .Subscribe();
         }

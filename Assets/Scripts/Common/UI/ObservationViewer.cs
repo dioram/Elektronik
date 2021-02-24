@@ -40,9 +40,9 @@ namespace Common.UI
 
             if (_currentFileName == observation.FileName) return;
             _currentFileName = observation.FileName;
-            var path = SettingsBag.Mode == Mode.Online
+            var path = ModeSelector.Mode == Mode.Online
                     ? Directory.GetCurrentDirectory()
-                    : SettingsBag.Current[SettingName.ImagePath].As<string>();
+                    : SettingsBag.GetCurrent<OfflineSettingsBag>().ImagePath;
             path = Path.Combine(path, observation.FileName);
             if (File.Exists(path))
             {

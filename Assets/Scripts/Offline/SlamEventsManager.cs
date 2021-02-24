@@ -2,8 +2,6 @@
 using Elektronik.Common.Extensions;
 using Elektronik.Common.Commands;
 using Elektronik.Common.Loggers;
-using Elektronik.Offline.Settings;
-using Elektronik.Common.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +10,8 @@ using Elektronik.Common.Data.Pb;
 using System.IO;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Settings;
+using Elektronik.Offline.Settings;
 
 namespace Elektronik.Offline
 {
@@ -40,10 +40,9 @@ namespace Elektronik.Offline
         private void Start()
         {
             _commander = commanders.BuildChain();
-            converter.SetInitTRS(
-                Vector3.zero,
-                Quaternion.identity,
-                Vector3.one * SettingsBag.Current[SettingName.Scale].As<float>());
+            converter.SetInitTRS(Vector3.zero,
+                                 Quaternion.identity,
+                                 Vector3.one * SettingsBag.GetCurrent<OfflineSettingsBag>().Scale);
             _commander.SetConverter(converter);
 
             _presenter = presenters.BuildChain();
@@ -193,7 +192,7 @@ namespace Elektronik.Offline
             ElektronikLogger.OpenLog();
             Application.logMessageReceived += ElektronikLogger.Log;
             Debug.Log("Parsing file...");
-            using (var input = File.OpenRead(SettingsBag.Current[SettingName.FilePath].As<string>()))
+            using (var input = File.OpenRead(SettingsBag.GetCurrent<OfflineSettingsBag>().FilePath))
             {
                 var commands = new LinkedList<ICommand>();
                 while (input.Position != input.Length)
