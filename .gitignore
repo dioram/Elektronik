@@ -14,6 +14,9 @@
 !/.gitattributes
 !/LICENSE.md
 !/README*
+!/build.bat
+!/.github/
+!/.github/**
 
 /Assets/generatedFiles/
 /Assets/Packages/

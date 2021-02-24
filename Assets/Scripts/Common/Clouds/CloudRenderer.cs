@@ -10,7 +10,7 @@ namespace Elektronik.Common.Clouds
     /// <typeparam name="TCloudItem"></typeparam>
     /// <typeparam name="TCloudBlock"></typeparam>
     public abstract class CloudRenderer<TCloudItem, TCloudBlock>
-            : MonoBehaviour, ICloudRenderer
+            : MonoBehaviour
             where TCloudItem : ICloudItem, new()
             where TCloudBlock : CloudBlock
     {
@@ -32,14 +32,20 @@ namespace Elektronik.Common.Clouds
 
         private void Start()
         {
-            CreateNewBlock();
+            _needNewBlock = true;
         }
 
         private void Update()
         {
             if (_needNewBlock)
             {
-                CreateNewBlock();
+                var go = new GameObject($"{GetType().ToString().Split('.').Last()} {_blocks.Count}");
+                go.transform.SetParent(transform);
+                var block = go.AddComponent<TCloudBlock>();
+                block.CloudShader = CloudShader;
+                block.Updated = true;
+                _blocks.Add(block);
+                _needNewBlock = false;
             }
 
             foreach (var block in _blocks)
@@ -121,17 +127,6 @@ namespace Elektronik.Common.Clouds
         private int _maxPlace = 0;
         private bool _needNewBlock;
         private int _amountOfItems;
-
-        private void CreateNewBlock()
-        {
-            var go = new GameObject($"{GetType().ToString().Split('.').Last()} {_blocks.Count}");
-            go.transform.SetParent(transform);
-            var block = go.AddComponent<TCloudBlock>();
-            block.CloudShader = CloudShader;
-            block.Updated = true;
-            _blocks.Add(block);
-            _needNewBlock = false;
-        }
 
         #endregion
     }
