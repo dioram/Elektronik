@@ -1,5 +1,5 @@
-﻿using SimpleFileBrowser;
-using System;
+﻿using System;
+using SFB;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,8 +10,7 @@ namespace Elektronik.Common.UI
     {
         private Button _browseButton;
 
-        [HideInInspector]
-        public InputField ifFilePath;
+        [HideInInspector] public InputField ifFilePath;
 
         public bool folderMode = false;
         public string initialPath = null;
@@ -29,8 +28,6 @@ namespace Elektronik.Common.UI
 
             ifFilePath = GetComponentInChildren<InputField>();
 
-            FileBrowser.SetFilters(showAllFiles, filters);
-
             string[] args = Environment.GetCommandLineArgs();
 
             if (args.Length > 1)
@@ -41,13 +38,21 @@ namespace Elektronik.Common.UI
 
         void Browse()
         {
-            FileBrowser.ShowLoadDialog(
-                path => ifFilePath.text = path[0],
-                () => { },
-                folderMode,
-                initialPath: initialPath, 
-                title: title, 
-                loadButtonText: buttonText);
+            if (folderMode)
+            {
+                StandaloneFileBrowser.OpenFolderPanelAsync("Open file",
+                                                           initialPath,
+                                                           false,
+                                                           path => ifFilePath.text = path[0]);
+            }
+            else
+            {
+                StandaloneFileBrowser.OpenFilePanelAsync("Open file",
+                                                         initialPath,
+                                                         "",
+                                                         false,
+                                                         path => ifFilePath.text = path[0]);
+            }
         }
     }
 }
