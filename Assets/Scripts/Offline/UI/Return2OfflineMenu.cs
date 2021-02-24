@@ -21,18 +21,7 @@ namespace Elektronik.Offline.UI
 
         void OnBackToMenuClick()
         {
-            switch (SettingsBag.Mode)
-            {
-                case Mode.Offline:
-                    SceneManager.LoadScene(@"Assets/Scenes/Offline/Offline settings.unity", LoadSceneMode.Single);
-                    break;
-                case Mode.Online:
-                    SceneManager.LoadScene(@"Assets/Scenes/Online/Online settings.unity", LoadSceneMode.Single);
-                    break;
-                default:
-                    throw new Exception("Go to this scene from settings scene");
-            }
+            SceneManager.LoadScene("Scenes/Settings", LoadSceneMode.Single);
         }
-
     }
 }

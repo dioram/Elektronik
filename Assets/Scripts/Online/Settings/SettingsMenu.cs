@@ -15,7 +15,6 @@ namespace Elektronik.Online.Settings
     public class SettingsMenu : MonoBehaviour
     {
         #region Settings
-        const string SettingsFile = @"online\settings.json";
 
         public UIListBox recentConnectionsListBox;
         public int MaxCountOfRecentFiles;
@@ -35,7 +34,7 @@ namespace Elektronik.Online.Settings
 
         private void Awake()
         {
-            SettingsBag.Mode = Mode.Online;
+            ModeSelector.Mode = Mode.Online;
             FindUIs();
             SubscribeUIs();
         }
@@ -43,7 +42,7 @@ namespace Elektronik.Online.Settings
         // Start is called before the first frame update
         void Start()
         {
-            _settingsHistory = new SettingsHistory<OnlineSettingsBag>(SettingsFile, MaxCountOfRecentFiles);
+            _settingsHistory = new SettingsHistory<OnlineSettingsBag>(MaxCountOfRecentFiles);
             AttachBehavior2RecentConnections();
         }
 
@@ -62,11 +61,11 @@ namespace Elektronik.Online.Settings
                 .Do(content => _loadButton.enabled = IPAddress.TryParse(content, out IPAddress _) && !String.IsNullOrEmpty(_uiMapInfoPort.text))
                 .Subscribe();
             _cancelButton.OnClickAsObservable()
-                .Do(_ => SettingsBag.Current = null)
+                .Do(_ => SettingsBag.RemoveCurrent(typeof(OnlineSettingsBag)))
                 .Subscribe(_ => SceneManager.LoadScene("Main menu", LoadSceneMode.Single));
             _loadButton.OnClickAsObservable()
                 .Select(_ => new OnlineSettingsBag())
-                .Do(osb => SettingsBag.Current = osb)
+                .Do(SettingsBag.SetCurrent)
                 .Do(osb => osb.Scale = _uiMapInfoScalingFactor.text.Length == 0 ? 1f : float.Parse(_uiMapInfoScalingFactor.text))
                 .Do(osb => osb.IPAddress = _uiMapInfoAddress.text)
                 .Do(osb => osb.Port = Int32.Parse(_uiMapInfoPort.text))
@@ -84,16 +83,17 @@ namespace Elektronik.Online.Settings
                 recentConnectionItem.FullAddress = $"{recent.IPAddress}:{recent.Port}";
                 recentConnectionItem.Time = recent.ModificationTime;
             }
-            SettingsBag.Current = _settingsHistory.Recent.Count > 0 ? _settingsHistory.Recent.First() : new OnlineSettingsBag();
+            SettingsBag.SetCurrent(_settingsHistory.Recent.Count > 0 ? _settingsHistory.Recent.First() : new OnlineSettingsBag());
             recentConnectionsListBox.OnSelectionChanged += RecentIPChanged;
         }
 
         void RecentIPChanged(object sender, UIListBox.SelectionChangedEventArgs args)
         {
-            SettingsBag.Current = _settingsHistory.Recent[args.Index];
-            _uiMapInfoAddress.text = OnlineSettingsBag.GetCurrent().IPAddress;
-            _uiMapInfoPort.text = OnlineSettingsBag.GetCurrent().Port.ToString();
-            _uiMapInfoScalingFactor.text = OnlineSettingsBag.GetCurrent().Scale.ToString(CultureInfo.CurrentCulture);
+            var current = _settingsHistory.Recent[args.Index];
+            SettingsBag.SetCurrent(current);
+            _uiMapInfoAddress.text = current.IPAddress;
+            _uiMapInfoPort.text = current.Port.ToString();
+            _uiMapInfoScalingFactor.text = current.Scale.ToString(CultureInfo.CurrentCulture);
         }
     }
 }

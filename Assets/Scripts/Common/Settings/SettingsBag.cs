@@ -1,62 +1,77 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.Serialization;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using UnityEngine;
 
 namespace Elektronik.Common.Settings
 {
     [Serializable]
-    public abstract class SettingsBag : IComparable<SettingsBag>, ISerializable
+    public class SettingsBag : ISerializationCallbackReceiver
     {
-        public static Mode Mode { get; set; }
-        public static SettingsBag Current { get; set; }
+        public DateTime ModificationTime;
 
-        private Dictionary<string, Setting> _settings;
-        public Guid UniqueId { get; private set; }
-        public DateTime ModificationTime { get; private set; }
-        public SettingsBag()
+        public static void CreateCurrent(Type settingsType)
         {
-            UniqueId = Guid.NewGuid();
-            _settings = new Dictionary<string, Setting>();
-            ModificationTime = DateTime.Now;
+            RemoveCurrent(settingsType);
+            Currents.Add((SettingsBag) Activator.CreateInstance(settingsType));
+        }
+
+        public static SettingsBag GetCurrent(Type settingsType)
+        {
+            var t = Currents.Where(s => s.GetType() == settingsType).ToList();
+            if (t.Any())
+            {
+                return t.First();
+            }
+
+            var tmp = (SettingsBag) Activator.CreateInstance(settingsType);
+            Currents.Add(tmp);
+            return tmp;
         }
         
-        public void Change<T>(string name, T value)
+        public static T GetCurrent<T>() where T: SettingsBag, new()
         {
-            this[name] = Setting.Create(name, value);
-            ModificationTime = DateTime.Now;
+            var t = Currents.OfType<T>().ToList();
+            if (t.Any())
+            {
+                return t.First();
+            }
+
+            var tmp = new T();
+            Currents.Add(tmp);
+            return tmp;
         }
 
-        protected SettingsBag(SerializationInfo info, StreamingContext context)
+        public static void SetCurrent<T>(T newSettings) where T : SettingsBag
         {
-            ModificationTime = DateTime.Parse(info.GetString("ModificationTime"));
-            UniqueId = (Guid)info.GetValue("UniqueId", typeof(Guid));
-            _settings = (Dictionary<string, Setting>)info.GetValue("Settings", typeof(Dictionary<string, Setting>));
+            RemoveCurrent(typeof(T));
+            Currents.Add(newSettings);
         }
 
-        public int CompareTo(SettingsBag other) => UniqueId.CompareTo(other.UniqueId);
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        public static void RemoveCurrent(Type settingsType)
         {
-            info.AddValue("ModificationTime", ModificationTime.ToString(CultureInfo.CurrentCulture));
-            info.AddValue("UniqueId", UniqueId);
-            info.AddValue("Settings", _settings);
+            var t = Currents.Where(s => s.GetType() == settingsType);
+            Currents.RemoveAll(s => t.Contains(s));
         }
 
-        public bool ContainsKey(string key) => _settings.ContainsKey(key);
-
-        public Setting this[string name]
+        public override string ToString()
         {
-            get => _settings[name];
-            protected set => _settings[name] = value;
+            return string.Join("\n", GetType()
+                                     .GetFields(BindingFlags.Public | BindingFlags.Instance)
+                                     .Where(f => Attribute.IsDefined(f, typeof(CheckForEqualsAttribute)))
+                                     .Select(f => f.GetValue(this).ToString()));
         }
 
-        public bool TryGetValue(string name, out Setting setting)
+        protected bool Equals(SettingsBag other)
         {
-            return _settings.TryGetValue(name, out setting);
+            return GetType()
+                   .GetFields(BindingFlags.Public | BindingFlags.Instance)
+                   .Where(f => Attribute.IsDefined(f, typeof(CheckForEqualsAttribute)))
+                   .Select(f => f.GetValue(this).Equals(f.GetValue(other)))
+                   .All(b => b);
         }
-
-        protected abstract bool Equals(SettingsBag other);
 
         public override bool Equals(object obj)
         {
@@ -66,15 +81,16 @@ namespace Elektronik.Common.Settings
             return Equals((SettingsBag) obj);
         }
 
-        public override int GetHashCode()
+        public void OnBeforeSerialize()
         {
-            unchecked
-            {
-                var hashCode = (_settings != null ? _settings.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ UniqueId.GetHashCode();
-                hashCode = (hashCode * 397) ^ ModificationTime.GetHashCode();
-                return hashCode;
-            }
+            ModificationTime = DateTime.Now;
         }
+
+        public void OnAfterDeserialize()
+        {
+            // Do nothing
+        }
+
+        private static readonly List<SettingsBag> Currents = new List<SettingsBag>();
     }
 }

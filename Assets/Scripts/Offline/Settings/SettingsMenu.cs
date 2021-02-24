@@ -12,8 +12,6 @@ namespace Elektronik.Offline.Settings
 {
     public class SettingsMenu : MonoBehaviour
     {
-        const string SettingsFile = @"offline\settings.json";
-
         public UIListBox lbRecentFiles;
         public Button buCancel;
         public Button buLoad;
@@ -25,13 +23,13 @@ namespace Elektronik.Offline.Settings
 
         private void Awake()
         {
-            SettingsBag.Mode = Mode.Offline;
+            ModeSelector.Mode = Mode.Offline;
         }
 
         // Use this for initialization
         private void Start()
         {
-            _settingsHistory = new SettingsHistory<OfflineSettingsBag>(SettingsFile, MaxCountOfRecentFiles);
+            _settingsHistory = new SettingsHistory<OfflineSettingsBag>(MaxCountOfRecentFiles);
             AttachBehavior2FileInput();
             AttachBehavior2Cancel();
             AttachBehavior2Load();
@@ -56,28 +54,29 @@ namespace Elektronik.Offline.Settings
             }
             if (_settingsHistory.Recent.Count > 0)
             {
-                SettingsBag.Current = _settingsHistory.Recent.First();
+                SettingsBag.SetCurrent(_settingsHistory.Recent.First());
             }
             else
             {
-                SettingsBag.Current = new OfflineSettingsBag();
+                SettingsBag.SetCurrent(new OfflineSettingsBag());
             }
             lbRecentFiles.OnSelectionChanged += RecentFileChanged;
         }
 
         private void RecentFileChanged(object sender, UIListBox.SelectionChangedEventArgs e)
         {
-            SettingsBag.Current = _settingsHistory.Recent[e.Index];
-            filePathField.text = OfflineSettingsBag.GetCurrent().FilePath;
-            imagePathField.text = OfflineSettingsBag.GetCurrent().ImagePath;
+            var current = _settingsHistory.Recent[e.Index];
+            SettingsBag.SetCurrent(current);
+            filePathField.text = current.FilePath;
+            imagePathField.text = current.ImagePath;
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
-            scalingField.text = OfflineSettingsBag.GetCurrent().Scale.ToString(CultureInfo.CurrentCulture);
+            scalingField.text = current.Scale.ToString(CultureInfo.CurrentCulture);
         }
 
         private void AttachBehavior2Cancel()
         {
             buCancel.OnClickAsObservable()
-                .Do(_ => SettingsBag.Current = null)
+                .Do(_ => SettingsBag.RemoveCurrent(typeof(OfflineSettingsBag)))
                 .Do(_ => UnityEngine.SceneManagement.SceneManager.LoadScene("Main menu", UnityEngine.SceneManagement.LoadSceneMode.Single))
                 .Subscribe();
         }
@@ -87,7 +86,7 @@ namespace Elektronik.Offline.Settings
             var scalingField = GameObject.Find("Input scaling").GetComponent<InputField>();
             buLoad.OnClickAsObservable()
                 .Select(_ => new OfflineSettingsBag())
-                .Do(ofb => SettingsBag.Current = ofb)
+                .Do(SettingsBag.SetCurrent)
                 .Do(ofb => ofb.Scale = scalingField.text.Length == 0 ? 1.0f : float.Parse(scalingField.text))
                 .Do(ofb => ofb.FilePath = filePathField.text)
                 .Do(ofb => ofb.ImagePath = imagePathField.text)

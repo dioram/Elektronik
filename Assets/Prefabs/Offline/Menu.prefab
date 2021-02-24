@@ -256,10 +256,10 @@ RectTransform:
   m_Father: {fileID: 5316914297954676031}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 784, y: -25}
-  m_SizeDelta: {x: 160, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3345302357241851481
 CanvasRenderer:
@@ -654,10 +654,10 @@ RectTransform:
   m_Father: {fileID: 5316914297954676031}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 352, y: -25}
-  m_SizeDelta: {x: 694, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4954483619245456587
 CanvasRenderer:
@@ -1952,10 +1952,10 @@ RectTransform:
   m_Father: {fileID: 8663262424634152305}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 352, y: -25}
-  m_SizeDelta: {x: 694, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8663262422940688794
 CanvasRenderer:
@@ -2445,7 +2445,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lbRecentFiles: {fileID: 8663262424426243162}
-  lbRecentImages: {fileID: 0}
   buCancel: {fileID: 8663262423216415596}
   buLoad: {fileID: 8663262424734549450}
   filePathField: {fileID: 8663262422940688792}
@@ -3226,7 +3225,7 @@ GameObject:
   - component: {fileID: 8663262423511586452}
   - component: {fileID: 8663262423511586455}
   m_Layer: 0
-  m_Name: Scenes
+  m_Name: Plugins
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3862,10 +3861,10 @@ RectTransform:
   m_Father: {fileID: 8663262424634152305}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 784, y: -25}
-  m_SizeDelta: {x: 160, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8663262423830160948
 CanvasRenderer:
@@ -4243,7 +4242,7 @@ GameObject:
   - component: {fileID: 8663262424064718356}
   - component: {fileID: 8663262424064718355}
   m_Layer: 0
-  m_Name: Scroll View Scenes
+  m_Name: Scroll View Plugins
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

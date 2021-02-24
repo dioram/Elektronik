@@ -5,13 +5,13 @@ using Elektronik.Common.Data.Pb;
 using Elektronik.Common.Extensions;
 using Elektronik.Common;
 using Elektronik.Online.Settings;
-using Elektronik.Common.Settings;
 using UnityEngine.UI;
 using System;
 using System.Linq;
 using Elektronik.Common.Cameras;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Settings;
 
 namespace Elektronik.Online
 {
@@ -34,8 +34,8 @@ namespace Elektronik.Online
             }
         }
         
-        GrpcServer _server;
         bool _serverStarted = false;
+        GrpcServer _server;
 
         // Start is called before the first frame update
         void Start()
@@ -43,7 +43,7 @@ namespace Elektronik.Online
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             GrpcEnvironment.SetLogger(new UnityLogger());
-            var currentSettings = OnlineSettingsBag.GetCurrent();
+            var currentSettings = SettingsBag.GetCurrent<OnlineSettingsBag>();
 
             converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * currentSettings.Scale);
 
@@ -56,7 +56,7 @@ namespace Elektronik.Online
                 Services = 
                 { 
                     MapsManagerPb.BindService(servicesChain), 
-                    SceneManagerPb.BindService(new SceneManager(Containers)),
+                    //SceneManagerPb.BindService(new SceneManager(Containers)),
                     ImageManagerPb.BindService(new ImageManager(imageRenderTarget))
                 },
                 Ports =

@@ -10,9 +10,9 @@ namespace Elektronik.Common.Containers
     /// <typeparam name="T"></typeparam>
     public interface IContainer<T> : IList<T>
     {
-        public event Action<IContainer<T>, AddedEventArgs<T>> OnAdded;
-        public event Action<IContainer<T>, UpdatedEventArgs<T>> OnUpdated;
-        public event Action<IContainer<T>, RemovedEventArgs> OnRemoved;
+        event Action<IContainer<T>, AddedEventArgs<T>> OnAdded;
+        event Action<IContainer<T>, UpdatedEventArgs<T>> OnUpdated;
+        event Action<IContainer<T>, RemovedEventArgs> OnRemoved;
 
         T this[T obj] { get; set; }
         void AddRange(IEnumerable<T> objects);

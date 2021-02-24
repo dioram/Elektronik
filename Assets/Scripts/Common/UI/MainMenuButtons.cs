@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Elektronik.Common.Settings;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Elektronik.Common.UI
@@ -12,12 +13,14 @@ namespace Elektronik.Common.UI
 
         public void OnOfflineModeClick()
         {
-            SceneManager.LoadScene("Offline settings", LoadSceneMode.Single);
+            ModeSelector.Mode = Mode.Offline;
+            SceneManager.LoadScene("Scenes/Settings", LoadSceneMode.Single);
         }
 
         public void OnOnlineModeClick()
         {
-            SceneManager.LoadScene("Online settings", LoadSceneMode.Single);
+            ModeSelector.Mode = Mode.Online;
+            SceneManager.LoadScene("Scenes/Settings", LoadSceneMode.Single);
         }
     }
 }

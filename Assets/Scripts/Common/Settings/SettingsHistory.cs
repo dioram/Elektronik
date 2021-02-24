@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Elektronik.Common.Settings
@@ -10,14 +9,10 @@ namespace Elektronik.Common.Settings
     {
         public ReadOnlyCollection<T> Recent => _recent.AsReadOnly();
 
-        public SettingsHistory(string fileName, int maxCountOfRecentFiles = 10)
+        public SettingsHistory(int maxCountOfRecentFiles = 10)
         {
             _maxCountOfRecentFiles = maxCountOfRecentFiles;
-            _fileName = fileName;
-            _settings = new JsonSerializerSettings
-            {
-                    ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
-            };
+            _fileName = $"{typeof(T).FullName}.json";
             
             Deserialize();
         }
@@ -46,7 +41,6 @@ namespace Elektronik.Common.Settings
         #region Private definitions
         
         private readonly string _fileName;
-        private readonly JsonSerializerSettings _settings;
         private readonly int _maxCountOfRecentFiles;
         private List<T> _recent;
         
@@ -56,7 +50,7 @@ namespace Elektronik.Common.Settings
             var fi = new FileInfo(pathToAppData);
             if (fi.Directory.Exists && File.Exists(pathToAppData))
             {
-                _recent = JsonConvert.DeserializeObject<List<T>>(File.ReadAllText(pathToAppData), _settings);
+                _recent = JsonUtility.FromJson<List<T>>(pathToAppData);
             }
             else
             {
@@ -70,7 +64,7 @@ namespace Elektronik.Common.Settings
             var fi = new FileInfo(pathToAppData);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
-            File.WriteAllText(pathToAppData, JsonConvert.SerializeObject(_recent, _settings));
+            File.WriteAllText(pathToAppData, JsonUtility.ToJson(_recent));
         }
 
         #endregion

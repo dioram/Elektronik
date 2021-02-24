@@ -1,56 +1,19 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
 using Elektronik.Common.Settings;
+using UnityEngine;
 
 namespace Elektronik.Online.Settings
 {
+    [Serializable]
     public class OnlineSettingsBag : SettingsBag
     {
-        private static class SettingName
-        {
-            public const string IPAddress = "IPAddress";
-            public const string Port = "Port";
-            public const string Scale = "Scale";
-        }
+        [CheckForEquals, Tooltip("IP address")]
+        public string IPAddress = "127.0.0.1";
 
-        public static OnlineSettingsBag GetCurrent()
-        {
-            return (OnlineSettingsBag) Current;
-        }
-        
-        public string IPAddress
-        {
-            get => this[SettingName.IPAddress].As<string>();
-            set => this[SettingName.IPAddress] = Setting.Create(SettingName.IPAddress, value);
-        }
-        
-        public int Port
-        {
-            get => this[SettingName.Port].As<int>();
-            set => this[SettingName.Port] = Setting.Create(SettingName.Port, value);
-        }
-        
-        public float Scale
-        {
-            get => this[SettingName.Scale].As<float>();
-            set => this[SettingName.Scale] = Setting.Create(SettingName.Scale, value);
-        }
+        [CheckForEquals, Tooltip("Port")]
+        public int Port = 5050;
 
-        public OnlineSettingsBag() : base()
-        {
-            
-        }
-        
-        public OnlineSettingsBag(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            
-        }
-        
-        protected override bool Equals(SettingsBag other)
-        {
-            if (other.GetType() != this.GetType()) return false;
-            var obj = (OnlineSettingsBag) other;
-            if (!obj.ContainsKey(SettingName.Port) || !obj.ContainsKey(SettingName.Port)) return false;
-            return IPAddress == obj.IPAddress && Port == obj.Port;
-        }
+        [Tooltip("Scale")]
+        public float Scale = 10f;
     }
 }

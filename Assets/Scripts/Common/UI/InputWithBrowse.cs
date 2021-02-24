@@ -35,7 +35,6 @@ namespace Elektronik.Common.UI
 
             if (args.Length > 1)
             {
-                Debug.Log(args[1]);
                 ifFilePath.text = args[1];
             }
         }
