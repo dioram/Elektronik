@@ -8,12 +8,12 @@ namespace Elektronik.Offline.Settings
     public class OfflineSettingsBag : SettingsBag
     {
         [CheckForEquals, Path(PathAttribute.PathTypes.File), Tooltip("Choose file path:")]
-        public string FilePath;
+        public string FilePath = @"C:\Users\User\RiderProjects\Elektronik-Tools-2.0\Examples\csharp\csharp.Tests\bin\Debug\netcoreapp3.1\TrackedObjsTests.dat";
 
         [CheckForEquals, Path(PathAttribute.PathTypes.Directory), Tooltip("Choose path ot images:")]
-        public string ImagePath;
+        public string ImagePath = @"C:\";
 
         [Tooltip("Scale")]
-        public float Scale;
+        public float Scale = 10;
     }
 }

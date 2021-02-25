@@ -1,47 +1,33 @@
 ﻿using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Maps;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 namespace Elektronik.Common.Commands.Generic
 {
     public class RemoveTrackedObjCommands : RemoveCommand<SlamTrackedObject>
     {
-        private Dictionary<int, IList<SlamLine>> m_trackStates;
+        private readonly SortedDictionary<int, IList<SlamLine>> _tracks = new SortedDictionary<int, IList<SlamLine>>();
+        private readonly ITrackedContainer<SlamTrackedObject> _container;
 
-        private GameObjectsContainer<SlamTrackedObject> m_goContainer;
-
-        public RemoveTrackedObjCommands(GameObjectsContainer<SlamTrackedObject> container, IEnumerable<SlamTrackedObject> data)
-            : base(container, data)
+        public RemoveTrackedObjCommands(ITrackedContainer<SlamTrackedObject> container, IEnumerable<SlamTrackedObject> objects)
+            : base(container, objects)
         {
-            m_goContainer = container;
-            m_trackStates = new Dictionary<int, IList<SlamLine>>();
-            for (int i = 0; i < Objs2Remove.Count; ++i)
+            _container = container;
+        }
+
+        public override void Execute()
+        {
+            foreach (var o in Objs2Remove)
             {
-                if (container.TryGet(Objs2Remove[i], out GameObject gameObject))
-                {
-                    var helmet = gameObject.GetComponent<Helmet>();
-                    m_trackStates[Objs2Remove[i].Id] = helmet.GetTrackState();
-                }
+                _tracks[o.Id] = _container.GetHistory(o.Id);
             }
+            base.Execute();
         }
 
         public override void UnExecute()
         {
-            base.UnExecute();
-            foreach (var o in Objs2Remove)
-            {
-                if (m_goContainer.TryGet(o, out GameObject gameObject))
-                {
-                    var helmet = gameObject.GetComponent<Helmet>();
-                    if (m_trackStates.ContainsKey(o.Id))
-                    {
-                        helmet.RestoreTrackState(m_trackStates[o.Id]);
-                    }
-                }
-            }
+            _container.AddRangeWithHistory(Objs2Remove.OrderBy(i => i.Id), _tracks.Values);
         }
-
     }
 }

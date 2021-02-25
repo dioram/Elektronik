@@ -7,7 +7,9 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class ConnectableObjectsContainer<T> : MonoBehaviour, IClearable, IConnectableObjectsContainer<T> where T : ICloudItem
+    public class ConnectableObjectsContainer<TCloudItem> 
+            : MonoBehaviour, IClearable, IConnectableObjectsContainer<TCloudItem> 
+            where TCloudItem : ICloudItem
     {
         #region Unity events
 
@@ -34,70 +36,58 @@ namespace Elektronik.Common.Containers
         #region IContainer implementation
 
         [Obsolete("Never raised for now.")] 
-        public event Action<IContainer<T>, AddedEventArgs<T>> OnAdded;
+        public event Action<IContainer<TCloudItem>, AddedEventArgs<TCloudItem>> OnAdded;
 
         [Obsolete("Never raised for now.")] 
-        public event Action<IContainer<T>, UpdatedEventArgs<T>> OnUpdated;
+        public event Action<IContainer<TCloudItem>, UpdatedEventArgs<TCloudItem>> OnUpdated;
 
         [Obsolete("Never raised for now.")] 
-        public event Action<IContainer<T>, RemovedEventArgs> OnRemoved;
+        public event Action<IContainer<TCloudItem>, RemovedEventArgs> OnRemoved;
 
         public int Count => Objects.Count;
 
         public bool IsReadOnly => false;
         
-        public bool Contains(T obj) => Objects.Contains(obj);
+        public bool Contains(TCloudItem obj) => Objects.Contains(obj);
         
-        public bool TryGet(T obj, out T current) => Objects.TryGet(obj, out current);
-        
-        public IEnumerator<T> GetEnumerator() => Objects.GetEnumerator();
+        public IEnumerator<TCloudItem> GetEnumerator() => Objects.GetEnumerator();
         
         IEnumerator IEnumerable.GetEnumerator() => Objects.GetEnumerator();
 
-        public int IndexOf(T item) => Objects.IndexOf(item);
+        public int IndexOf(TCloudItem item) => Objects.IndexOf(item);
         
-        public void CopyTo(T[] array, int arrayIndex) => Objects.CopyTo(array, arrayIndex);
-        
-        public T this[T obj]
-        {
-            get => Objects[obj];
-            set => Objects[obj] = value;
-        }
+        public void CopyTo(TCloudItem[] array, int arrayIndex) => Objects.CopyTo(array, arrayIndex);
 
-        public T this[int id]
+        public TCloudItem this[int id]
         {
             get => Objects[id];
             set => Objects[id] = value;
         }
         
-        public void Add(T obj) => Objects.Add(obj);
+        public void Add(TCloudItem obj) => Objects.Add(obj);
         
-        public void Insert(int index, T item) => Objects.Insert(index, item);
+        public void Insert(int index, TCloudItem item) => Objects.Insert(index, item);
         
-        public void AddRange(IEnumerable<T> objects) => Objects.AddRange(objects);
+        public void AddRange(IEnumerable<TCloudItem> items) => Objects.AddRange(items);
 
-        public void UpdateItem(T obj)
+        public void UpdateItem(TCloudItem item)
         {
-            Objects.UpdateItem(obj);
-            Objects.TryGetAsPoint(obj, out var pt1);
-            foreach (var col in _table.GetColIndices(pt1.Id))
+            Objects.UpdateItem(item);
+            foreach (var secondId in _table.GetColIndices(item.Id))
             {
-                Objects.TryGetAsPoint(col, out var pt2);
-                Connects.UpdateItem(new SlamLine(pt1, pt2));
+                Connects.UpdateItem(new SlamLine(item.Id, secondId));
             }
         }
 
-        public void UpdateItems(IEnumerable<T> objs)
+        public void UpdateItems(IEnumerable<TCloudItem> items)
         {
-            Objects.UpdateItems(objs);
+            Objects.UpdateItems(items);
             Debug.Assert(_linesBuffer.Count == 0);
-            foreach (var obj in objs)
+            foreach (var pt1 in items)
             {
-                Objects.TryGetAsPoint(obj, out var pt1);
-                foreach (var col in _table.GetColIndices(pt1.Id))
+                foreach (var pt2Id in _table.GetColIndices(pt1.Id))
                 {
-                    Objects.TryGetAsPoint(col, out var pt2);
-                    _linesBuffer.Add(new SlamLine(pt1, pt2));
+                    _linesBuffer.Add(new SlamLine(pt1.AsPoint(), Objects[pt2Id].AsPoint()));
                 }
             }
 
@@ -111,7 +101,7 @@ namespace Elektronik.Common.Containers
             Objects.RemoveAt(id);
         }
 
-        public bool Remove(T obj)
+        public bool Remove(TCloudItem obj)
         {
             int index = Objects.IndexOf(obj);
             if (index != -1)
@@ -124,11 +114,11 @@ namespace Elektronik.Common.Containers
             return false;
         }
 
-        public void Remove(IEnumerable<T> objs)
+        public void Remove(IEnumerable<TCloudItem> items)
         {
             Debug.Assert(_linesBuffer.Count == 0);
 
-            foreach (var obj in objs)
+            foreach (var obj in items)
             {
                 int id = Objects.IndexOf(obj);
                 if (id != -1)
@@ -148,7 +138,7 @@ namespace Elektronik.Common.Containers
 
             Connects.Remove(_linesBuffer);
             _linesBuffer.Clear();
-            Objects.Remove(objs);
+            Objects.Remove(items);
         }
 
         public void Clear()
@@ -160,73 +150,49 @@ namespace Elektronik.Common.Containers
 
         #endregion
 
-        #region ICloudObjectsContainer implementation
-        
-        public bool Contains(int objId) => Objects.Contains(objId);
-        
-        public bool TryGet(int idx, out T current) => Objects.TryGet(idx, out current);
-
-        public bool TryGetAsPoint(int idx, out SlamPoint point) => Objects.TryGetAsPoint(idx, out point);
-        
-        public bool TryGetAsPoint(T obj, out SlamPoint point) => Objects.TryGetAsPoint(obj, out point);
-        
-        #endregion
-
         #region IConnectableObjectsContainer implementation
         
-        public IEnumerable<SlamLine> Connections => Connects; 
-        
-        private bool AddConnection(T obj1, T obj2, Action<SlamLine> adding)
-        {
-            if (Objects.TryGetAsPoint(obj1, out var pt1) &&
-                Objects.TryGetAsPoint(obj2, out var pt2))
-            {
-                if (!_table[pt1.Id, pt2.Id].HasValue)
-                {
-                    _table[pt1.Id, pt2.Id] = _table[pt2.Id, pt1.Id] = true;
-                    adding(new SlamLine(pt1, pt2));
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        public IEnumerable<SlamLine> Connections => Connects;
 
         public bool AddConnection(int id1, int id2)
         {
-            if (Objects.TryGet(id1, out var obj1) &&
-                Objects.TryGet(id2, out var obj2))
-            {
-                return AddConnection(obj1, obj2);
-            }
-
-            return false;
+            if (_table[id1, id2].HasValue) return false;
+            
+            _table[id1, id2] = _table[id2, id1] = true;
+            return true;
         }
 
-        public bool AddConnection(T obj1, T obj2) => AddConnection(obj1, obj2, Connects.Add);
+        private bool AddConnection(int id1, int id2, Action<SlamLine> adding)
+        {
+            var res = AddConnection(id1, id2);
+            if (res) adding(new SlamLine(Objects[id1].AsPoint(), Objects[id2].AsPoint()));
+            return res;
+        }
+
+        public bool AddConnection(TCloudItem obj1, TCloudItem obj2) => AddConnection(obj1.Id, obj2.Id, Connects.Add);
 
         public bool RemoveConnection(int id1, int id2) => RemoveConnection(id1, id2, l => Connects.Remove(l));
 
-        public bool RemoveConnection(T obj1, T obj2) => RemoveConnection(Objects.IndexOf(obj1), Objects.IndexOf(obj2));
+        public bool RemoveConnection(TCloudItem obj1, TCloudItem obj2) => RemoveConnection(Objects.IndexOf(obj1), Objects.IndexOf(obj2));
 
         public void AddConnections(IEnumerable<(int id1, int id2)> connections)
         {
             Debug.Assert(_linesBuffer.Count == 0);
             foreach (var c in connections)
             {
-                AddConnection(Objects[c.id1], Objects[c.id2], line => _linesBuffer.Add(line));
+                AddConnection(c.id1, c.id2, line => _linesBuffer.Add(line));
             }
 
             Connects.AddRange(_linesBuffer);
             _linesBuffer.Clear();
         }
 
-        public void AddConnections(IEnumerable<(T obj1, T obj2)> connections)
+        public void AddConnections(IEnumerable<(TCloudItem obj1, TCloudItem obj2)> connections)
         {
             Debug.Assert(_linesBuffer.Count == 0);
             foreach (var c in connections)
             {
-                AddConnection(Objects[c.obj1], Objects[c.obj2], line => _linesBuffer.Add(line));
+                AddConnection(c.obj1.Id, c.obj2.Id, line => _linesBuffer.Add(line));
             }
 
             Connects.AddRange(_linesBuffer);
@@ -245,12 +211,12 @@ namespace Elektronik.Common.Containers
             _linesBuffer.Clear();
         }
 
-        public void RemoveConnections(IEnumerable<(T obj1, T obj2)> connections)
+        public void RemoveConnections(IEnumerable<(TCloudItem obj1, TCloudItem obj2)> connections)
         {
             Debug.Assert(_linesBuffer.Count == 0);
             foreach (var c in connections)
             {
-                RemoveConnection(Objects.IndexOf(c.obj1), Objects.IndexOf(c.obj2), line => _linesBuffer.Add(line));
+                RemoveConnection(c.obj1.Id, c.obj2.Id, line => _linesBuffer.Add(line));
             }
 
             Connects.Remove(_linesBuffer);
@@ -265,7 +231,7 @@ namespace Elektronik.Common.Containers
             }
         }
 
-        public IEnumerable<(int, int)> GetAllConnections(T obj)
+        public IEnumerable<(int, int)> GetAllConnections(TCloudItem obj)
         {
             int idx = Objects.IndexOf(obj);
             if (idx != -1)
@@ -282,7 +248,7 @@ namespace Elektronik.Common.Containers
         #region Protected definitions
         
         protected ILinesContainer<SlamLine> Connects;
-        protected ICloudObjectsContainer<T> Objects;
+        protected IContainer<TCloudItem> Objects;
 
         #endregion
         
@@ -310,7 +276,7 @@ namespace Elektronik.Common.Containers
                 {
                     _table.Remove(id1, id2);
                     _table.Remove(id2, id1);
-                    removing(new SlamLine(id1, id2));
+                    removing(new SlamLine(Objects[id1].AsPoint(), Objects[id2].AsPoint()));
                     return true;
                 }
             }

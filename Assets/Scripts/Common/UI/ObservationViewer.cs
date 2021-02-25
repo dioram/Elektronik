@@ -12,9 +12,8 @@ namespace Common.UI
     {
         public RawImage m_image;
         public Text m_message;
-        public GameObjectsContainer<SlamObservation> Observations;
 
-        private int _observationId;
+        private SlamObservation _observation;
         private string _currentFileName;
 
         private void Start()
@@ -27,23 +26,22 @@ namespace Common.UI
             SetData();
         }
 
-        public void ShowObservation(int observation)
+        public void ShowObservation(SlamObservation observation)
         {
             gameObject.SetActive(true);
-            _observationId = observation;
+            _observation = observation;
         }
 
-        void SetData()
+        private void SetData()
         {
-            SlamObservation observation = Observations[_observationId];
-            m_message.text = observation.Message;
+            m_message.text = _observation.Message;
 
-            if (_currentFileName == observation.FileName) return;
-            _currentFileName = observation.FileName;
+            if (_currentFileName == _observation.FileName) return;
+            _currentFileName = _observation.FileName;
             var path = ModeSelector.Mode == Mode.Online
                     ? Directory.GetCurrentDirectory()
                     : SettingsBag.GetCurrent<OfflineSettingsBag>().ImagePath;
-            path = Path.Combine(path, observation.FileName);
+            path = Path.Combine(path, _observation.FileName);
             if (File.Exists(path))
             {
                 Texture2D texture = new Texture2D(1024, 1024);

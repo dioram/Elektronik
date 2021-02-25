@@ -16,6 +16,8 @@ namespace Elektronik.Common.Data.PackageObjects
         public Quaternion Rotation;
         public Stats Statistics;
         public string Message { get; set; }
+        public SlamPoint AsPoint() => Point;
+
         public string FileName;
 
         public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName, Stats stats = new Stats())

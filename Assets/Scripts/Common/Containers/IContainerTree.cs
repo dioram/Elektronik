@@ -11,7 +11,5 @@ namespace Elektronik.Common.Containers
         void SetActive(bool active);
 
         void Clear();
-
-        void SetRenderers(ICloudRenderer[] renderers);
     }
 }

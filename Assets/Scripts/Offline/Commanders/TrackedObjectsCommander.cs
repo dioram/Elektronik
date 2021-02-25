@@ -10,7 +10,7 @@ namespace Elektronik.Offline.Commanders
 {
     public class TrackedObjectsCommander : Commander
     {
-        public ConnectableTrackedObjsContainer Container;
+        public TrackedObjectsContainer Container;
         
         protected virtual ICommand GetCommand(IEnumerable<SlamTrackedObject> objs, PacketPb.Types.ActionType action)
         {
@@ -19,11 +19,11 @@ namespace Elektronik.Offline.Commanders
                 case PacketPb.Types.ActionType.Add:
                     return new AddCommand<SlamTrackedObject>(Container, objs);
                 case PacketPb.Types.ActionType.Update:
-                    return new UpdateTrackedObjsCommand(Container.TrackedObjsContainer, objs);
+                    return new UpdateCommand<SlamTrackedObject>(Container, objs);
                 case PacketPb.Types.ActionType.Remove:
-                    return new RemoveTrackedObjCommands(Container.TrackedObjsContainer, objs);
+                    return new RemoveTrackedObjCommands(Container, objs);
                 case PacketPb.Types.ActionType.Clear:
-                    return new ClearTrackedObjsCommand(Container.TrackedObjsContainer);
+                    return new ClearTrackedObjsCommand(Container);
                 default: return null;
             }
         }

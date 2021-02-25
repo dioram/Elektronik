@@ -10,7 +10,16 @@ namespace Elektronik.Common.Containers.NotMono
 {
     public class SlamLinesContainer : IClearable, ILinesContainer<SlamLine>, IContainerTree
     {
-        public LineCloudRenderer Renderer;
+        // TODO: убрать значение по умолчанию
+        public SlamLinesContainer(ICloudRenderer<SlamLine> renderer = null)
+        {
+            if (renderer == null) return;
+            
+            _renderer = renderer;
+            OnAdded += _renderer.OnItemsAdded;
+            OnUpdated += _renderer.OnItemsUpdated;
+            OnRemoved += _renderer.OnItemsRemoved;
+        }
 
         #region IContaitner implementation
 
@@ -74,10 +83,10 @@ namespace Elektronik.Common.Containers.NotMono
 
         public void Insert(int index, SlamLine item) => Add(item);
 
-        public void AddRange(IEnumerable<SlamLine> objects)
+        public void AddRange(IEnumerable<SlamLine> items)
         {
             Debug.Assert(_linesBuffer.Count == 0);
-            foreach (var obj in objects)
+            foreach (var obj in items)
             {
                 var line = obj;
                 line.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
@@ -89,18 +98,18 @@ namespace Elektronik.Common.Containers.NotMono
             _linesBuffer.Clear();
         }
 
-        public void UpdateItem(SlamLine obj)
+        public void UpdateItem(SlamLine item)
         {
-            int index = _connectionsIndices[obj];
-            obj.Id = index;
-            _connections[obj.Id] = obj;
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {obj}));
+            int index = _connectionsIndices[item];
+            item.Id = index;
+            _connections[item.Id] = item;
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {item}));
         }
 
-        public void UpdateItems(IEnumerable<SlamLine> objs)
+        public void UpdateItems(IEnumerable<SlamLine> items)
         {
             Debug.Assert(_linesBuffer.Count == 0);
-            foreach (var obj in objs)
+            foreach (var obj in items)
             {
                 var line = obj;
                 line.Id = _connectionsIndices[line];
@@ -114,10 +123,10 @@ namespace Elektronik.Common.Containers.NotMono
 
         public bool Remove(SlamLine obj) => Remove(obj.Point1.Id, obj.Point2.Id);
 
-        public void Remove(IEnumerable<SlamLine> objs)
+        public void Remove(IEnumerable<SlamLine> items)
         {
             List<int> ids = new List<int>();
-            foreach (var l in objs)
+            foreach (var l in items)
             {
                 var index = _connectionsIndices[l];
                 ids.Add(index);
@@ -125,7 +134,7 @@ namespace Elektronik.Common.Containers.NotMono
                 _freeIds.Enqueue(index);
             }
 
-            foreach (var line in objs)
+            foreach (var line in items)
             {
                 _connectionsIndices.Remove(line);
             }
@@ -169,17 +178,6 @@ namespace Elektronik.Common.Containers.NotMono
                 OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys));
             }
         }
-
-        public void SetRenderers(ICloudRenderer[] renderers)
-        {
-            foreach (var cloudRenderer in renderers.OfType<LineCloudRenderer>())
-            {
-                OnAdded += cloudRenderer.OnItemsAdded;
-                OnUpdated += cloudRenderer.OnItemsUpdated;
-                OnRemoved += cloudRenderer.OnItemsRemoved;
-            }
-        }
-        
 
         #endregion
 
@@ -237,6 +235,7 @@ namespace Elektronik.Common.Containers.NotMono
 
         #region Private definitions
 
+        private ICloudRenderer<SlamLine> _renderer;
         private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
 
         private readonly IDictionary<int, SlamLine> _connections = new SortedDictionary<int, SlamLine>();

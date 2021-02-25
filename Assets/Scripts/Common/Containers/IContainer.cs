@@ -14,11 +14,9 @@ namespace Elektronik.Common.Containers
         event Action<IContainer<T>, UpdatedEventArgs<T>> OnUpdated;
         event Action<IContainer<T>, RemovedEventArgs> OnRemoved;
 
-        T this[T obj] { get; set; }
-        void AddRange(IEnumerable<T> objects);
-        void Remove(IEnumerable<T> objs);
-        bool TryGet(T obj, out T current);
-        void UpdateItem(T obj);
-        void UpdateItems(IEnumerable<T> objs);
+        void AddRange(IEnumerable<T> items);
+        void Remove(IEnumerable<T> items);
+        void UpdateItem(T item);
+        void UpdateItems(IEnumerable<T> items);
     }
 }

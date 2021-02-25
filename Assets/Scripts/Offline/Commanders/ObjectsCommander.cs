@@ -16,7 +16,7 @@ namespace Elektronik.Offline.Commanders
 
         private ICommand GetCommandForConnectableObjects<T>(IConnectableObjectsContainer<T> map,
                                                             IEnumerable<T> objects, PacketPb packet)
-                where T : ICloudItem
+                where T : struct, ICloudItem
         {
             switch (packet.Action)
             {
@@ -45,6 +45,7 @@ namespace Elektronik.Offline.Commanders
         }
 
         private ICommand GetCommand<T>(IContainer<T> map, IEnumerable<T> objects, PacketPb packet)
+                where T : struct, ICloudItem
         {
             switch (packet.Action)
             {

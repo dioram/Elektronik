@@ -2,26 +2,32 @@
 
 namespace Elektronik.Common.Data.PackageObjects
 {
-    public struct SlamLine : IEquatable<SlamLine>, IComparable<SlamLine>, ICloudItem
+    public struct SlamLine : IComparable<SlamLine>, ICloudItem
     {
         public int Id { get; set; }
         public string Message { get; set; }
+        
+        public SlamPoint AsPoint()
+        {
+            throw new InvalidCastException("Cannot get line as point");
+        }
+
         public SlamPoint Point1;
         public SlamPoint Point2;
 
-        public SlamLine(int id1, int id2)
+        public SlamLine(int id1, int id2, int id = 0)
         {
             Point1 = new SlamPoint() { Id = id1 };
             Point2 = new SlamPoint() { Id = id2 };
-            Id = 0;
+            Id = id;
             Message = "";
         }
 
-        public SlamLine(SlamPoint point1, SlamPoint point2)
+        public SlamLine(SlamPoint point1, SlamPoint point2, int id = 0)
         {
             Point1 = point1;
             Point2 = point2;
-            Id = 0;
+            Id = id;
             Message = "";
         }
 

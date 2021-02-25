@@ -1,4 +1,5 @@
 ﻿using Elektronik.PluginsSystem;
+using Elektronik.PluginsSystem.UnitySide;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,7 +38,11 @@ namespace Elektronik.Common.UI
             _descriptionLabel.text = Plugin.Description;
 
             _toggle.OnValueChangedAsObservable()
-                   .Do(_ => { });
+                   .Where(state => state)
+                   .Subscribe(_ => PluginsLoader.EnablePlugin(Plugin));
+            _toggle.OnValueChangedAsObservable()
+                   .Where(state => !state)
+                   .Subscribe(_ => PluginsLoader.DisablePlugin(Plugin));
         }
 
         public void ToggleDescription()

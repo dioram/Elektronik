@@ -5,7 +5,7 @@ namespace Elektronik.Common.Containers
 {
     /// <summary> Interface of container for connectable objects. </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IConnectableObjectsContainer<T> : ICloudObjectsContainer<T> where T: ICloudItem
+    public interface IConnectableObjectsContainer<T> : IContainer<T> where T: ICloudItem
     {
         IEnumerable<SlamLine> Connections { get; }
         bool AddConnection(int id1, int id2);

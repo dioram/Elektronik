@@ -9,5 +9,6 @@ namespace Elektronik.Common.Data.PackageObjects
         public Vector3 Normal;
         public Color Color;
         public string Message { get; set; }
+        public SlamPoint AsPoint() => new SlamPoint(Id, Offset, Color);
     }
 }

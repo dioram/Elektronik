@@ -9,6 +9,8 @@ namespace Elektronik.Common.Data.PackageObjects
         public Vector3 Position;
         public Quaternion Rotation;
         public string Message { get; set; }
+        
+        public SlamPoint AsPoint() => new SlamPoint(Id, Position, Color);
 
         public SlamTrackedObject(int id, Color color = default, Vector3 position = default, Quaternion rotation = default)
         {

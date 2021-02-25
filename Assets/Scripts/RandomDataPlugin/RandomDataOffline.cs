@@ -41,14 +41,6 @@ namespace Elektronik.RandomDataPlugin
             }
         }
 
-        public void SetRenderers(ICloudRenderer[] renderers)
-        {
-            foreach (var child in Children)
-            {
-                child.SetRenderers(renderers);
-            }
-        }
-
         public ICSConverter Converter { get; set; }
 
         public SettingsBag Settings

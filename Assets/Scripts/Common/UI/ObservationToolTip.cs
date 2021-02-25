@@ -9,15 +9,13 @@ namespace Common.UI
     {
         public ObservationViewer floatingViewer;
         public ObservationViewer pinnedViewer;
-        public GameObjectsContainer<SlamObservation> Observations;
+        public CloudContainer<SlamObservation> Observations;
         
         private Camera _camera;
 
         void Start()
         {
             _camera = Camera.main;
-            floatingViewer.Observations = Observations;
-            pinnedViewer.Observations = Observations;
         }
 
         private void Update()
@@ -25,14 +23,14 @@ namespace Common.UI
             var ray = _camera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hitInfo) && hitInfo.transform.CompareTag("Observation"))
             {
-                var id = hitInfo.transform.GetComponent<IdContainer>().Id;
+                var data = hitInfo.transform.GetComponent<DataComponent<SlamObservation>>().Data;
                 if (Input.GetMouseButton(0))
                 {
-                    pinnedViewer.ShowObservation(id);
+                    pinnedViewer.ShowObservation(data);
                 }
                 else
                 {
-                    floatingViewer.ShowObservation(id);
+                    floatingViewer.ShowObservation(data);
                     floatingViewer.transform.position = Input.mousePosition;
                 }
             }

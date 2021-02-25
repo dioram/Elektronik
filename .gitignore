@@ -25,3 +25,6 @@
 *.pidb.meta
 *.pdb.meta
 *.mdb.meta
+
+/Examples/csharp/.idea/
+/Examples/csharp/csharp.sln.*

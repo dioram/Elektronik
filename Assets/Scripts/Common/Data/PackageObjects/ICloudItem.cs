@@ -7,5 +7,7 @@
         
         /// <summary> Additional info. </summary>
         string Message { get; set; }
+
+        public SlamPoint AsPoint();
     }
 }

@@ -23,10 +23,10 @@ namespace Elektronik.Offline.Presenters
             {
                 case PacketPb.DataOneofCase.Points:
                     return packet.Points.Data.Select(p => 
-                        new SlamPoint(p.Id, ConnectablePoints[p].Position, color: default, message: p.Message));
+                        new SlamPoint(p.Id, ConnectablePoints[p.Id].Position, color: default, message: p.Message));
                 case PacketPb.DataOneofCase.Observations:
                     return packet.Observations.Data.Select(o =>
-                        new SlamPoint(o.Point.Id, ConnectableObservations[o].Point.Position, color: default, message: o.Point.Message));
+                        new SlamPoint(o.Point.Id, ConnectableObservations[o.Point.Id].Point.Position, color: default, message: o.Point.Message));
                 default:
                     return null;
             }

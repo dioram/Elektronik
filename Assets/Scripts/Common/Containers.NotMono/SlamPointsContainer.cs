@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers.NotMono
 {
-    public class SlamPointsContainer : IClearable, ICloudObjectsContainer<SlamPoint>, IContainerTree
+    public class SlamPointsContainer : IClearable, IContainer<SlamPoint>, IContainerTree
     {
         public PointCloudRenderer Renderer;
         
@@ -28,14 +28,15 @@ namespace Elektronik.Common.Containers.NotMono
             get => _points[id];
             set
             {
-                if (!TryGet(id, out _)) Add(value); else UpdateItem(value);
+                if (_points.ContainsKey(id))
+                {
+                    UpdateItem(value);
+                }
+                else
+                {
+                    Add(value);
+                }
             }
-        }
-        
-        public SlamPoint this[SlamPoint obj]
-        {
-            get => this[obj.Id];
-            set => this[obj.Id] = value;
         }
         
         public int Count => _points.Count;
@@ -46,44 +47,42 @@ namespace Elektronik.Common.Containers.NotMono
         
         public int IndexOf(SlamPoint item) => item.Id;
 
-        public bool Contains(SlamPoint point) => Contains(point.Id);
-        
-        public bool TryGet(SlamPoint point, out SlamPoint current) => TryGet(point.Id, out current);
-        
+        public bool Contains(SlamPoint point) => _points.ContainsKey(point.Id);
+
         public void Add(SlamPoint point)
         {
             _points.Add(point.Id, point);
             OnAdded?.Invoke(this, new AddedEventArgs<SlamPoint>(new []{point}));
         }
 
-        public void AddRange(IEnumerable<SlamPoint> points)
+        public void AddRange(IEnumerable<SlamPoint> items)
         {
-            foreach (var pt in points)
+            foreach (var pt in items)
                 _points.Add(pt.Id, pt);
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamPoint>(points));
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamPoint>(items));
         }
         
         public void Insert(int index, SlamPoint item) => Add(item);
 
-        public void UpdateItem(SlamPoint point)
+        public void UpdateItem(SlamPoint item)
         {
-            SlamPoint currentPoint = _points[point.Id];
-            currentPoint.Position = point.Position;
-            currentPoint.Color = point.Color;
-            _points[point.Id] = currentPoint;
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamPoint>(new []{point}));
+            SlamPoint currentPoint = _points[item.Id];
+            currentPoint.Position = item.Position;
+            currentPoint.Color = item.Color;
+            _points[item.Id] = currentPoint;
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamPoint>(new []{item}));
         }
 
-        public void UpdateItems(IEnumerable<SlamPoint> points)
+        public void UpdateItems(IEnumerable<SlamPoint> items)
         {
-            foreach (var pt in points)
+            foreach (var pt in items)
             {
                 SlamPoint currentPoint = _points[pt.Id];
                 currentPoint.Position = pt.Position;
                 currentPoint.Color = pt.Color;
                 _points[pt.Id] = currentPoint;
             }
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamPoint>(points));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamPoint>(items));
         }
 
         public void RemoveAt(int pointId)
@@ -99,11 +98,11 @@ namespace Elektronik.Common.Containers.NotMono
             return res;
         }
 
-        public void Remove(IEnumerable<SlamPoint> points)
+        public void Remove(IEnumerable<SlamPoint> items)
         {
-            foreach (var pt in points)
+            foreach (var pt in items)
                 _points.Remove(pt.Id);
-            OnRemoved?.Invoke(this, new RemovedEventArgs(points.Select(p => p.Id)));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(p => p.Id)));
         }
 
         public void Clear()
@@ -132,35 +131,6 @@ namespace Elektronik.Common.Containers.NotMono
                 OnRemoved?.Invoke(this, new RemovedEventArgs(_points.Keys));
             }
         }
-
-        public void SetRenderers(ICloudRenderer[] renderers)
-        {
-            foreach (var cloudRenderer in renderers.OfType<PointCloudRenderer>())
-            {
-                OnAdded += cloudRenderer.OnItemsAdded;
-                OnUpdated += cloudRenderer.OnItemsUpdated;
-                OnRemoved += cloudRenderer.OnItemsRemoved;
-            }
-        }
-
-        #endregion
-        
-        #region ICloudObjectsContainer implementation
-        
-        public bool Contains(int pointId) => _points.ContainsKey(pointId);
-
-        public bool TryGet(int idx, out SlamPoint current)
-        {
-            current = new SlamPoint();
-            if (!Contains(idx)) return false;
-            current = this[idx];
-            return true;
-
-        }
-
-        public bool TryGetAsPoint(SlamPoint obj, out SlamPoint point) => TryGet(obj, out point);
-
-        public bool TryGetAsPoint(int idx, out SlamPoint point) => TryGet(idx, out point);
 
         #endregion
 

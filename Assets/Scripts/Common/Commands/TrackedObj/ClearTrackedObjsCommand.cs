@@ -1,44 +1,37 @@
 ﻿using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Maps;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 namespace Elektronik.Common.Commands.Generic
 {
     public class ClearTrackedObjsCommand : ClearCommand<SlamTrackedObject>
     {
-        private Dictionary<int, IList<SlamLine>> m_trackStates;
+        private readonly SortedDictionary<int, (SlamTrackedObject, IList<SlamLine>)> _tracks
+                = new SortedDictionary<int, (SlamTrackedObject, IList<SlamLine>)>();
 
-        private GameObjectsContainer<SlamTrackedObject> m_goContainer;
+        private readonly ITrackedContainer<SlamTrackedObject> _container;
 
-        public ClearTrackedObjsCommand(GameObjectsContainer<SlamTrackedObject> container)
-            : base(container)
+        public ClearTrackedObjsCommand(ITrackedContainer<SlamTrackedObject> container)
+                : base(container)
         {
-            m_goContainer = container;
-            m_trackStates = new Dictionary<int, IList<SlamLine>>();
-            foreach (var o in container)
+            _container = container;
+        }
+
+        public override void Execute()
+        {
+            foreach (var o in _container)
             {
-                if (container.TryGet(o, out GameObject helmetGO))
-                {
-                    var helmet = helmetGO.GetComponent<Helmet>();
-                    m_trackStates[o.Id] = helmet.GetTrackState();
-                }
+                _tracks[o.Id] = (o, _container.GetHistory(o.Id));
             }
+
+            base.Execute();
         }
 
         public override void UnExecute()
         {
-            base.UnExecute();
-            foreach (var o in UndoObjects)
-            {
-                if (m_goContainer.TryGet(o, out GameObject helmetGO))
-                {
-                    var helmet = helmetGO.GetComponent<Helmet>();
-                    if (m_trackStates.ContainsKey(o.Id))
-                        helmet.RestoreTrackState(m_trackStates[o.Id]);
-                }
-            }
+            _container.AddRangeWithHistory(_tracks.Values.Select(p => p.Item1),
+                                           _tracks.Values.Select(p => p.Item2));
         }
     }
 }

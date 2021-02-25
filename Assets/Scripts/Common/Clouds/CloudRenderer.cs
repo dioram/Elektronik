@@ -10,8 +10,8 @@ namespace Elektronik.Common.Clouds
     /// <typeparam name="TCloudItem"></typeparam>
     /// <typeparam name="TCloudBlock"></typeparam>
     public abstract class CloudRenderer<TCloudItem, TCloudBlock>
-            : MonoBehaviour
-            where TCloudItem : ICloudItem, new()
+            : CloudRendererComponent<TCloudItem>, ICloudRenderer<TCloudItem>
+            where TCloudItem : struct, ICloudItem
             where TCloudBlock : CloudBlock
     {
         public Shader CloudShader;
@@ -56,9 +56,9 @@ namespace Elektronik.Common.Clouds
 
         #endregion
 
-        #region Container changes handlers
+        #region ICloudRenderer implementation
 
-        public void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e)
+        public override void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e)
         {
             _amountOfItems += e.AddedItems.Count();
             if (_amountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
@@ -77,7 +77,7 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-        public void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e)
+        public override void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e)
         {
             foreach (var item in e.UpdatedItems)
             {
@@ -89,7 +89,7 @@ namespace Elektronik.Common.Clouds
             }
         }
 
-        public void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e)
+        public override void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e)
         {
             foreach (var itemId in e.RemovedIds)
             {

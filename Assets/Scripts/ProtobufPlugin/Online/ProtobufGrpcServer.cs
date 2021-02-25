@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Common;
 using Elektronik.Common.Clouds;
@@ -21,13 +20,19 @@ namespace Elektronik.ProtobufPlugin.Online
     
     public class ProtobufGrpcServer : IDataSourceOnline
     {
+        #region IDataSourceOnline implementation
+
         public string DisplayName => "Protobuf";
+        
         public string Description => "Protobuf description";
-
+        
         public IContainerTree[] Children { get; }
+        
+        public ICSConverter Converter { get; set; }
+        
+        public SettingsBag Settings { get; set; }
 
-        private MapsManagerPb.MapsManagerPbBase[] _mapManagers;
-        bool _serverStarted = false;
+        public Type RequiredSettingsType => typeof(OnlineSettingsBag);
         
         public void SetActive(bool active)
         {
@@ -36,13 +41,7 @@ namespace Elektronik.ProtobufPlugin.Online
                 child.SetActive(active);
             }
         }
-
-        public ICSConverter Converter { get; set; }
         
-        public SettingsBag Settings { get; set; }
-
-        public Type RequiredSettingsType => typeof(OnlineSettingsBag);
-
         public void Start()
         {
             if (!(Settings is OnlineSettingsBag))
@@ -55,18 +54,22 @@ namespace Elektronik.ProtobufPlugin.Online
                 throw new NullReferenceException(
                         $"Converter is not set for {DisplayName}-{nameof(ProtobufGrpcServer)}");
             }
-            
-            
+
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             GrpcEnvironment.SetLogger(new UnityLogger());
-            var currentSettings = SettingsBag.GetCurrent<OnlineSettingsBag>();
             
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * currentSettings.Scale);
+            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * OnlineSettings.Scale);
             
-            var servicesChain = _mapManagers.Select(m => m as IChainable<MapsManagerPb.MapsManagerPbBase>).BuildChain();
+            var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
+            {
+                    // new PointsMapManager(slamMaps.Points, Converter),
+                    // new ObservationsMapManager(slamMaps.Observations, Converter),
+                    // new TrackedObjsMapManager(slamMaps.TrackedObjsGO, slamMaps.TrackedObjs, Converter),
+                    // new LinesMapManager(slamMaps.Lines, Converter),
+            }.BuildChain();
             
-            Debug.Log($"{currentSettings.IPAddress}:{currentSettings.Port}");
+            Debug.Log($"{OnlineSettings.IPAddress}:{OnlineSettings.Port}");
             
             _server = new GrpcServer()
             {
@@ -78,30 +81,17 @@ namespace Elektronik.ProtobufPlugin.Online
                     },
                     Ports =
                     {
-                            new ServerPort(currentSettings.IPAddress, currentSettings.Port, ServerCredentials.Insecure),
+                            new ServerPort(OnlineSettings.IPAddress, OnlineSettings.Port, ServerCredentials.Insecure),
                     },
             };
             StartServer();
         }
-        
-        private void StartServer()
-        {
-            Stop();
-            _server.Start();
-            _serverStarted = true;
-        }
-
-        private void StopServer()
-        {
-        }
 
         public void Stop()
         {
-            if (_serverStarted)
-            {
-                _server.ShutdownAsync().Wait();
-                _serverStarted = false;
-            }
+            if (!_serverStarted) return;
+            _server.ShutdownAsync().Wait();
+            _serverStarted = false;
         }
 
         public void Update()
@@ -117,12 +107,33 @@ namespace Elektronik.ProtobufPlugin.Online
             }
         }
 
-        public void SetRenderers(ICloudRenderer[] renderers)
-        {
-            throw new System.NotImplementedException();
-        }
+        // public void SetRenderers(ICloudRenderer[] renderers)
+        // {
+        //     foreach (var child in Children)
+        //     {
+        //         child.SetRenderers(renderers);
+        //     }
+        // }
         
-        public GrpcServer _server;
-        private OnlineSettingsBag _settings => (OnlineSettingsBag) Settings;
+        #endregion
+
+        #region Private definitions
+
+        private MapsManagerPb.MapsManagerPbBase[] _mapManagers;
+        
+        private bool _serverStarted = false;
+
+        private void StartServer()
+        {
+            Stop();
+            _server.Start();
+            _serverStarted = true;
+        }
+
+        private GrpcServer _server;
+        
+        private OnlineSettingsBag OnlineSettings => (OnlineSettingsBag) Settings;
+
+        #endregion
     }
 }
