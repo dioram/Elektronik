@@ -6,7 +6,7 @@ namespace Elektronik.Common.Settings
 {
     public class ModeSelector : MonoBehaviour
     {
-        public static Mode Mode = Mode.Online;// Mode.Invalid;
+        public static Mode Mode = Mode.Invalid;
     
         public GameObject filePlayer;
         public GameObject onlinePlayer;

@@ -4,47 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Common.Clouds;
 using Elektronik.Common.Data.PackageObjects;
-using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class CloudContainer<TCloudItem>: MonoBehaviour, IContainer<TCloudItem>
+    public class CloudContainer<TCloudItem>: IContainer<TCloudItem>, IContainerTree
         where TCloudItem: struct, ICloudItem
     {
-        public CloudRendererComponent<TCloudItem> Renderer;
-        
-        #region Unity events
-
-        private void Start()
+        public CloudContainer(string displayName = "")
         {
-            if (Renderer == null)
-            {
-                Debug.LogWarning($"No renderer set for {name}({GetType()})");
-            }
-            else
-            {
-                OnAdded += Renderer.OnItemsAdded;
-                OnUpdated += Renderer.OnItemsUpdated;
-                OnRemoved += Renderer.OnItemsRemoved;
-            }
+            DisplayName = string.IsNullOrEmpty(displayName) ? typeof(TCloudItem).Name : displayName;
         }
-
-        private void OnEnable()
-        {
-            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
-        }
-
-        private void OnDisable()
-        {
-            OnRemoved?.Invoke(this, new RemovedEventArgs(_items.Keys));
-        }
-
-        private void OnDestroy()
-        {
-            Clear();
-        }
-
-        #endregion
 
         #region IContainer implementation
 
@@ -57,7 +26,7 @@ namespace Elektronik.Common.Containers
             _items.Add(item.Id, item);
             OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new []{item}));
         }
-
+        
         public void Clear()
         {
             var ids = _items.Keys.ToArray();
@@ -151,9 +120,43 @@ namespace Elektronik.Common.Containers
 
         #endregion
 
+        #region IContainerTree implementations
+
+        public string DisplayName { get; protected set; }
+
+        public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
+
+        public bool IsActive
+        {
+            get => _isActive;
+            set
+            {
+                if (value && !_isActive) OnRemoved?.Invoke(this, new RemovedEventArgs(_items.Keys));
+                else if (!value && _isActive) OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
+                _isActive = value;
+            }
+        }
+
+        public void SetRenderer(object renderer)
+        {
+            if (renderer is ICloudRenderer<TCloudItem> typedRenderer)
+            {
+                OnAdded += typedRenderer.OnItemsAdded;
+                OnUpdated += typedRenderer.OnItemsUpdated;
+                OnRemoved += typedRenderer.OnItemsRemoved;
+                if (Count > 0)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
+                }
+            }
+        }
+        
+        #endregion
+
         #region Private definitions
 
         private readonly SortedDictionary<int, TCloudItem> _items = new SortedDictionary<int, TCloudItem>();
+        private bool _isActive = true;
 
         #endregion
     }

@@ -1,8 +1,6 @@
 ﻿using System.IO;
-using Elektronik.Common.Containers;
+using Elektronik.Common.Clouds;
 using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Settings;
-using Elektronik.Offline.Settings;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +11,7 @@ namespace Common.UI
         public RawImage m_image;
         public Text m_message;
 
-        private SlamObservation _observation;
+        private DataComponent<SlamObservation> _observation;
         private string _currentFileName;
 
         private void Start()
@@ -26,7 +24,7 @@ namespace Common.UI
             SetData();
         }
 
-        public void ShowObservation(SlamObservation observation)
+        public void ShowObservation(DataComponent<SlamObservation> observation)
         {
             gameObject.SetActive(true);
             _observation = observation;
@@ -34,19 +32,14 @@ namespace Common.UI
 
         private void SetData()
         {
-            m_message.text = _observation.Message;
+            m_message.text = _observation.Data.Message;
 
-            if (_currentFileName == _observation.FileName) return;
-            _currentFileName = _observation.FileName;
-            // TODO: Fix back
-            // var path = ModeSelector.Mode == Mode.Online
-            //         ? Directory.GetCurrentDirectory()
-            //         : SettingsBag.GetCurrent<OfflineSettingsBag>().ImagePath;
-            var path = @"C:\";//Path.Combine(path, _observation.FileName);
-            if (File.Exists(path))
+            if (_currentFileName == _observation.Data.FileName) return;
+            _currentFileName = _observation.Data.FileName;
+            if (File.Exists(_currentFileName))
             {
                 Texture2D texture = new Texture2D(1024, 1024);
-                texture.LoadImage(File.ReadAllBytes(path));
+                texture.LoadImage(File.ReadAllBytes(_currentFileName));
                 m_image.texture = texture;
             }
             else

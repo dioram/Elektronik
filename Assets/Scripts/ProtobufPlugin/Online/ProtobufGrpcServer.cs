@@ -70,7 +70,7 @@ namespace Elektronik.ProtobufPlugin.Online
                     {
                             MapsManagerPb.BindService(servicesChain), 
                             SceneManagerPb.BindService(new SceneManager(_containerTree)),
-                            //ImageManagerPb.BindService(new ImageManager(imageRenderTarget))
+                            // ImageManagerPb.BindService(new ImageManager(imageRenderTarget))
                     },
                     Ports =
                     {
@@ -87,7 +87,7 @@ namespace Elektronik.ProtobufPlugin.Online
             _serverStarted = false;
         }
 
-        public void Update()
+        public void Update(float delta)
         {
             // Do nothing
         }

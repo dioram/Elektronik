@@ -3,6 +3,8 @@ using System.Linq;
 using System.Reflection;
 using Elektronik.Common.Clouds;
 using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Renderers;
+using Elektronik.Offline;
 using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
@@ -12,29 +14,45 @@ namespace Elektronik.PluginsSystem.UnitySide
         public static readonly ReadOnlyCollection<IElektronikPlugin> Plugins = PluginsLoader.ActivePlugins.AsReadOnly();
         public GameObject Renderers;
         public CSConverter Converter;
+        public PlayerEventsManager PlayerEvents;
 
         private void Start()
         {
-            var renderers = Assembly.GetExecutingAssembly()
+            var cloudRenderers = Assembly.GetExecutingAssembly()
                                     .GetTypes()
                                     .Where(t => t.GetInterfaces()
                                                  .Where(i => i.IsGenericType)
                                                  .Any(i => i.GetGenericTypeDefinition() == typeof(ICloudRenderer<>)))
                                     .SelectMany(t => Renderers.GetComponentsInChildren(t))
                                     .ToArray();
+            var dataRenderers = Assembly.GetExecutingAssembly()
+                                        .GetTypes()
+                                        .Where(t => t.GetInterfaces()
+                                                     .Where(i => i.IsGenericType)
+                                                     .Any(i => i.GetGenericTypeDefinition() == typeof(IDataRenderer<>)))
+                                        .SelectMany(t => Renderers.GetComponentsInChildren(t))
+                                        .ToArray();
             foreach (var dataSource in Plugins.OfType<IDataSource>())
             {
-                foreach (var r in renderers)
+                foreach (var r in cloudRenderers)
                 {
                     dataSource.Data.SetRenderer(r);
                 }
 
                 dataSource.Converter = Converter;
             }
+            
+            foreach (var dataSource in Plugins.OfType<IDataSourceOffline>())
+            {
+                PlayerEvents.SetDataSource(dataSource);
+                foreach (var r in dataRenderers)
+                {
+                    dataSource.PresentersChain?.SetRenderer(r);
+                }
+            }
 
             foreach (var plugin in Plugins)
             {
-                // TODO: Send player events
                 plugin.Start();
             }
         }
@@ -43,7 +61,7 @@ namespace Elektronik.PluginsSystem.UnitySide
         {
             foreach (var plugin in Plugins)
             {
-                plugin.Update();
+                plugin.Update(Time.deltaTime);
             }
         }
 

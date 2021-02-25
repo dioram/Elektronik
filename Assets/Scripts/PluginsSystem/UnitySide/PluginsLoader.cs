@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Elektronik.ProtobufPlugin.Offline;
 using Elektronik.ProtobufPlugin.Online;
 using UnityEngine;
 
@@ -32,7 +33,8 @@ namespace Elektronik.PluginsSystem.UnitySide
                                       .ToList());
             
             //TODO: remove after tests
-            ActivePlugins.Add(Plugins.OfType<ProtobufGrpcServer>().First());
+            // ActivePlugins.Add(Plugins.OfType<ProtobufGrpcServer>().First());
+            // ActivePlugins.Add(Plugins.OfType<ProtobufFilePlayer>().First());
         }
 
         private static T InstantiatePlugin<T>(Type t) where T: class

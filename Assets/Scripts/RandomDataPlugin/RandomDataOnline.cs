@@ -43,7 +43,7 @@ namespace Elektronik.RandomDataPlugin
             _task.Dispose();
         }
 
-        public void Update()
+        public void Update(float delta)
         {
             // Do nothing
         }

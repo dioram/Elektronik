@@ -9,6 +9,6 @@ namespace Elektronik.PluginsSystem
         SettingsBag Settings { get; }
         void Start();
         void Stop();
-        void Update();
+        void Update(float delta);
     }
 }

@@ -4,17 +4,17 @@ namespace Elektronik.Common.Commands
 {
     public class LambdaCommand : ICommand
     {
-        private Action m_execute;
-        private Action m_unexecute;
+        private readonly Action _execute;
+        private readonly Action _unexecute;
 
         public LambdaCommand(Action execute, Action unexecute)
         {
-            m_execute = execute;
-            m_unexecute = unexecute;
+            _execute = execute;
+            _unexecute = unexecute;
         }
 
-        public void Execute() => m_execute();
+        public void Execute() => _execute();
 
-        public void UnExecute() => m_unexecute();
+        public void UnExecute() => _unexecute();
     }
 }

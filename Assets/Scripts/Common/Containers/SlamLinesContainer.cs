@@ -8,43 +8,13 @@ using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class SlamLinesContainer : MonoBehaviour, IClearable, ILinesContainer<SlamLine>
+    public class SlamLinesContainer : IContainer<SlamLine>, IContainerTree
     {
-        public LineCloudRenderer Renderer;
-
-        #region Unity events
-
-        private void Start()
+        public SlamLinesContainer(string displayName = "")
         {
-            if (Renderer == null)
-            {
-                Debug.LogWarning($"No renderer set for {name}({GetType()})");
-            }
-            else
-            {
-                OnAdded += Renderer.OnItemsAdded;
-                OnUpdated += Renderer.OnItemsUpdated;
-                OnRemoved += Renderer.OnItemsRemoved;
-            }
+            DisplayName = string.IsNullOrEmpty(displayName) ? "Lines" : displayName;
         }
-
-        private void OnEnable()
-        {
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
-        }
-
-        private void OnDisable()
-        {
-            OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys));
-        }
-
-        private void OnDestroy()
-        {
-            Clear();
-        }
-
-        #endregion
-
+        
         #region IContaitner implementation
 
         public event Action<IContainer<SlamLine>, AddedEventArgs<SlamLine>> OnAdded;
@@ -57,15 +27,12 @@ namespace Elektronik.Common.Containers
 
         public bool IsReadOnly => false;
 
-        public bool TryGet(SlamLine obj, out SlamLine current) => TryGet(obj.Point1.Id, obj.Point2.Id, out current);
-
-        public bool Contains(int id1, int id2) => TryGet(id1, id2, out SlamLine _);
-
-        public bool Contains(SlamLine obj) => TryGet(obj.Point1.Id, obj.Point2.Id, out SlamLine _);
 
         public IEnumerator<SlamLine> GetEnumerator() => _connections.Select(kv => kv.Value).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public bool Contains(SlamLine item) => _connectionsIndices.ContainsKey(item);
 
         public void CopyTo(SlamLine[] array, int arrayIndex) => _connections.Values.CopyTo(array, arrayIndex);
 
@@ -81,12 +48,6 @@ namespace Elektronik.Common.Containers
             }
 
             return -1;
-        }
-
-        public SlamLine this[SlamLine obj]
-        {
-            get => this[obj.Point1.Id, obj.Point2.Id];
-            set => this[obj.Point1.Id, obj.Point2.Id] = value;
         }
         
         [Obsolete("Don't use this getter. You can't get valid index outside the container anyway." +
@@ -145,7 +106,15 @@ namespace Elektronik.Common.Containers
             _linesBuffer.Clear();
         }
 
-        public bool Remove(SlamLine obj) => Remove(obj.Point1.Id, obj.Point2.Id);
+        public bool Remove(SlamLine obj)
+        {
+            if (!_connectionsIndices.ContainsKey(obj)) return false;
+            var index = _connectionsIndices[obj];
+            _connections.Remove(index);
+            _freeIds.Enqueue(index);
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{obj.Id}));
+            return true;
+        }
 
         public void Remove(IEnumerable<SlamLine> items)
         {
@@ -184,54 +153,35 @@ namespace Elektronik.Common.Containers
 
         #endregion
 
-        #region ILinesContainer implementation
+        #region IContainerTree implementation
 
-        public SlamLine this[int id1, int id2]
+        public string DisplayName { get; }
+
+        public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
+        
+        public bool IsActive
         {
-            get
+            get => _isActive;
+            set
             {
-                if (!TryGet(id1, id2, out SlamLine conn))
-                    throw new InvalidSlamContainerOperationException(
-                            $"[SlamPointsContainer.Get] Container doesn't contain point with id1({id1}) and id2({id2})");
-                return conn;
+                if (value && !_isActive) OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys));
+                else if (!value && _isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                _isActive = value;
             }
-            set => UpdateItem(value);
         }
 
-        public SlamLine Get(int id1, int id2)
+        public void SetRenderer(object renderer)
         {
-            if (TryGet(id1, id2, out SlamLine line))
+            if (renderer is ICloudRenderer<SlamLine> typedRenderer)
             {
-                return line;
+                OnAdded += typedRenderer.OnItemsAdded;
+                OnUpdated += typedRenderer.OnItemsUpdated;
+                OnRemoved += typedRenderer.OnItemsRemoved;
+                if (Count > 0)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                }
             }
-
-            throw new InvalidSlamContainerOperationException(
-                    $"[SlamLinesContainer.Get] Line with id[{id1}, {id2}] doesn't exist");
-        }
-
-        public bool Remove(int id1, int id2)
-        {
-            if (TryGet(id1, id2, out SlamLine l))
-            {
-                _connections.Remove(l.Id);
-                _freeIds.Enqueue(l.Id);
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {l.Id}));
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool TryGet(int idx1, int idx2, out SlamLine value)
-        {
-            value = default;
-            if (TryGet(idx1, idx2, out int lineId))
-            {
-                value = _connections[lineId];
-                return true;
-            }
-
-            return false;
         }
 
         #endregion
@@ -239,6 +189,7 @@ namespace Elektronik.Common.Containers
         #region Private definitions
 
         private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
+        private bool _isActive = true;
 
         private readonly IDictionary<int, SlamLine> _connections = new SortedDictionary<int, SlamLine>();
         private readonly IDictionary<SlamLine, int> _connectionsIndices = new SortedDictionary<SlamLine, int>();

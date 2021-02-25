@@ -4,25 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Common.Clouds;
 using Elektronik.Common.Data.PackageObjects;
-using UnityEngine;
 
 namespace Elektronik.Common.Containers
 {
-    public class TrackedObjectsContainer : MonoBehaviour, ITrackedContainer<SlamTrackedObject>
+    public class TrackedObjectsContainer : ITrackedContainer<SlamTrackedObject>, IContainerTree
     {
-        public CloudRendererComponent<SlamLine> LineRenderer;
-        public CloudRendererComponent<SlamTrackedObject> TrackedObjectsRenderer;
-
-        #region Unity event functions
-
-        private void Start()
+        public TrackedObjectsContainer(string displayName = "")
         {
-            OnAdded += TrackedObjectsRenderer.OnItemsAdded;
-            OnUpdated += TrackedObjectsRenderer.OnItemsUpdated;
-            OnRemoved += TrackedObjectsRenderer.OnItemsRemoved;
+            DisplayName = string.IsNullOrEmpty(displayName) ? GetType().Name : displayName;
         }
-
-        #endregion
 
         #region IContainer implementation
 
@@ -31,12 +21,11 @@ namespace Elektronik.Common.Containers
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public void Add(SlamTrackedObject item)
         {
-            var container = new TrackContainer();
-            container.SetRenderer(LineRenderer);
+            var container = CreateTrackContainer();
             _objects[item.Id] = (item, container);
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
         }
-
+        
         public void Clear()
         {
             foreach (var tuple in _objects)
@@ -113,8 +102,7 @@ namespace Elektronik.Common.Containers
         {
             foreach (var item in items)
             {
-                var container = new TrackContainer();
-                container.SetRenderer(LineRenderer);
+                var container = CreateTrackContainer();
                 _objects[item.Id] = (item, container);
             }
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
@@ -148,6 +136,45 @@ namespace Elektronik.Common.Containers
 
         #endregion
 
+        #region IContainerTree implementation
+
+        public string DisplayName { get; }
+
+        public IEnumerable<IContainerTree> Children => _lineContainers;
+
+        public bool IsActive
+        {
+            get => _isActive;
+            set
+            {
+                foreach (var child in Children)
+                {
+                    child.IsActive = value;
+                }
+                _isActive = value;
+            }
+        }
+
+        public void SetRenderer(object renderer)
+        {
+            if (renderer is ICloudRenderer<SlamTrackedObject> trackedRenderer)
+            {
+                OnAdded += trackedRenderer.OnItemsAdded;
+                OnUpdated += trackedRenderer.OnItemsUpdated;
+                OnRemoved += trackedRenderer.OnItemsRemoved;
+                if (Count > 0)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
+                }
+            }
+            else if (renderer is ICloudRenderer<SlamLine> lineRenderer)
+            {
+                _lineRenderer = lineRenderer;
+            }
+        }
+
+        #endregion
+
         #region ITrackedContainer implementation
 
         public IList<SlamLine> GetHistory(int id) => _objects[id].Item2.ToList();
@@ -156,9 +183,7 @@ namespace Elektronik.Common.Containers
         {
             if (_objects.ContainsKey(item.Id)) return;
 
-            var container = new TrackContainer();
-            container.SetRenderer(LineRenderer);
-            container.AddRange(history);
+            var container = CreateTrackContainer(history);
             _objects.Add(item.Id, (item, container));
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new []{item}));
         }
@@ -169,9 +194,7 @@ namespace Elektronik.Common.Containers
             {
                 if (_objects.ContainsKey(i.Id)) return;
 
-                var container = new TrackContainer();
-                container.SetRenderer(LineRenderer);
-                container.AddRange(h);
+                var container = CreateTrackContainer(h);
                 _objects.Add(i.Id, (i, container));
             }
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
@@ -181,10 +204,22 @@ namespace Elektronik.Common.Containers
 
         #region Private definitions
 
+        private ICloudRenderer<SlamLine> _lineRenderer;
+        private readonly List<IContainerTree> _lineContainers = new List<IContainerTree>();
         private readonly Dictionary<int, (SlamTrackedObject, TrackContainer)> _objects =
                 new Dictionary<int, (SlamTrackedObject, TrackContainer)>();
 
         private int _maxId = 0;
+        private bool _isActive;
+
+        private TrackContainer CreateTrackContainer(IList<SlamLine> history = null)
+        {
+            var res = new TrackContainer();
+            res.SetRenderer(_lineRenderer);
+            _lineContainers.Add(res);
+            if (history != null) res.AddRange(history);
+            return res;
+        }
 
         private void PureUpdate(SlamTrackedObject item)
         {

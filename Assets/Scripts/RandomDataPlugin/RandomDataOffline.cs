@@ -2,8 +2,8 @@
 using System.Linq;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Converters;
+using Elektronik.Common.Presenters;
 using Elektronik.Common.Settings;
-using Elektronik.Offline;
 using Elektronik.PluginsSystem;
 
 namespace Elektronik.RandomDataPlugin
@@ -21,20 +21,7 @@ namespace Elektronik.RandomDataPlugin
 
         public void Start()
         {
-            if (PlayerEvents == null)
-            {
-                throw new NullReferenceException($"No player events set for {nameof(RandomDataOffline)}");
-            }
-
-            PlayerEvents.Play += delegate { _containers.Points.AddRange(Generator.GeneratePoints(0, 10000, _settings.Scale)); };
-            PlayerEvents.NextKeyFrame += delegate
-            {
-                _containers.Points.UpdateItems(Generator.UpdatePoints(_containers.Points.ToList(), 2000, _settings.Scale));
-            };
-            PlayerEvents.Pause += delegate
-            {
-                _containers.Points.UpdateItems(Generator.UpdatePoints(_containers.Points.ToList(), 2000, _settings.Scale));
-            };
+            _containers.Points.AddRange(Generator.GeneratePoints(0, 10000, _settings.Scale));
         }
 
         public void Stop()
@@ -42,14 +29,44 @@ namespace Elektronik.RandomDataPlugin
             // Do nothing
         }
 
-        public void Update()
+        public void Update(float delta)
         {
             // Do nothing
         }
 
-        public IPlayerEvents PlayerEvents { get; set; }
         public int AmountOfFrames { get; } = 10;
-        
+        public int CurrentTimestamp { get; } = 0;
+        public int CurrentPosition { get; set; }
+
+        public void Play()
+        {
+            // Do nothing
+        }
+
+        public void Pause()
+        {
+            // Do nothing
+        }
+
+        public void StopPlaying()
+        {
+            // Do nothing
+        }
+
+        public void PreviousKeyFrame()
+        {
+            // Do nothing
+        }
+
+        public void NextKeyFrame()
+        {
+            _containers.Points.UpdateItems(Generator.UpdatePoints(_containers.Points.ToList(), 2000, _settings.Scale));
+        }
+
+        public event Action Finished;
+
+        public DataPresenter PresentersChain { get; } = null;
+
         private RandomSettingsBag _settings = new RandomSettingsBag();
         private readonly RandomContainerTree _containers = new RandomContainerTree();
     }

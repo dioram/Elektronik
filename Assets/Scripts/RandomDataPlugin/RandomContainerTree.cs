@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
-using Elektronik.Common.Clouds;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
-using SlamLinesContainer = Elektronik.Common.Containers.NotMono.SlamLinesContainer;
 
 namespace Elektronik.RandomDataPlugin
 {
     public class RandomContainerTree : IContainerTree
     {
-        public readonly IContainer<SlamPoint> Points = new Common.Containers.NotMono.CloudContainer<SlamPoint>(null);
+        public readonly IContainer<SlamPoint> Points = new CloudContainer<SlamPoint>(null);
         public readonly IContainer<SlamLine> Lines = new SlamLinesContainer();
 
         public RandomContainerTree()

@@ -1,6 +1,7 @@
 ﻿using Elektronik.Common.Data.Converters;
 using Elektronik.Common.Data.PackageObjects;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace Elektronik.Common.Data.Pb
@@ -20,13 +21,15 @@ namespace Elektronik.Common.Data.Pb
         }
 
         public static IEnumerable<SlamObservation> ExtractObservations(this PacketPb packet,
-            ICSConverter converter = null)
+            ICSConverter converter,
+            string imageDir)
         {
             Debug.Assert(packet.DataCase == PacketPb.DataOneofCase.Observations);
             foreach (var o in packet.Observations.Data)
             {
                 SlamObservation observation = o;
                 converter?.Convert(ref observation.Point.Position, ref observation.Rotation);
+                observation.FileName = Path.Combine(imageDir, observation.FileName);
                 yield return observation;
             }
         }

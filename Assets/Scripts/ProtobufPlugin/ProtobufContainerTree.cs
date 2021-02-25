@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
-using SlamLinesContainer = Elektronik.Common.Containers.NotMono.SlamLinesContainer;
-using TrackedObjectsContainer = Elektronik.Common.Containers.NotMono.TrackedObjectsContainer;
 
 namespace Elektronik.ProtobufPlugin
 {
@@ -11,25 +9,25 @@ namespace Elektronik.ProtobufPlugin
         public readonly ITrackedContainer<SlamTrackedObject> TrackedObjs;
         public readonly IConnectableObjectsContainer<SlamObservation> Observations;
         public readonly IConnectableObjectsContainer<SlamPoint> Points;
-        public readonly ILinesContainer<SlamLine> Lines;
+        public readonly IContainer<SlamLine> Lines;
         public readonly IContainer<SlamInfinitePlane> InfinitePlanes;
-        
+
         public ProtobufContainerTree(string displayName)
         {
             DisplayName = displayName;
 
             TrackedObjs = new TrackedObjectsContainer("Tracked objects");
-            Observations = new Elektronik.Common.Containers.NotMono.ConnectableObjectsContainer<SlamObservation>(
-                    new Elektronik.Common.Containers.NotMono.CloudContainer<SlamObservation>("Points"),
+            Observations = new ConnectableObjectsContainer<SlamObservation>(
+                    new CloudContainer<SlamObservation>("Points"),
                     new SlamLinesContainer("Connections"),
                     "Observations");
-            Points = new Elektronik.Common.Containers.NotMono.ConnectableObjectsContainer<SlamPoint>(
-                    new Elektronik.Common.Containers.NotMono.CloudContainer<SlamPoint>("Points"),
+            Points = new ConnectableObjectsContainer<SlamPoint>(
+                    new CloudContainer<SlamPoint>("Points"),
                     new SlamLinesContainer("Connections"),
                     "Points");
 
             Lines = new SlamLinesContainer("Lines");
-            InfinitePlanes = new Elektronik.Common.Containers.NotMono.CloudContainer<SlamInfinitePlane>("Infinite planes");
+            InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
 
             Children = new[]
             {

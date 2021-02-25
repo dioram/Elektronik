@@ -42,9 +42,13 @@ namespace Elektronik.Common.Clouds
             foreach (var obj in e.UpdatedItems)
             {
                 Pose pose = GetObjectPose(obj);
-                MainThreadInvoker.Instance.Enqueue(() => GameObjects[(sender.GetHashCode(), obj.Id)]
-                                                         .transform
-                                                         .SetPositionAndRotation(pose.position, pose.rotation));
+                MainThreadInvoker.Instance.Enqueue(() =>
+                {
+                    GameObjects[(sender.GetHashCode(), obj.Id)]
+                            .transform
+                            .SetPositionAndRotation(pose.position, pose.rotation);
+                    GameObjects[(sender.GetHashCode(), obj.Id)].GetComponent<DataComponent<TCloudItem>>().Data = obj;
+                });
             }
         }
 

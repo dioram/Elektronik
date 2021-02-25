@@ -1,4 +1,5 @@
-﻿using Elektronik.Common.Data.Converters;
+﻿using System.IO;
+using Elektronik.Common.Data.Converters;
 using Elektronik.Common.Data.PackageObjects;
 using Elektronik.Common.Data.Pb;
 using Grpc.Core;
@@ -24,7 +25,7 @@ namespace Elektronik.ProtobufPlugin.Online.GrpcServices
             Debug.Log("[ObservationsMapManager.Handle]");
             if (request.DataCase == PacketPb.DataOneofCase.Observations)
             {
-                var obs = request.ExtractObservations(_converter).ToList();
+                var obs = request.ExtractObservations(_converter, Directory.GetCurrentDirectory()).ToList();
                 return HandleConnections(request, Handle(request.Action, obs));
             }
 
