@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Common.UI;
 using Elektronik.Common.UI;
@@ -39,7 +38,7 @@ namespace Elektronik.Common.Settings
             // TODO: RX style?
             var pluginItem = ((UIPluginListBoxItem) PluginsListBox[e.Index]);
             pluginItem.ToggleDescription();
-            SettingsGenerator.Generate(SettingsBag.GetCurrent(pluginItem.Plugin.RequiredSettingsType));
+            SettingsGenerator.Generate(pluginItem.Plugin.Settings);
         }
 
         void AttachBehavior2Plugins()
@@ -61,7 +60,6 @@ namespace Elektronik.Common.Settings
             {
                 var pluginUIItem = (UIPluginListBoxItem) PluginsListBox.Add();
                 pluginUIItem.Plugin = plugin;
-                SettingsBag.CreateCurrent(plugin.RequiredSettingsType);
             }
         }
     }

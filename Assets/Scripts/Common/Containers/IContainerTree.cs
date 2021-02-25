@@ -1,4 +1,4 @@
-﻿using Elektronik.Common.Clouds;
+﻿using System.Collections.Generic;
 
 namespace Elektronik.Common.Containers
 {
@@ -6,10 +6,12 @@ namespace Elektronik.Common.Containers
     {
         string DisplayName { get; }
         
-        IContainerTree[] Children { get; }
+        IEnumerable<IContainerTree> Children { get; }
 
-        void SetActive(bool active);
+        bool IsActive { get; set; }
 
         void Clear();
+
+        void SetRenderer(object renderer);
     }
 }

@@ -12,6 +12,6 @@ namespace Elektronik.RandomDataPlugin
         public string JustPath;
 
         [Tooltip("Scale")]
-        public float Scale;
+        public float Scale = 10;
     }
 }

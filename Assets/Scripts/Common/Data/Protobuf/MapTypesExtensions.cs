@@ -135,12 +135,4 @@ namespace Elektronik.Common.Data.Pb
                     {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset}
                 : default;
     }
-
-    public partial class MapsManagerPb
-    {
-        public partial class MapsManagerPbBase : MonoBehaviour
-        {
-            
-        }
-    }
 }

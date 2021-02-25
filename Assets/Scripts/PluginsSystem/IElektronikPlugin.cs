@@ -1,5 +1,4 @@
-﻿using System;
-using Elektronik.Common.Settings;
+﻿using Elektronik.Common.Settings;
 
 namespace Elektronik.PluginsSystem
 {
@@ -7,8 +6,7 @@ namespace Elektronik.PluginsSystem
     {
         string DisplayName { get; }
         string Description { get; }
-        SettingsBag Settings { get; set; }
-        Type RequiredSettingsType { get; }
+        SettingsBag Settings { get; }
         void Start();
         void Stop();
         void Update();

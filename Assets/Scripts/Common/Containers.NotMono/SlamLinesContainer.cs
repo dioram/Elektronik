@@ -10,17 +10,11 @@ namespace Elektronik.Common.Containers.NotMono
 {
     public class SlamLinesContainer : IClearable, ILinesContainer<SlamLine>, IContainerTree
     {
-        // TODO: убрать значение по умолчанию
-        public SlamLinesContainer(ICloudRenderer<SlamLine> renderer = null)
+        public SlamLinesContainer(string displayName = "")
         {
-            if (renderer == null) return;
-            
-            _renderer = renderer;
-            OnAdded += _renderer.OnItemsAdded;
-            OnUpdated += _renderer.OnItemsUpdated;
-            OnRemoved += _renderer.OnItemsRemoved;
+            DisplayName = string.IsNullOrEmpty(displayName) ? "Lines" : displayName;
         }
-
+        
         #region IContaitner implementation
 
         public event Action<IContainer<SlamLine>, AddedEventArgs<SlamLine>> OnAdded;
@@ -162,20 +156,32 @@ namespace Elektronik.Common.Containers.NotMono
 
         #region IContainerTree implementation
 
-        public string DisplayName => "Lines";
-        
-        public IContainerTree[] Children { get; }
+        public string DisplayName { get; }
 
-        public void SetActive(bool active)
+        public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
+        
+        public bool IsActive
         {
-            
-            if (active)
+            get => _isActive;
+            set
             {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                if (value && !_isActive) OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys));
+                else if (!value && _isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                _isActive = value;
             }
-            else
+        }
+
+        public void SetRenderer(object renderer)
+        {
+            if (renderer is ICloudRenderer<SlamLine> typedRenderer)
             {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys));
+                OnAdded += typedRenderer.OnItemsAdded;
+                OnUpdated += typedRenderer.OnItemsUpdated;
+                OnRemoved += typedRenderer.OnItemsRemoved;
+                if (Count > 0)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                }
             }
         }
 
@@ -235,8 +241,8 @@ namespace Elektronik.Common.Containers.NotMono
 
         #region Private definitions
 
-        private ICloudRenderer<SlamLine> _renderer;
         private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
+        private bool _isActive = true;
 
         private readonly IDictionary<int, SlamLine> _connections = new SortedDictionary<int, SlamLine>();
         private readonly IDictionary<SlamLine, int> _connectionsIndices = new SortedDictionary<SlamLine, int>();

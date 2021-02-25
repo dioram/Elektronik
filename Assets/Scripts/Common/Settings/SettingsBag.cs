@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 
 namespace Elektronik.Common.Settings
@@ -11,50 +10,6 @@ namespace Elektronik.Common.Settings
     public class SettingsBag : ISerializationCallbackReceiver
     {
         public DateTime ModificationTime;
-
-        public static void CreateCurrent(Type settingsType)
-        {
-            RemoveCurrent(settingsType);
-            Currents.Add((SettingsBag) Activator.CreateInstance(settingsType));
-        }
-
-        public static SettingsBag GetCurrent(Type settingsType)
-        {
-            var t = Currents.Where(s => s.GetType() == settingsType).ToList();
-            if (t.Any())
-            {
-                return t.First();
-            }
-
-            var tmp = (SettingsBag) Activator.CreateInstance(settingsType);
-            Currents.Add(tmp);
-            return tmp;
-        }
-        
-        public static T GetCurrent<T>() where T: SettingsBag, new()
-        {
-            var t = Currents.OfType<T>().ToList();
-            if (t.Any())
-            {
-                return t.First();
-            }
-
-            var tmp = new T();
-            Currents.Add(tmp);
-            return tmp;
-        }
-
-        public static void SetCurrent<T>(T newSettings) where T : SettingsBag
-        {
-            RemoveCurrent(typeof(T));
-            Currents.Add(newSettings);
-        }
-
-        public static void RemoveCurrent(Type settingsType)
-        {
-            var t = Currents.Where(s => s.GetType() == settingsType);
-            Currents.RemoveAll(s => t.Contains(s));
-        }
 
         public override string ToString()
         {

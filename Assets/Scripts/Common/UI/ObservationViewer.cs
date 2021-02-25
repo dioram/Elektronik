@@ -38,10 +38,11 @@ namespace Common.UI
 
             if (_currentFileName == _observation.FileName) return;
             _currentFileName = _observation.FileName;
-            var path = ModeSelector.Mode == Mode.Online
-                    ? Directory.GetCurrentDirectory()
-                    : SettingsBag.GetCurrent<OfflineSettingsBag>().ImagePath;
-            path = Path.Combine(path, _observation.FileName);
+            // TODO: Fix back
+            // var path = ModeSelector.Mode == Mode.Online
+            //         ? Directory.GetCurrentDirectory()
+            //         : SettingsBag.GetCurrent<OfflineSettingsBag>().ImagePath;
+            var path = @"C:\";//Path.Combine(path, _observation.FileName);
             if (File.Exists(path))
             {
                 Texture2D texture = new Texture2D(1024, 1024);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Elektronik.ProtobufPlugin.Online;
 using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
@@ -29,6 +30,9 @@ namespace Elektronik.PluginsSystem.UnitySide
                                       .Select(InstantiatePlugin<IElektronikPlugin>)
                                       .Where(p => p != null)
                                       .ToList());
+            
+            //TODO: remove after tests
+            ActivePlugins.Add(Plugins.OfType<ProtobufGrpcServer>().First());
         }
 
         private static T InstantiatePlugin<T>(Type t) where T: class

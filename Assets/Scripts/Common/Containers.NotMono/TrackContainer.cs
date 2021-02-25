@@ -8,18 +8,8 @@ using Elektronik.Common.Data.PackageObjects;
 namespace Elektronik.Common.Containers
 {
     /// <summary> Contains lines in strict order. </summary>
-    public class TrackContainer : IContainer<SlamLine>
+    public class TrackContainer : IContainer<SlamLine>, IContainerTree
     {
-        public TrackContainer(CloudRendererComponent<SlamLine> renderer)
-        {
-            if (renderer == null) return;
-            
-            _renderer = renderer;
-            OnAdded += _renderer.OnItemsAdded;
-            OnUpdated += _renderer.OnItemsUpdated;
-            OnRemoved += _renderer.OnItemsRemoved;
-        }
-        
         #region IContainer implementaion
 
         public IEnumerator<SlamLine> GetEnumerator() => _lines.GetEnumerator();
@@ -120,10 +110,56 @@ namespace Elektronik.Common.Containers
 
         #endregion
 
+        #region IContainerTree implementation
+
+        public string DisplayName => "Lines";
+
+        public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
+        
+        public bool IsActive
+        {
+            get => _isActive;
+            set
+            {
+                if (value && !_isActive) OnRemoved?.Invoke(this, new RemovedEventArgs(_lines.Select(l => l.Id)));
+                else if (!value && _isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                _isActive = value;
+            }
+        }
+
+        public void SetActive(bool active)
+        {
+            if (active && !_isActive)
+            {
+                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+            }
+            else if (!active && _isActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(_lines.Select(l => l.Id)));
+            }
+            _isActive = active;
+        }
+
+        public void SetRenderer(object renderer)
+        {
+            if (renderer is ICloudRenderer<SlamLine> typedRenderer)
+            {
+                OnAdded += typedRenderer.OnItemsAdded;
+                OnUpdated += typedRenderer.OnItemsUpdated;
+                OnRemoved += typedRenderer.OnItemsRemoved;
+                if (Count > 0)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                }
+            }
+        }
+
+        #endregion
+
         #region Private definition
 
         private readonly List<SlamLine> _lines = new List<SlamLine>();
-        private readonly CloudRendererComponent<SlamLine> _renderer;
+        private bool _isActive = true;
 
         #endregion
     }

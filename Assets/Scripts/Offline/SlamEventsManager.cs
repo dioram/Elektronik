@@ -42,7 +42,7 @@ namespace Elektronik.Offline
             _commander = commanders.BuildChain();
             converter.SetInitTRS(Vector3.zero,
                                  Quaternion.identity,
-                                 Vector3.one * SettingsBag.GetCurrent<OfflineSettingsBag>().Scale);
+                                 Vector3.one /* SettingsBag.GetCurrent<OfflineSettingsBag>().Scale*/);
             _commander.SetConverter(converter);
 
             _presenter = presenters.BuildChain();
@@ -192,7 +192,7 @@ namespace Elektronik.Offline
             ElektronikLogger.OpenLog();
             Application.logMessageReceived += ElektronikLogger.Log;
             Debug.Log("Parsing file...");
-            using (var input = File.OpenRead(SettingsBag.GetCurrent<OfflineSettingsBag>().FilePath))
+            using (var input = File.OpenRead(/*SettingsBag.GetCurrent<OfflineSettingsBag>().FilePath*/ ""))
             {
                 var commands = new LinkedList<ICommand>();
                 while (input.Position != input.Length)

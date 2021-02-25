@@ -46,7 +46,7 @@ namespace Common.UI
             }
             else
             {
-                throw new NotImplementedException("Other field types not implemented yet");
+                throw new NotSupportedException("Other field types not implemented yet");
             }
         }
     }

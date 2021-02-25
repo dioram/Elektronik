@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Elektronik.Common.Clouds;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.Converters;
 using Elektronik.Common.Settings;
 using Elektronik.Offline;
 using Elektronik.PluginsSystem;
-using SlamPointsContainer = Elektronik.Common.Containers.NotMono.SlamPointsContainer;
-using SlamLinesContainer = Elektronik.Common.Containers.NotMono.SlamLinesContainer;
 
 namespace Elektronik.RandomDataPlugin
 {
@@ -16,40 +13,11 @@ namespace Elektronik.RandomDataPlugin
         public string DisplayName => "Random data";
         public string Description => "Generates cloud of random points";
 
-        public IContainerTree[] Children { get; } = new IContainerTree[2];
-
-
-        public RandomDataOffline()
-        {
-            Children[0] = _points;
-            Children[1] = _lines;
-        }
-
-        public void SetActive(bool active)
-        {
-            foreach (var child in Children)
-            {
-                child.SetActive(active);
-            }
-        }
-
-        public void Clear()
-        {
-            foreach (var child in Children)
-            {
-                child.Clear();
-            }
-        }
-
         public ICSConverter Converter { get; set; }
+        
+        public IContainerTree Data => _containers;
 
-        public SettingsBag Settings
-        {
-            get => _settings;
-            set => _settings = (RandomSettingsBag) value;
-        }
-
-        public Type RequiredSettingsType => typeof(RandomSettingsBag);
+        public SettingsBag Settings => _settings;
 
         public void Start()
         {
@@ -58,14 +26,14 @@ namespace Elektronik.RandomDataPlugin
                 throw new NullReferenceException($"No player events set for {nameof(RandomDataOffline)}");
             }
 
-            PlayerEvents.Play += delegate { _points.AddRange(Generator.GeneratePoints(0, 10000, _settings.Scale)); };
+            PlayerEvents.Play += delegate { _containers.Points.AddRange(Generator.GeneratePoints(0, 10000, _settings.Scale)); };
             PlayerEvents.NextKeyFrame += delegate
             {
-                _points.UpdateItems(Generator.UpdatePoints(_points.ToList(), 2000, _settings.Scale));
+                _containers.Points.UpdateItems(Generator.UpdatePoints(_containers.Points.ToList(), 2000, _settings.Scale));
             };
             PlayerEvents.Pause += delegate
             {
-                _points.UpdateItems(Generator.UpdatePoints(_points.ToList(), 2000, _settings.Scale));
+                _containers.Points.UpdateItems(Generator.UpdatePoints(_containers.Points.ToList(), 2000, _settings.Scale));
             };
         }
 
@@ -81,10 +49,8 @@ namespace Elektronik.RandomDataPlugin
 
         public IPlayerEvents PlayerEvents { get; set; }
         public int AmountOfFrames { get; } = 10;
-
-
-        private SlamPointsContainer _points = new SlamPointsContainer();
-        private SlamLinesContainer _lines = new SlamLinesContainer();
-        private RandomSettingsBag _settings;
+        
+        private RandomSettingsBag _settings = new RandomSettingsBag();
+        private readonly RandomContainerTree _containers = new RandomContainerTree();
     }
 }
