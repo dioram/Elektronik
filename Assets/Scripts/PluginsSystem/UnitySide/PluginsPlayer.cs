@@ -79,6 +79,10 @@ namespace Elektronik.PluginsSystem.UnitySide
             {
                 dataSourceOnline.Data.Clear();
             }
+            foreach (var dataSourceOffline in PluginsLoader.ActivePlugins.OfType<IDataSourceOffline>())
+            {
+                dataSourceOffline.StopPlaying();
+            }
         }
     }
 }

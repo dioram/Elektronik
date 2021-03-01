@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elektronik.Common.Containers;
@@ -18,7 +19,13 @@ namespace Elektronik.RandomDataPlugin
 
         public IContainerTree Data => _containers;
 
-        public SettingsBag Settings => _settings;
+        public SettingsBag Settings
+        {
+            get => _settings;
+            set => _settings = (RandomSettingsBag) value;
+        }
+
+        public ISettingsHistory SettingsHistory { get; } = new RandomSettingsHistory();
 
         public void Start()
         {

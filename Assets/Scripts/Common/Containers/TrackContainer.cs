@@ -127,19 +127,6 @@ namespace Elektronik.Common.Containers
             }
         }
 
-        public void SetActive(bool active)
-        {
-            if (active && !_isActive)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
-            }
-            else if (!active && _isActive)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(_lines.Select(l => l.Id)));
-            }
-            _isActive = active;
-        }
-
         public void SetRenderer(object renderer)
         {
             if (renderer is ICloudRenderer<SlamLine> typedRenderer)

@@ -31,7 +31,13 @@ namespace Elektronik.ProtobufPlugin.Online
 
         public IContainerTree Data => _containerTree;
 
-        public SettingsBag Settings => _onlineSettings;
+        public SettingsBag Settings
+        {
+            get => _onlineSettings;
+            set => _onlineSettings = (OnlineSettingsBag)value;
+        }
+
+        public ISettingsHistory SettingsHistory { get; } = new OnlineSettingsHistory();
 
         public void Start()
         {
@@ -97,7 +103,7 @@ namespace Elektronik.ProtobufPlugin.Online
 
         #region Private definitions
 
-        private ProtobufContainerTree _containerTree;
+        private readonly ProtobufContainerTree _containerTree;
 
         private bool _serverStarted = false;
 
@@ -110,7 +116,7 @@ namespace Elektronik.ProtobufPlugin.Online
 
         private GrpcServer _server;
 
-        private readonly OnlineSettingsBag _onlineSettings = new OnlineSettingsBag();
+        private OnlineSettingsBag _onlineSettings = new OnlineSettingsBag();
 
         #endregion
     }

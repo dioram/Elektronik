@@ -19,7 +19,7 @@ namespace Elektronik.ProtobufPlugin.Offline
     public class ProtobufFilePlayer : IDataSourceOffline
     {
         public const float Timeout = 0.5f;
-        public static readonly OfflineSettingsBag OfflineSettings = new OfflineSettingsBag();
+        public static OfflineSettingsBag OfflineSettings = new OfflineSettingsBag();
 
         public ProtobufFilePlayer()
         {
@@ -46,7 +46,13 @@ namespace Elektronik.ProtobufPlugin.Offline
 
         public string Description => "Protobuf description";
 
-        public SettingsBag Settings => OfflineSettings;
+        public SettingsBag Settings
+        {
+            get => OfflineSettings;
+            set => OfflineSettings = (OfflineSettingsBag)value;
+        }
+
+        public ISettingsHistory SettingsHistory { get; } = new OfflineSettingsHistory();
 
         public void Start()
         {

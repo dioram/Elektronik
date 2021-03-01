@@ -1,12 +1,17 @@
-﻿using UnityEngine;
+﻿using Elektronik.PluginsSystem.UnitySide;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Elektronik.Common.UI
 {
+    [RequireComponent(typeof(Button))]
     public class Return2OfflineMenu : MonoBehaviour
     {
+        public PluginsPlayer Player;
+        
         private Button _button;
+        
         private void Awake()
         {
             _button = GetComponent<Button>();
@@ -19,6 +24,7 @@ namespace Elektronik.Common.UI
 
         void OnBackToMenuClick()
         {
+            Player.ClearMap();
             SceneManager.LoadScene("Scenes/Settings", LoadSceneMode.Single);
         }
     }

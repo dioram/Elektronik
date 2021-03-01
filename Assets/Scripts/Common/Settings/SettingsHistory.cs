@@ -1,13 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Elektronik.Common.Settings
 {
-    public class SettingsHistory<T> where T: SettingsBag
+    public class SettingsHistory<T> : ISettingsHistory where T : SettingsBag
     {
-        public ReadOnlyCollection<T> Recent => _recent.AsReadOnly();
+        [Serializable]
+        private class RecentItems
+        {
+            public List<T> Items = new List<T>();
+        }
+
+        public void Add(SettingsBag recent)
+        {
+            Add((T)recent);
+        }
+
+        public ReadOnlyCollection<SettingsBag> Recent => _recent.Items.Select(s => s as SettingsBag).ToList().AsReadOnly();
 
         public SettingsHistory(int maxCountOfRecentFiles = 10)
         {
@@ -19,16 +32,16 @@ namespace Elektronik.Common.Settings
 
         public void Add(T recent)
         {
-            T existing = _recent.Find(setting => setting.Equals(recent));
+            T existing = _recent.Items.Find(setting => setting.Equals(recent));
             if (existing != null)
             {
-                _recent.Remove(recent);
+                _recent.Items.Remove(recent);
             }
-            _recent.Insert(0, recent);
+            _recent.Items.Insert(0, recent);
             
-            while (_recent.Count > _maxCountOfRecentFiles)
+            while (_recent.Items.Count > _maxCountOfRecentFiles)
             {
-                _recent.RemoveAt(_recent.Count - 1);
+                _recent.Items.RemoveAt(_recent.Items.Count - 1);
             }
                
         }
@@ -42,7 +55,7 @@ namespace Elektronik.Common.Settings
         
         private readonly string _fileName;
         private readonly int _maxCountOfRecentFiles;
-        private List<T> _recent;
+        private RecentItems _recent;
         
         private void Deserialize()
         {
@@ -50,11 +63,11 @@ namespace Elektronik.Common.Settings
             var fi = new FileInfo(pathToAppData);
             if (fi.Directory.Exists && File.Exists(pathToAppData))
             {
-                _recent = JsonUtility.FromJson<List<T>>(pathToAppData);
+                _recent = JsonUtility.FromJson<RecentItems>(File.ReadAllText(pathToAppData));
             }
             else
             {
-                _recent = new List<T>();
+                _recent = new RecentItems();
             }
         }
         

@@ -1,4 +1,5 @@
-﻿using Elektronik.PluginsSystem;
+﻿using System;
+using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using UniRx;
 using UnityEngine;
@@ -18,6 +19,13 @@ namespace Elektronik.Common.UI
         private Text _label;
         private Text _descriptionLabel;
         private LayoutElement _layoutElement;
+
+        public IObservable<bool> OnValueChangedAsObservable() => _toggle.OnValueChangedAsObservable();
+
+        public void Toggle(bool state)
+        {
+            _toggle.isOn = state;
+        }
 
         protected override void Awake()
         {

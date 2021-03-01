@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Elektronik.Common.UI
 {
-    public class UIListBox : MonoBehaviour
+    public class UIListBox : MonoBehaviour, IEnumerable<UIListBoxItem>
     {
         public class SelectionChangedEventArgs : EventArgs
         {
@@ -74,5 +75,9 @@ namespace Elektronik.Common.UI
 
             _listOfItems.Clear();
         }
+
+        public IEnumerator<UIListBoxItem> GetEnumerator() => _listOfItems.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

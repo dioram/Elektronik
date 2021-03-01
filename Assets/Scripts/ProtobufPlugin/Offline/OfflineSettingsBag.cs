@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Elektronik.Common.Settings;
 using UnityEngine;
 
@@ -16,5 +17,10 @@ namespace Elektronik.ProtobufPlugin.Offline
 
         [Tooltip("Scale")]
         public float Scale = 10;
+
+        public override bool Validate()
+        {
+            return File.Exists(FilePath);
+        }
     }
 }

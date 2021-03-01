@@ -21,7 +21,7 @@ namespace Common.UI
         {
             Tooltip.text = FieldToolTip;
             Field.text = FieldText;
-            Field.OnValueChangedAsObservable().Do(OnTextChanged).Subscribe();
+            Field.OnValueChangedAsObservable().Subscribe(OnTextChanged);
         }
 
         private void OnTextChanged(string text)

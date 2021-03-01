@@ -1,15 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 
 namespace Elektronik.Common.Settings
 {
     [Serializable]
-    public class SettingsBag : ISerializationCallbackReceiver
+    public class SettingsBag
     {
-        public DateTime ModificationTime;
+        public string ModificationTime;
+
+        public virtual bool Validate()
+        {
+            return true;
+        }
 
         public override string ToString()
         {
@@ -34,17 +37,5 @@ namespace Elektronik.Common.Settings
             if (obj.GetType() != this.GetType()) return false;
             return Equals((SettingsBag) obj);
         }
-
-        public void OnBeforeSerialize()
-        {
-            ModificationTime = DateTime.Now;
-        }
-
-        public void OnAfterDeserialize()
-        {
-            // Do nothing
-        }
-
-        private static readonly List<SettingsBag> Currents = new List<SettingsBag>();
     }
 }
