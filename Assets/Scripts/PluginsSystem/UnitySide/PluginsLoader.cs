@@ -25,19 +25,20 @@ namespace Elektronik.PluginsSystem.UnitySide
         static PluginsLoader()
         {
             Plugins.AddRange(AppDomain.CurrentDomain
-                                      .GetAssemblies()
-                                      .SelectMany(s => s.GetTypes())
-                                      .Where(p => typeof(IElektronikPlugin).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract)
-                                      .Select(InstantiatePlugin<IElektronikPlugin>)
-                                      .Where(p => p != null)
-                                      .ToList());
-            
+                                     .GetAssemblies()
+                                     .SelectMany(s => s.GetTypes())
+                                     .Where(p => typeof(IElektronikPlugin).IsAssignableFrom(p) && p.IsClass &&
+                                                    !p.IsAbstract)
+                                     .Select(InstantiatePlugin<IElektronikPlugin>)
+                                     .Where(p => p != null)
+                                     .ToList());
+
             //TODO: remove after tests
             // ActivePlugins.Add(Plugins.OfType<ProtobufGrpcServer>().First());
             // ActivePlugins.Add(Plugins.OfType<ProtobufFilePlayer>().First());
         }
 
-        private static T InstantiatePlugin<T>(Type t) where T: class
+        private static T InstantiatePlugin<T>(Type t) where T : class
         {
             try
             {

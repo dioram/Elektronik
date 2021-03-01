@@ -11,7 +11,7 @@ namespace Elektronik.RandomDataPlugin
     internal class RandomDataOnline : IDataSourceOnline
     {
         public string DisplayName => "Random data";
-        
+
         public string Description => "Generates cloud of random points";
 
         public ICSConverter Converter { get; set; }
@@ -32,7 +32,7 @@ namespace Elektronik.RandomDataPlugin
                 for (int i = 0; i < 100; i++)
                 {
                     _containers.Points.UpdateItems(
-                            Generator.UpdatePoints(_containers.Points.ToList(), 3000, _settings.Scale));
+                        Generator.UpdatePoints(_containers.Points.ToList(), 3000, _settings.Scale));
                     Thread.Sleep(100);
                 }
             });

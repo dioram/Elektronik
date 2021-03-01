@@ -19,19 +19,21 @@ namespace Elektronik.Common.Containers
         public IEnumerator<SlamTrackedObject> GetEnumerator() => _objects.Values.Select(p => p.Item1).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
         public void Add(SlamTrackedObject item)
         {
             var container = CreateTrackContainer();
             _objects[item.Id] = (item, container);
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
         }
-        
+
         public void Clear()
         {
             foreach (var tuple in _objects)
             {
                 tuple.Value.Item2.Clear();
             }
+
             OnRemoved?.Invoke(this, new RemovedEventArgs(_objects.Keys));
             _objects.Clear();
         }
@@ -39,8 +41,8 @@ namespace Elektronik.Common.Containers
         public bool Contains(SlamTrackedObject item)
         {
             return _objects.Values
-                           .Select(p => p.Item1)
-                           .Any(o => o.Id == item.Id);
+                    .Select(p => p.Item1)
+                    .Any(o => o.Id == item.Id);
         }
 
         public void CopyTo(SlamTrackedObject[] array, int arrayIndex)
@@ -53,19 +55,16 @@ namespace Elektronik.Common.Containers
             if (!_objects.ContainsKey(item.Id)) return false;
             _objects[item.Id].Item2.Clear();
             _objects.Remove(item.Id);
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new [] {item.Id}));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
             return true;
         }
 
         public int Count => _objects.Count;
-        
-        [Obsolete("Useless property. Exists only as IList implementation.")]
+
         public bool IsReadOnly => false;
 
-        [Obsolete("Useless method. Exists only as IList implementation.")]
         public int IndexOf(SlamTrackedObject item) => item.Id;
 
-        [Obsolete("Useless method. Exists only as IList implementation.")]
         public void Insert(int index, SlamTrackedObject item) => Add(item);
 
         public void RemoveAt(int index)
@@ -73,7 +72,7 @@ namespace Elektronik.Common.Containers
             if (!_objects.ContainsKey(index)) return;
             _objects[index].Item2.Clear();
             _objects.Remove(index);
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new [] {index}));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
         }
 
         public SlamTrackedObject this[int index]
@@ -93,11 +92,11 @@ namespace Elektronik.Common.Containers
         }
 
         public event Action<IContainer<SlamTrackedObject>, AddedEventArgs<SlamTrackedObject>> OnAdded;
-        
+
         public event Action<IContainer<SlamTrackedObject>, UpdatedEventArgs<SlamTrackedObject>> OnUpdated;
-        
+
         public event Action<IContainer<SlamTrackedObject>, RemovedEventArgs> OnRemoved;
-        
+
         public void AddRange(IEnumerable<SlamTrackedObject> items)
         {
             foreach (var item in items)
@@ -105,6 +104,7 @@ namespace Elektronik.Common.Containers
                 var container = CreateTrackContainer();
                 _objects[item.Id] = (item, container);
             }
+
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
         }
 
@@ -116,13 +116,14 @@ namespace Elektronik.Common.Containers
                 _objects[item.Id].Item2.Clear();
                 _objects.Remove(item.Id);
             }
+
             OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id)));
         }
 
         public void UpdateItem(SlamTrackedObject item)
         {
             PureUpdate(item);
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new [] {item}));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new[] {item}));
         }
 
         public void UpdateItems(IEnumerable<SlamTrackedObject> items)
@@ -131,6 +132,7 @@ namespace Elektronik.Common.Containers
             {
                 PureUpdate(item);
             }
+
             OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(items));
         }
 
@@ -151,6 +153,7 @@ namespace Elektronik.Common.Containers
                 {
                     child.IsActive = value;
                 }
+
                 _isActive = value;
             }
         }
@@ -185,7 +188,7 @@ namespace Elektronik.Common.Containers
 
             var container = CreateTrackContainer(history);
             _objects.Add(item.Id, (item, container));
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new []{item}));
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
         }
 
         public void AddRangeWithHistory(IEnumerable<SlamTrackedObject> items, IEnumerable<IList<SlamLine>> histories)
@@ -197,6 +200,7 @@ namespace Elektronik.Common.Containers
                 var container = CreateTrackContainer(h);
                 _objects.Add(i.Id, (i, container));
             }
+
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
         }
 
@@ -206,6 +210,7 @@ namespace Elektronik.Common.Containers
 
         private ICloudRenderer<SlamLine> _lineRenderer;
         private readonly List<IContainerTree> _lineContainers = new List<IContainerTree>();
+
         private readonly Dictionary<int, (SlamTrackedObject, TrackContainer)> _objects =
                 new Dictionary<int, (SlamTrackedObject, TrackContainer)>();
 

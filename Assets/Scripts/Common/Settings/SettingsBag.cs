@@ -14,18 +14,17 @@ namespace Elektronik.Common.Settings
         public override string ToString()
         {
             return string.Join("\n", GetType()
-                                     .GetFields(BindingFlags.Public | BindingFlags.Instance)
-                                     .Where(f => Attribute.IsDefined(f, typeof(CheckForEqualsAttribute)))
-                                     .Select(f => f.GetValue(this).ToString()));
+                                       .GetFields(BindingFlags.Public | BindingFlags.Instance)
+                                       .Where(f => Attribute.IsDefined(f, typeof(CheckForEqualsAttribute)))
+                                       .Select(f => f.GetValue(this).ToString()));
         }
 
         protected bool Equals(SettingsBag other)
         {
             return GetType()
-                   .GetFields(BindingFlags.Public | BindingFlags.Instance)
-                   .Where(f => Attribute.IsDefined(f, typeof(CheckForEqualsAttribute)))
-                   .Select(f => f.GetValue(this).Equals(f.GetValue(other)))
-                   .All(b => b);
+                    .GetFields(BindingFlags.Public | BindingFlags.Instance)
+                    .Where(f => Attribute.IsDefined(f, typeof(CheckForEqualsAttribute)))
+                    .All(f => f.GetValue(this).Equals(f.GetValue(other)));
         }
 
         public override bool Equals(object obj)

@@ -35,11 +35,10 @@ namespace Elektronik.ProtobufPlugin.Offline.Presenters
             case PacketPb.DataOneofCase.Observations:
                 return packet.Observations.Data.Select(o =>
                                                                new SlamPoint(
-                                                                       o.Point.Id,
-                                                                       _connectableObservations[o.Point.Id].Point
-                                                                               .Position,
-                                                                       default,
-                                                                       o.Point.Message));
+                                                                   o.Point.Id,
+                                                                   _connectableObservations[o.Point.Id].Point.Position,
+                                                                   default,
+                                                                   o.Point.Message));
             default:
                 return null;
             }
@@ -70,7 +69,8 @@ namespace Elektronik.ProtobufPlugin.Offline.Presenters
 
         public override void SetRenderer(object dataRenderer)
         {
-            if (dataRenderer is IDataRenderer<(string info, string objectType, IEnumerable<SlamPoint> objects)> renderer)
+            if (dataRenderer 
+                    is IDataRenderer<(string info, string objectType, IEnumerable<SlamPoint> objects)> renderer)
             {
                 _info = renderer;
             }

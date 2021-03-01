@@ -17,12 +17,12 @@ namespace Elektronik.Common.Clouds
             if (_instantiable == null)
             {
                 _instantiable = Assembly
-                                .GetExecutingAssembly()
-                                .GetTypes()
-                                .FirstOrDefault(t => t.BaseType != null
-                                                     && t.BaseType.IsGenericType
-                                                     && t.BaseType.GetGenericTypeDefinition() == typeof(DataComponent<>)
-                                                     && t.BaseType.GetGenericArguments().Contains(typeof(TCloudItem)));
+                        .GetExecutingAssembly()
+                        .GetTypes()
+                        .FirstOrDefault(t => t.BaseType != null
+                                                && t.BaseType.IsGenericType
+                                                && t.BaseType.GetGenericTypeDefinition() == typeof(DataComponent<>)
+                                                && t.BaseType.GetGenericArguments().Contains(typeof(TCloudItem)));
             }
 
             return _instantiable;

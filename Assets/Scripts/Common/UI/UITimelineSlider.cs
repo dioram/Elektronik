@@ -13,6 +13,7 @@ namespace Elektronik.Common.UI
 
         private event Action<float> OnTimelinePointerUp;
         private Slider _slider;
+
         private void Start()
         {
             _slider = gameObject.GetComponent<Slider>();
@@ -20,11 +21,13 @@ namespace Elektronik.Common.UI
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            var pointerUp = Observable.FromEvent<float>(add => OnTimelinePointerUp += add, remove => OnTimelinePointerUp -= remove);
+            var pointerUp =
+                    Observable.FromEvent<float>(add => OnTimelinePointerUp += add,
+                                                remove => OnTimelinePointerUp -= remove);
             _slider.ObserveEveryValueChanged(s => s.value)
-                .Do(v => OnTimelineChanged?.Invoke(v))
-                .TakeUntil(pointerUp)
-                .Subscribe();
+                    .Do(v => OnTimelineChanged?.Invoke(v))
+                    .TakeUntil(pointerUp)
+                    .Subscribe();
         }
 
         public void OnPointerUp(PointerEventData eventData)

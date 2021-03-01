@@ -27,13 +27,17 @@ namespace Elektronik.Common.Containers
 
         #region IContainer implementation
 
-        [Obsolete("Never raised for now.")]
+        /// <summary> This event will be raised when any new objects would be added. </summary>
+        /// <remarks> Never raised for now. </remarks>
         public event Action<IContainer<TCloudItem>, AddedEventArgs<TCloudItem>> OnAdded;
 
-        [Obsolete("Never raised for now.")]
+        /// <summary> This event will be raised when any objects would be updated. </summary>
+        /// <remarks> Never raised for now. </remarks>
         public event Action<IContainer<TCloudItem>, UpdatedEventArgs<TCloudItem>> OnUpdated;
 
-        [Obsolete("Never raised for now.")] public event Action<IContainer<TCloudItem>, RemovedEventArgs> OnRemoved;
+        /// <summary> This event will be raised when any objects would be removed. </summary>
+        /// <remarks> Never raised for now. </remarks>
+        public event Action<IContainer<TCloudItem>, RemovedEventArgs> OnRemoved;
 
         public int Count => _objects.Count;
 

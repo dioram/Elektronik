@@ -30,11 +30,13 @@ namespace Elektronik.Common.Cameras
                 _rotation.y += .1f * cameraSensitivity * Time.fixedDeltaTime;
                 _rotation.y = Mathf.Clamp(_rotation.y, -80, 80);
             }
+
             if (Input.GetKey(KeyCode.Keypad5))
             {
                 _rotation.y -= .1f * cameraSensitivity * Time.fixedDeltaTime;
                 _rotation.y = Mathf.Clamp(_rotation.y, -80, 80);
             }
+
             if (Input.GetKey(KeyCode.Keypad7))
                 _rotation.z += .1f * cameraSensitivity * Time.fixedDeltaTime;
             if (Input.GetKey(KeyCode.Keypad9))
@@ -49,31 +51,42 @@ namespace Elektronik.Common.Cameras
 
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
-                transform.position += transform.forward * (normalMoveSpeed * fastMoveFactor * Input.GetAxis("Vertical") * Time.deltaTime);
-                transform.position += transform.right * (normalMoveSpeed * fastMoveFactor * Input.GetAxis("Horizontal") * Time.deltaTime);
+                transform.position += transform.forward *
+                        (normalMoveSpeed * fastMoveFactor * Input.GetAxis("Vertical") * Time.deltaTime);
+                transform.position += transform.right *
+                        (normalMoveSpeed * fastMoveFactor * Input.GetAxis("Horizontal") * Time.deltaTime);
             }
             else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
             {
-                transform.position += transform.forward * (normalMoveSpeed * slowMoveFactor * Input.GetAxis("Vertical") * Time.deltaTime);
-                transform.position += transform.right * (normalMoveSpeed * slowMoveFactor * Input.GetAxis("Horizontal") * Time.deltaTime);
+                transform.position += transform.forward *
+                        (normalMoveSpeed * slowMoveFactor * Input.GetAxis("Vertical") * Time.deltaTime);
+                transform.position += transform.right *
+                        (normalMoveSpeed * slowMoveFactor * Input.GetAxis("Horizontal") * Time.deltaTime);
             }
             else
             {
-                transform.position += transform.forward * (normalMoveSpeed * Input.GetAxis("Vertical") * Time.deltaTime);
-                transform.position += transform.right * (normalMoveSpeed * Input.GetAxis("Horizontal") * Time.deltaTime);
+                transform.position +=
+                        transform.forward * (normalMoveSpeed * Input.GetAxis("Vertical") * Time.deltaTime);
+                transform.position +=
+                        transform.right * (normalMoveSpeed * Input.GetAxis("Horizontal") * Time.deltaTime);
             }
 
-            if (Input.GetKey(KeyCode.Q)) { transform.position += transform.up * (climbSpeed * Time.deltaTime); }
-            if (Input.GetKey(KeyCode.E)) { transform.position -= transform.up * (climbSpeed * Time.deltaTime); }
+            if (Input.GetKey(KeyCode.Q))
+            {
+                transform.position += transform.up * (climbSpeed * Time.deltaTime);
+            }
+
+            if (Input.GetKey(KeyCode.E))
+            {
+                transform.position -= transform.up * (climbSpeed * Time.deltaTime);
+            }
 
             if (Input.GetKeyDown(KeyCode.End))
             {
-                Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ?
-                    CursorLockMode.None :
-                    CursorLockMode.Locked;
+                Cursor.lockState = Cursor.lockState == CursorLockMode.Locked
+                        ? CursorLockMode.None
+                        : CursorLockMode.Locked;
             }
         }
     }
 }
-
-

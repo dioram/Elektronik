@@ -13,8 +13,8 @@ namespace Elektronik.RandomDataPlugin
         {
             Children = new[]
             {
-                    (IContainerTree) Points,
-                    (IContainerTree) Lines,
+                (IContainerTree) Points,
+                (IContainerTree) Lines,
             };
         }
 
@@ -23,7 +23,7 @@ namespace Elektronik.RandomDataPlugin
         public string DisplayName => "RandomData";
 
         public IEnumerable<IContainerTree> Children { get; }
-        
+
         public bool IsActive
         {
             get => _isActive;
@@ -33,6 +33,7 @@ namespace Elektronik.RandomDataPlugin
                 {
                     child.IsActive = value;
                 }
+
                 _isActive = value;
             }
         }

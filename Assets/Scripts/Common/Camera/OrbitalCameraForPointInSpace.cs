@@ -83,12 +83,15 @@ namespace Elektronik.Common.Cameras
             {
                 SwitchOff();
             }
+
             if (CurrentState == State.FlyingToPosition)
             {
                 float currentDistance = Vector3.Distance(transform.position, _targetPosition);
                 _targetRotation = Quaternion.LookRotation((_targetPosition - transform.position).normalized);
-                transform.position = Vector3.MoveTowards(transform.position, _targetPosition, fly2TargetDistanceDelta * currentDistance * .05f);
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, _targetRotation, fly2TargetDistanceDelta + (1 / currentDistance));
+                transform.position = Vector3.MoveTowards(transform.position, _targetPosition,
+                                                         fly2TargetDistanceDelta * currentDistance * .05f);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, _targetRotation,
+                                                              fly2TargetDistanceDelta + (1 / currentDistance));
                 if (currentDistance <= distance)
                 {
                     CurrentState = State.Active;
@@ -96,13 +99,14 @@ namespace Elektronik.Common.Cameras
                     _y = transform.rotation.eulerAngles.x;
                 }
             }
+
             if (CurrentState == State.Active)
             {
                 if (Input.GetKeyDown(KeyCode.End))
                 {
-                    Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ?
-                        CursorLockMode.None :
-                        CursorLockMode.Locked;
+                    Cursor.lockState = Cursor.lockState == CursorLockMode.Locked
+                            ? CursorLockMode.None
+                            : CursorLockMode.Locked;
                 }
 
                 if (Input.GetMouseButton(1))
@@ -119,6 +123,7 @@ namespace Elektronik.Common.Cameras
                 {
                     distance -= hit.distance;
                 }
+
                 Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
                 Vector3 position = rotation * negDistance + _targetPosition;
                 transform.rotation = rotation;

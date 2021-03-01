@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Elektronik.Offline.UI
+namespace Elektronik.Common.UI
 {
     public class SpecialInformationBanner : MonoBehaviour
     {

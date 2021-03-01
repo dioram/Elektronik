@@ -24,13 +24,13 @@ namespace Elektronik.Common.Settings
             PluginsListBox.OnSelectionChanged += PluginSelected;
 
             CancelButton.OnClickAsObservable()
-                        .Do(_ => PluginsLoader.ActivePlugins.Clear())
-                        .Do(_ => ModeSelector.Mode = Mode.Invalid)
-                        .Do(_ => SceneManager.LoadScene("Main menu", LoadSceneMode.Single))
-                        .Subscribe();
+                    .Do(_ => PluginsLoader.ActivePlugins.Clear())
+                    .Do(_ => ModeSelector.Mode = Mode.Invalid)
+                    .Do(_ => SceneManager.LoadScene("Main menu", LoadSceneMode.Single))
+                    .Subscribe();
             LoadButton.OnClickAsObservable()
-                      .Do(_ => SceneManager.LoadScene("Empty", LoadSceneMode.Single))
-                      .Subscribe();
+                    .Do(_ => SceneManager.LoadScene("Empty", LoadSceneMode.Single))
+                    .Subscribe();
         }
 
         private void PluginSelected(object sender, UIListBox.SelectionChangedEventArgs e)
@@ -55,7 +55,7 @@ namespace Elektronik.Common.Settings
             default:
                 break;
             }
-            
+
             foreach (var plugin in availablePlugins)
             {
                 var pluginUIItem = (UIPluginListBoxItem) PluginsListBox.Add();

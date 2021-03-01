@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System;
-using Elektronik.Common.Settings;
 
-namespace Elektronik.Offline.UI
+namespace Elektronik.Common.UI
 {
     public class Return2OfflineMenu : MonoBehaviour
     {

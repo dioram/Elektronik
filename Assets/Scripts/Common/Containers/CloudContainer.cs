@@ -50,13 +50,10 @@ namespace Elektronik.Common.Containers
 
         public int Count => _items.Count;
 
-        [Obsolete("Useless property. Exists only as IList implementation.")]
         public bool IsReadOnly => false;
 
-        [Obsolete("Useless method. Exists only as IList implementation.")]
         public int IndexOf(TCloudItem item) => item.Id;
 
-        [Obsolete("Useless method. Exists only as IList implementation.")]
         public void Insert(int index, TCloudItem item) => Add(item);
 
         public void RemoveAt(int index)

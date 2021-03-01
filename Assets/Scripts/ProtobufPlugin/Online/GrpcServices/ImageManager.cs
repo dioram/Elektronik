@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Elektronik.Common.Cameras;
 using Elektronik.Common.Data.Pb;
+using Elektronik.Common.Renderers;
 using Grpc.Core;
 
 namespace Elektronik.ProtobufPlugin.Online.GrpcServices
@@ -9,6 +9,7 @@ namespace Elektronik.ProtobufPlugin.Online.GrpcServices
     public class ImageManager : ImageManagerPb.ImageManagerPbBase
     {
         private readonly CameraImageRenderer _renderer;
+
         public ImageManager(CameraImageRenderer renderer)
         {
             _renderer = renderer;
@@ -22,13 +23,14 @@ namespace Elektronik.ProtobufPlugin.Online.GrpcServices
             };
             try
             {
-                _renderer.DrawImage(request.ImageData.ToByteArray());
+                _renderer.Render(request.ImageData.ToByteArray());
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 err.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                 err.Message = e.Message;
             }
+
             return Task.FromResult(err);
         }
     }

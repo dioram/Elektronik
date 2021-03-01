@@ -16,20 +16,20 @@ namespace Elektronik.ProtobufPlugin.Offline.Parsers
         {
             _container = container;
         }
-        
+
         protected virtual ICommand GetCommand(IEnumerable<SlamTrackedObject> objs, PacketPb.Types.ActionType action)
         {
             switch (action)
             {
-                case PacketPb.Types.ActionType.Add:
-                    return new AddCommand<SlamTrackedObject>(_container, objs);
-                case PacketPb.Types.ActionType.Update:
-                    return new UpdateCommand<SlamTrackedObject>(_container, objs);
-                case PacketPb.Types.ActionType.Remove:
-                    return new RemoveTrackedObjCommands(_container, objs);
-                case PacketPb.Types.ActionType.Clear:
-                    return new ClearTrackedObjsCommand(_container);
-                default: return null;
+            case PacketPb.Types.ActionType.Add:
+                return new AddCommand<SlamTrackedObject>(_container, objs);
+            case PacketPb.Types.ActionType.Update:
+                return new UpdateCommand<SlamTrackedObject>(_container, objs);
+            case PacketPb.Types.ActionType.Remove:
+                return new RemoveTrackedObjCommands(_container, objs);
+            case PacketPb.Types.ActionType.Clear:
+                return new ClearTrackedObjsCommand(_container);
+            default: return null;
             }
         }
 
@@ -40,6 +40,7 @@ namespace Elektronik.ProtobufPlugin.Offline.Parsers
                 var command = GetCommand(pkg.ExtractTrackedObjects(Converter).ToList(), pkg.Action);
                 return command;
             }
+
             return base.GetCommand(pkg);
         }
     }

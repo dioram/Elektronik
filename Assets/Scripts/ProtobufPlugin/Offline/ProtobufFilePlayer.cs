@@ -26,17 +26,17 @@ namespace Elektronik.ProtobufPlugin.Offline
             _containerTree = new ProtobufContainerTree("Protobuf");
             _parsersChain = new PackageParser[]
             {
-                    new ObjectsParser(_containerTree.InfinitePlanes,
-                                      _containerTree.Points,
-                                      _containerTree.Observations),
-                    new TrackedObjectsParser(_containerTree.TrackedObjs),
-                    new InfoParser(),
+                new ObjectsParser(_containerTree.InfinitePlanes,
+                                  _containerTree.Points,
+                                  _containerTree.Observations),
+                new TrackedObjectsParser(_containerTree.TrackedObjs),
+                new InfoParser(),
             }.BuildChain();
 
             PresentersChain = new DataPresenter[]
             {
-                    new ImagePresenter(OfflineSettings),
-                    new SlamDataInfoPresenter(_containerTree.Points, _containerTree.Observations),
+                new ImagePresenter(OfflineSettings),
+                new SlamDataInfoPresenter(_containerTree.Points, _containerTree.Observations),
             }.BuildChain();
         }
 
@@ -71,13 +71,12 @@ namespace Elektronik.ProtobufPlugin.Offline
             _timeout -= delta;
             if (_timeout < 0)
             {
-                Task.Run(() =>
-                                 _threadWorker.Enqueue(() =>
-                                 {
-                                     if (NextFrame()) return;
-                                     MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
-                                     _playing = false;
-                                 }));
+                Task.Run(() => _threadWorker.Enqueue(() =>
+                {
+                    if (NextFrame()) return;
+                    MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
+                    _playing = false;
+                }));
                 _timeout = Timeout;
             }
         }
@@ -108,11 +107,12 @@ namespace Elektronik.ProtobufPlugin.Offline
 
         public void StopPlaying()
         {
+            _playing = false;
             _threadWorker.Enqueue(() =>
             {
-                _frames.SoftReset();
                 Data.Clear();
                 PresentersChain.Clear();
+                _frames.SoftReset();
             });
         }
 
@@ -153,7 +153,6 @@ namespace Elektronik.ProtobufPlugin.Offline
         private bool _playing = false;
         private float _timeout = 0;
         private ThreadWorker _threadWorker;
-        private float _currentPosition;
 
         private IEnumerator<Frame> ReadCommands()
         {
@@ -195,7 +194,7 @@ namespace Elektronik.ProtobufPlugin.Offline
         private void RewindAt(int pos)
         {
             if (pos < 0 || pos >= AmountOfFrames || pos == CurrentPosition) return;
-            
+
             _threadWorker.Enqueue(() =>
             {
                 while (_frames.CurrentIndex != pos)

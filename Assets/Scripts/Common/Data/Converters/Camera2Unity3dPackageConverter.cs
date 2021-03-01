@@ -14,7 +14,8 @@ namespace Elektronik.Common.Data.Converters
         public override void Convert(ref Vector3 pos, ref Quaternion rot)
         {
             pos.y = -pos.y;
-            rot.y = -rot.y; rot.w = -rot.w;
+            rot.y = -rot.y;
+            rot.w = -rot.w;
             Matrix4x4 curHomo = Matrix4x4.TRS(pos, rot, Vector3.one);
             curHomo = _initPose * curHomo;
             pos = curHomo.GetColumn(3);

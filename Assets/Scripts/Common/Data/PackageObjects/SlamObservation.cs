@@ -20,7 +20,8 @@ namespace Elektronik.Common.Data.PackageObjects
 
         public string FileName;
 
-        public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName, Stats stats = new Stats())
+        public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName,
+                               Stats stats = new Stats())
         {
             Point = pt;
             Rotation = orientation;

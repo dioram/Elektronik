@@ -14,7 +14,7 @@ namespace Elektronik.Common.Containers
         {
             DisplayName = string.IsNullOrEmpty(displayName) ? "Lines" : displayName;
         }
-        
+
         #region IContaitner implementation
 
         public event Action<IContainer<SlamLine>, AddedEventArgs<SlamLine>> OnAdded;
@@ -49,12 +49,12 @@ namespace Elektronik.Common.Containers
 
             return -1;
         }
-        
-        [Obsolete("Don't use this getter. You can't get valid index outside the container anyway." +
-                  "It exists only as implementation of IList interface")]
+
         public SlamLine this[int index]
         {
-            get => _connections.Values.ElementAt(index);
+            get => throw new NotSupportedException("Don't use this getter."
+                                                   + " You can't get valid index outside the container anyway."
+                                                   + "It exists only as implementation of IList interface");
             set => UpdateItem(value);
         }
 
@@ -79,6 +79,7 @@ namespace Elektronik.Common.Containers
                 _connectionsIndices[line] = line.Id;
                 _linesBuffer.Add(line);
             }
+
             OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(_linesBuffer));
             _linesBuffer.Clear();
         }
@@ -112,7 +113,7 @@ namespace Elektronik.Common.Containers
             var index = _connectionsIndices[obj];
             _connections.Remove(index);
             _freeIds.Enqueue(index);
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{obj.Id}));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {obj.Id}));
             return true;
         }
 
@@ -158,7 +159,7 @@ namespace Elektronik.Common.Containers
         public string DisplayName { get; }
 
         public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
-        
+
         public bool IsActive
         {
             get => _isActive;

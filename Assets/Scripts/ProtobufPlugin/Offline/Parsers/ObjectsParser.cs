@@ -94,9 +94,9 @@ namespace Elektronik.ProtobufPlugin.Offline.Parsers
             case PacketPb.DataOneofCase.Observations:
                 return GetCommandForConnectableObjects(_observations,
                                                        packet.ExtractObservations(
-                                                                     Converter,
-                                                                     ProtobufFilePlayer.OfflineSettings.ImagePath)
-                                                             .ToList(), packet);
+                                                                   Converter,
+                                                                   ProtobufFilePlayer.OfflineSettings.ImagePath)
+                                                               .ToList(), packet);
             case PacketPb.DataOneofCase.InfinitePlanes:
                 return GetCommand(_infinitePlanes,
                                   packet.ExtractInfinitePlanes(Converter).ToList(), packet);

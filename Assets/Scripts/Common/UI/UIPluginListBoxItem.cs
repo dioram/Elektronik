@@ -8,10 +8,8 @@ namespace Elektronik.Common.UI
 {
     public class UIPluginListBoxItem : UIListBoxItem
     {
-        [Range(30, 100)] 
-        public int Height = 50;
-        [Range(30, 1000)] 
-        public int HeightWithDescription = 300;
+        [Range(30, 100)] public int Height = 50;
+        [Range(30, 1000)] public int HeightWithDescription = 300;
 
         public IElektronikPlugin Plugin;
 
@@ -38,19 +36,20 @@ namespace Elektronik.Common.UI
             _descriptionLabel.text = Plugin.Description;
 
             _toggle.OnValueChangedAsObservable()
-                   .Where(state => state)
-                   .Subscribe(_ => PluginsLoader.EnablePlugin(Plugin));
+                    .Where(state => state)
+                    .Subscribe(_ => PluginsLoader.EnablePlugin(Plugin));
             _toggle.OnValueChangedAsObservable()
-                   .Where(state => !state)
-                   .Subscribe(_ => PluginsLoader.DisablePlugin(Plugin));
+                    .Where(state => !state)
+                    .Subscribe(_ => PluginsLoader.DisablePlugin(Plugin));
         }
 
         public void ToggleDescription()
         {
             if (_description.rect.height == 0)
             {
-                ((RectTransform) _description.transform).SetSizeWithCurrentAnchors(
-                        RectTransform.Axis.Vertical, HeightWithDescription - Height);
+                ((RectTransform) _description.transform)
+                        .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                                                   HeightWithDescription - Height);
                 ((RectTransform) transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
                                                                       HeightWithDescription);
                 _layoutElement.minHeight = HeightWithDescription;

@@ -1,8 +1,7 @@
-﻿using Elektronik.Common.UI;
-using System;
+﻿using System;
 using UnityEngine.UI;
 
-namespace Elektronik.Offline.UI
+namespace Elektronik.Common.UI
 {
     public class UIRecentFileListBoxItem : UIListBoxItem
     {
@@ -11,15 +10,14 @@ namespace Elektronik.Offline.UI
 
         public string Path
         {
-            get { return path.text; }
-            set { path.text = value; }
+            get => path.text;
+            set => path.text = value;
         }
+
         public DateTime DateTime
         {
-            get { return DateTime.Parse(dateTime.text); }
-            set { dateTime.text = value.ToString("dd/MM/yyyy hh:mm:ss"); }
+            get => DateTime.Parse(dateTime.text);
+            set => dateTime.text = value.ToString("dd/MM/yyyy hh:mm:ss");
         }
-
-
     }
 }

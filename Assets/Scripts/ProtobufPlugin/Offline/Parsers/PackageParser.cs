@@ -12,7 +12,11 @@ namespace Elektronik.ProtobufPlugin.Offline.Parsers
     {
         protected PackageParser Successor;
         protected ICSConverter Converter;
-        public IChainable<PackageParser> SetSuccessor(IChainable<PackageParser> parser) => Successor = parser as PackageParser;
+
+        public IChainable<PackageParser> SetSuccessor(IChainable<PackageParser> parser)
+        {
+            return Successor = parser as PackageParser;
+        }
 
         /// <summary> Sets converter for this parser and its successors. </summary>
         /// <param name="converter"> Converter to set. </param>
@@ -21,7 +25,7 @@ namespace Elektronik.ProtobufPlugin.Offline.Parsers
             Converter = converter;
             Successor?.SetConverter(converter);
         }
-            
+
         /// <summary> Extracts command form packet. </summary>
         /// <param name="pkg"> Packet with command. </param>
         public virtual ICommand GetCommand(PacketPb pkg)

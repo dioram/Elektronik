@@ -12,10 +12,9 @@ namespace Common.UI
     {
         public GameObject StringFieldPrefab;
         public GameObject BrowseFieldPrefab;
-        
+
         private ScrollRect _scrollView;
         private readonly List<GameObject> _fields = new List<GameObject>();
-        private SettingsBag _current;
 
         public void Awake()
         {
@@ -25,7 +24,7 @@ namespace Common.UI
         public void Generate(SettingsBag settings)
         {
             _fields.ForEach(Destroy);
-            
+
             settings.GetType()
                     .GetFields(BindingFlags.Public | BindingFlags.Instance)
                     .Where(f => Attribute.IsDefined(f, typeof(TooltipAttribute)))
@@ -36,7 +35,7 @@ namespace Common.UI
         private void AddField(FieldInfo fieldInfo, SettingsBag obj)
         {
             GameObject newField;
-            if (fieldInfo.FieldType == typeof(string) 
+            if (fieldInfo.FieldType == typeof(string)
                 && Attribute.GetCustomAttribute(fieldInfo, typeof(PathAttribute)) != null)
             {
                 newField = Instantiate(BrowseFieldPrefab, _scrollView.content);

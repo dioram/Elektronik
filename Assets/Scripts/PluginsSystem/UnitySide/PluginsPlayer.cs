@@ -19,19 +19,19 @@ namespace Elektronik.PluginsSystem.UnitySide
         private void Start()
         {
             var cloudRenderers = Assembly.GetExecutingAssembly()
-                                    .GetTypes()
-                                    .Where(t => t.GetInterfaces()
-                                                 .Where(i => i.IsGenericType)
-                                                 .Any(i => i.GetGenericTypeDefinition() == typeof(ICloudRenderer<>)))
-                                    .SelectMany(t => Renderers.GetComponentsInChildren(t))
-                                    .ToArray();
+                    .GetTypes()
+                    .Where(t => t.GetInterfaces()
+                                   .Where(i => i.IsGenericType)
+                                   .Any(i => i.GetGenericTypeDefinition() == typeof(ICloudRenderer<>)))
+                    .SelectMany(t => Renderers.GetComponentsInChildren(t))
+                    .ToArray();
             var dataRenderers = Assembly.GetExecutingAssembly()
-                                        .GetTypes()
-                                        .Where(t => t.GetInterfaces()
-                                                     .Where(i => i.IsGenericType)
-                                                     .Any(i => i.GetGenericTypeDefinition() == typeof(IDataRenderer<>)))
-                                        .SelectMany(t => Renderers.GetComponentsInChildren(t))
-                                        .ToArray();
+                    .GetTypes()
+                    .Where(t => t.GetInterfaces()
+                                   .Where(i => i.IsGenericType)
+                                   .Any(i => i.GetGenericTypeDefinition() == typeof(IDataRenderer<>)))
+                    .SelectMany(t => Renderers.GetComponentsInChildren(t))
+                    .ToArray();
             foreach (var dataSource in Plugins.OfType<IDataSource>())
             {
                 foreach (var r in cloudRenderers)
@@ -41,7 +41,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
                 dataSource.Converter = Converter;
             }
-            
+
             foreach (var dataSource in Plugins.OfType<IDataSourceOffline>())
             {
                 PlayerEvents.SetDataSource(dataSource);

@@ -15,13 +15,13 @@ namespace Elektronik.RandomDataPlugin
             {
                 result[i] = new SlamPoint
                 {
-                        Id = minId + i,
-                        Position = new Vector3((float) rand.NextDouble() * scale,
-                                               (float) rand.NextDouble() * scale,
-                                               (float) rand.NextDouble() * scale),
-                        Color = new Color((float) rand.NextDouble(), (float) rand.NextDouble(),
-                                          (float) rand.NextDouble()),
-                        Message = "",
+                    Id = minId + i,
+                    Position = new Vector3((float) rand.NextDouble() * scale,
+                                           (float) rand.NextDouble() * scale,
+                                           (float) rand.NextDouble() * scale),
+                    Color = new Color((float) rand.NextDouble(), (float) rand.NextDouble(),
+                                      (float) rand.NextDouble()),
+                    Message = "",
                 };
             }
 

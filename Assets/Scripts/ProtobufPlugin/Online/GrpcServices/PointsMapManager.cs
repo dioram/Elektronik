@@ -13,11 +13,12 @@ namespace Elektronik.ProtobufPlugin.Online.GrpcServices
     {
         private readonly ICSConverter _converter;
 
-        public PointsMapManager(IConnectableObjectsContainer<SlamPoint> container, ICSConverter converter) : base(container)
+        public PointsMapManager(IConnectableObjectsContainer<SlamPoint> container, ICSConverter converter)
+                : base(container)
         {
             _converter = converter;
         }
-        
+
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             Debug.Log("[PointsMapManager.Handle]");

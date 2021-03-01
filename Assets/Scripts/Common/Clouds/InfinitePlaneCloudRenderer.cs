@@ -14,17 +14,17 @@ namespace Elektronik.Common.Clouds
             var v4 = new Vector3(-halfSide, 0, halfSide);
 
             var rotation = Quaternion.FromToRotation(Vector3.up, item.Normal);
-            
-            var vertices = new []
+
+            var vertices = new[]
             {
-                    rotation * v1 + item.Offset,
-                    rotation * v2 + item.Offset,
-                    rotation * v3 + item.Offset,
-                    rotation * v4 + item.Offset,
-                    rotation * v4 + item.Offset,
-                    rotation * v3 + item.Offset,
-                    rotation * v2 + item.Offset,
-                    rotation * v1 + item.Offset,
+                rotation * v1 + item.Offset,
+                rotation * v2 + item.Offset,
+                rotation * v3 + item.Offset,
+                rotation * v4 + item.Offset,
+                rotation * v4 + item.Offset,
+                rotation * v3 + item.Offset,
+                rotation * v2 + item.Offset,
+                rotation * v1 + item.Offset,
             };
             for (int i = 0; i < 8; i++)
             {

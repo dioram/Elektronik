@@ -13,7 +13,8 @@ namespace Elektronik.ProtobufPlugin.Online.GrpcServices
     {
         private readonly ICSConverter _converter;
 
-        public InfinitePlanesMapManager(IContainer<SlamInfinitePlane> container, ICSConverter converter) : base(container)
+        public InfinitePlanesMapManager(IContainer<SlamInfinitePlane> container, ICSConverter converter) 
+                : base(container)
         {
             _converter = converter;
         }

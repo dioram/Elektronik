@@ -18,24 +18,24 @@ namespace Elektronik.ProtobufPlugin
 
             TrackedObjs = new TrackedObjectsContainer("Tracked objects");
             Observations = new ConnectableObjectsContainer<SlamObservation>(
-                    new CloudContainer<SlamObservation>("Points"),
-                    new SlamLinesContainer("Connections"),
-                    "Observations");
+                new CloudContainer<SlamObservation>("Points"),
+                new SlamLinesContainer("Connections"),
+                "Observations");
             Points = new ConnectableObjectsContainer<SlamPoint>(
-                    new CloudContainer<SlamPoint>("Points"),
-                    new SlamLinesContainer("Connections"),
-                    "Points");
+                new CloudContainer<SlamPoint>("Points"),
+                new SlamLinesContainer("Connections"),
+                "Points");
 
             Lines = new SlamLinesContainer("Lines");
             InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
 
             Children = new[]
             {
-                    (IContainerTree) Points,
-                    (IContainerTree) TrackedObjs,
-                    (IContainerTree) Observations,
-                    (IContainerTree) Lines,
-                    (IContainerTree) InfinitePlanes,
+                (IContainerTree) Points,
+                (IContainerTree) TrackedObjs,
+                (IContainerTree) Observations,
+                (IContainerTree) Lines,
+                (IContainerTree) InfinitePlanes,
             };
         }
 

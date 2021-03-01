@@ -25,10 +25,10 @@ namespace Elektronik.ProtobufPlugin.Offline
         {
             return new Frame
             {
-                    Packet = packetPb,
-                    Timestamp = packetPb.Timestamp,
-                    IsSpecial = packetPb.Special,
-                    Command = parsersChain.GetCommand(packetPb),
+                Packet = packetPb,
+                Timestamp = packetPb.Timestamp,
+                IsSpecial = packetPb.Special,
+                Command = parsersChain.GetCommand(packetPb),
             };
         }
     }

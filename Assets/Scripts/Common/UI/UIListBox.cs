@@ -11,12 +11,15 @@ namespace Elektronik.Common.UI
         public class SelectionChangedEventArgs : EventArgs
         {
             public readonly int Index;
+
             public SelectionChangedEventArgs(int idx)
             {
                 Index = idx;
             }
         }
+
         public delegate void SelectionChangedEventHandler(object sender, SelectionChangedEventArgs e);
+
         public event SelectionChangedEventHandler OnSelectionChanged;
 
         public UIListBoxItem itemPrefab;
@@ -32,7 +35,7 @@ namespace Elektronik.Common.UI
             _poolOfItems = new ObjectPool(itemPrefab.gameObject);
         }
 
-        public UIListBoxItem this[int idx] { get { return _listOfItems[idx]; } }
+        public UIListBoxItem this[int idx] => _listOfItems[idx];
 
         public UIListBoxItem Add()
         {
@@ -45,8 +48,9 @@ namespace Elektronik.Common.UI
 
         private void SelectionChanged(object sender, EventArgs e)
         {
-            Debug.Assert(sender is UIListBoxItem, $"Sender must be {typeof(UIListBoxItem)}, but found {sender.GetType()}");
-            int index = _listOfItems.FindIndex(current => current == (UIListBoxItem)sender);
+            Debug.Assert(sender is UIListBoxItem,
+                         $"Sender must be {typeof(UIListBoxItem)}, but found {sender.GetType()}");
+            int index = _listOfItems.FindIndex(current => current == (UIListBoxItem) sender);
             Debug.Assert(index != -1, "UIListView wasn't found");
             SelectionChangedEventArgs selectionChangedEventArgs = new SelectionChangedEventArgs(index);
             OnSelectionChanged?.Invoke(this, selectionChangedEventArgs);
@@ -67,6 +71,7 @@ namespace Elektronik.Common.UI
                 item.transform.SetParent(null);
                 _poolOfItems.Despawn(item.gameObject);
             }
+
             _listOfItems.Clear();
         }
     }

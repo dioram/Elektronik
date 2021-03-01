@@ -4,8 +4,11 @@
     {
         protected DataPresenter Successor;
 
-        public IChainable<DataPresenter> SetSuccessor(IChainable<DataPresenter> presenter) => Successor = presenter as DataPresenter;
-        
+        public IChainable<DataPresenter> SetSuccessor(IChainable<DataPresenter> presenter)
+        {
+            return Successor = presenter as DataPresenter;
+        }
+
         public virtual void Present(object data)
         {
             Successor?.Present(data);

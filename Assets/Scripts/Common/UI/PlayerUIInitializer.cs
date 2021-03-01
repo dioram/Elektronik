@@ -21,7 +21,8 @@ namespace Elektronik.Common.UI
         // Start is called before the first frame update
         void Start()
         {
-            _vrModeKeyPressedEvent = VRMode.GetComponents<KeyPressedEventInvoker>().First(@event => @event.key == KeyCode.F12);
+            _vrModeKeyPressedEvent = VRMode.GetComponents<KeyPressedEventInvoker>()
+                    .First(@event => @event.key == KeyCode.F12);
             _vrModeKeyPressedEvent.myEvent.AddListener(InverseActive);
             VrModeButton.onClick.AddListener(InverseActive);
         }

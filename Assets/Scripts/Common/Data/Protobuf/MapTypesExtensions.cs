@@ -21,8 +21,8 @@ namespace Elektronik.Common.Data.Pb
         }
 
         public static IEnumerable<SlamObservation> ExtractObservations(this PacketPb packet,
-            ICSConverter converter,
-            string imageDir)
+                                                                       ICSConverter converter,
+                                                                       string imageDir)
         {
             Debug.Assert(packet.DataCase == PacketPb.DataOneofCase.Observations);
             foreach (var o in packet.Observations.Data)
@@ -35,7 +35,7 @@ namespace Elektronik.Common.Data.Pb
         }
 
         public static IEnumerable<SlamTrackedObject> ExtractTrackedObjects(this PacketPb packet,
-            ICSConverter converter = null)
+                                                                           ICSConverter converter = null)
         {
             Debug.Assert(packet.DataCase == PacketPb.DataOneofCase.TrackedObjs);
             foreach (var o in packet.TrackedObjs.Data)
@@ -60,7 +60,7 @@ namespace Elektronik.Common.Data.Pb
         }
 
         public static IEnumerable<SlamInfinitePlane> ExtractInfinitePlanes(this PacketPb packet,
-            ICSConverter converter = null)
+                                                                           ICSConverter converter = null)
         {
             Debug.Assert(packet.DataCase == PacketPb.DataOneofCase.InfinitePlanes);
             var stub = Quaternion.identity;
@@ -99,8 +99,8 @@ namespace Elektronik.Common.Data.Pb
     {
         public static implicit operator SlamPoint(PointPb p)
             => p != null
-                ? new SlamPoint() {Id = p.id_, Position = p.position_, Color = p.color_, Message = p.message_}
-                : default;
+                    ? new SlamPoint() {Id = p.id_, Position = p.position_, Color = p.color_, Message = p.message_}
+                    : default;
     }
 
     public partial class LinePb
@@ -134,8 +134,8 @@ namespace Elektronik.Common.Data.Pb
     {
         public static implicit operator SlamInfinitePlane(InfinitePlanePb p)
             => p != null
-                ? new SlamInfinitePlane
-                    {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset}
-                : default;
+                    ? new SlamInfinitePlane
+                            {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset}
+                    : default;
     }
 }

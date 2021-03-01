@@ -37,24 +37,25 @@ namespace Elektronik.Offline
             PreviousKeyFrame += _dataSourceOffline.PreviousKeyFrame;
             _dataSourceOffline.Finished += SetPausedState;
             TimelineSlider.OnValueChangedAsObservable()
-                          .Select(v => (int) Mathf.Round((_dataSourceOffline.AmountOfFrames - 1) * v))
-                          .Subscribe(value => _dataSourceOffline.CurrentPosition = value);
+                    .Select(v => (int) Mathf.Round((_dataSourceOffline.AmountOfFrames - 1) * v))
+                    .Where(v => !(v == 0 && _dataSourceOffline.CurrentPosition == -1))
+                    .Subscribe(value => _dataSourceOffline.CurrentPosition = value);
         }
 
         private void Awake()
         {
             _playButtonImage = PlayButton.transform.Find("Image").GetComponent<Image>();
             PlayButton.OnClickAsObservable()
-                      .Subscribe(_ => PlayPause());
+                    .Subscribe(_ => PlayPause());
             StopButton.OnClickAsObservable()
-                      .Do(_ => SetPausedState())
-                      .Subscribe(_ => Stop?.Invoke());
+                    .Do(_ => SetPausedState())
+                    .Subscribe(_ => Stop?.Invoke());
             NextKeyFrameButton.OnClickAsObservable()
-                              .Do(_ => SetPausedState())
-                              .Subscribe(_ => NextKeyFrame?.Invoke());
+                    .Do(_ => SetPausedState())
+                    .Subscribe(_ => NextKeyFrame?.Invoke());
             PreviousKeyFrameButton.OnClickAsObservable()
-                                  .Do(_ => SetPausedState())
-                                  .Subscribe(_ => PreviousKeyFrame?.Invoke());
+                    .Do(_ => SetPausedState())
+                    .Subscribe(_ => PreviousKeyFrame?.Invoke());
         }
 
         private void Update()
