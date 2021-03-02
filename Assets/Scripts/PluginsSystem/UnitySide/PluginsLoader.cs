@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Elektronik.ProtobufPlugin.Offline;
-using Elektronik.ProtobufPlugin.Online;
+using System.Reflection;
 using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
@@ -23,19 +23,25 @@ namespace Elektronik.PluginsSystem.UnitySide
         }
 
         static PluginsLoader()
-        {
-            Plugins.AddRange(AppDomain.CurrentDomain
-                                     .GetAssemblies()
-                                     .SelectMany(s => s.GetTypes())
-                                     .Where(p => typeof(IElektronikPlugin).IsAssignableFrom(p) && p.IsClass &&
-                                                    !p.IsAbstract)
-                                     .Select(InstantiatePlugin<IElektronikPlugin>)
-                                     .Where(p => p != null)
-                                     .ToList());
-
-            //TODO: remove after tests
-            // ActivePlugins.Add(Plugins.OfType<ProtobufGrpcServer>().First());
-            // ActivePlugins.Add(Plugins.OfType<ProtobufFilePlayer>().First());
+        {            
+            var pluginsDir = Path.Combine(Directory.GetCurrentDirectory(), @".\Elektronik tools_Data\Managed");
+            foreach (var file in Directory.GetFiles(pluginsDir, "*.dll"))
+            {
+                Debug.LogError(file);
+                try
+                {
+                    Plugins.AddRange(Assembly.LoadFrom(file)
+                                             .GetTypes()
+                                             .Where(p => typeof(IElektronikPlugin).IsAssignableFrom(p) && p.IsClass &&
+                                                            !p.IsAbstract)
+                                             .Select(InstantiatePlugin<IElektronikPlugin>)
+                                             .Where(p => p != null));
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(file);
+                }
+            }
         }
 
         private static T InstantiatePlugin<T>(Type t) where T : class

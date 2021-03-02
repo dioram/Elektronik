@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D5537785-A3FB-463D-BE75-31B09F184A86}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Protobuf</RootNamespace>
+    <AssemblyName>Protobuf</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <LangVersion>8</LangVersion>
+    <Nullable>enable</Nullable>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\build\Elektronik tools_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\build\Elektronik tools_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\build\Elektronik tools_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\build\Elektronik tools_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\build\Elektronik tools_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\MapTypesExtensions.cs" />
+    <Compile Include="Common\ProtobufContainerTree.cs" />
+    <Compile Include="Offline\Frame.cs" />
+    <Compile Include="Offline\OfflineSettingsBag.cs" />
+    <Compile Include="Offline\OfflineSettingsHistory.cs" />
+    <Compile Include="Offline\Parsers\InfoParser.cs" />
+    <Compile Include="Offline\Parsers\ObjectsParser.cs" />
+    <Compile Include="Offline\Parsers\PackageParser.cs" />
+    <Compile Include="Offline\Parsers\TrackedObjectsParser.cs" />
+    <Compile Include="Offline\Presenters\ImagePresenter.cs" />
+    <Compile Include="Offline\Presenters\SlamDataInfoPresenter.cs" />
+    <Compile Include="Offline\ProtobufFilePlayer.cs" />
+    <Compile Include="Online\GrpcServices\ConnectableObjectsMapManager.cs" />
+    <Compile Include="Online\GrpcServices\ImageManager.cs" />
+    <Compile Include="Online\GrpcServices\InfinitePlanesMapManager.cs" />
+    <Compile Include="Online\GrpcServices\LinesMapManager.cs" />
+    <Compile Include="Online\GrpcServices\MapManager.cs" />
+    <Compile Include="Online\GrpcServices\ObservationsMapManager.cs" />
+    <Compile Include="Online\GrpcServices\PointsMapManager.cs" />
+    <Compile Include="Online\GrpcServices\SceneManager.cs" />
+    <Compile Include="Online\GrpcServices\TrackedObjsMapManager.cs" />
+    <Compile Include="Online\OnlineSettingsBag.cs" />
+    <Compile Include="Online\OnlineSettingsHistory.cs" />
+    <Compile Include="Online\ProtobufGrpcServer.cs" />
+    <Compile Include="Online\UnityLogger.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="Common\MapTypes.proto" />
+    <Protobuf Include="Common\UpdateMapService.proto" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf">
+      <Version>3.15.3</Version>
+    </PackageReference>
+    <PackageReference Include="Grpc">
+      <Version>2.36.0</Version>
+    </PackageReference>
+    <PackageReference Include="Grpc.Core">
+      <Version>2.36.0</Version>
+    </PackageReference>
+    <PackageReference Include="Grpc.Core.Api">
+      <Version>2.36.0</Version>
+    </PackageReference>
+    <PackageReference Include="Grpc.Tools">
+      <Version>2.36.0</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NETCore.Platforms">
+      <Version>1.1.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+</Project>

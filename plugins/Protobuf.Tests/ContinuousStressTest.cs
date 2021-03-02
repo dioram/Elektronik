@@ -1,0 +1,277 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Elektronik.ProtobufPlugin.Common;
+using NUnit.Framework;
+
+namespace Protobuf.Tests
+{
+    public class ContinuousStressTest : TestsBase
+    {
+        private List<PointPb[]> movie;
+        private List<PacketPb.Types.ActionType> commands;
+
+        private Vector3Pb[] centers = new[]
+        {
+                new Vector3Pb {X = 0, Y = 0, Z = 0,},
+
+                new Vector3Pb {X = 0, Y = 2, Z = 0,},
+                new Vector3Pb {X = 0, Y = 2, Z = 2,},
+                new Vector3Pb {X = 0, Y = 2, Z = -2,},
+                new Vector3Pb {X = 2, Y = 2, Z = 0,},
+                new Vector3Pb {X = 2, Y = 2, Z = 2,},
+                new Vector3Pb {X = 2, Y = 2, Z = -2,},
+                new Vector3Pb {X = -2, Y = 2, Z = 0,},
+                new Vector3Pb {X = -2, Y = 2, Z = 2,},
+                new Vector3Pb {X = -2, Y = 2, Z = -2,},
+
+                new Vector3Pb {X = 0, Y = -2, Z = 0,},
+                new Vector3Pb {X = 0, Y = -2, Z = 2,},
+                new Vector3Pb {X = 0, Y = -2, Z = -2,},
+                new Vector3Pb {X = 2, Y = -2, Z = 0,},
+                new Vector3Pb {X = 2, Y = -2, Z = 2,},
+                new Vector3Pb {X = 2, Y = -2, Z = -2,},
+                new Vector3Pb {X = -2, Y = -2, Z = 0,},
+                new Vector3Pb {X = -2, Y = -2, Z = 2,},
+                new Vector3Pb {X = -2, Y = -2, Z = -2,},
+
+                new Vector3Pb {X = 0, Y = 0, Z = 2,},
+                new Vector3Pb {X = 0, Y = 0, Z = -2,},
+                new Vector3Pb {X = 2, Y = 0, Z = 0,},
+                new Vector3Pb {X = 2, Y = 0, Z = 2,},
+                new Vector3Pb {X = 2, Y = 0, Z = -2,},
+                new Vector3Pb {X = -2, Y = 0, Z = 0,},
+                new Vector3Pb {X = -2, Y = 0, Z = 2,},
+                new Vector3Pb {X = -2, Y = 0, Z = -2,},
+        };
+
+        public ContinuousStressTest()
+        {
+            MovieGenerator.CreateMovie(100, out movie, out commands);
+        }
+
+        [Test]
+        public void CycleTest()
+        {
+            for (int i = 0; i < commands.Count() * 10; i++)
+            {
+                var packet = new PacketPb()
+                {
+                        Special = true,
+                        Action = commands[i % commands.Count],
+                        Points = new PacketPb.Types.Points(),
+                };
+                if (commands[i % commands.Count] != PacketPb.Types.ActionType.Clear)
+                {
+                    packet.Points.Data.Add(movie[i % commands.Count]);
+                }
+
+                var response = MapClient.Handle(packet);
+                Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+                Thread.Sleep(250);
+            }
+        }
+
+        [Test, Explicit]
+        public void OverflowTest()
+        {
+            int i = 0;
+            int defaultPacketSize = 20000;
+            int resolution = 200;
+            var rand = new Random();
+            var center = new Vector3Pb {X = 0, Y = 0, Z = 0};
+            while (true)
+            {
+                int packetSize = rand.Next(defaultPacketSize / 2, defaultPacketSize + defaultPacketSize / 2);
+                var packet = new PacketPb()
+                {
+                        Special = true,
+                        Action = PacketPb.Types.ActionType.Add,
+                        Points = new PacketPb.Types.Points(),
+                };
+                packet.Points.Data.Add(MovieGenerator.CreatePoints(packetSize, center, resolution, out PointPb[] _, i));
+                i += packetSize;
+                var response = MapClient.Handle(packet);
+                Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+                Thread.Sleep(75);
+            }
+            // ReSharper disable once FunctionNeverReturns
+        }
+
+        [Test, Explicit]
+        public void SpreadedBlocksOverflowTest()
+        {
+            for (var index = 0; index < centers.Length; index++)
+            {
+                var c = centers[index];
+                int packetSize = 20000;
+                int resolution = 100;
+                var center = new Vector3Pb {X = c.X * resolution, Y = c.Y * resolution, Z = c.Z * resolution,};
+                for (int i = 0; i < 1024 * 1024; i += packetSize)
+                {
+                    var packet = new PacketPb()
+                    {
+                            Special = true,
+                            Action = PacketPb.Types.ActionType.Add,
+                            Points = new PacketPb.Types.Points(),
+                    };
+                    packet.Points.Data.Add(MovieGenerator.CreatePoints(packetSize,
+                                                                       center,
+                                                                       resolution,
+                                                                       out PointPb[] _,
+                                                                       index * 1024 * 1024 + i));
+                    var response = MapClient.Handle(packet);
+                    Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+                    Thread.Sleep(75);
+                }
+            }
+        }
+    }
+
+
+    public static class MovieGenerator
+    {
+        public static void CreateMovie(float resolution, out List<PointPb[]> points,
+                                       out List<PacketPb.Types.ActionType> commands)
+        {
+            points = new List<PointPb[]>();
+            commands = new List<PacketPb.Types.ActionType>();
+            var center = new Vector3Pb {X = 0, Y = 0, Z = 0};
+
+            PointPb[] allPoints;
+
+            points.Add(CreatePoints(10000, center, resolution, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Add);
+
+            points.Add(AddPoints(10000, center, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Add);
+
+            points.Add(RemovePoints(6000, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Remove);
+
+            points.Add(AddPoints(3000, center, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Add);
+
+            points.Add(UpdatePoints(8000, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Update);
+
+            points.Add(AddPoints(9000, center, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Add);
+
+            points.Add(RemovePoints(9000, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Remove);
+
+            points.Add(AddPoints(9000, center, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Add);
+
+            points.Add(UpdatePoints(6000, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Update);
+
+            points.Add(UpdatePoints(2000, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Update);
+
+            points.Add(UpdatePoints(10000, resolution, allPoints, out allPoints));
+            commands.Add(PacketPb.Types.ActionType.Update);
+
+            points.Add(Clear());
+            commands.Add(PacketPb.Types.ActionType.Clear);
+        }
+
+
+        public static PointPb[] CreatePoints(int amount, Vector3Pb center, float resolution, out PointPb[] after,
+                                             int minId = 0)
+        {
+            var result = new PointPb[amount];
+            for (int i = 0; i < amount; i++)
+            {
+                result[i] = CreatePoint(i + minId, center, resolution);
+            }
+
+            after = result;
+            return result;
+        }
+
+        static PointPb[] AddPoints(int amount, Vector3Pb center, float resolution, PointPb[] before,
+                                   out PointPb[] after)
+        {
+            var newPoints = CreatePoints(amount, center, resolution, out PointPb[] _, before.Last().Id + 1);
+            after = new PointPb[before.Length + newPoints.Length];
+            Array.Copy(before, 0, after, 0, before.Length);
+            Array.Copy(newPoints, 0, after, before.Length, newPoints.Length);
+            return newPoints;
+        }
+
+        static PointPb[] UpdatePoints(int amount, float resolution, PointPb[] before, out PointPb[] after)
+        {
+            var rand = new Random();
+            var result = new List<PointPb>();
+            after = new PointPb[before.Length];
+            before.CopyTo(after, 0);
+
+            HashSet<int> indexes2Update = new HashSet<int>();
+            for (int i = 0; i < amount; i++)
+            {
+                indexes2Update.Add(rand.Next(before.Length));
+            }
+
+            for (int i = 0; i < after.Length; i++)
+            {
+                if (indexes2Update.Contains(after[i].Id))
+                {
+                    var newPoint = CreatePoint(after[i].Id, after[i].Position, resolution / 10);
+                    after[i] = newPoint;
+                    result.Add(newPoint);
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        static PointPb[] RemovePoints(int amount, PointPb[] before, out PointPb[] after)
+        {
+            var rand = new Random();
+            HashSet<int> indexes2Remove = new HashSet<int>();
+            for (int i = 0; i < amount; i++)
+            {
+                indexes2Remove.Add(rand.Next(before.Length));
+            }
+
+            after = before.Where((p, i) => !indexes2Remove.Contains(i)).ToArray();
+            return before.Where((p, i) => indexes2Remove.Contains(i)).ToArray();
+        }
+
+        static PointPb[] Clear()
+        {
+            return new PointPb[0];
+        }
+
+        static PointPb CreatePoint(int id, Vector3Pb center, float maxDistance)
+        {
+            var rand = new Random();
+            var pos = new Vector3Pb
+            {
+                    X = -maxDistance + rand.NextDouble() * maxDistance * 2 + center.X,
+                    Y = -maxDistance + rand.NextDouble() * maxDistance * 2 + center.Y,
+                    Z = -maxDistance + rand.NextDouble() * maxDistance * 2 + center.Z,
+            };
+            ColorPb color;
+            if (Math.Abs(pos.Z / maxDistance) < 0.1)
+                color = new ColorPb {R = 0, G = 0, B = 0};
+            else if (Math.Abs(pos.Z / maxDistance) < 0.2)
+                color = new ColorPb {R = 255, G = 0, B = 0};
+            else if (Math.Abs(pos.Z / maxDistance) < 0.3)
+                color = new ColorPb {R = 0, G = 255, B = 0};
+            else if (Math.Abs(pos.Z / maxDistance) < 0.45)
+                color = new ColorPb {R = 0, G = 0, B = 255};
+            else if (Math.Abs(pos.Z / maxDistance) < 0.55)
+                color = new ColorPb {R = 255, G = 255, B = 0};
+            else if (Math.Abs(pos.Z / maxDistance) < 0.65)
+                color = new ColorPb {R = 0, G = 255, B = 255};
+            else
+                color = new ColorPb {R = 255, G = 0, B = 255};
+
+            return new PointPb {Id = id, Position = pos, Color = color};
+        }
+    }
+}
