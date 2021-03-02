@@ -24,14 +24,20 @@ namespace Elektronik.Common.Containers
         public void Add(TCloudItem item)
         {
             _items.Add(item.Id, item);
-            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new []{item}));
+            if (IsActive)
+            {
+                OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new []{item}));
+            }
         }
         
         public void Clear()
         {
             var ids = _items.Keys.ToArray();
             _items.Clear();
-            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            }
         }
 
         public bool Contains(TCloudItem item) => _items.ContainsKey(item.Id);
@@ -44,7 +50,10 @@ namespace Elektronik.Common.Containers
         public bool Remove(TCloudItem item)
         {
             var res = _items.Remove(item.Id);
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{item.Id}));
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new []{item.Id}));
+            }
             return res;
         }
 
@@ -59,7 +68,10 @@ namespace Elektronik.Common.Containers
         public void RemoveAt(int index)
         {
             _items.Remove(index);
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{index}));
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new []{index}));
+            }
         }
 
         public TCloudItem this[int index]
@@ -84,35 +96,53 @@ namespace Elektronik.Common.Containers
 
         public void AddRange(IEnumerable<TCloudItem> items)
         {
-            foreach (var ci in items)
+            var list = items.ToList();
+            foreach (var ci in list)
             {
                 _items.Add(ci.Id, ci);
             }
-            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(items));
+
+            if (IsActive)
+            {
+                OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(list));
+            }
         }
 
         public void Remove(IEnumerable<TCloudItem> items)
         {
-            foreach (var ci in items)
+            var list = items.ToList();
+            foreach (var ci in list)
             {
                 _items.Remove(ci.Id);
             }
-            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(p => p.Id)));
+
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(p => p.Id).ToList()));
+            }
         }
         
         public void UpdateItem(TCloudItem item)
         {
             _items[item.Id] = item;
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new []{item}));
+            if (IsActive)
+            {
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new []{item}));
+            }
         }
 
         public void UpdateItems(IEnumerable<TCloudItem> items)
         {
-            foreach (var ci in items)
+            var list = items.ToList();
+            foreach (var ci in list)
             {
                 _items[ci.Id] = ci;
             }
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(items));
+
+            if (IsActive)
+            {
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
+            }
         }
 
         #endregion
@@ -128,9 +158,10 @@ namespace Elektronik.Common.Containers
             get => _isActive;
             set
             {
-                if (value && !_isActive) OnRemoved?.Invoke(this, new RemovedEventArgs(_items.Keys));
-                else if (!value && _isActive) OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
+                if (_isActive == value) return;
                 _isActive = value;
+                if (_isActive) OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
+                else OnRemoved?.Invoke(this, new RemovedEventArgs(_items.Keys.ToList()));
             }
         }
 

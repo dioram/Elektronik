@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using Common.UI;
 using Elektronik.Common.Clouds;
 using Elektronik.Common.Data.Converters;
 using Elektronik.Common.Renderers;
@@ -15,6 +16,8 @@ namespace Elektronik.PluginsSystem.UnitySide
         public GameObject Renderers;
         public CSConverter Converter;
         public PlayerEventsManager PlayerEvents;
+        public GameObject ContainerTreePrefab;
+        public RectTransform TreeView;
 
         private void Start()
         {
@@ -40,6 +43,8 @@ namespace Elektronik.PluginsSystem.UnitySide
                 }
 
                 dataSource.Converter = Converter;
+                var treeElement = Instantiate(ContainerTreePrefab, TreeView).GetComponent<UIContainerTreeElement>();
+                treeElement.Node = dataSource.Data;
             }
 
             foreach (var dataSource in Plugins.OfType<IDataSourceOffline>())

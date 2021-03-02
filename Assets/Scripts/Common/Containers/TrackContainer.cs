@@ -19,12 +19,18 @@ namespace Elektronik.Common.Containers
         public void Add(SlamLine item)
         {
             _lines.Add(item);
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new []{item}));
+            if (IsActive)
+            {
+                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new []{item}));
+            }
         }
 
         public void Clear()
         {
-            OnRemoved?.Invoke(this, new RemovedEventArgs(_lines.Select(l => l.Id)));
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(_lines.Select(l => l.Id)));
+            }
             _lines.Clear();
         }
 
@@ -38,7 +44,10 @@ namespace Elektronik.Common.Containers
         public bool Remove(SlamLine item)
         {
             var res = _lines.Remove(item);
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{item.Id}));
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new []{item.Id}));
+            }
             return res;
         }
 
@@ -51,13 +60,19 @@ namespace Elektronik.Common.Containers
         public void Insert(int index, SlamLine item)
         {
             _lines.Insert(index, item);
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new []{item}));
+            if (IsActive)
+            {
+                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new []{item}));
+            }
         }
 
         public void RemoveAt(int index)
         {
             _lines.RemoveAt(index);
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{index}));
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new []{index}));
+            }
         }
 
         public SlamLine this[int index]
@@ -66,7 +81,10 @@ namespace Elektronik.Common.Containers
             set
             {
                 _lines[index] = value;
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new []{value}));
+                if (IsActive)
+                {
+                    OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new []{value}));
+                }
             }
         }
 
@@ -79,7 +97,10 @@ namespace Elektronik.Common.Containers
         public void AddRange(IEnumerable<SlamLine> items)
         {
             _lines.AddRange(items);
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(items));
+            if (IsActive)
+            {
+                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(items));
+            }
         }
 
         public void Remove(IEnumerable<SlamLine> items)
@@ -88,14 +109,21 @@ namespace Elektronik.Common.Containers
             {
                 _lines.Remove(item);
             }
-            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id)));
+
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id)));
+            }
         }
 
         public void UpdateItem(SlamLine item)
         {
             var index = _lines.FindIndex(l => l.Id == item.Id);
             _lines[index] = item;
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new []{item}));
+            if (IsActive)
+            {
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new []{item}));
+            }
         }
 
         public void UpdateItems(IEnumerable<SlamLine> items)
@@ -105,14 +133,18 @@ namespace Elektronik.Common.Containers
                 var index = _lines.FindIndex(l => l.Id == item.Id);
                 _lines[index] = item;
             }
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(items));
+
+            if (IsActive)
+            {
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(items));
+            }
         }
 
         #endregion
 
         #region IContainerTree implementation
 
-        public string DisplayName => "Lines";
+        public string DisplayName => "Track";
 
         public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
         
@@ -121,9 +153,10 @@ namespace Elektronik.Common.Containers
             get => _isActive;
             set
             {
-                if (value && !_isActive) OnRemoved?.Invoke(this, new RemovedEventArgs(_lines.Select(l => l.Id)));
-                else if (!value && _isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                if (_isActive == value) return;
                 _isActive = value;
+                if (_isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                else OnRemoved?.Invoke(this, new RemovedEventArgs(_lines.Select(l => l.Id)));
             }
         }
 

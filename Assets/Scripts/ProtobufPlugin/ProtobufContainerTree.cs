@@ -39,7 +39,7 @@ namespace Elektronik.ProtobufPlugin
             };
         }
 
-        private bool _isActive;
+        private bool _isActive = true;
 
         #region IContainerTree implementation
 

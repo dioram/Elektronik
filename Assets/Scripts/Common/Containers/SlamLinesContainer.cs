@@ -63,7 +63,10 @@ namespace Elektronik.Common.Containers
             obj.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
             _connectionsIndices[obj] = obj.Id;
             _connections[obj.Id] = obj;
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {obj}));
+            if (IsActive)
+            {
+                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {obj}));
+            }
         }
 
         public void Insert(int index, SlamLine item) => Add(item);
@@ -80,7 +83,10 @@ namespace Elektronik.Common.Containers
                 _linesBuffer.Add(line);
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(_linesBuffer));
+            if (IsActive)
+            {
+                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(_linesBuffer));
+            }
             _linesBuffer.Clear();
         }
 
@@ -89,7 +95,10 @@ namespace Elektronik.Common.Containers
             int index = _connectionsIndices[item];
             item.Id = index;
             _connections[item.Id] = item;
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {item}));
+            if (IsActive)
+            {
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {item}));
+            }
         }
 
         public void UpdateItems(IEnumerable<SlamLine> items)
@@ -103,7 +112,10 @@ namespace Elektronik.Common.Containers
                 _linesBuffer.Add(line);
             }
 
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(_linesBuffer));
+            if (IsActive)
+            {
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(_linesBuffer));
+            }
             _linesBuffer.Clear();
         }
 
@@ -113,7 +125,10 @@ namespace Elektronik.Common.Containers
             var index = _connectionsIndices[obj];
             _connections.Remove(index);
             _freeIds.Enqueue(index);
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {obj.Id}));
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {obj.Id}));
+            }
             return true;
         }
 
@@ -133,7 +148,10 @@ namespace Elektronik.Common.Containers
                 _connectionsIndices.Remove(line);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            }
         }
 
         public void RemoveAt(int index)
@@ -149,7 +167,10 @@ namespace Elektronik.Common.Containers
             _connectionsIndices.Clear();
             _freeIds.Clear();
             _maxId = 0;
-            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            if (IsActive)
+            {
+                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            }
         }
 
         #endregion
@@ -165,9 +186,11 @@ namespace Elektronik.Common.Containers
             get => _isActive;
             set
             {
-                if (value && !_isActive) OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys));
-                else if (!value && _isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                if (_isActive == value) return;
                 _isActive = value;
+                
+                if (_isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                else OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys.ToList()));
             }
         }
 
@@ -197,21 +220,6 @@ namespace Elektronik.Common.Containers
 
         private int _maxId = 0;
         private readonly Queue<int> _freeIds = new Queue<int>();
-
-        private bool TryGet(int idx1, int idx2, out int lineId)
-        {
-            foreach (var pair in _connections)
-            {
-                if (pair.Value.Equals(new SlamLine(idx1, idx2)))
-                {
-                    lineId = pair.Value.Id;
-                    return true;
-                }
-            }
-
-            lineId = -1;
-            return false;
-        }
 
         #endregion
     }

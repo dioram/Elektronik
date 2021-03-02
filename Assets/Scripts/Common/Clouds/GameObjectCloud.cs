@@ -13,7 +13,10 @@ namespace Elektronik.Common.Clouds
         public void Clear()
         {
             GameObjects.Clear();
-            MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.DespawnAllActiveObjects());
+            if (MainThreadInvoker.Instance != null)
+            {
+                MainThreadInvoker.Instance.Enqueue(() => ObservationsPool?.DespawnAllActiveObjects());
+            }
         }
 
         #region ICloud implementaion

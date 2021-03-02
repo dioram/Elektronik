@@ -54,6 +54,7 @@ namespace Elektronik.Common.Settings
 
             SetupSettings();
             _initCompleted = true;
+            PluginSelected(this, new UIListBox.SelectionChangedEventArgs(0));
         }
 
         private void SetupSettings()
