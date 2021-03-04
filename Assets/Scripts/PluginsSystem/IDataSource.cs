@@ -1,5 +1,5 @@
-﻿using Elektronik.Common.Containers;
-using Elektronik.Common.Data.Converters;
+﻿using Elektronik.Containers;
+using Elektronik.Data.Converters;
 
 namespace Elektronik.PluginsSystem
 {

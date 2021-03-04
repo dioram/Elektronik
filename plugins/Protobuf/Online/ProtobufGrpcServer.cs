@@ -1,16 +1,15 @@
 ﻿using System;
-using Elektronik.Common;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data.Converters;
-using Elektronik.Common.Extensions;
-using Elektronik.Common.Settings;
+using Elektronik.Containers;
+using Elektronik.Data.Converters;
+using Elektronik.Extensions;
 using Elektronik.PluginsSystem;
-using Elektronik.ProtobufPlugin.Common;
-using Elektronik.ProtobufPlugin.Online.GrpcServices;
+using Elektronik.Protobuf.Data;
+using Elektronik.Protobuf.Online.GrpcServices;
+using Elektronik.Settings;
 using Grpc.Core;
 using UnityEngine;
 
-namespace Elektronik.ProtobufPlugin.Online
+namespace Elektronik.Protobuf.Online
 {
     using GrpcServer = Grpc.Core.Server;
 

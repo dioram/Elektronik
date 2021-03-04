@@ -1,8 +1,8 @@
 ﻿using System;
-using Elektronik.Common.Settings;
+using Elektronik.Settings;
 using UnityEngine;
 
-namespace Elektronik.ProtobufPlugin.Online
+namespace Elektronik.Protobuf.Online
 {
     [Serializable]
     public class OnlineSettingsBag : SettingsBag

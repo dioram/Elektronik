@@ -1,8 +1,8 @@
-﻿using Elektronik.Common.Commands;
-using Elektronik.ProtobufPlugin.Common;
-using Elektronik.ProtobufPlugin.Offline.Parsers;
+﻿using Elektronik.Commands;
+using Elektronik.Protobuf.Data;
+using Elektronik.Protobuf.Offline.Parsers;
 
-namespace Elektronik.ProtobufPlugin.Offline
+namespace Elektronik.Protobuf.Offline
 {
     public class Frame
     {

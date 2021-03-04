@@ -1,11 +1,11 @@
-﻿using Elektronik.Common.Containers;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Elektronik.Common.Data.PackageObjects;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Containers;
+using Elektronik.Data.PackageObjects;
+using Elektronik.Protobuf.Data;
 
-namespace Elektronik.ProtobufPlugin.Online.GrpcServices
+namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public abstract class ConnectableObjectsMapManager<T> : MapManager<T> where T : ICloudItem
     {

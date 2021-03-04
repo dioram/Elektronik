@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Protobuf.Data;
 using NUnit.Framework;
 
 namespace Protobuf.Tests

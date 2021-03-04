@@ -1,6 +1,6 @@
-﻿using Elektronik.Common.Settings;
+﻿using Elektronik.Settings;
 
-namespace Elektronik.ProtobufPlugin.Offline
+namespace Elektronik.Protobuf.Offline
 {
     public class OfflineSettingsHistory : SettingsHistory<OfflineSettingsBag>
     {

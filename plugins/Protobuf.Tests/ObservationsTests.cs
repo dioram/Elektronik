@@ -1,9 +1,8 @@
 ﻿using NUnit.Framework;
 using System.IO;
 using System.Linq;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Protobuf.Data;
 using Google.Protobuf;
-
 
 namespace Protobuf.Tests
 {

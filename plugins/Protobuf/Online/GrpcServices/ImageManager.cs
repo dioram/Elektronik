@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Elektronik.Common.Renderers;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Protobuf.Data;
+using Elektronik.Renderers;
 using Grpc.Core;
 
-namespace Elektronik.ProtobufPlugin.Online.GrpcServices
+namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class ImageManager : ImageManagerPb.ImageManagerPbBase
     {

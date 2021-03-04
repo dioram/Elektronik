@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Elektronik.ProtobufPlugin.Offline
+namespace Elektronik.Offline
 {
     public class FramesCollection<T> : IDisposable
         where T: class

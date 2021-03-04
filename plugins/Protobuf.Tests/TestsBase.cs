@@ -1,6 +1,6 @@
 ﻿using Grpc.Core;
 using System;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Protobuf.Data;
 
 namespace Protobuf.Tests
 {

@@ -1,12 +1,13 @@
-﻿using Elektronik.Common.Commands;
-using Elektronik.Common.Commands.Generic;
-using Elektronik.Common.Data.PackageObjects;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Common.Containers;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Commands;
+using Elektronik.Commands.Generic;
+using Elektronik.Commands.TrackedObj;
+using Elektronik.Containers;
+using Elektronik.Data.PackageObjects;
+using Elektronik.Protobuf.Data;
 
-namespace Elektronik.ProtobufPlugin.Offline.Parsers
+namespace Elektronik.Protobuf.Offline.Parsers
 {
     public class TrackedObjectsParser : PackageParser
     {

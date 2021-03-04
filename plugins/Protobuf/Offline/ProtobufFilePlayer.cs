@@ -1,20 +1,20 @@
 ﻿using System;
-using Elektronik.Common.Extensions;
 using System.Collections.Generic;
-using UnityEngine;
 using System.IO;
 using System.Threading.Tasks;
-using Elektronik.Common;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Data.Converters;
-using Elektronik.Common.Presenters;
-using Elektronik.Common.Settings;
-using Elektronik.ProtobufPlugin.Offline.Parsers;
+using Elektronik.Containers;
+using Elektronik.Data.Converters;
+using Elektronik.Extensions;
+using Elektronik.Offline;
 using Elektronik.PluginsSystem;
-using Elektronik.ProtobufPlugin.Common;
-using Elektronik.ProtobufPlugin.Offline.Presenters;
+using Elektronik.Presenters;
+using Elektronik.Protobuf.Data;
+using Elektronik.Protobuf.Offline.Parsers;
+using Elektronik.Protobuf.Offline.Presenters;
+using Elektronik.Settings;
+using UnityEngine;
 
-namespace Elektronik.ProtobufPlugin.Offline
+namespace Elektronik.Protobuf.Offline
 {
     public class ProtobufFilePlayer : IDataSourceOffline
     {

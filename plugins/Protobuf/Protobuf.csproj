@@ -3,8 +3,8 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>8</LangVersion>
-        <Nullable>enable</Nullable>
-        <RootNamespace>ProtobufCore</RootNamespace>
+        <Nullable>disable</Nullable>
+        <RootNamespace>Elektronik.Protobuf</RootNamespace>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -12,7 +12,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Protobuf Include="Common\MapTypes.proto">
+      <Protobuf Include="Data\MapTypes.proto">
         <GrpcServices>Both</GrpcServices>
         <Access>Public</Access>
         <ProtoCompile>True</ProtoCompile>
@@ -20,7 +20,7 @@
         <OutputDir>obj\Release\</OutputDir>
         <Generator>MSBuild:Compile</Generator>
       </Protobuf>
-      <Protobuf Include="Common\UpdateMapService.proto">
+      <Protobuf Include="Data\UpdateMapService.proto">
         <GrpcServices>Both</GrpcServices>
         <Access>Public</Access>
         <ProtoCompile>True</ProtoCompile>

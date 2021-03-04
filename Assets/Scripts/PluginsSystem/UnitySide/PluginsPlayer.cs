@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using Common.UI;
-using Elektronik.Common.Clouds;
-using Elektronik.Common.Data.Converters;
-using Elektronik.Common.Renderers;
+using Elektronik.Clouds;
+using Elektronik.Data.Converters;
 using Elektronik.Offline;
+using Elektronik.Renderers;
+using Elektronik.UI;
 using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
@@ -43,7 +43,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                 }
 
                 dataSource.Converter = Converter;
-                var treeElement = Instantiate(ContainerTreePrefab, TreeView).GetComponent<UIContainerTreeElement>();
+                var treeElement = Instantiate(ContainerTreePrefab, TreeView).GetComponent<ContainerTreeElement>();
                 treeElement.Node = dataSource.Data;
             }
 

@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using System.Linq;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Protobuf.Data;
 
 namespace Protobuf.Tests
 {

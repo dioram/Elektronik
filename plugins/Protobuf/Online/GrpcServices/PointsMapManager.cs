@@ -1,13 +1,13 @@
-﻿using Elektronik.Common.Data.PackageObjects;
-using Elektronik.Common.Data.Converters;
-using Grpc.Core;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Elektronik.Common.Containers;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Containers;
+using Elektronik.Data.Converters;
+using Elektronik.Data.PackageObjects;
+using Elektronik.Protobuf.Data;
+using Grpc.Core;
 using UnityEngine;
 
-namespace Elektronik.ProtobufPlugin.Online.GrpcServices
+namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class PointsMapManager : ConnectableObjectsMapManager<SlamPoint>
     {

@@ -1,14 +1,13 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.Containers;
-using Grpc.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Containers;
+using Elektronik.Protobuf.Data;
+using Grpc.Core;
 
-namespace Elektronik.ProtobufPlugin.Online.GrpcServices
+namespace Elektronik.Protobuf.Online.GrpcServices
 {
     using UnityDebug = UnityEngine.Debug;
     

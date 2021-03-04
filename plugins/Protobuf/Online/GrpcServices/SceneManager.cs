@@ -1,11 +1,11 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using Elektronik.Common.Containers;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Containers;
+using Elektronik.Protobuf.Data;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 
-namespace Elektronik.ProtobufPlugin.Online.GrpcServices
+namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {

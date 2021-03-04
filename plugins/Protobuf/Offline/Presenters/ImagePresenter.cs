@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using Elektronik.Common.Presenters;
-using Elektronik.Common.Renderers;
+using Elektronik.Presenters;
+using Elektronik.Renderers;
 
-namespace Elektronik.ProtobufPlugin.Offline.Presenters
+namespace Elektronik.Protobuf.Offline.Presenters
 {
     public class ImagePresenter : DataPresenter
     {

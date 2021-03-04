@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using Elektronik.Common.Settings;
+using Elektronik.Settings;
 using UnityEngine;
 
-namespace Elektronik.ProtobufPlugin.Offline
+namespace Elektronik.Protobuf.Offline
 {
     [Serializable]
     public class OfflineSettingsBag : SettingsBag

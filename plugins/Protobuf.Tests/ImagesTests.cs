@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Threading;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Protobuf.Data;
 using Google.Protobuf;
 using NUnit.Framework;
 
@@ -9,7 +9,7 @@ namespace Protobuf.Tests
 {
     public class ImagesTests : TestsBase
     {
-        private string filename = $"{nameof(ImagesTests)}.dat";
+        private readonly string _filename = $"{nameof(ImagesTests)}.dat";
 
         [Test]
         public void OnlineImage()
@@ -33,7 +33,7 @@ namespace Protobuf.Tests
         [Test]
         public void OfflineImage()
         {
-            using var f = File.Open(filename, FileMode.Create);
+            using var f = File.Open(_filename, FileMode.Create);
 
             var packets = Enumerable.Range(1, 4).Select(i => new PacketPb
             {

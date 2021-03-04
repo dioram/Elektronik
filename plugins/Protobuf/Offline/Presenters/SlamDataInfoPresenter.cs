@@ -1,12 +1,12 @@
-﻿using Elektronik.Common.Presenters;
-using System.Collections.Generic;
-using Elektronik.Common.Data.PackageObjects;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Common.Containers;
-using Elektronik.Common.Renderers;
-using Elektronik.ProtobufPlugin.Common;
+using Elektronik.Containers;
+using Elektronik.Data.PackageObjects;
+using Elektronik.Presenters;
+using Elektronik.Protobuf.Data;
+using Elektronik.Renderers;
 
-namespace Elektronik.ProtobufPlugin.Offline.Presenters
+namespace Elektronik.Protobuf.Offline.Presenters
 {
     public class SlamDataInfoPresenter : DataPresenter
     {

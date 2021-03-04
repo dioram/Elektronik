@@ -1,9 +1,8 @@
-﻿using Elektronik.Common;
-using Elektronik.Common.Commands;
-using Elektronik.Common.Data.Converters;
-using Elektronik.ProtobufPlugin.Common;
+﻿using Elektronik.Commands;
+using Elektronik.Data.Converters;
+using Elektronik.Protobuf.Data;
 
-namespace Elektronik.ProtobufPlugin.Offline.Parsers
+namespace Elektronik.Protobuf.Offline.Parsers
 {
     /// <summary>
     /// Base class for parse data in offline mode. Used in pattern "Chain of responsibility".

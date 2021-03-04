@@ -1,5 +1,4 @@
-﻿using System;
-using Elektronik.Common.Settings;
+﻿using Elektronik.Settings;
 
 namespace Elektronik.PluginsSystem
 {

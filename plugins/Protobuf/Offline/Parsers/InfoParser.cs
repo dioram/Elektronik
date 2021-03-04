@@ -1,7 +1,7 @@
-﻿using Elektronik.Common.Commands;
-using Elektronik.ProtobufPlugin.Common;
+﻿using Elektronik.Commands;
+using Elektronik.Protobuf.Data;
 
-namespace Elektronik.ProtobufPlugin.Offline.Parsers
+namespace Elektronik.Protobuf.Offline.Parsers
 {
     public class InfoParser : PackageParser
     {

@@ -1,5 +1,5 @@
 ﻿using System;
-using Elektronik.Common.Presenters;
+using Elektronik.Presenters;
 
 namespace Elektronik.PluginsSystem
 {

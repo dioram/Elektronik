@@ -1,6 +1,6 @@
-﻿using Elektronik.Common.Settings;
+﻿using Elektronik.Settings;
 
-namespace Elektronik.ProtobufPlugin.Online
+namespace Elektronik.Protobuf.Online
 {
     public class OnlineSettingsHistory : SettingsHistory<OnlineSettingsBag>
     {
