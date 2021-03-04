@@ -395,7 +395,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Height: 50
-  HeightWithDescription: 300
+  HeightWithDescription: 150
 --- !u!114 &1164359793008016552
 MonoBehaviour:
   m_ObjectHideFlags: 0

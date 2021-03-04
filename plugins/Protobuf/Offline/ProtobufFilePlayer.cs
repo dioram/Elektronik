@@ -44,7 +44,7 @@ namespace Elektronik.Protobuf.Offline
 
         public string DisplayName => "Protobuf";
 
-        public string Description => "Protobuf description";
+        public string Description => "Reads protobuf packages from file.";
 
         public SettingsBag Settings
         {

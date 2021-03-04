@@ -31,7 +31,7 @@ namespace Elektronik.Protobuf.Online
 
         public string DisplayName => "Protobuf";
 
-        public string Description => "Protobuf description";
+        public string Description => "Protocol buffers through gRPC.";
 
         public ICSConverter Converter { get; set; }
 
