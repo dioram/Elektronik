@@ -1,4 +1,4 @@
-﻿using SFB;
+﻿using SimpleFileBrowser;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,21 +27,13 @@ namespace Elektronik.Common.UI
 
         void Browse()
         {
-            if (folderMode)
-            {
-                StandaloneFileBrowser.OpenFolderPanelAsync(title,
-                                                           initialPath,
-                                                           false,
-                                                           path => _ifFilePath.text = path[0]);
-            }
-            else
-            {
-                StandaloneFileBrowser.OpenFilePanelAsync(title,
-                                                         initialPath,
-                                                         "",
-                                                         false,
-                                                         path => _ifFilePath.text = path[0]);
-            }
+            FileBrowser.ShowLoadDialog(path => _ifFilePath.text = path[0],
+                                       () => { },
+                                       folderMode,
+                                       false,
+                                       initialPath,
+                                       title,
+                                       buttonText);
         }
     }
 }

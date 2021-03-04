@@ -42,8 +42,8 @@ namespace Elektronik.Common.Settings
                     .Where(_ => PluginsListBox.AsEnumerable()
                                    .OfType<UIPluginListBoxItem>()
                                    .All(lbi => lbi.Plugin.Settings.Validate()))
-                    .Do(_ => SceneManager.LoadScene("Empty", LoadSceneMode.Single))
                     .Do(_ => SaveSettings())
+                    .Do(_ => SceneManager.LoadScene("Empty", LoadSceneMode.Single))
                     .Subscribe();
 
             LoadButton.OnClickAsObservable()
@@ -79,7 +79,7 @@ namespace Elektronik.Common.Settings
             foreach (var lbi in PluginsListBox.OfType<UIPluginListBoxItem>())
             {
                 lbi.Plugin.Settings.ModificationTime = DateTime.Now.ToString(CultureInfo.CurrentCulture);
-                lbi.Plugin.SettingsHistory.Add(lbi.Plugin.Settings);
+                lbi.Plugin.SettingsHistory.Add(lbi.Plugin.Settings.Clone());
                 lbi.Plugin.SettingsHistory.Save();
             }
         }
@@ -110,7 +110,7 @@ namespace Elektronik.Common.Settings
 
         private void RecentSelected(object sender, UIListBox.SelectionChangedEventArgs e)
         {
-            _selectedPlugin.Plugin.Settings = ((UIRecentSettingsListBoxItem) HistoryListBox[e.Index]).Data;
+            _selectedPlugin.Plugin.Settings = ((UIRecentSettingsListBoxItem) HistoryListBox[e.Index]).Data.Clone();
             SettingsGenerator.Generate(_selectedPlugin.Plugin.Settings);
         }
 

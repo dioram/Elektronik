@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Elektronik.Common.Settings
@@ -60,10 +61,9 @@ namespace Elektronik.Common.Settings
         private void Deserialize()
         {
             string pathToAppData = Path.Combine(Application.persistentDataPath, _fileName);
-            var fi = new FileInfo(pathToAppData);
-            if (fi.Directory.Exists && File.Exists(pathToAppData))
+            if (File.Exists(pathToAppData))
             {
-                _recent = JsonUtility.FromJson<RecentItems>(File.ReadAllText(pathToAppData));
+                _recent = JsonConvert.DeserializeObject<RecentItems>(File.ReadAllText(pathToAppData));
             }
             else
             {
@@ -77,7 +77,7 @@ namespace Elektronik.Common.Settings
             var fi = new FileInfo(pathToAppData);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
-            File.WriteAllText(pathToAppData, JsonUtility.ToJson(_recent));
+            File.WriteAllText(pathToAppData, JsonConvert.SerializeObject(_recent));
         }
 
         #endregion

@@ -11,7 +11,6 @@ namespace Common.UI
         public SettingsBag SettingsBag;
         public string FieldToolTip;
         public string FieldName;
-        public string FieldText;
         public Type FieldType;
 
         public InputField Field;
@@ -20,7 +19,6 @@ namespace Common.UI
         private void Start()
         {
             Tooltip.text = FieldToolTip;
-            Field.text = FieldText;
             Field.OnValueChangedAsObservable().Subscribe(OnTextChanged);
         }
 

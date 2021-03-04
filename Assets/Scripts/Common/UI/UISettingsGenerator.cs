@@ -14,7 +14,7 @@ namespace Common.UI
         public GameObject BrowseFieldPrefab;
 
         private ScrollRect _scrollView;
-        private readonly List<GameObject> _fields = new List<GameObject>();
+        private readonly List<UISettingsField> _fields = new List<UISettingsField>();
 
         public void Awake()
         {
@@ -23,7 +23,7 @@ namespace Common.UI
 
         public void Generate(SettingsBag settings)
         {
-            _fields.ForEach(Destroy);
+            _fields.ForEach(f => Destroy(f.gameObject));
 
             settings.GetType()
                     .GetFields(BindingFlags.Public | BindingFlags.Instance)
@@ -52,8 +52,8 @@ namespace Common.UI
                     ((TooltipAttribute) Attribute.GetCustomAttribute(fieldInfo, typeof(TooltipAttribute))).tooltip;
             uiField.FieldName = fieldInfo.Name;
             uiField.FieldType = fieldInfo.FieldType;
-            uiField.FieldText = fieldInfo.GetValue(obj)?.ToString() ?? "";
-            _fields.Add(newField);
+            uiField.Field.text = fieldInfo.GetValue(obj)?.ToString() ?? "";
+            _fields.Add(uiField);
         }
     }
 }

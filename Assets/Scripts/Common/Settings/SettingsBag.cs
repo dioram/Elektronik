@@ -38,4 +38,19 @@ namespace Elektronik.Common.Settings
             return Equals((SettingsBag) obj);
         }
     }
+    
+    public static class SettingsBagExt
+    {
+        public static T Clone<T>(this T source) where T : SettingsBag
+        {
+            T result = (T)Activator.CreateInstance(source.GetType());
+            var fields = result.GetType()
+                    .GetFields(BindingFlags.Public | BindingFlags.Instance);
+            foreach (FieldInfo f in fields)
+            {
+                f.SetValue(result, f.GetValue(source));
+            }
+            return result;
+        }
+    }
 }

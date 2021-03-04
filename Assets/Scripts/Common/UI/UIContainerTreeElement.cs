@@ -92,7 +92,7 @@ namespace Common.UI
                     TreeButton.gameObject.SetActive(hasChildren);
                 }
 
-                yield return new WaitForSeconds(5);
+                yield return new WaitForSeconds(1);
             }
         }
 

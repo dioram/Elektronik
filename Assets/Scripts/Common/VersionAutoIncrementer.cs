@@ -15,9 +15,10 @@ namespace Elektronik.Common
 
             int major = int.Parse(currentVersion.Split('.')[0]);
             int minor = int.Parse(currentVersion.Split('.')[1]);
-            int build = int.Parse(currentVersion.Split('.')[2]) + 1;
+            int patch = int.Parse(currentVersion.Split('.')[2]);
+            int build = int.Parse(currentVersion.Split('.')[3]) + 1;
             
-            PlayerSettings.bundleVersion = major + "." + minor + "." + build;
+            PlayerSettings.bundleVersion = $"{major}.{minor}.{patch}.{build}";
         }
     }
 }

@@ -72,35 +72,37 @@ namespace Elektronik.ProtobufPlugin.Common
 
     public partial class Vector3Pb
     {
-        public static implicit operator Vector3(Vector3Pb v)
-            => new Vector3((float) v.X, (float) v.Y, (float) v.Z);
+        public static implicit operator Vector3(Vector3Pb? v)
+            => v != null ? new Vector3((float) v.X, (float) v.Y, (float) v.Z) : Vector3.zero;
     }
 
     public partial class Vector4Pb
     {
-        public static implicit operator Quaternion(Vector4Pb v)
-            => new Quaternion((float) v.X, (float) v.Y, (float) v.Z, (float) v.W);
+        public static implicit operator Quaternion(Vector4Pb? v)
+            => v != null ? new Quaternion((float) v.X, (float) v.Y, (float) v.Z, (float) v.W) : Quaternion.identity;
     }
 
     public partial class ColorPb
     {
-        public static implicit operator Color32(ColorPb c)
-            => new Color32((byte) c.R, (byte) c.G, (byte) c.B, 255);
+        public static implicit operator Color32(ColorPb? c)
+            => c != null ? new Color32((byte) c.R, (byte) c.G, (byte) c.B, 255) : new Color32(0, 0, 0, 255);
 
-        public static implicit operator Color(ColorPb c)
+        public static implicit operator Color(ColorPb? c)
             => (Color32) c;
     }
 
     public partial class PointPb
     {
-        public static implicit operator SlamPoint(PointPb p)
-            => new SlamPoint() {Id = p.id_, Position = p.position_, Color = p.color_, Message = p.message_};
+        public static implicit operator SlamPoint(PointPb? p)
+            => p != null
+                    ? new SlamPoint() {Id = p.id_, Position = p.position_, Color = p.color_, Message = p.message_}
+                    : default;
     }
 
     public partial class LinePb
     {
-        public static implicit operator SlamLine(LinePb c)
-            => new SlamLine(c.pt1_, c.pt2_);
+        public static implicit operator SlamLine(LinePb? c)
+            => c != null ? new SlamLine(c.pt1_, c.pt2_) : default;
     }
 
     public partial class ObservationPb
@@ -109,25 +111,27 @@ namespace Elektronik.ProtobufPlugin.Common
         {
             public partial class Stats
             {
-                public static implicit operator SlamObservation.Stats(Stats s)
+                public static implicit operator SlamObservation.Stats(Stats? s)
                     => default; // TODO: make statistics
             }
         }
 
-        public static implicit operator SlamObservation(ObservationPb o)
-            => new SlamObservation(o.point_, o.orientation_, o.message_, o.filename_, o.stats_);
+        public static implicit operator SlamObservation(ObservationPb? o)
+            => o != null ? new SlamObservation(o.point_, o.orientation_, o.message_, o.filename_, o.stats_) : default;
     }
 
     public partial class TrackedObjPb
     {
-        public static implicit operator SlamTrackedObject(TrackedObjPb o)
-            => new SlamTrackedObject(o.id_, o.trackColor_, o.translation_, o.rotation_);
+        public static implicit operator SlamTrackedObject(TrackedObjPb? o)
+            => o != null ? new SlamTrackedObject(o.id_, o.trackColor_, o.translation_, o.rotation_) : default;
     }
 
     public partial class InfinitePlanePb
     {
-        public static implicit operator SlamInfinitePlane(InfinitePlanePb p)
-            => new SlamInfinitePlane
-                    {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset};
+        public static implicit operator SlamInfinitePlane(InfinitePlanePb? p)
+            => p != null
+                    ? new SlamInfinitePlane
+                            {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset}
+                    : default;
     }
 }

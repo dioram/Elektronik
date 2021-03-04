@@ -92,6 +92,7 @@ namespace Elektronik.ProtobufPlugin.Online
             if (!_serverStarted) return;
             _server.ShutdownAsync().Wait();
             _serverStarted = false;
+            Data.Clear();
         }
 
         public void Update(float delta)

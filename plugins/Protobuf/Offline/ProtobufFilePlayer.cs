@@ -66,6 +66,7 @@ namespace Elektronik.ProtobufPlugin.Offline
 
         public void Stop()
         {
+            Data.Clear();
             _input.Dispose();
             _threadWorker.Dispose();
         }

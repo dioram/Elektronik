@@ -23,11 +23,12 @@ namespace Elektronik.PluginsSystem.UnitySide
         }
 
         static PluginsLoader()
-        {            
-            var pluginsDir = Path.Combine(Directory.GetCurrentDirectory(), @".\Elektronik tools_Data\Managed");
-            foreach (var file in Directory.GetFiles(pluginsDir, "*.dll"))
+        {
+            var pluginsDir = Path.Combine(Directory.GetCurrentDirectory(), @"Plugins");
+            var dlls = Directory.GetDirectories(pluginsDir)
+                    .SelectMany(d => Directory.GetFiles(Path.Combine(d, "libraries"), "*.dll"));
+            foreach (var file in dlls)
             {
-                Debug.LogError(file);
                 try
                 {
                     Plugins.AddRange(Assembly.LoadFrom(file)

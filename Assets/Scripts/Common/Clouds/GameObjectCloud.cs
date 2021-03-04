@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Elektronik.Common.Containers;
 using Elektronik.Common.Data.PackageObjects;
 using UnityEngine;
@@ -88,7 +89,7 @@ namespace Elektronik.Common.Clouds
 
         protected virtual void OnDisable()
         {
-            foreach (var o in ObservationsPool.ActiveObject)
+            foreach (var o in ObservationsPool.ActiveObject.Where(o => o != null))
             {
                 var meshRenderer = o.GetComponent<MeshRenderer>();
                 meshRenderer.enabled = false;
