@@ -38,17 +38,25 @@ namespace Elektronik.Settings
                     .Do(_ => SceneManager.LoadScene("Main menu", LoadSceneMode.Single))
                     .Subscribe();
             LoadButton.OnClickAsObservable()
-                    .Where(_ => PluginsListBox.AsEnumerable()
-                                   .OfType<PluginListBoxItem>()
-                                   .All(lbi => lbi.Plugin.Settings.Validate()))
+                    .Select(_ => PluginsLoader.ActivePlugins)
+                    .Where(ps => ps.Count > 0)
+                    .Where(ps => ps.All(p => p.Settings.Validate()))
                     .Do(_ => SaveSettings())
                     .Do(_ => SceneManager.LoadScene("Empty", LoadSceneMode.Single))
                     .Subscribe();
 
             LoadButton.OnClickAsObservable()
-                    .Where(_ => PluginsListBox.AsEnumerable()
-                                   .OfType<PluginListBoxItem>()
-                                   .Any(lbi => !lbi.Plugin.Settings.Validate()))
+                    .Select(_ => PluginsLoader.ActivePlugins)
+                    .Where(ps => ps.Count == 0)
+                    .Subscribe(_ =>
+                    {
+                        ErrorLabel.enabled = true;
+                        ErrorLabel.text = $"No data source selected";
+                    });
+
+            LoadButton.OnClickAsObservable()
+                    .Select(_ => PluginsLoader.ActivePlugins)
+                    .Where(ps => ps.Any(p => !p.Settings.Validate()))
                     .Subscribe(_ => ShowError());
 
             SetupSettings();

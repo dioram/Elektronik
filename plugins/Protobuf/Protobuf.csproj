@@ -44,16 +44,16 @@
 
     <ItemGroup>
       <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\build\Elektronik tools_Data\Managed\Assembly-CSharp.dll</HintPath>
+        <HintPath>..\..\build\Elektronik_Data\Managed\Assembly-CSharp.dll</HintPath>
       </Reference>
       <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\build\Elektronik tools_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+        <HintPath>..\..\build\Elektronik_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\build\Elektronik tools_Data\Managed\UnityEngine.dll</HintPath>
+        <HintPath>..\..\build\Elektronik_Data\Managed\UnityEngine.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\build\Elektronik tools_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+        <HintPath>..\..\build\Elektronik_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       </Reference>
     </ItemGroup>
 
