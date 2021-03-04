@@ -3,8 +3,10 @@ using Elektronik.Containers;
 using Elektronik.Data.Converters;
 using Elektronik.Extensions;
 using Elektronik.PluginsSystem;
+using Elektronik.Presenters;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.GrpcServices;
+using Elektronik.Protobuf.Online.Presenters;
 using Elektronik.Settings;
 using Grpc.Core;
 using UnityEngine;
@@ -18,6 +20,11 @@ namespace Elektronik.Protobuf.Online
         public ProtobufGrpcServer()
         {
             _containerTree = new ProtobufContainerTree("Protobuf");
+            _imagePresenter = new ImagePresenter();
+            PresentersChain = new DataPresenter[]
+            {
+                _imagePresenter
+            }.BuildChain();
         }
 
         #region IDataSourceOnline implementation
@@ -29,6 +36,7 @@ namespace Elektronik.Protobuf.Online
         public ICSConverter Converter { get; set; }
 
         public IContainerTree Data => _containerTree;
+        public DataPresenter PresentersChain { get; private set; }
 
         public SettingsBag Settings
         {
@@ -76,7 +84,7 @@ namespace Elektronik.Protobuf.Online
                 {
                     MapsManagerPb.BindService(servicesChain),
                     SceneManagerPb.BindService(new SceneManager(_containerTree)),
-                    // ImageManagerPb.BindService(new ImageManager(imageRenderTarget))
+                    ImageManagerPb.BindService(new ImageManager(_imagePresenter))
                 },
                 Ports =
                 {
@@ -104,6 +112,7 @@ namespace Elektronik.Protobuf.Online
         #region Private definitions
 
         private readonly ProtobufContainerTree _containerTree;
+        private readonly ImagePresenter _imagePresenter;
 
         private bool _serverStarted = false;
 

@@ -41,6 +41,10 @@ namespace Elektronik.PluginsSystem.UnitySide
                 {
                     dataSource.Data.SetRenderer(r);
                 }
+                foreach (var r in dataRenderers)
+                {
+                    dataSource.PresentersChain?.SetRenderer(r);
+                }
 
                 dataSource.Converter = Converter;
                 var treeElement = Instantiate(ContainerTreePrefab, TreeView).GetComponent<ContainerTreeElement>();
@@ -50,10 +54,6 @@ namespace Elektronik.PluginsSystem.UnitySide
             foreach (var dataSource in Plugins.OfType<IDataSourceOffline>())
             {
                 PlayerEvents.SetDataSource(dataSource);
-                foreach (var r in dataRenderers)
-                {
-                    dataSource.PresentersChain?.SetRenderer(r);
-                }
             }
 
             foreach (var plugin in Plugins)

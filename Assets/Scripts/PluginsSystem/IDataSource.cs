@@ -1,5 +1,6 @@
 ﻿using Elektronik.Containers;
 using Elektronik.Data.Converters;
+using Elektronik.Presenters;
 
 namespace Elektronik.PluginsSystem
 {
@@ -8,5 +9,7 @@ namespace Elektronik.PluginsSystem
         ICSConverter Converter { get; set; }
 
         IContainerTree Data { get; }
+        
+        DataPresenter PresentersChain { get; }
     }
 }

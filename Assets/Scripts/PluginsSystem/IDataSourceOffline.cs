@@ -1,5 +1,4 @@
 ﻿using System;
-using Elektronik.Presenters;
 
 namespace Elektronik.PluginsSystem
 {
@@ -16,7 +15,5 @@ namespace Elektronik.PluginsSystem
         void NextKeyFrame();
 
         event Action Finished;
-        
-        DataPresenter PresentersChain { get; }
     }
 }

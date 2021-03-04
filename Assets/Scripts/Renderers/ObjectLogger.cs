@@ -18,8 +18,11 @@ namespace Elektronik.Renderers
             }
             specialInformationBanner.gameObject.SetActive(true);
             specialInformationBanner.SetText(information);
-            arrow.SetActive(true);
-            arrow.transform.position = objectPosition + new Vector3(0, .45f, 0);
+            if (arrow != null)
+            {
+                arrow.SetActive(true);
+                arrow.transform.position = objectPosition + new Vector3(0, .45f, 0);
+            }
             Camera currentCam = Camera.allCameras[0];
             currentCam.gameObject.SetActive(false);
             specialCamera.FlyToPosition(currentCam.transform, objectPosition);

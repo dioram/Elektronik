@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Elektronik.Protobuf.Data;
-using Elektronik.Renderers;
+using Elektronik.Protobuf.Online.Presenters;
 using Grpc.Core;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class ImageManager : ImageManagerPb.ImageManagerPbBase
     {
-        private readonly CameraImageRenderer _renderer;
+        private readonly ImagePresenter _presenter;
 
-        public ImageManager(CameraImageRenderer renderer)
+        public ImageManager(ImagePresenter presenter)
         {
-            _renderer = renderer;
+            _presenter = presenter;
         }
 
         public override Task<ErrorStatusPb> Handle(ImagePacketPb request, ServerCallContext context)
@@ -23,7 +23,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             };
             try
             {
-                _renderer.Render(request.ImageData.ToByteArray());
+                _presenter.Present(request.ImageData.ToByteArray());
             }
             catch (Exception e)
             {
