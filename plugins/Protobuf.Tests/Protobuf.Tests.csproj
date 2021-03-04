@@ -43,7 +43,6 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="ContinuousStressTest.cs" />
         <Compile Include="ImagesTests.cs" />
         <Compile Include="InfinitePlanesTests.cs" />
         <Compile Include="InfoTests.cs" />

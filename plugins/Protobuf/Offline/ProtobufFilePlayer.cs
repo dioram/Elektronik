@@ -60,7 +60,8 @@ namespace Elektronik.Protobuf.Offline
             _input = File.OpenRead(OfflineSettings.FilePath!);
             Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * OfflineSettings.Scale);
             _parsersChain.SetConverter(Converter);
-            _frames = new FramesCollection<Frame>(ReadCommands());
+            
+            _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
             _threadWorker = new ThreadWorker();
         }
 
@@ -161,15 +162,34 @@ namespace Elektronik.Protobuf.Offline
         private float _timeout = 0;
         private ThreadWorker _threadWorker;
 
-        private IEnumerator<Frame> ReadCommands()
+        private const int MetadataOffset = 8;
+
+        private IEnumerator<Frame> ReadCommands(bool isSizeKnown)
         {
-            while (_input.Position != _input.Length)
+            var length = _input.Length - (isSizeKnown ? MetadataOffset : 0);
+            while (_input.Position < length)
             {
                 var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
                 yield return Frame.ParsePacket(packet, _parsersChain);
             }
 
             _input.Dispose();
+        }
+
+        private int TryGetSize()
+        {
+            _input.Position = _input.Length - 8;
+            var buffer = new byte[4];
+            _input.Read(buffer, 0, 4);
+            var marker = BitConverter.ToUInt32(buffer, 0);
+            if (marker == 0xDEADBEEF)
+            {
+                _input.Read(buffer, 0, 4);
+                _input.Position = 0;
+                return BitConverter.ToInt32(buffer, 0);
+            }
+            _input.Position = 0;
+            return 0;
         }
 
         private bool PreviousFrame()

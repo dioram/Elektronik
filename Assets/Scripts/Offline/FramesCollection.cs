@@ -9,10 +9,14 @@ namespace Elektronik.Offline
         private readonly IEnumerator<T> _enumerator;
         private readonly List<T> _buffer;
         private int _index;
+        private readonly bool _isSizeKnown;
+        private readonly int _framesAmount;
         
-        public FramesCollection(IEnumerator<T> enumerator)
+        public FramesCollection(Func<bool, IEnumerator<T>> enumerator, int framesAmount = 0)
         {
-            _enumerator = enumerator ?? throw new ArgumentNullException(nameof(enumerator));
+            _isSizeKnown = framesAmount != 0;
+            _framesAmount = framesAmount;
+            _enumerator = enumerator?.Invoke(_isSizeKnown) ?? throw new ArgumentNullException(nameof(enumerator));
             _buffer = new List<T>();
             _index = -1;
         }
@@ -33,7 +37,7 @@ namespace Elektronik.Offline
             _index = -1;
         }
 
-        public int CurrentSize => _buffer.Count;
+        public int CurrentSize => _isSizeKnown? _framesAmount : _buffer.Count;
         public int CurrentIndex => _index;
 
         public bool MoveNext()
