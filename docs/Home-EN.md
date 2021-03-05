@@ -11,8 +11,11 @@ This documentation will help you to get familiar with the interface of the appli
 
 Choose a section:
 - [Usage](Usage-EN.md)
-- [Data transfer format](Data-EN.md)
 - [Internal API](API-EN.md)
+- [Write your own plugin](Plugins-EN.md)
+
+Embeded plugins:
+- [Protobuf](Protobuf-EN.md)
 
 ### Update from 2.0 on 3.0 and above
 
