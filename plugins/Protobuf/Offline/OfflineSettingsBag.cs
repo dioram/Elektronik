@@ -14,7 +14,6 @@ namespace Elektronik.Protobuf.Offline
         [CheckForEquals, Path(PathAttribute.PathTypes.Directory), Tooltip("Choose path ot images:")]
         public string ImagePath;
 
-        [Tooltip("Scale")]
         public float Scale = 10;
 
         public override bool Validate()

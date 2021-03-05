@@ -27,7 +27,7 @@ namespace Elektronik.UI
 
             settings.GetType()
                     .GetFields(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(f => Attribute.IsDefined(f, typeof(TooltipAttribute)))
+                    .Where(f => f.GetCustomAttribute<NotShowAttribute>() == null)
                     .ToList()
                     .ForEach((f => AddField(f, settings)));
         }
@@ -48,8 +48,8 @@ namespace Elektronik.UI
             newField.name = $"{fieldInfo.Name}";
             var uiField = newField.GetComponent<SettingsField>();
             uiField.SettingsBag = obj;
-            uiField.FieldToolTip =
-                    ((TooltipAttribute) Attribute.GetCustomAttribute(fieldInfo, typeof(TooltipAttribute))).tooltip;
+            var tooltip = (TooltipAttribute)Attribute.GetCustomAttribute(fieldInfo, typeof(TooltipAttribute));
+            uiField.FieldToolTip = tooltip?.tooltip ?? fieldInfo.Name;
             uiField.FieldName = fieldInfo.Name;
             uiField.FieldType = fieldInfo.FieldType;
             uiField.Field.text = fieldInfo.GetValue(obj)?.ToString() ?? "";
