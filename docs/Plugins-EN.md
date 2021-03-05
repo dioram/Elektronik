@@ -42,7 +42,7 @@ ICSConverter Converter { get; set; }
 IContainerTree Data { get; }
 ```
 - Root of cloud containers tree. In Elektronik all data about cloud objects (points, lines, planes, etc.) are placed
-  in containers and containers implement a tree structure. More information [here](#Cloud-objects-containers).
+  in containers and containers implement a tree structure. More information [here](#Cloud-data-containers).
   This property should be initialized statically or in constructor.
 ```c#
 /// <summary> Containers with any data. </summary>
@@ -72,7 +72,7 @@ void Update(float delta);
 /// <summary> Plugins settings. </summary>
 SettingsBag Settings { get; set; }
 ```
-- Plugins settings object. For example it can contains path to file to open or porn for data listening.
+- Plugins settings object. For example it can contains path to file to open or port for data listening.
   More information [here](#Settings).
 ```c#
 /// <summary> Container for settings history. </summary>
@@ -153,7 +153,7 @@ For now Elektronk can render only:
 - and objects with track (T=[SlamTrackedObject](../Assets/Scripts/Data/PackageObjects/SlamTrackedObject.cs)).
 
 For rendering other types of cloud data convert them to one of types above or implement your on 
-[cloud renderer](API-RU.md#Rendering-classes).
+[cloud renderer](API-EN.md#Rendering-classes).
 
 Containers should implement [IContainerTree](../Assets/Scripts/Containers/IContainerTree.cs)
 for grouping in tree structure. Before playing started all cloud renderers will be set for containers using function
