@@ -10,10 +10,9 @@ namespace Elektronik.Protobuf.Online
         [CheckForEquals, Tooltip("IP address")]
         public string IPAddress = "127.0.0.1";
 
-        [CheckForEquals, Tooltip("Port")]
+        [CheckForEquals]
         public int Port = 5050;
 
-        [Tooltip("Scale")]
         public float Scale = 10f;
     }
 }
