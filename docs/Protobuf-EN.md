@@ -156,4 +156,4 @@ You can familiar with Elektronik interaction example in the folder Examples/cxx 
 The example is implemented as google tests Unit-tests. To build this example we recommend to use 
 [vcpkg](https://github.com/Microsoft/vcpkg).
 
-[<- Usage](Usage-EN.md) | [Internal API ->](API-EN.md)
+[<- Write your own plugin](Plugins-EN.md) | [Return to home page](Home-EN.md)

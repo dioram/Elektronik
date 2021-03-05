@@ -174,11 +174,12 @@ public interface IDataSourceOffline : IDataSource
 [IContainer\<T\>](../Assets/Scripts/Containers/IContainer.cs).
 В можете написать контейнер для собственных данных, либо вопользоваться одним из 
 [стандартных](../Assets/Scripts/Containers). Однако помните, что на данный момент электроник умеет отображать только
-облака точек (T=[SlamPoint](../Assets/Scripts/Data/PackageObjects/SlamPoint.cs)),
-линий (T=[SlamLine](../Assets/Scripts/Data/PackageObjects/SlamLine.cs)),
-бесконечных плоскостей (T=[SlamInfinitePlane](../Assets/Scripts/Data/PackageObjects/SlamInfinitePlane.cs)),
-а также граф наблюдений (T=[SlamObservation](../Assets/Scripts/Data/PackageObjects/SlamObservation.cs)),
-и треки отслеживаемых объектов (T=[SlamTrackedObject](../Assets/Scripts/Data/PackageObjects/SlamTrackedObject.cs)).
+- облака точек (T=[SlamPoint](../Assets/Scripts/Data/PackageObjects/SlamPoint.cs)),
+- линий (T=[SlamLine](../Assets/Scripts/Data/PackageObjects/SlamLine.cs)),
+- бесконечных плоскостей (T=[SlamInfinitePlane](../Assets/Scripts/Data/PackageObjects/SlamInfinitePlane.cs)),
+- а также граф наблюдений (T=[SlamObservation](../Assets/Scripts/Data/PackageObjects/SlamObservation.cs)),
+- и треки отслеживаемых объектов (T=[SlamTrackedObject](../Assets/Scripts/Data/PackageObjects/SlamTrackedObject.cs)).
+
 Для отображения приведите ваши данные к одному из указанных выше типов, либо реализуйте свой 
 [класс для отображения данных](API-RU.md#Классы-для-отображения-данных).
 
