@@ -15,7 +15,7 @@ You can extend Elektronik with [plugins](Plugins-EN.md) to support your own prot
 ![Settings](SettingsMenu.png)
 
 When you select mode you will see this settings window. Here you can select plugins and set their settings.
-In offline mode elektronik supports only one active data source. So in this mode you can choose only one data source plugin.
+In offline mode Elektronik supports only one active data source. So in this mode you can choose only one data source plugin.
 
 1. Back to main menu.
 2. Plugins panel.
@@ -38,7 +38,7 @@ In offline mode elektronik supports only one active data source. So in this mode
 2. Turn on/off images form camera.
 3. Switch of camera type (presently implemented only free camera). 
 4. Switch to VR mode (see [VR mode](#VR-mode)).
-5. Clouds tree. Allows you to control visibility of any objects cloud. Clouds updates even if they are invisible.
+5. Clouds tree. Allows you to control visibility of any objects cloud. Clouds will update even if they are invisible.
 
 # Offline
 
@@ -71,7 +71,7 @@ Unlike the offline mode, there is no playback control in online mode and also so
 Management in the online mode is as follows:
 
 1. Return to connection settings.
-2. [Settings](#Settings)
+2. [Player controls](#Player-controls)
 3. Clearing the scene. Do not use it while receiving the data! 
    Updating the map takes place incrementally so premature cleaning will result in an error.
 4. Connection status.
