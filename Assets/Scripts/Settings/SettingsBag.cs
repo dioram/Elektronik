@@ -7,6 +7,7 @@ namespace Elektronik.Settings
     [Serializable]
     public class SettingsBag
     {
+        [NotShow]
         public string ModificationTime;
 
         public virtual bool Validate()
