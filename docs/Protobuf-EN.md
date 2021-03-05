@@ -1,9 +1,10 @@
-﻿# Introduction
+﻿# Protobuf data source
 
-Elektronik uses [google protocol buffers](https://developers.google.com/protocol-buffers/?hl=en)
+By default Elektronik uses [google protocol buffers](https://developers.google.com/protocol-buffers/?hl=en)
 and [gRPC](https://grpc.io/).
-All Elektronik data is represented as data packages. 
-You can find package specification in protobuf format in file [MapTypes.proto](../Assets/Scripts/Common/Data/Protobuf/MapTypes.proto).
+All data is represented as data packages. 
+You can find package specification in protobuf format in file 
+[MapTypes.proto](../plugins/Protobuf/Data/MapTypes.proto).
 
 There are several types of packages:
 1. Action package
@@ -135,6 +136,12 @@ Infinite plane object contains:
 
 This type of packages is used for receive images form camera in online mode.
 It contains byte array of image in PNG or JPEG format.
+
+# Metadata
+
+There can be metainformation at the end of the file. For now it can only be Int32 value - amount of packages.
+Before metadata always should be special marker *0xDEADBEEF*.
+So now metadata is 8 bytes containing marker and amount of packages;
 
 # C#
 

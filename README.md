@@ -37,7 +37,10 @@ For example, you can connect a Microsoft Mixed Reality helmet but use your own t
 via the installed helmet driver.
 
 If you want to add, improve or accelerate Elektronik, you can find all necessary information 
-in [docs](docs/Home-EN.md) along with a description of the source code structure. 
+in [docs](docs/Home-EN.md) along with a description of the source code structure.
+Also you can extent Elektronik by writing your own plugins. But for now we are support only
+plugins for new types of data sources (protocols). All useful information can be found [here](docs/Plugins-EN.md) in docs.
+
 We are trying to make the Elektronik code as convenient 
 as possible for debugging and supporting, so we actively use OOP techniques and patterns.
 

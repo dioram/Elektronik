@@ -1,17 +1,17 @@
 # Новое в этой версии:
-- SteamVR 2.0
-- Поддержка gRPC и google protobuf
-- Оптимизация облаков точек
-- Новая сущность - бесконечная плоскость
-- Добавлена возможность отрисовки произвольных изображений и изображений для объектов наблюдений
-# Ломающие изменения:
-- Прекращена поддержка старого формата обмена данными
+- Поддержка плагинов добавляющих новые виды источников данных
+- Работа с Protobuf и gRPC вынесена в плагин
+- Новое меню настроек
+- Переделан UI элемент позволяющий скрывать определённые виды объектов
+- Protobuf плагин:
+  - Теперь данные загружаются не все сразу, а покадрово
+  - Для того чтобы понимать сколько кадров будет в файл может быть записан пакет с метаданными
 
 # New in this version:
-- SteamVR 2.0
-- gRPC and google protobuf support
-- Point cloud optimizations
-- New entity type - infinite plane
-- Added possibility to draw arbitrary images and observation objects images
-# Breaking changes:
-- Support of old data exchange format is ended
+- Plugins support. You can now create plugin for your own data source
+- Protobuf and gRPC protocols are now in plugin.
+- New settings menu
+- New GUI element allows you to toggle visibility of cloud objects
+- Protobuf plugin:
+  - Now file loading frame by frame
+  - Metadata can be written in file. Now it is only amount of commands
