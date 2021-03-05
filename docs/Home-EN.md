@@ -18,10 +18,3 @@ Choose a section:
 
 Since version 3.0 Elektronik uses [google protocol buffers](https://developers.google.com/protocol-buffers/?hl=en) 
 and [gRPC](https://grpc.io/).
-
-If you used version 2.0 before you need to delete directory:
-
-C:\\Users\\<user_name>\\AppData\\LocalLow\\Dioram\\Elektronik tools 2_0
-
-This directory contains history of last opened files and connections.
-Format of this data has been changed on 3.0 and will cause errors.
