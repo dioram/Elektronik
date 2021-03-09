@@ -1,9 +1,10 @@
 ﻿using Elektronik.Commands;
+using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
 
 namespace Elektronik.Protobuf.Offline.Parsers
 {
-    public class InfoParser : PackageParser
+    public class InfoParser : DataParser<PacketPb>
     {
         public class InfoCommand : ICommand
         {

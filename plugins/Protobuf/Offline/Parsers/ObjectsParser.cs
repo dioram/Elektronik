@@ -4,11 +4,12 @@ using Elektronik.Commands;
 using Elektronik.Commands.Generic;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
 
 namespace Elektronik.Protobuf.Offline.Parsers
 {
-    public class ObjectsParser : PackageParser
+    public class ObjectsParser : DataParser<PacketPb>
     {
         private readonly IContainer<SlamInfinitePlane> _infinitePlanes;
         private readonly IConnectableObjectsContainer<SlamPoint> _points;

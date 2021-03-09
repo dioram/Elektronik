@@ -150,7 +150,7 @@ namespace Elektronik.Containers
 
         #region IContainerTree implementations
 
-        public string DisplayName { get; protected set; }
+        public string DisplayName { get; set; }
 
         public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
 

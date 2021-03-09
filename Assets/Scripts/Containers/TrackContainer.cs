@@ -145,7 +145,7 @@ namespace Elektronik.Containers
 
         #region IContainerTree implementation
 
-        public string DisplayName => "Track";
+        public string DisplayName { get; set; } = "Track";
 
         public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
         

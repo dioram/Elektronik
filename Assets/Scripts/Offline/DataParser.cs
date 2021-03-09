@@ -1,20 +1,19 @@
 ﻿using Elektronik.Commands;
 using Elektronik.Data.Converters;
-using Elektronik.Protobuf.Data;
 
-namespace Elektronik.Protobuf.Offline.Parsers
+namespace Elektronik.Offline
 {
     /// <summary>
     /// Base class for parse data in offline mode. Used in pattern "Chain of responsibility".
     /// </summary>
-    public abstract class PackageParser : IChainable<PackageParser>
+    public abstract class DataParser<T> : IChainable<DataParser<T>>
     {
-        protected PackageParser Successor;
+        protected DataParser<T> Successor;
         protected ICSConverter Converter;
 
-        public IChainable<PackageParser> SetSuccessor(IChainable<PackageParser> parser)
+        public IChainable<DataParser<T>> SetSuccessor(IChainable<DataParser<T>> parser)
         {
-            return Successor = parser as PackageParser;
+            return Successor = parser as DataParser<T>;
         }
 
         /// <summary> Sets converter for this parser and its successors. </summary>
@@ -27,7 +26,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
 
         /// <summary> Extracts command form packet. </summary>
         /// <param name="pkg"> Packet with command. </param>
-        public virtual ICommand GetCommand(PacketPb pkg)
+        public virtual ICommand GetCommand(T pkg)
         {
             return Successor?.GetCommand(pkg);
         }
