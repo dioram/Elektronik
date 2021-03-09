@@ -6,17 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Common/Main menu.unity
+    path: Assets/Scenes/Main menu.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/Online/Online settings.unity
-    guid: b28774e31682def4ea9148e2b70b490c
-  - enabled: 1
-    path: Assets/Scenes/Offline/Offline settings.unity
-    guid: 79c188cefec78ba49bf9527640e00581
-  - enabled: 1
-    path: Assets/Scenes/Common/WorkArea/Empty.unity
+    path: Assets/Scenes/Empty.unity
     guid: af1b4d763a885d140bf10ab6705445ff
+  - enabled: 1
+    path: Assets/Scenes/Settings.unity
+    guid: 15badd107e160b3459ca34c68f1fd023
   m_configObjects:
     Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: cbb398d6052428442a6777bc52ff0791,
       type: 2}

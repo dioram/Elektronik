@@ -2,31 +2,52 @@
 ![MainMenu](MainMenu.png)
 
 In the main menu you can select one of the modes of interaction with the Electronics.
-1. [Online mode](#Online) - data is transferred via TCP connection.
-2. [Offline mode](#Offline) - data is read from a file.
+1. [Online mode](#Online) - for uncontrollable data stream. Mostly using for realtime data.
+2. [Offline mode](#Offline) - for data stream which can be stopped or rewinded. Mostly using for data written in file.
 
-You can view the format of the input data on [this page](Data-EN.md).
+For now Elektronik uses [google protocol buffers](https://developers.google.com/protocol-buffers/?hl=en)
+and [gRPC](https://grpc.io/).
+You can view the format of the input data on [this page](Protobuf-EN.md).
+You can extend Elektronik with [plugins](Plugins-EN.md) to support your own protocols and file formats.
+
+# Settings
+
+![Settings](SettingsMenu.png)
+
+When you select mode you will see this settings window. Here you can select plugins and set their settings.
+In offline mode Elektronik supports only one active data source. So in this mode you can choose only one data source plugin.
+
+1. Back to main menu.
+2. Plugins panel.
+3. Toggle for plugins activation.
+4. Settings panel.
+5. Panel of settings history.
+6. Error messages.
+7. Start playing.
+
+# Player controls
+
+![](PlayerSettingsHided.png)
+
+1. Back to settings.
+2. Hide/Expand player controls panel.
+
+![](PlayerSettingsExpanded.png)
+
+1. Points size slider.
+2. Turn on/off images form camera.
+3. Switch of camera type (presently implemented only free camera). 
+4. Switch to VR mode (see [VR mode](#VR-mode)).
+5. Clouds tree. Allows you to control visibility of any objects cloud. Clouds will update even if they are invisible.
 
 # Offline
 
-When you select the offline mode you will see the settings window.
-![offline mode settings](OfflineMenu.png)
-
-In this window you can select a file, specify the directory with images form camera (not necessary)
-and the scaling factor which will be applied to read data.
-After the file selection it is necessary to click Load button. 
-If Load button is disabled it means that the file has not been found and you have to check the path to it.
-
-After the successful file loading you will see the following window.
-
 ![offline mode user interface](OfflineMode.png)
-
-If the file is large enough it is necessary to wait until it is processed.
 
 The picture above indicates the following controls and display information:
 
-1. Return to the offline mode settings menu.
-2. [Settings](#Settings)
+1. Return to the settings menu.
+2. [Player controls](#Player-controls)
 3. Event information window.
 4. Objects with "special" information will be listed in this area. 
    Enumerations will be presented in the form of buttons. 
@@ -43,22 +64,6 @@ The picture above indicates the following controls and display information:
     
 # Online
 
-When you select the online mode you will see the settings window.
-
-![Online mode settings](OnlineMenu.png)
-
-At this window you can see the following settings:
-
-1. IP address of TCP server from which the data will be recieved.
-2. TCP Server port from which the data will be recieved.
-3. Scaling factor of input data.
-
-After setting all required settings it is necessary to click the Load button.
-If the button is disabled check the IP address and port. Note that connection 
-is not established immediately by pressing the Load button, therefore you can load scene even if the server does not work yet.
-
-After that you will go to the next scene.
-
 ![Online mode](OnlineMode.png)
 
 Unlike the offline mode, there is no playback control in online mode and also some UI elements are missing for improved performance.
@@ -66,25 +71,10 @@ Unlike the offline mode, there is no playback control in online mode and also so
 Management in the online mode is as follows:
 
 1. Return to connection settings.
-2. [Settings](#Settings)
+2. [Player controls](#Player-controls)
 3. Clearing the scene. Do not use it while receiving the data! 
    Updating the map takes place incrementally so premature cleaning will result in an error.
 4. Connection status.
-
-# Settings
-
-![Common settings](CommonSettings.png)
-
-Common settings for both modes.
-
-1. Turn on/off display of the cloud points. Adding points to the cloud does not turn off.
-2. Slider for changing point size,
-3. Turn on/off display of the tracks.
-4. Turn on/off display of the observations. Adding observations to the visibility graph does not turn off.
-5. Turn on/off display of planes.
-6. Turn on/off images form camera.
-7. Switch of camera type (presently implemented only free camera).
-11. Switch to VR mode (see [VR mode](#VR-mode)).
 
 # Observations
 
@@ -95,13 +85,11 @@ If you hover mouse over observation object you will see floating window.
 You can pin this window by clicking on observation.
 In online mode you will see only text information about observation.
 In offline you can also see images taken at moment of observation if images directory has been set.
-You can learn more about this function [here](Data-EN.md#Observations)
 
 # Images form camera.
 
 If "Camera view" setting is turned on you will see window in bottom-right corner.
 Here will be shown actual images from camera.
-If you want to know how to send images check [here](Data-EN.md#Image-package).
 This function works in both modes, but in offline you should set images directory.
 
 # VR Mode
@@ -113,4 +101,4 @@ In this mode you can bind the position of the connected helmet or replace this p
 that are generated by your algorithm. In "VR Settings" you can switch between 
 [online mode](#Оnline) and [offline mode](#Offline).
 
-[<- Start page](Home-EN.md) | [Data transfer format ->](Data-EN.md)
+[<- Start page](Home-EN.md) | [Internal API ->](API-EN.md)
