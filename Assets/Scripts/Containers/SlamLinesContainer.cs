@@ -53,9 +53,7 @@ namespace Elektronik.Containers
 
         public SlamLine this[int index]
         {
-            get => throw new NotSupportedException("Don't use this getter."
-                                                   + " You can't get valid index outside the container anyway."
-                                                   + "It exists only as implementation of IList interface");
+            get => _connections[index];
             set => UpdateItem(value);
         }
 
@@ -178,7 +176,7 @@ namespace Elektronik.Containers
 
         #region IContainerTree implementation
 
-        public string DisplayName { get; }
+        public string DisplayName { get; set; }
 
         public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
 
