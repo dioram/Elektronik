@@ -1,6 +1,6 @@
 ﻿using Elektronik.Commands;
+using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
-using Elektronik.Protobuf.Offline.Parsers;
 
 namespace Elektronik.Protobuf.Offline
 {
@@ -21,7 +21,7 @@ namespace Elektronik.Protobuf.Offline
             Command.UnExecute();
         }
 
-        public static Frame ParsePacket(PacketPb packetPb, PackageParser parsersChain)
+        public static Frame ParsePacket(PacketPb packetPb, DataParser<PacketPb> parsersChain)
         {
             return new Frame
             {

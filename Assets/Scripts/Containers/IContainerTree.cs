@@ -4,7 +4,7 @@ namespace Elektronik.Containers
 {
     public interface IContainerTree
     {
-        string DisplayName { get; }
+        string DisplayName { get; set; }
         
         IEnumerable<IContainerTree> Children { get; }
 

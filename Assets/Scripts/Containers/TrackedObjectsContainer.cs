@@ -183,7 +183,7 @@ namespace Elektronik.Containers
 
         #region IContainerTree implementation
 
-        public string DisplayName { get; }
+        public string DisplayName { get; set; }
 
         public IEnumerable<IContainerTree> Children => _lineContainers;
 

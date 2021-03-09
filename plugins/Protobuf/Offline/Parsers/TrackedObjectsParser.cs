@@ -5,11 +5,12 @@ using Elektronik.Commands.Generic;
 using Elektronik.Commands.TrackedObj;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
 
 namespace Elektronik.Protobuf.Offline.Parsers
 {
-    public class TrackedObjectsParser : PackageParser
+    public class TrackedObjectsParser : DataParser<PacketPb>
     {
         private readonly ITrackedContainer<SlamTrackedObject> _container;
 

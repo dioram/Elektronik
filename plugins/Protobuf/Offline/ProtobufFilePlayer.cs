@@ -24,7 +24,7 @@ namespace Elektronik.Protobuf.Offline
         public ProtobufFilePlayer()
         {
             _containerTree = new ProtobufContainerTree("Protobuf");
-            _parsersChain = new PackageParser[]
+            _parsersChain = new DataParser<PacketPb>[]
             {
                 new ObjectsParser(_containerTree.InfinitePlanes,
                                   _containerTree.Points,
@@ -157,7 +157,7 @@ namespace Elektronik.Protobuf.Offline
         private readonly ProtobufContainerTree _containerTree;
         private FileStream _input;
         private FramesCollection<Frame> _frames;
-        private readonly PackageParser _parsersChain;
+        private readonly DataParser<PacketPb> _parsersChain;
         private bool _playing = false;
         private float _timeout = 0;
         private ThreadWorker _threadWorker;
