@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protobuf.Tests", "Protobuf.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protobuf", "Protobuf\Protobuf.csproj", "{13D03981-E97E-47D1-959F-D5AE8260C676}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rosbag2", "Rosbag2\Rosbag2.csproj", "{4609CB25-BA3D-44D9-AACA-41BCD4E10475}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rosbag2.Tests", "Rosbag2.Tests\Rosbag2.Tests.csproj", "{663D34A1-7CFE-4124-945A-5A380A1CF40A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{13D03981-E97E-47D1-959F-D5AE8260C676}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13D03981-E97E-47D1-959F-D5AE8260C676}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13D03981-E97E-47D1-959F-D5AE8260C676}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4609CB25-BA3D-44D9-AACA-41BCD4E10475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4609CB25-BA3D-44D9-AACA-41BCD4E10475}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4609CB25-BA3D-44D9-AACA-41BCD4E10475}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4609CB25-BA3D-44D9-AACA-41BCD4E10475}.Release|Any CPU.Build.0 = Release|Any CPU
+		{663D34A1-7CFE-4124-945A-5A380A1CF40A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{663D34A1-7CFE-4124-945A-5A380A1CF40A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{663D34A1-7CFE-4124-945A-5A380A1CF40A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{663D34A1-7CFE-4124-945A-5A380A1CF40A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
