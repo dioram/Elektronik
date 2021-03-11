@@ -7,12 +7,13 @@ namespace Elektronik
     public class ThreadWorker : IDisposable
     {
         private readonly Thread _thread;
-        private readonly Queue<Action> _actions;
+        private readonly Queue<Action> _actions = new Queue<Action>();
 
+        public int QueuedActions => _actions.Count;
+        
         public ThreadWorker()
         {
             _thread = new Thread(Start);
-            _actions = new Queue<Action>();
             _thread.Start();
         }
 

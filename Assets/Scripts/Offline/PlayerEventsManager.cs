@@ -1,5 +1,6 @@
 ﻿using System;
 using Elektronik.PluginsSystem;
+using Elektronik.UI;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +19,7 @@ namespace Elektronik.Offline
         public Button StopButton;
         public Button NextKeyFrameButton;
         public Button PreviousKeyFrameButton;
-        public Slider TimelineSlider;
+        public TimelineSlider TimelineSlider;
         public Sprite PlayImage;
         public Sprite PauseImage;
         public Text Timestamp;
@@ -36,10 +37,11 @@ namespace Elektronik.Offline
             NextKeyFrame += _dataSourceOffline.NextKeyFrame;
             PreviousKeyFrame += _dataSourceOffline.PreviousKeyFrame;
             _dataSourceOffline.Finished += SetPausedState;
-            TimelineSlider.OnValueChangedAsObservable()
-                    .Select(v => (int) Mathf.Round((_dataSourceOffline.AmountOfFrames - 1) * v))
-                    .Where(v => !(v == 0 && _dataSourceOffline.CurrentPosition == -1))
-                    .Subscribe(value => _dataSourceOffline.CurrentPosition = value);
+            TimelineSlider.OnTimelineChanged += f =>
+            {
+                SetPausedState();
+                _dataSourceOffline.CurrentPosition = (int) Mathf.Round((_dataSourceOffline.AmountOfFrames - 1) * f);
+            };
         }
 
         private void Awake()
@@ -61,7 +63,7 @@ namespace Elektronik.Offline
         private void Update()
         {
             var pos = _dataSourceOffline.CurrentPosition / (float) (_dataSourceOffline.AmountOfFrames - 1);
-            if (!float.IsNaN(pos)) TimelineSlider.value = pos;
+            if (!float.IsNaN(pos)) TimelineSlider.Value = pos;
             Timestamp.text = $"{_dataSourceOffline.CurrentTimestamp}";
         }
 

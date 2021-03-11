@@ -6,9 +6,9 @@ using RosSharp.RosBridgeClient.MessageTypes.Geometry;
 using RosSharp.RosBridgeClient.MessageTypes.Nav;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
+using RosMessage = RosSharp.RosBridgeClient.Message;
 using Path = RosSharp.RosBridgeClient.MessageTypes.Nav.Path;
 using UInt32 = System.UInt32;
-using RosMessage = RosSharp.RosBridgeClient.Message;
 
 namespace Elektronik.Rosbag2.Parsers
 {
@@ -28,21 +28,55 @@ namespace Elektronik.Rosbag2.Parsers
                 return ParseImu(memoryStream);
             case "nav_msgs/msg/Path":
                 return ParsePath(memoryStream);
+            case "sensor_msgs/msg/PointCloud2":
+                return ParsePointCloud2(memoryStream);
             default:
-                throw new NotSupportedException("This type of ROS messages is not supported for now");
+                return null;
             }
+        }
+
+        private static PointCloud2 ParsePointCloud2(Stream data)
+        {
+            var header = ParseHeader(data);
+            var height = ParseUInt32(data);
+            var width = ParseUInt32(data);
+            var fields = ParsePointFieldArray(data);
+            var isBigEndian = ParseUInt32(data) != 0;
+            var pointStep = ParseUInt32(data);
+            var rowStep = ParseUInt32(data);
+            var pointData = ParseByteArray(data);
+            var isDense = ParseUInt32(data) != 0;
+            return new PointCloud2(header, height, width, fields, isBigEndian, pointStep, rowStep, pointData, isDense);
+        }
+
+        private static PointField[] ParsePointFieldArray(Stream data)
+        {
+            var amount = (int) ParseUInt32(data);
+            var fields = new PointField[amount];
+            for (int i = 0; i < amount; i++)
+            {
+                fields[i] = ParsePointField(data);
+            }
+
+            return fields;
+        }
+
+        private static PointField ParsePointField(Stream data)
+        {
+            return new PointField(ParseString(data), ParseUInt32(data), (byte) ParseUInt32(data), ParseUInt32(data));
         }
 
         private static Path ParsePath(Stream data)
         {
             var header = ParseHeader(data);
-            var amount = (int)ParseUInt32(data);
+            var amount = (int) ParseUInt32(data);
             var poses = new PoseStamped[amount];
             poses[0] = ParsePoseStamped(data, true, true);
             for (int i = 1; i < amount; i++)
             {
                 poses[i] = ParsePoseStamped(data, true);
             }
+
             return new Path(header, poses);
         }
 
@@ -149,6 +183,18 @@ namespace Elektronik.Rosbag2.Parsers
             return result;
         }
 
+        private static byte[] ParseByteArray(Stream data)
+        {
+            var size = ParseUInt32(data);
+            var result = new byte[size];
+            for (int i = 0; i < size; i++)
+            {
+                result[i] = (byte) data.ReadByte();
+            }
+
+            return result;
+        }
+
         private static string ParseString(Stream data)
         {
             var buffer = new byte[4];
@@ -165,6 +211,7 @@ namespace Elektronik.Rosbag2.Parsers
             {
                 len++;
             }
+
             return len;
         }
     }

@@ -5,15 +5,15 @@ using Elektronik.Containers;
 using Elektronik.Rosbag2.Data;
 using SQLite;
 
-namespace Elektronik.Rosbag2
+namespace Elektronik.Rosbag2.Containers
 {
     public class Rosbag2ContainerTree : VirtualContainer
     {
         public static readonly Dictionary<string, Type> SupportedMessages = new()
         {
-            {"geometry_msgs/msg/PoseStamped", typeof(TrackedObjectsContainer)},
-            {"nav_msgs/msg/Odometry", typeof(TrackedObjectsContainer)},
-            // {"sensor_msgs/msg/PointCloud2", typeof(CloudContainer<SlamPoint>)},
+            {"geometry_msgs/msg/PoseStamped", typeof(TrackedDBContainer)},
+            {"nav_msgs/msg/Odometry", typeof(TrackedDBContainer)},
+            {"sensor_msgs/msg/PointCloud2", typeof(PointsDBContainer)},
         };
 
         public Topic[] ActualTopics;
@@ -25,7 +25,7 @@ namespace Elektronik.Rosbag2
         public void Init(string path)
         {
             DisplayName = path.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag2: /";
-            DBModel = new SQLiteConnection(path);
+            DBModel = new SQLiteConnection(path, SQLiteOpenFlags.ReadOnly);
             ActualTopics = DBModel.Table<Topic>().ToList().Where(t => SupportedMessages.ContainsKey(t.Type)).ToArray();
             BuildTree();
             Squeeze();
@@ -39,6 +39,13 @@ namespace Elektronik.Rosbag2
             }
         }
 
+        public void Reset()
+        {
+            Clear();
+            DBModel.Dispose();
+            ChildrenList.Clear();
+        }
+
         public override string GetFullPath(IContainerTree container)
         {
             var path = base.GetFullPath(container);
@@ -49,6 +56,14 @@ namespace Elektronik.Rosbag2
         {
             _renderers.Add(renderer);
             base.SetRenderer(renderer);
+        }
+
+        public void ShowAt(long timestamp, bool rewind = false)
+        {
+            foreach (var dbContainer in GetRealChildren().OfType<IDBContainer>())
+            {
+                dbContainer.ShowAt(timestamp, rewind);
+            }
         }
 
         public SQLiteConnection DBModel { get; private set; }
@@ -78,7 +93,19 @@ namespace Elektronik.Rosbag2
                     }
                 }
 
-                parent.AddChild((IContainerTree) Activator.CreateInstance(SupportedMessages[topic.Type], path.Last()));
+                var cont = (IContainerTree) Activator.CreateInstance(SupportedMessages[topic.Type], path.Last());
+                if (cont is IDBContainer dbContainer)
+                {
+                    dbContainer.DBModel = DBModel;
+                    dbContainer.Topic = topic;
+                    var command = DBModel.CreateCommand(
+                        "SELECT timestamp FROM messages WHERE topic_id = $id ORDER BY timestamp",
+                        topic.Id);
+                    var arr = command.ExecuteQueryScalars<long>().ToArray();
+                    dbContainer.ActualTimestamps = arr;
+                }
+
+                parent.AddChild(cont);
             }
         }
 

@@ -12,11 +12,20 @@ namespace Elektronik.Offline
         private readonly bool _isSizeKnown;
         private readonly int _framesAmount;
         
-        public FramesCollection(Func<bool, IEnumerator<T>> enumerator, int framesAmount = 0)
+        public FramesCollection(Func<bool, IEnumerator<T>> enumerator, int framesAmount = 0) : this(framesAmount)
+        {
+            _enumerator = enumerator?.Invoke(_isSizeKnown) ?? throw new ArgumentNullException(nameof(enumerator));
+        }
+
+        public FramesCollection(Func<IEnumerator<T>> enumerator, int framesAmount = 0) : this(framesAmount)
+        {
+            _enumerator = enumerator?.Invoke() ?? throw new ArgumentNullException(nameof(enumerator));
+        }
+
+        private FramesCollection(int framesAmount)
         {
             _isSizeKnown = framesAmount != 0;
             _framesAmount = framesAmount;
-            _enumerator = enumerator?.Invoke(_isSizeKnown) ?? throw new ArgumentNullException(nameof(enumerator));
             _buffer = new List<T>();
             _index = -1;
         }

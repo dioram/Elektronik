@@ -61,53 +61,122 @@ namespace Elektronik.Clouds
 
         public override void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e)
         {
-            _amountOfItems += e.AddedItems.Count();
-            if (_amountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
+            lock (_pointPlaces)
             {
-                _needNewBlock = true;
-            }
+                _amountOfItems += e.AddedItems.Count();
+                if (_amountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
+                {
+                    _needNewBlock = true;
+                }
             
-            foreach (var item in e.AddedItems)
-            {
-                var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
-                _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
-                int layer = index / CloudBlock.Capacity;
-                int inLayerId = index % CloudBlock.Capacity;
-                ProcessItem(_blocks[layer], item, inLayerId);
-                _blocks[layer].Updated = true;
+                foreach (var item in e.AddedItems)
+                {
+                    var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
+                    _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
+                    int layer = index / CloudBlock.Capacity;
+                    int inLayerId = index % CloudBlock.Capacity;
+                    lock (_blocks[layer])
+                    {
+                        ProcessItem(_blocks[layer], item, inLayerId);
+                        _blocks[layer].Updated = true;
+                    }
+                }
             }
         }
 
         public override void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e)
         {
-            foreach (var item in e.UpdatedItems)
+            lock (_pointPlaces)
             {
-                var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
-                int layer = index / CloudBlock.Capacity;
-                int inLayerId = index % CloudBlock.Capacity;
-                ProcessItem(_blocks[layer], item, inLayerId);
-                _blocks[layer].Updated = true;
+                foreach (var item in e.UpdatedItems)
+                {
+                    var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
+                    int layer = index / CloudBlock.Capacity;
+                    int inLayerId = index % CloudBlock.Capacity;
+                    lock (_blocks[layer])
+                    {
+                        ProcessItem(_blocks[layer], item, inLayerId);
+                        _blocks[layer].Updated = true;
+                    }
+                }
             }
         }
 
         public override void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e)
         {
-            foreach (var itemId in e.RemovedIds)
+            lock (_pointPlaces)
             {
-                if (!_pointPlaces.ContainsKey((sender.GetHashCode(), itemId))) continue;
+                foreach (var itemId in e.RemovedIds)
+                {
+                    if (!_pointPlaces.ContainsKey((sender.GetHashCode(), itemId))) continue;
                 
-                var index = _pointPlaces[(sender.GetHashCode(), itemId)];
-                _pointPlaces.Remove((sender.GetHashCode(), itemId));
-                if (index == _maxPlace - 1) _maxPlace--;
-                else _freePlaces.Enqueue(index);
+                    var index = _pointPlaces[(sender.GetHashCode(), itemId)];
+                    _pointPlaces.Remove((sender.GetHashCode(), itemId));
+                    if (index == _maxPlace - 1) _maxPlace--;
+                    else _freePlaces.Enqueue(index);
                 
-                int layer = index / CloudBlock.Capacity;
-                int inLayerId = index % CloudBlock.Capacity;
-                RemoveItem(_blocks[layer], inLayerId);
-                _blocks[layer].Updated = true;
-            }
+                    int layer = index / CloudBlock.Capacity;
+                    int inLayerId = index % CloudBlock.Capacity;
+                    lock (_blocks[layer])
+                    {
+                        RemoveItem(_blocks[layer], inLayerId);
+                        _blocks[layer].Updated = true;
+                    }
+                }
 
-            _amountOfItems -= e.RemovedIds.Count();
+                _amountOfItems -= e.RemovedIds.Count();
+            }
+        }
+
+        public override void ShowItems(object sender, IEnumerable<TCloudItem> items)
+        {
+            OnClear(sender);
+            lock (_pointPlaces)
+            {
+                _amountOfItems += items.Count();
+                if (_amountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
+                {
+                    _needNewBlock = true;
+                }
+            
+                foreach (var item in items)
+                {
+                    var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
+                    _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
+                    int layer = index / CloudBlock.Capacity;
+                    int inLayerId = index % CloudBlock.Capacity;
+                    lock (_blocks[layer])
+                    {
+                        ProcessItem(_blocks[layer], item, inLayerId);
+                        _blocks[layer].Updated = true;
+                    }
+                }
+            }
+        }
+
+        public override void OnClear(object sender)
+        {
+            lock (_pointPlaces)
+            {
+                var keys = _pointPlaces.Keys.Where(k => k.Item1 == sender.GetHashCode()).ToList();
+                foreach (var key in keys)
+                {
+                    var index = _pointPlaces[key];
+                    _pointPlaces.Remove(key);
+                    if (index == _maxPlace - 1) _maxPlace--;
+                    else _freePlaces.Enqueue(index);
+                
+                    int layer = index / CloudBlock.Capacity;
+                    int inLayerId = index % CloudBlock.Capacity;
+                    lock (_blocks[layer])
+                    {
+                        RemoveItem(_blocks[layer], inLayerId);
+                        _blocks[layer].Updated = true;
+                    }
+                }
+
+                _amountOfItems -= keys.Count;
+            }
         }
 
         #endregion

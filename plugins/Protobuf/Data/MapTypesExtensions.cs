@@ -123,7 +123,7 @@ namespace Elektronik.Protobuf.Data
     public partial class TrackedObjPb
     {
         public static implicit operator SlamTrackedObject(TrackedObjPb o)
-            => o != null ? new SlamTrackedObject(o.id_, o.trackColor_, o.translation_, o.rotation_) : default;
+            => o != null ? new SlamTrackedObject(o.id_, o.translation_, o.rotation_, o.trackColor_) : default;
     }
 
     public partial class InfinitePlanePb

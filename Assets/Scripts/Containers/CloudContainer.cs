@@ -82,7 +82,7 @@ namespace Elektronik.Containers
             {
                 if (_items.ContainsKey(index))
                 {
-                    UpdateItem(value);
+                    Update(value);
                 }
                 else
                 {
@@ -123,7 +123,7 @@ namespace Elektronik.Containers
             }
         }
         
-        public void UpdateItem(TCloudItem item)
+        public void Update(TCloudItem item)
         {
             _items[item.Id] = item;
             if (IsActive)
@@ -132,7 +132,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public void UpdateItems(IEnumerable<TCloudItem> items)
+        public void Update(IEnumerable<TCloudItem> items)
         {
             var list = items.ToList();
             foreach (var ci in list)

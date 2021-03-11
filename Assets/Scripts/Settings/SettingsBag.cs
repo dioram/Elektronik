@@ -20,7 +20,7 @@ namespace Elektronik.Settings
             return string.Join("\n", GetType()
                                        .GetFields(BindingFlags.Public | BindingFlags.Instance)
                                        .Where(f => Attribute.IsDefined(f, typeof(CheckForEqualsAttribute)))
-                                       .Select(f => f.GetValue(this).ToString()));
+                                       .Select(f => f.GetValue(this)?.ToString() ?? ""));
         }
 
         protected bool Equals(SettingsBag other)
@@ -28,7 +28,7 @@ namespace Elektronik.Settings
             return GetType()
                     .GetFields(BindingFlags.Public | BindingFlags.Instance)
                     .Where(f => Attribute.IsDefined(f, typeof(CheckForEqualsAttribute)))
-                    .All(f => f.GetValue(this).Equals(f.GetValue(other)));
+                    .All(f => f.GetValue(this)?.Equals(f.GetValue(other)) ?? (f.GetValue(other) == null ? true : false));
         }
 
         public override bool Equals(object obj)

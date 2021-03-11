@@ -21,52 +21,100 @@ namespace Elektronik.Clouds
             }
         }
 
-        #region ICloud implementaion
+        #region ICloudRenderer implementaion
+
+        public override void ShowItems(object sender, IEnumerable<TCloudItem> items)
+        {
+            OnClear(sender);
+            lock (GameObjects)
+            {
+                foreach (var obj in items)
+                {
+                    Pose pose = GetObjectPose(obj);
+                    MainThreadInvoker.Instance.Enqueue(() =>
+                    {
+                        var go = ObservationsPool.Spawn(pose.position, pose.rotation);
+                        GameObjects[(sender.GetHashCode(), obj.Id)] = go;
+
+                        var dc = go.GetComponent(DataComponent<TCloudItem>.GetInstantiable());
+                        if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
+                        var dataComponent = (DataComponent<TCloudItem>) dc;
+                        dataComponent.Data = obj;
+                    });
+                }
+            }
+        }
+
+        public override void OnClear(object sender)
+        {
+            lock (GameObjects)
+            {
+                var keys = GameObjects.Keys.Where(k => k.Item1 == sender.GetHashCode()).ToList();
+                foreach (var key in keys)
+                {
+                    if (!GameObjects.ContainsKey(key)) continue;
+
+                    var go = GameObjects[key];
+                    MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.Despawn(go));
+                    GameObjects.Remove(key);
+                }
+            }
+        }
 
         public override void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e)
         {
-            foreach (var obj in e.AddedItems)
+            lock (GameObjects)
             {
-                Pose pose = GetObjectPose(obj);
-                MainThreadInvoker.Instance.Enqueue(() =>
+                foreach (var obj in e.AddedItems)
                 {
-                    var go = ObservationsPool.Spawn(pose.position, pose.rotation);
-                    GameObjects[(sender.GetHashCode(), obj.Id)] = go;
+                    Pose pose = GetObjectPose(obj);
+                    MainThreadInvoker.Instance.Enqueue(() =>
+                    {
+                        var go = ObservationsPool.Spawn(pose.position, pose.rotation);
+                        GameObjects[(sender.GetHashCode(), obj.Id)] = go;
 
-                    var dc = go.GetComponent(DataComponent<TCloudItem>.GetInstantiable());
-                    if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
-                    var dataComponent = (DataComponent<TCloudItem>) dc;
-                    dataComponent.Data = obj;
-                    dataComponent.Container = sender;
-                });
+                        var dc = go.GetComponent(DataComponent<TCloudItem>.GetInstantiable());
+                        if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
+                        var dataComponent = (DataComponent<TCloudItem>) dc;
+                        dataComponent.Data = obj;
+                        dataComponent.Container = sender;
+                    });
+                }
             }
         }
 
         public override void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e)
         {
-            foreach (var obj in e.UpdatedItems)
+            lock (GameObjects)
             {
-                Pose pose = GetObjectPose(obj);
-                MainThreadInvoker.Instance.Enqueue(() =>
+                foreach (var obj in e.UpdatedItems)
                 {
-                    GameObjects[(sender.GetHashCode(), obj.Id)]
-                            .transform
-                            .SetPositionAndRotation(pose.position, pose.rotation);
-                    GameObjects[(sender.GetHashCode(), obj.Id)].GetComponent<DataComponent<TCloudItem>>().Data = obj;
-                });
+                    Pose pose = GetObjectPose(obj);
+                    MainThreadInvoker.Instance.Enqueue(() =>
+                    {
+                        GameObjects[(sender.GetHashCode(), obj.Id)]
+                                .transform
+                                .SetPositionAndRotation(pose.position, pose.rotation);
+                        GameObjects[(sender.GetHashCode(), obj.Id)].GetComponent<DataComponent<TCloudItem>>().Data =
+                                obj;
+                    });
+                }
             }
         }
 
         public override void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e)
         {
-            foreach (var id in e.RemovedIds)
+            lock (GameObjects)
             {
-                var key = (sender.GetHashCode(), id);
-                if (!GameObjects.ContainsKey(key)) continue;
-                
-                var go = GameObjects[key];
-                MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.Despawn(go));
-                GameObjects.Remove(key);
+                foreach (var id in e.RemovedIds)
+                {
+                    var key = (sender.GetHashCode(), id);
+                    if (!GameObjects.ContainsKey(key)) continue;
+
+                    var go = GameObjects[key];
+                    MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.Despawn(go));
+                    GameObjects.Remove(key);
+                }
             }
         }
 

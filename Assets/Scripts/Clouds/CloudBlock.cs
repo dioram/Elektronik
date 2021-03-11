@@ -4,7 +4,7 @@ namespace Elektronik.Clouds
 {
     public abstract class CloudBlock : MonoBehaviour
     {
-        public const int Capacity = 256 * 256;
+        public const int Capacity = 512 * 512;
         public Shader CloudShader;
         public bool Updated;
         public bool ToClear;
@@ -31,11 +31,14 @@ namespace Elektronik.Clouds
 
         protected virtual void Update()
         {
-            if (!Updated) return;
+            lock (this)
+            {
+                if (!Updated) return;
             
-            OnUpdated();
+                OnUpdated();
 
-            Updated = false;
+                Updated = false;
+            }
         }
 
         protected virtual void OnRenderObject()
@@ -53,7 +56,6 @@ namespace Elektronik.Clouds
         protected abstract void Init();
 
         protected abstract void SendData(Material renderMaterial);
-
 
         protected abstract void OnUpdated();
 

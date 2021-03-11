@@ -13,21 +13,21 @@ namespace Elektronik.Rosbag2
 
         public void Squeeze()
         {
-            for (int i = 0; i < _children.Count(); i++)
+            for (int i = 0; i < ChildrenList.Count(); i++)
             {
-                if (_children[i] is not VirtualContainer @virtual) continue;
+                if (ChildrenList[i] is not VirtualContainer @virtual) continue;
 
                 @virtual.Squeeze();
-                if (@virtual._children.Count != 1) continue;
+                if (@virtual.ChildrenList.Count != 1) continue;
 
-                _children[i] = @virtual._children[0];
-                _children[i].DisplayName = $"{@virtual.DisplayName}/{_children[i].DisplayName}";
+                ChildrenList[i] = @virtual.ChildrenList[0];
+                ChildrenList[i].DisplayName = $"{@virtual.DisplayName}/{ChildrenList[i].DisplayName}";
             }
         }
 
         public void AddChild(IContainerTree child)
         {
-            _children.Add(child);
+            ChildrenList.Add(child);
         }
 
         public IEnumerable<IContainerTree> GetRealChildren()
@@ -87,7 +87,7 @@ namespace Elektronik.Rosbag2
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<IContainerTree> Children => _children;
+        public IEnumerable<IContainerTree> Children => ChildrenList;
 
         public bool IsActive
         {
@@ -107,7 +107,7 @@ namespace Elektronik.Rosbag2
         #region Private definitions
 
         private bool _isActive = true;
-        private readonly List<IContainerTree> _children = new List<IContainerTree>();
+        protected readonly List<IContainerTree> ChildrenList = new List<IContainerTree>();
 
         #endregion
     }

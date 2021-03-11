@@ -117,7 +117,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public void UpdateItem(SlamLine item)
+        public void Update(SlamLine item)
         {
             var index = _lines.FindIndex(l => l.Id == item.Id);
             _lines[index] = item;
@@ -127,7 +127,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public void UpdateItems(IEnumerable<SlamLine> items)
+        public void Update(IEnumerable<SlamLine> items)
         {
             foreach (var item in items)
             {

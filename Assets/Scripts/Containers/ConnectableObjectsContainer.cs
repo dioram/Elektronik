@@ -69,18 +69,18 @@ namespace Elektronik.Containers
 
         public void AddRange(IEnumerable<TCloudItem> items) => _objects.AddRange(items);
 
-        public void UpdateItem(TCloudItem item)
+        public void Update(TCloudItem item)
         {
-            _objects.UpdateItem(item);
+            _objects.Update(item);
             foreach (var secondId in _table.GetColIndices(item.Id))
             {
-                _connects.UpdateItem(new SlamLine(item.Id, secondId));
+                _connects.Update(new SlamLine(item.Id, secondId));
             }
         }
 
-        public void UpdateItems(IEnumerable<TCloudItem> items)
+        public void Update(IEnumerable<TCloudItem> items)
         {
-            _objects.UpdateItems(items);
+            _objects.Update(items);
             Debug.Assert(_linesBuffer.Count == 0);
             foreach (var pt1 in items)
             {
@@ -90,7 +90,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            _connects.UpdateItems(_linesBuffer);
+            _connects.Update(_linesBuffer);
             _linesBuffer.Clear();
         }
 

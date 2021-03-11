@@ -46,15 +46,13 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public override void Present(object data)
         {
-            if (data is Frame {IsSpecial: true} frame && _info != null)
+            if (data is Frame {IsSpecial: true} frame 
+                && _info != null
+                && frame.Packet.Action == PacketPb.Types.ActionType.Info)
             {
                 _info.Clear();
-                string objectsType = frame.Packet.Action == PacketPb.Types.ActionType.Info
-                        ? frame.Packet.DataCase.ToString()
-                        : null;
-                IEnumerable<SlamPoint> objects = frame.Packet.Action == PacketPb.Types.ActionType.Info
-                        ? Pkg2Pts(frame.Packet).ToArray()
-                        : null;
+                string objectsType = frame.Packet.DataCase.ToString();
+                IEnumerable<SlamPoint> objects = Pkg2Pts(frame.Packet).ToArray();
                 _info.Render((frame.Packet.Message, objectsType, objects));
             }
 
