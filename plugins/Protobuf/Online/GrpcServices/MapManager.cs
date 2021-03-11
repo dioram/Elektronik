@@ -67,7 +67,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                             Container.AddRange(readOnlyData);
                             break;
                         case PacketPb.Types.ActionType.Update:
-                            Container.UpdateItems(readOnlyData);
+                            Container.Update(readOnlyData);
                             break;
                         case PacketPb.Types.ActionType.Remove:
                             Container.Remove(readOnlyData);

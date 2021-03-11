@@ -54,7 +54,7 @@ namespace Elektronik.Containers
         public SlamLine this[int index]
         {
             get => _connections[index];
-            set => UpdateItem(value);
+            set => Update(value);
         }
 
         public void Add(SlamLine obj)
@@ -89,7 +89,7 @@ namespace Elektronik.Containers
             _linesBuffer.Clear();
         }
 
-        public void UpdateItem(SlamLine item)
+        public void Update(SlamLine item)
         {
             int index = _connectionsIndices[item];
             item.Id = index;
@@ -100,7 +100,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public void UpdateItems(IEnumerable<SlamLine> items)
+        public void Update(IEnumerable<SlamLine> items)
         {
             Debug.Assert(_linesBuffer.Count == 0);
             foreach (var obj in items)

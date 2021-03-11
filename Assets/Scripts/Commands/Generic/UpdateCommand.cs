@@ -21,7 +21,7 @@ namespace Elektronik.Commands.Generic
             Objs2Update = new ReadOnlyCollection<T>(objects.ToList());
         }
 
-        public virtual void Execute() => Container.UpdateItems(Objs2Update);
-        public virtual void UnExecute() => Container.UpdateItems(Objs2Restore);
+        public virtual void Execute() => Container.Update(Objs2Update);
+        public virtual void UnExecute() => Container.Update(Objs2Restore);
     }
 }

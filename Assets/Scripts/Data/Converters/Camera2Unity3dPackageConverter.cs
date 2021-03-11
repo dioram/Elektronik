@@ -6,6 +6,11 @@ namespace Elektronik.Data.Converters
     {
         private Matrix4x4 _initPose;
 
+        public override void Convert(ref Vector3 pos)
+        {
+            pos.y = -pos.y;
+        }
+
         public override void SetInitTRS(Vector3 pos, Quaternion rot, Vector3 scale)
         {
             _initPose = Matrix4x4.TRS(pos, rot, scale);

@@ -11,6 +11,12 @@ namespace Elektronik.UI
     {
         public event Action<float> OnTimelineChanged;
 
+        public float Value
+        {
+            get => _slider.value;
+            set => _slider.value = value;
+        }
+
         private event Action<float> OnTimelinePointerUp;
         private Slider _slider;
 

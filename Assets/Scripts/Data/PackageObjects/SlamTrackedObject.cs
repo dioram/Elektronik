@@ -12,8 +12,7 @@ namespace Elektronik.Data.PackageObjects
 
         public SlamPoint AsPoint() => new SlamPoint(Id, Position, Color);
 
-        public SlamTrackedObject(int id, Color color = default, Vector3 position = default,
-                                 Quaternion rotation = default)
+        public SlamTrackedObject(int id, Vector3 position, Quaternion rotation, Color color = default)
         {
             Id = id;
             Color = color;

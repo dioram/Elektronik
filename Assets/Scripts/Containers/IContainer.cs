@@ -17,7 +17,7 @@ namespace Elektronik.Containers
 
         void AddRange(IEnumerable<T> items);
         void Remove(IEnumerable<T> items);
-        void UpdateItem(T item);
-        void UpdateItems(IEnumerable<T> items);
+        void Update(T item);
+        void Update(IEnumerable<T> items);
     }
 }

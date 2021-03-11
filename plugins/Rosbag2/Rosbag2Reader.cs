@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Data.Converters;
-using Elektronik.Extensions;
-using Elektronik.Offline;
 using Elektronik.PluginsSystem;
 using Elektronik.Presenters;
-using Elektronik.Rosbag2.Data;
+using Elektronik.Rosbag2.Containers;
 using Elektronik.Rosbag2.Parsers;
 using Elektronik.Settings;
 using UnityEngine;
@@ -21,7 +17,7 @@ namespace Elektronik.Rosbag2
         #region IDataSourceOffline implementation
 
         public string DisplayName => "Rosbag2 reader";
-        public string Description => "Rosbag2 description";
+        public string Description => "This plugins allows Elektronik to read data saved from ROS2.";
 
         public SettingsBag Settings
         {
@@ -41,107 +37,116 @@ namespace Elektronik.Rosbag2
         {
             _threadWorker = new ThreadWorker();
             _data.Init(_settings.DirPath);
-            _startTimestamp = _data.DBModel.Table<Message>().OrderBy(m => m.Timestamp).First().Timestamp;
-            AmountOfFrames = _data.DBModel.Table<Message>().Count();
-            _messageParser = _data.GetRealChildren()
-                    .OfType<TrackedObjectsContainer>()
-                    .Select(c => (c, _data.DBModel.Table<Topic>().ToList().First(t => t.Name == _data.GetFullPath(c))))
-                    .Select(d => new TrackedObjectsParser(d.c, d.Item2)).BuildChain();
+
+            _actualTimestamps = _data.GetRealChildren()
+                    .OfType<IDBContainer>()
+                    .SelectMany(c => c.ActualTimestamps)
+                    .OrderBy(i => i)
+                    .ToArray();
+
             Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one);
-            _messageParser.SetConverter(Converter);
-            _frames = new FramesCollection<Frame>(ReadCommands, AmountOfFrames);
+            RosMessageConvertExtender.Converter = Converter;
         }
 
         public void Stop()
         {
-            Data.Clear();
+            _data.Reset();
             _threadWorker.Dispose();
         }
 
         public void Update(float delta)
         {
-            if (!_playing) return;
-
-            _timeout -= delta;
-            if (_timeout < 0)
+            lock (this)
             {
-                Task.Run(() => _threadWorker.Enqueue(() =>
+                if (_threadWorker.QueuedActions != 0) return;
+                if (_playing)
                 {
-                    if (NextFrame()) return;
 
-                    // getting timeout in seconds
-                    var currTimestamp = _frames.Current.Timestamp;
-                    if (NextFrame())
+                    if (CurrentPosition == AmountOfFrames - 1)
                     {
-                        var nextTimestamp = _frames.Current.Timestamp;
-                        PreviousFrame();
-                        float nanoDelta = nextTimestamp - currTimestamp;
-                        _timeout = nanoDelta / 1000000000;
-                    }
-                    else
-                    {
-                        _timeout = 0.001f;
+                        MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
+                        _playing = false;
+                        return;
                     }
 
-                    MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
-                    _playing = false;
-                }));
+                    NextFrame();
+                }
+                else if (_rewindPlannedPos > 0)
+                {               
+                    _currentPosition = _rewindPlannedPos;
+                    _rewindPlannedPos = -1; 
+                    _threadWorker.Enqueue(() =>
+                    {
+                        _data.ShowAt(_actualTimestamps[_currentPosition], true);
+                    });
+                }
             }
         }
 
         public void Play()
         {
-            _playing = true;
+            lock (this)
+            {
+                _playing = true;
+            }
         }
 
         public void Pause()
         {
-            _playing = false;
+            lock (this)
+            {
+                _playing = false;
+            }
         }
 
         public void StopPlaying()
         {
-            _playing = false;
-            _threadWorker.Enqueue(() =>
+            lock (this)
             {
-                Data.Clear();
-                PresentersChain?.Clear();
-                _frames.SoftReset();
-            });
+                _playing = false;
+                _threadWorker.Enqueue(() =>
+                {
+                    _currentPosition = 0;
+                    Data.Clear();
+                    PresentersChain?.Clear();
+                });
+            }
         }
 
         public void PreviousKeyFrame()
         {
-            _threadWorker.Enqueue(() =>
+            lock (this)
             {
-                do
+                _threadWorker.Enqueue(() =>
                 {
-                    if (!PreviousFrame()) break;
-                } while (_frames.Current.Command == null);
-            });
+                    if (CurrentPosition == 0) return;
+                    _currentPosition--;
+                    _data.ShowAt(_actualTimestamps[CurrentPosition]);
+                });  
+            }
         }
 
         public void NextKeyFrame()
         {
-            _threadWorker.Enqueue(() =>
+            lock (this)
             {
-                do
-                {
-                    if (!NextFrame()) break;
-                } while (_frames.Current.Command == null);
-            });
+                NextFrame();
+            }
         }
 
-        public int AmountOfFrames { get; private set; } = 0;
-        public int CurrentTimestamp { get; private set; }
+        public int AmountOfFrames => _actualTimestamps?.Length ?? 0;
+
+        public int CurrentTimestamp =>
+                (int) ((_actualTimestamps?[CurrentPosition] - _actualTimestamps?[0] ?? 0) / 1000);
 
         public int CurrentPosition
         {
             get => _currentPosition;
             set
             {
-                if (_currentPosition == value) return;
-                RewindAt(value);
+                if (value < 0 || value >= AmountOfFrames || _currentPosition == value) return;
+                _rewindPlannedPos = value;
+                _playing = false;
             }
         }
 
@@ -153,77 +158,20 @@ namespace Elektronik.Rosbag2
 
         private Rosbag2Settings _settings = new Rosbag2Settings();
         private readonly Rosbag2ContainerTree _data = new Rosbag2ContainerTree("TMP");
-        private DataParser<(Message, Topic)> _messageParser;
-        private FramesCollection<Frame> _frames;
         private ThreadWorker _threadWorker;
-        private long _startTimestamp;
         private bool _playing;
-        private float _timeout;
         private int _currentPosition;
-        private bool _rewinding = false;
+        private long[] _actualTimestamps;
+        private int _rewindPlannedPos;
 
-        private bool PreviousFrame()
+        private void NextFrame()
         {
-            var curr = _frames.Current;
-            if (_frames.MovePrevious())
-            {
-                curr.Rewind();
-                PresentersChain?.Present(_frames.Current);
-                _currentPosition = _frames.CurrentIndex;
-                CurrentTimestamp = (int) (_frames.Current.Timestamp / 1000);
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool NextFrame()
-        {
-            if (_frames.MoveNext())
-            {
-                var next = _frames.Current;
-                next.Show();
-                PresentersChain?.Present(next);
-                _currentPosition = _frames.CurrentIndex;
-                CurrentTimestamp = (int) (_frames.Current.Timestamp / 1000);
-                return true;
-            }
-
-            return false;
-        }
-
-        private IEnumerator<Frame> ReadCommands(bool _)
-        {
-            long lastTimestamp = long.MinValue;
-            while (true)
-            {
-                var timestamp = lastTimestamp;
-                var message = _data.DBModel.Table<Message>()
-                        .Where(m => m.Timestamp > timestamp)
-                        .OrderBy(m => m.Timestamp)
-                        .FirstOrDefault();
-                lastTimestamp = message?.Timestamp ?? lastTimestamp;
-                if (message == null) yield break;
-
-                var topic = _data.DBModel.Table<Topic>().First(t => t.Id == message.TopicID);
-                yield return Frame.ParseMessage(lastTimestamp - _startTimestamp, message, topic, _messageParser);
-            }
-        }
-
-        private void RewindAt(int pos)
-        {
-            if (pos < 0 || pos >= AmountOfFrames || pos == CurrentPosition || _rewinding) return;
-
             _threadWorker.Enqueue(() =>
             {
-                _rewinding = true;
-                while (_frames.CurrentIndex != pos)
-                {
-                    if (_frames.CurrentIndex < pos) NextFrame();
-                    else PreviousFrame();
-                }
+                if (CurrentPosition == AmountOfFrames - 1) return;
 
-                _rewinding = false;
+                _currentPosition++;
+                _data.ShowAt(_actualTimestamps[CurrentPosition]);
             });
         }
 

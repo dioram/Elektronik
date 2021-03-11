@@ -109,7 +109,7 @@ namespace Elektronik.Containers
             {
                 if (_objects.ContainsKey(value.Id))
                 {
-                    UpdateItem(value);
+                    Update(value);
                 }
                 else
                 {
@@ -157,7 +157,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public void UpdateItem(SlamTrackedObject item)
+        public void Update(SlamTrackedObject item)
         {
             PureUpdate(item);
             if (IsActive)
@@ -166,7 +166,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public void UpdateItems(IEnumerable<SlamTrackedObject> items)
+        public void Update(IEnumerable<SlamTrackedObject> items)
         {
             foreach (var item in items)
             {
@@ -235,6 +235,7 @@ namespace Elektronik.Containers
 
             var container = CreateTrackContainer(history);
             _objects.Add(item.Id, (item, container));
+            _maxId = history.Max(l => l.Id);
             if (IsActive)
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
@@ -251,6 +252,7 @@ namespace Elektronik.Containers
                 _objects.Add(i.Id, (i, container));
             }
 
+            _maxId = histories.SelectMany(l => l).Max(l => l.Id);
             if (IsActive)
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
