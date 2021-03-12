@@ -1,13 +1,10 @@
 ﻿using System;
-using Elektronik.Containers;
-using Elektronik.Data.Converters;
 using Elektronik.Extensions;
 using Elektronik.PluginsSystem;
 using Elektronik.Presenters;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.GrpcServices;
 using Elektronik.Protobuf.Online.Presenters;
-using Elektronik.Settings;
 using Grpc.Core;
 using UnityEngine;
 
@@ -15,7 +12,7 @@ namespace Elektronik.Protobuf.Online
 {
     using GrpcServer = Grpc.Core.Server;
 
-    public class ProtobufGrpcServer : IDataSourceOnline
+    public class ProtobufGrpcServer : DataSourceBase<OnlineSettingsBag>,  IDataSourceOnline
     {
         public ProtobufGrpcServer()
         {
@@ -25,33 +22,16 @@ namespace Elektronik.Protobuf.Online
             {
                 _imagePresenter
             }.BuildChain();
-            
-            var sh = new OnlineSettingsHistory();
-            SettingsHistory = sh;
-            if (sh.Recent.Count > 0) _onlineSettings = (OnlineSettingsBag) sh.Recent[0];
-            else _onlineSettings = new OnlineSettingsBag();
+            Data = _containerTree;
         }
 
         #region IDataSourceOnline implementation
 
-        public string DisplayName => "Protobuf";
+        public override string DisplayName => "Protobuf";
 
-        public string Description => "Protocol buffers through gRPC.";
+        public override string Description => "Protocol buffers through gRPC.";
 
-        public ICSConverter Converter { get; set; }
-
-        public IContainerTree Data => _containerTree;
-        public DataPresenter PresentersChain { get; private set; }
-
-        public SettingsBag Settings
-        {
-            get => _onlineSettings;
-            set => _onlineSettings = (OnlineSettingsBag)value;
-        }
-
-        public ISettingsHistory SettingsHistory { get; }
-
-        public void Start()
+        public override void Start()
         {
             if (!(Settings is OnlineSettingsBag))
             {
@@ -69,7 +49,7 @@ namespace Elektronik.Protobuf.Online
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             GrpcEnvironment.SetLogger(new UnityLogger());
 
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * _onlineSettings.Scale);
+            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
 
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
@@ -80,8 +60,8 @@ namespace Elektronik.Protobuf.Online
                 new InfinitePlanesMapManager(_containerTree.InfinitePlanes, Converter)
             }.BuildChain();
 
-            _containerTree.DisplayName = $"From gRPC {_onlineSettings.IPAddress}:{_onlineSettings.Port}";
-            Debug.Log($"{_onlineSettings.IPAddress}:{_onlineSettings.Port}");
+            _containerTree.DisplayName = $"From gRPC {TypedSettings.IPAddress}:{TypedSettings.Port}";
+            Debug.Log($"{TypedSettings.IPAddress}:{TypedSettings.Port}");
 
             _server = new GrpcServer()
             {
@@ -93,13 +73,13 @@ namespace Elektronik.Protobuf.Online
                 },
                 Ports =
                 {
-                    new ServerPort(_onlineSettings.IPAddress, _onlineSettings.Port, ServerCredentials.Insecure),
+                    new ServerPort(TypedSettings.IPAddress, TypedSettings.Port, ServerCredentials.Insecure),
                 },
             };
             StartServer();
         }
 
-        public void Stop()
+        public override void Stop()
         {
             if (!_serverStarted) return;
             _server.ShutdownAsync().Wait();
@@ -107,7 +87,7 @@ namespace Elektronik.Protobuf.Online
             Data.Clear();
         }
 
-        public void Update(float delta)
+        public override void Update(float delta)
         {
             // Do nothing
         }
@@ -129,8 +109,6 @@ namespace Elektronik.Protobuf.Online
         }
 
         private GrpcServer _server;
-
-        private OnlineSettingsBag _onlineSettings;
 
         #endregion
     }

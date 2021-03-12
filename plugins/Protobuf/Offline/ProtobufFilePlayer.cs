@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Elektronik.Containers;
-using Elektronik.Data.Converters;
 using Elektronik.Extensions;
 using Elektronik.Offline;
 using Elektronik.PluginsSystem;
@@ -11,73 +9,60 @@ using Elektronik.Presenters;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
-using Elektronik.Settings;
 using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline
 {
-    public class ProtobufFilePlayer : IDataSourceOffline
+    public class ProtobufFilePlayer : DataSourceBase<OfflineSettingsBag>, IDataSourceOffline
     {
         public const float Timeout = 0.5f;
-        public static OfflineSettingsBag OfflineSettings;
 
         public ProtobufFilePlayer()
         {
             _containerTree = new ProtobufContainerTree("Protobuf");
+            Data = _containerTree;
             _parsersChain = new DataParser<PacketPb>[]
             {
                 new ObjectsParser(_containerTree.InfinitePlanes,
                                   _containerTree.Points,
-                                  _containerTree.Observations),
+                                  _containerTree.Observations,
+                                  TypedSettings.ImagePath),
                 new TrackedObjectsParser(_containerTree.TrackedObjs),
                 new InfoParser(),
             }.BuildChain();
 
             PresentersChain = new DataPresenter[]
             {
-                new ImagePresenter(OfflineSettings),
+                new ImagePresenter(TypedSettings),
                 new SlamDataInfoPresenter(_containerTree.Points, _containerTree.Observations),
             }.BuildChain();
-            
-            var sh = new OfflineSettingsHistory();
-            SettingsHistory = sh;
-            if (sh.Recent.Count > 0) OfflineSettings = (OfflineSettingsBag) sh.Recent[0];
-            else OfflineSettings = new OfflineSettingsBag();
         }
 
         #region IDataSourceOffline
 
-        public string DisplayName => "Protobuf";
+        public override string DisplayName => "Protobuf";
 
-        public string Description => "Reads protobuf packages from file.";
+        public override string Description => "Reads protobuf packages from file.";
 
-        public SettingsBag Settings
+        public override void Start()
         {
-            get => OfflineSettings;
-            set => OfflineSettings = (OfflineSettingsBag)value;
-        }
-
-        public ISettingsHistory SettingsHistory { get; }
-
-        public void Start()
-        {
-            _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(OfflineSettings.FilePath)}";
-            _input = File.OpenRead(OfflineSettings.FilePath!);
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * OfflineSettings.Scale);
+            _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(TypedSettings.FilePath)}";
+            _input = File.OpenRead(TypedSettings.FilePath!);
+            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
             _parsersChain.SetConverter(Converter);
-            
+
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
             _threadWorker = new ThreadWorker();
         }
 
-        public void Stop()
+        public override void Stop()
         {
             Data.Clear();
             _input.Dispose();
             _threadWorker.Dispose();
         }
 
-        public void Update(float delta)
+        public override void Update(float delta)
         {
             if (!_playing) return;
 
@@ -93,10 +78,6 @@ namespace Elektronik.Protobuf.Offline
                 _timeout = Timeout;
             }
         }
-
-        public ICSConverter Converter { get; set; }
-
-        public IContainerTree Data => _containerTree;
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
 
@@ -153,8 +134,6 @@ namespace Elektronik.Protobuf.Offline
 
         public event Action Finished;
 
-        public DataPresenter PresentersChain { get; }
-
         #endregion
 
         #region Private definitions
@@ -193,6 +172,7 @@ namespace Elektronik.Protobuf.Offline
                 _input.Position = 0;
                 return BitConverter.ToInt32(buffer, 0);
             }
+
             _input.Position = 0;
             return 0;
         }

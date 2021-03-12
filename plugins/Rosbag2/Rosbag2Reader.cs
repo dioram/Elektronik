@@ -1,50 +1,30 @@
 ﻿using System;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Data.Converters;
 using Elektronik.PluginsSystem;
-using Elektronik.Presenters;
 using Elektronik.Rosbag2.Containers;
 using Elektronik.Rosbag2.Parsers;
-using Elektronik.Settings;
 using UnityEngine;
 using RosMessage = RosSharp.RosBridgeClient.Message;
 
 namespace Elektronik.Rosbag2
 {
-    public class Rosbag2Reader : IDataSourceOffline
+    public class Rosbag2Reader : DataSourceBase<Rosbag2Settings>, IDataSourceOffline
     {
         public Rosbag2Reader()
         {
-            var sh = new Rosbag2SettingsHistory();
-            SettingsHistory = sh;
-            if (sh.Recent.Count > 0) _settings = (Rosbag2Settings) sh.Recent[0];
-            else _settings = new Rosbag2Settings();
+            _data = new Rosbag2ContainerTree("TMP");
+            Data = _data;
         }
-
+        
         #region IDataSourceOffline implementation
 
-        public string DisplayName => "Rosbag2 reader";
-        public string Description => "This plugins allows Elektronik to read data saved from ROS2.";
+        public override string DisplayName => "Rosbag2 reader";
+        public override string Description => "This plugins allows Elektronik to read data saved from ROS2.";
 
-        public SettingsBag Settings
-        {
-            get => _settings;
-            set => _settings = (Rosbag2Settings) value;
-        }
-
-        public ISettingsHistory SettingsHistory { get; } = new Rosbag2SettingsHistory();
-
-        public ICSConverter Converter { get; set; }
-
-        public IContainerTree Data => _data;
-
-        public DataPresenter PresentersChain { get; }
-
-        public void Start()
+        public override void Start()
         {
             _threadWorker = new ThreadWorker();
-            _data.Init(_settings.DirPath);
+            _data.Init(TypedSettings.DirPath);
 
             _actualTimestamps = _data.GetRealChildren()
                     .OfType<IDBContainer>()
@@ -56,13 +36,13 @@ namespace Elektronik.Rosbag2
             RosMessageConvertExtender.Converter = Converter;
         }
 
-        public void Stop()
+        public override void Stop()
         {
             _data.Reset();
             _threadWorker.Dispose();
         }
 
-        public void Update(float delta)
+        public override void Update(float delta)
         {
             if (_threadWorker.QueuedActions != 0) return;
             if (_playing)
@@ -148,8 +128,7 @@ namespace Elektronik.Rosbag2
 
         #region Private definitions
 
-        private Rosbag2Settings _settings = new Rosbag2Settings();
-        private readonly Rosbag2ContainerTree _data = new Rosbag2ContainerTree("TMP");
+        private readonly Rosbag2ContainerTree _data;
         private ThreadWorker _threadWorker;
         private bool _playing;
         private int _currentPosition;

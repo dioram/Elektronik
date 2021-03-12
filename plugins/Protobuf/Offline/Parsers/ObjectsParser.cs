@@ -14,14 +14,17 @@ namespace Elektronik.Protobuf.Offline.Parsers
         private readonly IContainer<SlamInfinitePlane> _infinitePlanes;
         private readonly IConnectableObjectsContainer<SlamPoint> _points;
         private readonly IConnectableObjectsContainer<SlamObservation> _observations;
+        private readonly string _imagePath;
 
         public ObjectsParser(IContainer<SlamInfinitePlane> infinitePlanes,
                              IConnectableObjectsContainer<SlamPoint> points,
-                             IConnectableObjectsContainer<SlamObservation> observations)
+                             IConnectableObjectsContainer<SlamObservation> observations,
+                             string imagePath)
         {
             _infinitePlanes = infinitePlanes;
             _points = points;
             _observations = observations;
+            _imagePath = imagePath;
         }
 
         private ICommand GetCommandForConnectableObjects<T>(IConnectableObjectsContainer<T> map,
@@ -94,10 +97,8 @@ namespace Elektronik.Protobuf.Offline.Parsers
                                                        packet);
             case PacketPb.DataOneofCase.Observations:
                 return GetCommandForConnectableObjects(_observations,
-                                                       packet.ExtractObservations(
-                                                                   Converter,
-                                                                   ProtobufFilePlayer.OfflineSettings.ImagePath)
-                                                               .ToList(), packet);
+                                                       packet.ExtractObservations(Converter, _imagePath).ToList(),
+                                                       packet);
             case PacketPb.DataOneofCase.InfinitePlanes:
                 return GetCommand(_infinitePlanes,
                                   packet.ExtractInfinitePlanes(Converter).ToList(), packet);
