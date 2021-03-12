@@ -19,7 +19,7 @@ namespace Elektronik.Protobuf.Offline
     public class ProtobufFilePlayer : IDataSourceOffline
     {
         public const float Timeout = 0.5f;
-        public static OfflineSettingsBag OfflineSettings = new OfflineSettingsBag();
+        public static OfflineSettingsBag OfflineSettings;
 
         public ProtobufFilePlayer()
         {
@@ -38,6 +38,11 @@ namespace Elektronik.Protobuf.Offline
                 new ImagePresenter(OfflineSettings),
                 new SlamDataInfoPresenter(_containerTree.Points, _containerTree.Observations),
             }.BuildChain();
+            
+            var sh = new OfflineSettingsHistory();
+            SettingsHistory = sh;
+            if (sh.Recent.Count > 0) OfflineSettings = (OfflineSettingsBag) sh.Recent[0];
+            else OfflineSettings = new OfflineSettingsBag();
         }
 
         #region IDataSourceOffline
@@ -52,7 +57,7 @@ namespace Elektronik.Protobuf.Offline
             set => OfflineSettings = (OfflineSettingsBag)value;
         }
 
-        public ISettingsHistory SettingsHistory { get; } = new OfflineSettingsHistory();
+        public ISettingsHistory SettingsHistory { get; }
 
         public void Start()
         {

@@ -61,7 +61,18 @@ namespace Elektronik.Settings
 
             SetupSettings();
             _initCompleted = true;
-            PluginSelected(this, new ListBox.SelectionChangedEventArgs(0));
+
+            var selectedIndex = 0;
+            for (int i = 0; i < PluginsListBox.Count(); i++)
+            {
+                var lbi = (PluginListBoxItem) PluginsListBox[i];
+                if (lbi.State)
+                {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+            PluginSelected(this, new ListBox.SelectionChangedEventArgs(selectedIndex));
         }
 
         private void SetupSettings()
