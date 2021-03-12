@@ -9,8 +9,8 @@ namespace Elektronik
         private readonly Thread _thread;
         private readonly Queue<Action> _actions = new Queue<Action>();
 
-        public int QueuedActions => _actions.Count;
-        
+        public int QueuedActions { get; private set; }
+
         public ThreadWorker()
         {
             _thread = new Thread(Start);
@@ -27,6 +27,7 @@ namespace Elektronik
             lock (_actions)
             {
                 _actions.Enqueue(action);
+                QueuedActions++;
             }
         }
 
@@ -39,6 +40,7 @@ namespace Elektronik
                     while (_actions.Count > 0)
                     {
                         _actions.Dequeue()();
+                        QueuedActions--;
                     }
                 }
 

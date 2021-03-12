@@ -14,6 +14,14 @@ namespace Elektronik.Rosbag2
 {
     public class Rosbag2Reader : IDataSourceOffline
     {
+        public Rosbag2Reader()
+        {
+            var sh = new Rosbag2SettingsHistory();
+            SettingsHistory = sh;
+            if (sh.Recent.Count > 0) _settings = (Rosbag2Settings) sh.Recent[0];
+            else _settings = new Rosbag2Settings();
+        }
+
         #region IDataSourceOffline implementation
 
         public string DisplayName => "Rosbag2 reader";
@@ -56,82 +64,66 @@ namespace Elektronik.Rosbag2
 
         public void Update(float delta)
         {
-            lock (this)
+            if (_threadWorker.QueuedActions != 0) return;
+            if (_playing)
             {
-                if (_threadWorker.QueuedActions != 0) return;
-                if (_playing)
+                if (CurrentPosition == AmountOfFrames - 1)
                 {
-
-                    if (CurrentPosition == AmountOfFrames - 1)
-                    {
-                        MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
-                        _playing = false;
-                        return;
-                    }
-
-                    NextFrame();
+                    MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
+                    _playing = false;
+                    return;
                 }
-                else if (_rewindPlannedPos > 0)
-                {               
-                    _currentPosition = _rewindPlannedPos;
-                    _rewindPlannedPos = -1; 
-                    _threadWorker.Enqueue(() =>
-                    {
-                        _data.ShowAt(_actualTimestamps[_currentPosition], true);
-                    });
-                }
+
+                NextKeyFrame();
+            }
+            else if (_rewindPlannedPos > 0)
+            {
+                _currentPosition = _rewindPlannedPos;
+                _rewindPlannedPos = -1;
+                _threadWorker.Enqueue(() => { _data.ShowAt(_actualTimestamps[_currentPosition], true); });
             }
         }
 
         public void Play()
         {
-            lock (this)
-            {
-                _playing = true;
-            }
+            _playing = true;
         }
 
         public void Pause()
         {
-            lock (this)
-            {
-                _playing = false;
-            }
+            _playing = false;
         }
 
         public void StopPlaying()
         {
-            lock (this)
+            _playing = false;
+            _threadWorker.Enqueue(() =>
             {
-                _playing = false;
-                _threadWorker.Enqueue(() =>
-                {
-                    _currentPosition = 0;
-                    Data.Clear();
-                    PresentersChain?.Clear();
-                });
-            }
+                _currentPosition = 0;
+                Data.Clear();
+                PresentersChain?.Clear();
+            });
         }
 
         public void PreviousKeyFrame()
         {
-            lock (this)
+            _threadWorker.Enqueue(() =>
             {
-                _threadWorker.Enqueue(() =>
-                {
-                    if (CurrentPosition == 0) return;
-                    _currentPosition--;
-                    _data.ShowAt(_actualTimestamps[CurrentPosition]);
-                });  
-            }
+                if (CurrentPosition == 0) return;
+                _currentPosition--;
+                _data.ShowAt(_actualTimestamps[CurrentPosition]);
+            });
         }
 
         public void NextKeyFrame()
         {
-            lock (this)
+            _threadWorker.Enqueue(() =>
             {
-                NextFrame();
-            }
+                if (CurrentPosition == AmountOfFrames - 1) return;
+
+                _currentPosition++;
+                _data.ShowAt(_actualTimestamps[CurrentPosition]);
+            });
         }
 
         public int AmountOfFrames => _actualTimestamps?.Length ?? 0;
@@ -163,17 +155,6 @@ namespace Elektronik.Rosbag2
         private int _currentPosition;
         private long[] _actualTimestamps;
         private int _rewindPlannedPos;
-
-        private void NextFrame()
-        {
-            _threadWorker.Enqueue(() =>
-            {
-                if (CurrentPosition == AmountOfFrames - 1) return;
-
-                _currentPosition++;
-                _data.ShowAt(_actualTimestamps[CurrentPosition]);
-            });
-        }
 
         #endregion
     }

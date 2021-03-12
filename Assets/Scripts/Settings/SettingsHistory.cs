@@ -33,6 +33,9 @@ namespace Elektronik.Settings
 
         public void Add(T recent)
         {
+            if (recent == null) return;
+            if (!recent.Validate()) return;
+            
             T existing = _recent.Items.Find(setting => setting.Equals(recent));
             if (existing != null)
             {

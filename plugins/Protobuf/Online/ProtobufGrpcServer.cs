@@ -25,6 +25,11 @@ namespace Elektronik.Protobuf.Online
             {
                 _imagePresenter
             }.BuildChain();
+            
+            var sh = new OnlineSettingsHistory();
+            SettingsHistory = sh;
+            if (sh.Recent.Count > 0) _onlineSettings = (OnlineSettingsBag) sh.Recent[0];
+            else _onlineSettings = new OnlineSettingsBag();
         }
 
         #region IDataSourceOnline implementation
@@ -44,7 +49,7 @@ namespace Elektronik.Protobuf.Online
             set => _onlineSettings = (OnlineSettingsBag)value;
         }
 
-        public ISettingsHistory SettingsHistory { get; } = new OnlineSettingsHistory();
+        public ISettingsHistory SettingsHistory { get; }
 
         public void Start()
         {
@@ -125,7 +130,7 @@ namespace Elektronik.Protobuf.Online
 
         private GrpcServer _server;
 
-        private OnlineSettingsBag _onlineSettings = new OnlineSettingsBag();
+        private OnlineSettingsBag _onlineSettings;
 
         #endregion
     }
