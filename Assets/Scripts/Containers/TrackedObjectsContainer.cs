@@ -5,10 +5,11 @@ using System.Linq;
 using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class TrackedObjectsContainer : ITrackedContainer<SlamTrackedObject>, IContainerTree
+    public class TrackedObjectsContainer : ITrackedContainer<SlamTrackedObject>, IContainerTree, ILookable
     {
         public TrackedObjectsContainer(string displayName = "")
         {
@@ -257,6 +258,20 @@ namespace Elektronik.Containers
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
             }
+        }
+
+        #endregion
+
+        #region ILookable implementation
+
+        public (Vector3 pos, Quaternion rot) Look(Transform transform)
+        {
+            if (_lineContainers.Count != 0 && _lineContainers[0] is ILookable lookable)
+            {
+                return lookable.Look(transform);
+            }
+
+            return (transform.position, transform.rotation);
         }
 
         #endregion

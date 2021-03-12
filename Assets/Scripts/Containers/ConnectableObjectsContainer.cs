@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, IContainerTree
+    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, IContainerTree, ILookable
             where TCloudItem : struct, ICloudItem
     {
         public ConnectableObjectsContainer(IContainer<TCloudItem> objects,
@@ -273,6 +273,15 @@ namespace Elektronik.Containers
             {
                 child.SetRenderer(renderer);
             }
+        }
+
+        #endregion
+
+        #region ILookable implementation
+        
+        public (Vector3 pos, Quaternion rot) Look(Transform transform)
+        {
+            return (_objects as ILookable)?.Look(transform) ?? (transform.position, transform.rotation);
         }
 
         #endregion
