@@ -26,7 +26,9 @@ namespace Elektronik.PluginsSystem.UnitySide
         {
             var pluginsDir = Path.Combine(Directory.GetCurrentDirectory(), @"Plugins");
             var dlls = Directory.GetDirectories(pluginsDir)
-                    .SelectMany(d => Directory.GetFiles(Path.Combine(d, "libraries"), "*.dll"));
+                    .Select(d => Path.Combine(d, "libraries"))
+                    .Where(Directory.Exists)
+                    .SelectMany(d => Directory.GetFiles(d, "*.dll"));
             foreach (var file in dlls)
             {
                 try
