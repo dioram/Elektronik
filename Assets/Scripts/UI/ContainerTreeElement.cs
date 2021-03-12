@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Elektronik.Cameras;
 using Elektronik.Containers;
 using UniRx;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace Elektronik.UI
         public IContainerTree Node;
         public Button TreeButton;
         public ButtonChangingIcons VisibleButton;
+        public Button CameraButton;
         public Text NameLabel;
         public RectTransform Content;
         public GameObject Spacer;
@@ -36,6 +38,15 @@ namespace Elektronik.UI
                     .Subscribe(_ => { Node.IsActive = !Node.IsActive; });
             TreeButton.OnClickAsObservable().Subscribe(_ => ChangeState());
             NameLabel.text = Node.DisplayName;
+
+            if (Node is ILookable lookable && Camera.main.GetComponent<LookableCamera>() is { } cam)
+            {
+                CameraButton.OnClickAsObservable().Subscribe(_ => cam.Look(lookable.Look(cam.transform)));
+            }
+            else
+            {
+                CameraButton.gameObject.SetActive(false);
+            }
 
             StartCoroutine(CheckChildrenChanges());
         }

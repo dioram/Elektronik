@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class SlamLinesContainer : IContainer<SlamLine>, IContainerTree
+    public class SlamLinesContainer : IContainer<SlamLine>, IContainerTree, ILookable
     {
         public SlamLinesContainer(string displayName = "")
         {
@@ -86,6 +86,7 @@ namespace Elektronik.Containers
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(_linesBuffer));
             }
+
             _linesBuffer.Clear();
         }
 
@@ -115,6 +116,7 @@ namespace Elektronik.Containers
             {
                 OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(_linesBuffer));
             }
+
             _linesBuffer.Clear();
         }
 
@@ -128,6 +130,7 @@ namespace Elektronik.Containers
             {
                 OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {obj.Id}));
             }
+
             return true;
         }
 
@@ -187,7 +190,7 @@ namespace Elektronik.Containers
             {
                 if (_isActive == value) return;
                 _isActive = value;
-                
+
                 if (_isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
                 else OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys.ToList()));
             }
@@ -205,6 +208,30 @@ namespace Elektronik.Containers
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
                 }
             }
+        }
+
+        #endregion
+
+        #region ILookable implementation
+
+        public (Vector3 pos, Quaternion rot) Look(Transform transform)
+        {
+            if (_connectionsIndices.Count == 0) return (transform.position, transform.rotation);
+            
+            Vector3 min = Vector3.positiveInfinity;
+            Vector3 max = Vector3.negativeInfinity;
+            foreach (var point in _connectionsIndices
+                    .Keys
+                    .SelectMany(l => new[] {l.Point1.Position, l.Point2.Position}))
+            {
+                min = new Vector3(Mathf.Min(min.x, point.x), Mathf.Min(min.y, point.y), Mathf.Min(min.z, point.z));
+                max = new Vector3(Mathf.Max(max.x, point.x), Mathf.Max(max.y, point.y), Mathf.Max(max.z, point.z));
+            }
+
+            var bounds = max - min;
+            var center = (max + min) / 2;
+
+            return (center + bounds / 2 + bounds.normalized, Quaternion.LookRotation(-bounds));
         }
 
         #endregion

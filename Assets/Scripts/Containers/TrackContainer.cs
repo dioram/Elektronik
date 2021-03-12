@@ -5,11 +5,12 @@ using System.Linq;
 using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using UnityEngine;
 
 namespace Elektronik.Containers
 {
     /// <summary> Contains lines in strict order. </summary>
-    public class TrackContainer : IContainer<SlamLine>, IContainerTree
+    public class TrackContainer : IContainer<SlamLine>, IContainerTree, ILookable
     {
         #region IContainer implementaion
 
@@ -173,6 +174,18 @@ namespace Elektronik.Containers
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
                 }
             }
+        }
+
+        #endregion
+
+        #region ILookable implementaion
+
+        public (Vector3 pos, Quaternion rot) Look(Transform transform)
+        {
+            if (_lines.Count == 0) return (transform.position, transform.rotation);
+
+            var pos = _lines.Last().Point2.Position;
+            return (pos + (transform.position - pos).normalized, Quaternion.LookRotation(pos - transform.position));
         }
 
         #endregion

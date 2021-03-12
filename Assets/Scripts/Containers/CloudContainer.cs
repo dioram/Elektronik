@@ -5,11 +5,12 @@ using System.Linq;
 using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class CloudContainer<TCloudItem>: IContainer<TCloudItem>, IContainerTree
-        where TCloudItem: struct, ICloudItem
+    public class CloudContainer<TCloudItem> : IContainer<TCloudItem>, IContainerTree, ILookable
+            where TCloudItem : struct, ICloudItem
     {
         public CloudContainer(string displayName = "")
         {
@@ -27,10 +28,10 @@ namespace Elektronik.Containers
             _items.Add(item.Id, item);
             if (IsActive)
             {
-                OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new []{item}));
+                OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new[] {item}));
             }
         }
-        
+
         public void Clear()
         {
             var ids = _items.Keys.ToArray();
@@ -53,8 +54,9 @@ namespace Elektronik.Containers
             var res = _items.Remove(item.Id);
             if (IsActive)
             {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new []{item.Id}));
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
             }
+
             return res;
         }
 
@@ -71,7 +73,7 @@ namespace Elektronik.Containers
             _items.Remove(index);
             if (IsActive)
             {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new []{index}));
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
             }
         }
 
@@ -122,13 +124,13 @@ namespace Elektronik.Containers
                 OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(p => p.Id).ToList()));
             }
         }
-        
+
         public void Update(TCloudItem item)
         {
             _items[item.Id] = item;
             if (IsActive)
             {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new []{item}));
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new[] {item}));
             }
         }
 
@@ -179,7 +181,29 @@ namespace Elektronik.Containers
                 }
             }
         }
+
+        #endregion
+
+        #region ILookable implementation
         
+        public (Vector3 pos, Quaternion rot) Look(Transform transform)
+        {
+            if (_items.Count == 0) return (transform.position, transform.rotation);
+            
+            Vector3 min = Vector3.positiveInfinity;
+            Vector3 max = Vector3.negativeInfinity;
+            foreach (var point in _items.Select(i => i.Value.AsPoint().Position))
+            {
+                min = new Vector3(Mathf.Min(min.x, point.x), Mathf.Min(min.y, point.y), Mathf.Min(min.z, point.z));
+                max = new Vector3(Mathf.Max(max.x, point.x), Mathf.Max(max.y, point.y), Mathf.Max(max.z, point.z));
+            }
+
+            var bounds = max - min;
+            var center = (max + min) / 2;
+
+            return (center + bounds / 2 + bounds.normalized, Quaternion.LookRotation(-bounds));
+        }
+
         #endregion
 
         #region Private definitions
