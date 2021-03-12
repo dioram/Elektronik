@@ -2,7 +2,7 @@
 using System.Linq;
 using Elektronik.Containers;
 
-namespace Elektronik.Rosbag2
+namespace Elektronik.Rosbag2.Containers
 {
     public class VirtualContainer : IContainerTree
     {

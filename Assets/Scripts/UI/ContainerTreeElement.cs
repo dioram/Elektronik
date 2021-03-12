@@ -103,6 +103,7 @@ namespace Elektronik.UI
             _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded);
             _layoutElement.minHeight = expanded;
             Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded - MinHeight);
+            OnSizeChanged?.Invoke();
         }
 
         private void ChangeState()
