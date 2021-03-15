@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using Elektronik.Rosbag2.Data;
+using Elektronik.Rosbag2.RosMessages;
 using RosSharp.RosBridgeClient.MessageTypes.Geometry;
 using RosSharp.RosBridgeClient.MessageTypes.Nav;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
@@ -30,40 +31,86 @@ namespace Elektronik.Rosbag2.Parsers
                 return ParsePath(memoryStream);
             case "sensor_msgs/msg/PointCloud2":
                 return ParsePointCloud2(memoryStream);
+            case "visualization_msgs/msg/MarkerArray":
+                return ParseMarkerArray(memoryStream);
             default:
                 return null;
             }
         }
-
+        
         private static PointCloud2 ParsePointCloud2(Stream data)
         {
             var header = ParseHeader(data);
             var height = ParseUInt32(data);
             var width = ParseUInt32(data);
-            var fields = ParsePointFieldArray(data);
-            var isBigEndian = ParseUInt32(data) != 0;
+            var fields = ParseArray(data, ParsePointField);
+            var isBigEndian = ParseBool(data);
             var pointStep = ParseUInt32(data);
             var rowStep = ParseUInt32(data);
-            var pointData = ParseByteArray(data);
-            var isDense = ParseUInt32(data) != 0;
+            var pointData = ParseArray(data, stream => (byte)stream.ReadByte());
+            var isDense = ParseBool(data);
             return new PointCloud2(header, height, width, fields, isBigEndian, pointStep, rowStep, pointData, isDense);
         }
 
-        private static PointField[] ParsePointFieldArray(Stream data)
+        private static MarkerArray ParseMarkerArray(Stream data)
         {
-            var amount = (int) ParseUInt32(data);
-            var fields = new PointField[amount];
+            ParseUInt32(data);
+            return new MarkerArray { Markers = ParseArray(data, ParseMarker)};
+        }
+
+        private static Marker ParseMarker(Stream data)
+        {
+            return new Marker
+            {
+                Header = ParseHeader(data, true),
+                Ns = ParseString(data),
+                Id = ParseInt32(data),
+                Form = (Marker.MarkerForm) ParseUInt32(data),
+                Action = (Marker.MarkerAction) ParseUInt32(data),
+                Pose = ParsePose(data),
+                Scale = ParseVector3(data),
+                Color = ParseColor(data),
+                Lifetime = ParseTime(data),
+                FrameLocked = ParseBool(data),
+                Points = ParseArray(data, ParsePoint),
+                Colors = ParseArray(data, ParseColor),
+                Text = ParseString(data),
+                MeshResource = ParseString(data),
+                MeshUseEmbeddedMaterials = ParseBool(data),
+            };
+        }
+
+        private static T[] ParseArray<T>(Stream data, Func<Stream, T> parser)
+        {
+            var amount = ParseInt32(data);
+            var objs = new T[amount];
             for (int i = 0; i < amount; i++)
             {
-                fields[i] = ParsePointField(data);
+                objs[i] = parser(data);
             }
 
-            return fields;
+            return objs;
+        }
+
+        private static T[] ParseArray<T>(Stream data, int count, Func<Stream, T> parser)
+        {
+            var objs = new T[count];
+            for (int i = 0; i < count; i++)
+            {
+                objs[i] = parser(data);
+            }
+
+            return objs;
+        }
+
+        private static ColorRGBA ParseColor(Stream data)
+        {
+            return new ColorRGBA(ParseFloat32(data), ParseFloat32(data), ParseFloat32(data), ParseFloat32(data));
         }
 
         private static PointField ParsePointField(Stream data)
         {
-            return new PointField(ParseString(data), ParseUInt32(data), (byte) ParseUInt32(data), ParseUInt32(data));
+            return new PointField(ParseString(data), ParseUInt32(data), (byte)data.ReadByte(), ParseUInt32(data));
         }
 
         private static Path ParsePath(Stream data)
@@ -82,9 +129,9 @@ namespace Elektronik.Rosbag2.Parsers
 
         private static Imu ParseImu(Stream data)
         {
-            return new Imu(ParseHeader(data), ParseQuaternion(data), ParseFloat64Array(data, 9),
-                           ParseVector3(data), ParseFloat64Array(data, 9), ParseVector3(data),
-                           ParseFloat64Array(data, 9));
+            return new Imu(ParseHeader(data), ParseQuaternion(data), ParseArray(data, 9, ParseFloat64),
+                           ParseVector3(data), ParseArray(data, 9, ParseFloat64), ParseVector3(data),
+                           ParseArray(data, 9, ParseFloat64));
         }
 
         private static Odometry ParseOdometry(Stream data)
@@ -118,7 +165,7 @@ namespace Elektronik.Rosbag2.Parsers
 
         private static PoseWithCovariance ParsePoseWithCovariance(Stream data)
         {
-            return new PoseWithCovariance(ParsePose(data), ParseFloat64Array(data, 36));
+            return new PoseWithCovariance(ParsePose(data), ParseArray(data, 36, ParseFloat64));
         }
 
         private static Pose ParsePose(Stream data)
@@ -128,7 +175,7 @@ namespace Elektronik.Rosbag2.Parsers
 
         private static TwistWithCovariance ParseTwistWithCovariance(Stream data)
         {
-            return new TwistWithCovariance(ParseTwist(data), ParseFloat64Array(data, 36));
+            return new TwistWithCovariance(ParseTwist(data), ParseArray(data, 36, ParseFloat64));
         }
 
         private static Twist ParseTwist(Stream data)
@@ -156,63 +203,67 @@ namespace Elektronik.Rosbag2.Parsers
             return new Time(ParseUInt32(data), ParseUInt32(data));
         }
 
+        private static string ParseString(Stream data)
+        {
+            var len = ParseInt32(data);
+            var str = new byte[len];
+            data.Read(str, 0, len);
+            return Encoding.UTF8.GetString(str).TrimEnd('\0');
+        }
+
+        private static int ParseInt32(Stream data)
+        {
+            Align(data, 4);
+            var buffer = new byte[4];
+            data.Read(buffer, 0, 4);
+            return BitConverter.ToInt32(buffer, 0);
+        }
+
         private static UInt32 ParseUInt32(Stream data)
         {
+            Align(data, 4);
             var buffer = new byte[4];
             data.Read(buffer, 0, 4);
             return BitConverter.ToUInt32(buffer, 0);
         }
 
+        private static float ParseFloat32(Stream data)
+        {
+            Align(data, 4);
+            var buffer = new byte[4];
+            data.Read(buffer, 0, 4);
+            return BitConverter.ToSingle(buffer, 0);
+        }
+
         private static double ParseFloat64(Stream data)
         {
+            Align(data, 8);
             var buffer = new byte[8];
             data.Read(buffer, 0, 8);
             return BitConverter.ToDouble(buffer, 0);
         }
 
-        private static double[] ParseFloat64Array(Stream data, int count)
+        private static bool ParseBool(Stream data)
         {
-            var result = new double[count];
-            for (int i = 0; i < count; i++)
-            {
-                var buffer = new byte[8];
-                data.Read(buffer, 0, 8);
-                result[i] = BitConverter.ToDouble(buffer, 0);
-            }
-
-            return result;
+            return data.ReadByte() != 0;
         }
 
-        private static byte[] ParseByteArray(Stream data)
+        private static void Align(Stream data, int len)
         {
-            var size = ParseUInt32(data);
-            var result = new byte[size];
-            for (int i = 0; i < size; i++)
+            if (len != 8)
             {
-                result[i] = (byte) data.ReadByte();
+                while ((data.Position % len) != 0 && data.Position < data.Length)
+                {
+                    data.ReadByte();
+                }
             }
-
-            return result;
-        }
-
-        private static string ParseString(Stream data)
-        {
-            var buffer = new byte[4];
-            data.Read(buffer, 0, 4);
-            var len = FixLen(BitConverter.ToInt32(buffer, 0));
-            var str = new byte[len];
-            data.Read(str, 0, len);
-            return Encoding.UTF8.GetString(str);
-        }
-
-        private static int FixLen(int len)
-        {
-            while (len % 4 != 0)
+            else
             {
-                len++;
+                while ((data.Position % len) != 4 && data.Position < data.Length)
+                {
+                    data.ReadByte();
+                }
             }
-
-            return len;
         }
     }
 }

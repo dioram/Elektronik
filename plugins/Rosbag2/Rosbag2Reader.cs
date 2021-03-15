@@ -24,7 +24,7 @@ namespace Elektronik.Rosbag2
         public override void Start()
         {
             _threadWorker = new ThreadWorker();
-            _data.Init(TypedSettings.DirPath);
+            _data.Init(TypedSettings);
 
             _actualTimestamps = _data.GetRealChildren()
                     .OfType<IDBContainer>()
@@ -58,9 +58,14 @@ namespace Elektronik.Rosbag2
             }
             else if (_rewindPlannedPos > 0)
             {
+                Rewind?.Invoke(true);
                 _currentPosition = _rewindPlannedPos;
                 _rewindPlannedPos = -1;
-                _threadWorker.Enqueue(() => { _data.ShowAt(_actualTimestamps[_currentPosition], true); });
+                _threadWorker.Enqueue(() =>
+                {
+                    _data.ShowAt(_actualTimestamps[_currentPosition], true);
+                    Rewind?.Invoke(false);
+                });
             }
         }
 
@@ -122,13 +127,15 @@ namespace Elektronik.Rosbag2
             }
         }
 
+        public event Action<bool> Rewind;
+
         public event Action Finished;
 
         #endregion
 
         #region Private definitions
 
-        private readonly Rosbag2ContainerTree _data;
+        private Rosbag2ContainerTree _data;
         private ThreadWorker _threadWorker;
         private bool _playing;
         private int _currentPosition;

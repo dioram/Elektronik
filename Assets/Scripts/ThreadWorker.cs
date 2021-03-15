@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 
 namespace Elektronik
 {
@@ -39,8 +40,18 @@ namespace Elektronik
                 {
                     while (_actions.Count > 0)
                     {
-                        _actions.Dequeue()();
-                        QueuedActions--;
+                        try
+                        {
+                            _actions.Dequeue()();
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError(e);
+                        }
+                        finally
+                        {
+                            QueuedActions--;  
+                        }
                     }
                 }
 

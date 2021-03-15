@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Elektronik.Settings;
+using Elektronik.UI.Fields;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ namespace Elektronik.UI
     {
         public GameObject StringFieldPrefab;
         public GameObject BrowseFieldPrefab;
+        public GameObject BoolFieldPrefab;
 
         private ScrollRect _scrollView;
         private readonly List<SettingsField> _fields = new List<SettingsField>();
@@ -35,24 +37,35 @@ namespace Elektronik.UI
         private void AddField(FieldInfo fieldInfo, SettingsBag obj)
         {
             GameObject newField;
-            if (fieldInfo.FieldType == typeof(string)
-                && Attribute.GetCustomAttribute(fieldInfo, typeof(PathAttribute)) != null)
+            SettingsField uiField;
+            if (fieldInfo.FieldType == typeof(bool))
             {
-                newField = Instantiate(BrowseFieldPrefab, _scrollView.content);
+                newField = Instantiate(BoolFieldPrefab, _scrollView.content);
+                var f = newField.GetComponent<BoolSettingField>();
+                f.CheckBox.isOn = (bool) fieldInfo.GetValue(obj);
+                uiField = f;
             }
-            else
-            {
-                newField = Instantiate(StringFieldPrefab, _scrollView.content);
+            else //(fieldInfo.FieldType == typeof(string))
+            {    // Anything except bool is string for now 
+                if (Attribute.GetCustomAttribute(fieldInfo, typeof(PathAttribute)) != null)
+                {
+                    newField = Instantiate(BrowseFieldPrefab, _scrollView.content);
+                }
+                else
+                {
+                    newField = Instantiate(StringFieldPrefab, _scrollView.content);
+                }
+                var f = newField.GetComponent<StringSettingsField>();
+                f.Field.text = fieldInfo.GetValue(obj)?.ToString() ?? "";
+                uiField = f;
             }
 
             newField.name = $"{fieldInfo.Name}";
-            var uiField = newField.GetComponent<SettingsField>();
             uiField.SettingsBag = obj;
             var tooltip = (TooltipAttribute)Attribute.GetCustomAttribute(fieldInfo, typeof(TooltipAttribute));
             uiField.FieldToolTip = tooltip?.tooltip ?? fieldInfo.Name;
             uiField.FieldName = fieldInfo.Name;
             uiField.FieldType = fieldInfo.FieldType;
-            uiField.Field.text = fieldInfo.GetValue(obj)?.ToString() ?? "";
             _fields.Add(uiField);
         }
     }

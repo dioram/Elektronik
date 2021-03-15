@@ -34,7 +34,7 @@ namespace Elektronik.Containers
 
         public void Clear()
         {
-            var ids = _items.Keys.ToArray();
+            var ids = _items.Keys.ToList();
             _items.Clear();
             if (IsActive)
             {

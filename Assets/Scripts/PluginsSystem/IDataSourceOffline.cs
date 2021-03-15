@@ -28,6 +28,8 @@ namespace Elektronik.PluginsSystem
         /// <summary> Next frame button pressed handler. </summary>
         void NextKeyFrame();
 
+        event Action<bool> Rewind;
+
         /// <summary> Reached end of the file. </summary>
         event Action Finished;
     }

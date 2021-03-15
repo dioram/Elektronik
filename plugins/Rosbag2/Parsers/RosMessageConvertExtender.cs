@@ -4,11 +4,14 @@ using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using RosSharp.RosBridgeClient.MessageTypes.Geometry;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
+using RosSharp.RosBridgeClient.MessageTypes.Std;
 using UnityEngine;
 using Pose = RosSharp.RosBridgeClient.MessageTypes.Geometry.Pose;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
 using RosMessage = RosSharp.RosBridgeClient.Message;
+using RosVector3 = RosSharp.RosBridgeClient.MessageTypes.Geometry.Vector3;
+using Time = RosSharp.RosBridgeClient.MessageTypes.Std.Time;
 
 namespace Elektronik.Rosbag2.Parsers
 {
@@ -40,13 +43,13 @@ namespace Elektronik.Rosbag2.Parsers
         {
             var res = new SlamPoint[cloud.data.Length / cloud.point_step];
 
-            var xOffset = cloud.fields.First(f => f.name.StartsWith("x")).offset;
-            var yOffset = cloud.fields.First(f => f.name.StartsWith("y")).offset;
-            var zOffset = cloud.fields.First(f => f.name.StartsWith("z")).offset;
-            var intensityOffset = cloud.fields.FirstOrDefault(f => f.name.StartsWith("intensity"))?.offset ??
+            var xOffset = cloud.fields.First(f => f.name == "x").offset;
+            var yOffset = cloud.fields.First(f => f.name == "y").offset;
+            var zOffset = cloud.fields.First(f => f.name == "z").offset;
+            var intensityOffset = cloud.fields.FirstOrDefault(f => f.name == "intensity")?.offset ??
                     cloud.point_step + 1;
-            var rgbOffset = cloud.fields.FirstOrDefault(f => f.name.StartsWith("rgb"))?.offset ?? cloud.point_step + 1;
-            var rgbaOffset = cloud.fields.FirstOrDefault(f => f.name.StartsWith("rgba"))?.offset ??
+            var rgbOffset = cloud.fields.FirstOrDefault(f => f.name == "rgb")?.offset ?? cloud.point_step + 1;
+            var rgbaOffset = cloud.fields.FirstOrDefault(f => f.name == "rgba")?.offset ??
                     cloud.point_step + 1;
 
             for (int i = 0; i < cloud.data.Length / cloud.point_step; i++)
@@ -86,6 +89,9 @@ namespace Elektronik.Rosbag2.Parsers
             return res;
         }
 
+        public static long ToLong(this Time time) => (((long) time.secs) << 32) + time.nsecs;
+
+        public static Color ToUnity(this ColorRGBA color) => new Color(color.r, color.g, color.b, color.a);
 
         private static Color ColorFromIntensity(float intensity) =>
                 intensity switch
@@ -109,7 +115,7 @@ namespace Elektronik.Rosbag2.Parsers
             };
         }
 
-        public static (Vector3, Quaternion) ToUnity(this Pose pose)
+        public static (Vector3 pos, Quaternion rot) ToUnity(this Pose pose)
         {
             Vector3 v = new Vector3((float) pose.position.x, (float) pose.position.y, (float) pose.position.z);
             Quaternion q = new Quaternion((float) pose.orientation.x, (float) pose.orientation.y,
@@ -117,6 +123,20 @@ namespace Elektronik.Rosbag2.Parsers
                                           (float) pose.orientation.w);
             Converter?.Convert(ref v, ref q);
             return (v, q);
+        }
+
+        public static Vector3 ToUnity(this RosVector3 vector3)
+        {
+            var res = new Vector3((float) vector3.x, (float) vector3.y, (float) vector3.z);
+            Converter?.Convert(ref res);
+            return res;
+        }
+        
+        public static Vector3 ToUnity(this Point point)
+        {
+            var res = new Vector3((float) point.x, (float) point.y, (float) point.z);
+            Converter?.Convert(ref res);
+            return res;
         }
     }
 }
