@@ -14,6 +14,7 @@ namespace Elektronik.Rosbag2.Containers
             {"geometry_msgs/msg/PoseStamped", typeof(TrackedDBContainer)},
             {"nav_msgs/msg/Odometry", typeof(TrackedDBContainer)},
             {"sensor_msgs/msg/PointCloud2", typeof(PointsDBContainer)},
+            {"visualization_msgs/msg/MarkerArray", typeof(VisualisationMarkersDBContainer)},
         };
 
         public Topic[] ActualTopics;
@@ -22,10 +23,10 @@ namespace Elektronik.Rosbag2.Containers
         {
         }
 
-        public void Init(string path)
+        public void Init(Rosbag2Settings settings)
         {
-            DisplayName = path.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag2: /";
-            DBModel = new SQLiteConnection(path, SQLiteOpenFlags.ReadOnly);
+            DisplayName = settings.DirPath.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag2: /";
+            DBModel = new SQLiteConnection(settings.DirPath, SQLiteOpenFlags.ReadOnly);
             ActualTopics = DBModel.Table<Topic>().ToList().Where(t => SupportedMessages.ContainsKey(t.Type)).ToArray();
             BuildTree();
             Squeeze();

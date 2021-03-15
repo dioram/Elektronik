@@ -89,6 +89,8 @@ namespace Elektronik.Protobuf.Offline
             set => RewindAt(value);
         }
 
+        public event Action<bool> Rewind;
+
         public void Play()
         {
             _playing = true;

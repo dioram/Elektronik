@@ -24,31 +24,37 @@ namespace Elektronik.Containers
 
         public void Add(SlamTrackedObject item)
         {
-            var container = CreateTrackContainer();
-            _objects[item.Id] = (item, container);
-            if (IsActive)
+            lock (_objects)
             {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
+                var container = CreateTrackContainer();
+                _objects[item.Id] = (item, container);
+                if (IsActive)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
+                }
             }
         }
 
         public void Clear()
         {
-            foreach (var tuple in _objects)
+            lock (_objects)
             {
-                tuple.Value.Item2.Clear();
-            }
+                foreach (var tuple in _objects)
+                {
+                    tuple.Value.Item2.Clear();
+                }
 
-            if (IsActive)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(_objects.Keys));
-            }
+                if (IsActive)
+                {
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(_objects.Keys));
+                }
 
-            lock (Children)
-            {
-                _lineContainers.Clear();
+                lock (Children)
+                {
+                    _lineContainers.Clear();
+                }
+                _objects.Clear();
             }
-            _objects.Clear();
         }
 
         public bool Contains(SlamTrackedObject item)
@@ -65,19 +71,22 @@ namespace Elektronik.Containers
 
         public bool Remove(SlamTrackedObject item)
         {
-            if (!_objects.ContainsKey(item.Id)) return false;
-            _objects[item.Id].Item2.Clear();
-            lock (Children)
+            lock (_objects)
             {
-                _lineContainers.Remove(_objects[item.Id].Item2);
-            }
-            _objects.Remove(item.Id);
+                if (!_objects.ContainsKey(item.Id)) return false;
+                _objects[item.Id].Item2.Clear();
+                lock (Children)
+                {
+                    _lineContainers.Remove(_objects[item.Id].Item2);
+                }
+                _objects.Remove(item.Id);
 
-            if (IsActive)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
+                if (IsActive)
+                {
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
+                }
+                return true;
             }
-            return true;
         }
 
         public int Count => _objects.Count;
@@ -90,16 +99,19 @@ namespace Elektronik.Containers
 
         public void RemoveAt(int index)
         {
-            if (!_objects.ContainsKey(index)) return;
-            _objects[index].Item2.Clear();
-            lock (Children)
+            lock (_objects)
             {
-                _lineContainers.Remove(_objects[index].Item2);
-            }
-            _objects.Remove(index);
-            if (IsActive)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
+                if (!_objects.ContainsKey(index)) return;
+                _objects[index].Item2.Clear();
+                lock (Children)
+                {
+                    _lineContainers.Remove(_objects[index].Item2);
+                }
+                _objects.Remove(index);
+                if (IsActive)
+                {
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
+                }
             }
         }
 
@@ -127,34 +139,40 @@ namespace Elektronik.Containers
 
         public void AddRange(IEnumerable<SlamTrackedObject> items)
         {
-            foreach (var item in items)
+            lock (_objects)
             {
-                var container = CreateTrackContainer();
-                _objects[item.Id] = (item, container);
-            }
+                foreach (var item in items)
+                {
+                    var container = CreateTrackContainer();
+                    _objects[item.Id] = (item, container);
+                }
 
-            if (IsActive)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
+                if (IsActive)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
+                }
             }
         }
 
         public void Remove(IEnumerable<SlamTrackedObject> items)
         {
-            foreach (var item in items)
+            lock (_objects)
             {
-                if (!_objects.ContainsKey(item.Id)) continue;
-                _objects[item.Id].Item2.Clear();
-                lock (Children)
+                foreach (var item in items)
                 {
-                    _lineContainers.Remove(_objects[item.Id].Item2);
+                    if (!_objects.ContainsKey(item.Id)) continue;
+                    _objects[item.Id].Item2.Clear();
+                    lock (Children)
+                    {
+                        _lineContainers.Remove(_objects[item.Id].Item2);
+                    }
+                    _objects.Remove(item.Id);
                 }
-                _objects.Remove(item.Id);
-            }
 
-            if (IsActive)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id)));
+                if (IsActive)
+                {
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id)));
+                }
             }
         }
 
@@ -232,31 +250,37 @@ namespace Elektronik.Containers
 
         public void AddWithHistory(SlamTrackedObject item, IList<SlamLine> history)
         {
-            if (_objects.ContainsKey(item.Id)) return;
-
-            var container = CreateTrackContainer(history);
-            _objects.Add(item.Id, (item, container));
-            _maxId = history.Max(l => l.Id);
-            if (IsActive)
+            lock (_objects)
             {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
+                if (_objects.ContainsKey(item.Id)) return;
+
+                var container = CreateTrackContainer(history);
+                _objects.Add(item.Id, (item, container));
+                _maxId = history.Count > 0 ? history.Max(l => l.Id) : 0;
+                if (IsActive)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
+                }
             }
         }
 
         public void AddRangeWithHistory(IEnumerable<SlamTrackedObject> items, IEnumerable<IList<SlamLine>> histories)
         {
-            foreach (var (i, h) in items.Zip(histories, (i, h) => (i, h)))
+            lock (_objects)
             {
-                if (_objects.ContainsKey(i.Id)) return;
+                foreach (var (i, h) in items.Zip(histories, (i, h) => (i, h)))
+                {
+                    if (_objects.ContainsKey(i.Id)) return;
 
-                var container = CreateTrackContainer(h);
-                _objects.Add(i.Id, (i, container));
-            }
+                    var container = CreateTrackContainer(h);
+                    _objects.Add(i.Id, (i, container));
+                }
 
-            _maxId = histories.SelectMany(l => l).Max(l => l.Id);
-            if (IsActive)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
+                _maxId = histories.SelectMany(l => l).Max(l => l.Id);
+                if (IsActive)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
+                }
             }
         }
 

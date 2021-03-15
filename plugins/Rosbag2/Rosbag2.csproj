@@ -4,6 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>Elektronik.Rosbag2</RootNamespace>
         <LangVersion>9</LangVersion>
+        <AssemblyVersion>0.4.9</AssemblyVersion>
     </PropertyGroup>
 
     <ItemGroup>

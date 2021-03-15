@@ -14,7 +14,7 @@ namespace Rosbag2.Tests
         [SetUp]
         public void Setup()
         {
-            _tree.Init(@"test_db.db3");
+            _tree.Init(new Rosbag2Settings {DirPath = @"test_db.db3"});
         }
 
         [Test]

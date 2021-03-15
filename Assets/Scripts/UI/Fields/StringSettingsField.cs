@@ -5,21 +5,15 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Elektronik.UI
+namespace Elektronik.UI.Fields
 {
-    public class SettingsField : MonoBehaviour
+    public class StringSettingsField : SettingsField
     {
-        public SettingsBag SettingsBag;
-        public string FieldToolTip;
-        public string FieldName;
-        public Type FieldType;
-
         public InputField Field;
-        public Text Tooltip;
 
-        private void Start()
+        protected override void Start()
         {
-            Tooltip.text = FieldToolTip;
+            base.Start();
             if (IsDirectory())
             {
                 GetComponent<InputWithBrowse>().folderMode = true;

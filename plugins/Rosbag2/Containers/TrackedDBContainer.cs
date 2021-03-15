@@ -62,13 +62,9 @@ namespace Elektronik.Rosbag2.Containers
                     .Select(m => MessageParser.Parse(m, Topic).GetPose().ToUnity())
                     .ToList();
 
-            var obj = new SlamTrackedObject(0, messages.Last().Item1, messages.Last().Item2);
-            if (messages.Count == 0)
-            {
-                Add(obj);
-                return;
-            }
+            if (messages.Count == 0) return;
             
+            var obj = new SlamTrackedObject(0, messages.Last().Item1, messages.Last().Item2);
             var history = new SlamLine[messages.Count - 1];
             for (int i = 0; i < messages.Count - 1; i++)
             {

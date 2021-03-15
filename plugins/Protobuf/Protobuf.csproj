@@ -5,6 +5,7 @@
         <LangVersion>8</LangVersion>
         <Nullable>disable</Nullable>
         <RootNamespace>Elektronik.Protobuf</RootNamespace>
+        <AssemblyVersion>1.2.1</AssemblyVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -43,6 +44,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Update="grpc_csharp_ext.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
       <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\build\Elektronik_Data\Managed\Assembly-CSharp.dll</HintPath>
       </Reference>
@@ -55,12 +62,6 @@
       <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\build\Elektronik_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="grpc_csharp_ext.dll">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
     </ItemGroup>
 
 </Project>
