@@ -17,10 +17,6 @@
 !/build.bat
 !/.github/
 !/.github/**
-!/plugins/
-!/plugins/**
-/plugins/**/bin
-/plugins/**/obj
 
 /Assets/generatedFiles/
 /Assets/Packages/
@@ -29,7 +25,3 @@
 *.pidb.meta
 *.pdb.meta
 *.mdb.meta
-
-/**/.idea/
-/**/.vs/
-/**/*.sln.*
