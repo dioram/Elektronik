@@ -10,8 +10,11 @@ namespace Elektronik.UI.Fields
         protected override void Start()
         {
             base.Start();
-            CheckBox?.OnValueChangedAsObservable()
-                    .Subscribe(v => SettingsBag.GetType().GetField(FieldName).SetValue(SettingsBag, v));
+            if (CheckBox != null)
+            {
+                CheckBox.OnValueChangedAsObservable()
+                        .Subscribe(v => SettingsBag.GetType().GetField(FieldName).SetValue(SettingsBag, v));
+            }
         }
     }
 }

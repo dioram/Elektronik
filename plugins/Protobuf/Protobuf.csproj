@@ -5,7 +5,9 @@
         <LangVersion>8</LangVersion>
         <Nullable>disable</Nullable>
         <RootNamespace>Elektronik.Protobuf</RootNamespace>
-        <AssemblyVersion>1.2.1</AssemblyVersion>
+        <Deterministic>False</Deterministic>
+        <AssemblyVersion>1.2.*</AssemblyVersion>
+        <FileVersion>1.2.*</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

@@ -119,7 +119,7 @@ namespace Elektronik.Protobuf.Offline
                 do
                 {
                     if (!PreviousFrame()) break;
-                } while (!_frames.Current.IsSpecial);
+                } while (!_frames?.Current?.IsSpecial ?? false);
             });
         }
 
@@ -130,7 +130,7 @@ namespace Elektronik.Protobuf.Offline
                 do
                 {
                     if (!NextFrame()) break;
-                } while (!_frames.Current.IsSpecial);
+                } while (!_frames?.Current?.IsSpecial ?? false);
             });
         }
 
@@ -181,11 +181,11 @@ namespace Elektronik.Protobuf.Offline
 
         private bool PreviousFrame()
         {
-            var curr = _frames.Current;
-            if (_frames.MovePrevious())
+            _frames?.Current?.Rewind();
+            if (_frames?.MovePrevious() ?? false)
             {
-                curr.Rewind();
-                PresentersChain.Present(_frames.Current);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                PresentersChain.Present(_frames?.Current);
                 return true;
             }
 
@@ -196,9 +196,9 @@ namespace Elektronik.Protobuf.Offline
         {
             if (_frames.MoveNext())
             {
-                var next = _frames.Current;
-                next.Show();
-                PresentersChain.Present(next);
+                _frames?.Current?.Show();
+                // ReSharper disable once AssignNullToNotNullAttribute
+                PresentersChain.Present(_frames?.Current);
                 return true;
             }
 

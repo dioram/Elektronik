@@ -2,7 +2,6 @@
 using System.Reflection;
 using Elektronik.Settings;
 using UniRx;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Elektronik.UI.Fields

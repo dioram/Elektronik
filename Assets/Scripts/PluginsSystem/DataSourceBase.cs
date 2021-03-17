@@ -8,11 +8,12 @@ namespace Elektronik.PluginsSystem
     public abstract class DataSourceBase<TSettings> : IDataSource
             where TSettings : SettingsBag, new()
     {
+        // ReSharper disable once NotNullMemberIsNotInitialized
         public DataSourceBase()
         {
-            var sh = new SettingsHistory<TSettings>();
+            var sh = new SettingsHistory<TSettings>($"{GetType().FullName}.json");
             SettingsHistory = sh;
-            if (sh.Recent.Count > 0) TypedSettings = (TSettings) sh.Recent[0];
+            if (sh.Recent.Count > 0) TypedSettings = (TSettings) sh.Recent[0].Clone();
             else TypedSettings = new TSettings();
         }
         

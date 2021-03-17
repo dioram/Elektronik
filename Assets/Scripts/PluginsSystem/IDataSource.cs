@@ -1,6 +1,7 @@
 ﻿using Elektronik.Containers;
 using Elektronik.Data.Converters;
 using Elektronik.Presenters;
+using JetBrains.Annotations;
 
 namespace Elektronik.PluginsSystem
 {
@@ -8,12 +9,12 @@ namespace Elektronik.PluginsSystem
     public interface IDataSource : IElektronikPlugin
     {
         /// <summary> Converter for raw Vector3 and Quaternions </summary>
-        ICSConverter Converter { get; set; }
+        [CanBeNull] ICSConverter Converter { get; set; }
 
         /// <summary> Containers with cloud data. </summary>
-        IContainerTree Data { get; }
+        [NotNull] IContainerTree Data { get; }
         
         /// <summary> Containers with any data. </summary>
-        DataPresenter PresentersChain { get; }
+        [CanBeNull] DataPresenter PresentersChain { get; }
     }
 }

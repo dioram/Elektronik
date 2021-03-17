@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Elektronik.Containers.EventArgs;
+using JetBrains.Annotations;
 
 namespace Elektronik.Containers
 {
@@ -11,9 +12,11 @@ namespace Elektronik.Containers
     /// <typeparam name="T"></typeparam>
     public interface IContainer<T> : IList<T>
     {
-        event Action<IContainer<T>, AddedEventArgs<T>> OnAdded;
-        event Action<IContainer<T>, UpdatedEventArgs<T>> OnUpdated;
-        event Action<IContainer<T>, RemovedEventArgs> OnRemoved;
+        [CanBeNull] event Action<IContainer<T>, AddedEventArgs<T>> OnAdded;
+
+        [CanBeNull] event Action<IContainer<T>, UpdatedEventArgs<T>> OnUpdated;
+
+        [CanBeNull] event Action<IContainer<T>, RemovedEventArgs> OnRemoved;
 
         void AddRange(IEnumerable<T> items);
         void Remove(IEnumerable<T> items);

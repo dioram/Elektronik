@@ -10,11 +10,10 @@ namespace Elektronik.Protobuf.Data
     {
         public static IEnumerable<SlamPoint> ExtractPoints(this PacketPb packet, ICSConverter converter = null)
         {
-            var stub = Quaternion.identity;
             foreach (var p in packet.Points.Data)
             {
                 SlamPoint point = p;
-                converter?.Convert(ref point.Position, ref stub);
+                converter?.Convert(ref point.Position);
                 yield return point;
             }
         }
@@ -46,12 +45,11 @@ namespace Elektronik.Protobuf.Data
         public static IEnumerable<SlamLine> ExtractLines(this PacketPb packet, ICSConverter converter = null)
         {
             Debug.Assert(packet.DataCase == PacketPb.DataOneofCase.Lines);
-            var stub = Quaternion.identity;
             foreach (var l in packet.Lines.Data)
             {
                 SlamLine line = l;
-                converter?.Convert(ref line.Point1.Position, ref stub);
-                converter?.Convert(ref line.Point2.Position, ref stub);
+                converter?.Convert(ref line.Point1.Position);
+                converter?.Convert(ref line.Point2.Position);
                 yield return line;
             }
         }
@@ -59,12 +57,11 @@ namespace Elektronik.Protobuf.Data
         public static IEnumerable<SlamInfinitePlane> ExtractInfinitePlanes(this PacketPb packet,
                                                                            ICSConverter converter = null)
         {
-            var stub = Quaternion.identity;
             foreach (var p in packet.InfinitePlanes.Data)
             {
                 SlamInfinitePlane plane = p;
-                converter?.Convert(ref plane.Offset, ref stub);
-                converter?.Convert(ref plane.Normal, ref stub);
+                converter?.Convert(ref plane.Offset);
+                converter?.Convert(ref plane.Normal);
                 yield return plane;
             }
         }

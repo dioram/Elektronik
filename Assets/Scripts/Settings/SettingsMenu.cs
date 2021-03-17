@@ -77,7 +77,7 @@ namespace Elektronik.Settings
 
         private void SetupSettings()
         {
-            _pluginsHistory = new SettingsHistory<SelectedPlugins>(1);
+            _pluginsHistory = new SettingsHistory<SelectedPlugins>("SelectedPlugins.json", 1);
             if (_pluginsHistory.Recent.Count == 0) _pluginsHistory.Add(new SelectedPlugins());
             _selectedPlugins = (SelectedPlugins) _pluginsHistory.Recent.First();
             foreach (var pluginName in _selectedPlugins.SelectedPluginsNames)
@@ -142,8 +142,6 @@ namespace Elektronik.Settings
                 break;
             case Mode.Offline:
                 availablePlugins.AddRange(PluginsLoader.Plugins.OfType<IDataSourceOffline>());
-                break;
-            default:
                 break;
             }
 

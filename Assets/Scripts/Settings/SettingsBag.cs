@@ -28,7 +28,7 @@ namespace Elektronik.Settings
             return GetType()
                     .GetFields(BindingFlags.Public | BindingFlags.Instance)
                     .Where(f => Attribute.IsDefined(f, typeof(CheckForEqualsAttribute)))
-                    .All(f => f.GetValue(this)?.Equals(f.GetValue(other)) ?? (f.GetValue(other) == null ? true : false));
+                    .All(f => f.GetValue(this)?.Equals(f.GetValue(other)) ?? (f.GetValue(other) == null));
         }
 
         public override bool Equals(object obj)

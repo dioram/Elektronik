@@ -5,14 +5,18 @@ namespace Elektronik.Data.Converters
     public class Camera2Unity3dPackageConverter : CSConverter
     {
         private Matrix4x4 _initPose;
+        private Vector3 _scale = Vector3.one;
 
         public override void Convert(ref Vector3 pos)
         {
-            pos.y = -pos.y;
+            pos.x *= _scale.x;
+            pos.y = -pos.y * _scale.y;
+            pos.z *= _scale.z;
         }
 
         public override void SetInitTRS(Vector3 pos, Quaternion rot, Vector3 scale)
         {
+            _scale = scale;
             _initPose = Matrix4x4.TRS(pos, rot, scale);
         }
 

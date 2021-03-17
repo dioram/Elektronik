@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Elektronik.Protobuf.Online
 {
-    using GrpcServer = Grpc.Core.Server;
+    using GrpcServer = Server;
 
     public class ProtobufGrpcServer : DataSourceBase<OnlineSettingsBag>,  IDataSourceOnline
     {

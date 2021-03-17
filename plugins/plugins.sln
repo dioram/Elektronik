@@ -4,9 +4,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protobuf.Tests", "Protobuf.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protobuf", "Protobuf\Protobuf.csproj", "{13D03981-E97E-47D1-959F-D5AE8260C676}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rosbag2", "Rosbag2\Rosbag2.csproj", "{4609CB25-BA3D-44D9-AACA-41BCD4E10475}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ros", "Ros\Ros.csproj", "{AFC99927-2701-4867-957D-4DF5A8121DBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rosbag2.Tests", "Rosbag2.Tests\Rosbag2.Tests.csproj", "{663D34A1-7CFE-4124-945A-5A380A1CF40A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ros.Tests", "Ros.Tests\Ros.Tests.csproj", "{D2126F38-46AF-4335-B005-2B2AE4A76A09}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,13 +22,13 @@ Global
 		{13D03981-E97E-47D1-959F-D5AE8260C676}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13D03981-E97E-47D1-959F-D5AE8260C676}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13D03981-E97E-47D1-959F-D5AE8260C676}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4609CB25-BA3D-44D9-AACA-41BCD4E10475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4609CB25-BA3D-44D9-AACA-41BCD4E10475}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4609CB25-BA3D-44D9-AACA-41BCD4E10475}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4609CB25-BA3D-44D9-AACA-41BCD4E10475}.Release|Any CPU.Build.0 = Release|Any CPU
-		{663D34A1-7CFE-4124-945A-5A380A1CF40A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{663D34A1-7CFE-4124-945A-5A380A1CF40A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{663D34A1-7CFE-4124-945A-5A380A1CF40A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{663D34A1-7CFE-4124-945A-5A380A1CF40A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFC99927-2701-4867-957D-4DF5A8121DBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFC99927-2701-4867-957D-4DF5A8121DBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFC99927-2701-4867-957D-4DF5A8121DBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFC99927-2701-4867-957D-4DF5A8121DBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2126F38-46AF-4335-B005-2B2AE4A76A09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2126F38-46AF-4335-B005-2B2AE4A76A09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2126F38-46AF-4335-B005-2B2AE4A76A09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2126F38-46AF-4335-B005-2B2AE4A76A09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

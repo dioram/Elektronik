@@ -23,10 +23,10 @@ namespace Elektronik.Settings
 
         public ReadOnlyCollection<SettingsBag> Recent => _recent.Items.Select(s => s as SettingsBag).ToList().AsReadOnly();
 
-        public SettingsHistory(int maxCountOfRecentFiles = 10)
+        public SettingsHistory(string filename, int maxCountOfRecentFiles = 10)
         {
             _maxCountOfRecentFiles = maxCountOfRecentFiles;
-            _fileName = $"{typeof(T).FullName}.json";
+            _fileName = filename;
             
             Deserialize();
         }
