@@ -75,6 +75,7 @@ namespace Elektronik.UI
             {
                 lock (Node.Children)
                 {
+                    NameLabel.text = Node.DisplayName;
                     var newChildren = Node.Children.Where(c => !_children.Exists(ui => ui.Node == c)).ToList();
                     foreach (var child in newChildren)
                     {

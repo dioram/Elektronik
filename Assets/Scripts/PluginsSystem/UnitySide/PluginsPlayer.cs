@@ -1,6 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Elektronik.Clouds;
 using Elektronik.Data.Converters;
 using Elektronik.Offline;
@@ -18,9 +22,16 @@ namespace Elektronik.PluginsSystem.UnitySide
         public PlayerEventsManager PlayerEvents;
         public GameObject ContainerTreePrefab;
         public RectTransform TreeView;
+        public GameObject ScreenLocker;
+
+        public event Action PluginsStarted; 
+
+        private readonly List<Thread> _startupThreads = new List<Thread>();
 
         private void Start()
         {
+            ScreenLocker.SetActive(true);
+            
             var cloudRenderers = Assembly.GetExecutingAssembly()
                     .GetTypes()
                     .Where(t => t.GetInterfaces()
@@ -58,8 +69,22 @@ namespace Elektronik.PluginsSystem.UnitySide
 
             foreach (var plugin in Plugins)
             {
-                plugin.Start();
+                var thread = new Thread(() => plugin.Start());
+                thread.Start();
+                _startupThreads.Add(thread);
             }
+
+            PluginsStarted += () => ScreenLocker.SetActive(false);
+
+            Task.Run(() =>
+            {
+                foreach (var thread in _startupThreads)
+                {
+                    thread.Join();
+                }
+
+                MainThreadInvoker.Instance.Enqueue(() => PluginsStarted?.Invoke());
+            });
         }
 
         private void Update()
