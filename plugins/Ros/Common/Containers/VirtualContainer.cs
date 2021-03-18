@@ -38,6 +38,7 @@ namespace Elektronik.RosPlugin.Common.Containers
             {
                 child.Clear();
             }
+            ChildrenList.Clear();
         }
 
         public virtual void SetRenderer(object renderer)

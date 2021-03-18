@@ -41,7 +41,7 @@ namespace Elektronik.UI
         protected override void Start()
         {
             base.Start();
-            _label.text = Plugin.DisplayName;
+            _label.text = $"{Plugin.DisplayName} (v{Plugin.GetVersion()})";
             _descriptionLabel.text = Plugin.Description;
 
             _toggle.OnValueChangedAsObservable()

@@ -178,23 +178,29 @@ namespace Elektronik.Containers
 
         public void Update(SlamTrackedObject item)
         {
-            PureUpdate(item);
-            if (IsActive)
+            lock (_objects)
             {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new[] {item}));
+                PureUpdate(item);
+                if (IsActive)
+                {
+                    OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new[] {item}));
+                }
             }
         }
 
         public void Update(IEnumerable<SlamTrackedObject> items)
         {
-            foreach (var item in items)
+            lock (_objects)
             {
-                PureUpdate(item);
-            }
+                foreach (var item in items)
+                {
+                    PureUpdate(item);
+                }
 
-            if (IsActive)
-            {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(items));
+                if (IsActive)
+                {
+                    OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(items));
+                }
             }
         }
 

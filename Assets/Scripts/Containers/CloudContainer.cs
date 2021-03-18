@@ -25,20 +25,26 @@ namespace Elektronik.Containers
 
         public void Add(TCloudItem item)
         {
-            _items.Add(item.Id, item);
-            if (IsActive)
+            lock (_items)
             {
-                OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new[] {item}));
+                _items.Add(item.Id, item);
+                if (IsActive)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new[] {item}));
+                }
             }
         }
 
         public void Clear()
         {
-            var ids = _items.Keys.ToList();
-            _items.Clear();
-            if (IsActive)
+            lock (_items)
             {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+                var ids = _items.Keys.ToList();
+                _items.Clear();
+                if (IsActive)
+                {
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+                }
             }
         }
 
@@ -51,13 +57,16 @@ namespace Elektronik.Containers
 
         public bool Remove(TCloudItem item)
         {
-            var res = _items.Remove(item.Id);
-            if (IsActive)
+            lock (_items)
             {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
-            }
+                var res = _items.Remove(item.Id);
+                if (IsActive)
+                {
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
+                }
 
-            return res;
+                return res;
+            }
         }
 
         public int Count => _items.Count;
@@ -70,10 +79,13 @@ namespace Elektronik.Containers
 
         public void RemoveAt(int index)
         {
-            _items.Remove(index);
-            if (IsActive)
+            lock (_items)
             {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
+                _items.Remove(index);
+                if (IsActive)
+                {
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
+                }
             }
         }
 
@@ -99,52 +111,64 @@ namespace Elektronik.Containers
 
         public void AddRange(IEnumerable<TCloudItem> items)
         {
-            var list = items.ToList();
-            foreach (var ci in list)
+            lock (_items)
             {
-                _items.Add(ci.Id, ci);
-            }
+                var list = items.ToList();
+                foreach (var ci in list)
+                {
+                    _items.Add(ci.Id, ci);
+                }
 
-            if (IsActive)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(list));
+                if (IsActive)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(list));
+                }
             }
         }
 
         public void Remove(IEnumerable<TCloudItem> items)
         {
-            var list = items.ToList();
-            foreach (var ci in list)
+            lock (_items)
             {
-                _items.Remove(ci.Id);
-            }
+                var list = items.ToList();
+                foreach (var ci in list)
+                {
+                    _items.Remove(ci.Id);
+                }
 
-            if (IsActive)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(p => p.Id).ToList()));
+                if (IsActive)
+                {
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(p => p.Id).ToList()));
+                }
             }
         }
 
         public void Update(TCloudItem item)
         {
-            _items[item.Id] = item;
-            if (IsActive)
+            lock (_items)
             {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new[] {item}));
+                _items[item.Id] = item;
+                if (IsActive)
+                {
+                    OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new[] {item}));
+                }
             }
         }
 
         public void Update(IEnumerable<TCloudItem> items)
         {
-            var list = items.ToList();
-            foreach (var ci in list)
+            lock (_items)
             {
-                _items[ci.Id] = ci;
-            }
+                var list = items.ToList();
+                foreach (var ci in list)
+                {
+                    _items[ci.Id] = ci;
+                }
 
-            if (IsActive)
-            {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
+                if (IsActive)
+                {
+                    OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
+                }
             }
         }
 

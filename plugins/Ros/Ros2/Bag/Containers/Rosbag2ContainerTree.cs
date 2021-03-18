@@ -23,15 +23,16 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         {
         }
 
-        public override void Init(FileScaleSettingsBag settings)
+        public void Init(FileScaleSettingsBag settings)
         {
+            DisplayName = settings.FilePath.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
             DBModel = new SQLiteConnection(settings.FilePath, SQLiteOpenFlags.ReadOnly);
             ActualTopics = DBModel.Table<Topic>()
                     .ToList()
                     .Where(t => SupportedMessages.ContainsKey(t.Type))
                     .Select(t => (t.Name, t.Type))
                     .ToArray();
-            base.Init(settings);
+            RebuildTree();
         }
         
         public void ShowAt(long timestamp, bool rewind = false)
@@ -42,15 +43,17 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             }
         }
 
-        public override void Reset()
+        public override void Clear()
         {
             DBModel?.Dispose();
-            base.Reset();
+            base.Clear();
         }
 
         public SQLiteConnection? DBModel { get; private set; }
 
-        public override IContainerTree CreateContainer(string topicName, string topicType)
+        #region Protected
+
+        protected override IContainerTree CreateContainer(string topicName, string topicType)
         {
             var topic = DBModel!.Table<Topic>().First(t => t.Name == topicName);
             var command = DBModel.CreateCommand(
@@ -63,5 +66,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
                                                              topic,
                                                              arr);
         }
+
+        #endregion
     }
 }

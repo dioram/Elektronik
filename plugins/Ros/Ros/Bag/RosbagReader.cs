@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Offline;
 using Elektronik.PluginsSystem;
+using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros.Bag.Parsers;
 using Elektronik.Settings;
@@ -21,11 +22,26 @@ namespace Elektronik.RosPlugin.Ros.Bag
             Finished += () => _playing = false;
         }
 
-        public override string DisplayName => "ROS bag plugin";
+        public override string DisplayName => "ROS bag";
         public override string Description => "This plugins allows Elektronik to read data saved from ROS.";
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
-        public int CurrentTimestamp  => (int)((_frames?.Current?.Timestamp ?? 0 - _startTimestamp) / 1000000);
+        public int CurrentTimestamp
+        {
+            get
+            {
+                var t = _frames?.Current?.Timestamp ?? 0;
+                var s = _startTimestamp;
+                var ts = (int) t; // secs
+                var tn = (int) (t >> 32); // nanosecs
+                var ss = (int) s; // secs
+                var sn = (int) (s >> 32); // nanosecs
+                var rs = ts - ss;
+                var rn = tn - sn;
+                return rs * 1000000 + rn / 1000;
+            }
+        }
+
         public int CurrentPosition 
         {
             get => _frames?.CurrentIndex ?? 0;
@@ -40,6 +56,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
             _container.Init(TypedSettings);
             _startTimestamp = _container.Parser?.ReadMessages().FirstOrDefault()?.Timestamp ?? 0;
             _frames = new FramesCollection<Frame>(ReadNext);
+            Converter = new RosConverter();
             Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
             RosMessageConvertExtender.Converter = Converter;
             _threadWorker = new ThreadWorker();
@@ -47,7 +64,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         public override void Stop()
         {
-            _container.Reset();
+            _container.Clear();
             _threadWorker?.Dispose();
         }
 

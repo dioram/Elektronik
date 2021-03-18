@@ -18,9 +18,9 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
                     .ToDictionary(t => (byte) t.GetField("OpCode").GetValue(null));
         }
 
-        public static Record? Read(Stream stream, bool onlyConnections = false)
+        public static Record? Read(Stream stream, IEnumerable<byte>? allowedOpCodes = null)
         {
-            var record = ReadRecord(stream, onlyConnections);
+            var record = ReadRecord(stream, allowedOpCodes);
             if (record == null) return null;
             return (Record) Activator.CreateInstance(Records[record.Value.header["op"][0]], record);
         }
@@ -41,11 +41,11 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
 
         private static readonly Dictionary<byte, Type> Records;
 
-        private static (Dictionary<string, byte[]> header, byte[] data)? ReadRecord(Stream stream, bool onlyConnection)
+        private static (Dictionary<string, byte[]> header, byte[] data)? ReadRecord(Stream stream, IEnumerable<byte>? allowedOpCodes = null)
         {
             var header = ReadHeader(stream);
             int dataLen = stream.ReadInt32();
-            if (onlyConnection && header["op"][0] != Connection.OpCode)
+            if (allowedOpCodes != null && !allowedOpCodes.Contains(header["op"][0]))
             {
                 stream.Position += dataLen;
                 return null;

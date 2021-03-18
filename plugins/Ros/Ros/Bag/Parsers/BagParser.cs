@@ -39,7 +39,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
             _file.Position = 13;
             while (_file.Position < _file.Length)
             {
-                var record = RecordsFactory.Read(_file) as Connection;
+                var record = RecordsFactory.Read(_file, new []{Connection.OpCode}) as Connection;
                 if (record == null) continue;
                 _connections.Add(record);
                 yield return record;

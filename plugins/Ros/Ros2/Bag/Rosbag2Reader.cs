@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Elektronik.PluginsSystem;
+using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Containers;
 using Elektronik.Settings;
@@ -18,7 +19,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
         
         #region IDataSourceOffline implementation
 
-        public override string DisplayName => "Rosbag2 reader";
+        public override string DisplayName => "ROS2 bag";
         public override string Description => "This plugins allows Elektronik to read data saved from ROS2.";
 
         public override void Start()
@@ -32,13 +33,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag
                     .OrderBy(i => i)
                     .ToArray();
 
+            Converter = new RosConverter();
             Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
             RosMessageConvertExtender.Converter = Converter;
         }
 
         public override void Stop()
         {
-            _data.Reset();
+            _data.Clear();
             _threadWorker?.Dispose();
         }
 

@@ -6,8 +6,8 @@
         <Nullable>enable</Nullable>
         <RootNamespace>Elektronik.RosPlugin</RootNamespace>
         <Deterministic>False</Deterministic>
-        <AssemblyVersion>1.0.*</AssemblyVersion>
-        <FileVersion>1.0.*</FileVersion>
+        <AssemblyVersion>1.1.*</AssemblyVersion>
+        <FileVersion>1.1.*</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -28,6 +28,7 @@
     <ItemGroup>
       <PackageReference Include="RosSharpRosBridgeClient" Version="1.7.0" />
       <PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
+      <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>

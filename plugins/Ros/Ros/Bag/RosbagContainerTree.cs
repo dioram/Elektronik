@@ -11,7 +11,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
 {
     public class RosbagContainerTree : RosContainerTree
     {
-        protected static readonly Dictionary<string, Type> SupportedMessages = new()
+        private static readonly Dictionary<string, Type> SupportedMessages = new()
         {
             {"geometry_msgs/PoseStamped", typeof(TrackedObjectsContainer)},
             {"nav_msgs/Odometry", typeof(TrackedObjectsContainer)},
@@ -25,25 +25,26 @@ namespace Elektronik.RosPlugin.Ros.Bag
         {
         }
 
-        public override void Init(FileScaleSettingsBag settings)
+        public void Init(FileScaleSettingsBag settings)
         {
+            DisplayName = settings.FilePath.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
             Parser = new BagParser(settings.FilePath);
             ActualTopics = Parser.GetTopics()
                     .Where(t => SupportedMessages.ContainsKey(t.Type))
                     .Select(t => (t.Topic, t.Type))
                     .ToArray();
-            base.Init(settings);
+            RebuildTree();
         }
 
-        public override void Reset()
+        public override void Clear()
         {
             Parser?.Dispose();
-            base.Reset();
+            base.Clear();
         }
 
         #region Protected
 
-        public override IContainerTree CreateContainer(string topicName, string topicType)
+        protected override IContainerTree CreateContainer(string topicName, string topicType)
         {
             return (IContainerTree) Activator.CreateInstance(SupportedMessages[topicType],
                                                              topicName.Split('/').Last());

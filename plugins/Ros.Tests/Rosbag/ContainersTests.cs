@@ -22,7 +22,7 @@ namespace Elektronik.Ros.Tests.Rosbag
         [TearDown]
         public void TearDown()
         {
-            _tree.Reset();
+            _tree.Clear();
         }
 
         [Test]
