@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using Elektronik.Ros.Rosbag2.Data;
-using Elektronik.Ros.RosMessages;
+using Elektronik.RosPlugin.Common.RosMessages;
+using Elektronik.RosPlugin.Ros2.Bag.Data;
 using NUnit.Framework;
 using RosSharp.RosBridgeClient.MessageTypes.Geometry;
 using RosSharp.RosBridgeClient.MessageTypes.Nav;

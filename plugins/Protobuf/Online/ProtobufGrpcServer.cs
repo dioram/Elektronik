@@ -5,6 +5,7 @@ using Elektronik.Presenters;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.GrpcServices;
 using Elektronik.Protobuf.Online.Presenters;
+using Elektronik.Settings;
 using Grpc.Core;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace Elektronik.Protobuf.Online
 {
     using GrpcServer = Server;
 
-    public class ProtobufGrpcServer : DataSourceBase<OnlineSettingsBag>,  IDataSourceOnline
+    public class ProtobufGrpcServer : DataSourceBase<AddressPortScaleSettingsBag>,  IDataSourceOnline
     {
         public ProtobufGrpcServer()
         {
@@ -33,12 +34,6 @@ namespace Elektronik.Protobuf.Online
 
         public override void Start()
         {
-            if (!(Settings is OnlineSettingsBag))
-            {
-                throw new InvalidCastException(
-                    $"Wrong type of settings for {DisplayName}-{nameof(ProtobufGrpcServer)}");
-            }
-
             if (Converter == null)
             {
                 throw new NullReferenceException(

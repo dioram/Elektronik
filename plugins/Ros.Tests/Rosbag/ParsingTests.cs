@@ -1,7 +1,7 @@
 using System.Linq;
-using Elektronik.Ros.Rosbag.Parsers;
-using Elektronik.Ros.Rosbag.Parsers.Records;
-using Elektronik.Ros.RosMessages;
+using Elektronik.RosPlugin.Common.RosMessages;
+using Elektronik.RosPlugin.Ros.Bag.Parsers;
+using Elektronik.RosPlugin.Ros.Bag.Parsers.Records;
 using NUnit.Framework;
 using RosSharp.RosBridgeClient.MessageTypes.Nav;
 
@@ -50,7 +50,7 @@ namespace Elektronik.Ros.Tests.Rosbag
             Assert.AreEqual(bagHeader.ChunkCount, types.Count(t => t == typeof(Chunk)));
             Assert.AreEqual(bagHeader.ConnectionsCount, types.Count(t => t == typeof(Connection)));
         }
-        
+
         [Test]
         public void ConnectionsTest()
         {
@@ -71,14 +71,23 @@ namespace Elektronik.Ros.Tests.Rosbag
                     .Where(m => m is not null)
                     .Select(m => m!)
                     .ToList();
-            Assert.AreEqual(675, messages.Count);
+            Assert.AreEqual(10068, messages.Count);
             Assert.IsInstanceOf<Odometry>(messages[0]);
+        }
+
+        [Test]
+        public void MessagesTest()
+        {
+            var messages = _parser.ReadMessages().ToList();
+            Assert.AreEqual(24027, messages.Count);
+            Assert.AreEqual(5015, messages.Count(m => m.TopicName == "/odometry/filtered"));
+            Assert.AreEqual(5053, messages.Count(m => m.TopicName == "/rr_robot/mobile_base_controller/odom"));
         }
 
         [Test]
         public void TopicsTest()
         {
-            var topics = _parser.GetTopics().ToList();
+            var topics = _parser.GetTopics().Select(t => (t.Topic, t.Type)).ToList();
             Assert.AreEqual(6, topics.Count);
             Assert.AreEqual(("/rr_robot/mobile_base_controller/odom", "nav_msgs/Odometry"), topics[0]);
         }

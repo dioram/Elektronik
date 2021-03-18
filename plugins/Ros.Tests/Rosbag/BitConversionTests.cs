@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Text;
-using Elektronik.Ros.Rosbag.Parsers;
+using Elektronik.RosPlugin.Ros.Bag.Parsers;
 using NUnit.Framework;
 
 namespace Elektronik.Ros.Tests.Rosbag

@@ -1,7 +1,7 @@
 using System.Linq;
-using Elektronik.Ros.Containers;
-using Elektronik.Ros.Rosbag2.Containers;
-using Elektronik.Ros.Rosbag2.Data;
+using Elektronik.RosPlugin.Common.Containers;
+using Elektronik.RosPlugin.Ros2.Bag.Containers;
+using Elektronik.RosPlugin.Ros2.Bag.Data;
 using Elektronik.Settings;
 using NUnit.Framework;
 
@@ -21,8 +21,6 @@ namespace Elektronik.Ros.Tests.Rosbag2
         public void ReadMetadata()
         {
             Assert.AreEqual(402, _tree.DBModel?.Table<Message>().Count());
-            // Assert.AreEqual(new[] {"test_db.db3"}, _tree.Metadata.Paths);
-            // Assert.AreEqual(1614606828653705041, _tree.Metadata.StartingTime);
         }
 
         [Test]

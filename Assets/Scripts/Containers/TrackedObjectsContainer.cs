@@ -290,12 +290,10 @@ namespace Elektronik.Containers
 
         public (Vector3 pos, Quaternion rot) Look(Transform transform)
         {
-            if (_lineContainers.Count != 0 && _lineContainers[0] is ILookable lookable)
-            {
-                return lookable.Look(transform);
-            }
+            if (_objects.Count == 0) return (transform.position, transform.rotation);
 
-            return (transform.position, transform.rotation);
+            var pos = _objects.First().Value.Item1.Position;
+            return (pos + (transform.position - pos).normalized, Quaternion.LookRotation(pos - transform.position));
         }
 
         #endregion
