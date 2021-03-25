@@ -11,14 +11,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
     public class Rosbag2ContainerTree : RosContainerTree
     {
-        protected static readonly Dictionary<string, Type> SupportedMessages = new()
-        {
-            {"geometry_msgs/msg/PoseStamped", typeof(TrackedDBContainer)},
-            {"nav_msgs/msg/Odometry", typeof(TrackedDBContainer)},
-            {"sensor_msgs/msg/PointCloud2", typeof(PointsDBContainer)},
-            {"visualization_msgs/msg/MarkerArray", typeof(VisualisationMarkersDBContainer)},
-        };
-        
         public Rosbag2ContainerTree(string displayName) : base(displayName)
         {
         }
@@ -31,7 +23,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
                     .ToList()
                     .Where(t => SupportedMessages.ContainsKey(t.Type))
                     .Select(t => (t.Name, t.Type))
-                    .ToArray();
+                    .ToList();
             RebuildTree();
         }
         
@@ -43,10 +35,10 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             }
         }
 
-        public override void Clear()
+        public override void Reset()
         {
             DBModel?.Dispose();
-            base.Clear();
+            base.Reset();
         }
 
         public SQLiteConnection? DBModel { get; private set; }
@@ -66,6 +58,18 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
                                                              topic,
                                                              arr);
         }
+
+        #endregion
+
+        #region Private
+        
+        private static readonly Dictionary<string, Type> SupportedMessages = new()
+        {
+            {"geometry_msgs/msg/PoseStamped", typeof(TrackedDBContainer)},
+            {"nav_msgs/msg/Odometry", typeof(TrackedDBContainer)},
+            {"sensor_msgs/msg/PointCloud2", typeof(PointsDBContainer)},
+            {"visualization_msgs/msg/MarkerArray", typeof(VisualisationMarkersDBContainer)},
+        };
 
         #endregion
     }

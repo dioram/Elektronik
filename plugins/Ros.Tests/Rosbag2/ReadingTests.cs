@@ -26,7 +26,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
         [Test]
         public void ContainersTree()
         {
-            Assert.AreEqual(18, _tree.ActualTopics?.Length);
+            Assert.AreEqual(18, _tree.ActualTopics.Count);
             Assert.AreEqual(14, _tree.Children.Count());
             var children = _tree.Children.ToList();
             Assert.IsInstanceOf<VirtualContainer>(children[0]);

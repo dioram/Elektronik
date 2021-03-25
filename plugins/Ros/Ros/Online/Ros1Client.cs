@@ -33,6 +33,7 @@ namespace Elektronik.RosPlugin.Ros.Online
 
         public override void Stop()
         {
+            _container.Reset();
         }
 
         public override void Update(float delta)

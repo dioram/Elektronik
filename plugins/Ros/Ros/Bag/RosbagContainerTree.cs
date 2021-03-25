@@ -16,7 +16,6 @@ namespace Elektronik.RosPlugin.Ros.Bag
             {"geometry_msgs/PoseStamped", typeof(TrackedObjectsContainer)},
             {"nav_msgs/Odometry", typeof(TrackedObjectsContainer)},
             {"sensor_msgs/PointCloud2", typeof(CloudContainer<SlamPoint>)},
-            // {"visualization_msgs/msg/MarkerArray", typeof(CloudContainer<SlamPoint>)},
         };
         
         public BagParser? Parser { get; private set; }
@@ -32,14 +31,14 @@ namespace Elektronik.RosPlugin.Ros.Bag
             ActualTopics = Parser.GetTopics()
                     .Where(t => SupportedMessages.ContainsKey(t.Type))
                     .Select(t => (t.Topic, t.Type))
-                    .ToArray();
+                    .ToList();
             RebuildTree();
         }
 
-        public override void Clear()
+        public override void Reset()
         {
             Parser?.Dispose();
-            base.Clear();
+            base.Reset();
         }
 
         #region Protected

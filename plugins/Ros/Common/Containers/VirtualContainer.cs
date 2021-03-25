@@ -11,20 +11,6 @@ namespace Elektronik.RosPlugin.Common.Containers
             DisplayName = displayName;
         }
 
-        public void Squeeze()
-        {
-            for (int i = 0; i < ChildrenList.Count(); i++)
-            {
-                if (ChildrenList[i] is not VirtualContainer @virtual) continue;
-
-                @virtual.Squeeze();
-                if (@virtual.ChildrenList.Count != 1) continue;
-
-                ChildrenList[i] = @virtual.ChildrenList[0];
-                ChildrenList[i].DisplayName = $"{@virtual.DisplayName}/{ChildrenList[i].DisplayName}";
-            }
-        }
-
         public void AddChild(string path, IContainerTree child)
         {
             ChildrenList.Add(child);
@@ -38,7 +24,6 @@ namespace Elektronik.RosPlugin.Common.Containers
             {
                 child.Clear();
             }
-            ChildrenList.Clear();
         }
 
         public virtual void SetRenderer(object renderer)
@@ -63,6 +48,24 @@ namespace Elektronik.RosPlugin.Common.Containers
                 {
                     child.IsActive = IsActive;
                 }
+            }
+        }
+
+        #endregion
+
+        #region Protected
+
+        protected void Squeeze()
+        {
+            for (int i = 0; i < ChildrenList.Count(); i++)
+            {
+                if (ChildrenList[i] is not VirtualContainer @virtual) continue;
+
+                @virtual.Squeeze();
+                if (@virtual.ChildrenList.Count != 1) continue;
+
+                ChildrenList[i] = @virtual.ChildrenList[0];
+                ChildrenList[i].DisplayName = $"{@virtual.DisplayName}/{ChildrenList[i].DisplayName}";
             }
         }
 

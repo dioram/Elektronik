@@ -6,18 +6,19 @@ namespace Elektronik.RosPlugin.Common.Containers
 {
     public abstract class RosContainerTree : VirtualContainer
     {
-        public (string Name, string Type)[]? ActualTopics;
+        public List<(string Name, string Type)> ActualTopics = new ();
         public readonly Dictionary<string, IContainerTree> RealChildren = new();
 
         public RosContainerTree(string displayName) : base(displayName)
         {
         }
 
-        public override void Clear()
+        public virtual void Reset()
         {
-            ActualTopics = null;
-            base.Clear();
+            Clear();
+            ActualTopics.Clear();
             RealChildren.Clear();
+            ChildrenList.Clear();
         }
 
         public override void SetRenderer(object renderer)
@@ -44,7 +45,6 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         private void BuildTree()
         {
-            if (ActualTopics == null) return;
             ChildrenList.Clear();
 
             foreach (var topic in ActualTopics)
@@ -73,6 +73,10 @@ namespace Elektronik.RosPlugin.Common.Containers
                     {
                         RealChildren[topic.Name].SetRenderer(renderer);
                     }
+                }
+                else
+                {
+                    RealChildren[topic.Name].DisplayName = topic.Name.Split('/').Last();
                 }
 
                 parent.AddChild(topic.Name, RealChildren[topic.Name]);

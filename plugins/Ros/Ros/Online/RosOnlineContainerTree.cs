@@ -19,20 +19,19 @@ namespace Elektronik.RosPlugin.Ros.Online
         {
         }
 
-        public void UpdateTopics(TopicsResponse message)
+        public void UpdateTopics(TopicsResponse? message)
         {
-            var tmp = message.topics
+            var tmp = message?.topics
                     .Zip(message.types, (s, s1) => (s, s1))
                     .Where(m => SupportedMessages.ContainsKey(m.s1))
                     .OrderBy(m => m.s)
-                    .ToArray();
+                    .ToList() ?? new List<(string s, string s1)>();
 
-            
-            if (tmp.Length == ActualTopics?.Length)
+            if (tmp.Count == ActualTopics.Count)
             {
-                if (tmp.Length == 0) return;
+                if (tmp.Count == 0) return;
                 bool equals = true;
-                for (int i = 0; i < tmp.Length; i++)
+                for (int i = 0; i < tmp.Count; i++)
                 {
                     if (tmp[i].s != ActualTopics[i].Name || tmp[i].s1 != ActualTopics[i].Type)
                     {
@@ -51,11 +50,12 @@ namespace Elektronik.RosPlugin.Ros.Online
             var uri = $"ws://{settings.IPAddress}:{settings.Port}";
             DisplayName = $"ROS: {uri}";
             Socket = new RosSocket(new RosSharp.RosBridgeClient.Protocols.WebSocketNetProtocol(uri));
+            UpdateTopics(null);
         }
 
-        public override void Clear()
+        public override void Reset()
         {
-            base.Clear();
+            base.Reset();
             foreach (var handler in _handlers)
             {
                 handler.Dispose();
@@ -83,10 +83,8 @@ namespace Elektronik.RosPlugin.Ros.Online
             {"geometry_msgs/PoseStamped", (typeof(TrackedObjectsContainer), typeof(PoseStampedHandler))},
             {"nav_msgs/Odometry", (typeof(TrackedObjectsContainer), typeof(OdometryHandler))},
             {"sensor_msgs/PointCloud2", (typeof(CloudContainer<SlamPoint>), typeof(PointCloud2Handler))},
-            // {"visualization_msgs/msg/MarkerArray", typeof(CloudContainer<SlamPoint>)},
         };
 
-        // ReSharper disable once CollectionNeverQueried.Local
         private readonly List<IMessageHandler> _handlers = new();
 
         #endregion

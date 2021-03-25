@@ -40,7 +40,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public override void Stop()
         {
-            _data.Clear();
+            _data.Reset();
             _threadWorker?.Dispose();
         }
 

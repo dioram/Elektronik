@@ -93,7 +93,7 @@ namespace Elektronik.RosPlugin.Common.RosMessages
 
         public static Color ToUnity(this ColorRGBA color) => new Color(color.r, color.g, color.b, color.a);
 
-        private static Color ColorFromIntensity(float intensity) =>
+        public static Color ColorFromIntensity(float intensity) =>
                 intensity switch
                 {
                     > 1 => Color.red,

@@ -28,7 +28,7 @@ namespace Elektronik.Ros.Tests.Rosbag
         [Test]
         public void ActualTopicsTest()
         {
-            Assert.AreEqual(2, _tree.ActualTopics!.Length);
+            Assert.AreEqual(2, _tree.ActualTopics.Count);
             Assert.AreEqual(("/rr_robot/mobile_base_controller/odom", "nav_msgs/Odometry"), _tree.ActualTopics[0]);
             Assert.AreEqual(("/odometry/filtered", "nav_msgs/Odometry"), _tree.ActualTopics[1]);
         }
