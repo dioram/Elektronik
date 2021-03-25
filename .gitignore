@@ -21,6 +21,9 @@
 !/plugins/**
 /plugins/**/bin
 /plugins/**/obj
+/plugins/Ros/Ros2/Online/SWIG_generated
+/plugins/ROS2DDS/ConnectorCSHARP*
+/plugins/ROS2DDS/cmake-build-*
 
 /Assets/generatedFiles/
 /Assets/Packages/
