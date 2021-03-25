@@ -4,11 +4,11 @@ name: Build project
 
 # Controls when the action will run. 
 on:
-  pull_request: {}
-  push: {}
+  pull_request: { }
+  push: { }
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-  
+
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 jobs:
@@ -19,6 +19,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           lfs: true
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
       - name: Build unity player
         run: .\.github\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
       - uses: actions/upload-artifact@v1
