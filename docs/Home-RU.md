@@ -16,9 +16,4 @@
 
 Встроенные плагины:
 - [Protobuf](Protobuf-RU.md)
-
-### Обновление с версии 2.0 на 3.0 и выше
-
-Начиная с версии 3.0 Elektronik использует формат обмена данными 
-[google protocol buffers](https://developers.google.com/protocol-buffers/?hl=en) и [gRPC](https://grpc.io/). 
-С документацией по использованию этих фреймворков можно ознакомиться по предоставленным ссылкам.
+- [ROS](ROS-RU.md)

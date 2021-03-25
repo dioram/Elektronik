@@ -16,8 +16,4 @@ Choose a section:
 
 Embeded plugins:
 - [Protobuf](Protobuf-EN.md)
-
-### Update from 2.0 on 3.0 and above
-
-Since version 3.0 Elektronik uses [google protocol buffers](https://developers.google.com/protocol-buffers/?hl=en) 
-and [gRPC](https://grpc.io/).
+- [ROS](ROS-EN.md)

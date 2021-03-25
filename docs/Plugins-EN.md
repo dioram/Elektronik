@@ -208,6 +208,10 @@ Mark fields with `Tooltip(string)` attribute to change displaying name of this f
 If you need to validate settings override `bool Validate()` it should return true if settings are correct.
 Playing will not started before all turned on plugins have correct settings.
 
+Some of popular types of settings are already implemented:
+[AddressPortScaleSettingsBag](../Assets/Scripts/Settings/Bags/AddressPortScaleSettingsBag.cs)
+[FileScaleSettingsBag](../Assets/Scripts/Settings/Bags/FileScaleSettingsBag.cs)
+
 For keeping history of setting create a specialization of class [SettingsHistory\<T\>](../Assets/Scripts/Settings/SettingsHistory.cs)
 for your setting class.
 
@@ -220,6 +224,10 @@ ISettingsHistory SettingsHistory { get; }
 ```
 in your plugin statically or in constructor using created classes.
 
-All settings are stored in `C:\Users\<User>\AppData\LocalLow\Dioram\Elektronik\<FullNameOfSettingsClass>.json`.
+Or instead of specialization of class [SettingsHistory\<T\>](../Assets/Scripts/Settings/SettingsHistory.cs), 
+you can inherit [DataSourceBase\<T\>](../Assets/Scripts/PluginsSystem/DataSourceBase.cs), where T is settings bag class.
+In **DataSourceBase\<T\>** settings history is already implemented.
+
+All settings and history are stored in `C:\Users\<User>\AppData\LocalLow\Dioram\Elektronik\<Plugin.DisplayName>.json`.
 
 [<- Internal API](API-EN.md) | [Protobuf plugin ->](Protobuf-EN.md)

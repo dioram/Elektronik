@@ -76,6 +76,56 @@ void UpdateItem(T obj);
 void UpdateItems(IEnumerable<T> objs);
 ```
 
+## [IContainerTree](../Assets/Scripts/Containers/IContainerTree.cs)
+
+Containers with this interface can be united in tree structure.
+
+**Implementation examples:** [CloudContainer\<T\>](../Assets/Scripts/Containers/CloudContainer.cs),
+[TrackedObjectsContainer](../Assets/Scripts/Containers/TrackedObjectsContainer.cs)
+
+Members:
+```c#
+/// <summary> Display name of container. </summary>
+/// <remarks> Will be used in ContainerTree UI widget. </remarks>
+string DisplayName { get; set; }
+IEnumerable<IContainerTree> Children { get; }
+/// <summary> Should content of this container be displayed or not. </summary>
+bool IsActive { get; set; }
+/// <summary> Clear all content. </summary>
+void Clear();
+/// <summary> Sets renderer class for this container. </summary>
+/// <remarks> You should choose and set only correct type of renderer in implementation of this method. </remarks>
+/// <example>
+/// if (renderer is ICloudRenderer&lt;TCloudItem&gt; typedRenderer)
+/// {
+///     OnAdded += typedRenderer.OnItemsAdded;
+///     OnUpdated += typedRenderer.OnItemsUpdated;
+///     OnRemoved += typedRenderer.OnItemsRemoved;
+///     if (Count > 0)
+///     {
+///         OnAdded?.Invoke(this, new AddedEventArgs&lt;TCloudItem&gt;(this));
+///     }
+/// }
+/// </example>
+/// <param name="renderer"> Content renderer </param>
+void SetRenderer(object renderer);
+```
+
+## [ILookable](../Assets/Scripts/Containers/ILookable.cs)
+
+Containers with this interface can give coordinates for best position to look at theirs content.
+
+**Implementation examples:** [CloudContainer\<T\>](../Assets/Scripts/Containers/CloudContainer.cs),
+[TrackedObjectsContainer](../Assets/Scripts/Containers/TrackedObjectsContainer.cs)
+
+Members:
+```c#
+/// <summary> Returns coordinates of camera for best position to look at container's content. </summary>
+/// <param name="transform"> Initial camera transform. </param>
+/// <returns> End camera transform. </returns>
+(Vector3 pos, Quaternion rot) Look(Transform transform);
+```
+
 ## [IConnectableObjectsContainer\<T\>](../Assets/Scripts/Containers/IConnectableObjectsContainer.cs)
 
 Interface of container for connectable objects.

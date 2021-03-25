@@ -32,7 +32,7 @@ void UnExecute();
 
 ## [ICSConverter](../Assets/Scripts/Data/Converters/ICSConverter.cs)
 
-Дает возможность настраивать переход между системами координат из полученных в отображаемые для различных видов пакетов.
+Дает возможность настраивать переход между системами координат для различных видов пакетов.
 
 **Пример реализации:** [Camera2Unity3dPackageConverter](../Assets/Scripts/Data/Converters/Camera2Unity3dPackageConverter.cs).
 
@@ -95,6 +95,56 @@ bool RemoveConnection(T obj1, T obj2);
 void RemoveConnections(IEnumerable<(T obj1, T obj2)> connections);
 IEnumerable<(int id1, int id2)> GetAllConnections(int id);
 IEnumerable<(int id1, int id2)> GetAllConnections(T obj);
+```
+
+## [IContainerTree](../Assets/Scripts/Containers/IContainerTree.cs)
+
+Интерфейс для контейнеров, которые могут соединяться в древовидную структуру.
+
+**Примеры реализации** [CloudContainer\<T\>](../Assets/Scripts/Containers/CloudContainer.cs),
+[TrackedObjectsContainer](../Assets/Scripts/Containers/TrackedObjectsContainer.cs)
+
+Свойства и методы:
+```c#
+/// <summary> Display name of container. </summary>
+/// <remarks> Will be used in ContainerTree UI widget. </remarks>
+string DisplayName { get; set; }
+IEnumerable<IContainerTree> Children { get; }
+/// <summary> Should content of this container be displayed or not. </summary>
+bool IsActive { get; set; }
+/// <summary> Clear all content. </summary>
+void Clear();
+/// <summary> Sets renderer class for this container. </summary>
+/// <remarks> You should choose and set only correct type of renderer in implementation of this method. </remarks>
+/// <example>
+/// if (renderer is ICloudRenderer&lt;TCloudItem&gt; typedRenderer)
+/// {
+///     OnAdded += typedRenderer.OnItemsAdded;
+///     OnUpdated += typedRenderer.OnItemsUpdated;
+///     OnRemoved += typedRenderer.OnItemsRemoved;
+///     if (Count > 0)
+///     {
+///         OnAdded?.Invoke(this, new AddedEventArgs&lt;TCloudItem&gt;(this));
+///     }
+/// }
+/// </example>
+/// <param name="renderer"> Content renderer </param>
+void SetRenderer(object renderer);
+```
+
+## [ILookable](../Assets/Scripts/Containers/ILookable.cs)
+
+Интерфейс для контейнеров на содержимое которых можно навести камеру.
+
+**Примеры реализации** [CloudContainer\<T\>](../Assets/Scripts/Containers/CloudContainer.cs),
+[TrackedObjectsContainer](../Assets/Scripts/Containers/TrackedObjectsContainer.cs)
+
+Свойства и методы:
+```c#
+/// <summary> Returns coordinates of camera for best position to look at container's content. </summary>
+/// <param name="transform"> Initial camera transform. </param>
+/// <returns> End camera transform. </returns>
+(Vector3 pos, Quaternion rot) Look(Transform transform);
 ```
 
 # Классы для отображения данных

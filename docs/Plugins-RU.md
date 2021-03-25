@@ -98,7 +98,6 @@ SettingsBag Settings { get; set; }
 ISettingsHistory SettingsHistory { get; }
 ```
 - Объект хранящий историю настройки плагина. Скорее всего вы не будете им пользоваться :)
-  Но, к сожалению, его нужно будет инициализировать в плагине.
   Это свойство должно быть инициализированно статически или в конструкторе.
   Подробности в разделе [Настройки](#Настройки)
 
@@ -208,7 +207,8 @@ public void SetRenderer(object renderer)
 }
 ```
 Если в вашем плагине будут использоваться несколько контейнеров, то вам придется создать корневой контейнер, 
-в котором будут назодиться все остальные. [Пример](../plugins/Protobuf/Data/ProtobufContainerTree.cs) можно посмотреть в плагине Protobuf.
+в котором будут находиться все остальные. 
+[Пример](../plugins/Protobuf/Data/ProtobufContainerTree.cs) можно посмотреть в плагине Protobuf.
 
 ## Другие виды данных
 
@@ -240,6 +240,10 @@ Successor?.SetRenderer(dataRenderer);
 переопределите функцию `bool Validate()`, она должна возвращать `true`, если настройки корректны. 
 Проигрывание не будет запущено пока у всех включенных плагинов не будут установлены корректноые настройки.
 
+Несколько самых популярных типов настроек уже реализованы и вы можете использовать их в своих плагинах:
+[AddressPortScaleSettingsBag](../Assets/Scripts/Settings/Bags/AddressPortScaleSettingsBag.cs)
+[FileScaleSettingsBag](../Assets/Scripts/Settings/Bags/FileScaleSettingsBag.cs)
+
 Для хранения истории настроек сделайте специализацию класса [SettingsHistory\<T\>](../Assets/Scripts/Settings/SettingsHistory.cs),
 где в качестве T укажите ваш класс настроек. Больше в нём не потребуется ничего реализовывать. 
 
@@ -252,6 +256,9 @@ ISettingsHistory SettingsHistory { get; }
 ```
 в своём плагине статически или в конструкторе, используя созданный вами классы.
 
-Все настройки хранятся в `C:\Users\<User>\AppData\LocalLow\Dioram\Elektronik\<FullNameOfSettingsClass>.json`.
+Или вместо специализации класса [SettingsHistory\<T\>], можете унаследовать класс [DataSourceBase\<T\>], где T - класс настроек,
+в котором уже реализована работа с историей настроек.
+
+Вся история настроек хранится в `C:\Users\<User>\AppData\LocalLow\Dioram\Elektronik\<Plugin.DisplayName>.json`.
 
 [<- Внутреннее API](API-RU.md) | [Protobuf plugin ->](Protobuf-RU.md)
