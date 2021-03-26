@@ -10,7 +10,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
 {
     public static class MessageToCommandExt
     {
-        public static ICommand? ToCommand(this Message message, IContainerTree container)
+        public static ICommand? ToCommand(this Message message, ISourceTree container)
         {
             return message switch
             {

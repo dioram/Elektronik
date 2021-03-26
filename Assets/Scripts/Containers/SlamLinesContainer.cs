@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class SlamLinesContainer : IContainer<SlamLine>, IContainerTree, ILookable
+    public class SlamLinesContainer : IContainer<SlamLine>, ISourceTree, ILookable
     {
         public SlamLinesContainer(string displayName = "")
         {
@@ -181,7 +181,7 @@ namespace Elektronik.Containers
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
+        public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
 
         public bool IsActive
         {

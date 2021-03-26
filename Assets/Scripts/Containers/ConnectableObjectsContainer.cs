@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, IContainerTree, ILookable
+    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTree, ILookable
             where TCloudItem : struct, ICloudItem
     {
         public ConnectableObjectsContainer(IContainer<TCloudItem> objects,
@@ -19,8 +19,8 @@ namespace Elektronik.Containers
             _objects = objects;
             Children = new[]
             {
-                    (IContainerTree) _connects,
-                    (IContainerTree) _objects,
+                    (ISourceTree) _connects,
+                    (ISourceTree) _objects,
             };
 
             DisplayName = string.IsNullOrEmpty(displayName) ? GetType().Name : displayName;
@@ -251,7 +251,7 @@ namespace Elektronik.Containers
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<IContainerTree> Children { get; }
+        public IEnumerable<ISourceTree> Children { get; }
 
         public bool IsActive
         {

@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     /// <summary> Contains lines in strict order. </summary>
-    public class TrackContainer : IContainer<SlamLine>, IContainerTree, ILookable
+    public class TrackContainer : IContainer<SlamLine>, ISourceTree, ILookable
     {
         #region IContainer implementaion
 
@@ -148,7 +148,7 @@ namespace Elektronik.Containers
 
         public string DisplayName { get; set; } = "Track";
 
-        public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
+        public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
         
         public bool IsActive
         {

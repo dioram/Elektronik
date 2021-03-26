@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using Elektronik.Clouds;
 using Elektronik.Data.Converters;
 using Elektronik.Offline;
-using Elektronik.Renderers;
 using Elektronik.UI;
+using Elektronik.UI.Windows;
 using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
@@ -38,31 +38,22 @@ namespace Elektronik.PluginsSystem.UnitySide
                                    .Where(i => i.IsGenericType)
                                    .Any(i => i.GetGenericTypeDefinition() == typeof(ICloudRenderer<>)))
                     .SelectMany(t => Renderers.GetComponentsInChildren(t))
+                    .Concat(new []{Renderers.transform.Find("Windows").GetComponent<WindowsFactory>()})
                     .ToArray();
-            var dataRenderers = Assembly.GetExecutingAssembly()
-                    .GetTypes()
-                    .Where(t => t.GetInterfaces()
-                                   .Where(i => i.IsGenericType)
-                                   .Any(i => i.GetGenericTypeDefinition() == typeof(IDataRenderer<>)))
-                    .SelectMany(t => Renderers.GetComponentsInChildren(t))
-                    .ToArray();
-            foreach (var dataSource in Plugins.OfType<IDataSource>())
+            
+            foreach (var dataSource in Plugins.OfType<IDataSourcePlugin>())
             {
                 foreach (var r in cloudRenderers)
                 {
                     dataSource.Data.SetRenderer(r);
                 }
-                foreach (var r in dataRenderers)
-                {
-                    dataSource.PresentersChain?.SetRenderer(r);
-                }
 
                 dataSource.Converter = Converter;
-                var treeElement = Instantiate(ContainerTreePrefab, TreeView).GetComponent<ContainerTreeElement>();
+                var treeElement = Instantiate(ContainerTreePrefab, TreeView).GetComponent<SourceTreeElement>();
                 treeElement.Node = dataSource.Data;
             }
 
-            foreach (var dataSource in Plugins.OfType<IDataSourceOffline>())
+            foreach (var dataSource in Plugins.OfType<IDataSourcePluginOffline>())
             {
                 PlayerEvents.SetDataSource(dataSource);
             }
@@ -105,11 +96,11 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         public void ClearMap()
         {
-            foreach (var dataSourceOnline in PluginsLoader.ActivePlugins.OfType<IDataSourceOnline>())
+            foreach (var dataSourceOnline in PluginsLoader.ActivePlugins.OfType<IDataSourcePluginOnline>())
             {
                 dataSourceOnline.Data.Clear();
             }
-            foreach (var dataSourceOffline in PluginsLoader.ActivePlugins.OfType<IDataSourceOffline>())
+            foreach (var dataSourceOffline in PluginsLoader.ActivePlugins.OfType<IDataSourcePluginOffline>())
             {
                 dataSourceOffline.StopPlaying();
             }

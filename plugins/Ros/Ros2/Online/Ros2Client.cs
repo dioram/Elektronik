@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Online
 {
-    public class Ros2Client : DataSourceBase<Ros2Settings>, IDataSourceOnline
+    public class Ros2Client : DataSourcePluginBase<Ros2Settings>, IDataSourcePluginOnline
     {
         public Ros2Client()
         {

@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Elektronik.Containers;
+using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
 {
-    public struct SlamPoint : ICloudItem
+    public struct SlamPoint : ICloudItem, ILookable
     {
         public int Id { get; set; }
         public Vector3 Position;
@@ -18,17 +19,15 @@ namespace Elektronik.Data.PackageObjects
             Message = message;
         }
 
-        public SlamPoint(SlamPoint point)
-        {
-            Id = point.Id;
-            Position = point.Position;
-            Color = point.Color;
-            Message = point.Message;
-        }
-
         public override string ToString()
         {
             return Message ?? "SlamPoint";
+        }
+
+        public (Vector3 pos, Quaternion rot) Look(Transform transform)
+        {
+            return (Position + (transform.position - Position).normalized,
+                    Quaternion.LookRotation(Position - transform.position));
         }
     }
 }

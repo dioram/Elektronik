@@ -8,7 +8,7 @@ namespace Elektronik.RosPlugin.Ros.Online.Handlers
 {
     public class OdometryHandler : MessageHandler<Odometry, SlamTrackedObject>
     {
-        public OdometryHandler(IContainerTree container, RosSocket socket, string topic) : base(
+        public OdometryHandler(ISourceTree container, RosSocket socket, string topic) : base(
             container, socket, topic)
         {
         }

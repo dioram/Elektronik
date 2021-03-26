@@ -7,7 +7,7 @@ namespace Elektronik.RosPlugin.Common.Containers
     public abstract class RosContainerTree : VirtualContainer
     {
         public List<(string Name, string Type)> ActualTopics = new ();
-        public readonly Dictionary<string, IContainerTree> RealChildren = new();
+        public readonly Dictionary<string, ISourceTree> RealChildren = new();
 
         public RosContainerTree(string displayName) : base(displayName)
         {
@@ -29,7 +29,7 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #region Protected
 
-        protected abstract IContainerTree CreateContainer(string topicName, string topicType);
+        protected abstract ISourceTree CreateContainer(string topicName, string topicType);
 
         protected virtual void RebuildTree()
         {

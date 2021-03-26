@@ -4,14 +4,14 @@ using Elektronik.Containers;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
-    public class VirtualContainer : IContainerTree
+    public class VirtualContainer : ISourceTree
     {
         public VirtualContainer(string displayName)
         {
             DisplayName = displayName;
         }
 
-        public void AddChild(string path, IContainerTree child)
+        public void AddChild(string path, ISourceTree child)
         {
             ChildrenList.Add(child);
         }
@@ -36,7 +36,7 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<IContainerTree> Children => ChildrenList;
+        public IEnumerable<ISourceTree> Children => ChildrenList;
 
         public bool IsActive
         {
@@ -74,7 +74,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         #region Private definitions
 
         private bool _isActive = true;
-        protected readonly List<IContainerTree> ChildrenList = new();
+        protected readonly List<ISourceTree> ChildrenList = new();
 
         #endregion
     }

@@ -9,9 +9,9 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {
-        private readonly IContainerTree _container;
+        private readonly ISourceTree _container;
 
-        public SceneManager(IContainerTree container)
+        public SceneManager(ISourceTree container)
         {
             _container = container;
         }

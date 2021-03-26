@@ -65,10 +65,10 @@ namespace Elektronik.RosPlugin.Ros.Online
 
         #region Protected
 
-        protected override IContainerTree CreateContainer(string topicName, string topicType)
+        protected override ISourceTree CreateContainer(string topicName, string topicType)
         {
-            var container = (IContainerTree) Activator.CreateInstance(SupportedMessages[topicType].container,
-                                                                      topicName.Split('/').Last());
+            var container = (ISourceTree) Activator.CreateInstance(SupportedMessages[topicType].container,
+                                                                   topicName.Split('/').Last());
             _handlers.Add((IMessageHandler) Activator.CreateInstance(SupportedMessages[topicType].handler, container,
                                                                      Socket, topicName));
             return container;

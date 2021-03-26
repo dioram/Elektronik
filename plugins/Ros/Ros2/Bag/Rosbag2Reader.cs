@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag
 {
-    public class Rosbag2Reader : DataSourceBase<FileScaleSettingsBag>, IDataSourceOffline
+    public class Rosbag2Reader : DataSourcePluginBase<FileScaleSettingsBag>, IDataSourcePluginOffline
     {
         public Rosbag2Reader()
         {

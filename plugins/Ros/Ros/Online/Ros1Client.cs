@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Online
 {
-    public class Ros1Client : DataSourceBase<AddressPortScaleSettingsBag>, IDataSourceOnline
+    public class Ros1Client : DataSourcePluginBase<AddressPortScaleSettingsBag>, IDataSourcePluginOnline
     {
         public Ros1Client()
         {

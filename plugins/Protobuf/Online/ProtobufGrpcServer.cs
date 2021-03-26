@@ -1,7 +1,6 @@
 ﻿using System;
 using Elektronik.Extensions;
 using Elektronik.PluginsSystem;
-using Elektronik.Presenters;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.GrpcServices;
 using Elektronik.Protobuf.Online.Presenters;
@@ -13,16 +12,11 @@ namespace Elektronik.Protobuf.Online
 {
     using GrpcServer = Server;
 
-    public class ProtobufGrpcServer : DataSourceBase<AddressPortScaleSettingsBag>,  IDataSourceOnline
+    public class ProtobufGrpcServer : DataSourcePluginBase<AddressPortScaleSettingsBag>, IDataSourcePluginOnline
     {
         public ProtobufGrpcServer()
         {
-            _containerTree = new ProtobufContainerTree("Protobuf");
-            _imagePresenter = new ImagePresenter();
-            PresentersChain = new DataPresenter[]
-            {
-                _imagePresenter
-            }.BuildChain();
+            _containerTree = new ProtobufContainerTree("Protobuf", new RawImagePresenter("Camera"), null);
             Data = _containerTree;
         }
 
@@ -64,7 +58,7 @@ namespace Elektronik.Protobuf.Online
                 {
                     MapsManagerPb.BindService(servicesChain),
                     SceneManagerPb.BindService(new SceneManager(_containerTree)),
-                    ImageManagerPb.BindService(new ImageManager(_imagePresenter))
+                    ImageManagerPb.BindService(new ImageManager((RawImagePresenter) _containerTree.Image))
                 },
                 Ports =
                 {
@@ -92,7 +86,6 @@ namespace Elektronik.Protobuf.Online
         #region Private definitions
 
         private readonly ProtobufContainerTree _containerTree;
-        private readonly ImagePresenter _imagePresenter;
 
         private bool _serverStarted = false;
 

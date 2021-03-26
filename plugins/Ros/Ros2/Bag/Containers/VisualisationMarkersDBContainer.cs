@@ -10,7 +10,7 @@ using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class VisualisationMarkersDBContainer : IContainerTree, IDBContainer
+    public class VisualisationMarkersDBContainer : ISourceTree, IDBContainer
     {
         public VisualisationMarkersDBContainer(string displayName, SQLiteConnection dbModel, Topic topic,
                                                long[] actualTimestamps)
@@ -21,7 +21,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             ActualTimestamps = actualTimestamps;
         }
 
-        #region IContainerTree implementation
+        #region ISourceTree implementation
 
         public void Clear()
         {
@@ -42,7 +42,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         }
 
         public string DisplayName { get; set; }
-        public IEnumerable<IContainerTree> Children => _children.Values.ToList();
+        public IEnumerable<ISourceTree> Children => _children.Values.ToList();
 
         public bool IsActive
         {
@@ -94,7 +94,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private bool _isActive = true;
         private int _pos;
-        private readonly SortedDictionary<string, IContainerTree> _children = new();
+        private readonly SortedDictionary<string, ISourceTree> _children = new();
         private readonly List<object> _renderers = new List<object>();
         private readonly Dictionary<long, List<Marker>> _delayedRemoving = new();
 
@@ -210,7 +210,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private void CreateContainer(Type containerType, string key)
         {
-            _children[key] = (IContainerTree) Activator.CreateInstance(containerType, key);
+            _children[key] = (ISourceTree) Activator.CreateInstance(containerType, key);
             foreach (var renderer in _renderers)
             {
                 _children[key].SetRenderer(renderer);

@@ -1,20 +1,25 @@
 ﻿using System.Collections.Generic;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Protobuf.Offline.Presenters;
 
 namespace Elektronik.Protobuf.Data
 {
-    public class ProtobufContainerTree : IContainerTree
+    public class ProtobufContainerTree : ISourceTree
     {
         public readonly ITrackedContainer<SlamTrackedObject> TrackedObjs;
         public readonly IConnectableObjectsContainer<SlamObservation> Observations;
         public readonly IConnectableObjectsContainer<SlamPoint> Points;
         public readonly IContainer<SlamLine> Lines;
         public readonly IContainer<SlamInfinitePlane> InfinitePlanes;
+        public readonly ISourceTree Image;
+        public readonly SlamDataInfoPresenter SpecialInfo;
 
-        public ProtobufContainerTree(string displayName)
+        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo)
         {
             DisplayName = displayName;
+            Image = image;
+            SpecialInfo = specialInfo;
 
             TrackedObjs = new TrackedObjectsContainer("Tracked objects");
             Observations = new ConnectableObjectsContainer<SlamObservation>(
@@ -28,24 +33,26 @@ namespace Elektronik.Protobuf.Data
 
             Lines = new SlamLinesContainer("Lines");
             InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
-
-            Children = new[]
+            var ch =  new List<ISourceTree>
             {
-                (IContainerTree) Points,
-                (IContainerTree) TrackedObjs,
-                (IContainerTree) Observations,
-                (IContainerTree) Lines,
-                (IContainerTree) InfinitePlanes,
+                (ISourceTree) Points,
+                (ISourceTree) TrackedObjs,
+                (ISourceTree) Observations,
+                (ISourceTree) Lines,
+                (ISourceTree) InfinitePlanes,
+                Image,
             };
+            if (SpecialInfo != null) ch.Add(SpecialInfo);
+            Children = ch.ToArray();
         }
 
         private bool _isActive = true;
 
-        #region IContainerTree implementation
+        #region ISourceTree implementation
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<IContainerTree> Children { get; }
+        public IEnumerable<ISourceTree> Children { get; }
 
         public bool IsActive
         {

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Elektronik.Extensions;
 using Elektronik.Offline;
 using Elektronik.PluginsSystem;
-using Elektronik.Presenters;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
@@ -13,13 +12,15 @@ using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline
 {
-    public class ProtobufFilePlayer : DataSourceBase<OfflineSettingsBag>, IDataSourceOffline
+    public class ProtobufFilePlayer : DataSourcePluginBase<OfflineSettingsBag>, IDataSourcePluginOffline
     {
-        public const float Timeout = 0.5f;
+        private const float Timeout = 0.5f;
 
         public ProtobufFilePlayer()
         {
-            _containerTree = new ProtobufContainerTree("Protobuf");
+            _containerTree = new ProtobufContainerTree("Protobuf",
+                                                       new FileImagePresenter("Camera", TypedSettings.ImagePath),
+                                                       new SlamDataInfoPresenter("Special info"));
             Data = _containerTree;
             _parsersChain = new DataParser<PacketPb>[]
             {
@@ -28,14 +29,9 @@ namespace Elektronik.Protobuf.Offline
                                   _containerTree.Observations,
                                   TypedSettings.ImagePath),
                 new TrackedObjectsParser(_containerTree.TrackedObjs),
-                new InfoParser(),
+                new InfoParser(_containerTree.SpecialInfo),
             }.BuildChain();
 
-            PresentersChain = new DataPresenter[]
-            {
-                new ImagePresenter(TypedSettings),
-                new SlamDataInfoPresenter(_containerTree.Points, _containerTree.Observations),
-            }.BuildChain();
         }
 
         #region IDataSourceOffline
@@ -107,7 +103,6 @@ namespace Elektronik.Protobuf.Offline
             _threadWorker.Enqueue(() =>
             {
                 Data.Clear();
-                PresentersChain.Clear();
                 _frames.SoftReset();
             });
         }
@@ -184,8 +179,7 @@ namespace Elektronik.Protobuf.Offline
             _frames?.Current?.Rewind();
             if (_frames?.MovePrevious() ?? false)
             {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                PresentersChain.Present(_frames?.Current);
+                (_containerTree.Image as FileImagePresenter)?.Present(_frames?.Current);
                 return true;
             }
 
@@ -197,8 +191,7 @@ namespace Elektronik.Protobuf.Offline
             if (_frames.MoveNext())
             {
                 _frames?.Current?.Show();
-                // ReSharper disable once AssignNullToNotNullAttribute
-                PresentersChain.Present(_frames?.Current);
+                (_containerTree.Image as FileImagePresenter)?.Present(_frames?.Current);
                 return true;
             }
 

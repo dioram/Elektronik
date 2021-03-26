@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Bag
 {
-    public class RosbagReader : DataSourceBase<FileScaleSettingsBag>, IDataSourceOffline
+    public class RosbagReader : DataSourcePluginBase<FileScaleSettingsBag>, IDataSourcePluginOffline
     {
         #region IDataSourceOffline
 

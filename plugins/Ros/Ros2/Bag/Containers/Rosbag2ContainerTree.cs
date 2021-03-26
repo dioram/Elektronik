@@ -45,18 +45,18 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region Protected
 
-        protected override IContainerTree CreateContainer(string topicName, string topicType)
+        protected override ISourceTree CreateContainer(string topicName, string topicType)
         {
             var topic = DBModel!.Table<Topic>().First(t => t.Name == topicName);
             var command = DBModel.CreateCommand(
                 "SELECT timestamp FROM messages WHERE topic_id = $id ORDER BY timestamp",
                 topic.Id);
             var arr = command.ExecuteQueryScalars<long>().ToArray();
-            return (IContainerTree) Activator.CreateInstance(SupportedMessages[topic.Type],
-                                                             topicName.Split('/').Last(),
-                                                             DBModel,
-                                                             topic,
-                                                             arr);
+            return (ISourceTree) Activator.CreateInstance(SupportedMessages[topic.Type],
+                                                          topicName.Split('/').Last(),
+                                                          DBModel,
+                                                          topic,
+                                                          arr);
         }
 
         #endregion

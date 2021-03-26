@@ -8,25 +8,26 @@ namespace Elektronik.UI.Windows
     [RequireComponent(typeof(RectTransform))]
     public class ResizingEdge : MonoBehaviour, IDragHandler, IPointerEnterHandler, IPointerExitHandler
     {
+        [Flags]
         public enum EdgeSide
         {
-            Top,
-            Right,
-            Bottom,
-            Left,
+            Top = 1,
+            Right = 2,
+            Bottom = 4,
+            Left = 8,
         }
 
         public EdgeSide Edge;
+        public RectTransform ResizeTarget;
 
         #region Unity event functions
 
         private void Start()
         {
-            _resizeTarget = (RectTransform) transform.parent;
-            var window = _resizeTarget.GetComponent<WindowBase>();
-            _minHeigth = window.MinHeight;
+            var window = ResizeTarget.GetComponent<Window>();
+            _minHeight = window.MinHeight;
             _minWidth = window.MinWidth;
-            RectTransform testCanvas = _resizeTarget;
+            RectTransform testCanvas = ResizeTarget;
             while (_canvas == null && testCanvas != null)
             {
                 _canvas = testCanvas.GetComponent<Canvas>();
@@ -37,18 +38,27 @@ namespace Elektronik.UI.Windows
         private void Update()
         {
             if (!_hovered) return;
-            switch (Edge)
+            if (((Edge & (EdgeSide.Left | EdgeSide.Top)) == (EdgeSide.Left | EdgeSide.Top))
+                || ((Edge & (EdgeSide.Right | EdgeSide.Bottom)) == (EdgeSide.Right | EdgeSide.Bottom)))
             {
-            case EdgeSide.Bottom:
-            case EdgeSide.Top:
+                SetCursor(LoadCursor(IntPtr.Zero,
+                                     (int) WindowsCursors.DoublePointedArrowPointingNorthwestAndSoutheast));
+            }
+            else if (((Edge & (EdgeSide.Left | EdgeSide.Bottom)) == (EdgeSide.Left | EdgeSide.Bottom))
+                || ((Edge & (EdgeSide.Right | EdgeSide.Top)) == (EdgeSide.Right | EdgeSide.Top)))
+            {
+                SetCursor(LoadCursor(IntPtr.Zero,
+                                     (int) WindowsCursors.DoublePointedArrowPointingNortheastAndSouthwest));
+            }
+            else if (((Edge & EdgeSide.Top) == EdgeSide.Top)
+                    || ((Edge & EdgeSide.Bottom) == EdgeSide.Bottom))
+            {
                 SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.DoublePointedArrowPointingNorthAndSouth));
-                break;
-            case EdgeSide.Right:
-            case EdgeSide.Left:
+            }
+            else if (((Edge & EdgeSide.Left) == EdgeSide.Left)
+                || ((Edge & EdgeSide.Right) == EdgeSide.Right))
+            {
                 SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.DoublePointedArrowPointingWestAndEast));
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -58,33 +68,32 @@ namespace Elektronik.UI.Windows
 
         public void OnDrag(PointerEventData eventData)
         {
-            var newPos = _resizeTarget.anchoredPosition;
-            var newHeight = _resizeTarget.rect.height;
-            var newWidth = _resizeTarget.rect.width;
-            switch (Edge)
+            var newPos = ResizeTarget.anchoredPosition;
+            var newHeight = ResizeTarget.rect.height;
+            var newWidth = ResizeTarget.rect.width;
+            if ((Edge & EdgeSide.Top) == EdgeSide.Top)
             {
-            case EdgeSide.Top:
                 newPos.y += eventData.delta.y / _canvas.scaleFactor;
                 newHeight += eventData.delta.y / _canvas.scaleFactor;
-                break;
-            case EdgeSide.Right:
-                newWidth += eventData.delta.x / _canvas.scaleFactor;
-                break;
-            case EdgeSide.Bottom:
+            }
+            if ((Edge & EdgeSide.Bottom) == EdgeSide.Bottom)
+            {
                 newHeight -= eventData.delta.y / _canvas.scaleFactor;
-                break;
-            case EdgeSide.Left:
+            }
+            if ((Edge & EdgeSide.Left) == EdgeSide.Left)
+            {
                 newPos.x += eventData.delta.x / _canvas.scaleFactor;
                 newWidth -= eventData.delta.x / _canvas.scaleFactor;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
             }
-
-            if (newHeight < _minHeigth || newWidth < _minWidth) return;
-            _resizeTarget.anchoredPosition = newPos;
-            _resizeTarget.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, newHeight);
-            _resizeTarget.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, newWidth);
+            if ((Edge & EdgeSide.Right) == EdgeSide.Right)
+            {
+                newWidth += eventData.delta.x / _canvas.scaleFactor;
+            }
+ 
+            if (newHeight < _minHeight || newWidth < _minWidth) return;
+            ResizeTarget.anchoredPosition = newPos;
+            ResizeTarget.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, newHeight);
+            ResizeTarget.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, newWidth);
         }
 
         #endregion
@@ -109,9 +118,8 @@ namespace Elektronik.UI.Windows
 
         #region Private
 
-        private RectTransform _resizeTarget;
         private Canvas _canvas;
-        private float _minHeigth;
+        private float _minHeight;
         private float _minWidth;
         private bool _hovered;
 
@@ -123,20 +131,11 @@ namespace Elektronik.UI.Windows
 
         private enum WindowsCursors
         {
-            StandardArrowAndSmallHourglass = 32650,
             StandardArrow = 32512,
-            Crosshair = 32515,
-            Hand = 32649,
-            ArrowAndQuestionMark = 32651,
-            IBeam = 32513,
-            SlashedCircle = 32648,
-            FourPointedArrowPointingNorthSouthEastAndWest = 32646,
             DoublePointedArrowPointingNortheastAndSouthwest = 32643,
             DoublePointedArrowPointingNorthAndSouth = 32645,
             DoublePointedArrowPointingNorthwestAndSoutheast = 32642,
             DoublePointedArrowPointingWestAndEast = 32644,
-            VerticalArrow = 32516,
-            Hourglass = 32514
         }
 
         #endregion

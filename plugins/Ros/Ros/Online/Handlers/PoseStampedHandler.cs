@@ -8,7 +8,7 @@ namespace Elektronik.RosPlugin.Ros.Online.Handlers
 {
     public class PoseStampedHandler : MessageHandler<PoseStamped, SlamTrackedObject>
     {
-        public PoseStampedHandler(IContainerTree container, RosSocket socket, string topic) : base(container, socket, topic)
+        public PoseStampedHandler(ISourceTree container, RosSocket socket, string topic) : base(container, socket, topic)
         {
         }
         

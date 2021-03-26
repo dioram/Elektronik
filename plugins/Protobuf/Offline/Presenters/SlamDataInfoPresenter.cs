@@ -1,79 +1,88 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Presenters;
 using Elektronik.Protobuf.Data;
 using Elektronik.Renderers;
+using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Offline.Presenters
 {
-    public class SlamDataInfoPresenter : DataPresenter
+    public class SlamDataInfoPresenter : ISourceTree, IRendersToWindow
     {
-        private IDataRenderer<(string info, string objectType, IEnumerable<SlamPoint> objects)> _info;
-        private readonly IConnectableObjectsContainer<SlamPoint> _connectablePoints;
-        private readonly IConnectableObjectsContainer<SlamObservation> _connectableObservations;
-
-
-        public SlamDataInfoPresenter(IConnectableObjectsContainer<SlamPoint> connectablePoints,
-                                     IConnectableObjectsContainer<SlamObservation> connectableObservations)
+        public SlamDataInfoPresenter(string displayName)
         {
-            _connectablePoints = connectablePoints;
-            _connectableObservations = connectableObservations;
+            DisplayName = displayName;
         }
 
-        private IEnumerable<SlamPoint> Pkg2Pts(PacketPb packet)
+        public void Present(PacketPb data, ICSConverter converter)
+        {
+            MainThreadInvoker.Instance.Enqueue(() => _info.Clear());
+            IEnumerable<ICloudItem> objects = Pkg2Pts(data, converter).ToArray();
+            MainThreadInvoker.Instance.Enqueue(() => _info.Render((data.Message, objects)));
+        }
+
+        #region ISourceTree
+
+        public string DisplayName { get; set; }
+        public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
+        public bool IsActive { get; set; }
+
+        public void SetRenderer(object dataRenderer)
+        {
+            if (dataRenderer is WindowsFactory factory)
+            {
+                factory.GetNewDataRenderer<SlamInfoRenderer>(DisplayName, (renderer, window) =>
+                {
+                    _info = renderer;
+                    Window = window;
+                });
+            }
+        }
+
+        public void Clear()
+        {
+            _info?.Clear();
+        }
+
+        #endregion
+
+        #region IRendersToWindow
+
+        public Window Window { get; private set; }
+
+        #endregion
+
+        #region Private
+
+        private IDataRenderer<(string info, IEnumerable<ICloudItem> objects)> _info;
+
+        private IEnumerable<ICloudItem> Pkg2Pts(PacketPb packet, ICSConverter converter)
         {
             switch (packet.DataCase)
             {
             case PacketPb.DataOneofCase.Points:
-                return packet.Points.Data.Select(p =>
-                                                         new SlamPoint(p.Id,
-                                                                       _connectablePoints[p.Id].Position,
-                                                                       default,
-                                                                       p.Message));
+                foreach (var pointPb in packet.Points.Data)
+                {
+                    SlamPoint point = pointPb;
+                    converter.Convert(ref point.Position);
+                    yield return point;
+                }
+                break;
             case PacketPb.DataOneofCase.Observations:
-                return packet.Observations.Data.Select(o =>
-                                                               new SlamPoint(
-                                                                   o.Point.Id,
-                                                                   _connectableObservations[o.Point.Id].Point.Position,
-                                                                   default,
-                                                                   o.Point.Message));
+                foreach (var observationPb in packet.Observations.Data)
+                {
+                    SlamObservation observation = observationPb;
+                    converter.Convert(ref observation.Point.Position, ref observation.Rotation);
+                    yield return observation;
+                }
+                break;
             default:
-                return null;
+                yield break;
             }
         }
 
-        public override void Present(object data)
-        {
-            if (data is Frame {IsSpecial: true} frame 
-                && _info != null
-                && frame.Packet.Action == PacketPb.Types.ActionType.Info)
-            {
-                _info.Clear();
-                string objectsType = frame.Packet.DataCase.ToString();
-                IEnumerable<SlamPoint> objects = Pkg2Pts(frame.Packet).ToArray();
-                _info.Render((frame.Packet.Message, objectsType, objects));
-            }
-
-            base.Present(data);
-        }
-
-        public override void Clear()
-        {
-            _info?.Clear();
-            base.Clear();
-        }
-
-        public override void SetRenderer(object dataRenderer)
-        {
-            if (dataRenderer 
-                    is IDataRenderer<(string info, string objectType, IEnumerable<SlamPoint> objects)> renderer)
-            {
-                _info = renderer;
-            }
-
-            base.SetRenderer(dataRenderer);
-        }
+        #endregion
     }
 }

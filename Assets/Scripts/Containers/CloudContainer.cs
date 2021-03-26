@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class CloudContainer<TCloudItem> : IContainer<TCloudItem>, IContainerTree, ILookable
+    public class CloudContainer<TCloudItem> : IContainer<TCloudItem>, ISourceTree, ILookable
             where TCloudItem : struct, ICloudItem
     {
         public CloudContainer(string displayName = "")
@@ -178,7 +178,7 @@ namespace Elektronik.Containers
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<IContainerTree> Children => Enumerable.Empty<IContainerTree>();
+        public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
 
         public bool IsActive
         {

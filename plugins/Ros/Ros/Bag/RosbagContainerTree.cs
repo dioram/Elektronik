@@ -43,10 +43,10 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         #region Protected
 
-        protected override IContainerTree CreateContainer(string topicName, string topicType)
+        protected override ISourceTree CreateContainer(string topicName, string topicType)
         {
-            return (IContainerTree) Activator.CreateInstance(SupportedMessages[topicType],
-                                                             topicName.Split('/').Last());
+            return (ISourceTree) Activator.CreateInstance(SupportedMessages[topicType],
+                                                          topicName.Split('/').Last());
         }
 
         #endregion

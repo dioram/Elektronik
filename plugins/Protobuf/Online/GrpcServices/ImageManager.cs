@@ -8,9 +8,9 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class ImageManager : ImageManagerPb.ImageManagerPbBase
     {
-        private readonly ImagePresenter _presenter;
+        private readonly RawImagePresenter _presenter;
 
-        public ImageManager(ImagePresenter presenter)
+        public ImageManager(RawImagePresenter presenter)
         {
             _presenter = presenter;
         }

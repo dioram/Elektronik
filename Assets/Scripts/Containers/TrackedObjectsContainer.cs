@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class TrackedObjectsContainer : ITrackedContainer<SlamTrackedObject>, IContainerTree, ILookable
+    public class TrackedObjectsContainer : ITrackedContainer<SlamTrackedObject>, ISourceTree, ILookable
     {
         public TrackedObjectsContainer(string displayName = "")
         {
@@ -210,7 +210,7 @@ namespace Elektronik.Containers
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<IContainerTree> Children => _lineContainers;
+        public IEnumerable<ISourceTree> Children => _lineContainers;
 
         public bool IsActive
         {
@@ -307,7 +307,7 @@ namespace Elektronik.Containers
         #region Private definitions
 
         private ICloudRenderer<SlamLine> _lineRenderer;
-        private readonly List<IContainerTree> _lineContainers = new List<IContainerTree>();
+        private readonly List<ISourceTree> _lineContainers = new List<ISourceTree>();
 
         private readonly Dictionary<int, (SlamTrackedObject, TrackContainer)> _objects =
                 new Dictionary<int, (SlamTrackedObject, TrackContainer)>();

@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class PointsDBContainer : IContainerTree, IDBContainer, ILookable
+    public class PointsDBContainer : ISourceTree, IDBContainer, ILookable
     {
         private bool _isActive = true;
 
@@ -42,7 +42,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (IsActive) SetPoints();
         }
 
-        #region IContainerTree implementation
+        #region ISourceTree implementation
 
         public void Clear()
         {
@@ -61,7 +61,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         }
 
         public string DisplayName { get; set; }
-        public IEnumerable<IContainerTree> Children { get; } = new IContainerTree[0];
+        public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
 
         public bool IsActive
         {

@@ -26,21 +26,21 @@ namespace Elektronik.Offline
 
         private bool _isPlaying;
         private Image _playButtonImage;
-        private IDataSourceOffline _dataSourceOffline;
+        private IDataSourcePluginOffline _dataSourcePluginOffline;
 
-        public void SetDataSource(IDataSourceOffline dataSourceOffline)
+        public void SetDataSource(IDataSourcePluginOffline dataSourcePluginOffline)
         {
-            _dataSourceOffline = dataSourceOffline;
-            Play += _dataSourceOffline.Play;
-            Pause += _dataSourceOffline.Pause;
-            Stop += _dataSourceOffline.StopPlaying;
-            NextKeyFrame += _dataSourceOffline.NextKeyFrame;
-            PreviousKeyFrame += _dataSourceOffline.PreviousKeyFrame;
-            _dataSourceOffline.Finished += SetPausedState;
+            _dataSourcePluginOffline = dataSourcePluginOffline;
+            Play += _dataSourcePluginOffline.Play;
+            Pause += _dataSourcePluginOffline.Pause;
+            Stop += _dataSourcePluginOffline.StopPlaying;
+            NextKeyFrame += _dataSourcePluginOffline.NextKeyFrame;
+            PreviousKeyFrame += _dataSourcePluginOffline.PreviousKeyFrame;
+            _dataSourcePluginOffline.Finished += SetPausedState;
             TimelineSlider.OnTimelineChanged += f =>
             {
                 SetPausedState();
-                _dataSourceOffline.CurrentPosition = (int) Mathf.Round((_dataSourceOffline.AmountOfFrames - 1) * f);
+                _dataSourcePluginOffline.CurrentPosition = (int) Mathf.Round((_dataSourcePluginOffline.AmountOfFrames - 1) * f);
             };
         }
 
@@ -62,9 +62,9 @@ namespace Elektronik.Offline
 
         private void Update()
         {
-            var pos = _dataSourceOffline.CurrentPosition / (float) (_dataSourceOffline.AmountOfFrames - 1);
+            var pos = _dataSourcePluginOffline.CurrentPosition / (float) (_dataSourcePluginOffline.AmountOfFrames - 1);
             if (!float.IsNaN(pos)) TimelineSlider.Value = pos;
-            Timestamp.text = $"{_dataSourceOffline.CurrentTimestamp}";
+            Timestamp.text = $"{_dataSourcePluginOffline.CurrentTimestamp}";
         }
 
         private void PlayPause()

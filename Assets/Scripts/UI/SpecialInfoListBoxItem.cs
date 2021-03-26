@@ -1,33 +1,33 @@
-﻿using System;
+﻿using Elektronik.Cameras;
+using Elektronik.Data.PackageObjects;
+using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Elektronik.UI
 {
+    [RequireComponent(typeof(Button))]
     public class SpecialInfoListBoxItem : ListBoxItem
     {
-        public Text uitext;
+        public TMP_Text MessageLabel;
+        public ICloudItem Point;
+        public TMP_Text Title;
 
-        public void SetObject(int id, string type, Vector3 position, string msg)
+        private Button _button;
+
+        protected override void Start()
         {
-            ID = id;
-            Type = type;
-            Position = position;
-            Text = String.Format("ID {0}. {1}.", id, type);
-            Message = msg;
+            base.Start();
+            Title.text = $"ID {Point.Id}. {Point.GetType().Name.Substring(4)}";
+            _button = GetComponent<Button>();
+            _button.OnClickAsObservable()
+                    .Do(_ => MessageLabel.text = $"Item message: {Point.Message}")
+                    .Select(_ => Camera.main.GetComponent<LookableCamera>())
+                    .Where(c => c != null)
+                    .Do(c => c.Look(Point.AsPoint().Look(c.transform)))
+                    .Subscribe();
         }
-        public int ID { get; private set; }
-        public string Type { get; private set; }
-        public Vector3 Position { get; private set; }
-
-        public string Text
-        {
-            get { return uitext.text; }
-            private set { uitext.text = value; }
-        }
-
-        public string Message { get; private set; }
     }
-
 }
 
