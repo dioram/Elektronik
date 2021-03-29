@@ -88,8 +88,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             {
                 _currentPosition = 0;
                 Data.Clear();
-                // ReSharper disable once ConstantConditionalAccessQualifier
-                PresentersChain?.Clear();
             });
         }
 

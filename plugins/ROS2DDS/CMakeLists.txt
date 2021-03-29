@@ -1,15 +1,23 @@
 cmake_minimum_required(VERSION 3.17)
 project(ROS2DDS CXX)
+include(CopyDlls.cmake)
+include(GNUInstallDirs)
 
+find_package(asio REQUIRED)
+find_package(openssl REQUIRED)
+find_package(tinyxml2 REQUIRED)
+find_package(foonathan_memory REQUIRED)
 find_package(fastcdr REQUIRED)
 find_package(fastrtps REQUIRED)
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 set_source_files_properties(interface/Connector.i PROPERTIES CPLUSPLUS ON)
+# SWIG command line option. Sets where to find native dll in runtime.
 set_property(SOURCE interface/Connector.i PROPERTY COMPILE_OPTIONS -dllimport Plugins/Ros/libraries/ROS2DDS.dll)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS -EHsc)
+if (MSVC)
+    set(CMAKE_CXX_FLAGS -EHsc)
+endif ()
 set(DataTypes DataTypes/Ros.h DataTypes/Ros.cxx DataTypes/RosPubSubTypes.h DataTypes/RosPubSubTypes.cxx)
 
 swig_add_library(ROS2DDS
@@ -20,8 +28,16 @@ swig_add_library(ROS2DDS
         SOURCES interface/Connector.h interface/Connector.cpp interface/Connector.i interface/Handlers.h
         interface/Messages.h interface/Logger.h ${DataTypes})
 target_link_libraries(ROS2DDS PRIVATE fastrtps fastcdr)
+set_target_properties(ROS2DDS PROPERTIES CMAKE_CXX_STANDARD 17)
 
-set(INSTALL_DIR ${PROJECT_SOURCE_DIR}/../../build/Plugins/Ros/libraries)
+set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/../../build/Plugins/Ros/libraries CACHE PATH "installation prefix")
+set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../build/Plugins/Ros/libraries)
 
-install(TARGETS ROS2DDS RUNTIME DESTINATION ${INSTALL_DIR})
-install(DIRECTORY "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/" DESTINATION ${INSTALL_DIR} FILES_MATCHING PATTERN "*.dll")
+set(DEPLOY_DLLS)
+target_copy_dlls(ROS2DDS fastrtps fastcdr asio openssl tinyxml2)
+file(GLOB DEPLOY_DLLS ${CMAKE_BINARY_DIR}/*.dll)
+set(DEPLOY_LIBS)
+target_copy_libs(ROS2DDS foonathan_memory)
+file(GLOB DEPLOY_LIBS ${CMAKE_BINARY_DIR}/*.lib)
+install(FILES ${DEPLOY_DLLS} DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${DEPLOY_LIBS} DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -24,6 +24,7 @@
 /plugins/Ros/Ros2/Online/SWIG_generated
 /plugins/ROS2DDS/ConnectorCSHARP*
 /plugins/ROS2DDS/cmake-build-*
+/plugins/ROS2DDS/CMakeSettings.json
 
 /Assets/generatedFiles/
 /Assets/Packages/
@@ -36,3 +37,4 @@
 /**/.idea/
 /**/.vs/
 /**/*.sln.*
+/plugins/Ros/libraries/
