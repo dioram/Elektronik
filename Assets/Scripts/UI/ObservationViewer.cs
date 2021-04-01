@@ -1,22 +1,29 @@
 ﻿using System.IO;
 using Elektronik.Clouds;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Renderers;
+using Elektronik.UI.Windows;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Elektronik.UI
 {
-    public class ObservationViewer : MonoBehaviour
+    [RequireComponent(typeof(Window))]
+    public class ObservationViewer : MonoBehaviour, IDataRenderer<DataComponent<SlamObservation>>
     {
-        public RawImage m_image;
-        public Text m_message;
-
-        private DataComponent<SlamObservation> _observation;
-        private string _currentFileName;
-
-        private void Start()
+        public void Hide()
         {
-            m_image.texture = Texture2D.whiteTexture;
+            gameObject.SetActive(false);
+        }
+
+        #region Unity events
+
+        private void Awake()
+        {
+            Image.texture = Texture2D.whiteTexture;
+            Image.gameObject.SetActive(false);
+            Window = GetComponent<Window>();
         }
 
         private void Update()
@@ -24,15 +31,42 @@ namespace Elektronik.UI
             SetData();
         }
 
-        public void ShowObservation(DataComponent<SlamObservation> observation)
+        #endregion
+
+        #region IDataRenderer
+        
+        public bool IsShowing => gameObject.activeSelf;
+
+        public void Render(DataComponent<SlamObservation> data)
         {
-            gameObject.SetActive(true);
-            _observation = observation;
+            MainThreadInvoker.Instance.Enqueue(() =>
+            {
+                gameObject.SetActive(true);
+                _observation = data;
+                Window.Title = $"Observation #{data.Data.Id}";
+                SetData();
+            });
         }
+
+        public void Clear()
+        {
+        }
+
+        #endregion
+
+        #region Private
+        
+        [SerializeField] private RawImage Image;
+        [SerializeField] private TMP_Text Message;
+        [SerializeField] private Window Window;
+
+        private string _currentFileName;
+        private DataComponent<SlamObservation> _observation;
 
         private void SetData()
         {
-            m_message.text = _observation.Data.Message;
+            Message.text = _observation.Data.Message;
+            Message.gameObject.SetActive(!string.IsNullOrEmpty(Message.text));
 
             if (_currentFileName == _observation.Data.FileName) return;
             _currentFileName = _observation.Data.FileName;
@@ -40,17 +74,16 @@ namespace Elektronik.UI
             {
                 Texture2D texture = new Texture2D(1024, 1024);
                 texture.LoadImage(File.ReadAllBytes(_currentFileName));
-                m_image.texture = texture;
+                Image.texture = texture;
+                Image.gameObject.SetActive(true);
             }
             else
             {
-                m_image.texture = Texture2D.whiteTexture;
+                Image.texture = Texture2D.whiteTexture;
+                Image.gameObject.SetActive(false);
             }
         }
 
-        public void Hide()
-        {
-            gameObject.SetActive(false);
-        }
+        #endregion
     }
 }

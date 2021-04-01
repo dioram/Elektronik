@@ -1,19 +1,26 @@
-﻿using Elektronik.Clouds;
+﻿using System.Collections.Generic;
+using Elektronik.Clouds;
 using Elektronik.Data.PackageObjects;
+using Elektronik.UI.Windows;
 using UnityEngine;
 
 namespace Elektronik.UI
 {
     public class ObservationToolTip : MonoBehaviour
     {
-        public ObservationViewer floatingViewer;
-        public ObservationViewer pinnedViewer;
-        
+        [SerializeField] private WindowsFactory Factory;
         private Camera _camera;
+        private ObservationViewer _floatingViewer;
+        private readonly List<Window> _pinnedViewers = new List<Window>();
 
         void Start()
         {
             _camera = Camera.main;
+            Factory.GetNewDataRenderer<ObservationViewer>($"", (viewer, window) =>
+            {
+                _floatingViewer = viewer;
+                viewer.Hide();
+            });
         }
 
         private void Update()
@@ -22,19 +29,24 @@ namespace Elektronik.UI
             if (Physics.Raycast(ray, out RaycastHit hitInfo) && hitInfo.transform.CompareTag("Observation"))
             {
                 var data = hitInfo.transform.GetComponent<DataComponent<SlamObservation>>();
-                if (Input.GetMouseButton(0))
+                var title = $"Observation #{data.Data.Id}";
+                if (Input.GetMouseButton(0) && !_pinnedViewers.Exists(v => v.GetComponent<Window>().Title == title))
                 {
-                    pinnedViewer.ShowObservation(data);
+                    Factory.GetNewDataRenderer<ObservationViewer>(title, (viewer, window) =>
+                    {
+                        viewer.Render(data);
+                        _pinnedViewers.Add(window);
+                    });
                 }
                 else
                 {
-                    floatingViewer.ShowObservation(data);
-                    floatingViewer.transform.position = Input.mousePosition;
+                    _floatingViewer.Render(data);
+                    _floatingViewer.transform.position = Input.mousePosition;
                 }
             }
             else
             {
-                floatingViewer.Hide();
+                if (_floatingViewer is { }) _floatingViewer.Hide();
             }
         }
     }
