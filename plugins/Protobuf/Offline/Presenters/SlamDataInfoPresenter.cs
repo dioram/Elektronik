@@ -51,6 +51,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
         #region IRendersToWindow
 
         public Window Window { get; private set; }
+        public string Title { get; set; }
 
         #endregion
 

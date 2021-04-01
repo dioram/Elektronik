@@ -6,6 +6,7 @@ using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Common.RosMessages;
 using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
+using RosSharp.RosBridgeClient.MessageTypes.Std;
 
 namespace Elektronik.RosPlugin.Ros.Bag.Parsers
 {
@@ -19,8 +20,10 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
                         new ClearCommand<SlamPoint>(pointsContainer),
                         new AddCommand<SlamPoint>(pointsContainer, cloud.ToSlamPoints())
                     }),
-            Image image when container is ImagePresenter presenter => new ShowImageCommand(presenter,
-                                                                                           image.ToImageData()),
+            Image image when container is ImagePresenter presenter => 
+                    new ShowCommand<ImagePresenter, ImagePresenter.ImageData>(presenter, image.ToImageData()),
+            String str when container is StringPresenter presenter => 
+                    new ShowCommand<StringPresenter, String>(presenter, str),
             _ when container is TrackedObjectsContainer trackedContainer && message.GetPose() is { } pose =>
                     trackedContainer.Count switch
                     {

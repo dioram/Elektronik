@@ -115,6 +115,7 @@ namespace Elektronik.Protobuf.Offline
                 {
                     if (!PreviousFrame()) break;
                 } while (!_frames?.Current?.IsSpecial ?? false);
+                if (!_frames?.MovePrevious() ?? false) _frames?.SoftReset();
             });
         }
 

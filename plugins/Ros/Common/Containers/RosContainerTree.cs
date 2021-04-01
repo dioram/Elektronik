@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers;
+using Elektronik.UI.Windows;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
@@ -67,7 +68,9 @@ namespace Elektronik.RosPlugin.Common.Containers
 
                 if (!RealChildren.ContainsKey(topic.Name))
                 {
-                    RealChildren[topic.Name] = CreateContainer(topic.Name, topic.Type);
+                    var child = CreateContainer(topic.Name, topic.Type);
+                    if (child is IRendersToWindow w) w.Title = topic.Name;
+                    RealChildren[topic.Name] = child;
                     
                     foreach (var renderer in _renderers)
                     {

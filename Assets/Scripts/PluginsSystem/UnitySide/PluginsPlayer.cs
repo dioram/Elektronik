@@ -51,6 +51,10 @@ namespace Elektronik.PluginsSystem.UnitySide
                 dataSource.Converter = Converter;
                 var treeElement = Instantiate(ContainerTreePrefab, TreeView).GetComponent<SourceTreeElement>();
                 treeElement.Node = dataSource.Data;
+                if (Plugins.OfType<IDataSourcePlugin>().Count() == 1)
+                {
+                    treeElement.ChangeState();
+                }
             }
 
             foreach (var dataSource in Plugins.OfType<IDataSourcePluginOffline>())

@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
-using Elektronik.Containers;
-using Elektronik.Renderers;
+﻿using Elektronik.Renderers;
 using Elektronik.RosPlugin.Common.RosMessages;
-using Elektronik.UI.Windows;
+using JetBrains.Annotations;
+using UnityEngine;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
-    public class ImagePresenter : ISourceTree, IRendersToWindow
+    public class ImagePresenter
+            : PresenterBase<
+                ImagePresenter.ImageData,
+                ImageRenderer,
+                (int width, int height, byte[] array, TextureFormat format)>
     {
         public class ImageData
         {
@@ -24,58 +27,23 @@ namespace Elektronik.RosPlugin.Common.Containers
             }
         }
 
-        public ImagePresenter(string displayName)
+        public ImagePresenter([NotNull] string displayName) : base(displayName)
         {
-            DisplayName = displayName;
         }
 
-        public void Present(ImageData data)
+        #region PresenterBase
+
+        protected override void SetRendererCallback()
         {
-            Current = data;
-            if (_renderer is null || !_renderer.IsShowing) return;
-            _renderer.Render((data.Width, data.Height, data.Data,
-                              RosMessageConvertExtender.GetTextureFormat(data.Encoding)));
+            base.SetRendererCallback();
+            if (Renderer is not null) Renderer.FlipVertically = true;
         }
 
-        public ImageData Current;
-
-        #region ISourceTree
-
-        public string DisplayName { get; set; }
-
-        public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
-
-        public bool IsActive { get; set; }
-
-        public void Clear()
+        protected override (int width, int height, byte[] array, TextureFormat format) ToRenderType(ImageData message)
         {
-            if (_renderer is not null) _renderer.Clear();
+            return (message.Width, message.Height, message.Data,
+                    RosMessageConvertExtender.GetTextureFormat(message.Encoding));
         }
-
-        public void SetRenderer(object renderer)
-        {
-            if (renderer is WindowsFactory factory)
-            {
-                factory.GetNewDataRenderer<ImageRenderer>(DisplayName, (imageRenderer, window) =>
-                {
-                    _renderer = imageRenderer;
-                    _renderer.FlipVertically = true;
-                    Window = window;
-                });
-            }
-        }
-
-        #endregion
-
-        #region IRendersToWIndow
-
-        public Window Window { get; private set; }
-
-        #endregion
-
-        #region Private
-
-        private ImageRenderer? _renderer;
 
         #endregion
     }

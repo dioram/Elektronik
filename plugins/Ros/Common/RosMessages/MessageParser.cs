@@ -7,6 +7,7 @@ using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
 using RosMessage = RosSharp.RosBridgeClient.Message;
 using Path = RosSharp.RosBridgeClient.MessageTypes.Nav.Path;
+using RosString = RosSharp.RosBridgeClient.MessageTypes.Std.String;
 using UInt32 = System.UInt32;
 
 namespace Elektronik.RosPlugin.Common.RosMessages
@@ -40,9 +41,31 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             case "sensor_msgs/msg/Image":
             case "sensor_msgs/Image":
                 return ParseImage(memoryStream, cdr);
+            case "geometry_msgs/msg/TransformStamped":
+            case "geometry_msgs/TransformStamped":
+                return ParseTransformStamped(memoryStream, cdr);
+            case "std_msgs/msg/String":
+            case "std_msgs/String":
+                return ParseStringMessage(memoryStream, cdr);
             default:
                 return null;
             }
+        }
+
+        private static RosString ParseStringMessage(Stream data, bool cdr)
+        {
+            var tmp = ParseInt32(data, cdr);
+            return new RosString(ParseString(data, cdr));
+        }
+
+        private static TransformStamped ParseTransformStamped(Stream data, bool cdr)
+        {
+            return new TransformStamped(ParseHeader(data, cdr), ParseString(data, cdr), ParseTransform(data, cdr));
+        }
+
+        private static Transform ParseTransform(Stream data, bool cdr)
+        {
+            return new Transform(ParseVector3(data, cdr), ParseQuaternion(data, cdr));
         }
 
         private static PointCloud2 ParsePointCloud2(Stream data, bool cdr)
@@ -61,11 +84,11 @@ namespace Elektronik.RosPlugin.Common.RosMessages
 
         private static Image ParseImage(Stream data, bool cdr)
         {
-            return new Image(ParseHeader(data, cdr), 
-                             ParseUInt32(data, cdr), 
+            return new Image(ParseHeader(data, cdr),
                              ParseUInt32(data, cdr),
-                             ParseString(data, cdr), 
-                             (byte) data.ReadByte(), 
+                             ParseUInt32(data, cdr),
+                             ParseString(data, cdr),
+                             (byte) data.ReadByte(),
                              ParseUInt32(data, cdr),
                              ParseByteArray(data, cdr));
         }

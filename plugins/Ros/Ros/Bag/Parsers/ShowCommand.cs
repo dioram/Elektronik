@@ -3,21 +3,22 @@ using Elektronik.RosPlugin.Common.Containers;
 
 namespace Elektronik.RosPlugin.Ros.Bag.Parsers
 {
-    public class ShowImageCommand : ICommand
+    public class ShowCommand<TPresenter, TMessage> : ICommand
+    where TPresenter : IPresenter<TMessage>
     {
-        private readonly ImagePresenter _presenter;
-        private readonly ImagePresenter.ImageData _newData;
-        private ImagePresenter.ImageData? _oldData;
+        private readonly TPresenter _presenter;
+        private readonly TMessage _newData;
+        private readonly TMessage? _oldData;
 
-        public ShowImageCommand(ImagePresenter presenter, ImagePresenter.ImageData data)
+        public ShowCommand(TPresenter presenter, TMessage data)
         {
             _presenter = presenter;
+            _oldData = _presenter.Current;
             _newData = data;
         }
 
         public void Execute()
         {
-            _oldData = _presenter.Current;
             _presenter.Present(_newData);
         }
 

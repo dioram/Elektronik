@@ -14,6 +14,7 @@ using Quaternion = UnityEngine.Quaternion;
 using RosMessage = RosSharp.RosBridgeClient.Message;
 using RosVector3 = RosSharp.RosBridgeClient.MessageTypes.Geometry.Vector3;
 using Time = RosSharp.RosBridgeClient.MessageTypes.Std.Time;
+using Transform = RosSharp.RosBridgeClient.MessageTypes.Geometry.Transform;
 
 namespace Elektronik.RosPlugin.Common.RosMessages
 {
@@ -111,6 +112,15 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             var v = new Vector3((float) pose.position.x, (float) pose.position.y, (float) pose.position.z);
             var q = new Quaternion((float) pose.orientation.x, (float) pose.orientation.y,
                                    (float) pose.orientation.z, (float) pose.orientation.w);
+            Converter?.Convert(ref v, ref q);
+            return (v, q);
+        }
+
+        public static (Vector3 pos, Quaternion rot) ToUnity(this Transform transform)
+        {
+            var v = new Vector3((float) transform.translation.x, (float) transform.translation.y, (float) transform.translation.z);
+            var q = new Quaternion((float) transform.rotation.x, (float) transform.rotation.y,
+                                   (float) transform.rotation.z, (float) transform.rotation.w);
             Converter?.Convert(ref v, ref q);
             return (v, q);
         }

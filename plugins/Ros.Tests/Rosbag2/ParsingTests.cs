@@ -70,7 +70,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             Assert.AreEqual(32, data.point_step);
             Assert.AreEqual(432768, data.row_step);
             Assert.AreEqual(true, data.is_dense);
-            
+
             var cloud = data.ToSlamPoints();
             Assert.AreEqual(13524, cloud.Length);
             Assert.AreEqual(0, cloud[0].Id);

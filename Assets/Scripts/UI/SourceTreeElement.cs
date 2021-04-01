@@ -32,10 +32,41 @@ namespace Elektronik.UI
         private LayoutElement _layoutElement;
         private readonly List<SourceTreeElement> _children = new List<SourceTreeElement>();
 
-        public void Start()
+
+        public void ChangeState()
+        {
+            if (_isExpanded)
+            {
+                _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, MinHeight);
+                _layoutElement.minHeight = MinHeight;
+                _layoutElement.preferredHeight = MinHeight;
+                Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
+                Content.gameObject.SetActive(false);
+                _isExpanded = false;
+            }
+            else
+            {
+                var expanded = GetExpandedSize(true);
+                _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded);
+                _layoutElement.minHeight = expanded;
+                Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded - MinHeight);
+                Content.gameObject.SetActive(true);
+                _isExpanded = true;
+            }
+
+            OnSizeChanged?.Invoke();
+        }
+
+        #region Unity events
+
+        public void Awake()
         {
             _rectTransform = (RectTransform) transform;
             _layoutElement = GetComponent<LayoutElement>();
+        }
+
+        public void Start()
+        {
             // ReSharper disable once SuspiciousTypeConversion.Global
             if (Node is IRendersToWindow node)
             {
@@ -69,7 +100,11 @@ namespace Elektronik.UI
             VisibleButton.State = Node.IsActive ? 0 : 1;
         }
 
-        public float GetExpandedSize(bool ignoreSelfExpand = false)
+        #endregion
+
+        #region Private
+
+        private float GetExpandedSize(bool ignoreSelfExpand = false)
         {
             if (_children.Count == 0 || (!_isExpanded && !ignoreSelfExpand)) return MinHeight;
 
@@ -132,28 +167,7 @@ namespace Elektronik.UI
             OnSizeChanged?.Invoke();
         }
 
-        private void ChangeState()
-        {
-            if (_isExpanded)
-            {
-                _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, MinHeight);
-                _layoutElement.minHeight = MinHeight;
-                _layoutElement.preferredHeight = MinHeight;
-                Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
-                Content.gameObject.SetActive(false);
-                _isExpanded = false;
-            }
-            else
-            {
-                var expanded = GetExpandedSize(true);
-                _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded);
-                _layoutElement.minHeight = expanded;
-                Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded - MinHeight);
-                Content.gameObject.SetActive(true);
-                _isExpanded = true;
-            }
+        #endregion
 
-            OnSizeChanged?.Invoke();
-        }
     }
 }

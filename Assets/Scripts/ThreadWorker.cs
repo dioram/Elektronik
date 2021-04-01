@@ -10,6 +10,8 @@ namespace Elektronik
         private readonly Thread _thread;
         private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
 
+        public int AmountOfActions = 0;
+
         public ThreadWorker()
         {
             _thread = new Thread(Start);
@@ -23,6 +25,7 @@ namespace Elektronik
 
         public void Enqueue(Action action)
         {
+            AmountOfActions++;
             _actions.Enqueue(action);
         }
 
@@ -39,6 +42,10 @@ namespace Elektronik
                     catch (Exception e)
                     {
                         Debug.LogError(e);
+                    }
+                    finally
+                    {
+                        AmountOfActions--;
                     }
                 }
             }

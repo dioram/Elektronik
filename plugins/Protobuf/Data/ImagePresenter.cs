@@ -41,8 +41,8 @@ namespace Elektronik.Protobuf.Data
 
         #region IRendersToWindow
 
-        
         public Window Window { get; private set; }
+        public string Title { get; set; }
 
         #endregion
 

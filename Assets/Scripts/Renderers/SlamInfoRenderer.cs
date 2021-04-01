@@ -8,10 +8,6 @@ namespace Elektronik.Renderers
 {
     public class SlamInfoRenderer : MonoBehaviour, IDataRenderer<(string message, IEnumerable<ICloudItem> points)>
     {
-        public TMP_Text MessageLabel;
-        public TMP_Text PointMessageLabel;
-        public ListBox PointButtonsBox;
-
         #region Unity events
         
         private void OnEnable()
@@ -25,6 +21,8 @@ namespace Elektronik.Renderers
         }
 
         #endregion
+
+        #region IDataRenderer
 
         public bool IsShowing { get; private set; }
 
@@ -45,5 +43,15 @@ namespace Elektronik.Renderers
             PointMessageLabel.text = "";
             PointButtonsBox.Clear();
         }
+
+        #endregion
+        
+        #region Private
+        
+        [SerializeField] private TMP_Text MessageLabel;
+        [SerializeField] private TMP_Text PointMessageLabel;
+        [SerializeField] private ListBox PointButtonsBox;
+
+        #endregion
     }
 }

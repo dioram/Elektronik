@@ -18,7 +18,8 @@ namespace Elektronik.Containers
 
         #region IContainer implementation
 
-        public IEnumerator<SlamTrackedObject> GetEnumerator() => _objects.Values.Select(p => p.Item1).ToList().GetEnumerator();
+        public IEnumerator<SlamTrackedObject> GetEnumerator() =>
+                _objects.Values.Select(p => p.Item1).ToList().GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -26,7 +27,7 @@ namespace Elektronik.Containers
         {
             lock (_objects)
             {
-                var container = CreateTrackContainer();
+                var container = CreateTrackContainer(item);
                 _objects[item.Id] = (item, container);
                 if (IsActive)
                 {
@@ -53,6 +54,7 @@ namespace Elektronik.Containers
                 {
                     _lineContainers.Clear();
                 }
+
                 _objects.Clear();
             }
         }
@@ -79,12 +81,14 @@ namespace Elektronik.Containers
                 {
                     _lineContainers.Remove(_objects[item.Id].Item2);
                 }
+
                 _objects.Remove(item.Id);
 
                 if (IsActive)
                 {
                     OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
                 }
+
                 return true;
             }
         }
@@ -107,6 +111,7 @@ namespace Elektronik.Containers
                 {
                     _lineContainers.Remove(_objects[index].Item2);
                 }
+
                 _objects.Remove(index);
                 if (IsActive)
                 {
@@ -143,7 +148,7 @@ namespace Elektronik.Containers
             {
                 foreach (var item in items)
                 {
-                    var container = CreateTrackContainer();
+                    var container = CreateTrackContainer(item);
                     _objects[item.Id] = (item, container);
                 }
 
@@ -166,6 +171,7 @@ namespace Elektronik.Containers
                     {
                         _lineContainers.Remove(_objects[item.Id].Item2);
                     }
+
                     _objects.Remove(item.Id);
                 }
 
@@ -218,7 +224,7 @@ namespace Elektronik.Containers
             set
             {
                 if (_isActive == value) return;
-                
+
                 foreach (var child in Children)
                 {
                     child.IsActive = value;
@@ -260,7 +266,7 @@ namespace Elektronik.Containers
             {
                 if (_objects.ContainsKey(item.Id)) return;
 
-                var container = CreateTrackContainer(history);
+                var container = CreateTrackContainer(item, history);
                 _objects.Add(item.Id, (item, container));
                 _maxId = history.Count > 0 ? history.Max(l => l.Id) : 0;
                 if (IsActive)
@@ -278,7 +284,7 @@ namespace Elektronik.Containers
                 {
                     if (_objects.ContainsKey(i.Id)) return;
 
-                    var container = CreateTrackContainer(h);
+                    var container = CreateTrackContainer(i, h);
                     _objects.Add(i.Id, (i, container));
                 }
 
@@ -315,14 +321,24 @@ namespace Elektronik.Containers
         private int _maxId = 0;
         private bool _isActive = true;
 
-        private TrackContainer CreateTrackContainer(IList<SlamLine> history = null)
+        private TrackContainer CreateTrackContainer(SlamTrackedObject obj, IList<SlamLine> history = null)
         {
             lock (Children)
             {
                 var res = new TrackContainer();
                 res.SetRenderer(_lineRenderer);
+                res.DisplayName = $"Track #{obj.Id}";
                 _lineContainers.Add(res);
-                if (history != null) res.AddRange(history);
+                if (history == null)
+                {
+                    res.Add(new SlamLine(new SlamPoint(-1, obj.Position, obj.Color),
+                                         new SlamPoint(-2, obj.Position, obj.Color)));
+                }
+                else
+                {
+                    res.AddRange(history);
+                }
+
                 return res;
             }
         }

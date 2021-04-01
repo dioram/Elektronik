@@ -46,7 +46,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public override void Update(float delta)
         {
-            if (_threadWorker == null) return;
+            if (_threadWorker == null || _threadWorker.AmountOfActions > 0) return;
             if (_playing)
             {
                 if (CurrentPosition == AmountOfFrames - 1)

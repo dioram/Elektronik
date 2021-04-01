@@ -104,7 +104,12 @@ namespace Elektronik.Settings
 
         private void PluginSelected(object sender, ListBox.SelectionChangedEventArgs e)
         {
-            _selectedPlugin = ((PluginListBoxItem) PluginsListBox[e.Index]);
+            PluginSelected((PluginListBoxItem) PluginsListBox[e.Index]);
+        }
+
+        private void PluginSelected(PluginListBoxItem pluginListBoxItem)
+        {
+            _selectedPlugin = pluginListBoxItem;
             _selectedPlugin.ToggleDescription();
             SettingsGenerator.Generate(_selectedPlugin.Plugin.Settings);
 
@@ -157,6 +162,7 @@ namespace Elektronik.Settings
                         .Where(state => state && _initCompleted
                                        && !_selectedPlugins.SelectedPluginsNames.Contains(plugin.DisplayName))
                         .Do(_ => _selectedPlugins.SelectedPluginsNames.Add(plugin.GetType().FullName))
+                        .Do(_ => PluginSelected(pluginUIItem))
                         .Subscribe(_ => _pluginsHistory.Save());
                 pluginUIItem.OnValueChangedAsObservable()
                         .Where(state => !state && _initCompleted)

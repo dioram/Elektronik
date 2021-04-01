@@ -1,4 +1,5 @@
-﻿using SimpleFileBrowser;
+﻿using System.IO;
+using SimpleFileBrowser;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,7 +32,9 @@ namespace Elektronik.UI
                                        () => { },
                                        folderMode,
                                        false,
-                                       initialPath,
+                                       string.IsNullOrEmpty(initialPath)
+                                               ? Path.GetDirectoryName(_ifFilePath.text)
+                                               : initialPath,
                                        title,
                                        buttonText);
         }
