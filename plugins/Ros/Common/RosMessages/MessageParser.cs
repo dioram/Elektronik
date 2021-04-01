@@ -37,6 +37,9 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             case "visualization_msgs/msg/MarkerArray":
             case "visualization_msgs/MarkerArray":
                 return ParseMarkerArray(memoryStream, cdr);
+            case "sensor_msgs/msg/Image":
+            case "sensor_msgs/Image":
+                return ParseImage(memoryStream, cdr);
             default:
                 return null;
             }
@@ -51,9 +54,20 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             var isBigEndian = ParseBool(data, cdr);
             var pointStep = ParseUInt32(data, cdr);
             var rowStep = ParseUInt32(data, cdr);
-            var pointData = ParseArray(data, (stream, _) => (byte) stream.ReadByte(), cdr);
+            var pointData = ParseByteArray(data, cdr);
             var isDense = ParseBool(data, cdr);
             return new PointCloud2(header, height, width, fields, isBigEndian, pointStep, rowStep, pointData, isDense);
+        }
+
+        private static Image ParseImage(Stream data, bool cdr)
+        {
+            return new Image(ParseHeader(data, cdr), 
+                             ParseUInt32(data, cdr), 
+                             ParseUInt32(data, cdr),
+                             ParseString(data, cdr), 
+                             (byte) data.ReadByte(), 
+                             ParseUInt32(data, cdr),
+                             ParseByteArray(data, cdr));
         }
 
         private static MarkerArray ParseMarkerArray(Stream data, bool cdr)
@@ -82,6 +96,14 @@ namespace Elektronik.RosPlugin.Common.RosMessages
                 MeshResource = ParseString(data, cdr),
                 MeshUseEmbeddedMaterials = ParseBool(data, cdr),
             };
+        }
+
+        private static byte[] ParseByteArray(Stream data, bool cdr)
+        {
+            var amount = ParseInt32(data, cdr);
+            var bytes = new byte[amount];
+            data.Read(bytes, 0, amount);
+            return bytes;
         }
 
         private static T[] ParseArray<T>(Stream data, Func<Stream, bool, T> parser, bool cdr)

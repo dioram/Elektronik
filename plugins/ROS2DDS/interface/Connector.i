@@ -12,6 +12,7 @@
 %feature("director") TopicsDiscoveryHandler;
 %feature("director") Ros2Message;
 %feature("director") OdometryMessage;
+%feature("director") ImageMessage;
 %feature("director") PoseStampedMessage;
 %feature("director") PointCloud2Message;
 %feature("director") Logger;

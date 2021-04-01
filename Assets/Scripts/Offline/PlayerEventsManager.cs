@@ -24,6 +24,7 @@ namespace Elektronik.Offline
         public Sprite PauseImage;
         public Text Timestamp;
 
+        private bool _isRewinding;
         private bool _isPlaying;
         private Image _playButtonImage;
         private IDataSourcePluginOffline _dataSourcePluginOffline;
@@ -37,8 +38,10 @@ namespace Elektronik.Offline
             NextKeyFrame += _dataSourcePluginOffline.NextKeyFrame;
             PreviousKeyFrame += _dataSourcePluginOffline.PreviousKeyFrame;
             _dataSourcePluginOffline.Finished += SetPausedState;
+            _dataSourcePluginOffline.Rewind += b => _isRewinding = b;
             TimelineSlider.OnTimelineChanged += f =>
             {
+                if (_isRewinding) return;
                 SetPausedState();
                 _dataSourcePluginOffline.CurrentPosition = (int) Mathf.Round((_dataSourcePluginOffline.AmountOfFrames - 1) * f);
             };

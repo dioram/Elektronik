@@ -12,9 +12,21 @@ namespace Elektronik.Renderers
         public TMP_Text PointMessageLabel;
         public ListBox PointButtonsBox;
 
-        public void Render((string message, IEnumerable<SlamPoint> points) data)
+        #region Unity events
+        
+        private void OnEnable()
         {
+            IsShowing = true;
         }
+
+        private void OnDisable()
+        {
+            IsShowing = false;
+        }
+
+        #endregion
+
+        public bool IsShowing { get; private set; }
 
         public void Render((string message, IEnumerable<ICloudItem> points) data)
         {

@@ -16,6 +16,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
             {"geometry_msgs/PoseStamped", typeof(TrackedObjectsContainer)},
             {"nav_msgs/Odometry", typeof(TrackedObjectsContainer)},
             {"sensor_msgs/PointCloud2", typeof(CloudContainer<SlamPoint>)},
+            {"sensor_msgs/Image", typeof(ImagePresenter)},
         };
         
         public BagParser? Parser { get; private set; }

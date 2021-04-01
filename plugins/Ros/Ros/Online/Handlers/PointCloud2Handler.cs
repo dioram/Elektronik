@@ -6,7 +6,7 @@ using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 
 namespace Elektronik.RosPlugin.Ros.Online.Handlers
 {
-    public class PointCloud2Handler : MessageHandler<PointCloud2, SlamPoint>
+    public class PointCloud2Handler : MessageHandler<PointCloud2, IContainer<SlamPoint>>
     {
         public PointCloud2Handler(ISourceTree container, RosSocket socket, string topic)
                 : base(container, socket, topic)

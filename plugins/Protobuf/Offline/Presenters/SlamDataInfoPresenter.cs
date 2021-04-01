@@ -43,7 +43,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public void Clear()
         {
-            _info?.Clear();
+            MainThreadInvoker.Instance.Enqueue(() => _info.Clear());
         }
 
         #endregion

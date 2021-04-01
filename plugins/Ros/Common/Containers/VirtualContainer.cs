@@ -11,7 +11,7 @@ namespace Elektronik.RosPlugin.Common.Containers
             DisplayName = displayName;
         }
 
-        public void AddChild(string path, ISourceTree child)
+        public void AddChild(ISourceTree child)
         {
             ChildrenList.Add(child);
         }

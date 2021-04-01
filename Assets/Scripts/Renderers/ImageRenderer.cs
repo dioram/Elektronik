@@ -1,77 +1,98 @@
-﻿using System.Threading;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Elektronik.Renderers
 {
-    public class ImageRenderer : MonoBehaviour, IDataRenderer<byte[]>
+    public class ImageRenderer : MonoBehaviour, IDataRenderer<byte[]>,
+                                 IDataRenderer<(int width, int height, byte[] array, TextureFormat format)>
     {
-        public RawImage Target;
-        
+        public bool FlipVertically = false;
+
         #region Unity events
 
         private void Start()
         {
             Target.texture = Texture2D.whiteTexture;
         }
-        
-        private void Update()
-        {
-            if (_clearImage)
-            {
-                _clearImage = false;
-                _imageChanged = false;
-                Target.texture = Texture2D.whiteTexture;
-                return;
-            }
-            
-            if (!_imageChanged) return;
-            _imageChanged = false;
 
-            try
-            {
-                _sync.EnterReadLock();
-                Texture2D texture2D = Texture2D.blackTexture;
-                texture2D.LoadImage(_array);
-                Target.texture = texture2D;
-            }
-            finally
-            {
-                _sync.ExitReadLock();
-            }
+        private void OnEnable()
+        {
+            IsShowing = true;
+        }
+
+        private void OnDisable()
+        {
+            IsShowing = false;
         }
 
         #endregion
 
         #region IDataRenderer
-        
+
+        public bool IsShowing { get; private set; }
+
         public void Render(byte[] array)
         {
-            try
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
-                _sync.EnterWriteLock();
-                _array = array;
-                _imageChanged = true;
-            }
-            finally
+                Texture2D texture2D = Texture2D.blackTexture;
+                texture2D.LoadImage(array);
+                Fitter.aspectRatio = texture2D.width / (float)texture2D.height;
+                Target.texture = texture2D;
+            });
+        }
+
+        public void Render((int width, int height, byte[] array, TextureFormat format) data)
+        {
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
-                _sync.ExitWriteLock();
-            }
+                if (_texture == null 
+                    || _texture.width != data.width 
+                    || _texture.height != data.height 
+                    || _texture.format != data.format)
+                {
+                    _texture = new Texture2D(data.width, data.height, data.format, false);
+                }
+                _texture.LoadRawTextureData(data.array);
+                if (FlipVertically) FlipTextureVertically(_texture);
+                _texture.Apply();
+                Fitter.aspectRatio = data.width / (float)data.height;
+                Target.texture = _texture;
+            });
         }
 
         public void Clear()
         {
-            _clearImage = true;
+            MainThreadInvoker.Instance.Enqueue(() => Target.texture = Texture2D.whiteTexture);
         }
 
         #endregion
 
-        #region Private definitions
+        #region Private
+        
+        [SerializeField] private RawImage Target;
+        [SerializeField] private AspectRatioFitter Fitter;
+        private Texture2D _texture;
 
-        private bool _imageChanged;
-        private bool _clearImage;
-        private byte[] _array;
-        private readonly ReaderWriterLockSlim _sync = new ReaderWriterLockSlim();
+        private static void FlipTextureVertically(Texture2D original)
+        {
+            var originalPixels = original.GetPixels();
+
+            Color[] newPixels = new Color[originalPixels.Length];
+
+            int width = original.width;
+            int rows = original.height;
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < rows; y++)
+                {
+                    newPixels[x + y * width] = originalPixels[x + (rows - y -1) * width];
+                }
+            }
+
+            original.SetPixels(newPixels);
+        }
 
         #endregion
     }

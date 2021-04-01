@@ -78,18 +78,18 @@ namespace Elektronik.RosPlugin.Ros.Bag
         {
             if (_playing)
             {
-                if (_threadWorker != null && _threadWorker.QueuedActions != 0) return;
+                if (_threadWorker == null) return;
                 NextKeyFrame();
             }
             else if (_rewindAt > 0)
             {
                 _playing = false;
                 Rewind?.Invoke(true);
-                if (CurrentPosition - (_threadWorker?.QueuedActions ?? 0) > _rewindAt)
+                if (CurrentPosition > _rewindAt)
                 {
                     PreviousKeyFrame();
                 }
-                else if (CurrentPosition + (_threadWorker?.QueuedActions ?? 0) < _rewindAt)
+                else if (CurrentPosition < _rewindAt)
                 {
                     NextKeyFrame();
                 }
@@ -117,8 +117,6 @@ namespace Elektronik.RosPlugin.Ros.Bag
             _threadWorker?.Enqueue(() =>
             {
                 Data.Clear();
-                // ReSharper disable once ConstantConditionalAccessQualifier
-                PresentersChain?.Clear();
                 _frames?.SoftReset();
             });
         }

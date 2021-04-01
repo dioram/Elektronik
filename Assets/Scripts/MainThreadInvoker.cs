@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 using UnityEngine;
 
@@ -11,15 +11,12 @@ namespace Elektronik
 
         private Thread _mainThread;
 
-        public AutoResetEvent Sync { get; private set; }
-
-        private Queue<Action> _actions;
+        private ConcurrentQueue<Action> _actions;
 
         private void Awake()
         {
             _mainThread = Thread.CurrentThread;
-            _actions = new Queue<Action>();
-            Sync = new AutoResetEvent(false);
+            _actions = new ConcurrentQueue<Action>();
         }
 
         private void Start()
@@ -43,10 +40,7 @@ namespace Elektronik
         {
             if (Thread.CurrentThread != _mainThread)
             {
-                lock (_actions)
-                {
-                    _actions.Enqueue(action);
-                }
+                _actions.Enqueue(action);
             }
             else
             {
@@ -56,15 +50,13 @@ namespace Elektronik
 
         private void Update()
         {
-            lock(_actions)
+            while (_actions.Count != 0)
             {
-                while (_actions.Count != 0)
+                if (_actions.TryDequeue(out Action a))
                 {
-                    _actions.Dequeue()();
+                    a();
                 }
             }
-            Sync.Set();
         }
-
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 using UnityEngine;
 
@@ -8,9 +8,7 @@ namespace Elektronik
     public class ThreadWorker : IDisposable
     {
         private readonly Thread _thread;
-        private readonly Queue<Action> _actions = new Queue<Action>();
-
-        public int QueuedActions { get; private set; }
+        private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
 
         public ThreadWorker()
         {
@@ -25,37 +23,24 @@ namespace Elektronik
 
         public void Enqueue(Action action)
         {
-            lock (_actions)
-            {
-                _actions.Enqueue(action);
-                QueuedActions++;
-            }
+            _actions.Enqueue(action);
         }
 
         private void Start()
         {
             while (true)
             {
-                lock (_actions)
+                if (_actions.TryDequeue(out Action a))
                 {
-                    while (_actions.Count > 0)
+                    try
                     {
-                        try
-                        {
-                            _actions.Dequeue()();
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError(e);
-                        }
-                        finally
-                        {
-                            QueuedActions--;  
-                        }
+                        a();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
                     }
                 }
-
-                Thread.Sleep(20);
             }
             // ReSharper disable once FunctionNeverReturns
         }

@@ -123,5 +123,13 @@ module sensor_msgs { module msg {
         sequence<octet> data;
         boolean is_dense;
     };
-
+    struct Image {
+        std_msgs::msg::Header header;
+        unsigned long height;
+        unsigned long width;
+        string encoding;
+        octet is_bigendian;
+        unsigned long step;
+        sequence<octet> data;
+    };
 }; };

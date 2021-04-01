@@ -29,6 +29,7 @@ Connector::Connector(int domainId, Logger *logger) : m_messageListener(this),
     m_supportedTypes["nav_msgs::msg::dds_::Odometry_"] = TypeSupport(new OdometryPubSubType());
     m_supportedTypes["geometry_msgs::msg::dds_::PoseStamped_"] = TypeSupport(new PoseStampedPubSubType());
     m_supportedTypes["sensor_msgs::msg::dds_::PointCloud2_"] = TypeSupport(new PointCloud2PubSubType());
+    m_supportedTypes["sensor_msgs::msg::dds_::Image_"] = TypeSupport(new ImagePubSubType());
 
     for (const auto &pair: m_supportedTypes) {
         pair.second.register_type(m_topicsReaderParticipant);

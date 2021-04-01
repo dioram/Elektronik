@@ -60,7 +60,7 @@ namespace Elektronik.RosPlugin.Common.Containers
                     else
                     {
                         var newContainer = new VirtualContainer(path[i]);
-                        parent.AddChild(path[i], newContainer);
+                        parent.AddChild(newContainer);
                         parent = newContainer;
                     }
                 }
@@ -79,7 +79,7 @@ namespace Elektronik.RosPlugin.Common.Containers
                     RealChildren[topic.Name].DisplayName = topic.Name.Split('/').Last();
                 }
 
-                parent.AddChild(topic.Name, RealChildren[topic.Name]);
+                parent.AddChild(RealChildren[topic.Name]);
             }
         }
 

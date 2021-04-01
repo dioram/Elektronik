@@ -83,6 +83,7 @@ namespace Elektronik.RosPlugin.Ros.Online
             {"geometry_msgs/PoseStamped", (typeof(TrackedObjectsContainer), typeof(PoseStampedHandler))},
             {"nav_msgs/Odometry", (typeof(TrackedObjectsContainer), typeof(OdometryHandler))},
             {"sensor_msgs/PointCloud2", (typeof(CloudContainer<SlamPoint>), typeof(PointCloud2Handler))},
+            {"sensor_msgs/Image", (typeof(ImagePresenter), typeof(ImageHandler))},
         };
 
         private readonly List<IMessageHandler> _handlers = new();

@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using SQLite;
 using UnityEngine;
+using RosMessage = RosSharp.RosBridgeClient.Message;
+using Pose = RosSharp.RosBridgeClient.MessageTypes.Geometry.Pose;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {

@@ -2,7 +2,9 @@
 using System.Linq;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.RosPlugin.Common.Containers;
 using RosSharp.RosBridgeClient.MessageTypes.Geometry;
+using RosSharp.RosBridgeClient.MessageTypes.Nav;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
 using UnityEngine;
@@ -19,25 +21,14 @@ namespace Elektronik.RosPlugin.Common.RosMessages
     {
         public static ICSConverter? Converter;
 
-        public static Pose? GetPose(this RosMessage rosMessage)
+        public static Pose? GetPose(this RosMessage rosMessage) => rosMessage switch
         {
-            var field = rosMessage.GetType()
-                    .GetProperties()
-                    .FirstOrDefault(f => f.PropertyType == typeof(Pose));
-            if (field != null) return (Pose) field.GetValue(rosMessage);
-
-            field = rosMessage.GetType()
-                    .GetProperties()
-                    .FirstOrDefault(f => f.PropertyType == typeof(PoseWithCovariance));
-            if (field != null) return ((PoseWithCovariance) field.GetValue(rosMessage)).pose;
-
-            field = rosMessage.GetType()
-                    .GetProperties()
-                    .FirstOrDefault(f => f.PropertyType == typeof(PoseWithCovarianceStamped));
-            if (field != null) return ((PoseWithCovarianceStamped) field.GetValue(rosMessage)).pose.pose;
-
-            return null;
-        }
+            Odometry odometry => odometry.pose.pose,
+            PoseStamped poseStamped => poseStamped.pose,
+            PoseWithCovariance poseWithCovariance => poseWithCovariance.pose,
+            PoseWithCovarianceStamped poseWithCovarianceStamped => poseWithCovarianceStamped.pose.pose,
+            _ => null,
+        };
 
         public static SlamPoint[] ToSlamPoints(this PointCloud2 cloud)
         {
@@ -117,10 +108,9 @@ namespace Elektronik.RosPlugin.Common.RosMessages
 
         public static (Vector3 pos, Quaternion rot) ToUnity(this Pose pose)
         {
-            Vector3 v = new Vector3((float) pose.position.x, (float) pose.position.y, (float) pose.position.z);
-            Quaternion q = new Quaternion((float) pose.orientation.x, (float) pose.orientation.y,
-                                          (float) pose.orientation.z,
-                                          (float) pose.orientation.w);
+            var v = new Vector3((float) pose.position.x, (float) pose.position.y, (float) pose.position.z);
+            var q = new Quaternion((float) pose.orientation.x, (float) pose.orientation.y,
+                                   (float) pose.orientation.z, (float) pose.orientation.w);
             Converter?.Convert(ref v, ref q);
             return (v, q);
         }
@@ -131,12 +121,30 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             Converter?.Convert(ref res);
             return res;
         }
-        
+
         public static Vector3 ToUnity(this Point point)
         {
             var res = new Vector3((float) point.x, (float) point.y, (float) point.z);
             Converter?.Convert(ref res);
             return res;
         }
+
+        public static ImagePresenter.ImageData ToImageData(this Image image)
+            => new((int)image.width, (int)image.height, image.encoding, image.data);
+        
+
+        public static TextureFormat GetTextureFormat(string encoding) =>
+                encoding switch
+                {
+                    "rgb8" => TextureFormat.RGB24,
+                    "rgba8" => TextureFormat.RGBA32,
+                    "rgb16" => TextureFormat.RGB48,
+                    "rgba16" => TextureFormat.RGBA64,
+                    "bgra8" => TextureFormat.BGRA32,
+                    "mono8" => TextureFormat.Alpha8,
+                    "mono16" => TextureFormat.R16,
+                    _ => throw new ArgumentOutOfRangeException(nameof(encoding), encoding,
+                                                               "This type of encoding is not supported.")
+                };
     }
 }

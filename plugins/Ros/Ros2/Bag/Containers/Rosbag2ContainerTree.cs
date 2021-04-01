@@ -69,6 +69,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             {"nav_msgs/msg/Odometry", typeof(TrackedDBContainer)},
             {"sensor_msgs/msg/PointCloud2", typeof(PointsDBContainer)},
             {"visualization_msgs/msg/MarkerArray", typeof(VisualisationMarkersDBContainer)},
+            {"sensor_msgs/msg/Image", typeof(ImageDBContainer)}
         };
 
         #endregion

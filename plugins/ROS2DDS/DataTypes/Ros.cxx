@@ -1298,11 +1298,11 @@ void geometry_msgs::msg::PoseWithCovariance::serializeKey(
 
 geometry_msgs::msg::Vector3::Vector3()
 {
-    // m_x com.eprosima.idl.parser.typecode.PrimitiveTypeCode@74650e52
+    // m_x com.eprosima.idl.parser.typecode.PrimitiveTypeCode@6acdbdf5
     m_x = 0.0;
-    // m_y com.eprosima.idl.parser.typecode.PrimitiveTypeCode@15d0c81b
+    // m_y com.eprosima.idl.parser.typecode.PrimitiveTypeCode@4b1c1ea0
     m_y = 0.0;
-    // m_z com.eprosima.idl.parser.typecode.PrimitiveTypeCode@6acdbdf5
+    // m_z com.eprosima.idl.parser.typecode.PrimitiveTypeCode@17579e0f
     m_z = 0.0;
 
 }
@@ -1523,9 +1523,9 @@ void geometry_msgs::msg::Vector3::serializeKey(
 
 geometry_msgs::msg::Twist::Twist()
 {
-    // m_linear com.eprosima.fastdds.idl.parser.typecode.StructTypeCode@17579e0f
+    // m_linear com.eprosima.fastdds.idl.parser.typecode.StructTypeCode@3712b94
 
-    // m_angular com.eprosima.fastdds.idl.parser.typecode.StructTypeCode@17579e0f
+    // m_angular com.eprosima.fastdds.idl.parser.typecode.StructTypeCode@3712b94
 
 
 }
@@ -1716,9 +1716,9 @@ void geometry_msgs::msg::Twist::serializeKey(
 
 geometry_msgs::msg::TwistWithCovariance::TwistWithCovariance()
 {
-    // m_twist com.eprosima.fastdds.idl.parser.typecode.StructTypeCode@33f88ab
+    // m_twist com.eprosima.fastdds.idl.parser.typecode.StructTypeCode@2d8f65a4
 
-    // m_covariance com.eprosima.idl.parser.typecode.AliasTypeCode@27a8c74e
+    // m_covariance com.eprosima.idl.parser.typecode.AliasTypeCode@1b68ddbd
     memset(&m_covariance, 0, (36) * 8);
 
 }
@@ -3401,6 +3401,437 @@ void sensor_msgs::msg::PointCloud2::serializeKey(
 {
     (void) scdr;
              
+}
+
+sensor_msgs::msg::Image::Image()
+{
+    // m_header com.eprosima.fastdds.idl.parser.typecode.StructTypeCode@146044d7
+
+    // m_height com.eprosima.idl.parser.typecode.PrimitiveTypeCode@2f112965
+    m_height = 0;
+    // m_width com.eprosima.idl.parser.typecode.PrimitiveTypeCode@1a04f701
+    m_width = 0;
+    // m_encoding com.eprosima.idl.parser.typecode.StringTypeCode@4e91d63f
+    m_encoding ="";
+    // m_is_bigendian com.eprosima.idl.parser.typecode.PrimitiveTypeCode@d4342c2
+    m_is_bigendian = 0;
+    // m_step com.eprosima.idl.parser.typecode.PrimitiveTypeCode@2bbf180e
+    m_step = 0;
+    // m_data com.eprosima.idl.parser.typecode.SequenceTypeCode@163e4e87
+
+
+}
+
+sensor_msgs::msg::Image::~Image()
+{
+
+
+
+
+
+
+
+}
+
+sensor_msgs::msg::Image::Image(
+        const Image& x)
+{
+    m_header = x.m_header;
+    m_height = x.m_height;
+    m_width = x.m_width;
+    m_encoding = x.m_encoding;
+    m_is_bigendian = x.m_is_bigendian;
+    m_step = x.m_step;
+    m_data = x.m_data;
+}
+
+sensor_msgs::msg::Image::Image(
+        Image&& x)
+{
+    m_header = std::move(x.m_header);
+    m_height = x.m_height;
+    m_width = x.m_width;
+    m_encoding = std::move(x.m_encoding);
+    m_is_bigendian = x.m_is_bigendian;
+    m_step = x.m_step;
+    m_data = std::move(x.m_data);
+}
+
+sensor_msgs::msg::Image& sensor_msgs::msg::Image::operator =(
+        const Image& x)
+{
+
+    m_header = x.m_header;
+    m_height = x.m_height;
+    m_width = x.m_width;
+    m_encoding = x.m_encoding;
+    m_is_bigendian = x.m_is_bigendian;
+    m_step = x.m_step;
+    m_data = x.m_data;
+
+    return *this;
+}
+
+sensor_msgs::msg::Image& sensor_msgs::msg::Image::operator =(
+        Image&& x)
+{
+
+    m_header = std::move(x.m_header);
+    m_height = x.m_height;
+    m_width = x.m_width;
+    m_encoding = std::move(x.m_encoding);
+    m_is_bigendian = x.m_is_bigendian;
+    m_step = x.m_step;
+    m_data = std::move(x.m_data);
+
+    return *this;
+}
+
+size_t sensor_msgs::msg::Image::getMaxCdrSerializedSize(
+        size_t current_alignment)
+{
+    size_t initial_alignment = current_alignment;
+
+
+    current_alignment += std_msgs::msg::Header::getMaxCdrSerializedSize(current_alignment);
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + 255 + 1;
+
+    current_alignment += 1 + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+    current_alignment += (100 * 1) + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
+
+
+
+
+    return current_alignment - initial_alignment;
+}
+
+size_t sensor_msgs::msg::Image::getCdrSerializedSize(
+        const sensor_msgs::msg::Image& data,
+        size_t current_alignment)
+{
+    (void)data;
+    size_t initial_alignment = current_alignment;
+
+
+    current_alignment += std_msgs::msg::Header::getCdrSerializedSize(data.header(), current_alignment);
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + data.encoding().size() + 1;
+
+    current_alignment += 1 + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+    if (data.data().size() > 0)
+    {
+        current_alignment += (data.data().size() * 1) + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
+    }
+
+
+
+
+    return current_alignment - initial_alignment;
+}
+
+void sensor_msgs::msg::Image::serialize(
+        eprosima::fastcdr::Cdr& scdr) const
+{
+
+    scdr << m_header;
+    scdr << m_height;
+    scdr << m_width;
+    scdr << m_encoding;
+    scdr << m_is_bigendian;
+    scdr << m_step;
+    scdr << m_data;
+
+}
+
+void sensor_msgs::msg::Image::deserialize(
+        eprosima::fastcdr::Cdr& dcdr)
+{
+
+    dcdr >> m_header;
+    dcdr >> m_height;
+    dcdr >> m_width;
+    dcdr >> m_encoding;
+    dcdr >> m_is_bigendian;
+    dcdr >> m_step;
+    dcdr >> m_data;
+}
+
+/*!
+ * @brief This function copies the value in member header
+ * @param _header New value to be copied in member header
+ */
+void sensor_msgs::msg::Image::header(
+        const std_msgs::msg::Header& _header)
+{
+    m_header = _header;
+}
+
+/*!
+ * @brief This function moves the value in member header
+ * @param _header New value to be moved in member header
+ */
+void sensor_msgs::msg::Image::header(
+        std_msgs::msg::Header&& _header)
+{
+    m_header = std::move(_header);
+}
+
+/*!
+ * @brief This function returns a constant reference to member header
+ * @return Constant reference to member header
+ */
+const std_msgs::msg::Header& sensor_msgs::msg::Image::header() const
+{
+    return m_header;
+}
+
+/*!
+ * @brief This function returns a reference to member header
+ * @return Reference to member header
+ */
+std_msgs::msg::Header& sensor_msgs::msg::Image::header()
+{
+    return m_header;
+}
+/*!
+ * @brief This function sets a value in member height
+ * @param _height New value for member height
+ */
+void sensor_msgs::msg::Image::height(
+        uint32_t _height)
+{
+    m_height = _height;
+}
+
+/*!
+ * @brief This function returns the value of member height
+ * @return Value of member height
+ */
+uint32_t sensor_msgs::msg::Image::height() const
+{
+    return m_height;
+}
+
+/*!
+ * @brief This function returns a reference to member height
+ * @return Reference to member height
+ */
+uint32_t& sensor_msgs::msg::Image::height()
+{
+    return m_height;
+}
+
+/*!
+ * @brief This function sets a value in member width
+ * @param _width New value for member width
+ */
+void sensor_msgs::msg::Image::width(
+        uint32_t _width)
+{
+    m_width = _width;
+}
+
+/*!
+ * @brief This function returns the value of member width
+ * @return Value of member width
+ */
+uint32_t sensor_msgs::msg::Image::width() const
+{
+    return m_width;
+}
+
+/*!
+ * @brief This function returns a reference to member width
+ * @return Reference to member width
+ */
+uint32_t& sensor_msgs::msg::Image::width()
+{
+    return m_width;
+}
+
+/*!
+ * @brief This function copies the value in member encoding
+ * @param _encoding New value to be copied in member encoding
+ */
+void sensor_msgs::msg::Image::encoding(
+        const std::string& _encoding)
+{
+    m_encoding = _encoding;
+}
+
+/*!
+ * @brief This function moves the value in member encoding
+ * @param _encoding New value to be moved in member encoding
+ */
+void sensor_msgs::msg::Image::encoding(
+        std::string&& _encoding)
+{
+    m_encoding = std::move(_encoding);
+}
+
+/*!
+ * @brief This function returns a constant reference to member encoding
+ * @return Constant reference to member encoding
+ */
+const std::string& sensor_msgs::msg::Image::encoding() const
+{
+    return m_encoding;
+}
+
+/*!
+ * @brief This function returns a reference to member encoding
+ * @return Reference to member encoding
+ */
+std::string& sensor_msgs::msg::Image::encoding()
+{
+    return m_encoding;
+}
+/*!
+ * @brief This function sets a value in member is_bigendian
+ * @param _is_bigendian New value for member is_bigendian
+ */
+void sensor_msgs::msg::Image::is_bigendian(
+        uint8_t _is_bigendian)
+{
+    m_is_bigendian = _is_bigendian;
+}
+
+/*!
+ * @brief This function returns the value of member is_bigendian
+ * @return Value of member is_bigendian
+ */
+uint8_t sensor_msgs::msg::Image::is_bigendian() const
+{
+    return m_is_bigendian;
+}
+
+/*!
+ * @brief This function returns a reference to member is_bigendian
+ * @return Reference to member is_bigendian
+ */
+uint8_t& sensor_msgs::msg::Image::is_bigendian()
+{
+    return m_is_bigendian;
+}
+
+/*!
+ * @brief This function sets a value in member step
+ * @param _step New value for member step
+ */
+void sensor_msgs::msg::Image::step(
+        uint32_t _step)
+{
+    m_step = _step;
+}
+
+/*!
+ * @brief This function returns the value of member step
+ * @return Value of member step
+ */
+uint32_t sensor_msgs::msg::Image::step() const
+{
+    return m_step;
+}
+
+/*!
+ * @brief This function returns a reference to member step
+ * @return Reference to member step
+ */
+uint32_t& sensor_msgs::msg::Image::step()
+{
+    return m_step;
+}
+
+/*!
+ * @brief This function copies the value in member data
+ * @param _data New value to be copied in member data
+ */
+void sensor_msgs::msg::Image::data(
+        const std::vector<uint8_t>& _data)
+{
+    m_data = _data;
+}
+
+/*!
+ * @brief This function moves the value in member data
+ * @param _data New value to be moved in member data
+ */
+void sensor_msgs::msg::Image::data(
+        std::vector<uint8_t>&& _data)
+{
+    m_data = std::move(_data);
+}
+
+/*!
+ * @brief This function returns a constant reference to member data
+ * @return Constant reference to member data
+ */
+const std::vector<uint8_t>& sensor_msgs::msg::Image::data() const
+{
+    return m_data;
+}
+
+/*!
+ * @brief This function returns a reference to member data
+ * @return Reference to member data
+ */
+std::vector<uint8_t>& sensor_msgs::msg::Image::data()
+{
+    return m_data;
+}
+
+size_t sensor_msgs::msg::Image::getKeyMaxCdrSerializedSize(
+        size_t current_alignment)
+{
+    size_t current_align = current_alignment;
+
+
+
+
+
+
+
+
+
+
+    return current_align;
+}
+
+bool sensor_msgs::msg::Image::isKeyDefined()
+{
+    return false;
+}
+
+void sensor_msgs::msg::Image::serializeKey(
+        eprosima::fastcdr::Cdr& scdr) const
+{
+    (void) scdr;
+           
 }
 
 

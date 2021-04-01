@@ -4,18 +4,18 @@ using RosSharp.RosBridgeClient;
 
 namespace Elektronik.RosPlugin.Ros.Online.Handlers
 {
-    public abstract class MessageHandler<TMessage, TCloudItem> : IMessageHandler
+    public abstract class MessageHandler<TMessage, TContainer> : IMessageHandler
             where TMessage : Message
-            where TCloudItem : ICloudItem
+            where TContainer : class
     {
-        protected IContainer<TCloudItem>? Container;
+        protected TContainer? Container;
         private RosSocket? _socket;
         private readonly string _subscriptionId;
 
         protected MessageHandler(ISourceTree container, RosSocket socket, string topic)
         {
             _socket = socket;
-            Container = (IContainer<TCloudItem>) container;
+            Container = (TContainer) container;
             _subscriptionId = _socket.Subscribe(topic, new SubscriptionHandler<TMessage>(Handle));
         }
 
