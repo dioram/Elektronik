@@ -53,7 +53,10 @@ namespace Elektronik.Renderers
 
         public void Clear()
         {
-            Label.text = "";
+            MainThreadInvoker.Instance.Enqueue(() =>
+            {
+                if (Label != null) Label.text = "";
+            });
         }
 
         #endregion

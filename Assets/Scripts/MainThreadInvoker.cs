@@ -17,10 +17,6 @@ namespace Elektronik
         {
             _mainThread = Thread.CurrentThread;
             _actions = new ConcurrentQueue<Action>();
-        }
-
-        private void Start()
-        {
             if (Instance == null)
             {
                 Instance = this;

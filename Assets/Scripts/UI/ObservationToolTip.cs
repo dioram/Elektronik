@@ -16,7 +16,7 @@ namespace Elektronik.UI
         void Start()
         {
             _camera = Camera.main;
-            Factory.GetNewDataRenderer<ObservationViewer>($"", (viewer, window) =>
+            Factory.CreateWindow<ObservationViewer>($"", (viewer, window) =>
             {
                 _floatingViewer = viewer;
                 viewer.Hide();
@@ -32,7 +32,7 @@ namespace Elektronik.UI
                 var title = $"Observation #{data.Data.Id}";
                 if (Input.GetMouseButton(0) && !_pinnedViewers.Exists(v => v.GetComponent<Window>().Title == title))
                 {
-                    Factory.GetNewDataRenderer<ObservationViewer>(title, (viewer, window) =>
+                    Factory.CreateWindow<ObservationViewer>(title, (viewer, window) =>
                     {
                         viewer.Render(data);
                         _pinnedViewers.Add(window);

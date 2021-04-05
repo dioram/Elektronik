@@ -9,16 +9,16 @@ namespace Elektronik.UI.Windows
         public RectTransform Canvas;
         public GameObject[] RendererWindowsPrefabs;
 
-        public void GetNewDataRenderer<T>(string title, Action<T, Window> callback)
+        public void CreateWindow<TComponent>(string title, Action<TComponent, Window> callback)
         {
             MainThreadInvoker.Instance.Enqueue(() =>
             {
-                var prefab = RendererWindowsPrefabs.First(g => g.GetComponent<T>() != null);
+                var prefab = RendererWindowsPrefabs.First(g => g.GetComponent<TComponent>() != null);
                 var go = Instantiate(prefab, Canvas);
                 var window = go.GetComponent<Window>();
                 window.Title = title;
                 go.SetActive(false);
-                callback(go.GetComponent<T>(), window);
+                callback(go.GetComponent<TComponent>(), window);
             });
         }
     }

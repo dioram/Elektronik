@@ -10,7 +10,7 @@ namespace Elektronik.PluginsSystem
         string DisplayName { get; }
 
         /// <summary> Plugins description. Will be displayed in plugins settings </summary>
-        /// <remarks> Supports unity rich text. See: https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/StyledText.html </remarks>
+        /// <remarks> Supports unity rich text. See: http://digitalnativestudios.com/textmeshpro/docs/rich-text/ </remarks>
         [NotNull]
         string Description { get; }
 

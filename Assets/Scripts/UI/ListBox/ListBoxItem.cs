@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Elektronik.UI
+namespace Elektronik.UI.ListBox
 {
     [RequireComponent(typeof(Button))]
     public class ListBoxItem : MonoBehaviour

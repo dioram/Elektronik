@@ -13,32 +13,37 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
 
         public readonly int Id;
         public readonly string Topic;
-        public readonly string Type;
-        
-        public Connection((Dictionary<string, byte[]> header, byte[] data) record) : base(record)
+        private string _type = "";
+
+        public string Type => string.IsNullOrEmpty(_type) ? GetTopicType() : _type;
+
+        public Connection(Dictionary<string, byte[]> header) : base(header)
         {
             if (Op != OpCode) throw new FileLoadException("Can't read connection");
 
             Id = BitConverter.ToInt32(Header["conn"], 0);
             Topic = Encoding.UTF8.GetString(Header["topic"]);
-
-            var stream = new MemoryStream(Data);
-            while (stream.Position < stream.Length)
-            {
-                var (name, data) = RecordsFactory.ReadField(stream);
-                if (name == "type")
-                {
-                    Type = Encoding.UTF8.GetString(data);
-                    break;
-                }
-            }
-
-            if (Type is null) throw new ParsingException($"Type not found for topic {Topic}");
         }
 
         public override string ToString()
         {
             return $"{Type}    {Topic}";
+        }
+
+        private string GetTopicType()
+        {
+            var stream = new MemoryStream(Data!);
+            while (stream.Position < stream.Length)
+            {
+                var (name, data) = RecordsFactory.ReadField(stream);
+                if (name == "type")
+                {
+                    _type = Encoding.UTF8.GetString(data);
+                    return _type;
+                }
+            }
+
+            throw new ParsingException($"Type not found for topic {Topic}");
         }
     }
 }

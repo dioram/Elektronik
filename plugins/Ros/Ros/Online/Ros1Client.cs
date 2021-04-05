@@ -19,9 +19,11 @@ namespace Elektronik.RosPlugin.Ros.Online
 
         public override string DisplayName => "ROS listener";
 
-        public override string Description =>
-                "Client for ROS1 network. Needs to be used with Rosbridge. " +
-                "See: http://wiki.ros.org/rosbridge_suite/Tutorials/RunningRosbridge";
+        public override string Description => "Client for " +
+                "<#7f7fe5><u><link=\"http://wiki.ros.org/noetic/Installation\">ROS1</link></u></color>" +
+                " network. Needs to be used with " +
+                "<#7f7fe5><u><link=\"http://wiki.ros.org/rosbridge_suite/Tutorials/RunningRosbridge\">" +
+                "Rosbridge</link></u></color>.";
 
         public override void Start()
         {

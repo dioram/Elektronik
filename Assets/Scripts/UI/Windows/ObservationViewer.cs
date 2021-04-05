@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Elektronik.UI
+namespace Elektronik.UI.Windows
 {
     [RequireComponent(typeof(Window))]
     public class ObservationViewer : MonoBehaviour, IDataRenderer<DataComponent<SlamObservation>>

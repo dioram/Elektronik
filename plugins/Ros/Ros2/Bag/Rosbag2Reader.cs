@@ -16,11 +16,15 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             _data = new Rosbag2ContainerTree("TMP");
             Data = _data;
         }
-        
+
         #region IDataSourceOffline implementation
 
         public override string DisplayName => "ROS2 bag";
-        public override string Description => "This plugins allows Elektronik to read data saved from ROS2.";
+
+        public override string Description => "This plugins allows Elektronik to read data saved from " +
+                "<#7f7fe5><u><link=\"https://docs.ros.org/en/foxy/index.html\">ROS2</link></u></color> using " +
+                "<#7f7fe5><u><link=\"https://docs.ros.org/en/foxy/Tutorials/Ros2bag/Recording-And-Playing-Back-Data.html\">" +
+                "rosbag2</link></u></color>.";
 
         public override void Start()
         {

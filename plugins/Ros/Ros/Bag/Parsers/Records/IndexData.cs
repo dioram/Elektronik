@@ -13,7 +13,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
         public readonly int ConnectionId;
         public readonly int Count;
         
-        public IndexData((Dictionary<string, byte[]> header, byte[] data) record) : base(record)
+        public IndexData(Dictionary<string, byte[]> header) : base(header)
         {
             if (Op != OpCode) throw new ParsingException("Can't read IndexData");
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Elektronik.RosPlugin.Common;
 
 namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
@@ -13,9 +14,9 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
         public readonly long ChunkPos;
         public readonly long StartTime;
         public readonly long EndTime;
-        public readonly int Count;
+        public readonly int ConnectionCount;
         
-        public ChunkInfo((Dictionary<string, byte[]> header, byte[] data) record) : base(record)
+        public ChunkInfo(Dictionary<string, byte[]> header) : base(header)
         {
             if (Op != OpCode) throw new ParsingException("Can't read ChunkInfo");
 
@@ -23,7 +24,18 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
             ChunkPos = BitConverter.ToInt64(Header["chunk_pos"], 0);
             StartTime = BitConverter.ToInt64(Header["start_time"], 0);
             EndTime = BitConverter.ToInt64(Header["end_time"], 0);
-            Count = BitConverter.ToInt32(Header["count"], 0);
+            ConnectionCount = BitConverter.ToInt32(Header["count"], 0);
+        }
+
+        public IEnumerable<long> GetIds()
+        {
+            using var stream = new MemoryStream(Data);
+            while (stream.Position < stream.Length)
+            {
+                var conn = stream.ReadInt32();
+                var _ = stream.ReadInt32(); // count
+                yield return conn;
+            }
         }
     }
 }

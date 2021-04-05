@@ -17,7 +17,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
         
         public string? TopicName { get; private set; }
         
-        public MessageData((Dictionary<string, byte[]> header, byte[] data) record) : base(record)
+        public MessageData(Dictionary<string, byte[]> header) : base(header)
         {
             if (Op != OpCode) throw new ParsingException("Can't read MessageData");
 

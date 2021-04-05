@@ -2,7 +2,7 @@
 using Elektronik.Settings;
 using UnityEngine.UI;
 
-namespace Elektronik.UI
+namespace Elektronik.UI.ListBox
 {
     public class RecentSettingsListBoxItem : ListBoxItem
     {

@@ -26,14 +26,14 @@ namespace Elektronik.Ros.Tests.Rosbag2
         [Test]
         public void ContainersTree()
         {
-            Assert.AreEqual(18, _tree.ActualTopics.Count);
-            Assert.AreEqual(14, _tree.Children.Count());
+            Assert.AreEqual(20, _tree.ActualTopics.Count);
+            Assert.AreEqual(16, _tree.Children.Count());
             var children = _tree.Children.ToList();
-            Assert.IsInstanceOf<VirtualContainer>(children[0]);
-            Assert.AreEqual("control", children[0].DisplayName);
-            Assert.AreEqual(2, children[0].Children.Count());
-            Assert.IsInstanceOf<VisualisationMarkersDBContainer>(children[1]);
-            Assert.AreEqual("visualization_planning", children[1].DisplayName);
+            Assert.IsInstanceOf<VirtualContainer>(children[1]);
+            Assert.AreEqual("control", children[1].DisplayName);
+            Assert.AreEqual(2, children[1].Children.Count());
+            Assert.IsInstanceOf<VisualisationMarkersDBContainer>(children[2]);
+            Assert.AreEqual("visualization_planning", children[2].DisplayName);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Elektronik.Data.PackageObjects;
-using Elektronik.UI;
+using Elektronik.UI.ListBox;
 using TMPro;
 using UnityEngine;
 
@@ -39,9 +39,9 @@ namespace Elektronik.Renderers
 
         public void Clear()
         {
-            MessageLabel.text = "";
-            PointMessageLabel.text = "";
-            PointButtonsBox.Clear();
+            if (MessageLabel != null) MessageLabel.text = "";
+            if (PointMessageLabel != null) PointMessageLabel.text = "";
+            if (PointButtonsBox != null) PointButtonsBox.Clear();
         }
 
         #endregion

@@ -27,7 +27,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         {
             if (renderer is WindowsFactory factory)
             {
-                factory.GetNewDataRenderer<TRender>(Title, (r, window) =>
+                factory.CreateWindow<TRender>(Title, (r, window) =>
                 {
                     Renderer = r;
                     Window = window;

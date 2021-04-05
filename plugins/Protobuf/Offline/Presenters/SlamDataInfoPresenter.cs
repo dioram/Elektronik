@@ -33,7 +33,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
         {
             if (dataRenderer is WindowsFactory factory)
             {
-                factory.GetNewDataRenderer<SlamInfoRenderer>(DisplayName, (renderer, window) =>
+                factory.CreateWindow<SlamInfoRenderer>(DisplayName, (renderer, window) =>
                 {
                     _info = renderer;
                     Window = window;

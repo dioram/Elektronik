@@ -12,10 +12,12 @@ namespace Elektronik.RosPlugin.Ros2.Online
             _container = new Ros2OnlineContainerTree("TMP");
             Data = _container;
         }
+        
         #region IDataSourceOnline
 
         public override string DisplayName => "ROS2 listener";
-        public override string Description => "Client for ROS2 network.";
+        public override string Description => "Client for " +
+                "<#7f7fe5><u><link=\"https://docs.ros.org/en/foxy/index.html\">ROS2</link></u></color> network.";
         
         public override void Start()
         {

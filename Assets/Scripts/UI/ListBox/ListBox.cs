@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Elektronik.UI
+namespace Elektronik.UI.ListBox
 {
     public class ListBox : MonoBehaviour, IEnumerable<ListBoxItem>
     {

@@ -15,10 +15,6 @@ namespace Elektronik.RosPlugin.Common
         public void Convert(ref Vector3 pos, ref Quaternion rot)
         {
             Convert(ref pos);
-            rot.w = rot.w;
-            var tmp = rot.z;
-            rot.z = -rot.y;
-            rot.y = tmp;
         }
 
         public void Convert(ref Vector3 pos)

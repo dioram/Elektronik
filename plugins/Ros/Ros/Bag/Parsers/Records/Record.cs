@@ -6,14 +6,13 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
     [Serializable]
     public class Record
     {
-        public readonly byte[] Data;
+        public byte[]? Data;
         public readonly byte Op;
 
-        public Record((Dictionary<string, byte[]> header, byte[] data) record)
+        public Record(Dictionary<string, byte[]> header)
         {
-            Header = record.header;
+            Header = header;
             Op = Header["op"][0];
-            Data = record.data;
         }
 
         #region Protected definitions

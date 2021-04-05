@@ -63,7 +63,10 @@ namespace Elektronik.Renderers
 
         public void Clear()
         {
-            MainThreadInvoker.Instance.Enqueue(() => Target.texture = Texture2D.whiteTexture);
+            MainThreadInvoker.Instance.Enqueue(() =>
+            {
+                if (Target != null) Target.texture = Texture2D.whiteTexture;
+            });
         }
 
         #endregion

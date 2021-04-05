@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
+using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -19,11 +23,13 @@ namespace Elektronik.UI.Windows
 
         public EdgeSide Edge;
         public RectTransform ResizeTarget;
+        [CanBeNull] public RectTransform CollidedWindow;
 
         #region Unity event functions
 
         private void Start()
         {
+            _collider = GetComponent<BoxCollider2D>();
             var window = ResizeTarget.GetComponent<Window>();
             _minHeight = window.MinHeight;
             _minWidth = window.MinWidth;
@@ -33,6 +39,16 @@ namespace Elektronik.UI.Windows
                 _canvas = testCanvas.GetComponent<Canvas>();
                 testCanvas = testCanvas.parent as RectTransform;
             }
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            CollidedWindow = (RectTransform) other.transform;
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            CollidedWindow = null;
         }
 
         private void Update()
@@ -51,7 +67,7 @@ namespace Elektronik.UI.Windows
                                      (int) WindowsCursors.DoublePointedArrowPointingNortheastAndSouthwest));
             }
             else if (((Edge & EdgeSide.Top) == EdgeSide.Top)
-                    || ((Edge & EdgeSide.Bottom) == EdgeSide.Bottom))
+                || ((Edge & EdgeSide.Bottom) == EdgeSide.Bottom))
             {
                 SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.DoublePointedArrowPointingNorthAndSouth));
             }
@@ -76,20 +92,23 @@ namespace Elektronik.UI.Windows
                 newPos.y += eventData.delta.y / _canvas.scaleFactor;
                 newHeight += eventData.delta.y / _canvas.scaleFactor;
             }
+
             if ((Edge & EdgeSide.Bottom) == EdgeSide.Bottom)
             {
                 newHeight -= eventData.delta.y / _canvas.scaleFactor;
             }
+
             if ((Edge & EdgeSide.Left) == EdgeSide.Left)
             {
                 newPos.x += eventData.delta.x / _canvas.scaleFactor;
                 newWidth -= eventData.delta.x / _canvas.scaleFactor;
             }
+
             if ((Edge & EdgeSide.Right) == EdgeSide.Right)
             {
                 newWidth += eventData.delta.x / _canvas.scaleFactor;
             }
- 
+
             if (newHeight < _minHeight || newWidth < _minWidth) return;
             ResizeTarget.anchoredPosition = newPos;
             ResizeTarget.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, newHeight);
@@ -118,6 +137,7 @@ namespace Elektronik.UI.Windows
 
         #region Private
 
+        private BoxCollider2D _collider;
         private Canvas _canvas;
         private float _minHeight;
         private float _minWidth;

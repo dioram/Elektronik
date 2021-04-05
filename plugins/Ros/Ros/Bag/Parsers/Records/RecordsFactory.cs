@@ -2,27 +2,26 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
 {
     public static class RecordsFactory
     {
-        static RecordsFactory()
+        public static TRecord? Read<TRecord>(Stream stream, byte opCode) where TRecord : Record
         {
-            Records = Assembly.GetExecutingAssembly()
-                    .GetTypes()
-                    .Where(t => typeof(Record).IsAssignableFrom(t))
-                    .Where(t => t != typeof(Record))
-                    .ToDictionary(t => (byte) t.GetField("OpCode").GetValue(null));
-        }
+            var header = ReadHeader(stream);
+            int dataLen = stream.ReadInt32();
+            if (header["op"][0] != opCode)
+            {
+                stream.Position += dataLen;
+                return null;
+            }
 
-        public static Record? Read(Stream stream, IEnumerable<byte>? allowedOpCodes = null)
-        {
-            var record = ReadRecord(stream, allowedOpCodes);
-            if (record == null) return null;
-            return (Record) Activator.CreateInstance(Records[record.Value.header["op"][0]], record);
+            var res = CreateRecord(header) as TRecord;
+            res!.Data = new byte[dataLen];
+            stream.Read(res!.Data, 0, dataLen);
+            return res;
         }
 
         public static (string name, byte[] data) ReadField(Stream stream)
@@ -39,21 +38,6 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
 
         #region Private
 
-        private static readonly Dictionary<byte, Type> Records;
-
-        private static (Dictionary<string, byte[]> header, byte[] data)? ReadRecord(Stream stream, IEnumerable<byte>? allowedOpCodes = null)
-        {
-            var header = ReadHeader(stream);
-            int dataLen = stream.ReadInt32();
-            if (allowedOpCodes != null && !allowedOpCodes.Contains(header["op"][0]))
-            {
-                stream.Position += dataLen;
-                return null;
-            }
-            var data = stream.ReadBytes(dataLen);
-            return (header, data);
-        }
-
         private static Dictionary<string, byte[]> ReadHeader(Stream stream)
         {
             long startPos = stream.Position;
@@ -67,6 +51,18 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
 
             return header;
         }
+
+        private static Record CreateRecord(Dictionary<string, byte[]> header) =>
+                header["op"][0] switch
+                {
+                    0x02 => new MessageData(header),
+                    0x03 => new BagHeader(header),
+                    0x04 => new IndexData(header),
+                    0x05 => new Chunk(header),
+                    0x06 => new ChunkInfo(header),
+                    0x07 => new Connection(header),
+                    _ => throw new ArgumentOutOfRangeException($"Unknown record op code: {header["op"][0]}"),
+                };
 
         #endregion
     }

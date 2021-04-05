@@ -42,7 +42,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         {
             if (renderer is WindowsFactory factory)
             {
-                factory.GetNewDataRenderer<TRenderer>(Title, (r, window) =>
+                factory.CreateWindow<TRenderer>(Title, (r, window) =>
                 {
                     Renderer = r;
                     Window = window;

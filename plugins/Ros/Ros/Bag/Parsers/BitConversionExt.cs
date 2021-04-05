@@ -14,6 +14,13 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
             return BitConverter.ToInt32(buffer, 0);
         }
         
+        public static long ReadInt64(this Stream data)
+        {
+            var buffer = new byte[8];
+            data.Read(buffer, 0, 8);
+            return BitConverter.ToInt64(buffer, 0);
+        }
+        
         public static byte[] ReadBytes(this Stream data, int count)
         {
             var buffer = new byte[count];

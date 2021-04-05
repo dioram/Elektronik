@@ -54,7 +54,7 @@ namespace Elektronik.RosPlugin.Common.RosMessages
 
         private static RosString ParseStringMessage(Stream data, bool cdr)
         {
-            var tmp = ParseInt32(data, cdr);
+            ParseInt32(data, cdr);
             return new RosString(ParseString(data, cdr));
         }
 

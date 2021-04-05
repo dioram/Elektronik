@@ -15,7 +15,7 @@ namespace Elektronik.UI
     public class SourceTreeElement : MonoBehaviour
     {
         public ISourceTree Node;
-        public Button TreeButton;
+        public ButtonChangingIcons TreeButton;
         public Button WindowButton;
         public ButtonChangingIcons VisibleButton;
         public Button CameraButton;
@@ -37,6 +37,7 @@ namespace Elektronik.UI
         {
             if (_isExpanded)
             {
+                TreeButton.State = 0;
                 _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, MinHeight);
                 _layoutElement.minHeight = MinHeight;
                 _layoutElement.preferredHeight = MinHeight;
@@ -46,6 +47,7 @@ namespace Elektronik.UI
             }
             else
             {
+                TreeButton.State = 1;
                 var expanded = GetExpandedSize(true);
                 _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded);
                 _layoutElement.minHeight = expanded;

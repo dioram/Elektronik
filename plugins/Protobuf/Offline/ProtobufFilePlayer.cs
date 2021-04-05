@@ -38,7 +38,11 @@ namespace Elektronik.Protobuf.Offline
 
         public override string DisplayName => "Protobuf";
 
-        public override string Description => "Reads protobuf packages from file.";
+        public override string Description => "This plugin reads " +
+                "<#7f7fe5><u><link=\"https://developers.google.com/protocol-buffers/\">protobuf</link></u></color>" +
+                " packages from file. You can find documentation for data package format " +
+                "<#7f7fe5><u><link=\"https://github.com/dioram/Elektronik-Tools-2.0/blob/master/docs/Protobuf-EN.md\">" +
+                "here</link></u></color>.";
 
         public override void Start()
         {

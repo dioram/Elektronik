@@ -31,7 +31,7 @@ namespace Elektronik.Protobuf.Data
         {
             if (dataRenderer is WindowsFactory factory)
             {
-                factory.GetNewDataRenderer<ImageRenderer>(DisplayName, (renderer, window) =>
+                factory.CreateWindow<ImageRenderer>(DisplayName, (renderer, window) =>
                 {
                     Renderer = renderer;
                     Window = window;

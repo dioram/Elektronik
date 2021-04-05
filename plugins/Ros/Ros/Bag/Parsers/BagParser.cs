@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Ros.Bag.Parsers.Records;
 
@@ -12,7 +14,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
     {
         private readonly FileStream _file;
         private (int, int)? _version;
-        private List<Connection>? _connections;
+        private readonly List<Connection> _connections = new();
 
         public BagParser(string fileName)
         {
@@ -22,41 +24,45 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
 
         public (int major, int minor) Version => _version ?? ReadVersion();
 
-        public IEnumerable<Record> ReadAll()
-        {
-            _file.Position = 13;
-            while (_file.Position < _file.Length)
-            {
-                var record = RecordsFactory.Read(_file);
-                if (record == null) continue;
-                yield return record;
-            }
-        }
-
         public IEnumerable<Connection> GetTopics()
         {
-            _connections ??= new List<Connection>();
-            _file.Position = 13;
-            while (_file.Position < _file.Length)
+            if (_connections.Count == 0)
             {
-                var record = RecordsFactory.Read(_file, new []{Connection.OpCode}) as Connection;
-                if (record == null) continue;
-                _connections.Add(record);
-                yield return record;
+                _file.Position = 13;
+                while (_file.Position < _file.Length)
+                {
+                    var record = RecordsFactory.Read<Connection>(_file, Connection.OpCode);
+                    if (record == null) continue;
+                    _connections.Add(record);
+                }
             }
+
+            return _connections;
         }
 
-        public IEnumerable<MessageData> ReadMessages()
+        public async IAsyncEnumerable<MessageData> ReadMessagesAsync(IEnumerable<Connection>? topics = null)
         {
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            if (_connections == null) GetTopics().ToList();
-            _file.Position = 13;
-            while (_file.Position < _file.Length)
+            int[]? actualIds = topics?.Select(c => c.Id).ToArray();
+            var actualChunks = GetActualChunks(actualIds);
+            var activeTasks = new ConcurrentQueue<Task<IEnumerable<MessageData>>>();
+
+            var _ = Task.Run(() =>
             {
-                var record = RecordsFactory.Read(_file);
-                if (record is not Chunk chunk) continue;
-                var messages = chunk.Unchunk();
-                foreach (var message in messages)
+                while (actualChunks.Count > 0)
+                {
+                    while (activeTasks.Count < 10)
+                    {
+                        var chunk = actualChunks.Dequeue();
+                        activeTasks.Enqueue(Task.Run(() => ReadAndUnchunk(chunk, actualIds)));
+                    }
+                }
+            });
+
+            while (actualChunks.Count > 0 || activeTasks.Count > 0)
+            {
+                if (!activeTasks.TryDequeue(out var task)) continue;
+                var data = await task;
+                foreach (var message in data)
                 {
                     message.SetTopic(_connections!);
                     yield return message;
@@ -70,6 +76,36 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
         }
 
         #region Private
+
+        private IEnumerable<MessageData> ReadAndUnchunk(long filePos, int[]? allowedTopicIds = null)
+        {
+            Chunk record;
+            lock (_file)
+            {
+                _file.Position = filePos;
+                record = RecordsFactory.Read<Chunk>(_file, Chunk.OpCode)!;
+            }
+
+            return record!.Unchunk(allowedTopicIds);
+        }
+
+        private Queue<long> GetActualChunks(int[]? actualIds = null)
+        {
+            Queue<long> actualChunks = new();
+            _file.Position = 13;
+            while (_file.Position < _file.Length)
+            {
+                var record = RecordsFactory.Read<ChunkInfo>(_file, ChunkInfo.OpCode);
+                if (record == null) continue;
+                if (actualIds == null
+                    || actualIds.Any(id => record.GetIds().Contains(id) && !actualChunks.Contains(record.ChunkPos)))
+                {
+                    actualChunks.Enqueue(record.ChunkPos);
+                }
+            }
+
+            return actualChunks;
+        }
 
         private (int, int) ReadVersion()
         {

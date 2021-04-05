@@ -54,7 +54,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         protected override ISourceTree CreateContainer(string topicName, string topicType)
         {
             var topic = DBModel!.Table<Topic>().First(t => t.Name == topicName);
-            var arr = _timestamps
+            var arr = _timestamps?
                     .Where(data => data.topicId == topic.Id)
                     .Select(data => data.timestamp)
                     .ToArray();
@@ -79,7 +79,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             {"std_msgs/msg/String", typeof(StringDBContainer)},
         };
 
-        private (long timestamp, int topicId)[] _timestamps;
+        private (long timestamp, int topicId)[]? _timestamps;
 
         #endregion
     }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Offline;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros.Bag.Parsers;
+using Elektronik.RosPlugin.Ros.Bag.Parsers.Records;
 using Elektronik.Settings;
 using UnityEngine;
 
@@ -23,7 +23,9 @@ namespace Elektronik.RosPlugin.Ros.Bag
         }
 
         public override string DisplayName => "ROS bag";
-        public override string Description => "This plugins allows Elektronik to read data saved from ROS.";
+        public override string Description => "This plugins allows Elektronik to read data saved from " +
+                "<#7f7fe5><u><link=\"https://www.ros.org\">ROS</link></u></color>" +
+                " using <#7f7fe5><u><link=\"http://wiki.ros.org/rosbag\">rosbag</link></u></color>.";
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
 
@@ -60,8 +62,11 @@ namespace Elektronik.RosPlugin.Ros.Bag
         public override void Start()
         {
             _container.Init(TypedSettings);
-            _startTimestamp = _container.Parser?.ReadMessages().FirstOrDefault()?.Timestamp ?? 0;
-            _frames = new FramesCollection<Frame>(ReadNext);
+            _startTimestamp = _container.Parser?.ReadMessagesAsync().FirstOrDefaultAsync().Result?.Timestamp ?? 0;
+            var actualConnections = _container.Parser?
+                    .GetTopics()
+                    .Where(t => _container.ActualTopics.Select(a => a.Name).Contains(t.Topic));
+            _frames = new FramesAsyncCollection<Frame>(() => ReadNext(actualConnections));
             Converter = new RosConverter();
             Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
             RosMessageConvertExtender.Converter = Converter;
@@ -76,9 +81,9 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         public override void Update(float delta)
         {
+            if (_threadWorker == null || _threadWorker.AmountOfActions > 0) return;
             if (_playing)
             {
-                if (_threadWorker == null) return;
                 NextKeyFrame();
             }
             else if (_rewindAt > 0)
@@ -152,23 +157,23 @@ namespace Elektronik.RosPlugin.Ros.Bag
         #region Private
 
         private readonly RosbagContainerTree _container;
-        private FramesCollection<Frame>? _frames;
+        private FramesAsyncCollection<Frame>? _frames;
         private ThreadWorker? _threadWorker;
         private bool _playing;
         private long _startTimestamp = 0;
         private int _rewindAt = -1;
 
-        private IEnumerator<Frame> ReadNext()
+        private IAsyncEnumerator<Frame> ReadNext(IEnumerable<Connection>? topics)
         {
             return _container.Parser!
-                    .ReadMessages()
+                    .ReadMessagesAsync(topics)
                     .Where(m => m.TopicName is not null && m.TopicType is not null)
                     .Where(m => _container.RealChildren.Keys.Contains(m.TopicName))
-                    .Select(m => (MessageParser.Parse(m.Data, m.TopicType!, false),
+                    .Select(m => (MessageParser.Parse(m.Data!, m.TopicType!, false),
                                   _container.RealChildren[m.TopicName!], m.Timestamp))
                     .Where(data => data.Item1 is not null)
                     .Select(data => new Frame(data.Timestamp, data.Item1!.ToCommand(data.Item2)!))
-                    .GetEnumerator();
+                    .GetAsyncEnumerator();
         }
 
         #endregion
