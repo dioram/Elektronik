@@ -25,7 +25,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         public override void SetRenderer(object renderer)
         {
-            if (renderer is WindowsFactory factory)
+            if (renderer is WindowsManager factory)
             {
                 factory.CreateWindow<TRender>(Title, (r, window) =>
                 {

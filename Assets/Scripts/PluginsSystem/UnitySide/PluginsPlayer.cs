@@ -38,7 +38,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                                    .Where(i => i.IsGenericType)
                                    .Any(i => i.GetGenericTypeDefinition() == typeof(ICloudRenderer<>)))
                     .SelectMany(t => Renderers.GetComponentsInChildren(t))
-                    .Concat(new []{Renderers.transform.Find("Windows").GetComponent<WindowsFactory>()})
+                    .Concat(new []{Renderers.transform.Find("Windows").GetComponent<WindowsManager>()})
                     .ToArray();
             
             foreach (var dataSource in Plugins.OfType<IDataSourcePlugin>())

@@ -40,7 +40,7 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         public void SetRenderer(object renderer)
         {
-            if (renderer is WindowsFactory factory)
+            if (renderer is WindowsManager factory)
             {
                 factory.CreateWindow<TRenderer>(Title, (r, window) =>
                 {

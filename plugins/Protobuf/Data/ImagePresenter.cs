@@ -29,7 +29,7 @@ namespace Elektronik.Protobuf.Data
 
         public void SetRenderer(object dataRenderer)
         {
-            if (dataRenderer is WindowsFactory factory)
+            if (dataRenderer is WindowsManager factory)
             {
                 factory.CreateWindow<ImageRenderer>(DisplayName, (renderer, window) =>
                 {

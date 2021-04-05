@@ -88,8 +88,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b9bb96da2c447692769197968ce3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Edge: 2
+  Side: 2
   ResizeTarget: {fileID: 0}
+  Manager: {fileID: 0}
 --- !u!1 &1401536463182920682
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,8 +179,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b9bb96da2c447692769197968ce3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Edge: 9
+  Side: 9
   ResizeTarget: {fileID: 0}
+  Manager: {fileID: 0}
 --- !u!1 &2270593155093918805
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,8 +270,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b9bb96da2c447692769197968ce3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Edge: 1
+  Side: 1
   ResizeTarget: {fileID: 0}
+  Manager: {fileID: 0}
 --- !u!1 &2836171263188791087
 GameObject:
   m_ObjectHideFlags: 0
@@ -358,8 +361,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b9bb96da2c447692769197968ce3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Edge: 6
+  Side: 6
   ResizeTarget: {fileID: 0}
+  Manager: {fileID: 0}
 --- !u!1 &3721444697488748641
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,7 +374,7 @@ GameObject:
   m_Component:
   - component: {fileID: 519396921173571282}
   m_Layer: 0
-  m_Name: Edges
+  m_Name: Resizing Edges
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -491,8 +495,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b9bb96da2c447692769197968ce3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Edge: 3
+  Side: 3
   ResizeTarget: {fileID: 0}
+  Manager: {fileID: 0}
 --- !u!1 &4319958426384509303
 GameObject:
   m_ObjectHideFlags: 0
@@ -581,8 +586,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b9bb96da2c447692769197968ce3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Edge: 8
+  Side: 8
   ResizeTarget: {fileID: 0}
+  Manager: {fileID: 0}
 --- !u!1 &5004319930583444929
 GameObject:
   m_ObjectHideFlags: 0
@@ -671,8 +677,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b9bb96da2c447692769197968ce3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Edge: 12
+  Side: 12
   ResizeTarget: {fileID: 0}
+  Manager: {fileID: 0}
 --- !u!1 &6675775284324720127
 GameObject:
   m_ObjectHideFlags: 0
@@ -761,5 +768,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b9bb96da2c447692769197968ce3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Edge: 4
+  Side: 4
   ResizeTarget: {fileID: 0}
+  Manager: {fileID: 0}

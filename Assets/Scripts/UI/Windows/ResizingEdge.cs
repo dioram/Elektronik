@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
-using UniRx;
-using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -21,15 +18,14 @@ namespace Elektronik.UI.Windows
             Left = 8,
         }
 
-        public EdgeSide Edge;
+        public EdgeSide Side;
         public RectTransform ResizeTarget;
-        [CanBeNull] public RectTransform CollidedWindow;
+        public WindowsManager Manager;
 
         #region Unity event functions
 
         private void Start()
         {
-            _collider = GetComponent<BoxCollider2D>();
             var window = ResizeTarget.GetComponent<Window>();
             _minHeight = window.MinHeight;
             _minWidth = window.MinWidth;
@@ -41,38 +37,28 @@ namespace Elektronik.UI.Windows
             }
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            CollidedWindow = (RectTransform) other.transform;
-        }
-
-        private void OnTriggerExit2D(Collider2D other)
-        {
-            CollidedWindow = null;
-        }
-
         private void Update()
         {
             if (!_hovered) return;
-            if (((Edge & (EdgeSide.Left | EdgeSide.Top)) == (EdgeSide.Left | EdgeSide.Top))
-                || ((Edge & (EdgeSide.Right | EdgeSide.Bottom)) == (EdgeSide.Right | EdgeSide.Bottom)))
+            if (((Side & (EdgeSide.Left | EdgeSide.Top)) == (EdgeSide.Left | EdgeSide.Top))
+                || ((Side & (EdgeSide.Right | EdgeSide.Bottom)) == (EdgeSide.Right | EdgeSide.Bottom)))
             {
                 SetCursor(LoadCursor(IntPtr.Zero,
                                      (int) WindowsCursors.DoublePointedArrowPointingNorthwestAndSoutheast));
             }
-            else if (((Edge & (EdgeSide.Left | EdgeSide.Bottom)) == (EdgeSide.Left | EdgeSide.Bottom))
-                || ((Edge & (EdgeSide.Right | EdgeSide.Top)) == (EdgeSide.Right | EdgeSide.Top)))
+            else if (((Side & (EdgeSide.Left | EdgeSide.Bottom)) == (EdgeSide.Left | EdgeSide.Bottom))
+                || ((Side & (EdgeSide.Right | EdgeSide.Top)) == (EdgeSide.Right | EdgeSide.Top)))
             {
                 SetCursor(LoadCursor(IntPtr.Zero,
                                      (int) WindowsCursors.DoublePointedArrowPointingNortheastAndSouthwest));
             }
-            else if (((Edge & EdgeSide.Top) == EdgeSide.Top)
-                || ((Edge & EdgeSide.Bottom) == EdgeSide.Bottom))
+            else if (((Side & EdgeSide.Top) == EdgeSide.Top)
+                || ((Side & EdgeSide.Bottom) == EdgeSide.Bottom))
             {
                 SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.DoublePointedArrowPointingNorthAndSouth));
             }
-            else if (((Edge & EdgeSide.Left) == EdgeSide.Left)
-                || ((Edge & EdgeSide.Right) == EdgeSide.Right))
+            else if (((Side & EdgeSide.Left) == EdgeSide.Left)
+                || ((Side & EdgeSide.Right) == EdgeSide.Right))
             {
                 SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.DoublePointedArrowPointingWestAndEast));
             }
@@ -87,26 +73,62 @@ namespace Elektronik.UI.Windows
             var newPos = ResizeTarget.anchoredPosition;
             var newHeight = ResizeTarget.rect.height;
             var newWidth = ResizeTarget.rect.width;
-            if ((Edge & EdgeSide.Top) == EdgeSide.Top)
+            if ((Side & EdgeSide.Top) == EdgeSide.Top)
             {
-                newPos.y += eventData.delta.y / _canvas.scaleFactor;
-                newHeight += eventData.delta.y / _canvas.scaleFactor;
+                var topAligns = Manager.NearestAlign(WindowsManager.Direction.Horizontal, newPos.y);
+                if (topAligns.Length > 0)
+                {
+                    newHeight += topAligns.First() - newPos.y;
+                    newPos.y = topAligns.First();
+                }
+                else
+                {
+                    newPos.y += eventData.delta.y / _canvas.scaleFactor;
+                    newHeight += eventData.delta.y / _canvas.scaleFactor;
+                }
             }
 
-            if ((Edge & EdgeSide.Bottom) == EdgeSide.Bottom)
+            if ((Side & EdgeSide.Bottom) == EdgeSide.Bottom)
             {
-                newHeight -= eventData.delta.y / _canvas.scaleFactor;
+                var bottom = ResizeTarget.anchoredPosition.y - ResizeTarget.sizeDelta.y;
+                var bottomAligns = Manager.NearestAlign(WindowsManager.Direction.Horizontal, bottom);
+                if (bottomAligns.Length > 0)
+                {
+                    newHeight += bottom - bottomAligns.First();
+                }
+                else
+                {
+                    newHeight -= eventData.delta.y / _canvas.scaleFactor;
+                }
             }
 
-            if ((Edge & EdgeSide.Left) == EdgeSide.Left)
+            if ((Side & EdgeSide.Left) == EdgeSide.Left)
             {
-                newPos.x += eventData.delta.x / _canvas.scaleFactor;
-                newWidth -= eventData.delta.x / _canvas.scaleFactor;
+                var leftAligns = Manager.NearestAlign(WindowsManager.Direction.Vertical, newPos.x);
+                if (leftAligns.Length > 0)
+                {
+                    newWidth -= leftAligns.First() - newPos.x;
+                    newPos.x = leftAligns.First();
+                }
+                else
+                {
+                    newPos.x += eventData.delta.x / _canvas.scaleFactor;
+                    newWidth -= eventData.delta.x / _canvas.scaleFactor;
+                }
             }
 
-            if ((Edge & EdgeSide.Right) == EdgeSide.Right)
+            if ((Side & EdgeSide.Right) == EdgeSide.Right)
             {
-                newWidth += eventData.delta.x / _canvas.scaleFactor;
+                var right = ResizeTarget.anchoredPosition.x + ResizeTarget.sizeDelta.x;
+                var rightAligns = Manager.NearestAlign(WindowsManager.Direction.Vertical, right);
+                if (rightAligns.Length > 0)
+                {
+                    newWidth += right - rightAligns.First();
+                }
+                else
+                {
+                    newWidth += eventData.delta.x / _canvas.scaleFactor;
+                }
             }
 
             if (newHeight < _minHeight || newWidth < _minWidth) return;
@@ -137,7 +159,6 @@ namespace Elektronik.UI.Windows
 
         #region Private
 
-        private BoxCollider2D _collider;
         private Canvas _canvas;
         private float _minHeight;
         private float _minWidth;

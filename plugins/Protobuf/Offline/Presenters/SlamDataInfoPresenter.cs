@@ -31,7 +31,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public void SetRenderer(object dataRenderer)
         {
-            if (dataRenderer is WindowsFactory factory)
+            if (dataRenderer is WindowsManager factory)
             {
                 factory.CreateWindow<SlamInfoRenderer>(DisplayName, (renderer, window) =>
                 {

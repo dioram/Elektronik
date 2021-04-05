@@ -42,6 +42,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
 
         public async IAsyncEnumerable<MessageData> ReadMessagesAsync(IEnumerable<Connection>? topics = null)
         {
+            var connections = GetTopics().ToList();
             int[]? actualIds = topics?.Select(c => c.Id).ToArray();
             var actualChunks = GetActualChunks(actualIds);
             var activeTasks = new ConcurrentQueue<Task<IEnumerable<MessageData>>>();
@@ -64,7 +65,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
                 var data = await task;
                 foreach (var message in data)
                 {
-                    message.SetTopic(_connections!);
+                    message.SetTopic(connections);
                     yield return message;
                 }
             }

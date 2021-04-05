@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,8 +12,6 @@ namespace Elektronik.UI.Windows
         public float MinHeight = 40;
         public float MinWidth = 80;
         public string Title;
-
-        public IEnumerable<RectTransform> Collisions => _edges.Select(e => e.CollidedWindow).Where(w => w != null);
 
         public void Show()
         {
@@ -36,7 +32,6 @@ namespace Elektronik.UI.Windows
         {
             _header = transform.Find("Header").GetComponent<Image>();
             _titleLabel = transform.Find("Header/Title").GetComponent<TMP_Text>();
-            _edges = GetComponentsInChildren<ResizingEdge>();
             if (!string.IsNullOrEmpty(Title))
             {
                 _titleLabel.text = Title;
@@ -60,7 +55,6 @@ namespace Elektronik.UI.Windows
         [SerializeField] private Color BaseHeaderColor = new Color(1, 1, 1, 0.5f);
         [SerializeField] private Color HighlightHeaderColor = Color.blue;
         private TMP_Text _titleLabel;
-        private ResizingEdge[] _edges;
 
         private IEnumerator HighlightHeader()
         {

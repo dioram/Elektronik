@@ -8,7 +8,7 @@ namespace Elektronik.UI
 {
     public class ObservationToolTip : MonoBehaviour
     {
-        [SerializeField] private WindowsFactory Factory;
+        [SerializeField] private WindowsManager Manager;
         private Camera _camera;
         private ObservationViewer _floatingViewer;
         private readonly List<Window> _pinnedViewers = new List<Window>();
@@ -16,7 +16,7 @@ namespace Elektronik.UI
         void Start()
         {
             _camera = Camera.main;
-            Factory.CreateWindow<ObservationViewer>($"", (viewer, window) =>
+            Manager.CreateWindow<ObservationViewer>($"", (viewer, window) =>
             {
                 _floatingViewer = viewer;
                 viewer.Hide();
@@ -32,7 +32,7 @@ namespace Elektronik.UI
                 var title = $"Observation #{data.Data.Id}";
                 if (Input.GetMouseButton(0) && !_pinnedViewers.Exists(v => v.GetComponent<Window>().Title == title))
                 {
-                    Factory.CreateWindow<ObservationViewer>(title, (viewer, window) =>
+                    Manager.CreateWindow<ObservationViewer>(title, (viewer, window) =>
                     {
                         viewer.Render(data);
                         _pinnedViewers.Add(window);
