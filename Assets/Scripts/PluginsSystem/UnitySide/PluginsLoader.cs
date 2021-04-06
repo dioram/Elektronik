@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Elektronik.PluginsSystem.UnitySide
 {
@@ -24,7 +25,8 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         static PluginsLoader()
         {
-            var pluginsDir = Path.Combine(Directory.GetCurrentDirectory(), @"Plugins");
+            var currentDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+            var pluginsDir = Path.Combine(currentDir, @"Plugins");
             var dlls = Directory.GetDirectories(pluginsDir)
                     .Select(d => Path.Combine(d, "libraries"))
                     .Where(Directory.Exists)
@@ -45,6 +47,26 @@ namespace Elektronik.PluginsSystem.UnitySide
                     Debug.LogError(file);
                 }
             }
+
+            SetupContextMenu(Environment.GetCommandLineArgs()[0]);
+        }
+
+        private static void SetupContextMenu(string elektronikExe)
+        {
+#if UNITY_STANDALONE_WIN
+            var setter = new Process
+            {
+                StartInfo =
+                {
+                    FileName = Path.Combine(Path.GetDirectoryName(elektronikExe)!,
+                                            @"Plugins\ContextMenuSetter\ContextMenuSetter.exe"),
+                    Arguments = elektronikExe + " " + string.Join(" ",
+                                                                  Plugins.OfType<IDataSourcePluginOffline>()
+                                                                          .SelectMany(p => p.SupportedExtensions))
+                }
+            };
+            setter.Start();
+#endif
         }
 
         private static T InstantiatePlugin<T>(Type t) where T : class
