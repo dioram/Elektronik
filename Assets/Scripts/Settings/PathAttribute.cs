@@ -12,9 +12,12 @@ namespace Elektronik.Settings
 
         public readonly PathTypes PathType;
 
-        public PathAttribute(PathTypes pathType)
+        public readonly string[] Extensions;
+
+        public PathAttribute(PathTypes pathType, string[] extensions)
         {
             PathType = pathType;
+            Extensions = extensions;
         }
     }
 }

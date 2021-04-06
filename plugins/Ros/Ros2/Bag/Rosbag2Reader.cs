@@ -4,12 +4,11 @@ using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Containers;
-using Elektronik.Settings;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag
 {
-    public class Rosbag2Reader : DataSourcePluginBase<FileScaleSettingsBag>, IDataSourcePluginOffline
+    public class Rosbag2Reader : DataSourcePluginBase<Rosbag2Settings>, IDataSourcePluginOffline
     {
         public Rosbag2Reader()
         {
@@ -118,8 +117,10 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public int AmountOfFrames => _actualTimestamps?.Length ?? 0;
 
-        public int CurrentTimestamp =>
-                (int) ((_actualTimestamps?[CurrentPosition] - _actualTimestamps?[0] ?? 0) / 1000);
+        public string CurrentTimestamp =>
+                $"{(_actualTimestamps?[CurrentPosition] - _actualTimestamps?[0] ?? 0) / 1000000000f:F3}";
+
+        public string[] SupportedExtensions { get; } = {".db3"};
 
         public int CurrentPosition
         {

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Elektronik.Settings;
 using UniRx;
+using UniRx.Async;
 using UnityEngine.UI;
 
 namespace Elektronik.UI.Fields
@@ -12,10 +14,15 @@ namespace Elektronik.UI.Fields
 
         protected override void Start()
         {
+            var input = GetComponent<InputWithBrowse>();
             base.Start();
-            if (IsDirectory())
+            if (input != null && IsDirectory())
             {
-                GetComponent<InputWithBrowse>().folderMode = true;
+                input.folderMode = true;
+            }
+            else if (input != null)
+            {
+                input.filters = SettingsBag.GetType().GetField(FieldName).GetCustomAttribute<PathAttribute>().Extensions;
             }
 
             Field.OnValueChangedAsObservable().Subscribe(OnTextChanged);

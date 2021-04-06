@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Elektronik.Extensions;
 using Elektronik.Offline;
@@ -8,6 +9,7 @@ using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
+using Elektronik.Settings;
 using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline
@@ -31,7 +33,6 @@ namespace Elektronik.Protobuf.Offline
                 new TrackedObjectsParser(_containerTree.TrackedObjs),
                 new InfoParser(_containerTree.SpecialInfo),
             }.BuildChain();
-
         }
 
         #region IDataSourceOffline
@@ -81,7 +82,8 @@ namespace Elektronik.Protobuf.Offline
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
 
-        public int CurrentTimestamp => _frames?.Current?.Timestamp ?? 0;
+        public string CurrentTimestamp => $"{_frames?.Current?.Timestamp ?? 0}";
+        public string[] SupportedExtensions { get; } = {".dat"};
 
         public int CurrentPosition
         {
@@ -119,6 +121,7 @@ namespace Elektronik.Protobuf.Offline
                 {
                     if (!PreviousFrame()) break;
                 } while (!_frames?.Current?.IsSpecial ?? false);
+
                 if (!_frames?.MovePrevious() ?? false) _frames?.SoftReset();
             });
         }

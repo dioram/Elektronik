@@ -15,7 +15,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         {
         }
 
-        public void Init(FileScaleSettingsBag settings)
+        public void Init(Rosbag2Settings settings)
         {
             DisplayName = settings.FilePath.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
             DBModel = new SQLiteConnection(settings.FilePath, SQLiteOpenFlags.ReadOnly);

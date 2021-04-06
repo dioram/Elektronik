@@ -1,8 +1,8 @@
 using System.Linq;
 using Elektronik.RosPlugin.Common.Containers;
+using Elektronik.RosPlugin.Ros2.Bag;
 using Elektronik.RosPlugin.Ros2.Bag.Containers;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
-using Elektronik.Settings;
 using NUnit.Framework;
 
 namespace Elektronik.Ros.Tests.Rosbag2
@@ -14,7 +14,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
         [SetUp]
         public void Setup()
         {
-            _tree.Init(new FileScaleSettingsBag() {FilePath = @"test_db.db3"});
+            _tree.Init(new Rosbag2Settings() {FilePath = @"test_db.db3"});
         }
 
         [Test]

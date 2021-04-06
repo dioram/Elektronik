@@ -8,10 +8,10 @@ namespace Elektronik.Protobuf.Offline
     [Serializable]
     public class OfflineSettingsBag : SettingsBag
     {
-        [CheckForEquals, Path(PathAttribute.PathTypes.File), Tooltip("Choose file path:")]
+        [CheckForEquals, Path(PathAttribute.PathTypes.File, new[] {".bag"}), Tooltip("Choose file path:")]
         public string FilePath;
 
-        [CheckForEquals, Path(PathAttribute.PathTypes.Directory), Tooltip("Choose path ot images:")]
+        [CheckForEquals, Path(PathAttribute.PathTypes.Directory, new[] {""}), Tooltip("Choose path ot images:")]
         public string ImagePath;
 
         public float Scale = 10;

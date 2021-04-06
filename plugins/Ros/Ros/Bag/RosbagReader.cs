@@ -6,12 +6,11 @@ using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros.Bag.Parsers;
 using Elektronik.RosPlugin.Ros.Bag.Parsers.Records;
-using Elektronik.Settings;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Bag
 {
-    public class RosbagReader : DataSourcePluginBase<FileScaleSettingsBag>, IDataSourcePluginOffline
+    public class RosbagReader : DataSourcePluginBase<RosbagSettings>, IDataSourcePluginOffline
     {
         #region IDataSourceOffline
 
@@ -23,13 +22,14 @@ namespace Elektronik.RosPlugin.Ros.Bag
         }
 
         public override string DisplayName => "ROS bag";
+
         public override string Description => "This plugins allows Elektronik to read data saved from " +
                 "<#7f7fe5><u><link=\"https://www.ros.org\">ROS</link></u></color>" +
                 " using <#7f7fe5><u><link=\"http://wiki.ros.org/rosbag\">rosbag</link></u></color>.";
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
 
-        public int CurrentTimestamp
+        public string CurrentTimestamp
         {
             get
             {
@@ -41,10 +41,12 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 var ss = (int) s; // secs
                 var sn = (int) (s >> 32); // nanosecs
                 var rs = ts - ss;
-                var rn = tn - sn;
-                return rs * 1000000 + rn / 1000;
+                var rn = (tn - sn)/1000000;
+                return $"{rs}.{rn:000}";
             }
         }
+
+        public string[] SupportedExtensions { get; } = {".bag"};
 
         public int CurrentPosition
         {

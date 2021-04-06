@@ -9,7 +9,10 @@ namespace Elektronik.PluginsSystem
         int AmountOfFrames { get; }
 
         /// <summary> Displaying timestamp of current frame. </summary>
-        int CurrentTimestamp { get; }
+        string CurrentTimestamp { get; }
+        
+        /// <summary> Array of supported file extensions for this plugin. </summary>
+        string[] SupportedExtensions { get; }
 
         /// <summary> Number of current frame. </summary>
         int CurrentPosition { get; set; }

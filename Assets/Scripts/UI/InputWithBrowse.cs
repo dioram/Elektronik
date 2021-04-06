@@ -28,6 +28,7 @@ namespace Elektronik.UI
 
         void Browse()
         {
+            FileBrowser.SetFilters(true, filters);
             FileBrowser.ShowLoadDialog(path => _ifFilePath.text = path[0],
                                        () => { },
                                        folderMode,

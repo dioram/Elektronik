@@ -26,7 +26,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
         {
         }
 
-        public void Init(FileScaleSettingsBag settings)
+        public void Init(RosbagSettings settings)
         {
             DisplayName = settings.FilePath.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
             Parser = new BagParser(settings.FilePath);
