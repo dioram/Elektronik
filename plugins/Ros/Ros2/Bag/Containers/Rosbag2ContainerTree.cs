@@ -4,7 +4,6 @@ using System.Linq;
 using Elektronik.Containers;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
-using Elektronik.Settings;
 using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
@@ -58,7 +57,17 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
                     .Where(data => data.topicId == topic.Id)
                     .Select(data => data.timestamp)
                     .ToArray();
-            return (ISourceTree) Activator.CreateInstance(SupportedMessages[topic.Type],
+            
+            if (SupportedMessages.ContainsKey(topicType))
+            {
+                return (ISourceTree) Activator.CreateInstance(SupportedMessages[topic.Type],
+                                                              topicName.Split('/').Last(),
+                                                              DBModel,
+                                                              topic,
+                                                              arr);
+            }
+            
+            return (ISourceTree) Activator.CreateInstance(SupportedMessages["*"],
                                                           topicName.Split('/').Last(),
                                                           DBModel,
                                                           topic,
@@ -77,6 +86,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             {"visualization_msgs/msg/MarkerArray", typeof(VisualisationMarkersDBContainer)},
             {"sensor_msgs/msg/Image", typeof(ImageDBContainer)},
             {"std_msgs/msg/String", typeof(StringDBContainer)},
+            {"*", typeof(UnknownTypeDBContainer)}
         };
 
         private (long timestamp, int topicId)[]? _timestamps;

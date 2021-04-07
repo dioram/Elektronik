@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Elektronik.Extensions;
 using Elektronik.Offline;
@@ -9,7 +8,6 @@ using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
-using Elektronik.Settings;
 using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline

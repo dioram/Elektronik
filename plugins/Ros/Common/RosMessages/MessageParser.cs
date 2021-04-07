@@ -1,133 +1,58 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using RosSharp.RosBridgeClient.MessageTypes.Geometry;
-using RosSharp.RosBridgeClient.MessageTypes.Nav;
-using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
 using RosMessage = RosSharp.RosBridgeClient.Message;
-using Path = RosSharp.RosBridgeClient.MessageTypes.Nav.Path;
 using RosString = RosSharp.RosBridgeClient.MessageTypes.Std.String;
-using UInt32 = System.UInt32;
 
 namespace Elektronik.RosPlugin.Common.RosMessages
 {
-    public static class MessageParser
+    public static partial class MessageParser
     {
+        private static readonly Dictionary<string, Func<Stream, bool, RosMessage>> Parsers = new()
+        {
+            {"std_msgs/msg/String", ParseStringMessage},
+            {"std_msgs/String", ParseStringMessage},
+            {"visualization_msgs/msg/MarkerArray", ParseMarkerArray},
+            {"visualization_msgs/MarkerArray", ParseMarkerArray},
+        };
+
         public static RosMessage? Parse(byte[] data, string topic, bool cdr)
         {
             MemoryStream memoryStream = new(data);
             memoryStream.Position = 0;
-            switch (topic)
-            {
-            case "geometry_msgs/msg/PoseStamped":
-            case "geometry_msgs/PoseStamped":
-                return ParsePoseStamped(memoryStream, cdr);
-            case "nav_msgs/msg/Odometry":
-            case "nav_msgs/Odometry":
-                return ParseOdometry(memoryStream, cdr);
-            case "sensor_msgs/msg/Imu":
-            case "sensor_msgs/Imu":
-                return ParseImu(memoryStream, cdr);
-            case "nav_msgs/msg/Path":
-            case "nav_msgs/Path":
-                return ParsePath(memoryStream, cdr);
-            case "sensor_msgs/msg/PointCloud2":
-            case "sensor_msgs/PointCloud2":
-                return ParsePointCloud2(memoryStream, cdr);
-            case "visualization_msgs/msg/MarkerArray":
-            case "visualization_msgs/MarkerArray":
-                return ParseMarkerArray(memoryStream, cdr);
-            case "sensor_msgs/msg/Image":
-            case "sensor_msgs/Image":
-                return ParseImage(memoryStream, cdr);
-            case "geometry_msgs/msg/TransformStamped":
-            case "geometry_msgs/TransformStamped":
-                return ParseTransformStamped(memoryStream, cdr);
-            case "std_msgs/msg/String":
-            case "std_msgs/String":
-                return ParseStringMessage(memoryStream, cdr);
-            default:
-                return null;
-            }
+            ParseInt32(memoryStream, cdr);
+            return Parsers.ContainsKey(topic) ? Parsers[topic](memoryStream, cdr) : null;
         }
 
         private static RosString ParseStringMessage(Stream data, bool cdr)
-        {
-            ParseInt32(data, cdr);
-            return new RosString(ParseString(data, cdr));
-        }
-
-        private static TransformStamped ParseTransformStamped(Stream data, bool cdr)
-        {
-            return new TransformStamped(ParseHeader(data, cdr), ParseString(data, cdr), ParseTransform(data, cdr));
-        }
-
-        private static Transform ParseTransform(Stream data, bool cdr)
-        {
-            return new Transform(ParseVector3(data, cdr), ParseQuaternion(data, cdr));
-        }
-
-        private static PointCloud2 ParsePointCloud2(Stream data, bool cdr)
-        {
-            var header = ParseHeader(data, cdr);
-            var height = ParseUInt32(data, cdr);
-            var width = ParseUInt32(data, cdr);
-            var fields = ParseArray(data, ParsePointField, cdr);
-            var isBigEndian = ParseBool(data, cdr);
-            var pointStep = ParseUInt32(data, cdr);
-            var rowStep = ParseUInt32(data, cdr);
-            var pointData = ParseByteArray(data, cdr);
-            var isDense = ParseBool(data, cdr);
-            return new PointCloud2(header, height, width, fields, isBigEndian, pointStep, rowStep, pointData, isDense);
-        }
-
-        private static Image ParseImage(Stream data, bool cdr)
-        {
-            return new Image(ParseHeader(data, cdr),
-                             ParseUInt32(data, cdr),
-                             ParseUInt32(data, cdr),
-                             ParseString(data, cdr),
-                             (byte) data.ReadByte(),
-                             ParseUInt32(data, cdr),
-                             ParseByteArray(data, cdr));
-        }
+            => new(ParseString(data, cdr));
 
         private static MarkerArray ParseMarkerArray(Stream data, bool cdr)
-        {
-            ParseUInt32(data, cdr);
-            return new MarkerArray {Markers = ParseArray(data, ParseMarker, cdr)};
-        }
+            => new MarkerArray {Markers = ParseArray(data, ParseMarker, cdr)};
 
-        private static Marker ParseMarker(Stream data, bool cdr)
-        {
-            return new Marker
-            {
-                Header = ParseHeader(data, cdr, true),
-                Ns = ParseString(data, cdr),
-                Id = ParseInt32(data, cdr),
-                Form = (Marker.MarkerForm) ParseUInt32(data, cdr),
-                Action = (Marker.MarkerAction) ParseUInt32(data, cdr),
-                Pose = ParsePose(data, cdr),
-                Scale = ParseVector3(data, cdr),
-                Color = ParseColor(data, cdr),
-                Lifetime = ParseTime(data, cdr),
-                FrameLocked = ParseBool(data, cdr),
-                Points = ParseArray(data, ParsePoint, cdr),
-                Colors = ParseArray(data, ParseColor, cdr),
-                Text = ParseString(data, cdr),
-                MeshResource = ParseString(data, cdr),
-                MeshUseEmbeddedMaterials = ParseBool(data, cdr),
-            };
-        }
-
-        private static byte[] ParseByteArray(Stream data, bool cdr)
-        {
-            var amount = ParseInt32(data, cdr);
-            var bytes = new byte[amount];
-            data.Read(bytes, 0, amount);
-            return bytes;
-        }
+        private static Marker ParseMarker(Stream data, bool cdr) =>
+                new Marker
+                {
+                    Header = ParseHeader(data, cdr),
+                    Ns = ParseString(data, cdr),
+                    Id = ParseInt32(data, cdr),
+                    Form = (Marker.MarkerForm) ParseUInt32(data, cdr),
+                    Action = (Marker.MarkerAction) ParseUInt32(data, cdr),
+                    Pose = ParsePose(data, cdr),
+                    Scale = ParseVector3(data, cdr),
+                    Color = ParseColorRGBA(data, cdr),
+                    Lifetime = ParseTime(data, cdr),
+                    FrameLocked = ParseBoolean(data, cdr),
+                    Points = ParseArray(data, ParsePoint, cdr),
+                    Colors = ParseArray(data, ParseColorRGBA, cdr),
+                    Text = ParseString(data, cdr),
+                    MeshResource = ParseString(data, cdr),
+                    MeshUseEmbeddedMaterials = ParseBoolean(data, cdr),
+                };
+        
+        private static byte[] ParseByteArray(Stream data, bool cdr) => ReadBytes(ParseInt32(data, cdr), data, false);
 
         private static T[] ParseArray<T>(Stream data, Func<Stream, bool, T> parser, bool cdr)
         {
@@ -152,154 +77,47 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             return objs;
         }
 
-        private static ColorRGBA ParseColor(Stream data, bool cdr)
-        {
-            return new(ParseFloat32(data, cdr), ParseFloat32(data, cdr), ParseFloat32(data, cdr),
-                       ParseFloat32(data, cdr));
-        }
-
-        private static PointField ParsePointField(Stream data, bool cdr)
-        {
-            return new PointField(ParseString(data, cdr), ParseUInt32(data, cdr), (byte) data.ReadByte(),
-                                  ParseUInt32(data, cdr));
-        }
-
-        private static Path ParsePath(Stream data, bool cdr)
-        {
-            var header = ParseHeader(data, cdr);
-            var amount = (int) ParseUInt32(data, cdr);
-            var poses = new PoseStamped[amount];
-            poses[0] = ParsePoseStamped(data, true, true);
-            for (int i = 1; i < amount; i++)
-            {
-                poses[i] = ParsePoseStamped(data, true);
-            }
-
-            return new Path(header, poses);
-        }
-
-        private static Imu ParseImu(Stream data, bool cdr)
-        {
-            return new Imu(ParseHeader(data, cdr), ParseQuaternion(data, cdr), ParseArray(data, 9, ParseFloat64, cdr),
-                           ParseVector3(data, cdr), ParseArray(data, 9, ParseFloat64, cdr), ParseVector3(data, cdr),
-                           ParseArray(data, 9, ParseFloat64, cdr));
-        }
-
-        private static Odometry ParseOdometry(Stream data, bool cdr)
-        {
-            return new Odometry(ParseHeader(data, cdr), ParseString(data, cdr), ParsePoseWithCovariance(data, cdr),
-                                ParseTwistWithCovariance(data, cdr));
-        }
-
-        private static PoseStamped ParsePoseStamped(Stream data, bool cdr, bool noSeq = false,
-                                                    bool strangeHeader = false)
-        {
-            return new PoseStamped(ParseHeader(data, cdr, noSeq, strangeHeader), ParsePose(data, cdr));
-        }
-
-        private static Header ParseHeader(Stream data, bool cdr, bool noSeq = false, bool strangeHeader = false)
-        {
-            switch (noSeq)
-            {
-            case true when strangeHeader:
-            {
-                var time = ParseTime(data, cdr);
-                var str = ParseString(data, cdr);
-                var _ = ParseUInt32(data, cdr);
-                return new Header(0, time, str);
-            }
-            case true:
-                return new Header(0, ParseTime(data, cdr), ParseString(data, cdr));
-            default:
-                return new Header(ParseUInt32(data, cdr), ParseTime(data, cdr), ParseString(data, cdr));
-            }
-        }
-
-        private static PoseWithCovariance ParsePoseWithCovariance(Stream data, bool cdr)
-        {
-            return new PoseWithCovariance(ParsePose(data, cdr), ParseArray(data, 36, ParseFloat64, cdr));
-        }
-
-        private static Pose ParsePose(Stream data, bool cdr)
-        {
-            return new Pose(ParsePoint(data, cdr), ParseQuaternion(data, cdr));
-        }
-
-        private static TwistWithCovariance ParseTwistWithCovariance(Stream data, bool cdr)
-        {
-            return new TwistWithCovariance(ParseTwist(data, cdr), ParseArray(data, 36, ParseFloat64, cdr));
-        }
-
-        private static Twist ParseTwist(Stream data, bool cdr)
-        {
-            return new Twist(ParseVector3(data, cdr), ParseVector3(data, cdr));
-        }
-
-        private static Point ParsePoint(Stream data, bool cdr)
-        {
-            return new Point(ParseFloat64(data, cdr), ParseFloat64(data, cdr), ParseFloat64(data, cdr));
-        }
-
-        private static Vector3 ParseVector3(Stream data, bool cdr)
-        {
-            return new Vector3(ParseFloat64(data, cdr), ParseFloat64(data, cdr), ParseFloat64(data, cdr));
-        }
-
-        private static Quaternion ParseQuaternion(Stream data, bool cdr)
-        {
-            return new Quaternion(ParseFloat64(data, cdr), ParseFloat64(data, cdr), ParseFloat64(data, cdr),
-                                  ParseFloat64(data, cdr));
-        }
-
-        private static Time ParseTime(Stream data, bool cdr)
-        {
-            return new Time(ParseUInt32(data, cdr), ParseUInt32(data, cdr));
-        }
-
         private static string ParseString(Stream data, bool cdr)
         {
-            var len = ParseInt32(data, cdr);
-            var str = new byte[len];
-            data.Read(str, 0, len);
-            return Encoding.UTF8.GetString(str).TrimEnd('\0');
+            return Encoding.UTF8.GetString(ReadBytes(ParseInt32(data, cdr), data, false)).TrimEnd('\0');
         }
 
-        private static int ParseInt32(Stream data, bool cdr)
+        private static Header ParseHeader(Stream data, bool cdr)
         {
-            if (cdr) Align(data, 4);
-            var buffer = new byte[4];
-            data.Read(buffer, 0, 4);
-            return BitConverter.ToInt32(buffer, 0);
+            return new(0, ParseTime(data, cdr), ParseString(data, cdr));
         }
 
-        private static UInt32 ParseUInt32(Stream data, bool cdr)
-        {
-            if (cdr) Align(data, 4);
-            var buffer = new byte[4];
-            data.Read(buffer, 0, 4);
-            return BitConverter.ToUInt32(buffer, 0);
-        }
+        private static short ParseInt16(Stream data, bool cdr) => BitConverter.ToInt16(ReadBytes(2, data, cdr), 0);
 
-        private static float ParseFloat32(Stream data, bool cdr)
-        {
-            if (cdr) Align(data, 4);
-            var buffer = new byte[4];
-            data.Read(buffer, 0, 4);
-            return BitConverter.ToSingle(buffer, 0);
-        }
+        private static ushort ParseUInt16(Stream data, bool cdr) => BitConverter.ToUInt16(ReadBytes(2, data, cdr), 0);
 
-        private static double ParseFloat64(Stream data, bool cdr)
-        {
-            if (cdr) Align(data, 8);
-            var buffer = new byte[8];
-            data.Read(buffer, 0, 8);
-            return BitConverter.ToDouble(buffer, 0);
-        }
+        private static int ParseInt32(Stream data, bool cdr) => BitConverter.ToInt32(ReadBytes(4, data, cdr), 0);
+
+        private static uint ParseUInt32(Stream data, bool cdr) => BitConverter.ToUInt32(ReadBytes(4, data, cdr), 0);
+
+        private static long ParseInt64(Stream data, bool cdr) => BitConverter.ToInt64(ReadBytes(8, data, cdr), 0);
+
+        private static ulong ParseUInt64(Stream data, bool cdr) => BitConverter.ToUInt64(ReadBytes(8, data, cdr), 0);
+
+        private static float ParseSingle(Stream data, bool cdr) => BitConverter.ToSingle(ReadBytes(4, data, cdr), 0);
+
+        private static double ParseDouble(Stream data, bool cdr) => BitConverter.ToDouble(ReadBytes(8, data, cdr), 0);
 
         // ReSharper disable once UnusedParameter.Local
-        private static bool ParseBool(Stream data, bool cdr)
+        private static bool ParseBoolean(Stream data, bool cdr) => data.ReadByte() != 0;
+
+        // ReSharper disable once UnusedParameter.Local
+        private static sbyte ParseSByte(Stream data, bool cdr) => (sbyte) data.ReadByte();
+
+        // ReSharper disable once UnusedParameter.Local
+        private static byte ParseByte(Stream data, bool cdr) => (byte) data.ReadByte();
+
+        private static byte[] ReadBytes(int count, Stream data, bool cdr)
         {
-            return data.ReadByte() != 0;
+            if (cdr) Align(data, count);
+            var buffer = new byte[count];
+            data.Read(buffer, 0, count);
+            return buffer;
         }
 
         private static void Align(Stream data, int len)

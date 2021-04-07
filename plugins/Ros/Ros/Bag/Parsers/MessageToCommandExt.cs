@@ -12,7 +12,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
 {
     public static class MessageToCommandExt
     {
-        public static ICommand? ToCommand(this Message message, ISourceTree container) => message switch
+        public static ICommand ToCommand(this Message message, ISourceTree container) => message switch
         {
             PointCloud2 cloud when container is IContainer<SlamPoint> pointsContainer =>
                     new MacroCommand(new ICommand[]
@@ -30,7 +30,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
                         0 => new AddCommand<SlamTrackedObject>(trackedContainer, new[] {pose.ToTracked()}),
                         _ => new UpdateCommand<SlamTrackedObject>(trackedContainer, new[] {pose.ToTracked()})
                     },
-            _ => null,
+            _ => new ShowCommand<UnknownTypePresenter, Message>((UnknownTypePresenter)container, message),
         };
     }
 }

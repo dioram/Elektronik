@@ -174,7 +174,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
                     .Select(m => (MessageParser.Parse(m.Data!, m.TopicType!, false),
                                   _container.RealChildren[m.TopicName!], m.Timestamp))
                     .Where(data => data.Item1 is not null)
-                    .Select(data => new Frame(data.Timestamp, data.Item1!.ToCommand(data.Item2)!))
+                    .Select(data => new Frame(data.Timestamp, data.Item1!.ToCommand(data.Item2)))
                     .GetAsyncEnumerator();
         }
 

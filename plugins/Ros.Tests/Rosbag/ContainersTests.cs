@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Elektronik.Containers;
 using Elektronik.RosPlugin.Ros.Bag;
-using Elektronik.Settings;
 using NUnit.Framework;
 
 namespace Elektronik.Ros.Tests.Rosbag

@@ -36,11 +36,11 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
             {
                 if (data[i] == separator)
                 {
-                    res.Add(data.AsSpan(lastSep, i - lastSep).ToArray());
+                    res.Add(data.Skip(lastSep).Take(i - lastSep).ToArray());
                     lastSep = i + 1;
                 }
             }
-            res.Add(data.AsSpan(lastSep, data.Length - lastSep).ToArray());
+            res.Add(data.Skip(lastSep).ToArray());
 
             return res;
         }

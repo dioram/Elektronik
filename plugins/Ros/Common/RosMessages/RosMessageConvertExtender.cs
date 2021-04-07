@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
+using System.Text;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.Containers;
@@ -21,6 +23,15 @@ namespace Elektronik.RosPlugin.Common.RosMessages
     public static class RosMessageConvertExtender
     {
         public static ICSConverter? Converter;
+
+        public static string GetData(this RosMessage message)
+        {
+            return string.Join(" ", message.GetType()
+                                       .GetProperties()
+                                       .Where(p => !typeof(Header).IsAssignableFrom(p.PropertyType))
+                                       .Select(p => $"{p.Name}, {GetData(p.GetValue(message))}"));
+            // return Newtonsoft.Json.JsonConvert.SerializeObject(message);
+        }
 
         public static Pose? GetPose(this RosMessage rosMessage) => rosMessage switch
         {
@@ -156,5 +167,26 @@ namespace Elektronik.RosPlugin.Common.RosMessages
                     _ => throw new ArgumentOutOfRangeException(nameof(encoding), encoding,
                                                                "This type of encoding is not supported.")
                 };
+
+        private static string GetData(this object value)
+        {
+            switch (value)
+            {
+            case RosMessage message:
+                return GetData(message);
+            case IEnumerable arr:
+                var builder = new StringBuilder("[");
+                foreach (var o in arr)
+                {
+                    builder.Append($"{o.GetData()}, ");
+                }
+
+                builder.Remove(builder.Length - 2, 2);
+                builder.Append("]");
+                return builder.ToString();
+            default:
+                return value.ToString();
+            }
+        }
     }
 }
