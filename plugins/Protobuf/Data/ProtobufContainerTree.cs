@@ -46,27 +46,11 @@ namespace Elektronik.Protobuf.Data
             Children = ch.ToArray();
         }
 
-        private bool _isActive = true;
-
         #region ISourceTree implementation
 
         public string DisplayName { get; set; }
 
         public IEnumerable<ISourceTree> Children { get; }
-
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                foreach (var child in Children)
-                {
-                    child.IsActive = value;
-                }
-
-                _isActive = value;
-            }
-        }
 
         public void Clear()
         {

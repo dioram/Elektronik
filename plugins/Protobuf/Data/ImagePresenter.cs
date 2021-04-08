@@ -16,7 +16,6 @@ namespace Elektronik.Protobuf.Data
 
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTree> Children => new ISourceTree[0];
-        public bool IsActive { get; set; }
 
         #endregion
 

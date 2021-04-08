@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     /// <summary> Contains lines in strict order. </summary>
-    public class TrackContainer : IContainer<SlamLine>, ISourceTree, ILookable
+    public class TrackContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible
     {
         #region IContainer implementaion
 
@@ -21,7 +21,7 @@ namespace Elektronik.Containers
         public void Add(SlamLine item)
         {
             _lines.Add(item);
-            if (IsActive)
+            if (IsVisible)
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new []{item}));
             }
@@ -29,7 +29,7 @@ namespace Elektronik.Containers
 
         public void Clear()
         {
-            if (IsActive)
+            if (IsVisible)
             {
                 OnRemoved?.Invoke(this, new RemovedEventArgs(_lines.Select(l => l.Id)));
             }
@@ -46,7 +46,7 @@ namespace Elektronik.Containers
         public bool Remove(SlamLine item)
         {
             var res = _lines.Remove(item);
-            if (IsActive)
+            if (IsVisible)
             {
                 OnRemoved?.Invoke(this, new RemovedEventArgs(new []{item.Id}));
             }
@@ -62,7 +62,7 @@ namespace Elektronik.Containers
         public void Insert(int index, SlamLine item)
         {
             _lines.Insert(index, item);
-            if (IsActive)
+            if (IsVisible)
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new []{item}));
             }
@@ -71,7 +71,7 @@ namespace Elektronik.Containers
         public void RemoveAt(int index)
         {
             _lines.RemoveAt(index);
-            if (IsActive)
+            if (IsVisible)
             {
                 OnRemoved?.Invoke(this, new RemovedEventArgs(new []{index}));
             }
@@ -83,7 +83,7 @@ namespace Elektronik.Containers
             set
             {
                 _lines[index] = value;
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new []{value}));
                 }
@@ -99,7 +99,7 @@ namespace Elektronik.Containers
         public void AddRange(IEnumerable<SlamLine> items)
         {
             _lines.AddRange(items);
-            if (IsActive)
+            if (IsVisible)
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(items));
             }
@@ -112,7 +112,7 @@ namespace Elektronik.Containers
                 _lines.Remove(item);
             }
 
-            if (IsActive)
+            if (IsVisible)
             {
                 OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id)));
             }
@@ -122,7 +122,7 @@ namespace Elektronik.Containers
         {
             var index = _lines.FindIndex(l => l.Id == item.Id);
             _lines[index] = item;
-            if (IsActive)
+            if (IsVisible)
             {
                 OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new []{item}));
             }
@@ -136,7 +136,7 @@ namespace Elektronik.Containers
                 _lines[index] = item;
             }
 
-            if (IsActive)
+            if (IsVisible)
             {
                 OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(items));
             }
@@ -144,23 +144,11 @@ namespace Elektronik.Containers
 
         #endregion
 
-        #region IContainerTree implementation
+        #region ISourceTree implementation
 
         public string DisplayName { get; set; } = "Track";
 
         public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
-        
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value) return;
-                _isActive = value;
-                if (_isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
-                else OnRemoved?.Invoke(this, new RemovedEventArgs(_lines.Select(l => l.Id)));
-            }
-        }
 
         public void SetRenderer(object renderer)
         {
@@ -190,10 +178,28 @@ namespace Elektronik.Containers
 
         #endregion
 
+        #region IVisible
+        
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible == value) return;
+                _isVisible = value;
+                if (_isVisible) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                else OnRemoved?.Invoke(this, new RemovedEventArgs(_lines.Select(l => l.Id)));
+            }
+        }
+
+        public bool ShowButton => true;
+
+        #endregion
+        
         #region Private definition
 
         private readonly List<SlamLine> _lines = new List<SlamLine>();
-        private bool _isActive = true;
+        private bool _isVisible = true;
 
         #endregion
     }

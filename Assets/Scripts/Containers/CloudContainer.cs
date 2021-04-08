@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class CloudContainer<TCloudItem> : IContainer<TCloudItem>, ISourceTree, ILookable
+    public class CloudContainer<TCloudItem> : IContainer<TCloudItem>, ISourceTree, ILookable, IVisible
             where TCloudItem : struct, ICloudItem
     {
         public CloudContainer(string displayName = "")
@@ -28,7 +28,7 @@ namespace Elektronik.Containers
             lock (_items)
             {
                 _items.Add(item.Id, item);
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new[] {item}));
                 }
@@ -41,7 +41,7 @@ namespace Elektronik.Containers
             {
                 var ids = _items.Keys.ToList();
                 _items.Clear();
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
                 }
@@ -60,7 +60,7 @@ namespace Elektronik.Containers
             lock (_items)
             {
                 var res = _items.Remove(item.Id);
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
                 }
@@ -82,7 +82,7 @@ namespace Elektronik.Containers
             lock (_items)
             {
                 _items.Remove(index);
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
                 }
@@ -119,7 +119,7 @@ namespace Elektronik.Containers
                     _items.Add(ci.Id, ci);
                 }
 
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(list));
                 }
@@ -136,7 +136,7 @@ namespace Elektronik.Containers
                     _items.Remove(ci.Id);
                 }
 
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(p => p.Id).ToList()));
                 }
@@ -148,7 +148,7 @@ namespace Elektronik.Containers
             lock (_items)
             {
                 _items[item.Id] = item;
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new[] {item}));
                 }
@@ -165,7 +165,7 @@ namespace Elektronik.Containers
                     _items[ci.Id] = ci;
                 }
 
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
                 }
@@ -174,23 +174,11 @@ namespace Elektronik.Containers
 
         #endregion
 
-        #region IContainerTree implementations
+        #region ISourceTree implementations
 
         public string DisplayName { get; set; }
 
         public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
-
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value) return;
-                _isActive = value;
-                if (_isActive) OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
-                else OnRemoved?.Invoke(this, new RemovedEventArgs(_items.Keys.ToList()));
-            }
-        }
 
         public void SetRenderer(object renderer)
         {
@@ -230,10 +218,28 @@ namespace Elektronik.Containers
 
         #endregion
 
+        #region IVisible
+        
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible == value) return;
+                _isVisible = value;
+                if (_isVisible) OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
+                else OnRemoved?.Invoke(this, new RemovedEventArgs(_items.Keys.ToList()));
+            }
+        }
+
+        public bool ShowButton => true;
+
+        #endregion
+        
         #region Private definitions
 
         private readonly SortedDictionary<int, TCloudItem> _items = new SortedDictionary<int, TCloudItem>();
-        private bool _isActive = true;
+        private bool _isVisible = true;
 
         #endregion
     }

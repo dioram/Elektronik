@@ -9,12 +9,15 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class TrackedObjectsContainer : ITrackedContainer<SlamTrackedObject>, ISourceTree, ILookable
+    public class TrackedObjectsContainer : ITrackedContainer<SlamTrackedObject>, ISourceTree, ILookable, IVisible
     {
         public TrackedObjectsContainer(string displayName = "")
         {
             DisplayName = string.IsNullOrEmpty(displayName) ? GetType().Name : displayName;
+            ObjectLabel = DisplayName;
         }
+
+        public string ObjectLabel;
 
         #region IContainer implementation
 
@@ -29,7 +32,7 @@ namespace Elektronik.Containers
             {
                 var container = CreateTrackContainer(item);
                 _objects[item.Id] = (item, container);
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
                 }
@@ -45,7 +48,7 @@ namespace Elektronik.Containers
                     tuple.Value.Item2.Clear();
                 }
 
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnRemoved?.Invoke(this, new RemovedEventArgs(_objects.Keys));
                 }
@@ -84,7 +87,7 @@ namespace Elektronik.Containers
 
                 _objects.Remove(item.Id);
 
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
                 }
@@ -113,7 +116,7 @@ namespace Elektronik.Containers
                 }
 
                 _objects.Remove(index);
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
                 }
@@ -152,7 +155,7 @@ namespace Elektronik.Containers
                     _objects[item.Id] = (item, container);
                 }
 
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
                 }
@@ -175,7 +178,7 @@ namespace Elektronik.Containers
                     _objects.Remove(item.Id);
                 }
 
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id)));
                 }
@@ -187,7 +190,7 @@ namespace Elektronik.Containers
             lock (_objects)
             {
                 PureUpdate(item);
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new[] {item}));
                 }
@@ -203,7 +206,7 @@ namespace Elektronik.Containers
                     PureUpdate(item);
                 }
 
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(items));
                 }
@@ -217,24 +220,6 @@ namespace Elektronik.Containers
         public string DisplayName { get; set; }
 
         public IEnumerable<ISourceTree> Children => _lineContainers;
-
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value) return;
-
-                foreach (var child in Children)
-                {
-                    child.IsActive = value;
-                }
-
-                _isActive = value;
-                if (_isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
-                else OnRemoved?.Invoke(this, new RemovedEventArgs(_objects.Keys.ToList()));
-            }
-        }
 
         public void SetRenderer(object renderer)
         {
@@ -269,7 +254,7 @@ namespace Elektronik.Containers
                 var container = CreateTrackContainer(item, history);
                 _objects.Add(item.Id, (item, container));
                 _maxId = history.Count > 0 ? history.Max(l => l.Id) : 0;
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
                 }
@@ -289,7 +274,7 @@ namespace Elektronik.Containers
                 }
 
                 _maxId = histories.SelectMany(l => l).Max(l => l.Id);
-                if (IsActive)
+                if (IsVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
                 }
@@ -310,6 +295,30 @@ namespace Elektronik.Containers
 
         #endregion
 
+        #region IVisible
+
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible == value) return;
+
+                foreach (var child in Children.OfType<IVisible>())
+                {
+                    child.IsVisible = value;
+                }
+
+                _isVisible = value;
+                if (_isVisible) OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
+                else OnRemoved?.Invoke(this, new RemovedEventArgs(_objects.Keys.ToList()));
+            }
+        }
+
+        public bool ShowButton => true;
+
+        #endregion
+        
         #region Private definitions
 
         private ICloudRenderer<SlamLine> _lineRenderer;
@@ -319,7 +328,7 @@ namespace Elektronik.Containers
                 new Dictionary<int, (SlamTrackedObject, TrackContainer)>();
 
         private int _maxId = 0;
-        private bool _isActive = true;
+        private bool _isVisible = true;
 
         private TrackContainer CreateTrackContainer(SlamTrackedObject obj, IList<SlamLine> history = null)
         {

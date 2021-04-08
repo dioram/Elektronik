@@ -27,8 +27,6 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
-        public bool IsActive { get; set; }
-
         public void SetRenderer(object dataRenderer)
         {
             if (dataRenderer is WindowsManager factory)

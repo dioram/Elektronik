@@ -27,7 +27,7 @@ namespace Elektronik.Clouds
                         dataComponent.Container = sender;
 
                         go.transform.Find("Label").GetComponent<TMP_Text>().text =
-                                $"{(sender as ISourceTree)?.DisplayName} #{obj.Id}";
+                                $"{(sender as TrackedObjectsContainer)?.ObjectLabel} #{obj.Id}";
                     });
                 }
             }

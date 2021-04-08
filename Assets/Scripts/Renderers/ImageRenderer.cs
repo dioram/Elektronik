@@ -7,6 +7,7 @@ namespace Elektronik.Renderers
                                  IDataRenderer<ImageData>
     {
         public bool FlipVertically = false;
+        public Texture2D NotSupportedPlaceholder;
 
         #region Unity events
 
@@ -29,7 +30,16 @@ namespace Elektronik.Renderers
 
         #region IDataRenderer
 
-        public bool IsShowing { get; private set; }
+        public bool IsShowing
+        {
+            get => _isShowing;
+            set
+            {
+                if (_isShowing == value) return;
+                _isShowing = value;
+                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
+            }
+        }
 
         public void Render(byte[] array)
         {
@@ -37,7 +47,7 @@ namespace Elektronik.Renderers
             {
                 Texture2D texture2D = Texture2D.blackTexture;
                 texture2D.LoadImage(array);
-                Fitter.aspectRatio = texture2D.width / (float)texture2D.height;
+                Fitter.aspectRatio = texture2D.width / (float) texture2D.height;
                 Target.texture = texture2D;
             });
         }
@@ -46,17 +56,25 @@ namespace Elektronik.Renderers
         {
             MainThreadInvoker.Instance.Enqueue(() =>
             {
-                if (_texture == null 
-                    || _texture.width != data.Width 
-                    || _texture.height != data.Height 
+                if (!data.IsSupported)
+                {
+                    Fitter.aspectRatio = NotSupportedPlaceholder.width / (float) NotSupportedPlaceholder.height;
+                    Target.texture = NotSupportedPlaceholder;
+                    return;
+                }
+                
+                if (_texture == null
+                    || _texture.width != data.Width
+                    || _texture.height != data.Height
                     || _texture.format != data.Encoding)
                 {
                     _texture = new Texture2D(data.Width, data.Height, data.Encoding, false);
                 }
+
                 _texture.LoadRawTextureData(data.Data);
                 if (FlipVertically) FlipTextureVertically(_texture);
                 _texture.Apply();
-                Fitter.aspectRatio = data.Width / (float)data.Height;
+                Fitter.aspectRatio = data.Width / (float) data.Height;
                 Target.texture = _texture;
             });
         }
@@ -72,10 +90,11 @@ namespace Elektronik.Renderers
         #endregion
 
         #region Private
-        
+
         [SerializeField] private RawImage Target;
         [SerializeField] private AspectRatioFitter Fitter;
         private Texture2D _texture;
+        private bool _isShowing;
 
         private static void FlipTextureVertically(Texture2D original)
         {
@@ -90,7 +109,7 @@ namespace Elektronik.Renderers
             {
                 for (int y = 0; y < rows; y++)
                 {
-                    newPixels[x + y * width] = originalPixels[x + (rows - y -1) * width];
+                    newPixels[x + y * width] = originalPixels[x + (rows - y - 1) * width];
                 }
             }
 

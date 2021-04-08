@@ -14,7 +14,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
     public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable
     {
-        private bool _isActive = true;
+        private bool _isVisible = true;
 
         public PointsDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps)
                 : base(displayName, dbModel, topic, actualTimestamps)
@@ -37,16 +37,16 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             OnClear += pointRenderer.OnClear;
         }
 
-        public override bool IsActive
+        public override bool IsVisible
         {
-            get => _isActive;
+            get => _isVisible;
             set
             {
                 lock (this)
                 {
-                    if (_isActive == value) return;
-                    _isActive = value;
-                    if (!_isActive) Clear();
+                    if (_isVisible == value) return;
+                    _isVisible = value;
+                    if (!_isVisible) Clear();
                     else SetData();
                 }
             }

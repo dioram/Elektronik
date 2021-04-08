@@ -18,12 +18,12 @@ namespace Elektronik.UI.Windows
             if (gameObject.activeSelf)
             {
                 StartCoroutine(HighlightHeader());
-                transform.SetAsLastSibling();
             }
             else
             {
                 gameObject.SetActive(true);
             }
+            transform.SetAsLastSibling();
         }
 
         #region Unity events

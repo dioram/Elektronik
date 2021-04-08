@@ -73,13 +73,19 @@ namespace Elektronik.UI
             if (Node is IRendersToWindow node)
             {
                 WindowButton.OnClickAsObservable().Subscribe(_ => node.Window.Show());
-                VisibleButton.gameObject.SetActive(false);
             }
             else
             {
-                VisibleButton.OnClickAsObservable()
-                        .Subscribe(_ => { Node.IsActive = !Node.IsActive; });
                 WindowButton.gameObject.SetActive(false);
+            }
+
+            if (Node is IVisible v)
+            {
+                VisibleButton.OnClickAsObservable().Subscribe(_ => { v.IsVisible = !v.IsVisible; });
+            }
+            else
+            {
+                VisibleButton.gameObject.SetActive(false);
             }
 
             TreeButton.OnClickAsObservable().Subscribe(_ => ChangeState());
@@ -99,7 +105,11 @@ namespace Elektronik.UI
 
         public void Update()
         {
-            VisibleButton.State = Node.IsActive ? 0 : 1;
+            if (Node is IVisible v)
+            {
+                VisibleButton.State = v.IsVisible ? 0 : 1;
+                VisibleButton.gameObject.SetActive(v.ShowButton);
+            }
         }
 
         #endregion

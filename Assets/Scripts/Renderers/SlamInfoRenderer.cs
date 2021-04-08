@@ -24,7 +24,16 @@ namespace Elektronik.Renderers
 
         #region IDataRenderer
 
-        public bool IsShowing { get; private set; }
+        public bool IsShowing
+        {
+            get => _isShowing;
+            set
+            {
+                if (_isShowing == value) return;
+                _isShowing = value;
+                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
+            }
+        }
 
         public void Render((string message, IEnumerable<ICloudItem> points) data)
         {
@@ -51,6 +60,7 @@ namespace Elektronik.Renderers
         [SerializeField] private TMP_Text MessageLabel;
         [SerializeField] private TMP_Text PointMessageLabel;
         [SerializeField] private ListBox PointButtonsBox;
+        private bool _isShowing;
 
         #endregion
     }

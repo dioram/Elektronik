@@ -13,9 +13,6 @@ namespace Elektronik.Containers
 
         [NotNull] IEnumerable<ISourceTree> Children { get; }
 
-        /// <summary> Should content of this data source be displayed or not. </summary>
-        bool IsActive { get; set; }
-
         /// <summary> Clear all content. </summary>
         void Clear();
 

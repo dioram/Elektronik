@@ -8,5 +8,6 @@ namespace Elektronik.Renderers
         public int Height;
         public TextureFormat Encoding;
         public byte[] Data;
+        public bool IsSupported;
     }
 }

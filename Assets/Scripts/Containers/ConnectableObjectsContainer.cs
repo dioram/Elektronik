@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTree, ILookable
+    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTree, ILookable, IVisible
             where TCloudItem : struct, ICloudItem
     {
         public ConnectableObjectsContainer(IContainer<TCloudItem> objects,
@@ -253,19 +253,6 @@ namespace Elektronik.Containers
 
         public IEnumerable<ISourceTree> Children { get; }
 
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                foreach (var child in Children)
-                {
-                    child.IsActive = value;
-                }
-
-                _isActive = value;
-            }
-        }
 
         public void SetRenderer(object renderer)
         {
@@ -286,13 +273,33 @@ namespace Elektronik.Containers
 
         #endregion
 
+        #region IVisible
+        
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                foreach (var child in Children.OfType<IVisible>())
+                {
+                    child.IsVisible = value;
+                }
+
+                _isVisible = value;
+            }
+        }
+
+        public bool ShowButton => true;
+
+        #endregion
+        
         #region Private definitions
 
         private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
         private readonly SparseSquareMatrix<bool> _table = new SparseSquareMatrix<bool>();
         private readonly IContainer<SlamLine> _connects;
         private readonly IContainer<TCloudItem> _objects;
-        private bool _isActive = true;
+        private bool _isVisible = true;
 
         private void RemoveConnections(int id)
         {
@@ -323,5 +330,6 @@ namespace Elektronik.Containers
         }
 
         #endregion
+
     }
 }

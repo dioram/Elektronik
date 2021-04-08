@@ -2,7 +2,7 @@
 {
     public interface IDataRenderer<T>
     {
-        bool IsShowing { get; }
+        bool IsShowing { get; set; }
         void Render(T data);
         void Clear();
     }

@@ -7,14 +7,24 @@ namespace Elektronik.RosPlugin.Common.Containers
 {
     public static class ImageDataExt
     {
-        public static ImageData FromImageMessage(Image image) =>
-                new ImageData
+        public static ImageData FromImageMessage(Image image)
+        {
+            try
+            {
+                return new ImageData
                 {
                     Width = (int) image.width,
                     Height = (int) image.height,
                     Encoding = GetTextureFormat(image.encoding),
                     Data = image.data,
+                    IsSupported = true,
                 };
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                return new ImageData{IsSupported = false};
+            }
+        }
 
         public static TextureFormat GetTextureFormat(string encoding) =>
                 encoding switch

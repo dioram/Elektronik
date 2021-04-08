@@ -70,6 +70,7 @@ namespace Elektronik.RosPlugin.Common.Containers
                 {
                     var child = CreateContainer(topic.Name, topic.Type);
                     if (child is IRendersToWindow w) w.Title = topic.Name;
+                    if (child is TrackedObjectsContainer t) t.ObjectLabel = topic.Name;
                     RealChildren[topic.Name] = child;
                     
                     foreach (var renderer in _renderers)

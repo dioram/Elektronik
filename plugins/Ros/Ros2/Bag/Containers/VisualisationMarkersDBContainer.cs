@@ -10,7 +10,7 @@ using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class VisualisationMarkersDBContainer : ISourceTree, IDBContainer
+    public class VisualisationMarkersDBContainer : ISourceTree, IDBContainer, IVisible
     {
         public VisualisationMarkersDBContainer(string displayName, SQLiteConnection dbModel, Topic topic,
                                                long[] actualTimestamps)
@@ -44,23 +44,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTree> Children => _children.Values.ToList();
 
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                lock (this)
-                {
-                    foreach (var child in _children.Values)
-                    {
-                        child.IsActive = value;
-                    }
-
-                    _isActive = value;
-                }
-            }
-        }
-
         #endregion
 
         #region IDBContainer implementation
@@ -90,9 +73,32 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #endregion
 
+        #region IVisible
+
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                lock (this)
+                {
+                    foreach (var child in _children.Values.OfType<IVisible>())
+                    {
+                        child.IsVisible = value;
+                    }
+
+                    _isVisible = value;
+                }
+            }
+        }
+        
+        public bool ShowButton => true;
+
+        #endregion
+
         #region Private definitions
 
-        private bool _isActive = true;
+        private bool _isVisible = true;
         private int _pos;
         private readonly SortedDictionary<string, ISourceTree> _children = new();
         private readonly List<object> _renderers = new List<object>();
@@ -215,8 +221,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             {
                 _children[key].SetRenderer(renderer);
             }
-
-            _children[key].IsActive = IsActive;
         }
 
         private class MarkersComparer : IEqualityComparer<Marker>

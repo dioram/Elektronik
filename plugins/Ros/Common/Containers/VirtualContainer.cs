@@ -4,7 +4,7 @@ using Elektronik.Containers;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
-    public class VirtualContainer : ISourceTree
+    public class VirtualContainer : ISourceTree, IVisible
     {
         public VirtualContainer(string displayName)
         {
@@ -38,18 +38,24 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         public IEnumerable<ISourceTree> Children => ChildrenList;
 
-        public bool IsActive
+        #endregion
+
+        #region IVisible
+
+        public bool IsVisible
         {
-            get => _isActive;
+            get => _isVisible;
             set
             {
-                _isActive = value;
-                foreach (var child in Children)
+                _isVisible = value;
+                foreach (var child in Children.OfType<IVisible>())
                 {
-                    child.IsActive = IsActive;
+                    child.IsVisible = IsVisible;
                 }
             }
         }
+
+        public bool ShowButton { get; private set; }
 
         #endregion
 
@@ -67,15 +73,36 @@ namespace Elektronik.RosPlugin.Common.Containers
                 ChildrenList[i] = @virtual.ChildrenList[0];
                 ChildrenList[i].DisplayName = $"{@virtual.DisplayName}/{ChildrenList[i].DisplayName}";
             }
+
+            ShowButton = CheckShowButton();
         }
 
         #endregion
 
-        #region Private definitions
+        #region Private
 
-        private bool _isActive = true;
+        private bool _isVisible = true;
         protected readonly List<ISourceTree> ChildrenList = new();
 
+        private bool CheckShowButton()
+        {
+            foreach (var child in ChildrenList)
+            {
+                switch (child)
+                {
+                case IVisible {ShowButton: true}:
+                    ShowButton = true;
+                    return true;
+                case VirtualContainer v when v.CheckShowButton():
+                    ShowButton = true;
+                    return true;
+                }
+            }
+
+            ShowButton = false;
+            return false;
+        }
+        
         #endregion
     }
 }

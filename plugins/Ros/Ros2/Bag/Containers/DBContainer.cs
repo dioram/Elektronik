@@ -7,7 +7,7 @@ using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public abstract class DBContainer<TMessage, TRenderType> : IDBContainer, ISourceTree
+    public abstract class DBContainer<TMessage, TRenderType> : IDBContainer, ISourceTree, IVisible
             where TMessage : RosSharp.RosBridgeClient.Message
     {
         public DBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps)
@@ -22,7 +22,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
-        public virtual bool IsActive { get; set; } = true;
 
         public abstract void Clear();
 
@@ -44,8 +43,15 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (Timestamp == time) return;
             Timestamp = time;
             _pos = pos;
-            if (IsActive) SetData();
+            if (IsVisible) SetData();
         }
+
+        #endregion
+
+        #region IVisible
+
+        public virtual bool IsVisible { get; set; } = true;
+        public bool ShowButton { get; }
 
         #endregion
 

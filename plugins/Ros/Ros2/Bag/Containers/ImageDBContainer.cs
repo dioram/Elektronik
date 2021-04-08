@@ -1,10 +1,8 @@
 ﻿using Elektronik.Renderers;
 using Elektronik.RosPlugin.Common.Containers;
-using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using SQLite;
-using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
@@ -17,7 +15,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         {
         }
         
-        public override bool IsActive
+        public override bool IsVisible
         {
             get => Renderer is not null && Renderer.IsShowing;
             set { }

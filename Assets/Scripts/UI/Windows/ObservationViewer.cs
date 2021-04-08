@@ -35,7 +35,11 @@ namespace Elektronik.UI.Windows
 
         #region IDataRenderer
         
-        public bool IsShowing => gameObject.activeSelf;
+        public bool IsShowing
+        {
+            get => gameObject.activeSelf;
+            set => gameObject.SetActive(value);
+        }
 
         public void Render(DataComponent<SlamObservation> data)
         {

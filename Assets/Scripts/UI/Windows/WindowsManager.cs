@@ -12,7 +12,7 @@ namespace Elektronik.UI.Windows
         public GameObject[] RendererWindowsPrefabs;
 
         public List<Window> Windows = new List<Window>();
-        
+
         public enum Direction
         {
             Vertical,
@@ -32,6 +32,7 @@ namespace Elektronik.UI.Windows
                 {
                     edge.Manager = this;
                 }
+
                 go.SetActive(false);
                 Windows.Add(window);
                 callback(go.GetComponent<TComponent>(), window);
@@ -71,55 +72,6 @@ namespace Elektronik.UI.Windows
             tr.anchoredPosition = pos;
         }
 
-        public void AlignResizing(RectTransform tr, ResizingEdge.EdgeSide side)
-        {
-            var pos = tr.anchoredPosition;
-            var height = tr.rect.height;
-            var width = tr.rect.width;
-            if ((side & ResizingEdge.EdgeSide.Top) == ResizingEdge.EdgeSide.Top)
-            {
-                var top = tr.anchoredPosition.y;
-                var topAligns = NearestAlign(Direction.Horizontal, top);
-                if (topAligns.Length > 0)
-                {
-                    pos.y = topAligns.First();
-                    height += pos.y - topAligns.First();
-                }
-            }
-            else if ((side & ResizingEdge.EdgeSide.Bottom) == ResizingEdge.EdgeSide.Bottom)
-            {
-                var bottom = tr.anchoredPosition.y - tr.sizeDelta.y;
-                var bottomAligns = NearestAlign(Direction.Horizontal, bottom);
-                if (bottomAligns.Length > 0)
-                {
-                    height += bottom - bottomAligns.First();
-                }
-            }
-            if ((side & ResizingEdge.EdgeSide.Left) == ResizingEdge.EdgeSide.Left)
-            {
-                var left = tr.anchoredPosition.x;
-                var leftAligns = NearestAlign(Direction.Vertical, left);
-                if (leftAligns.Length > 0)
-                {
-                    pos.x = leftAligns.First();
-                    width += pos.x - leftAligns.First();
-                }
-            }
-            else if ((side & ResizingEdge.EdgeSide.Right) == ResizingEdge.EdgeSide.Right)
-            {
-                var right = tr.anchoredPosition.x + tr.sizeDelta.x;
-                var rightAligns = NearestAlign(Direction.Vertical, right);
-                if (rightAligns.Length > 0)
-                {
-                    width += right - rightAligns.First();
-                }
-            }
-
-            tr.anchoredPosition = pos;
-            tr.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-            tr.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-        }
-
         public float[] NearestAlign(Direction direction, float value)
         {
             var arr = direction == Direction.Vertical ? VerticalAligns() : HorizontalAligns();
@@ -147,7 +99,7 @@ namespace Elektronik.UI.Windows
                     .Where(w => w.gameObject.activeInHierarchy)
                     .Select(w => (RectTransform) w.transform)
                     .SelectMany(t => new[] {t.anchoredPosition.y - t.sizeDelta.y, t.anchoredPosition.y})
-                    .Concat(new[] {0, (float) -Screen.height})
+                    .Concat(new[] {0, (float) -Screen.height, (float) 40 - Screen.height})
                     .ToArray();
         }
 

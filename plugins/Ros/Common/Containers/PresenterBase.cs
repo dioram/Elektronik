@@ -32,7 +32,6 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
-        public bool IsActive { get; set; }
 
         public void Clear()
         {

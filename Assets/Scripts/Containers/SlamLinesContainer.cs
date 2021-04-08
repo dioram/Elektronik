@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class SlamLinesContainer : IContainer<SlamLine>, ISourceTree, ILookable
+    public class SlamLinesContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible
     {
         public SlamLinesContainer(string displayName = "")
         {
@@ -62,7 +62,7 @@ namespace Elektronik.Containers
             obj.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
             _connectionsIndices[obj] = obj.Id;
             _connections[obj.Id] = obj;
-            if (IsActive)
+            if (IsVisible)
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {obj}));
             }
@@ -82,7 +82,7 @@ namespace Elektronik.Containers
                 _linesBuffer.Add(line);
             }
 
-            if (IsActive)
+            if (IsVisible)
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(_linesBuffer));
             }
@@ -95,7 +95,7 @@ namespace Elektronik.Containers
             int index = _connectionsIndices[item];
             item.Id = index;
             _connections[item.Id] = item;
-            if (IsActive)
+            if (IsVisible)
             {
                 OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {item}));
             }
@@ -112,7 +112,7 @@ namespace Elektronik.Containers
                 _linesBuffer.Add(line);
             }
 
-            if (IsActive)
+            if (IsVisible)
             {
                 OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(_linesBuffer));
             }
@@ -126,7 +126,7 @@ namespace Elektronik.Containers
             var index = _connectionsIndices[obj];
             _connections.Remove(index);
             _freeIds.Enqueue(index);
-            if (IsActive)
+            if (IsVisible)
             {
                 OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {obj.Id}));
             }
@@ -150,7 +150,7 @@ namespace Elektronik.Containers
                 _connectionsIndices.Remove(line);
             }
 
-            if (IsActive)
+            if (IsVisible)
             {
                 OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
             }
@@ -169,7 +169,7 @@ namespace Elektronik.Containers
             _connectionsIndices.Clear();
             _freeIds.Clear();
             _maxId = 0;
-            if (IsActive)
+            if (IsVisible)
             {
                 OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
             }
@@ -177,24 +177,11 @@ namespace Elektronik.Containers
 
         #endregion
 
-        #region IContainerTree implementation
+        #region ISourceTree implementation
 
         public string DisplayName { get; set; }
 
         public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
-
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value) return;
-                _isActive = value;
-
-                if (_isActive) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
-                else OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys.ToList()));
-            }
-        }
 
         public void SetRenderer(object renderer)
         {
@@ -236,10 +223,29 @@ namespace Elektronik.Containers
 
         #endregion
 
+        #region MyRegion
+
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible == value) return;
+                _isVisible = value;
+
+                if (_isVisible) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                else OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys.ToList()));
+            }
+        }
+
+        public bool ShowButton => true;
+
+        #endregion
+        
         #region Private definitions
 
         private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
-        private bool _isActive = true;
+        private bool _isVisible = true;
 
         private readonly IDictionary<int, SlamLine> _connections = new SortedDictionary<int, SlamLine>();
         private readonly IDictionary<SlamLine, int> _connectionsIndices = new SortedDictionary<SlamLine, int>();
