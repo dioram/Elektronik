@@ -34,15 +34,15 @@ namespace Elektronik.RosPlugin.Ros.Bag
             get
             {
                 // ReSharper disable once ConstantConditionalAccessQualifier
-                var t = _frames?.Current?.Timestamp ?? 0;
-                var s = _startTimestamp;
-                var ts = (int) t; // secs
-                var tn = (int) (t >> 32); // nanosecs
-                var ss = (int) s; // secs
+                var t = _frames?.Current?.Timestamp ?? 0; // I want to kill man who designed this time storage format.
+                var s = _startTimestamp;                  // Instead of saving time as 1 long or ulong value
+                var ts = (int) t; // secs                      // or saving 2 separate int values
+                var tn = (int) (t >> 32); // nanosecs          // He took 2 ints and store them inside 1 long value.
+                var ss = (int) s; // secs                      // WTF???
                 var sn = (int) (s >> 32); // nanosecs
-                var rs = ts - ss;
-                var rn = (tn - sn)/1000000;
-                return $"{rs}.{rn:000}";
+                t = ts * 1000 + tn / 1000000;
+                s = ss * 1000 + sn / 1000000;
+                return $"{(t-s)/1000f:F3}";
             }
         }
 

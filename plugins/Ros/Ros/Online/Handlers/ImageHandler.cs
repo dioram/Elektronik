@@ -1,4 +1,5 @@
 ﻿using Elektronik.Containers;
+using Elektronik.Renderers;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Common.RosMessages;
 using RosSharp.RosBridgeClient;
@@ -14,7 +15,7 @@ namespace Elektronik.RosPlugin.Ros.Online.Handlers
 
         protected override void Handle(Image message)
         {
-            Container?.Present(message.ToImageData());
+            Container?.Present(ImageDataExt.FromImageMessage(message));
         }
     }
 }

@@ -7,15 +7,20 @@ using RosSharp.RosBridgeClient;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
-    public class UnknownTypePresenter : PresenterBase<Message, StringRenderer, string>
+    public class UnknownTypePresenter : PresenterBase<Message, TableRenderer, string[]>
     {
         public UnknownTypePresenter(string displayName) : base(displayName)
         {
         }
 
-        protected override string ToRenderType(Message message)
+        protected override string[] ToRenderType(Message message)
         {
-            return message.GetData();
+            if (_isFirstMessage && Renderer is not null)
+            {
+                Renderer.SetHeader(RosMessageConvertExtender.GetMessagePropertyNames(message.GetType()));
+                _isFirstMessage = false;
+            }
+            return  message.GetData();
         }
 
         public static bool CanParseTopic(string topic)
@@ -29,5 +34,7 @@ namespace Elektronik.RosPlugin.Common.Containers
                 .GetTypes()
                 .Where(t => t.IsSubclassOf(typeof(Message)))
                 .ToArray();
+
+        private bool _isFirstMessage = true;
     }
 }

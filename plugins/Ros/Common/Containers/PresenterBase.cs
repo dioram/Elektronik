@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Renderers;
 using Elektronik.UI.Windows;
@@ -22,7 +23,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         {
             Current = data;
             if (Renderer is null || !Renderer.IsShowing) return;
-            Renderer.Render(ToRenderType(data));
+            Task.Run(() => Renderer.Render(ToRenderType(data)));
         }
 
         #endregion

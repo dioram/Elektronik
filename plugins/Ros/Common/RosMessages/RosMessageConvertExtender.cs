@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
-using Elektronik.RosPlugin.Common.Containers;
 using RosSharp.RosBridgeClient.MessageTypes.Geometry;
 using RosSharp.RosBridgeClient.MessageTypes.Nav;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
@@ -13,6 +12,7 @@ using UnityEngine;
 using Pose = RosSharp.RosBridgeClient.MessageTypes.Geometry.Pose;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
+using RosQuaternion = RosSharp.RosBridgeClient.MessageTypes.Geometry.Quaternion;
 using RosMessage = RosSharp.RosBridgeClient.Message;
 using RosVector3 = RosSharp.RosBridgeClient.MessageTypes.Geometry.Vector3;
 using Time = RosSharp.RosBridgeClient.MessageTypes.Std.Time;
@@ -24,13 +24,32 @@ namespace Elektronik.RosPlugin.Common.RosMessages
     {
         public static ICSConverter? Converter;
 
-        public static string GetData(this RosMessage message)
+        public static string[] GetMessagePropertyNames(Type messageType, string prefix = "")
         {
-            return string.Join(" ", message.GetType()
-                                       .GetProperties()
-                                       .Where(p => !typeof(Header).IsAssignableFrom(p.PropertyType))
-                                       .Select(p => $"{p.Name}, {GetData(p.GetValue(message))}"));
-            // return Newtonsoft.Json.JsonConvert.SerializeObject(message);
+            if (!messageType.IsSubclassOf(typeof(RosMessage))
+                || messageType.Name == "Vector3"
+                || messageType.Name == nameof(Point)
+                || messageType.Name == "Quaternion")
+            {
+                return new[] {prefix};
+            }
+
+            if (messageType.Name == nameof(Header)) return new[] {"timestamp"};
+            
+            return messageType
+                    .GetProperties()
+                    .SelectMany(p => GetMessagePropertyNames(p.PropertyType, $"{prefix}.{p.Name}"))
+                    .Select(s => s.TrimStart('.'))
+                    .ToArray();
+        }
+
+        public static string[] GetData(this RosMessage message)
+        {
+            return message.GetType()
+                    .GetProperties()
+                    .Where(p => p.Name != nameof(Header.seq) && p.Name != nameof(Header.frame_id))
+                    .SelectMany(p => GetData(p.GetValue(message)))
+                    .ToArray();
         }
 
         public static Pose? GetPose(this RosMessage rosMessage) => rosMessage switch
@@ -129,7 +148,8 @@ namespace Elektronik.RosPlugin.Common.RosMessages
 
         public static (Vector3 pos, Quaternion rot) ToUnity(this Transform transform)
         {
-            var v = new Vector3((float) transform.translation.x, (float) transform.translation.y, (float) transform.translation.z);
+            var v = new Vector3((float) transform.translation.x, (float) transform.translation.y,
+                                (float) transform.translation.z);
             var q = new Quaternion((float) transform.rotation.x, (float) transform.rotation.y,
                                    (float) transform.rotation.z, (float) transform.rotation.w);
             Converter?.Convert(ref v, ref q);
@@ -150,42 +170,31 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             return res;
         }
 
-        public static ImagePresenter.ImageData ToImageData(this Image image)
-            => new((int)image.width, (int)image.height, image.encoding, image.data);
-        
-
-        public static TextureFormat GetTextureFormat(string encoding) =>
-                encoding switch
-                {
-                    "rgb8" => TextureFormat.RGB24,
-                    "rgba8" => TextureFormat.RGBA32,
-                    "rgb16" => TextureFormat.RGB48,
-                    "rgba16" => TextureFormat.RGBA64,
-                    "bgra8" => TextureFormat.BGRA32,
-                    "mono8" => TextureFormat.Alpha8,
-                    "mono16" => TextureFormat.R16,
-                    _ => throw new ArgumentOutOfRangeException(nameof(encoding), encoding,
-                                                               "This type of encoding is not supported.")
-                };
-
-        private static string GetData(this object value)
+        private static string[] GetData(this object value)
         {
             switch (value)
             {
+            case RosVector3 vector:
+                return new[] {$"{vector.x:F3}, {vector.y:F3}, {vector.z:F3}"};
+            case Point point:
+                return new[] {$"{point.x:F3}, {point.y:F3}, {point.z:F3}"};
+            case RosQuaternion quaternion:
+                return new[] {$"{quaternion.x:F3}, {quaternion.y:F3}, {quaternion.z:F3}, {quaternion.w:F3}"};
+            case Header header:
+                return new[] {$"{header.stamp.secs}.{header.stamp.nsecs/1000000:000}"};
             case RosMessage message:
                 return GetData(message);
             case IEnumerable arr:
-                var builder = new StringBuilder("[");
+                var builder = new StringBuilder();
                 foreach (var o in arr)
                 {
-                    builder.Append($"{o.GetData()}, ");
+                    builder.Append($"{o.GetData()[0]}, ");
                 }
 
                 builder.Remove(builder.Length - 2, 2);
-                builder.Append("]");
-                return builder.ToString();
+                return new[] {builder.ToString()};
             default:
-                return value.ToString();
+                return new[] {value.ToString()};
             }
         }
     }

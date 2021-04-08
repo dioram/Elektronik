@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace Elektronik.Renderers
 {
     public class ImageRenderer : MonoBehaviour, IDataRenderer<byte[]>,
-                                 IDataRenderer<(int width, int height, byte[] array, TextureFormat format)>
+                                 IDataRenderer<ImageData>
     {
         public bool FlipVertically = false;
 
@@ -42,21 +42,21 @@ namespace Elektronik.Renderers
             });
         }
 
-        public void Render((int width, int height, byte[] array, TextureFormat format) data)
+        public void Render(ImageData data)
         {
             MainThreadInvoker.Instance.Enqueue(() =>
             {
                 if (_texture == null 
-                    || _texture.width != data.width 
-                    || _texture.height != data.height 
-                    || _texture.format != data.format)
+                    || _texture.width != data.Width 
+                    || _texture.height != data.Height 
+                    || _texture.format != data.Encoding)
                 {
-                    _texture = new Texture2D(data.width, data.height, data.format, false);
+                    _texture = new Texture2D(data.Width, data.Height, data.Encoding, false);
                 }
-                _texture.LoadRawTextureData(data.array);
+                _texture.LoadRawTextureData(data.Data);
                 if (FlipVertically) FlipTextureVertically(_texture);
                 _texture.Apply();
-                Fitter.aspectRatio = data.width / (float)data.height;
+                Fitter.aspectRatio = data.Width / (float)data.Height;
                 Target.texture = _texture;
             });
         }

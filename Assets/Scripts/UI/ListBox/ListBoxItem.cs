@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 namespace Elektronik.UI.ListBox
 {
-    [RequireComponent(typeof(Button))]
     public class ListBoxItem : MonoBehaviour
     {
         public event EventHandler OnClick;
@@ -18,6 +17,7 @@ namespace Elektronik.UI.ListBox
 
         protected virtual void Start()
         {
+            if (ClickButton == null) return;
             ClickButton.onClick.AddListener(() => OnClick?.Invoke(this, null));
         }
     }

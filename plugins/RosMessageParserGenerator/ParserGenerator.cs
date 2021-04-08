@@ -20,20 +20,14 @@ namespace Elektronik.RosMessageParserGenerator
             "Header", "String", "Double", "Bool", "SByte", "Byte",
             "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64",
         };
-        
+
         private static readonly Dictionary<string, string> FuncNames = new();
 
         private static Assembly? _ros;
         private static Type? _baseType;
 
         public void Initialize(GeneratorInitializationContext context)
-        { 
-// #if DEBUG
-//             if (!Debugger.IsAttached) 
-//             {
-//                 Debugger.Launch();
-//             } 
-// #endif
+        {
             _ros = Assembly.LoadFile(Path.Combine(GetSourceFileDir(), "RosBridgeClient.dll"));
             _baseType = _ros!.ExportedTypes.First(t => t.Name == "Message");
         }
@@ -46,7 +40,7 @@ namespace Elektronik.RosMessageParserGenerator
                                                   "public static partial class MessageParser {\n");
             // Static Constructor will be inserted here
             var insertIndex = sourceBuilder.Length;
-            
+
             foreach (var type in _ros!.ExportedTypes.Where(t => t.IsSubclassOf(_baseType)
                                                                    && !t.Name.Contains("`")
                                                                    && !t.Name.Contains("Action")
@@ -57,13 +51,14 @@ namespace Elektronik.RosMessageParserGenerator
             {
                 sourceBuilder.Append(GenerateParseMethod(type));
             }
-            
+
             // Creating static constructor
             var constructorBuilder = new StringBuilder("static MessageParser(){\n");
             foreach (var pair in FuncNames)
             {
                 constructorBuilder.Append($"Parsers.Add(\"{pair.Key}\", {pair.Value});\n");
             }
+
             constructorBuilder.Append("}\n\n");
             sourceBuilder.Insert(insertIndex, constructorBuilder);
 
@@ -88,7 +83,7 @@ namespace Elektronik.RosMessageParserGenerator
             tmp.Insert(1, "msg");
             messageName = string.Join("/", tmp);
             FuncNames.Add(messageName, $"Parse{parsingType.Name}");
-            
+
             foreach (var param in parameters)
             {
                 switch (param.ParameterType.IsArray)

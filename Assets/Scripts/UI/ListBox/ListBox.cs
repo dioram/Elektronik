@@ -25,13 +25,13 @@ namespace Elektronik.UI.ListBox
         public ListBoxItem itemPrefab;
         private ObjectPool _poolOfItems;
 
-        private ScrollRect _scrollView;
+        [SerializeField] private RectTransform Target;
         private List<ListBoxItem> _listOfItems;
 
         private void Awake()
         {
             _listOfItems = new List<ListBoxItem>();
-            _scrollView = GetComponentInChildren<ScrollRect>();
+            if (Target == null) Target = GetComponentInChildren<ScrollRect>().content;
             _poolOfItems = new ObjectPool(itemPrefab.gameObject);
         }
 
@@ -41,7 +41,7 @@ namespace Elektronik.UI.ListBox
         {
             ListBoxItem listViewItem = _poolOfItems.Spawn().GetComponent<ListBoxItem>();
             listViewItem.OnClick += SelectionChanged;
-            listViewItem.transform.SetParent(_scrollView.content);
+            listViewItem.transform.SetParent(Target);
             _listOfItems.Add(listViewItem);
             return listViewItem;
         }

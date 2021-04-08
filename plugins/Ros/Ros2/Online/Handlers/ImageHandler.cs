@@ -1,4 +1,5 @@
-﻿using Elektronik.RosPlugin.Common.Containers;
+﻿using Elektronik.Renderers;
+using Elektronik.RosPlugin.Common.Containers;
 
 namespace Elektronik.RosPlugin.Ros2.Online.Handlers
 {
@@ -15,8 +16,13 @@ namespace Elektronik.RosPlugin.Ros2.Online.Handlers
         {
             var image = message.CastTo<ImageMessage>();
             if (image is null) return;
-            _presenter.Present(new ImagePresenter.ImageData((int) image.width, (int) image.height, image.encoding,
-                                                            image.data.ToArray()));
+            _presenter.Present(new ImageData
+            {
+                Width = (int) image.width, 
+                Height = (int) image.height,
+                Encoding = ImageDataExt.GetTextureFormat(image.encoding),
+                Data = image.data.ToArray()
+            });
             message.Dispose();
         }
     }

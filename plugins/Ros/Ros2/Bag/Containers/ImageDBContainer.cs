@@ -1,4 +1,5 @@
 ﻿using Elektronik.Renderers;
+using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
@@ -8,7 +9,7 @@ using UnityEngine;
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
     public class ImageDBContainer 
-            : DBContainerToWindow<Image, ImageRenderer, (int width, int height, byte[] array, TextureFormat format)>
+            : DBContainerToWindow<Image, ImageRenderer, ImageData>
     {
 
         public ImageDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps) 
@@ -24,10 +25,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region DBContainerToWindow
         
-        protected override (int width, int height, byte[] array, TextureFormat format) ToRenderType(Image message)
+        protected override ImageData ToRenderType(Image message)
         {
-            return ((int) message.width, (int) message.height, message.data,
-                    RosMessageConvertExtender.GetTextureFormat(message.encoding));
+            return ImageDataExt.FromImageMessage(message);
         }
         
         protected override void SetRendererCallback()
