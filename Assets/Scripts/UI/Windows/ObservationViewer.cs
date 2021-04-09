@@ -22,7 +22,7 @@ namespace Elektronik.UI.Windows
         private void Awake()
         {
             Image.texture = Texture2D.whiteTexture;
-            Image.gameObject.SetActive(false);
+            Image.transform.parent.gameObject.SetActive(false);
             Window = GetComponent<Window>();
         }
 
@@ -79,12 +79,12 @@ namespace Elektronik.UI.Windows
                 Texture2D texture = new Texture2D(1024, 1024);
                 texture.LoadImage(File.ReadAllBytes(_currentFileName));
                 Image.texture = texture;
-                Image.gameObject.SetActive(true);
+                Image.transform.parent.gameObject.SetActive(true);
             }
             else
             {
                 Image.texture = Texture2D.whiteTexture;
-                Image.gameObject.SetActive(false);
+                Image.transform.parent.gameObject.SetActive(false);
             }
         }
 

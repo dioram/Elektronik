@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Elektronik.Clouds;
+using Elektronik.Containers;
+using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using Elektronik.UI.Windows;
 using UnityEngine;
@@ -11,7 +13,8 @@ namespace Elektronik.UI
         [SerializeField] private WindowsManager Manager;
         private Camera _camera;
         private ObservationViewer _floatingViewer;
-        private readonly List<Window> _pinnedViewers = new List<Window>();
+        private readonly Dictionary<(int, int), Window> _pinnedViewers = new Dictionary<(int, int), Window>();
+        private readonly List<IContainer<SlamObservation>> _containers = new List<IContainer<SlamObservation>>();
 
         void Start()
         {
@@ -30,13 +33,9 @@ namespace Elektronik.UI
             {
                 var data = hitInfo.transform.GetComponent<DataComponent<SlamObservation>>();
                 var title = $"Observation #{data.Data.Id}";
-                if (Input.GetMouseButton(0) && !_pinnedViewers.Exists(v => v.GetComponent<Window>().Title == title))
+                if (Input.GetMouseButton(0))
                 {
-                    Manager.CreateWindow<ObservationViewer>(title, (viewer, window) =>
-                    {
-                        viewer.Render(data);
-                        _pinnedViewers.Add(window);
-                    });
+                    CreateOrShowWindow(data, title);
                 }
                 else
                 {
@@ -47,6 +46,44 @@ namespace Elektronik.UI
             else
             {
                 if (_floatingViewer is { }) _floatingViewer.Hide();
+            }
+        }
+
+        private void CreateOrShowWindow(DataComponent<SlamObservation> data, string title)
+        {
+            var key = (data.Container.GetHashCode(), data.Data.Id);
+            if (!_containers.Contains(data.Container))
+            {
+                _containers.Add(data.Container);
+                data.Container.OnRemoved += DestroyObsoleteWindows;
+            }
+            if (!_pinnedViewers.ContainsKey(key))
+            {
+                Manager.CreateWindow<ObservationViewer>(title, (viewer, window) =>
+                {
+                    viewer.Render(data);
+                    _pinnedViewers.Add(key, window);
+                });
+            }
+            else
+            {
+                _pinnedViewers[key].Show();
+            }
+        }
+
+        private void DestroyObsoleteWindows(object container, RemovedEventArgs args)
+        {
+            foreach (var id in args.RemovedIds)
+            {
+                var key = (container.GetHashCode(), id);
+                if (_pinnedViewers.ContainsKey(key))
+                {
+                    MainThreadInvoker.Instance.Enqueue(() =>
+                    {
+                        Destroy(_pinnedViewers[key].gameObject);
+                        _pinnedViewers.Remove(key);
+                    });
+                }
             }
         }
     }

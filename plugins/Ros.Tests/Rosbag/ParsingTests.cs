@@ -40,7 +40,7 @@ namespace Elektronik.Ros.Tests.Rosbag
                     .Where(m => m is not null)
                     .Select(m => m!)
                     .ToListAsync();
-            Assert.AreEqual(10068, messages.Count);
+            Assert.AreEqual(24027, messages.Count);
             Assert.IsInstanceOf<Odometry>(messages[0]);
         }
 
