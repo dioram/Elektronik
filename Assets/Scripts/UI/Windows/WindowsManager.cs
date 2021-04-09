@@ -86,7 +86,7 @@ namespace Elektronik.UI.Windows
         private float[] VerticalAligns()
         {
             return Windows
-                    .Where(w => w.gameObject.activeInHierarchy)
+                    .Where(w => w.gameObject.activeInHierarchy && !w.IsMinimized)
                     .Select(w => (RectTransform) w.transform)
                     .SelectMany(t => new[] {t.anchoredPosition.x, t.anchoredPosition.x + t.sizeDelta.x})
                     .Concat(new[] {0, (float) Screen.width})
@@ -96,7 +96,7 @@ namespace Elektronik.UI.Windows
         private float[] HorizontalAligns()
         {
             return Windows
-                    .Where(w => w.gameObject.activeInHierarchy)
+                    .Where(w => w.gameObject.activeInHierarchy && !w.IsMinimized)
                     .Select(w => (RectTransform) w.transform)
                     .SelectMany(t => new[] {t.anchoredPosition.y - t.sizeDelta.y, t.anchoredPosition.y})
                     .Concat(new[] {0, (float) -Screen.height, (float) 40 - Screen.height})
