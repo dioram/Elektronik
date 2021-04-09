@@ -1,5 +1,5 @@
 ### The work with Elektronik Tools 2.0 starts from the main menu.
-![MainMenu](MainMenu.png)
+![MainMenu](Images/MainMenu.png)
 
 In the main menu you can select one of the modes of interaction with the Electronics.
 1. [Online mode](#Online) - for uncontrollable data stream. Mostly using for realtime data.
@@ -12,7 +12,7 @@ You can extend Elektronik with [plugins](Plugins-EN.md) to support your own prot
 
 # Settings
 
-![Settings](SettingsMenu.png)
+![Settings](Images/SettingsMenu.png)
 
 When you select mode you will see this settings window. Here you can select plugins and set their settings.
 In offline mode Elektronik supports only one active data source. So in this mode you can choose only one data source plugin.
@@ -27,12 +27,12 @@ In offline mode Elektronik supports only one active data source. So in this mode
 
 # Player controls
 
-![](PlayerSettingsHided.png)
+![](Images/PlayerSettingsHided.png)
 
 1. Back to settings.
 2. Hide/Expand player controls panel.
 
-![](PlayerSettingsExpanded.png)
+![](Images/PlayerSettingsExpanded.png)
 
 1. Points size slider.
 2. Turn on/off images form camera.
@@ -42,7 +42,7 @@ In offline mode Elektronik supports only one active data source. So in this mode
 
 # Offline
 
-![offline mode user interface](OfflineMode.png)
+![offline mode user interface](Images/OfflineMode.png)
 
 The picture above indicates the following controls and display information:
 
@@ -64,7 +64,7 @@ The picture above indicates the following controls and display information:
     
 # Online
 
-![Online mode](OnlineMode.png)
+![Online mode](Images/OnlineMode.png)
 
 Unlike the offline mode, there is no playback control in online mode and also some UI elements are missing for improved performance.
 
@@ -78,7 +78,7 @@ Management in the online mode is as follows:
 
 # Observations
 
-![Observations images](Observations.png)
+![Observations images](Images/Observations.png)
 
 Elektronik can show additional information about observation.
 If you hover mouse over observation object you will see floating window.

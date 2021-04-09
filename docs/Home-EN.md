@@ -13,6 +13,7 @@ Choose a section:
 - [Usage](Usage-EN.md)
 - [Internal API](API-EN.md)
 - [Write your own plugin](Plugins-EN.md)
+- [Windows for additional data](Windows-EN.md)
 
 Embeded plugins:
 - [Protobuf](Protobuf-EN.md)

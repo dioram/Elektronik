@@ -261,4 +261,4 @@ ISettingsHistory SettingsHistory { get; }
 
 Вся история настроек хранится в `C:\Users\<User>\AppData\LocalLow\Dioram\Elektronik\<Plugin.DisplayName>.json`.
 
-[<- Внутреннее API](API-RU.md) | [Protobuf plugin ->](Protobuf-RU.md)
+[<- Внутреннее API](API-RU.md) | [Окна для вывода дополнительных данных ->](Windows-RU.md)

@@ -156,4 +156,4 @@ You can familiar with Elektronik interaction example in the folder Examples/cxx 
 The example is implemented as google tests Unit-tests. To build this example we recommend to use 
 [vcpkg](https://github.com/Microsoft/vcpkg).
 
-[<- Write your own plugin](Plugins-EN.md) | [ROS ->](ROS-EN.md)
+[<- Windows for additional data](Windows-EN.md) | [ROS ->](ROS-EN.md)

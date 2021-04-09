@@ -230,4 +230,4 @@ In **DataSourceBase\<T\>** settings history is already implemented.
 
 All settings and history are stored in `C:\Users\<User>\AppData\LocalLow\Dioram\Elektronik\<Plugin.DisplayName>.json`.
 
-[<- Internal API](API-EN.md) | [Protobuf plugin ->](Protobuf-EN.md)
+[<- Internal API](API-EN.md) | [Windows for additional data ->](Windows-EN.md)
