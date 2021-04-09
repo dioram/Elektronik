@@ -9,6 +9,16 @@ namespace Elektronik.Renderers
     {
         [Range(0, 50)]
         public int MaxAmountOfRows;
+
+        public void LoadData(string[] header, string[][] data)
+        {
+            Clear();
+            SetHeader(header);
+            for (int i = 0; i < data.Length; i++)
+            {
+                _columns[i].LoadData(data[i]);
+            }
+        }
         
         public void SetHeader(string[] header)
         {
