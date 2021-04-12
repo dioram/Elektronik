@@ -21,8 +21,8 @@ MonoBehaviour:
     m_Address: Assets/Localization/UI Text Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 11400000, guid: 4b44fd5b774b9f3428cbd7c8bd7d2e11, type: 2}
-    m_TargetAsset: {fileID: 11400000, guid: 4b44fd5b774b9f3428cbd7c8bd7d2e11, type: 2}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: 8c69eb9b519e9fa45aecf1cde07a55d4, type: 2}
   m_SchemaSet:
