@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Threading;
-using Elektronik.Protobuf.Data;
+using Elektronik.Common.Data.Pb;
 using Google.Protobuf;
 using NUnit.Framework;
 

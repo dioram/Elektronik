@@ -1,8 +1,9 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Elektronik.Clouds;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Renderers;
-using Elektronik.UI.Windows;
+using Elektronik.UI.Localization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,7 +48,7 @@ namespace Elektronik.UI.Windows
             {
                 gameObject.SetActive(true);
                 _observation = data;
-                Window.Title = $"Observation #{data.Data.Id}";
+                Window.TitleLabel.SetLocalizedText("Observation #{0}", new List<object>{data.Data.Id});
                 SetData();
             });
         }

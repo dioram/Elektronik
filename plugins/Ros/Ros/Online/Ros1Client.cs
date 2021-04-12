@@ -1,7 +1,7 @@
 ﻿using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
-using Elektronik.Settings;
+using Elektronik.Settings.Bags;
 using RosSharp.RosBridgeClient.MessageTypes.Rosapi;
 using UnityEngine;
 

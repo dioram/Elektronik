@@ -353,6 +353,9 @@ MonoBehaviour:
   SelfPrefab: {fileID: 3654434711664828031, guid: 76725cc8ce4a6c84bbff5d2c858af4ba,
     type: 3}
   MinHeight: 40
+  LocalizedTable:
+    m_TableReference:
+      m_TableCollectionName: GUID:4b44fd5b774b9f3428cbd7c8bd7d2e11
 --- !u!114 &3654434711664828003
 MonoBehaviour:
   m_ObjectHideFlags: 0

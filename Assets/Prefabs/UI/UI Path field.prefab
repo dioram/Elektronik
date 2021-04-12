@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3658292136248447867}
   - component: {fileID: 3244745704914747271}
   - component: {fileID: 7192409647640735549}
+  - component: {fileID: 8729685396460272522}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -79,6 +80,41 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Browse...
+--- !u!114 &8729685396460272522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3507070723755946571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:4b44fd5b774b9f3428cbd7c8bd7d2e11
+    m_TableEntryReference:
+      m_KeyId: 89028013723648
+      m_Key: 
+    m_FallbackState: 0
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7192409647640735549}
+        m_TargetAssemblyTypeName: UnityEngine.UI.Text, UnityEngine.UI
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1
 --- !u!1 &7791269851443080765
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,11 +468,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1308538e5a6346f4a185b9687d924cf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SettingsBag:
+    ModificationTime: 
   FieldToolTip: 
   FieldName: 
-  FieldText: 
-  Field: {fileID: 8779474676383486289}
   Tooltip: {fileID: 8779474675176271082}
+  Field: {fileID: 8779474676383486289}
 --- !u!114 &2951192953047188554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -449,13 +486,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d74b580b8f35f418229f2476ecd683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ifFilePath: {fileID: 0}
-  folderMode: 0
-  initialPath: 
-  title: Load
-  buttonText: Select
-  showAllFiles: 0
-  filters: []
+  FolderMode: 0
+  InitialPath: 
+  Title: Load
+  ButtonText: Select
+  Filters: []
 --- !u!1 &8779474675449012763
 GameObject:
   m_ObjectHideFlags: 0
@@ -668,6 +703,9 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls: []
+  m_OnSubmit:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -710,6 +748,7 @@ GameObject:
   - component: {fileID: 8779474676769651693}
   - component: {fileID: 8779474676769651683}
   - component: {fileID: 8779474676769651682}
+  - component: {fileID: 435561232888423400}
   m_Layer: 0
   m_Name: Placeholder
   m_TagString: Untagged
@@ -777,7 +816,42 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enter value...
+  m_Text: Enter text...
+--- !u!114 &435561232888423400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8779474676769651692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:4b44fd5b774b9f3428cbd7c8bd7d2e11
+    m_TableEntryReference:
+      m_KeyId: 89896175931392
+      m_Key: 
+    m_FallbackState: 0
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8779474676769651682}
+        m_TargetAssemblyTypeName: UnityEngine.UI.Text, UnityEngine.UI
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1
 --- !u!1 &8779474676981560805
 GameObject:
   m_ObjectHideFlags: 0

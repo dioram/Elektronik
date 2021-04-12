@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers;
+using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Ros.Online.Handlers;
-using Elektronik.Settings;
+using Elektronik.Settings.Bags;
 using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.MessageTypes.Rosapi;
 

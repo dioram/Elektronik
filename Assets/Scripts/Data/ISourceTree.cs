@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Elektronik.Containers
+namespace Elektronik.Data
 {
     /// <summary> Data sources (eg. Containers) with this interface can be united in tree structure. </summary>
     public interface ISourceTree

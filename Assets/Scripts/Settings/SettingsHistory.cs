@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using Elektronik.Settings.Bags;
 using Newtonsoft.Json;
 using UnityEngine;
 

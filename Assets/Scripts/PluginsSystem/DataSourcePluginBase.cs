@@ -1,6 +1,7 @@
-﻿using Elektronik.Containers;
+﻿using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Settings;
+using Elektronik.Settings.Bags;
 
 namespace Elektronik.PluginsSystem
 {

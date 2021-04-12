@@ -20,7 +20,7 @@ namespace Elektronik.RosPlugin.Common.Containers
                     IsSupported = true,
                 };
             }
-            catch (ArgumentOutOfRangeException e)
+            catch (ArgumentOutOfRangeException)
             {
                 return new ImageData{IsSupported = false};
             }

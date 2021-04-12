@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Elektronik.Common.Data.Pb;
 using Elektronik.Extensions;
 using Elektronik.Offline;
 using Elektronik.PluginsSystem;

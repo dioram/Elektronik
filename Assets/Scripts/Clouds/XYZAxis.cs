@@ -4,7 +4,7 @@ namespace Elektronik.Clouds
 {
     public class XYZAxis : MonoBehaviour
     {
-        public float lengthOfAxis = 0.05f;
+        public float LengthOfAxis = 0.5f;
         private static Material _lineMaterial;
         private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
         private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
@@ -47,15 +47,15 @@ namespace Elektronik.Clouds
             //Draw X axis
             GL.Color(Color.red);
             GL.Vertex3(0, 0, 0);
-            GL.Vertex3(lengthOfAxis, 0.0f, 0.0f);
+            GL.Vertex3(LengthOfAxis, 0.0f, 0.0f);
             //Draw Y axis
             GL.Color(Color.green);
             GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0.0f, -lengthOfAxis, 0.0f);
+            GL.Vertex3(0.0f, -LengthOfAxis, 0.0f);
             //Draw Z axis
             GL.Color(Color.blue);
             GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0.0f, 0.0f, lengthOfAxis);
+            GL.Vertex3(0.0f, 0.0f, LengthOfAxis);
             GL.End();
             GL.PopMatrix();
         }

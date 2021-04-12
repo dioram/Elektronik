@@ -1,8 +1,7 @@
 ﻿using System;
-using System.IO;
 using UnityEngine;
 
-namespace Elektronik.Settings
+namespace Elektronik.Settings.Bags
 {
     [Serializable]
     public class AddressPortScaleSettingsBag : SettingsBag

@@ -11,8 +11,8 @@ namespace Elektronik.UI.Windows
     {
         public float MinHeight = 40;
         public float MinWidth = 80;
-        public string Title;
         public bool IsMinimized => _isMinimized;
+        public TMP_Text TitleLabel;
 
         public void Show()
         {
@@ -55,16 +55,16 @@ namespace Elektronik.UI.Windows
 
         #region Unity events
 
+        protected void Awake()
+        {
+            TitleLabel = transform.Find("Header/Title").GetComponent<TMP_Text>();
+        }
+
         protected void Start()
         {
             _edges = GetComponentsInChildren<ResizingEdge>();
             _header = transform.Find("Header").GetComponent<Image>();
             _content = transform.Find("Content").gameObject;
-            _titleLabel = transform.Find("Header/Title").GetComponent<TMP_Text>();
-            if (!string.IsNullOrEmpty(Title))
-            {
-                _titleLabel.text = Title;
-            }
         }
 
         #endregion
@@ -84,7 +84,6 @@ namespace Elektronik.UI.Windows
         [SerializeField] private Color HighlightHeaderColor = Color.blue;
         private ResizingEdge[] _edges;
         private Image _header;
-        private TMP_Text _titleLabel;
         private GameObject _content;
         private float _maximizedHeight;
         private bool _isMinimized;

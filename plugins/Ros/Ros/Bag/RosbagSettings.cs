@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Elektronik.Settings;
+using Elektronik.Settings.Bags;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Bag

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Elektronik.Settings;
+using Elektronik.Settings.Bags;
 using Elektronik.UI.Fields;
 using UnityEngine;
 using UnityEngine.UI;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Elektronik.Settings.Bags;
 using UnityEngine;
 
 namespace Elektronik.Settings

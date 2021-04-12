@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Elektronik.Settings
+namespace Elektronik.Settings.Bags
 {
     [Serializable]
     public class SettingsBag

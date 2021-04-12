@@ -1,0 +1,156 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI Text Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: UI Text
+  m_TableCollectionNameGuidString: 4b44fd5b774b9f3428cbd7c8bd7d2e11
+  m_Entries:
+  - m_Id: 90842468352
+    m_Key: Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 149415923712
+    m_Key: Online mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 201786003456
+    m_Key: Offline mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 222061268992
+    m_Key: Exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 276360728576
+    m_Key: Version
+    m_Metadata:
+      m_Items: []
+  - m_Id: 302046646272
+    m_Key: Online settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 392681361408
+    m_Key: Offline settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 447345725440
+    m_Key: Plugins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 490685468672
+    m_Key: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 522415378432
+    m_Key: History
+    m_Metadata:
+      m_Items: []
+  - m_Id: 557899190272
+    m_Key: Start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 599397634048
+    m_Key: Points size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 721292496896
+    m_Key: VR mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 752842051584
+    m_Key: Scene color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 793258364928
+    m_Key: Clear map
+    m_Metadata:
+      m_Items: []
+  - m_Id: 878159466496
+    m_Key: Loading data
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51659705290752
+    m_Key: Wrong settings for plugins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51813678190592
+    m_Key: No data source selected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70123740336128
+    m_Key: Camera
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71807581425664
+    m_Key: IP address
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71899822559232
+    m_Key: Port
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71972736339968
+    m_Key: Scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76461220433920
+    m_Key: Points
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76491331342336
+    m_Key: Tracked objects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76558255656960
+    m_Key: Observations
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76586382659584
+    m_Key: Lines
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76602098716672
+    m_Key: Infinite planes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76666057658368
+    m_Key: Special info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77303126298624
+    m_Key: Path to file
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80224966545408
+    m_Key: Observation #{0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89028013723648
+    m_Key: Browse...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89896175931392
+    m_Key: Enter text...
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    id: 0
+  references:
+    version: 1
+    00000000:
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables,
+        asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1618210911210

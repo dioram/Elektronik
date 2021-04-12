@@ -1,10 +1,11 @@
 ﻿using System;
+using Elektronik.Common.Data.Pb;
 using Elektronik.Extensions;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.GrpcServices;
 using Elektronik.Protobuf.Online.Presenters;
-using Elektronik.Settings;
+using Elektronik.Settings.Bags;
 using Grpc.Core;
 using UnityEngine;
 
@@ -27,7 +28,7 @@ namespace Elektronik.Protobuf.Online
         public override string Description => "This plugin plays data coming through " +
                 "<#7f7fe5><u><link=\"https://grpc.io/\">gRPC</link></u></color> with " +
                 "<#7f7fe5><u><link=\"https://developers.google.com/protocol-buffers/\">" +
-                "Protocol buffers</link></u></color>." +
+                "Protocol buffers</link></u></color>. " +
                 "You can find documentation for data package format " +
                 "<#7f7fe5><u><link=\"https://github.com/dioram/Elektronik-Tools-2.0/blob/master/docs/Protobuf-EN.md\">" +
                 "here</link></u></color>.";

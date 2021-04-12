@@ -430,6 +430,9 @@ MonoBehaviour:
     ModificationTime: 
   FieldToolTip: 
   FieldName: 
+  LocalizedTable:
+    m_TableReference:
+      m_TableCollectionName: GUID:4b44fd5b774b9f3428cbd7c8bd7d2e11
   Tooltip: {fileID: 3679474227343509567}
   CheckBox: {fileID: 4473719062154392084}
 --- !u!1 &8779474676981560805

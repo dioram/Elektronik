@@ -11,14 +11,12 @@ namespace Elektronik.UI
         private Button _browseButton;
         private InputField _ifFilePath;
 
-        public bool folderMode = false;
-        public string initialPath = null;
-        public string title = "Load";
-        public string buttonText = "Select";
-        public string[] filters;
+        public bool FolderMode = false;
+        public string InitialPath = null;
+        public string Title = "Load";
+        public string ButtonText = "Select";
+        public string[] Filters;
 
-
-        // Use this for initialization
         void Start()
         {
             _browseButton = GetComponentInChildren<Button>();
@@ -28,16 +26,16 @@ namespace Elektronik.UI
 
         void Browse()
         {
-            FileBrowser.SetFilters(true, filters);
+            FileBrowser.SetFilters(true, Filters);
             FileBrowser.ShowLoadDialog(path => _ifFilePath.text = path[0],
                                        () => { },
-                                       folderMode,
+                                       FolderMode,
                                        false,
-                                       string.IsNullOrEmpty(initialPath)
+                                       string.IsNullOrEmpty(InitialPath)
                                                ? Path.GetDirectoryName(_ifFilePath.text)
-                                               : initialPath,
-                                       title,
-                                       buttonText);
+                                               : InitialPath,
+                                       Title,
+                                       ButtonText);
         }
     }
 }

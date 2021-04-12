@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -170,6 +171,7 @@ namespace Elektronik.UI.Windows
         [DllImport("user32.dll")]
         private static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
 
+        [SuppressMessage("ReSharper", "UnusedMember.Local")]
         private enum WindowsCursors
         {
             StandardArrow = 32512,

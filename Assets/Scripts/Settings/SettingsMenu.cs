@@ -4,8 +4,10 @@ using System.Globalization;
 using System.Linq;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
+using Elektronik.Settings.Bags;
 using Elektronik.UI;
 using Elektronik.UI.ListBox;
+using Elektronik.UI.Localization;
 using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -52,7 +54,7 @@ namespace Elektronik.Settings
                     .Subscribe(_ =>
                     {
                         ErrorLabel.enabled = true;
-                        ErrorLabel.text = $"No data source selected";
+                        ErrorLabel.SetLocalizedText("No data source selected");
                     });
 
             LoadButton.OnClickAsObservable()
@@ -73,6 +75,7 @@ namespace Elektronik.Settings
                     break;
                 }
             }
+
             PluginSelected(this, new ListBox.SelectionChangedEventArgs(selectedIndex));
         }
 
@@ -129,7 +132,8 @@ namespace Elektronik.Settings
                     .OfType<PluginListBoxItem>()
                     .Where(lbi => !lbi.Plugin.Settings.Validate())
                     .Select(lbi => lbi.Plugin.DisplayName);
-            ErrorLabel.text = $"Wrong settings for plugins: {string.Join(", ", plugins)}";
+            ErrorLabel.SetLocalizedText("Wrong settings for plugins",
+                                        new List<object> {string.Join(", ", plugins)});
         }
 
         private void RecentSelected(object sender, ListBox.SelectionChangedEventArgs e)

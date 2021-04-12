@@ -3,6 +3,7 @@ cd plugins
 dotnet publish ContextMenuSetter -o ../Build/Plugins/ContextMenuSetter
 dotnet publish Protobuf -o ../Build/Plugins/Protobuf/libraries
 cd ..\\Build\\Plugins\\Protobuf\\libraries
+move *.csv ../data
 for %%I in (..\\..\\..\\Elektronik_Data\\Managed\\*.*) do del %%~nxI
 cd ../../../../plugins
 
@@ -13,5 +14,6 @@ cmake --install .
 cd ..
 dotnet publish Ros -o ../Build/Plugins/Ros/libraries
 cd ..\\Build\\Plugins\\Ros\\libraries
+move *.csv ../data
 for %%I in (..\\..\\..\\Elektronik_Data\\Managed\\*.*) do del %%~nxI
 cd ../../../../plugins

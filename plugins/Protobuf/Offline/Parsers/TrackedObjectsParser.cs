@@ -3,10 +3,10 @@ using System.Linq;
 using Elektronik.Commands;
 using Elektronik.Commands.Generic;
 using Elektronik.Commands.TrackedObj;
+using Elektronik.Common.Data.Pb;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Offline;
-using Elektronik.Protobuf.Data;
 
 namespace Elektronik.Protobuf.Offline.Parsers
 {

@@ -23,6 +23,30 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
             stream.Read(res!.Data, 0, dataLen);
             return res;
         }
+        
+        public static Record? Read(Stream stream, byte[] opCodes) 
+        {
+            var header = ReadHeader(stream);
+            int dataLen = stream.ReadInt32();
+            if (!opCodes.Contains(header["op"][0]))
+            {
+                stream.Position += dataLen;
+                return null;
+            }
+
+            var res = CreateRecord(header);
+            res!.Data = new byte[dataLen];
+            stream.Read(res!.Data, 0, dataLen);
+            return res;
+        }
+        
+        public static Record ReadHeaders(Stream stream)
+        {
+            var header = ReadHeader(stream);
+            int dataLen = stream.ReadInt32();
+            stream.Position += dataLen;
+            return CreateRecord(header);
+        }
 
         public static (string name, byte[] data) ReadField(Stream stream)
         {

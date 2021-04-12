@@ -32,10 +32,9 @@ namespace Elektronik.UI
             if (Physics.Raycast(ray, out RaycastHit hitInfo) && hitInfo.transform.CompareTag("Observation"))
             {
                 var data = hitInfo.transform.GetComponent<DataComponent<SlamObservation>>();
-                var title = $"Observation #{data.Data.Id}";
                 if (Input.GetMouseButton(0))
                 {
-                    CreateOrShowWindow(data, title);
+                    CreateOrShowWindow(data, "Observation #{0}");
                 }
                 else
                 {
@@ -57,13 +56,15 @@ namespace Elektronik.UI
                 _containers.Add(data.Container);
                 data.Container.OnRemoved += DestroyObsoleteWindows;
             }
+
             if (!_pinnedViewers.ContainsKey(key))
             {
                 Manager.CreateWindow<ObservationViewer>(title, (viewer, window) =>
-                {
-                    viewer.Render(data);
-                    _pinnedViewers.Add(key, window);
-                });
+                                                        {
+                                                            viewer.Render(data);
+                                                            _pinnedViewers.Add(key, window);
+                                                        },
+                                                        new List<object> {data.Data.Id});
             }
             else
             {

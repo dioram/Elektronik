@@ -44,6 +44,9 @@
         <None Update="e_sqlite3.dll">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="translations.csv">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

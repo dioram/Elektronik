@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Cameras;
 using Elektronik.Containers;
+using Elektronik.Data;
+using Elektronik.UI.Localization;
 using Elektronik.UI.Windows;
 using UniRx;
 using UnityEngine;
@@ -89,7 +91,7 @@ namespace Elektronik.UI
             }
 
             TreeButton.OnClickAsObservable().Subscribe(_ => ChangeState());
-            NameLabel.text = Node.DisplayName;
+            NameLabel.SetLocalizedText(Node.DisplayName);
 
             if (Node is ILookable lookable && Camera.main.GetComponent<LookableCamera>() is { } cam)
             {
@@ -135,7 +137,7 @@ namespace Elektronik.UI
             {
                 lock (Node.Children)
                 {
-                    NameLabel.text = Node.DisplayName;
+                    NameLabel.SetLocalizedText(Node.DisplayName);
                     var newChildren = Node.Children.Where(c => !_children.Exists(ui => ui.Node == c)).ToList();
                     foreach (var child in newChildren)
                     {

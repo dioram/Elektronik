@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Elektronik.Containers;
-using Elektronik.Protobuf.Data;
+using Elektronik.Common.Data.Pb;
+using Elektronik.Data;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 

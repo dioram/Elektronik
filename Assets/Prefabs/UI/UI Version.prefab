@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 3906353315155848805}
   - component: {fileID: 5680139911226365063}
   - component: {fileID: 2489740236158506649}
+  - component: {fileID: 1547052863581757625}
   m_Layer: 0
-  m_Name: Version
+  m_Name: UI Version
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,11 +76,11 @@ MonoBehaviour:
     m_MaxSize: 40
     m_Alignment: 5
     m_AlignByGeometry: 0
-    m_RichText: 1
+    m_RichText: 0
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Version X.X.XX
+  m_Text: Version 3.1.4.261
 --- !u!114 &2489740236158506649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,3 +93,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d15d0a2ee3a4a6baf3e880d85978511, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  VersionNumber: 3.1.4.282
+--- !u!114 &1547052863581757625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3773719361486625333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:4b44fd5b774b9f3428cbd7c8bd7d2e11
+    m_TableEntryReference:
+      m_KeyId: 276360728576
+      m_Key: 
+    m_FallbackState: 0
+  m_FormatArguments:
+  - {fileID: 2489740236158506649}
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5680139911226365063}
+        m_TargetAssemblyTypeName: UnityEngine.UI.Text, UnityEngine.UI
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1

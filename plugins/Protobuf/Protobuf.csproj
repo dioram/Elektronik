@@ -133,6 +133,9 @@
       <None Remove="libraries\Assembly-CSharp.pdb" />
       <None Remove="libraries\Assembly-CSharp.dll" />
       <None Remove="libraries\Assembly-CSharp-firstpass.pdb" />
+      <None Update="translations.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
     <ItemGroup>

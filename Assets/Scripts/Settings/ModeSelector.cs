@@ -8,9 +8,10 @@ namespace Elektronik.Settings
     {
         public static Mode Mode = Mode.Invalid;
     
-        public GameObject filePlayer;
-        public GameObject onlinePlayer;
-        public Text Label;
+        public GameObject FilePlayer;
+        public GameObject OnlinePlayer;
+        public Text OnlineLabel;
+        public Text OfflineLabel;
 
         private void Start()
         {
@@ -18,14 +19,16 @@ namespace Elektronik.Settings
             {
                 case Mode.Offline:
                 {
-                    if (filePlayer != null) filePlayer.SetActive(true);
-                    if (Label != null) Label.text = $"Offline {Label.text}";
+                    if (FilePlayer != null) FilePlayer.SetActive(true);
+                    if (OnlineLabel != null) OnlineLabel.enabled = false;
+                    if (OfflineLabel != null) OfflineLabel.enabled = true;
                     break;
                 }
                 case Mode.Online:
                 {
-                    if (onlinePlayer != null) onlinePlayer.SetActive(true);
-                    if (Label != null) Label.text = $"Online {Label.text}";
+                    if (OnlinePlayer != null) OnlinePlayer.SetActive(true);
+                    if (OnlineLabel != null) OnlineLabel.enabled = true;
+                    if (OfflineLabel != null) OfflineLabel.enabled = false;
                     break;
                 }
                 default:

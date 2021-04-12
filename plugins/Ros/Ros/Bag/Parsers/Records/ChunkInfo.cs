@@ -27,7 +27,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
             ConnectionCount = BitConverter.ToInt32(Header["count"], 0);
         }
 
-        public IEnumerable<long> GetIds()
+        public IEnumerable<int> GetIds()
         {
             using var stream = new MemoryStream(Data);
             while (stream.Position < stream.Length)

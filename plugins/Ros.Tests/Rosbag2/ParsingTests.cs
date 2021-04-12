@@ -55,7 +55,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             var message = _dbModel.Table<Message>().OrderBy(m => m.ID).First(m => m.TopicID == 35);
 
             var data = (MessageParser.Parse(message.Data, topic.Type, true) as PointCloud2)!;
-            Assert.AreEqual(256, data.header.seq);
+            Assert.AreEqual(0, data.header.seq);
             Assert.AreEqual(1614606828, data.header.stamp.secs);
             Assert.AreEqual(641145056, data.header.stamp.nsecs);
             Assert.AreEqual("base_link", data.header.frame_id);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Elektronik.UI.Localization;
 using UnityEngine;
 
 namespace Elektronik.UI.Windows
@@ -19,14 +20,15 @@ namespace Elektronik.UI.Windows
             Horizontal,
         }
 
-        public void CreateWindow<TComponent>(string title, Action<TComponent, Window> callback)
+        public void CreateWindow<TComponent>(string title, Action<TComponent, Window> callback, 
+                                             IList<object> titleFormatArgs = null)
         {
             MainThreadInvoker.Instance.Enqueue(() =>
             {
                 var prefab = RendererWindowsPrefabs.First(g => g.GetComponent<TComponent>() != null);
                 var go = Instantiate(prefab, Canvas);
                 var window = go.GetComponent<Window>();
-                window.Title = title;
+                window.TitleLabel.SetLocalizedText(title, titleFormatArgs);
                 window.transform.Find("Header").GetComponent<HeaderDragHandler>().Manager = this;
                 foreach (var edge in window.GetComponentsInChildren<ResizingEdge>())
                 {
@@ -37,6 +39,11 @@ namespace Elektronik.UI.Windows
                 Windows.Add(window);
                 callback(go.GetComponent<TComponent>(), window);
             });
+        }
+
+        public void OnWindowDestroyed(Window sender)
+        {
+            Windows.Remove(sender);
         }
 
         public void Align(RectTransform tr)
@@ -99,7 +106,7 @@ namespace Elektronik.UI.Windows
                     .Where(w => w.gameObject.activeInHierarchy && !w.IsMinimized)
                     .Select(w => (RectTransform) w.transform)
                     .SelectMany(t => new[] {t.anchoredPosition.y - t.sizeDelta.y, t.anchoredPosition.y})
-                    .Concat(new[] {0, (float) -Screen.height, (float) 40 - Screen.height})
+                    .Concat(new[] {0, -Screen.height, (float) 40 - Screen.height})
                     .ToArray();
         }
 

@@ -1,6 +1,6 @@
 ﻿using Elektronik.Commands;
+using Elektronik.Common.Data.Pb;
 using Elektronik.Offline;
-using Elektronik.Protobuf.Data;
 
 namespace Elektronik.Protobuf.Offline
 {

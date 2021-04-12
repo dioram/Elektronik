@@ -8,17 +8,17 @@ namespace Elektronik.Cameras
     {
         private Vector3 _targetPosition;
         private Quaternion _targetRotation;
-        public float fly2TargetDistanceDelta = .25f;
+        public float Fly2TargetDistanceDelta = .25f;
 
-        public float distance = 10.0f;
-        public float xSpeed = 120.0f;
-        public float ySpeed = 120.0f;
+        public float Distance = 10.0f;
+        public float XSpeed = 120.0f;
+        public float YSpeed = 120.0f;
 
-        public float yMinLimit = -80f;
-        public float yMaxLimit = 80f;
+        public float YMinLimit = -80f;
+        public float YMaxLimit = 80f;
 
-        public float distanceMin = .5f;
-        public float distanceMax = 15f;
+        public float DistanceMin = .5f;
+        public float DistanceMax = 15f;
 
         float _x = 0.0f;
         float _y = 0.0f;
@@ -89,10 +89,10 @@ namespace Elektronik.Cameras
                 float currentDistance = Vector3.Distance(transform.position, _targetPosition);
                 _targetRotation = Quaternion.LookRotation((_targetPosition - transform.position).normalized);
                 transform.position = Vector3.MoveTowards(transform.position, _targetPosition,
-                                                         fly2TargetDistanceDelta * currentDistance * .05f);
+                                                         Fly2TargetDistanceDelta * currentDistance * .05f);
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, _targetRotation,
-                                                              fly2TargetDistanceDelta + (1 / currentDistance));
-                if (currentDistance <= distance)
+                                                              Fly2TargetDistanceDelta + (1 / currentDistance));
+                if (currentDistance <= Distance)
                 {
                     CurrentState = State.Active;
                     _x = transform.rotation.eulerAngles.y;
@@ -111,20 +111,20 @@ namespace Elektronik.Cameras
 
                 if (Input.GetMouseButton(1))
                 {
-                    _x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
-                    _y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
-                    _y = ClampAngle(_y, yMinLimit, yMaxLimit);
+                    _x += Input.GetAxis("Mouse X") * XSpeed * Distance * 0.02f;
+                    _y -= Input.GetAxis("Mouse Y") * YSpeed * 0.02f;
+                    _y = ClampAngle(_y, YMinLimit, YMaxLimit);
                 }
 
                 Quaternion rotation = Quaternion.Euler(_y, _x, 0);
-                distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 5, distanceMin, distanceMax);
+                Distance = Mathf.Clamp(Distance - Input.GetAxis("Mouse ScrollWheel") * 5, DistanceMin, DistanceMax);
                 RaycastHit hit;
                 if (Physics.Linecast(_targetPosition, transform.position, out hit))
                 {
-                    distance -= hit.distance;
+                    Distance -= hit.distance;
                 }
 
-                Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
+                Vector3 negDistance = new Vector3(0.0f, 0.0f, -Distance);
                 Vector3 position = rotation * negDistance + _targetPosition;
                 transform.rotation = rotation;
                 transform.position = position;

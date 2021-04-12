@@ -1,4 +1,5 @@
 ﻿using Elektronik.Settings;
+using Elektronik.Settings.Bags;
 using JetBrains.Annotations;
 
 namespace Elektronik.PluginsSystem

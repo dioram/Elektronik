@@ -1,7 +1,7 @@
 ﻿using Elektronik.Commands;
+using Elektronik.Common.Data.Pb;
 using Elektronik.Data.Converters;
 using Elektronik.Offline;
-using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Presenters;
 
 namespace Elektronik.Protobuf.Offline.Parsers

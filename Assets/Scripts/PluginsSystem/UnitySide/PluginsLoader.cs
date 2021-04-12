@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Elektronik.UI.Localization;
 using Debug = UnityEngine.Debug;
 
 namespace Elektronik.PluginsSystem.UnitySide
@@ -41,10 +42,12 @@ namespace Elektronik.PluginsSystem.UnitySide
                                                             !p.IsAbstract)
                                              .Select(InstantiatePlugin<IElektronikPlugin>)
                                              .Where(p => p != null));
+                    TextLocalizationExtender.ImportTranslations(Path.Combine(Path.GetDirectoryName(file)!,
+                                                                             @"../data/translations.csv"));
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError(file);
+                    Debug.LogError($"Plugin load error: {file}, {e.Message}");
                 }
             }
 
@@ -54,18 +57,25 @@ namespace Elektronik.PluginsSystem.UnitySide
         private static void SetupContextMenu(string elektronikExe)
         {
 #if UNITY_STANDALONE_WIN
-            var setter = new Process
+            try
             {
-                StartInfo =
+                var setter = new Process
                 {
-                    FileName = Path.Combine(Path.GetDirectoryName(elektronikExe)!,
-                                            @"Plugins\ContextMenuSetter\ContextMenuSetter.exe"),
-                    Arguments = elektronikExe + " " + string.Join(" ",
-                                                                  Plugins.OfType<IDataSourcePluginOffline>()
-                                                                          .SelectMany(p => p.SupportedExtensions))
-                }
-            };
-            setter.Start();
+                    StartInfo =
+                    {
+                        FileName = Path.Combine(Path.GetDirectoryName(elektronikExe)!,
+                                                @"Plugins\ContextMenuSetter\ContextMenuSetter.exe"),
+                        Arguments = elektronikExe + " " + string.Join(" ",
+                                                                      Plugins.OfType<IDataSourcePluginOffline>()
+                                                                              .SelectMany(p => p.SupportedExtensions))
+                    }
+                };
+                setter.Start();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Context menu setter error: {e.Message}");
+            }
 #endif
         }
 

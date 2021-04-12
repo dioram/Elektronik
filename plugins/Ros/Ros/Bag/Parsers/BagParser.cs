@@ -15,6 +15,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
         private readonly FileStream _file;
         private (int, int)? _version;
         private readonly List<Connection> _connections = new();
+        private readonly List<ChunkInfo> _chunkInfos = new();
 
         public BagParser(string fileName)
         {
@@ -40,11 +41,32 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
             return _connections;
         }
 
+        public IEnumerable<ChunkInfo> GetMetadata()
+        {
+            if (_chunkInfos.Count == 0)
+            {
+                _file.Position = 13;
+                var bagHeader = RecordsFactory.ReadHeaders(_file) as BagHeader;
+                _file.Position = bagHeader!.IndexPos;
+                while (_file.Position < _file.Length)
+                {
+                    var info = RecordsFactory.Read<ChunkInfo>(_file, ChunkInfo.OpCode);
+                    if (info is not null) _chunkInfos.Add(info);
+                }
+            }
+
+            return _chunkInfos;
+        }
+
         public async IAsyncEnumerable<MessageData> ReadMessagesAsync(IEnumerable<Connection>? topics = null)
         {
             var connections = GetTopics().ToList();
-            int[]? actualIds = topics?.Select(c => c.Id).ToArray();
-            var actualChunks = GetActualChunks(actualIds);
+            int[] actualIds = (topics?.Select(c => c.Id) ?? connections.Select(c => c.Id)).ToArray();
+            var actualChunks = new Queue<long>(GetMetadata()
+                                                       .Where(c => c.GetIds().Intersect(actualIds).Any())
+                                                       .Select(c => c.ChunkPos)
+                                                       .OrderBy(c => c));
+            
             var activeTasks = new ConcurrentQueue<Task<IEnumerable<MessageData>>>();
 
             var _ = Task.Run(() =>
@@ -88,24 +110,6 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
             }
 
             return record!.Unchunk(allowedTopicIds);
-        }
-
-        private Queue<long> GetActualChunks(int[]? actualIds = null)
-        {
-            Queue<long> actualChunks = new();
-            _file.Position = 13;
-            while (_file.Position < _file.Length)
-            {
-                var record = RecordsFactory.Read<ChunkInfo>(_file, ChunkInfo.OpCode);
-                if (record == null) continue;
-                if (actualIds == null
-                    || actualIds.Any(id => record.GetIds().Contains(id) && !actualChunks.Contains(record.ChunkPos)))
-                {
-                    actualChunks.Enqueue(record.ChunkPos);
-                }
-            }
-
-            return actualChunks;
         }
 
         private (int, int) ReadVersion()

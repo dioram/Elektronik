@@ -1,6 +1,7 @@
 ﻿using System;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
+using Elektronik.UI.Localization;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -44,7 +45,7 @@ namespace Elektronik.UI.ListBox
         {
             base.Start();
             _label.text = $"{Plugin.DisplayName} (v{Plugin.GetVersion()})";
-            _descriptionLabel.text = Plugin.Description;
+            _descriptionLabel.SetLocalizedText(Plugin.Description);
 
             _toggle.OnValueChangedAsObservable()
                     .Where(state => state)

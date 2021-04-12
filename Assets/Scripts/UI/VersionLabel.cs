@@ -7,11 +7,11 @@ namespace Elektronik.UI
     [ExecuteInEditMode]
     public class VersionLabel : MonoBehaviour
     {
-        private Text _label;
-        private void Start()
+        public string VersionNumber = "";
+        
+        private void Awake()
         {
-            _label = GetComponent<Text>();
-            _label.text = $"Version {Application.version}";
+            VersionNumber = Application.version;
         }
     }
 }

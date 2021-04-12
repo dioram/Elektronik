@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers;
+using Elektronik.Data;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using SQLite;
@@ -51,7 +52,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         #region IVisible
 
         public virtual bool IsVisible { get; set; } = true;
-        public bool ShowButton { get; }
+        public bool ShowButton { get; } = true;
 
         #endregion
 

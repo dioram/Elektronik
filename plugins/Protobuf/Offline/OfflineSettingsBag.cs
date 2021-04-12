@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Elektronik.Settings;
+using Elektronik.Settings.Bags;
 using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline
@@ -8,10 +9,10 @@ namespace Elektronik.Protobuf.Offline
     [Serializable]
     public class OfflineSettingsBag : SettingsBag
     {
-        [CheckForEquals, Path(PathAttribute.PathTypes.File, new[] {".bag"}), Tooltip("Choose file path:")]
+        [CheckForEquals, Path(PathAttribute.PathTypes.File, new[] {".bag"}), Tooltip("Path to file")]
         public string FilePath;
 
-        [CheckForEquals, Path(PathAttribute.PathTypes.Directory, new[] {""}), Tooltip("Choose path ot images:")]
+        [CheckForEquals, Path(PathAttribute.PathTypes.Directory, new[] {""}), Tooltip("Path to images")]
         public string ImagePath;
 
         public float Scale = 10;

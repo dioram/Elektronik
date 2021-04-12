@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Elektronik.Common.Data.Pb;
 using Elektronik.Containers;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Protobuf.Data;
 using Grpc.Core;
 
 namespace Elektronik.Protobuf.Online.GrpcServices

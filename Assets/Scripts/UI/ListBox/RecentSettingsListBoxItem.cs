@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using Elektronik.Settings;
+using Elektronik.Settings.Bags;
 using UnityEngine.UI;
 
 namespace Elektronik.UI.ListBox

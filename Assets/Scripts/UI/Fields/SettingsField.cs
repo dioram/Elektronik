@@ -1,5 +1,6 @@
 ﻿using System;
-using Elektronik.Settings;
+using Elektronik.Settings.Bags;
+using Elektronik.UI.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +18,7 @@ namespace Elektronik.UI.Fields
         
         protected virtual void Start()
         {
-            Tooltip.text = FieldToolTip;
+            Tooltip.SetLocalizedText(FieldToolTip);
         }
     }
 }
