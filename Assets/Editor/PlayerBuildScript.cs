@@ -1,4 +1,5 @@
-﻿using UnityEditor.AddressableAssets.Settings;
+﻿using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 
 namespace Elektronik.Editor
 {
@@ -6,6 +7,8 @@ namespace Elektronik.Editor
     {
         public static void BuildAddressables()
         {
+            var s = AddressableAssetSettingsDefaultObject.Settings;
+            s.buildSettings.bundleBuildPath = "./AddressableAssetsData";
             AddressableAssetSettings.BuildPlayerContent();
         }
     }
