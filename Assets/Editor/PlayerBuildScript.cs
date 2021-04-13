@@ -1,5 +1,4 @@
-﻿using UnityEditor;
-using UnityEditor.AddressableAssets.Settings;
+﻿using UnityEditor.AddressableAssets.Settings;
 
 namespace Elektronik.Editor
 {
@@ -8,8 +7,6 @@ namespace Elektronik.Editor
         public static void BuildAddressables()
         {
             AddressableAssetSettings.BuildPlayerContent();
-            BuildPipeline.BuildPlayer(EditorBuildSettings.scenes, @".\Build\Elektronik.exe",
-                                      EditorUserBuildSettings.activeBuildTarget, BuildOptions.None);
         }
     }
 }
