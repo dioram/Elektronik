@@ -1,8 +1,6 @@
 ﻿#if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build;
-using UnityEditor.Build.Pipeline.Utilities;
 using UnityEditor.Build.Reporting;
 
 namespace Elektronik
@@ -13,10 +11,6 @@ namespace Elektronik
 
         public void OnPreprocessBuild(BuildReport report)
         {
-            AddressableAssetSettings.CleanPlayerContent();
-            BuildCache.PurgeCache(false);
-            AddressableAssetSettings.BuildPlayerContent();
-            
             string currentVersion = PlayerSettings.bundleVersion;
 
             int major = int.Parse(currentVersion.Split('.')[0]);
