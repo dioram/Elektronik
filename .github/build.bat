@@ -1,10 +1,10 @@
 ﻿"C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe" -quit -accept-apiupdate -batchmode -serial %1 -username %2 -password %3 -logFile .\Logs\pre_build.log -executeMethod Elektronik.Editor.PlayerBuildScript.BuildAddressables -projectPath .\
-"C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe" -quit -accept-apiupdate -batchmode -serial %1 -username %2 -password %3 -logPath .\Logs\build.log -projectPath .\ -buildWindows64Player .\Build\Elektronik.exe 
+"C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe" -quit -accept-apiupdate -batchmode -serial %1 -username %2 -password %3 -logFile .\Logs\build.log -projectPath .\ -buildWindows64Player .\Build\Elektronik.exe 
 cd plugins
 dotnet publish ContextMenuSetter -o ../Build/Plugins/ContextMenuSetter
 dotnet publish Protobuf -o ../Build/Plugins/Protobuf/libraries
 cd ..\\Build\\Plugins\\Protobuf\\libraries
-md ../data
+mkdir ..\\data
 move translation.csv ../data/translation.csv
 for %%I in (..\\..\\..\\Elektronik_Data\\Managed\\*.*) do del %%~nxI
 cd ../../../../plugins
@@ -16,7 +16,7 @@ cmake --install .
 cd ..
 dotnet publish Ros -o ../Build/Plugins/Ros/libraries
 cd ..\\Build\\Plugins\\Ros\\libraries
-md ../data
+mkdir ..\\data
 move translation.csv ../data/translation.csv
 for %%I in (..\\..\\..\\Elektronik_Data\\Managed\\*.*) do del %%~nxI
 cd ../../../../plugins
