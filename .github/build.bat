@@ -5,7 +5,8 @@ dotnet publish ContextMenuSetter -o ../Build/Plugins/ContextMenuSetter
 dotnet publish Protobuf -o ../Build/Plugins/Protobuf/libraries
 cd ..\\Build\\Plugins\\Protobuf\\libraries
 mkdir ..\\data
-move translation.csv ../data/translation.csv
+move *.csv ..\\data
+for /R .\\ %%I in (*.proto) do move %%I ..\\data
 for %%I in (..\\..\\..\\Elektronik_Data\\Managed\\*.*) do del %%~nxI
 cd ../../../../plugins
 
@@ -17,6 +18,6 @@ cd ..
 dotnet publish Ros -o ../Build/Plugins/Ros/libraries
 cd ..\\Build\\Plugins\\Ros\\libraries
 mkdir ..\\data
-move translation.csv ../data/translation.csv
+move *.csv ..\\data
 for %%I in (..\\..\\..\\Elektronik_Data\\Managed\\*.*) do del %%~nxI
 cd ../../../../plugins
