@@ -1,9 +1,9 @@
 ﻿using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 
-namespace Elektronik
+namespace Elektronik.Editor
 {
-    public static class BuildScript
+    public static class PlayerBuildScript
     {
         public static void BuildAddressables()
         {
