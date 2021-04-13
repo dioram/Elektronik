@@ -34,10 +34,10 @@ set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/../../build/Plugins/Ros/libraries
 set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../build/Plugins/Ros/libraries)
 
 set(DEPLOY_DLLS)
-target_copy_dlls(ROS2DDS fastrtps fastcdr asio openssl tinyxml2)
 file(GLOB DEPLOY_DLLS ${CMAKE_BINARY_DIR}/*.dll)
 set(DEPLOY_LIBS)
 target_copy_libs(ROS2DDS foonathan_memory)
 file(GLOB DEPLOY_LIBS ${CMAKE_BINARY_DIR}/*.lib)
+
 install(FILES ${DEPLOY_DLLS} DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${DEPLOY_LIBS} DESTINATION ${CMAKE_INSTALL_BINDIR})
