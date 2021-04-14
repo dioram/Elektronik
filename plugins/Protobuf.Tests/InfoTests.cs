@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
-using Elektronik.Common.Data.Pb;
+using Elektronik.Protobuf.Data;
 using Google.Protobuf;
 using NUnit.Framework;
 

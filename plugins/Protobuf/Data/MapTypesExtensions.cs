@@ -4,7 +4,7 @@ using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
 
-namespace Elektronik.Common.Data.Pb
+namespace Elektronik.Protobuf.Data
 {
     public static class PacketPbExtensions
     {

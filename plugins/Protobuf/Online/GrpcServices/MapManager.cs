@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Elektronik.Common.Data.Pb;
 using Elektronik.Containers;
+using Elektronik.Protobuf.Data;
 using Grpc.Core;
 
 namespace Elektronik.Protobuf.Online.GrpcServices

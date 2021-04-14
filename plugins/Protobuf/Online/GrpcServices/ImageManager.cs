@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Elektronik.Common.Data.Pb;
+using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.Presenters;
 using Grpc.Core;
 

@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System.IO;
 using System.Linq;
-using Elektronik.Common.Data.Pb;
+using Elektronik.Protobuf.Data;
 using Google.Protobuf;
 
 namespace Protobuf.Tests
