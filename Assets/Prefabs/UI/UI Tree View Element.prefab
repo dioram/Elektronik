@@ -226,11 +226,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1498298380941210238}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 42cf7d102ca749f0866afd27ed42ab23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Events: []
   Icons:
   - {fileID: 21300000, guid: dab0c88c894eb9b4ca7c77873b9920e7, type: 3}
   - {fileID: 21300000, guid: 1e2a79ab087a66146ab9e30a1813c8cf, type: 3}
@@ -823,6 +824,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42cf7d102ca749f0866afd27ed42ab23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Events: []
   Icons:
   - {fileID: 21300000, guid: 51cc25acfafd4fd4b8031a0585874ba4, type: 3}
   - {fileID: 21300000, guid: 908100b6dd1bcdc4da431f22726190e5, type: 3}
@@ -1129,6 +1131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42cf7d102ca749f0866afd27ed42ab23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Events: []
   Icons:
   - {fileID: 21300000, guid: d69368c4ca3caa74a81e6d85555faea2, type: 3}
   - {fileID: 21300000, guid: a48208bf73f30d647ba75579735b48cb, type: 3}
