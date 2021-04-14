@@ -151,6 +151,10 @@ MonoBehaviour:
     m_Key: Trace lifetime
     m_Metadata:
       m_Items: []
+  - m_Id: 732357097295872
+    m_Key: Connections
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

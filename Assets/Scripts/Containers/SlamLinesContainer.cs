@@ -138,17 +138,15 @@ namespace Elektronik.Containers
         public void Remove(IEnumerable<SlamLine> items)
         {
             List<int> ids = new List<int>();
-            foreach (var l in items)
+            foreach (var line in items)
             {
-                var index = _connectionsIndices[l];
+                if (!_connectionsIndices.ContainsKey(line)) continue;
+                var index = _connectionsIndices[line];
+                _connectionsIndices.Remove(line);
+                if (!_connections.ContainsKey(index)) continue;
                 ids.Add(index);
                 _connections.Remove(index);
                 _freeIds.Enqueue(index);
-            }
-
-            foreach (var line in items)
-            {
-                _connectionsIndices.Remove(line);
             }
 
             if (IsVisible)

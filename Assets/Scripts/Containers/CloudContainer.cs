@@ -42,6 +42,7 @@ namespace Elektronik.Containers
         {
             lock (_items)
             {
+                RemoveTraces(_items.Values);
                 var ids = _items.Keys.ToList();
                 _items.Clear();
                 if (IsVisible)
@@ -62,6 +63,7 @@ namespace Elektronik.Containers
         {
             lock (_items)
             {
+                RemoveTraces(new [] {item});
                 var res = _items.Remove(item.Id);
                 if (IsVisible)
                 {
@@ -84,6 +86,7 @@ namespace Elektronik.Containers
         {
             lock (_items)
             {
+                RemoveTraces(new []{_items[index]});
                 _items.Remove(index);
                 if (IsVisible)
                 {
@@ -134,6 +137,7 @@ namespace Elektronik.Containers
             lock (_items)
             {
                 var list = items.ToList();
+                RemoveTraces(list);
                 foreach (var ci in list)
                 {
                     _items.Remove(ci.Id);
@@ -150,7 +154,7 @@ namespace Elektronik.Containers
         {
             lock (_items)
             {
-                CreateTrace(new [] {item});
+                CreateTraces(new [] {item});
                 _items[item.Id] = item;
                 if (IsVisible)
                 {
@@ -163,7 +167,7 @@ namespace Elektronik.Containers
         {
             lock (_items)
             {
-                CreateTrace(items);
+                CreateTraces(items);
                 foreach (var ci in items)
                 {
                     _items[ci.Id] = ci;
@@ -253,10 +257,18 @@ namespace Elektronik.Containers
         private readonly SortedDictionary<int, TCloudItem> _items = new SortedDictionary<int, TCloudItem>();
         private bool _isVisible = true;
         private readonly SlamLinesContainer _traceContainer = new SlamLinesContainer();
-        private int _tasks = -1;
+        private int _tasks = 0;
 
+        private void RemoveTraces(IEnumerable<TCloudItem> items)
+        {
+            lock (_traceContainer)
+            {
+                _traceContainer.Remove(Enumerable.Range(0, _tasks)
+                                               .SelectMany(id => items.Select(i => new SlamLine(i.Id, id))));
+            }
+        }
 
-        private void CreateTrace(IEnumerable<TCloudItem> items)
+        private void CreateTraces(IEnumerable<TCloudItem> items)
         {
             if (Duration <= 0 || !TraceEnabled) return;
 
@@ -275,14 +287,14 @@ namespace Elektronik.Containers
             _traceContainer.AddRange(traces);
             Task.Run(() =>
             {
-                _tasks--;
+                _tasks++;
                 Thread.Sleep(Duration);
                 lock (_traceContainer)
                 {
                     _traceContainer.Remove(traces);
                 }
 
-                _tasks++;
+                _tasks--;
             });
         }
         #endregion

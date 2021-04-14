@@ -158,6 +158,10 @@ MonoBehaviour:
     m_Localized: 'Trace lifetime:'
     m_Metadata:
       m_Items: []
+  - m_Id: 732357097295872
+    m_Localized: Connections
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:
