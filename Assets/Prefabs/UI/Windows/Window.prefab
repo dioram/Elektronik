@@ -640,6 +640,7 @@ GameObject:
   - component: {fileID: 4178012200927366601}
   - component: {fileID: 4968420213671230980}
   - component: {fileID: 6680217321974353104}
+  - component: {fileID: 6398037178270859284}
   m_Layer: 0
   m_Name: MinimizeButton
   m_TagString: Untagged
@@ -841,6 +842,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &6398037178270859284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1633165849779494453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
+    type: 3}
+  TooltipText: Minimize
+  Offset: {x: 0, y: 40}
 --- !u!1 &2332260864402391318
 GameObject:
   m_ObjectHideFlags: 0
@@ -929,6 +946,7 @@ GameObject:
   - component: {fileID: 1543287955057864686}
   - component: {fileID: 525956749614829747}
   - component: {fileID: 5749458867430198248}
+  - component: {fileID: 8812173608877771680}
   m_Layer: 0
   m_Name: CloseButton
   m_TagString: Untagged
@@ -1070,6 +1088,22 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &8812173608877771680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3592646623150070923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
+    type: 3}
+  TooltipText: Close
+  Offset: {x: 0, y: 40}
 --- !u!114 &3659021247190570395
 MonoBehaviour:
   m_ObjectHideFlags: 0

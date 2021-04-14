@@ -89,6 +89,7 @@ GameObject:
   - component: {fileID: 601642210422958158}
   - component: {fileID: 6726690276359684712}
   - component: {fileID: 8599606782316953650}
+  - component: {fileID: 3973071743379563035}
   m_Layer: 0
   m_Name: TraceButton
   m_TagString: Untagged
@@ -234,6 +235,22 @@ MonoBehaviour:
   - {fileID: 21300000, guid: dab0c88c894eb9b4ca7c77873b9920e7, type: 3}
   - {fileID: 21300000, guid: 1e2a79ab087a66146ab9e30a1813c8cf, type: 3}
   TargetImage: {fileID: 3462413717095775695}
+--- !u!114 &3973071743379563035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498298380941210238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
+    type: 3}
+  TooltipText: Trace
+  Offset: {x: 0, y: 40}
 --- !u!1 &2214842138114993958
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,6 +264,7 @@ GameObject:
   - component: {fileID: 9043382921487154560}
   - component: {fileID: 8519741931512456391}
   - component: {fileID: 6076283851386966927}
+  - component: {fileID: 3429946654588806334}
   m_Layer: 0
   m_Name: WindowButton
   m_TagString: Untagged
@@ -376,6 +394,22 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &3429946654588806334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2214842138114993958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
+    type: 3}
+  TooltipText: Show window
+  Offset: {x: 0, y: 40}
 --- !u!1 &3654434711590099038
 GameObject:
   m_ObjectHideFlags: 0
@@ -647,6 +681,7 @@ GameObject:
   - component: {fileID: 3654434712273500215}
   - component: {fileID: 3654434712273500214}
   - component: {fileID: 3654434712273500218}
+  - component: {fileID: 6716704544384917487}
   m_Layer: 0
   m_Name: VisibleButton
   m_TagString: Untagged
@@ -792,6 +827,22 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 51cc25acfafd4fd4b8031a0585874ba4, type: 3}
   - {fileID: 21300000, guid: 908100b6dd1bcdc4da431f22726190e5, type: 3}
   TargetImage: {fileID: 3654434711590099008}
+--- !u!114 &6716704544384917487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3654434712273500212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
+    type: 3}
+  TooltipText: Visibility
+  Offset: {x: 0, y: 40}
 --- !u!1 &3654434712727471053
 GameObject:
   m_ObjectHideFlags: 0
@@ -1376,6 +1427,7 @@ GameObject:
   - component: {fileID: 6506919928706337052}
   - component: {fileID: 3828753632466485585}
   - component: {fileID: 1194000048086753488}
+  - component: {fileID: 3476492002547441377}
   m_Layer: 0
   m_Name: CameraButton
   m_TagString: Untagged
@@ -1505,3 +1557,19 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &3476492002547441377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8775834957440630560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
+    type: 3}
+  TooltipText: Look at
+  Offset: {x: 0, y: 40}

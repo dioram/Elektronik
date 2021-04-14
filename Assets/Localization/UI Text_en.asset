@@ -162,6 +162,38 @@ MonoBehaviour:
     m_Localized: Connections
     m_Metadata:
       m_Items: []
+  - m_Id: 757641246806016
+    m_Localized: Visibility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 757868133486592
+    m_Localized: Show window
+    m_Metadata:
+      m_Items: []
+  - m_Id: 758039433056256
+    m_Localized: Look at
+    m_Metadata:
+      m_Items: []
+  - m_Id: 758150133321728
+    m_Localized: Trace
+    m_Metadata:
+      m_Items: []
+  - m_Id: 758698328854528
+    m_Localized: Back to menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 758823658852352
+    m_Localized: Show settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 759360882085888
+    m_Localized: Minimize
+    m_Metadata:
+      m_Items: []
+  - m_Id: 759517707112448
+    m_Localized: Close
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

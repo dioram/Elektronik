@@ -42,7 +42,7 @@ namespace Elektronik.Containers
         {
             lock (_items)
             {
-                RemoveTraces(_items.Values);
+                _traceContainer.Clear();
                 var ids = _items.Keys.ToList();
                 _items.Clear();
                 if (IsVisible)
