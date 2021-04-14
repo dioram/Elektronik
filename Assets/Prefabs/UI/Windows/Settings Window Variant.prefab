@@ -2029,7 +2029,6 @@ GameObject:
   - component: {fileID: 1555354070198106993}
   - component: {fileID: 5913393539139185702}
   - component: {fileID: 6738657396390460352}
-  - component: {fileID: 4759798280748977672}
   m_Layer: 0
   m_Name: GridButton
   m_TagString: Untagged
@@ -2138,20 +2137,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8668737242401663505}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4759798280748977672}
-        m_TargetAssemblyTypeName: Elektronik.Events.ObjectStateConditionalEventInvoker,
-          Assembly-CSharp
-        m_MethodName: Raise
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &5913393539139185702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2184,29 +2170,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42cf7d102ca749f0866afd27ed42ab23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Events:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   Icons:
   - {fileID: 21300000, guid: d291a9564ebd44147aedf873388bb3ae, type: 3}
   - {fileID: 21300000, guid: a33724dd121679244a0afeb2788775cc, type: 3}
   TargetImage: {fileID: 6366045499736813875}
---- !u!114 &4759798280748977672
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1853718738260363344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 727a4e2e6c8fcff41a43466ac7017272, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectWithDesiredState: {fileID: 0}
-  invokeIfTrue:
-    m_PersistentCalls:
-      m_Calls: []
-  invokeIfFalse:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &2373279536751679245
 GameObject:
   m_ObjectHideFlags: 0
@@ -2539,6 +2535,23 @@ MonoBehaviour:
   Cameras:
   - {fileID: 0}
   - {fileID: 0}
+--- !u!114 &4779582600405782631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3304135195918206567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61882cdad7f6472b87a0b93f8120c2d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GridButton: {fileID: 6738657396390460352}
+  AxisButton: {fileID: 2767856075687690363}
+  PointSizeSlider: {fileID: 260075177}
+  DurationSlider: {fileID: 8866125318420004211}
+  ColorPicker: {fileID: 3978977980323748701}
 --- !u!114 &3504936964133410075
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2807,7 +2820,6 @@ GameObject:
   - component: {fileID: 3746577118240483603}
   - component: {fileID: 5327469675514280381}
   - component: {fileID: 6856933217579142825}
-  - component: {fileID: 3817587819121205398}
   - component: {fileID: 2767856075687690363}
   m_Layer: 0
   m_Name: AxisButton
@@ -2917,20 +2929,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3746577118240483603}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3817587819121205398}
-        m_TargetAssemblyTypeName: Elektronik.Events.ObjectStateConditionalEventInvoker,
-          Assembly-CSharp
-        m_MethodName: Raise
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &6856933217579142825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2951,25 +2950,6 @@ MonoBehaviour:
   m_FlexibleWidth: 100
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &3817587819121205398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6145011483010642500}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 727a4e2e6c8fcff41a43466ac7017272, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectWithDesiredState: {fileID: 0}
-  invokeIfTrue:
-    m_PersistentCalls:
-      m_Calls: []
-  invokeIfFalse:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &2767856075687690363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2982,6 +2962,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7993af576a9b449b94a21c4ccc7fbc26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Events:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   Texts:
   - Show axis
   - Hide axis
@@ -4473,15 +4482,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178, type: 3}
---- !u!1 &3304135195567775922 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1633165848553420338, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178,
-    type: 3}
-  m_PrefabInstance: {fileID: 4283080321106024064}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3304135195918206567 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1633165848068722919, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178,
+    type: 3}
+  m_PrefabInstance: {fileID: 4283080321106024064}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3304135195567775922 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1633165848553420338, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178,
     type: 3}
   m_PrefabInstance: {fileID: 4283080321106024064}
   m_PrefabAsset: {fileID: 0}

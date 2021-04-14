@@ -11,25 +11,19 @@ namespace Elektronik.Settings
 {
     public class SettingsHistory<T> : ISettingsHistory where T : SettingsBag
     {
-        [Serializable]
-        private class RecentItems
-        {
-            public List<T> Items = new List<T>();
-        }
-
-        public void Add(SettingsBag recent)
-        {
-            Add((T)recent);
-        }
-
-        public ReadOnlyCollection<SettingsBag> Recent => _recent.Items.Select(s => s as SettingsBag).ToList().AsReadOnly();
-
         public SettingsHistory(string filename, int maxCountOfRecentFiles = 10)
         {
             _maxCountOfRecentFiles = maxCountOfRecentFiles;
             _fileName = filename;
             
             Deserialize();
+        }
+
+        public ReadOnlyCollection<SettingsBag> Recent => _recent.Items.Select(s => s as SettingsBag).ToList().AsReadOnly();
+
+        public void Add(SettingsBag recent)
+        {
+            Add((T)recent);
         }
 
         public void Add(T recent)
@@ -58,6 +52,12 @@ namespace Elektronik.Settings
 
         #region Private definitions
         
+        [Serializable]
+        private class RecentItems
+        {
+            public List<T> Items = new List<T>();
+        }
+        
         private readonly string _fileName;
         private readonly int _maxCountOfRecentFiles;
         private RecentItems _recent;
@@ -79,8 +79,7 @@ namespace Elektronik.Settings
         {
             string pathToAppData = Path.Combine(Application.persistentDataPath, _fileName);
             var fi = new FileInfo(pathToAppData);
-            if (!fi.Directory.Exists)
-                fi.Directory.Create();
+            if (!fi.Directory.Exists) fi.Directory.Create();
             File.WriteAllText(pathToAppData, JsonConvert.SerializeObject(_recent));
         }
 

@@ -58,10 +58,6 @@ namespace Elektronik.UI.Windows
         protected void Awake()
         {
             TitleLabel = transform.Find("Header/Title").GetComponent<TMP_Text>();
-        }
-
-        protected void Start()
-        {
             _edges = GetComponentsInChildren<ResizingEdge>();
             _header = transform.Find("Header").GetComponent<Image>();
             _content = transform.Find("Content").gameObject;

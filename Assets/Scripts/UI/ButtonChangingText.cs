@@ -1,7 +1,5 @@
-﻿using System;
-using Elektronik.UI.Localization;
+﻿using Elektronik.UI.Localization;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,38 +7,22 @@ namespace Elektronik.UI
 {
     [ExecuteInEditMode]
     [RequireComponent(typeof(Button))]
-    public class ButtonChangingText : MonoBehaviour
+    public class ButtonChangingText : ChangingButton
     {
         public string[] Texts;
         public TMP_Text TargetTMPText;
         public Text TargetText;
 
-        public int State
+        protected override void Start()
         {
-            get => _state;
-            set
-            {
-                _state = value % Texts.Length;
-                SetText(_state);
-            }
+            MaxState = Texts.Length;
+            base.Start();
         }
 
-        public IObservable<Unit> OnClickAsObservable() => _button.OnClickAsObservable();
-
-        private Button _button;
-        private int _state;
-
-        private void Awake()
+        protected override void SetValue()
         {
-            _button = GetComponent<Button>();
-            _button.OnClickAsObservable().Subscribe(_ => State++);
-            SetText(0);
-        }
-
-        private void SetText(int state)
-        {
-            if (TargetTMPText != null) TargetTMPText.SetLocalizedText(Texts[state]);
-            if (TargetText != null) TargetText.SetLocalizedText(Texts[state]);
+            if (TargetTMPText != null) TargetTMPText.SetLocalizedText(Texts[State]);
+            if (TargetText != null) TargetText.SetLocalizedText(Texts[State]);
         }
     }
 }

@@ -1,38 +1,24 @@
-﻿using System;
-using UniRx;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Elektronik.UI
 {
     [ExecuteInEditMode]
     [RequireComponent(typeof(Button))]
-    public class ButtonChangingIcons : MonoBehaviour
+    public class ButtonChangingIcons : ChangingButton
     {
         public Sprite[] Icons;
         public Image TargetImage;
 
-        public int State
+        protected override void Start()
         {
-            get => _state;
-            set
-            {
-                _state = value % Icons.Length;
-                TargetImage.sprite = Icons[_state];
-            }
+            MaxState = Icons.Length;
+            base.Start();
         }
 
-        public IObservable<Unit> OnClickAsObservable() => _button.OnClickAsObservable();
-
-        private Button _button;
-        private int _state;
-
-        private void Awake()
+        protected override void SetValue()
         {
-            _button = GetComponent<Button>();
-            _button.OnClickAsObservable().Subscribe(_ => State++);
-            TargetImage.sprite = Icons[0];
+            TargetImage.sprite = Icons[State];
         }
-
     }
 }

@@ -639,7 +639,6 @@ GameObject:
   - component: {fileID: 1633165849779494459}
   - component: {fileID: 4178012200927366601}
   - component: {fileID: 4968420213671230980}
-  - component: {fileID: 6680217321974353104}
   - component: {fileID: 6398037178270859284}
   m_Layer: 0
   m_Name: MinimizeButton
@@ -749,20 +748,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1633165849779494456}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6680217321974353104}
-        m_TargetAssemblyTypeName: Elektronik.Events.ObjectStateConditionalEventInvoker,
-          Assembly-CSharp
-        m_MethodName: Raise
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &4178012200927366601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -790,30 +776,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1633165849779494453}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 42cf7d102ca749f0866afd27ed42ab23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Icons:
-  - {fileID: 21300000, guid: f8b8a7f19b1fd5d478da8c266ed91289, type: 3}
-  - {fileID: 21300000, guid: 35bb6c494a08eed43af15ffe29840148, type: 3}
-  TargetImage: {fileID: 1633165847745301030}
---- !u!114 &6680217321974353104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1633165849779494453}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 727a4e2e6c8fcff41a43466ac7017272, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectWithDesiredState: {fileID: 1633165848553420338}
-  invokeIfTrue:
-    m_PersistentCalls:
+  Events:
+  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7424587317706410260}
         m_TargetAssemblyTypeName: Elektronik.UI.Windows.Window, Assembly-CSharp
@@ -827,8 +796,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  invokeIfFalse:
-    m_PersistentCalls:
+  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7424587317706410260}
         m_TargetAssemblyTypeName: Elektronik.UI.Windows.Window, Assembly-CSharp
@@ -842,6 +810,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  Icons:
+  - {fileID: 21300000, guid: f8b8a7f19b1fd5d478da8c266ed91289, type: 3}
+  - {fileID: 21300000, guid: 35bb6c494a08eed43af15ffe29840148, type: 3}
+  TargetImage: {fileID: 1633165847745301030}
 --- !u!114 &6398037178270859284
 MonoBehaviour:
   m_ObjectHideFlags: 0
