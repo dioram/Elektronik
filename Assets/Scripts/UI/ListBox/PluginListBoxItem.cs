@@ -24,7 +24,7 @@ namespace Elektronik.UI.ListBox
         private TMP_Text _descriptionLabel;
         private LayoutElement _layoutElement;
 
-        public IObservable<bool> OnValueChangedAsObservable() => _toggle.OnValueChangedAsObservable();
+        public IObservable<bool> OnToggleChangedAsObservable() => _toggle.OnValueChangedAsObservable();
 
         public void Toggle(bool state)
         {
@@ -55,23 +55,21 @@ namespace Elektronik.UI.ListBox
                     .Subscribe(_ => PluginsLoader.DisablePlugin(Plugin));
         }
 
-        public void ToggleDescription()
+        public void ShowDescription()
         {
-            if (_description.rect.height == 0)
-            {
-                ((RectTransform) _description.transform)
-                        .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                                                   HeightWithDescription - Height);
-                ((RectTransform) transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                                                                      HeightWithDescription);
-                _layoutElement.minHeight = HeightWithDescription;
-            }
-            else
-            {
-                ((RectTransform) _description.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
-                ((RectTransform) transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Height);
-                _layoutElement.minHeight = Height;
-            }
+            ((RectTransform) _description.transform)
+                    .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                                               HeightWithDescription - Height);
+            ((RectTransform) transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                                                                  HeightWithDescription);
+            _layoutElement.minHeight = HeightWithDescription;
+        }
+
+        public void HideDescription()
+        {
+            ((RectTransform) _description.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
+            ((RectTransform) transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Height);
+            _layoutElement.minHeight = Height;
         }
 
         public void OnPointerClick(PointerEventData eventData)

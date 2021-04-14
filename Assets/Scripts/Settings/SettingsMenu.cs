@@ -113,8 +113,13 @@ namespace Elektronik.Settings
 
         private void PluginSelected(PluginListBoxItem pluginListBoxItem)
         {
+            foreach (var plugin in PluginsListBox.Select(lbi=> (PluginListBoxItem)lbi))
+            {
+                plugin.HideDescription();
+            }
+            
             _selectedPlugin = pluginListBoxItem;
-            _selectedPlugin.ToggleDescription();
+            _selectedPlugin.ShowDescription();
             SettingsGenerator.Generate(_selectedPlugin.Plugin.Settings);
 
             HistoryListBox.Clear();
@@ -159,17 +164,17 @@ namespace Elektronik.Settings
             {
                 var pluginUIItem = (PluginListBoxItem) PluginsListBox.Add();
                 pluginUIItem.Plugin = plugin;
-                pluginUIItem.OnValueChangedAsObservable()
+                pluginUIItem.OnToggleChangedAsObservable()
                         .Where(state => state && ModeSelector.Mode == Mode.Offline)
                         .Subscribe(_ => DisableOfflinePlugins(plugin));
 
-                pluginUIItem.OnValueChangedAsObservable()
+                pluginUIItem.OnToggleChangedAsObservable()
                         .Where(state => state && _initCompleted
                                        && !_selectedPlugins.SelectedPluginsNames.Contains(plugin.DisplayName))
                         .Do(_ => _selectedPlugins.SelectedPluginsNames.Add(plugin.GetType().FullName))
                         .Do(_ => PluginSelected(pluginUIItem))
                         .Subscribe(_ => _pluginsHistory.Save());
-                pluginUIItem.OnValueChangedAsObservable()
+                pluginUIItem.OnToggleChangedAsObservable()
                         .Where(state => !state && _initCompleted)
                         .Do(_ => _selectedPlugins.SelectedPluginsNames.Remove(plugin.GetType().FullName))
                         .Subscribe(_ => _pluginsHistory.Save());
