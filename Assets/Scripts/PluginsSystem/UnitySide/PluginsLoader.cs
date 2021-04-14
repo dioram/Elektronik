@@ -26,29 +26,36 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         static PluginsLoader()
         {
-            var currentDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-            var pluginsDir = Path.Combine(currentDir, @"Plugins");
-            var dlls = Directory.GetDirectories(pluginsDir)
-                    .Select(d => Path.Combine(d, "libraries"))
-                    .Where(Directory.Exists)
-                    .SelectMany(d => Directory.GetFiles(d, "*.dll"));
-            foreach (var file in dlls)
+            try
             {
-                try
+                var currentDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+                var pluginsDir = Path.Combine(currentDir, @"Plugins");
+                var dlls = Directory.GetDirectories(pluginsDir)
+                        .Select(d => Path.Combine(d, "libraries"))
+                        .Where(Directory.Exists)
+                        .SelectMany(d => Directory.GetFiles(d, "*.dll"));
+                foreach (var file in dlls)
                 {
-                    Plugins.AddRange(Assembly.LoadFrom(file)
-                                             .GetTypes()
-                                             .Where(p => typeof(IElektronikPlugin).IsAssignableFrom(p) && p.IsClass &&
-                                                            !p.IsAbstract)
-                                             .Select(InstantiatePlugin<IElektronikPlugin>)
-                                             .Where(p => p != null));
-                    TextLocalizationExtender.ImportTranslations(Path.Combine(Path.GetDirectoryName(file)!,
-                                                                             @"../data/translations.csv"));
+                    try
+                    {
+                        Plugins.AddRange(Assembly.LoadFrom(file)
+                                                 .GetTypes()
+                                                 .Where(p => typeof(IElektronikPlugin).IsAssignableFrom(p) && p.IsClass &&
+                                                                !p.IsAbstract)
+                                                 .Select(InstantiatePlugin<IElektronikPlugin>)
+                                                 .Where(p => p != null));
+                        TextLocalizationExtender.ImportTranslations(Path.Combine(Path.GetDirectoryName(file)!,
+                                                                        @"../data/translations.csv"));
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"Plugin load error: {file}, {e.Message}");
+                    }
                 }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Plugin load error: {file}, {e.Message}");
-                }
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogError($"PluginsLoader initialized with error: {e.Message}");
             }
 
             SetupContextMenu(Environment.GetCommandLineArgs()[0]);

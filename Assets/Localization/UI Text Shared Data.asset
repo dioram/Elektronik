@@ -187,6 +187,18 @@ MonoBehaviour:
     m_Key: Close
     m_Metadata:
       m_Items: []
+  - m_Id: 780378665259008
+    m_Key: Axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782002859151360
+    m_Key: Show axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782032714207232
+    m_Key: Hide axis
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -194,6 +194,18 @@ MonoBehaviour:
     m_Localized: Close
     m_Metadata:
       m_Items: []
+  - m_Id: 780378665259008
+    m_Localized: Axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782002859151360
+    m_Localized: Show axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782032714207232
+    m_Localized: Hide axis
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

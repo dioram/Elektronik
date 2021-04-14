@@ -53,11 +53,14 @@ namespace Elektronik.UI.Localization
         public static string GetLocalizedString(string text, IList<object> args = null)
         {
             var defaultTable = LocalizationSettings.Instance.GetStringDatabase().GetDefaultTableAsync().Result;
-            var entry = defaultTable.GetEntry(text);
-            if (entry != null)
+            if (defaultTable != null)
             {
-                var localizedTitle = entry.GetLocalizedString(args);
-                return localizedTitle;
+                var entry = defaultTable.GetEntry(text);
+                if (entry != null)
+                {
+                    var localizedTitle = entry.GetLocalizedString(args);
+                    return localizedTitle;
+                }
             }
             
             if (Translations.ContainsKey(text) && Translations[text].ContainsKey(GetCurrentLocale()))

@@ -51,7 +51,7 @@ namespace Elektronik.Clouds
             //Draw Y axis
             GL.Color(Color.green);
             GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0.0f, -LengthOfAxis, 0.0f);
+            GL.Vertex3(0.0f, LengthOfAxis, 0.0f);
             //Draw Z axis
             GL.Color(Color.blue);
             GL.Vertex3(0, 0, 0);

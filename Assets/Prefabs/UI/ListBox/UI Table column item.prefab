@@ -228,7 +228,6 @@ MonoBehaviour:
   Window: {fileID: 0}
   DataLabel: {fileID: 4634318445501276307}
   HeaderButton: {fileID: 250234299594801234}
-  ToolTipPanel: {fileID: 0}
   HeaderIcon: {fileID: 5434354957870245241}
   HiddenWidth: 10
 --- !u!1 &4214725087583866954
