@@ -52,7 +52,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         #region IVisible
 
         public virtual bool IsVisible { get; set; } = true;
-        public bool ShowButton { get; } = true;
+        public virtual bool ShowButton { get; } = false;
 
         #endregion
 

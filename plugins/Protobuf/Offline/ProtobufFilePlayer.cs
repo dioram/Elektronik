@@ -14,8 +14,6 @@ namespace Elektronik.Protobuf.Offline
 {
     public class ProtobufFilePlayer : DataSourcePluginBase<OfflineSettingsBag>, IDataSourcePluginOffline
     {
-        private const float Timeout = 0.5f;
-
         public ProtobufFilePlayer()
         {
             _containerTree = new ProtobufContainerTree("Protobuf",
@@ -65,17 +63,12 @@ namespace Elektronik.Protobuf.Offline
         {
             if (!_playing) return;
 
-            _timeout -= delta;
-            if (_timeout < 0)
+            Task.Run(() => _threadWorker.Enqueue(() =>
             {
-                Task.Run(() => _threadWorker.Enqueue(() =>
-                {
-                    if (NextFrame()) return;
-                    MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
-                    _playing = false;
-                }));
-                _timeout = Timeout;
-            }
+                if (NextFrame()) return;
+                MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
+                _playing = false;
+            }));
         }
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
@@ -115,12 +108,17 @@ namespace Elektronik.Protobuf.Offline
         {
             _threadWorker.Enqueue(() =>
             {
+                if (_frames?.CurrentIndex == 0)
+                {
+                    _frames?.Current?.Rewind();
+                    _frames?.SoftReset();
+                    return;
+                }
                 do
                 {
                     if (!PreviousFrame()) break;
                 } while (!_frames?.Current?.IsSpecial ?? false);
 
-                if (!_frames?.MovePrevious() ?? false) _frames?.SoftReset();
             });
         }
 
@@ -146,7 +144,6 @@ namespace Elektronik.Protobuf.Offline
         private FramesCollection<Frame> _frames;
         private readonly DataParser<PacketPb> _parsersChain;
         private bool _playing = false;
-        private float _timeout = 0;
         private ThreadWorker _threadWorker;
 
         private const int MetadataOffset = 8;

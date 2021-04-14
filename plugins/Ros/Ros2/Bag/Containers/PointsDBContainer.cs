@@ -22,6 +22,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         }
 
         #region DBContainer
+        
+        public override bool ShowButton { get; } = true;
 
         public override void Clear()
         {

@@ -42,44 +42,30 @@ namespace Elektronik.UI.Localization
 
         public static void SetLocalizedText(this Text label, string text, IList<object> args = null)
         {
-            try
-            {
-                var defaultTable = LocalizationSettings.Instance.GetStringDatabase().GetDefaultTableAsync().Result;
-                var localizedTitle = defaultTable.GetEntry(text).GetLocalizedString(args);
-                label.text = localizedTitle;
-            }
-            catch
-            {
-                if (Translations.ContainsKey(text) && Translations[text].ContainsKey(GetCurrentLocale()))
-                {
-                    label.text = Translations[text][GetCurrentLocale()];
-                }
-                else
-                {
-                    label.text = text;
-                }
-            }
+            label.text = GetLocalizedString(text, args);
         }
 
         public static void SetLocalizedText(this TMP_Text label, string text, IList<object> args = null)
         {
-            try
+            label.text = GetLocalizedString(text, args);
+        }
+
+        public static string GetLocalizedString(string text, IList<object> args = null)
+        {
+            var defaultTable = LocalizationSettings.Instance.GetStringDatabase().GetDefaultTableAsync().Result;
+            var entry = defaultTable.GetEntry(text);
+            if (entry != null)
             {
-                var defaultTable = LocalizationSettings.Instance.GetStringDatabase().GetDefaultTableAsync().Result;
-                var localizedTitle = defaultTable.GetEntry(text).GetLocalizedString(args);
-                label.text = localizedTitle;
+                var localizedTitle = entry.GetLocalizedString(args);
+                return localizedTitle;
             }
-            catch
+            
+            if (Translations.ContainsKey(text) && Translations[text].ContainsKey(GetCurrentLocale()))
             {
-                if (Translations.ContainsKey(text) && Translations[text].ContainsKey(GetCurrentLocale()))
-                {
-                    label.text = Translations[text][GetCurrentLocale()];
-                }
-                else
-                {
-                    label.text = text;
-                }
+                return Translations[text][GetCurrentLocale()];
             }
+            
+            return text;
         }
 
         private static string GetCurrentLocale() => LocalizationSettings.Instance.GetSelectedLocale().LocaleName;

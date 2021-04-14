@@ -47,6 +47,8 @@ namespace Elektronik.Offline
             };
         }
 
+        #region Unity events
+
         private void Awake()
         {
             _playButtonImage = PlayButton.transform.Find("Image").GetComponent<Image>();
@@ -54,19 +56,34 @@ namespace Elektronik.Offline
                     .Subscribe(_ => PlayPause());
             StopButton.OnClickAsObservable()
                     .Do(_ => SetPausedState())
+                    .Do(_ => UpdateControls(true))
                     .Subscribe(_ => Stop?.Invoke());
             NextKeyFrameButton.OnClickAsObservable()
                     .Do(_ => SetPausedState())
+                    .Do(_ => UpdateControls(true))
                     .Subscribe(_ => NextKeyFrame?.Invoke());
             PreviousKeyFrameButton.OnClickAsObservable()
                     .Do(_ => SetPausedState())
+                    .Do(_ => UpdateControls(true))
                     .Subscribe(_ => PreviousKeyFrame?.Invoke());
         }
 
         private void Update()
         {
-            var pos = _dataSourcePluginOffline.CurrentPosition / (float) (_dataSourcePluginOffline.AmountOfFrames - 1);
-            if (!float.IsNaN(pos)) TimelineSlider.Value = pos;
+            UpdateControls(_isPlaying);
+        }
+
+        #endregion
+
+        #region Private
+
+        private void UpdateControls(bool updateSlider)
+        {
+            if (updateSlider)
+            {
+                var pos = _dataSourcePluginOffline.CurrentPosition / (float) (_dataSourcePluginOffline.AmountOfFrames - 1);
+                if (!float.IsNaN(pos)) TimelineSlider.Value = pos;
+            }
             Timestamp.text = $"{_dataSourcePluginOffline.CurrentTimestamp}";
         }
 
@@ -91,5 +108,7 @@ namespace Elektronik.Offline
             Pause?.Invoke();
             _isPlaying = false;
         }
+
+        #endregion
     }
 }
