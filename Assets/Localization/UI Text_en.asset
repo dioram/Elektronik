@@ -150,6 +150,14 @@ MonoBehaviour:
     m_Localized: Enter text...
     m_Metadata:
       m_Items: []
+  - m_Id: 463706540609536
+    m_Localized: Grid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 479039536107520
+    m_Localized: 'Trace lifetime:'
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

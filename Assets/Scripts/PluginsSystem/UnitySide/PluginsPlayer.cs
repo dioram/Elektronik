@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Elektronik.Clouds;
+using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Offline;
 using Elektronik.UI;
@@ -26,7 +27,27 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         public event Action PluginsStarted; 
 
-        private readonly List<Thread> _startupThreads = new List<Thread>();
+        public void ClearMap()
+        {
+            foreach (var dataSourceOnline in PluginsLoader.ActivePlugins.OfType<IDataSourcePluginOnline>())
+            {
+                dataSourceOnline.Data.Clear();
+            }
+            foreach (var dataSourceOffline in PluginsLoader.ActivePlugins.OfType<IDataSourcePluginOffline>())
+            {
+                dataSourceOffline.StopPlaying();
+            }
+        }
+
+        public static void MapSourceTree(Action<ISourceTree> action)
+        {
+            foreach (var treeElement in Plugins.OfType<IDataSourcePlugin>().Select(p => p.Data))
+            {
+                MapSourceTree(treeElement, action);
+            }
+        }
+        
+        #region Unity events
 
         private void Start()
         {
@@ -98,16 +119,21 @@ namespace Elektronik.PluginsSystem.UnitySide
             }
         }
 
-        public void ClearMap()
+        #endregion
+
+        #region Private
+
+        private readonly List<Thread> _startupThreads = new List<Thread>();
+
+        private static void MapSourceTree(ISourceTree treeElement, Action<ISourceTree> action)
         {
-            foreach (var dataSourceOnline in PluginsLoader.ActivePlugins.OfType<IDataSourcePluginOnline>())
+            action(treeElement);
+            foreach (var child in treeElement.Children)
             {
-                dataSourceOnline.Data.Clear();
-            }
-            foreach (var dataSourceOffline in PluginsLoader.ActivePlugins.OfType<IDataSourcePluginOffline>())
-            {
-                dataSourceOffline.StopPlaying();
+                MapSourceTree(child, action);
             }
         }
+
+        #endregion
     }
 }

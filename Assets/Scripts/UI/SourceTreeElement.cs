@@ -20,6 +20,7 @@ namespace Elektronik.UI
         public ButtonChangingIcons TreeButton;
         public Button WindowButton;
         public ButtonChangingIcons VisibleButton;
+        public ButtonChangingIcons TraceButton;
         public Button CameraButton;
         public Text NameLabel;
         public RectTransform Content;
@@ -88,6 +89,15 @@ namespace Elektronik.UI
             else
             {
                 VisibleButton.gameObject.SetActive(false);
+            }
+
+            if (Node is ITraceable t)
+            {
+                TraceButton.OnClickAsObservable().Subscribe(_ => t.TraceEnabled = TraceButton.State == 1);
+            }
+            else
+            {
+                TraceButton.gameObject.SetActive(false);
             }
 
             TreeButton.OnClickAsObservable().Subscribe(_ => ChangeState());
@@ -182,6 +192,5 @@ namespace Elektronik.UI
         }
 
         #endregion
-
     }
 }

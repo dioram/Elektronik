@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data;
@@ -10,7 +12,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class CloudContainer<TCloudItem> : IContainer<TCloudItem>, ISourceTree, ILookable, IVisible
+    public class CloudContainer<TCloudItem> : IContainer<TCloudItem>, ISourceTree, ILookable, IVisible, ITraceable
             where TCloudItem : struct, ICloudItem
     {
         public CloudContainer(string displayName = "")
@@ -148,6 +150,7 @@ namespace Elektronik.Containers
         {
             lock (_items)
             {
+                CreateTrace(new [] {item});
                 _items[item.Id] = item;
                 if (IsVisible)
                 {
@@ -160,15 +163,15 @@ namespace Elektronik.Containers
         {
             lock (_items)
             {
-                var list = items.ToList();
-                foreach (var ci in list)
+                CreateTrace(items);
+                foreach (var ci in items)
                 {
                     _items[ci.Id] = ci;
                 }
 
                 if (IsVisible)
                 {
-                    OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
+                    OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(items));
                 }
             }
         }
@@ -183,6 +186,7 @@ namespace Elektronik.Containers
 
         public void SetRenderer(object renderer)
         {
+            _traceContainer.SetRenderer(renderer);
             if (renderer is ICloudRenderer<TCloudItem> typedRenderer)
             {
                 OnAdded += typedRenderer.OnItemsAdded;
@@ -198,11 +202,11 @@ namespace Elektronik.Containers
         #endregion
 
         #region ILookable implementation
-        
+
         public (Vector3 pos, Quaternion rot) Look(Transform transform)
         {
             if (_items.Count == 0) return (transform.position, transform.rotation);
-            
+
             Vector3 min = Vector3.positiveInfinity;
             Vector3 max = Vector3.negativeInfinity;
             foreach (var point in _items.Select(i => i.Value.AsPoint().Position))
@@ -219,8 +223,15 @@ namespace Elektronik.Containers
 
         #endregion
 
+        #region ITraceable
+
+        public bool TraceEnabled { get; set; }
+        public int Duration { get; set; } = TraceSettings.Duration;
+
+        #endregion
+
         #region IVisible
-        
+
         public bool IsVisible
         {
             get => _isVisible;
@@ -236,12 +247,44 @@ namespace Elektronik.Containers
         public bool ShowButton => true;
 
         #endregion
-        
+
         #region Private definitions
 
         private readonly SortedDictionary<int, TCloudItem> _items = new SortedDictionary<int, TCloudItem>();
         private bool _isVisible = true;
+        private readonly SlamLinesContainer _traceContainer = new SlamLinesContainer();
+        private int _tasks = -1;
 
+
+        private void CreateTrace(IEnumerable<TCloudItem> items)
+        {
+            if (Duration <= 0 || !TraceEnabled) return;
+
+            var traces = new List<SlamLine>(items.Count());
+            lock (_traceContainer)
+            {
+                foreach (var ci in items)
+                {
+                    var point = ci.AsPoint();
+                    point.Id = _tasks;
+                    var line = new SlamLine(_items[ci.Id].AsPoint(), point);
+                    traces.Add(line);
+                }
+            }
+
+            _traceContainer.AddRange(traces);
+            Task.Run(() =>
+            {
+                _tasks--;
+                Thread.Sleep(Duration);
+                lock (_traceContainer)
+                {
+                    _traceContainer.Remove(traces);
+                }
+
+                _tasks++;
+            });
+        }
         #endregion
     }
 }
