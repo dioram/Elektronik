@@ -22,7 +22,10 @@ namespace Elektronik.UI.Windows
 
         private void OnDestroy()
         {
-            Manager.OnWindowDestroyed(_windowTransform.GetComponent<Window>());
+            if (Manager != null)
+            {
+                Manager.OnWindowDestroyed(_windowTransform.GetComponent<Window>());
+            }
         }
 
         #endregion

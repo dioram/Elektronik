@@ -8,9 +8,8 @@ namespace Elektronik.UI
         public ColorPicker Picker;
         public Camera[] Cameras;
 
-        private void Start()
+        private void Awake()
         {
-            Picker.CurrentColor = Camera.main.backgroundColor;
             Picker.onValueChanged.AddListener(color =>
             {
                 foreach (var cam in Cameras)

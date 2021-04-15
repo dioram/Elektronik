@@ -96,7 +96,7 @@ namespace Elektronik.UI.Windows
                     .Where(w => w.gameObject.activeInHierarchy && !w.IsMinimized)
                     .Select(w => (RectTransform) w.transform)
                     .SelectMany(t => new[] {t.anchoredPosition.x, t.anchoredPosition.x + t.sizeDelta.x})
-                    .Concat(new[] {0, (float) Screen.width})
+                    .Concat(new[] {0,(float) Screen.width})
                     .ToArray();
         }
 
@@ -106,7 +106,7 @@ namespace Elektronik.UI.Windows
                     .Where(w => w.gameObject.activeInHierarchy && !w.IsMinimized)
                     .Select(w => (RectTransform) w.transform)
                     .SelectMany(t => new[] {t.anchoredPosition.y - t.sizeDelta.y, t.anchoredPosition.y})
-                    .Concat(new[] {0, -Screen.height, (float) 40 - Screen.height})
+                    .Concat(new[] {0, -50, -Screen.height, (float) 40 - Screen.height})
                     .ToArray();
         }
 
