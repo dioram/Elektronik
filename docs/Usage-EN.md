@@ -46,6 +46,16 @@ In offline mode Elektronik supports only one active data source. So in this mode
 10. Turn on / off moved point traces.
 11. Open window for this type of data.
 
+# Camera controls
+- Keyboard:
+    - WASD - to move camera forward/backward or to left/right.
+    - QE - to move camera up or down
+    - Arrow buttons - rotate camera
+    - R - return camera to (0, 0, 0)
+- Mous:
+    - Hold right mouse button and move mouse to rotate camera.
+    - Use mouse wheel to move camera forward or backward.
+- ![LookAtButton.png](Images/LookAtButton.png) Button "Look at" for some data sources can move camera to see all data of chosen type.
 # Offline
 
 ![offline mode user interface](Images/OfflineMode.png)
