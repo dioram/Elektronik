@@ -40,6 +40,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
             return res;
         }
         
+        //TODO: plural
         public static Record ReadHeaders(Stream stream)
         {
             var header = ReadHeader(stream);

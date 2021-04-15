@@ -6,12 +6,12 @@ namespace Elektronik.Cameras
     [RequireComponent(typeof(Camera))]
     public class DisableAutoXR : MonoBehaviour
     {
-        public bool @default;
+        public bool Default;
         private bool _current;
 
         void Start()
         {
-            DisableXR(@default);
+            DisableXR(Default);
         }
 
         public void DisableXR(bool disable)

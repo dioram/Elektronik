@@ -84,7 +84,7 @@ namespace Elektronik.UI
 
             if (Node is IVisible v)
             {
-                VisibleButton.OnClickAsObservable().Subscribe(_ => { v.IsVisible = !v.IsVisible; });
+                VisibleButton.OnStateChanged += _ => v.IsVisible = VisibleButton.State == 0;
             }
             else
             {
@@ -93,14 +93,14 @@ namespace Elektronik.UI
 
             if (Node is ITraceable t)
             {
-                TraceButton.OnClickAsObservable().Subscribe(_ => t.TraceEnabled = TraceButton.State == 1);
+                TraceButton.OnStateChanged += _ => t.TraceEnabled = TraceButton.State == 1;
             }
             else
             {
                 TraceButton.gameObject.SetActive(false);
             }
 
-            TreeButton.OnClickAsObservable().Subscribe(_ => ChangeState());
+            TreeButton.OnStateChanged += _ => ChangeState();
             NameLabel.SetLocalizedText(Node.DisplayName);
 
             if (Node is ILookable lookable && Camera.main.GetComponent<LookableCamera>() is { } cam)

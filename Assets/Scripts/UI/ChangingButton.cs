@@ -14,30 +14,40 @@ namespace Elektronik.UI
         public sealed class ButtonPressedEvent : UnityEvent { }
 
         public List<ButtonPressedEvent> Events = new List<ButtonPressedEvent>();
-        
-        public IObservable<int> OnClickAsObservable() => _button.OnClickAsObservable().Select(_ => State);
+
+        public Action<int> OnStateChanged;
 
         public int State
         {
             get => _state;
             set
             {
+                if (_state >= 0 && _state < Events.Count) Events[_state]?.Invoke();
+                if (_state == value % MaxState) return;
                 _state = value % MaxState;
-                if (State < Events.Count) Events[State]?.Invoke();
                 SetValue();
+                OnStateChanged?.Invoke(State);
             }
+        }
+
+        public void InitState(int state)
+        {
+            _state = state == 0 ? MaxState - 1 : state - 1;
+            State = state;
+            _wasInited = true;
         }
 
         #region Unity events
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _button = GetComponent<Button>();
-            _button.OnClickAsObservable().Subscribe(_ => State++);
+            _button.OnClickAsObservable().Do(_ => State++).Subscribe();
         }
 
         protected virtual void Start()
         {
+            if (_wasInited) return;
             _state = 0;
             SetValue();
         }
@@ -56,6 +66,7 @@ namespace Elektronik.UI
 
         private Button _button;
         private int _state;
+        private bool _wasInited;
 
         #endregion
     }

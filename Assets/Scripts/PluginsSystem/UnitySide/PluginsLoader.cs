@@ -55,7 +55,7 @@ namespace Elektronik.PluginsSystem.UnitySide
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogError($"PluginsLoader initialized with error: {e.Message}");
+                Debug.LogError($"PluginsLoader initialized with error: {e.Message}");
             }
 
             SetupContextMenu(Environment.GetCommandLineArgs()[0]);

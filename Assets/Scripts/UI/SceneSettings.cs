@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Elektronik.Settings;
 using Elektronik.Settings.Bags;
 using HSVPicker;
@@ -28,15 +27,23 @@ namespace Elektronik.UI
             if (_bag == null) _bag = new SceneSettingsBag();
             else
             {
-                GridButton.State = _bag.GridState;
-                AxisButton.State = _bag.AxisState;
+                GridButton.InitState(_bag.GridState);
+                AxisButton.InitState(_bag.AxisState);
                 DurationSlider.value = _bag.Duration;
                 PointSizeSlider.value = _bag.PointSize;
                 ColorPicker.CurrentColor = _bag.SceneColor;
             }
 
-            GridButton.OnClickAsObservable().Do(i => _bag.GridState = i).Subscribe(_ => SaveSettings());
-            AxisButton.OnClickAsObservable().Do(i => _bag.AxisState = i).Subscribe(_ => SaveSettings());
+            GridButton.OnStateChanged += i =>
+            {
+                _bag.GridState = i;
+                SaveSettings();
+            };
+            AxisButton.OnStateChanged += i =>
+            {
+                _bag.AxisState = i;
+                SaveSettings();
+            };
             DurationSlider.OnValueChangedAsObservable().Do(i => _bag.Duration = (int) i).Subscribe(_ => SaveSettings());
             PointSizeSlider.OnValueChangedAsObservable().Do(i => _bag.PointSize = i).Subscribe(_ => SaveSettings());
             ColorPicker.onValueChanged.AddListener(color =>

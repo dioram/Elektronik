@@ -3,17 +3,15 @@ using UnityEngine.UI;
 
 namespace Elektronik.UI
 {
-    [ExecuteInEditMode]
-    [RequireComponent(typeof(Button))]
     public class ButtonChangingIcons : ChangingButton
     {
         public Sprite[] Icons;
         public Image TargetImage;
 
-        protected override void Start()
+        protected override void Awake()
         {
+            base.Awake();
             MaxState = Icons.Length;
-            base.Start();
         }
 
         protected override void SetValue()

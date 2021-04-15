@@ -14,10 +14,13 @@ namespace Elektronik.Clouds
 
         public void Clear()
         {
-            GameObjects.Clear();
-            if (MainThreadInvoker.Instance != null)
+            lock (GameObjects)
             {
-                MainThreadInvoker.Instance.Enqueue(() => ObservationsPool?.DespawnAllActiveObjects());
+                GameObjects.Clear();
+                if (MainThreadInvoker.Instance != null)
+                {
+                    MainThreadInvoker.Instance.Enqueue(() => ObservationsPool?.DespawnAllActiveObjects());
+                }
             }
         }
 
