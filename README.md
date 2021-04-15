@@ -1,9 +1,9 @@
 # Elektronik Tools
 The tool for testing and debugging SLAM.
 
-![](docs/Screenshot.png)
+![](docs/Images/Screenshot.png)
 
-[![Release](https://github.com/dioram/Elektronik-Tools-2.0/actions/workflows/release.yml/badge.svg?branch=master)](https://github.com/dioram/Elektronik-Tools-2.0/actions/workflows/release.yml)
+[![Release](https://github.com/dioram/Elektronik-Tools-2.0/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/dioram/Elektronik-Tools-2.0/actions/workflows/release.yml)
 
 Elektronik is a tool that is actively used by the Dioram development team in developing tracking algorithms and SLAM.
 This software allows you to visually track:
@@ -19,9 +19,7 @@ and many other things related to tracking algorithms and SLAM.
 
 There are two main modes available in Elektronik - realtime mode and reading from a file mode.
 
-In the [realtime mode](docs/Usage-EN.md#Online) you can observe the process of building a map whilst the algorithm is running by transmitting data 
-using [google protocol buffers](https://developers.google.com/protocol-buffers/?hl=en)
-and [gRPC](https://grpc.io/).
+In the [realtime mode](docs/Usage-EN.md#Online) you can observe the process of building a map whilst the algorithm is running/
 
 The [offline mode](docs/Usage-EN.md#Offline) works by reading data from a file filled with protobuf packages.
 It allows you to write all events once and run them without running the main algorithm. 
@@ -36,6 +34,13 @@ This allows you to use your own tracking to move around the scene.
 For example, you can connect a Microsoft Mixed Reality helmet but use your own tracking instead of that provided 
 via the installed helmet driver.
 
+At this moment Elektronik supports these sources of tracking data:
+- [Protobuf](docs/Protobuf-EN.md). Format developed by Dioram based on 
+  [google protocol buffers](https://developers.google.com/protocol-buffers/?hl=en).
+  Actively used by dioram developers for everyday work.
+- [ROS](docs/ROS-EN.md) Data transmitted by ROS network. Supports ROS, ROS2, rosbag, rosbag2.
+  More about possibilities and limitations you can read at [documentation](docs/ROS-EN.md).
+
 If you want to add, improve or accelerate Elektronik, you can find all necessary information 
 in [docs](docs/Home-EN.md) along with a description of the source code structure.
 Also you can extent Elektronik by writing your own plugins. But for now we are support only
@@ -48,4 +53,4 @@ We hope that Elektronik will help you in developing the SLAM of your dream and w
 
 Sincerely, Dioram development team.
 
-![](docs/Logo.svg)
+![](docs/Images/Logo.svg)
