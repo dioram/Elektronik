@@ -20,7 +20,15 @@ namespace Elektronik.UI.Windows
             Horizontal,
         }
 
-        public void CreateWindow<TComponent>(string title, Action<TComponent, Window> callback, 
+        private void Start()
+        {
+            foreach (var window in Windows)
+            {
+                SetManager(window);
+            }
+        }
+
+        public void CreateWindow<TComponent>(string title, Action<TComponent, Window> callback,
                                              IList<object> titleFormatArgs = null)
         {
             MainThreadInvoker.Instance.Enqueue(() =>
@@ -29,12 +37,7 @@ namespace Elektronik.UI.Windows
                 var go = Instantiate(prefab, Canvas);
                 var window = go.GetComponent<Window>();
                 window.TitleLabel.SetLocalizedText(title, titleFormatArgs);
-                window.transform.Find("Header").GetComponent<HeaderDragHandler>().Manager = this;
-                foreach (var edge in window.GetComponentsInChildren<ResizingEdge>())
-                {
-                    edge.Manager = this;
-                }
-
+                SetManager(window);
                 go.SetActive(false);
                 Windows.Add(window);
                 callback(go.GetComponent<TComponent>(), window);
@@ -90,13 +93,22 @@ namespace Elektronik.UI.Windows
 
         #region Private
 
+        private void SetManager(Window window)
+        {
+            window.transform.Find("Header").GetComponent<HeaderDragHandler>().Manager = this;
+            foreach (var edge in window.GetComponentsInChildren<ResizingEdge>())
+            {
+                edge.Manager = this;
+            }
+        }
+
         private float[] VerticalAligns()
         {
             return Windows
                     .Where(w => w.gameObject.activeInHierarchy && !w.IsMinimized)
                     .Select(w => (RectTransform) w.transform)
                     .SelectMany(t => new[] {t.anchoredPosition.x, t.anchoredPosition.x + t.sizeDelta.x})
-                    .Concat(new[] {0,(float) Screen.width})
+                    .Concat(new[] {0, (float) Screen.width})
                     .ToArray();
         }
 

@@ -22,6 +22,7 @@ namespace Elektronik.UI.Windows
         public EdgeSide Side;
         public RectTransform ResizeTarget;
         public WindowsManager Manager;
+        public Action<Rect> OnResized;
 
         #region Unity event functions
 
@@ -136,6 +137,7 @@ namespace Elektronik.UI.Windows
             ResizeTarget.anchoredPosition = newPos;
             ResizeTarget.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, newHeight);
             ResizeTarget.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, newWidth);
+            OnResized?.Invoke(new Rect(ResizeTarget.anchoredPosition, ResizeTarget.sizeDelta));
         }
 
         #endregion
