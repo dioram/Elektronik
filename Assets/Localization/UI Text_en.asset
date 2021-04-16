@@ -222,6 +222,18 @@ MonoBehaviour:
     m_Localized: Scene view
     m_Metadata:
       m_Items: []
+  - m_Id: 1488487188664320
+    m_Localized: Update
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499525887954944
+    m_Localized: 'New releases:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499634700783616
+    m_Localized: 'New pre-releases:'
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

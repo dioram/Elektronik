@@ -129,9 +129,10 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 3.2.0.0.376
+  bundleVersion: 3.2.0-rc1
   preloadedAssets:
   - {fileID: 11400000, guid: 643c9912d14026240bf6e70b352818ad, type: 2}
+  - {fileID: -4910998042643817111, guid: d7ae9999363409c4a922750160a37e6e, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -794,11 +795,6 @@ PlayerSettings:
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames:
   - Fastest
-  - Fast
-  - Simple
-  - Good
-  - Beautiful
-  - Fantastic
   projectName: Elektronik tools 2.0
   organizationId: elevir
   cloudEnabled: 0

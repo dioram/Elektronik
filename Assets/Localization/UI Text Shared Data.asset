@@ -215,6 +215,18 @@ MonoBehaviour:
     m_Key: Scene view
     m_Metadata:
       m_Items: []
+  - m_Id: 1488487188664320
+    m_Key: Update
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499525887954944
+    m_Key: New releases
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499634700783616
+    m_Key: New pre-releases
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
