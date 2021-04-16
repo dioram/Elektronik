@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -6,7 +8,9 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TMPro;
+using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Elektronik
 {
@@ -41,6 +45,28 @@ namespace Elektronik
             public string ReleaseNotes;
             public string URL;
             public bool IsPreRelease;
+
+            public void Update()
+            {
+                var currentDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+                var updaterOldDir = Path.Combine(currentDir, "Plugins/Updater");
+                var updaterNewDir = Path.Combine(currentDir, "../ElektronikUpdater");
+                
+                if (Directory.Exists(updaterNewDir)) Directory.Delete(updaterNewDir, true);
+                Directory.Move(updaterOldDir, updaterNewDir);
+
+                var process = new Process
+                {
+                    StartInfo =
+                    {
+                        WorkingDirectory = updaterNewDir,
+                        FileName = Path.Combine(updaterNewDir, "Updater.exe"),
+                        Arguments = $"{Version} {currentDir}"
+                    }
+                };
+                process.Start();
+                Application.Quit();
+            }
         }
 
         private readonly List<Release> _releases = new List<Release>();
@@ -100,6 +126,8 @@ namespace Elektronik
                 var go = Instantiate(ReleasePrefab, preReleases ? PreReleaseRenderTarget : ReleaseRenderTarget);
                 go.transform.Find("Header/Version").GetComponent<TMP_Text>().text = release.Version;
                 go.transform.Find("Notes").GetComponent<TMP_Text>().text = release.ReleaseNotes;
+                go.transform.Find("Header/UpdateButton").GetComponent<Button>().OnClickAsObservable()
+                        .Subscribe(_ => release.Update());
             }
 
             if (releases.Count > 0)
