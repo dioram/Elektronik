@@ -1,18 +1,21 @@
-name: Pre-release
+name: Build and make pre-release
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - pre-release
+  workflow_dispatch:
 
 jobs:
   buildAndRelease:
-    if: github.event.base_ref == 'refs/heads/pre-release'
     name: Build for StandaloneWindows64
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
         with:
           lfs: true
+      - name: Get previous tag
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
@@ -26,8 +29,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Pre-release ${{ github.ref }}
+          tag_name: ${{ steps.previoustag.outputs.tag }}
+          release_name: Pre-release ${{ steps.previoustag.outputs.tag }}
           body_path: ReleaseNotes.md
           draft: false
           prerelease: true
