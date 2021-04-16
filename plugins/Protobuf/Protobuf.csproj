@@ -1,0 +1,160 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>8</LangVersion>
+        <Nullable>disable</Nullable>
+        <RootNamespace>Elektronik.Protobuf</RootNamespace>
+        <Deterministic>False</Deterministic>
+        <AssemblyVersion>1.2.*</AssemblyVersion>
+        <FileVersion>1.2.*</FileVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Protobuf Include="Data\MapTypes.proto">
+        <GrpcServices>Both</GrpcServices>
+        <Access>Public</Access>
+        <ProtoCompile>True</ProtoCompile>
+        <CompileOutputs>True</CompileOutputs>
+        <OutputDir>obj\Release\</OutputDir>
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
+      <Protobuf Include="Data\UpdateMapService.proto">
+        <GrpcServices>Both</GrpcServices>
+        <Access>Public</Access>
+        <ProtoCompile>True</ProtoCompile>
+        <CompileOutputs>True</CompileOutputs>
+        <OutputDir>obj\Release\</OutputDir>
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Google.Protobuf" Version="3.15.3" />
+      <PackageReference Include="Grpc" Version="2.36.0" />
+      <PackageReference Include="Grpc.Core" Version="2.36.0" />
+      <PackageReference Include="Grpc.Core.Api" Version="2.36.0" />
+      <PackageReference Include="Grpc.Tools" Version="2.36.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="grpc_csharp_ext.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Remove="libraries\grpc_csharp_ext.dll" />
+      <None Remove="libraries\UnityEngine.dll" />
+      <None Remove="libraries\UnityEngine.XRModule.dll" />
+      <None Remove="libraries\UnityEngine.WindModule.dll" />
+      <None Remove="libraries\UnityEngine.VirtualTexturingModule.dll" />
+      <None Remove="libraries\UnityEngine.VideoModule.dll" />
+      <None Remove="libraries\UnityEngine.VehiclesModule.dll" />
+      <None Remove="libraries\UnityEngine.VRModule.dll" />
+      <None Remove="libraries\UnityEngine.VFXModule.dll" />
+      <None Remove="libraries\UnityEngine.UnityWebRequestWWWModule.dll" />
+      <None Remove="libraries\UnityEngine.UnityWebRequestTextureModule.dll" />
+      <None Remove="libraries\UnityEngine.UnityWebRequestModule.dll" />
+      <None Remove="libraries\UnityEngine.UnityWebRequestAudioModule.dll" />
+      <None Remove="libraries\UnityEngine.UnityWebRequestAssetBundleModule.dll" />
+      <None Remove="libraries\UnityEngine.UnityCurlModule.dll" />
+      <None Remove="libraries\UnityEngine.UnityConnectModule.dll" />
+      <None Remove="libraries\UnityEngine.UnityAnalyticsModule.dll" />
+      <None Remove="libraries\UnityEngine.UNETModule.dll" />
+      <None Remove="libraries\UnityEngine.UIModule.dll" />
+      <None Remove="libraries\UnityEngine.UIElementsNativeModule.dll" />
+      <None Remove="libraries\UnityEngine.UIElementsModule.dll" />
+      <None Remove="libraries\UnityEngine.UI.pdb" />
+      <None Remove="libraries\UnityEngine.UI.dll" />
+      <None Remove="libraries\UnityEngine.TilemapModule.dll" />
+      <None Remove="libraries\UnityEngine.TextRenderingModule.dll" />
+      <None Remove="libraries\UnityEngine.TextCoreModule.dll" />
+      <None Remove="libraries\UnityEngine.TerrainPhysicsModule.dll" />
+      <None Remove="libraries\UnityEngine.TerrainModule.dll" />
+      <None Remove="libraries\UnityEngine.SubsystemsModule.dll" />
+      <None Remove="libraries\UnityEngine.StreamingModule.dll" />
+      <None Remove="libraries\UnityEngine.SpriteShapeModule.dll" />
+      <None Remove="libraries\UnityEngine.SpriteMaskModule.dll" />
+      <None Remove="libraries\UnityEngine.SharedInternalsModule.dll" />
+      <None Remove="libraries\UnityEngine.ScreenCaptureModule.dll" />
+      <None Remove="libraries\UnityEngine.PhysicsModule.dll" />
+      <None Remove="libraries\UnityEngine.Physics2DModule.dll" />
+      <None Remove="libraries\UnityEngine.PerformanceReportingModule.dll" />
+      <None Remove="libraries\UnityEngine.ParticleSystemModule.dll" />
+      <None Remove="libraries\UnityEngine.LocalizationModule.dll" />
+      <None Remove="libraries\UnityEngine.JSONSerializeModule.dll" />
+      <None Remove="libraries\UnityEngine.InputModule.dll" />
+      <None Remove="libraries\UnityEngine.InputLegacyModule.dll" />
+      <None Remove="libraries\UnityEngine.ImageConversionModule.dll" />
+      <None Remove="libraries\UnityEngine.IMGUIModule.dll" />
+      <None Remove="libraries\UnityEngine.GridModule.dll" />
+      <None Remove="libraries\UnityEngine.GameCenterModule.dll" />
+      <None Remove="libraries\UnityEngine.DirectorModule.dll" />
+      <None Remove="libraries\UnityEngine.DSPGraphModule.dll" />
+      <None Remove="libraries\UnityEngine.CrashReportingModule.dll" />
+      <None Remove="libraries\UnityEngine.CoreModule.dll" />
+      <None Remove="libraries\UnityEngine.ClusterRendererModule.dll" />
+      <None Remove="libraries\UnityEngine.ClusterInputModule.dll" />
+      <None Remove="libraries\UnityEngine.ClothModule.dll" />
+      <None Remove="libraries\UnityEngine.AudioModule.dll" />
+      <None Remove="libraries\UnityEngine.AssetBundleModule.dll" />
+      <None Remove="libraries\UnityEngine.AnimationModule.dll" />
+      <None Remove="libraries\UnityEngine.AndroidJNIModule.dll" />
+      <None Remove="libraries\UnityEngine.AccessibilityModule.dll" />
+      <None Remove="libraries\UnityEngine.ARModule.dll" />
+      <None Remove="libraries\UnityEngine.AIModule.dll" />
+      <None Remove="libraries\Unity.TextMeshPro.pdb" />
+      <None Remove="libraries\Unity.TextMeshPro.dll" />
+      <None Remove="libraries\UniRx.pdb" />
+      <None Remove="libraries\UniRx.dll" />
+      <None Remove="libraries\UniRx.Async.pdb" />
+      <None Remove="libraries\UniRx.Async.dll" />
+      <None Remove="libraries\System.Runtime.CompilerServices.Unsafe.dll" />
+      <None Remove="libraries\System.Numerics.Vectors.dll" />
+      <None Remove="libraries\System.Memory.dll" />
+      <None Remove="libraries\System.Buffers.dll" />
+      <None Remove="libraries\SimpleFileBrowser.Runtime.pdb" />
+      <None Remove="libraries\SimpleFileBrowser.Runtime.dll" />
+      <None Remove="libraries\Protobuf.pdb" />
+      <None Remove="libraries\Protobuf.dll" />
+      <None Remove="libraries\Protobuf.deps.json" />
+      <None Remove="libraries\Newtonsoft.Json.dll" />
+      <None Remove="libraries\HSVPicker.pdb" />
+      <None Remove="libraries\HSVPicker.dll" />
+      <None Remove="libraries\Grpc.Core.dll" />
+      <None Remove="libraries\Grpc.Core.Api.dll" />
+      <None Remove="libraries\Google.Protobuf.dll" />
+      <None Remove="libraries\Assembly-CSharp.pdb" />
+      <None Remove="libraries\Assembly-CSharp.dll" />
+      <None Remove="libraries\Assembly-CSharp-firstpass.pdb" />
+      <None Update="translations.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\build\Elektronik_Data\Managed\Assembly-CSharp.dll</HintPath>
+      </Reference>
+      <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\build\Elektronik_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\build\Elektronik_Data\Managed\UnityEngine.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\build\Elektronik_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="libraries" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,135 @@
+/* 
+ * Copyright 2012-2018 Open Source Robotics Foundation 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at 
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
+ * limitations under the License. 
+ */
+
+module std_msgs { module msg {
+
+    @nested
+    struct Time {
+        long sec;
+        unsigned long nanosec;
+    };
+
+    struct Header {
+        Time stamp;
+        string frame_id;
+    };
+
+}; };
+
+module geometry_msgs { module msg {
+
+struct Point {
+    double x;
+    double y;
+    double z;
+};
+struct Quaternion {
+    double x;
+    double y;
+    double z;
+    double w;
+};
+
+struct Pose {
+    Point position;
+    Quaternion orientation;
+};
+typedef double geometry_msgs__PoseWithCovariance__double_array_36[36];
+
+struct PoseWithCovariance {
+ Pose _pose;
+ geometry_msgs__PoseWithCovariance__double_array_36 covariance;
+};
+struct Vector3 {
+    double x;
+    double y;
+    double z;
+};
+
+struct Twist {
+    Vector3 linear;
+    Vector3 angular;
+};
+
+typedef double geometry_msgs__TwistWithCovariance__double_array_36[36];
+
+struct TwistWithCovariance {
+    Twist _twist;
+    geometry_msgs__TwistWithCovariance__double_array_36 covariance;
+};
+
+struct PointStamped {
+    std_msgs::msg::Header header;
+    geometry_msgs::msg::Point point;
+};
+
+struct PoseStamped {
+    std_msgs::msg::Header header;
+    geometry_msgs::msg::Pose pose;
+};
+
+}; };
+
+module nav_msgs { module msg {
+
+struct Odometry {
+    std_msgs::msg::Header header;
+    string child_frame_id;
+    geometry_msgs::msg::PoseWithCovariance pose;
+    geometry_msgs::msg::TwistWithCovariance twist;
+};
+
+}; };  // module msg::nav_msgs
+
+module sensor_msgs { module msg {
+
+    const octet PointField__INT8 = 1;
+    const octet PointField__UINT8 = 2;
+    const octet PointField__INT16 = 3;
+    const octet PointField__UINT16 = 4;
+    const octet PointField__INT32 = 5;
+    const octet PointField__UINT32 = 6;
+    const octet PointField__FLOAT32 = 7;
+    const octet PointField__FLOAT64 = 8;
+
+    struct PointField {
+        string name;
+        unsigned long offset;
+        octet datatype;
+        unsigned long count;
+    };
+
+    struct PointCloud2 {
+        std_msgs::msg::Header header;
+        unsigned long height;
+        unsigned long width;
+        sequence<sensor_msgs::msg::PointField> fields;
+        boolean is_bigendian;
+        unsigned long point_step;
+        unsigned long row_step;
+        sequence<octet> data;
+        boolean is_dense;
+    };
+    struct Image {
+        std_msgs::msg::Header header;
+        unsigned long height;
+        unsigned long width;
+        string encoding;
+        octet is_bigendian;
+        unsigned long step;
+        sequence<octet> data;
+    };
+}; };

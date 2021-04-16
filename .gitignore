@@ -17,6 +17,14 @@
 !/build.bat
 !/.github/
 !/.github/**
+!/plugins/
+!/plugins/**
+/plugins/**/bin
+/plugins/**/obj
+/plugins/Ros/Ros2/Online/SWIG_generated
+/plugins/ROS2DDS/ConnectorCSHARP*
+/plugins/ROS2DDS/cmake-build-*
+/plugins/ROS2DDS/CMakeSettings.json
 
 /Assets/generatedFiles/
 /Assets/Packages/
@@ -25,3 +33,8 @@
 *.pidb.meta
 *.pdb.meta
 *.mdb.meta
+
+/**/.idea/
+/**/.vs/
+/**/*.sln.*
+/plugins/Ros/libraries/

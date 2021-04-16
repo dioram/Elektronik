@@ -1,0 +1,214 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI Text_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 4b44fd5b774b9f3428cbd7c8bd7d2e11, type: 2}
+  m_Metadata:
+    m_Items:
+    - id: 0
+  m_TableData:
+  - m_Id: 90842468352
+    m_Localized: Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 276360728576
+    m_Localized: Version {VersionNumber}
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 149415923712
+    m_Localized: Online mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 201786003456
+    m_Localized: Offline mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 222061268992
+    m_Localized: Exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 302046646272
+    m_Localized: Online settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 392681361408
+    m_Localized: Offline settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 447345725440
+    m_Localized: Plugins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 490685468672
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 522415378432
+    m_Localized: History
+    m_Metadata:
+      m_Items: []
+  - m_Id: 557899190272
+    m_Localized: Start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 599397634048
+    m_Localized: 'Points size:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 721292496896
+    m_Localized: VR mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 752842051584
+    m_Localized: Scene color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 793258364928
+    m_Localized: Clear map
+    m_Metadata:
+      m_Items: []
+  - m_Id: 878159466496
+    m_Localized: Loading data...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51659705290752
+    m_Localized: 'Wrong settings for plugins: {0}'
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 51813678190592
+    m_Localized: No data source selected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70123740336128
+    m_Localized: Camera
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71807581425664
+    m_Localized: IP address
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71899822559232
+    m_Localized: Port
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71972736339968
+    m_Localized: Scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76461220433920
+    m_Localized: Points
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76491331342336
+    m_Localized: Tracked objects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76558255656960
+    m_Localized: Observations
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76586382659584
+    m_Localized: Lines
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76602098716672
+    m_Localized: Infinite planes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76666057658368
+    m_Localized: Special info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77303126298624
+    m_Localized: Path to file
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80224966545408
+    m_Localized: Observation #{0}
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 89028013723648
+    m_Localized: Browse...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89896175931392
+    m_Localized: Enter text...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 463706540609536
+    m_Localized: Grid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 479039536107520
+    m_Localized: 'Trace lifetime:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 732357097295872
+    m_Localized: Connections
+    m_Metadata:
+      m_Items: []
+  - m_Id: 757641246806016
+    m_Localized: Visibility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 757868133486592
+    m_Localized: Show window
+    m_Metadata:
+      m_Items: []
+  - m_Id: 758039433056256
+    m_Localized: Look at
+    m_Metadata:
+      m_Items: []
+  - m_Id: 758150133321728
+    m_Localized: Trace
+    m_Metadata:
+      m_Items: []
+  - m_Id: 758698328854528
+    m_Localized: Back to menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 758823658852352
+    m_Localized: Show settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 759360882085888
+    m_Localized: Minimize
+    m_Metadata:
+      m_Items: []
+  - m_Id: 759517707112448
+    m_Localized: Close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 780378665259008
+    m_Localized: Axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782002859151360
+    m_Localized: Show axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782032714207232
+    m_Localized: Hide axis
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 1
+    00000000:
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0010625840000000001062f6fb2e00000010a2d4f6480000001062dd11490000

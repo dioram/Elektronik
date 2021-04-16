@@ -1,0 +1,29 @@
+﻿syntax = "proto3";
+
+package Elektronik.Common.Data.Pb;
+option csharp_namespace = "Elektronik.Protobuf.Data";
+
+import "google/protobuf/empty.proto";
+import "Data/MapTypes.proto";
+
+message ErrorStatusPb {
+	enum ErrorStatusEnum {
+		UNKNOWN = 0;
+		SUCCEEDED = 1;
+		FAILED = 2;
+	}
+	ErrorStatusEnum err_type = 1;
+	string message = 2;
+}
+
+service MapsManagerPb {
+	rpc Handle(PacketPb) returns(ErrorStatusPb) {}
+}
+
+service ImageManagerPb {
+	rpc Handle(ImagePacketPb) returns(ErrorStatusPb) {}
+}
+
+service SceneManagerPb {
+	rpc Clear(google.protobuf.Empty) returns(ErrorStatusPb) {}
+}

@@ -14,6 +14,7 @@ namespace csharp.Tests
         private ConnectionPb[] m_connections;
         
         private string filename = $"{nameof(ObservationsTests)}.dat";
+        private static int _timestamp;
 
         public ObservationsTests()
         {
@@ -49,6 +50,7 @@ namespace csharp.Tests
             {
                 Action = PacketPb.Types.ActionType.Add,
                 Observations = new PacketPb.Types.Observations(),
+                Timestamp = ++_timestamp,
             };
             var obs = Enumerable.Range(0, 5).Select(id => new ObservationPb()
             {
@@ -58,7 +60,7 @@ namespace csharp.Tests
                     Message = $"{id}",
                 },
                 Message = $"Observation #{id}",
-                Filename = $"{id}.png"
+                Filename = $"{id}.png",
             }).ToArray();
             obs[0].Point.Position = new Vector3Pb() { X = 0, Y = .5 };
             obs[1].Point.Position = new Vector3Pb() { X = .5, Y = -.5 };
@@ -81,6 +83,7 @@ namespace csharp.Tests
             {
                 Action = PacketPb.Types.ActionType.Update,
                 Observations = new PacketPb.Types.Observations(),
+                Timestamp = ++_timestamp,
             };
             m_map[0].Point.Position.Z += .5;
             m_map[2].Point.Position.Z += .5;
@@ -111,6 +114,7 @@ namespace csharp.Tests
                 {
                     Action = PacketPb.Types.Connections.Types.Action.Add,
                 },
+                Timestamp = ++_timestamp,
             };
             packet.Connections.Data.Add(m_connections);
             
@@ -132,6 +136,7 @@ namespace csharp.Tests
                 {
                     Action = PacketPb.Types.Connections.Types.Action.Remove,
                 },
+                Timestamp = ++_timestamp,
             };
             packet.Connections.Data.Add(new[] { m_connections[0], m_connections[1] });
             
@@ -149,6 +154,7 @@ namespace csharp.Tests
             {
                 Action = PacketPb.Types.ActionType.Remove,
                 Observations = new PacketPb.Types.Observations(),
+                Timestamp = ++_timestamp,
             };
 
             packet.Observations.Data.Add(new[] { m_map[1], m_map[3] });
@@ -167,6 +173,7 @@ namespace csharp.Tests
             {
                 Action = PacketPb.Types.ActionType.Clear,
                 Observations = new PacketPb.Types.Observations(),
+                Timestamp = ++_timestamp,
             };
             
             using var file = File.Open(filename, FileMode.Append);
