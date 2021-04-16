@@ -38,6 +38,7 @@ namespace Elektronik.Clouds
                     {
                         var go = ObservationsPool.Spawn(pose.position, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
+                        go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
 
                         var dc = go.GetComponent(DataComponent<TCloudItem>.GetInstantiable());
                         if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
@@ -75,6 +76,7 @@ namespace Elektronik.Clouds
                     {
                         var go = ObservationsPool.Spawn(pose.position, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
+                        go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
 
                         var dc = go.GetComponent(DataComponent<TCloudItem>.GetInstantiable());
                         if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
@@ -95,11 +97,10 @@ namespace Elektronik.Clouds
                     Pose pose = GetObjectPose(obj);
                     MainThreadInvoker.Instance.Enqueue(() =>
                     {
-                        GameObjects[(sender.GetHashCode(), obj.Id)]
-                                .transform
-                                .SetPositionAndRotation(pose.position, pose.rotation);
-                        GameObjects[(sender.GetHashCode(), obj.Id)].GetComponent<DataComponent<TCloudItem>>().Data =
-                                obj;
+                        var go = GameObjects[(sender.GetHashCode(), obj.Id)];
+                        go.transform.SetPositionAndRotation(pose.position, pose.rotation);
+                        go.GetComponent<DataComponent<TCloudItem>>().Data = obj;
+                        go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
                     });
                 }
             }
@@ -161,6 +162,7 @@ namespace Elektronik.Clouds
                 new SortedDictionary<(int, int), GameObject>();
 
         protected ObjectPool ObservationsPool;
+        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
         protected abstract Pose GetObjectPose(TCloudItem obj);
 

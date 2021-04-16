@@ -2474,12 +2474,17 @@ PrefabInstance:
     - target: {fileID: 4251823873330017684, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178,
         type: 3}
       propertyPath: m_ReverseArrangement
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6492332731233021922, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178,
         type: 3}
       propertyPath: m_Padding.m_Left
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6492332731233021922, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178,
+        type: 3}
+      propertyPath: m_ReverseArrangement
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7422870107346735501, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178,
         type: 3}
