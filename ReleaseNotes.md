@@ -1,15 +1,9 @@
 # Новое в этой версии:
-- Плагин для работы с ROS. Поддерживаются ROS, ROS2, rosbag и rosbag2.
-- Значительная переработка интерфейса. В частности:
-  - Система окон для вывода различной информации
-  - Группировка облачных данных по типам в дерево.
-  - Возможность навести камеру на выбранное облако или объект.
-- Отображение следа для точек изменивших своё положение
+- **Начиная с этой версии возможно автоматическое обновление Электроника при выходе нового релиза или пре-релиза.**
+- Окно настроек сцены преобразовано в 2 окна: окно инструментов и окно дерева источников данных.
+- Добавлен виджет для вывода ориентации и позиции камеры, а также для выравнивания камеры относительно осей координат.
 
 # New in this version:
-- Plugin for ROS support. It can work with ROS, ROS2, rosbag and rosbag2.
-- Major UI improvements. Most important:
-  - Windows system. Now elektronik can show any types of additional info or metadata.
-  - Tree of data sources.
-  - "Look at" button which allows you to quickly center camera on chosen cloud.
-- Track of moved points.
+- **Starts with this version Elektronik can be automatically updated at new release or pre-release.**
+- Scene settings window was separated to tools window and data source tree window.
+- Added widget showing camera position, orientation. This widget can also align camera.
