@@ -360,9 +360,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MinHeight: 40
   MinWidth: 80
+  SavingSettings: 0
   TitleLabel: {fileID: 0}
   BaseHeaderColor: {r: 1, g: 1, b: 1, a: 0.5}
   HighlightHeaderColor: {r: 0, g: 0, b: 1, a: 1}
+  MinimizeButton: {fileID: 4968420213671230980}
 --- !u!114 &4251823873330017684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1028,10 +1030,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1633165848068722919}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 7424587317706410260}
+        m_TargetAssemblyTypeName: Elektronik.UI.Windows.Window, Assembly-CSharp
+        m_MethodName: Hide
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

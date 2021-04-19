@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Elektronik.UI.Windows
@@ -6,6 +7,8 @@ namespace Elektronik.UI.Windows
     public class HeaderDragHandler : MonoBehaviour, IDragHandler
     {
         public WindowsManager Manager;
+
+        public Action<Rect> OnDragged;
         
         #region Unity events
 
@@ -22,7 +25,10 @@ namespace Elektronik.UI.Windows
 
         private void OnDestroy()
         {
-            Manager.OnWindowDestroyed(_windowTransform.GetComponent<Window>());
+            if (Manager != null)
+            {
+                Manager.OnWindowDestroyed(_windowTransform.GetComponent<Window>());
+            }
         }
 
         #endregion
@@ -37,6 +43,7 @@ namespace Elektronik.UI.Windows
             newPos += eventData.delta / _canvas.scaleFactor;
             _windowTransform.anchoredPosition = newPos;
             Manager.Align(_windowTransform);
+            OnDragged?.Invoke(new Rect(_windowTransform.anchoredPosition, _windowTransform.sizeDelta));
         }
 
         #endregion

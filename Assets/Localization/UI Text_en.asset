@@ -206,6 +206,34 @@ MonoBehaviour:
     m_Localized: Hide axis
     m_Metadata:
       m_Items: []
+  - m_Id: 1179022329516032
+    m_Localized: Show data tree
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1180012348837888
+    m_Localized: Tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1180093168881664
+    m_Localized: Data tree
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1192124664123392
+    m_Localized: Scene view
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1488487188664320
+    m_Localized: Update
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499525887954944
+    m_Localized: 'New releases:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499634700783616
+    m_Localized: 'New pre-releases:'
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

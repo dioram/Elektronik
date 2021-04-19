@@ -8,7 +8,7 @@ env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 jobs:
   buildForSomePlatforms:
-    name: Build for StandaloneWindows64  on version 2020.2.4f1
+    name: Build for StandaloneWindows64
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2

@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using Elektronik.Settings;
 using Elektronik.Settings.Bags;
-using HSVPicker;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions.ColorPicker;
 
 namespace Elektronik.UI
 {
@@ -18,7 +18,8 @@ namespace Elektronik.UI
         [SerializeField] private ChangingButton AxisButton;
         [SerializeField] private Slider PointSizeSlider;
         [SerializeField] private Slider DurationSlider;
-        [SerializeField] private ColorPicker ColorPicker;
+        [SerializeField] private ColorPickerControl ColorPicker;
+        private bool _inited = false;
 
         private void Start()
         {
@@ -34,6 +35,8 @@ namespace Elektronik.UI
                 ColorPicker.CurrentColor = _bag.SceneColor;
             }
 
+            _inited = true;
+
             GridButton.OnStateChanged += i =>
             {
                 _bag.GridState = i;
@@ -48,8 +51,11 @@ namespace Elektronik.UI
             PointSizeSlider.OnValueChangedAsObservable().Do(i => _bag.PointSize = i).Subscribe(_ => SaveSettings());
             ColorPicker.onValueChanged.AddListener(color =>
             {
-                _bag.SceneColor = color;
-                SaveSettings();
+                if (_inited)
+                {
+                    _bag.SceneColor = color;
+                    SaveSettings();
+                }
             });
         }
 
