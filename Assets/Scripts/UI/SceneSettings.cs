@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using Elektronik.Settings;
 using Elektronik.Settings.Bags;
-using HSVPicker;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions.ColorPicker;
 
 namespace Elektronik.UI
 {
@@ -18,7 +18,7 @@ namespace Elektronik.UI
         [SerializeField] private ChangingButton AxisButton;
         [SerializeField] private Slider PointSizeSlider;
         [SerializeField] private Slider DurationSlider;
-        [SerializeField] private ColorPicker ColorPicker;
+        [SerializeField] private ColorPickerControl ColorPicker;
         private bool _inited = false;
 
         private void Start()

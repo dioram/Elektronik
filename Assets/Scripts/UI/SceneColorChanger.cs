@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using HSVPicker;
+using UnityEngine.UI.Extensions.ColorPicker;
 
 namespace Elektronik.UI
 {
     public class SceneColorChanger : MonoBehaviour
     {
-        public ColorPicker Picker;
+        public ColorPickerControl Picker;
         public Camera[] Cameras;
 
         private void Awake()
