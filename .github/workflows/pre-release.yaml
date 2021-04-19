@@ -2,7 +2,7 @@ name: Build and make pre-release
 on:
   push:
     branches:
-      - pre-release
+      - pre-release*
   workflow_dispatch:
 
 jobs:
