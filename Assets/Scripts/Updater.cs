@@ -61,7 +61,7 @@ namespace Elektronik
                     {
                         WorkingDirectory = updaterNewDir,
                         FileName = Path.Combine(updaterNewDir, "Updater.exe"),
-                        Arguments = $"{Version} {currentDir}"
+                        Arguments = $"{Version} {currentDir}",
                     }
                 };
                 process.Start();
