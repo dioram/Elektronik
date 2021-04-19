@@ -82,6 +82,8 @@ namespace Elektronik.UI.Windows
                 {
                     newHeight += topAligns.First() - newPos.y;
                     newPos.y = topAligns.First();
+                    Manager.ShowLine(WindowsManager.Direction.Horizontal, topAligns.First());
+                    StartCoroutine(Manager.HideAlignLine(WindowsManager.Direction.Horizontal));
                 }
                 else
                 {
@@ -97,6 +99,8 @@ namespace Elektronik.UI.Windows
                 if (bottomAligns.Length > 0)
                 {
                     newHeight += bottom - bottomAligns.First();
+                    Manager.ShowLine(WindowsManager.Direction.Horizontal, bottomAligns.First());
+                    StartCoroutine(Manager.HideAlignLine(WindowsManager.Direction.Horizontal));
                 }
                 else
                 {
@@ -111,6 +115,8 @@ namespace Elektronik.UI.Windows
                 {
                     newWidth -= leftAligns.First() - newPos.x;
                     newPos.x = leftAligns.First();
+                    Manager.ShowLine(WindowsManager.Direction.Vertical, leftAligns.First());
+                    StartCoroutine(Manager.HideAlignLine(WindowsManager.Direction.Vertical));
                 }
                 else
                 {
@@ -126,6 +132,8 @@ namespace Elektronik.UI.Windows
                 if (rightAligns.Length > 0)
                 {
                     newWidth += right - rightAligns.First();
+                    Manager.ShowLine(WindowsManager.Direction.Vertical, rightAligns.First());
+                    StartCoroutine(Manager.HideAlignLine(WindowsManager.Direction.Vertical));
                 }
                 else
                 {
