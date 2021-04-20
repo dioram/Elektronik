@@ -234,9 +234,35 @@ MonoBehaviour:
     m_Localized: 'New pre-releases:'
     m_Metadata:
       m_Items: []
+  - m_Id: 2901965152849920
+    m_Localized: Cloud clusterization
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2941787762462720
+    m_Localized: Remove
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2946729273331712
+    m_Localized: Clustered {0}
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 2948087888089088
+    m_Localized: Cluster #{0}
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 2948700474576896
+    m_Localized: Compute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2949819334529024
+    m_Localized: Simple 3 plane clusterization
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010625840000000001062f6fb2e00000010a2d4f6480000001062dd11490000
+        m_Entries: 0010625840000000001062f6fb2e00000010a2d4f6480000001062dd11490000001096df08780a000010563345790a00

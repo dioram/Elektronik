@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Elektronik.Containers
+namespace Elektronik.Containers.SpecialInterfaces
 {
     public interface ILookable
     {

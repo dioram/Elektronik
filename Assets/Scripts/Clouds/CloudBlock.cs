@@ -7,7 +7,6 @@ namespace Elektronik.Clouds
         public const int Capacity = 512 * 512;
         public Shader CloudShader;
         public bool Updated;
-        public bool ToClear;
         public float ItemSize = 1f;
 
         public virtual void Clear()

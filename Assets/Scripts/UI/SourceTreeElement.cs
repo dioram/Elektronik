@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Cameras;
 using Elektronik.Containers;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.UI.Localization;
 using Elektronik.UI.Windows;
@@ -21,6 +22,7 @@ namespace Elektronik.UI
         public Button WindowButton;
         public ButtonChangingIcons VisibleButton;
         public ButtonChangingIcons TraceButton;
+        public Button RemoveButton;
         public Button CameraButton;
         public Text NameLabel;
         public RectTransform Content;
@@ -98,6 +100,19 @@ namespace Elektronik.UI
             else
             {
                 TraceButton.gameObject.SetActive(false);
+            }
+
+            if (Node is IRemovable r)
+            {
+                RemoveButton.OnClickAsObservable().Subscribe(_ =>
+                {
+                    r.RemoveSelf();
+                    Destroy(gameObject);
+                });
+            }
+            else
+            {
+                RemoveButton.gameObject.SetActive(false);
             }
 
             TreeButton.OnStateChanged += _ => ChangeState();

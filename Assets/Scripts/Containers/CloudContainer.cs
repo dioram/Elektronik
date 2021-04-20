@@ -5,14 +5,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elektronik.Clouds;
+using Elektronik.Clusterization.Containers;
 using Elektronik.Containers.EventArgs;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class CloudContainer<TCloudItem> : IContainer<TCloudItem>, ISourceTree, ILookable, IVisible, ITraceable
+    public class CloudContainer<TCloudItem> 
+            : IContainer<TCloudItem>, ISourceTree, ILookable, IVisible, ITraceable, IClusterable
             where TCloudItem : struct, ICloudItem
     {
         public CloudContainer(string displayName = "")
@@ -234,6 +237,15 @@ namespace Elektronik.Containers
 
         #endregion
 
+        #region IClusterable
+        
+        public IEnumerable<SlamPoint> GetAllPoints()
+        {
+            return _items.Values.Select(i => i.AsPoint());
+        }
+
+        #endregion
+        
         #region IVisible
 
         public bool IsVisible

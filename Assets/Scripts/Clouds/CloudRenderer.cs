@@ -40,7 +40,7 @@ namespace Elektronik.Clouds
         {
             if (_needNewBlock)
             {
-                var go = new GameObject($"{GetType().ToString().Split('.').Last()} {_blocks.Count}");
+                var go = new GameObject($"{GetType().Name} {_blocks.Count}");
                 go.transform.SetParent(transform);
                 var block = go.AddComponent<TCloudBlock>();
                 block.CloudShader = CloudShader;
