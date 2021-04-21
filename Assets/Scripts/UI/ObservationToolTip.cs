@@ -32,6 +32,7 @@ namespace Elektronik.UI
             if (Physics.Raycast(ray, out RaycastHit hitInfo) && hitInfo.transform.CompareTag("Observation"))
             {
                 var data = hitInfo.transform.GetComponent<DataComponent<SlamObservation>>();
+                var image3D = data.GetComponent<Observation3DImage>();
                 if (Input.GetMouseButton(0))
                 {
                     CreateOrShowWindow(data, "Observation #{0}");
@@ -41,6 +42,7 @@ namespace Elektronik.UI
                     if (_floatingViewer.gameObject.activeInHierarchy) return;
                     _floatingViewer.Render(data);
                     _floatingViewer.transform.position = Input.mousePosition;
+                    // if (image3D != null) image3D.enabled = true;
                 }
             }
             else

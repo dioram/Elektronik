@@ -83,7 +83,7 @@ namespace Protobuf.Tests
             m_map[2].Filename = "";
             m_map[4].Point.Position.Z += .5;
             m_map[4].Point.Color = new ColorPb() {R = 255, B = 255};
-            m_map[2].Filename = "";
+            m_map[4].Filename = "";
 
             foreach (var pb in m_map)
             {

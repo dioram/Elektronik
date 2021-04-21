@@ -71,6 +71,7 @@ namespace Elektronik.UI.Windows
         [SerializeField] private TMP_Text Message;
         [SerializeField] private Window Window;
         [SerializeField] private GameObject TextView;
+        [SerializeField] private AspectRatioFitter Fitter;
 
         private DataComponent<SlamObservation> _observation;
 
@@ -90,10 +91,12 @@ namespace Elektronik.UI.Windows
 
             if (File.Exists(_observation.Data.FileName))
             {
-                var texture = new Texture2D(1024, 1024);
+                var texture = new Texture2D(1024, 1024, TextureFormat.RGB24, false);
                 texture.LoadImage(File.ReadAllBytes(_observation.Data.FileName));
+                texture.filterMode = FilterMode.Trilinear;
                 Image.texture = texture;
                 Image.transform.parent.gameObject.SetActive(true);
+                Fitter.aspectRatio = texture.width / (float) texture.height;
             }
             else
             {

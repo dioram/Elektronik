@@ -47,6 +47,7 @@ namespace Elektronik.Renderers
             {
                 Texture2D texture2D = Texture2D.blackTexture;
                 texture2D.LoadImage(array);
+                texture2D.filterMode = FilterMode.Trilinear;
                 Fitter.aspectRatio = texture2D.width / (float) texture2D.height;
                 Target.texture = texture2D;
             });
