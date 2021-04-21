@@ -157,7 +157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
     type: 3}
-  TooltipText: Clusterise
+  TooltipText: Remove
   Offset: {x: 0, y: 40}
 --- !u!1 &690437898311979858
 GameObject:
@@ -484,7 +484,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
     type: 3}
-  TooltipText: Remove
+  TooltipText: Trace
   Offset: {x: 0, y: 40}
 --- !u!1 &2214842138114993958
 GameObject:

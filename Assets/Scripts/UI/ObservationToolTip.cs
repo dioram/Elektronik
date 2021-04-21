@@ -10,6 +10,7 @@ namespace Elektronik.UI
 {
     public class ObservationToolTip : MonoBehaviour
     {
+        public bool Enable3DImages { get; set; }
         [SerializeField] private WindowsManager Manager;
         private Camera _camera;
         private ObservationViewer _floatingViewer;
@@ -32,17 +33,20 @@ namespace Elektronik.UI
             if (Physics.Raycast(ray, out RaycastHit hitInfo) && hitInfo.transform.CompareTag("Observation"))
             {
                 var data = hitInfo.transform.GetComponent<DataComponent<SlamObservation>>();
-                var image3D = data.GetComponent<Observation3DImage>();
-                if (Input.GetMouseButton(0))
+                if (Input.GetMouseButtonUp(0))
                 {
                     CreateOrShowWindow(data, "Observation #{0}");
+                    var image3D = data.GetComponent<Observation3DImage>();
+                    if (Enable3DImages && image3D != null)
+                    {
+                        image3D.enabled = !image3D.enabled;
+                    }
                 }
                 else
                 {
                     if (_floatingViewer.gameObject.activeInHierarchy) return;
                     _floatingViewer.Render(data);
                     _floatingViewer.transform.position = Input.mousePosition;
-                    // if (image3D != null) image3D.enabled = true;
                 }
             }
             else

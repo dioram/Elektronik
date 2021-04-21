@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Elektronik.Clouds;
 using Elektronik.Clusterization.Algorithms;
 using Elektronik.Clusterization.Containers;
@@ -23,15 +25,23 @@ namespace Elektronik.Clusterization.UI
         public void Compute(IClusterizationAlgorithm algorithm)
         {
             var pair = _clusterableContainers[ContainersSelector.value];
-            (pair.container as IVisible).IsVisible = false;
-            var data = algorithm.Compute((pair.container as IClusterable).GetAllPoints().ToList());
-            var go = Instantiate(TreeElementPrefab, TreeView);
-            var treeElement = go.GetComponent<SourceTreeElement>();
-            var localizedName = TextLocalizationExtender.GetLocalizedString("Clustered {0}", 
-                                                                            new List<object>{pair.name});
-            var clustered = new ClustersContainer(localizedName, data, pair.container as IVisible);
-            treeElement.Node = clustered;
-            clustered.SetRenderer(Renderer);
+            var list = (pair.container as IClusterable).GetAllPoints().ToList();
+
+            Task.Run(() =>
+            {
+                var data = algorithm.Compute(list);
+                MainThreadInvoker.Instance.Enqueue(() =>
+                {
+                    var go = Instantiate(TreeElementPrefab, TreeView);
+                    var treeElement = go.GetComponent<SourceTreeElement>();
+                    var localizedName = TextLocalizationExtender.GetLocalizedString("Clustered {0}", 
+                        new List<object>{pair.name});
+                    var clustered = new ClustersContainer(localizedName, data, pair.container as IVisible);
+                    treeElement.Node = clustered;
+                    clustered.SetRenderer(Renderer);
+                    (pair.container as IVisible).IsVisible = false;
+                });
+            });
         }
 
         #region Unity events
