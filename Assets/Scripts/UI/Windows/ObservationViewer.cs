@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Elektronik.Clouds;
 using Elektronik.Data.PackageObjects;
@@ -27,9 +28,14 @@ namespace Elektronik.UI.Windows
             Window = GetComponent<Window>();
         }
 
-        private void Update()
+        private void OnEnable()
         {
-            SetData();
+            StartCoroutine(UpdatePicture());
+        }
+
+        private void OnDisable()
+        {
+            StopAllCoroutines();
         }
 
         #endregion
@@ -64,21 +70,28 @@ namespace Elektronik.UI.Windows
         [SerializeField] private RawImage Image;
         [SerializeField] private TMP_Text Message;
         [SerializeField] private Window Window;
+        [SerializeField] private GameObject TextView;
 
-        private string _currentFileName;
         private DataComponent<SlamObservation> _observation;
+
+        private IEnumerator UpdatePicture()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(1);
+                SetData();
+            }
+        }
 
         private void SetData()
         {
             Message.text = _observation.Data.Message;
-            Message.gameObject.SetActive(!string.IsNullOrEmpty(Message.text));
+            TextView.SetActive(!string.IsNullOrEmpty(Message.text));
 
-            if (_currentFileName == _observation.Data.FileName) return;
-            _currentFileName = _observation.Data.FileName;
-            if (File.Exists(_currentFileName))
+            if (File.Exists(_observation.Data.FileName))
             {
-                Texture2D texture = new Texture2D(1024, 1024);
-                texture.LoadImage(File.ReadAllBytes(_currentFileName));
+                var texture = new Texture2D(1024, 1024);
+                texture.LoadImage(File.ReadAllBytes(_observation.Data.FileName));
                 Image.texture = texture;
                 Image.transform.parent.gameObject.SetActive(true);
             }

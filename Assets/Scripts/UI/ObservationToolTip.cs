@@ -38,6 +38,7 @@ namespace Elektronik.UI
                 }
                 else
                 {
+                    if (_floatingViewer.gameObject.activeInHierarchy) return;
                     _floatingViewer.Render(data);
                     _floatingViewer.transform.position = Input.mousePosition;
                 }

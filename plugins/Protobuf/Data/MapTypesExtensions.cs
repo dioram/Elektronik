@@ -26,7 +26,10 @@ namespace Elektronik.Protobuf.Data
             {
                 SlamObservation observation = o;
                 converter?.Convert(ref observation.Point.Position, ref observation.Rotation);
-                observation.FileName = Path.Combine(imageDir, observation.FileName);
+                if (!Path.IsPathRooted(observation.FileName))
+                {
+                    observation.FileName = Path.Combine(imageDir, observation.FileName); 
+                }
                 yield return observation;
             }
         }
