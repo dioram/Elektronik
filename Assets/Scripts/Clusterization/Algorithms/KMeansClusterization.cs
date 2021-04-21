@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Elektronik.Data.PackageObjects;
@@ -35,9 +36,12 @@ namespace Elektronik.Clusterization.Algorithms
 
         private List<int> ComputeClusters(IList<SlamPoint> points)
         {
-            File.WriteAllLines("tmp.csv", points.Select(p => p.Position).Select(p => $"{p.x},{p.y},{p.z}"));
+            File.WriteAllLines("tmp.csv", points
+                                       .Select(p => $"{p.Position.x.ToString(CultureInfo.InvariantCulture)};" +
+                                                       $"{p.Position.y.ToString(CultureInfo.InvariantCulture)};" +
+                                                       $"{p.Position.z.ToString(CultureInfo.InvariantCulture)}"));
             var mlContext = new MLContext(seed: 0);
-            
+
             var reader = mlContext.Data.CreateTextLoader(
                 new[]
                 {
@@ -46,14 +50,14 @@ namespace Elektronik.Clusterization.Algorithms
                     new TextLoader.Column("Z", DataKind.Single, 2),
                 },
                 hasHeader: false,
-                separatorChar: ','
+                separatorChar: ';'
             );
 
             var dataView = reader.Load("tmp.csv");
             var pipeline = mlContext.Transforms
                     .Concatenate("Features", "X", "Y", "Z")
                     .Append(mlContext.Clustering.Trainers.KMeans(numberOfClusters: _k));
-            
+
             var transformed = pipeline.Fit(dataView).Transform(dataView);
             var clusterColumn = transformed.Schema.GetColumnOrNull("PredictedLabel")!.Value;
             var cursor = transformed.GetRowCursor(new[] {clusterColumn});
