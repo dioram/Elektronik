@@ -5,6 +5,6 @@ namespace Elektronik.Clusterization.Algorithms
 {
     public interface IClusterizationAlgorithm
     {
-        public List<List<SlamPoint>> Compute(IEnumerable<SlamPoint> items);
+        public List<List<SlamPoint>> Compute(IList<SlamPoint> items);
     }
 }

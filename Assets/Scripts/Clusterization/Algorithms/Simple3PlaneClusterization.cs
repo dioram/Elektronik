@@ -12,33 +12,32 @@ namespace Elektronik.Clusterization.Algorithms
             _offset = offset;
         }
 
-        public List<List<SlamPoint>> Compute(IEnumerable<SlamPoint> items)
+        public List<List<SlamPoint>> Compute(IList<SlamPoint> items)
         {
-            var l = items.ToList();
-            var l1 = l.Where(i => i.Position.x > _offset.x
-                                     && i.Position.y > _offset.y
-                                     && i.Position.z > _offset.z).ToList();
-            var l2 = l.Where(i => i.Position.x > _offset.x
-                                     && i.Position.y > _offset.y
-                                     && i.Position.z < _offset.z).ToList();
-            var l3 = l.Where(i => i.Position.x > _offset.x
-                                     && i.Position.y < _offset.y
-                                     && i.Position.z > _offset.z).ToList();
-            var l4 = l.Where(i => i.Position.x > _offset.x
-                                     && i.Position.y < _offset.y
-                                     && i.Position.z < _offset.z).ToList();
-            var l5 = l.Where(i => i.Position.x < _offset.x
-                                     && i.Position.y > _offset.y
-                                     && i.Position.z > _offset.z).ToList();
-            var l6 = l.Where(i => i.Position.x < _offset.x
-                                     && i.Position.y > _offset.y
-                                     && i.Position.z < _offset.z).ToList();
-            var l7 = l.Where(i => i.Position.x < _offset.x
-                                     && i.Position.y < _offset.y
-                                     && i.Position.z > _offset.z).ToList();
-            var l8 = l.Where(i => i.Position.x < _offset.x
-                                     && i.Position.y < _offset.y
-                                     && i.Position.z < _offset.z).ToList();
+            var l1 = items.Where(i => i.Position.x > _offset.x
+                                         && i.Position.y > _offset.y
+                                         && i.Position.z > _offset.z).ToList();
+            var l2 = items.Where(i => i.Position.x > _offset.x
+                                         && i.Position.y > _offset.y
+                                         && i.Position.z < _offset.z).ToList();
+            var l3 = items.Where(i => i.Position.x > _offset.x
+                                         && i.Position.y < _offset.y
+                                         && i.Position.z > _offset.z).ToList();
+            var l4 = items.Where(i => i.Position.x > _offset.x
+                                         && i.Position.y < _offset.y
+                                         && i.Position.z < _offset.z).ToList();
+            var l5 = items.Where(i => i.Position.x < _offset.x
+                                         && i.Position.y > _offset.y
+                                         && i.Position.z > _offset.z).ToList();
+            var l6 = items.Where(i => i.Position.x < _offset.x
+                                         && i.Position.y > _offset.y
+                                         && i.Position.z < _offset.z).ToList();
+            var l7 = items.Where(i => i.Position.x < _offset.x
+                                         && i.Position.y < _offset.y
+                                         && i.Position.z > _offset.z).ToList();
+            var l8 = items.Where(i => i.Position.x < _offset.x
+                                         && i.Position.y < _offset.y
+                                         && i.Position.z < _offset.z).ToList();
 
             var res = new List<List<SlamPoint>> {l1, l2, l3, l4, l5, l6, l7, l8};
             for (int i = 0; i < res.Count; i++)

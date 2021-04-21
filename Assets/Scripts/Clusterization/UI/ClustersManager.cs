@@ -24,7 +24,7 @@ namespace Elektronik.Clusterization.UI
         {
             var pair = _clusterableContainers[ContainersSelector.value];
             (pair.container as IVisible).IsVisible = false;
-            var data = algorithm.Compute((pair.container as IClusterable).GetAllPoints());
+            var data = algorithm.Compute((pair.container as IClusterable).GetAllPoints().ToList());
             var go = Instantiate(TreeElementPrefab, TreeView);
             var treeElement = go.GetComponent<SourceTreeElement>();
             var localizedName = TextLocalizationExtender.GetLocalizedString("Clustered {0}", 
