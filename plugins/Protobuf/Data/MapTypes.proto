@@ -1,0 +1,119 @@
+﻿syntax = "proto3";
+
+package Elektronik.Common.Data.Pb;
+option csharp_namespace = "Elektronik.Protobuf.Data";
+
+message Vector3Pb {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+message Vector4Pb {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+  double w = 4;
+}
+
+message ColorPb {
+  int32 r = 1;
+  int32 g = 2;
+  int32 b = 3;
+}
+
+message PointPb {
+  int32 id = 1;
+  Vector3Pb position = 2;
+  ColorPb color = 3;
+  string message = 16;
+}
+
+message ObservationPb {
+  message Stats {
+    reserved 1 to 4;
+  }
+  PointPb point = 1;
+  Vector4Pb orientation = 2;
+  string message = 3;
+  string filename = 4;
+  Stats stats = 16;
+}
+
+message ConnectionPb {
+  int32 id1 = 1;
+  int32 id2 = 2;
+}
+
+message LinePb {
+  PointPb pt1 = 1;
+  PointPb pt2 = 2;
+}
+
+message InfinitePlanePb {
+  int32 id = 1;
+  Vector3Pb offset = 2;
+  Vector3Pb normal = 3;
+  ColorPb color = 4;
+  string message = 16;
+}
+
+message TrackedObjPb {
+  int32 id = 1;
+  Vector3Pb translation = 2;
+  Vector4Pb rotation = 3;
+  ColorPb trackColor = 4;
+  string message = 5;
+}
+
+message PacketPb {
+  enum ActionType {
+    add = 0;
+    update = 1;
+    remove = 2;
+    clear = 3;
+    info = 4;
+  }
+  message Points {
+    repeated PointPb data = 1;
+  }
+  message Observations {
+    repeated ObservationPb data = 1;
+  }
+  message Lines {
+    repeated LinePb data = 1;
+  }
+  message TrackedObjs {
+    repeated TrackedObjPb data = 1;
+  }
+  message InfinitePlanes {
+    repeated InfinitePlanePb data = 1;
+  }
+  message Connections {
+    enum Action {
+      unknown = 0;
+      add = 1;
+      remove = 2;
+    }
+    Action action = 1;
+    repeated ConnectionPb data = 2;
+  }
+
+  ActionType action = 1;
+  int32 timestamp = 2;
+  bool special = 3;
+  string message = 4;
+  Connections connections = 5;
+
+  oneof Data {
+    TrackedObjs trackedObjs = 12;
+    Points points = 13;
+    Observations observations = 14;
+    Lines lines = 15;
+    InfinitePlanes infinitePlanes = 16;
+  }
+}
+
+message ImagePacketPb {
+  bytes image_data = 1;
+}

@@ -1,29 +1,26 @@
-# This is a basic workflow to help you get started with Actions
-
-name: Release
-
-# Controls when the action will run. 
+name: Build and release
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-    
+    branches:
+      - master
   workflow_dispatch:
-    
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  buildForSomePlatforms:
-    name: Build for StandaloneWindows64  on version 2020.2.4f1
+  buildAndRelease:
+    name: Build for StandaloneWindows64
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
         with:
           lfs: true
+      - name: Get previous tag
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
       - name: Build unity player
-        run: .\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
+        run: .\.github\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
       - name: Zip artifact
         run: powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\Build', 'build.zip'); }"
       - name: Create Release
@@ -32,13 +29,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.previoustag.outputs.tag }}
+          release_name: Release ${{ steps.previoustag.outputs.tag }}
           body_path: ReleaseNotes.md
           draft: false
           prerelease: false
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

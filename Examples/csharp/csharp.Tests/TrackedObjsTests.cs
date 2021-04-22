@@ -12,14 +12,15 @@ namespace csharp.Tests
     {
         private TrackedObjPb[] m_objects;
         private string filename = $"{nameof(TrackedObjsTests)}.dat";
+        private static int _timestamp = 0;
 
         public TrackedObjsTests()
         {
             m_objects = Enumerable.Range(0, 3).Select(id => new TrackedObjPb()
             {
-                Id = id,
-                Rotation = new Vector4Pb() { W = 1, },
-                Translation = new Vector3Pb(),
+                    Id = id,
+                    Rotation = new Vector4Pb() {W = 1,},
+                    Translation = new Vector3Pb(),
             }).ToArray();
         }
 
@@ -28,17 +29,19 @@ namespace csharp.Tests
         {
             var packet = new PacketPb()
             {
-                Action = PacketPb.Types.ActionType.Add,
-                TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                    Action = PacketPb.Types.ActionType.Add,
+                    TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                    Timestamp = ++_timestamp,
+                    Special = true,
             };
             m_objects[0].Translation = new Vector3Pb();
-            m_objects[1].Translation = new Vector3Pb() { X = 0.5, };
-            m_objects[2].Translation = new Vector3Pb() { X = -0.5, };
-            m_objects[0].TrackColor = new ColorPb() { R = 255, };
-            m_objects[1].TrackColor = new ColorPb() { G = 255, };
-            m_objects[2].TrackColor = new ColorPb() { B = 255, };
+            m_objects[1].Translation = new Vector3Pb() {X = 0.5,};
+            m_objects[2].Translation = new Vector3Pb() {X = -0.5,};
+            m_objects[0].TrackColor = new ColorPb() {R = 255,};
+            m_objects[1].TrackColor = new ColorPb() {G = 255,};
+            m_objects[2].TrackColor = new ColorPb() {B = 255,};
             packet.TrackedObjs.Data.Add(m_objects);
-            
+
             using var file = File.Open(filename, FileMode.Create);
             packet.WriteDelimitedTo(file);
 
@@ -51,12 +54,14 @@ namespace csharp.Tests
         {
             var packet = new PacketPb()
             {
-                Action = PacketPb.Types.ActionType.Update,
-                TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                    Action = PacketPb.Types.ActionType.Update,
+                    TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                    Timestamp = ++_timestamp,
+                    Special = true,
             };
-            m_objects[0].Translation = new Vector3Pb() { X = 0.0, Z = 0.5 };
-            m_objects[1].Translation = new Vector3Pb() { X = 0.5, Z = 0.5 };
-            m_objects[2].Translation = new Vector3Pb() { X = -0.5, Z = 0.5 };
+            m_objects[0].Translation = new Vector3Pb() {X = 0.0, Z = 0.5};
+            m_objects[1].Translation = new Vector3Pb() {X = 0.5, Z = 0.5};
+            m_objects[2].Translation = new Vector3Pb() {X = -0.5, Z = 0.5};
             packet.TrackedObjs.Data.Clear();
             packet.TrackedObjs.Data.Add(m_objects);
             var response = m_mapClient.Handle(packet);
@@ -74,10 +79,14 @@ namespace csharp.Tests
             {
                     Action = PacketPb.Types.ActionType.Update,
                     TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                    Timestamp = ++_timestamp,
             };
-            m_objects[0].Translation = new Vector3Pb() { X = rand.NextDouble(), Y = rand.NextDouble(),  Z = rand.NextDouble() };
-            m_objects[1].Translation = new Vector3Pb() { X = rand.NextDouble(), Y = rand.NextDouble(),  Z = rand.NextDouble() };
-            m_objects[2].Translation = new Vector3Pb() { X = rand.NextDouble(), Y = rand.NextDouble(),  Z = rand.NextDouble() };
+            m_objects[0].Translation = new Vector3Pb()
+                    {X = rand.NextDouble(), Y = rand.NextDouble(), Z = rand.NextDouble()};
+            m_objects[1].Translation = new Vector3Pb()
+                    {X = rand.NextDouble(), Y = rand.NextDouble(), Z = rand.NextDouble()};
+            m_objects[2].Translation = new Vector3Pb()
+                    {X = rand.NextDouble(), Y = rand.NextDouble(), Z = rand.NextDouble()};
             packet.TrackedObjs.Data.Clear();
             packet.TrackedObjs.Data.Add(m_objects);
             var response = m_mapClient.Handle(packet);
@@ -92,10 +101,12 @@ namespace csharp.Tests
         {
             var packet = new PacketPb()
             {
-                Action = PacketPb.Types.ActionType.Remove,
-                TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                    Action = PacketPb.Types.ActionType.Remove,
+                    TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                    Timestamp = ++_timestamp,
+                    Special = true,
             };
-            packet.TrackedObjs.Data.Add(new[] { m_objects[1] });
+            packet.TrackedObjs.Data.Add(new[] {m_objects[1]});
             var response = m_mapClient.Handle(packet);
 
             using var file = File.Open(filename, FileMode.Append);
@@ -108,8 +119,10 @@ namespace csharp.Tests
         {
             var packet = new PacketPb()
             {
-                Action = PacketPb.Types.ActionType.Clear,
-                TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                    Action = PacketPb.Types.ActionType.Clear,
+                    TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                    Timestamp = ++_timestamp,
+                    Special = true,
             };
             var response = m_mapClient.Handle(packet);
 
