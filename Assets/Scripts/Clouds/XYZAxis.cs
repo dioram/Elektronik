@@ -9,7 +9,6 @@ namespace Elektronik.Clouds
         private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
         private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
         private static readonly int Cull = Shader.PropertyToID("_Cull");
-        private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
 
         static void CreateLineMaterial()
         {
@@ -25,8 +24,6 @@ namespace Elektronik.Clouds
                 _lineMaterial.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                 // Turn backface culling off
                 _lineMaterial.SetInt(Cull, (int)UnityEngine.Rendering.CullMode.Off);
-                // Turn off depth writes
-                _lineMaterial.SetInt(ZWrite, 0);
             }
         }
 

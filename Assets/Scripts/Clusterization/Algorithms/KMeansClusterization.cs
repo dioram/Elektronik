@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Microsoft.ML;
+using Microsoft.ML.Data;
 using UnityEngine;
 
 namespace Elektronik.Clusterization.Algorithms
@@ -36,13 +37,26 @@ namespace Elektronik.Clusterization.Algorithms
         private List<int> ComputeClusters(IList<SlamPoint> points)
         {
             File.WriteAllLines("tmp.csv", points
-                                       .Select(p => $"{p.Position.x.ToString(CultureInfo.InvariantCulture)}\t" +
-                                                       $"{p.Position.y.ToString(CultureInfo.InvariantCulture)}\t" +
-                                                       $"{p.Position.z.ToString(CultureInfo.InvariantCulture)}\t"));
+                                       .Select(p => $"{p.Position.x.ToString(CultureInfo.InvariantCulture)};" +
+                                                       $"{p.Position.y.ToString(CultureInfo.InvariantCulture)};" +
+                                                       $"{p.Position.z.ToString(CultureInfo.InvariantCulture)}"));
             var mlContext = new MLContext(seed: 0);
-            var dataView = mlContext.Data.LoadFromTextFile("tmp.csv");
+            var reader = mlContext.Data.CreateTextLoader(
+                new[]
+                {
+                    new TextLoader.Column("X", DataKind.Single, 0),
+                    new TextLoader.Column("Y", DataKind.Single, 1),
+                    new TextLoader.Column("Z", DataKind.Single, 2),
+                },
+                hasHeader: false,
+                separatorChar: ';'
+            );
 
-            var pipeline = mlContext.Clustering.Trainers.KMeans(numberOfClusters: _k);
+            var dataView = reader.Load("tmp.csv");
+            var pipeline = mlContext.Transforms
+                    .Concatenate("Features", "X", "Y", "Z")
+                    .Append(mlContext.Clustering.Trainers.KMeans(numberOfClusters: _k));
+
             var transformed = pipeline.Fit(dataView).Transform(dataView);
             var clusterColumn = transformed.Schema.GetColumnOrNull("PredictedLabel")!.Value;
             var cursor = transformed.GetRowCursor(new[] {clusterColumn});

@@ -10,7 +10,8 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTree, ILookable, IVisible
+    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTree,
+                                                           ILookable, IVisible
             where TCloudItem : struct, ICloudItem
     {
         public ConnectableObjectsContainer(IContainer<TCloudItem> objects,
@@ -21,8 +22,8 @@ namespace Elektronik.Containers
             _objects = objects;
             Children = new[]
             {
-                    (ISourceTree) _connects,
-                    (ISourceTree) _objects,
+                (ISourceTree) _connects,
+                (ISourceTree) _objects,
             };
 
             DisplayName = string.IsNullOrEmpty(displayName) ? GetType().Name : displayName;
@@ -168,7 +169,7 @@ namespace Elektronik.Containers
 
                 _connects.Remove(_linesBuffer);
                 _linesBuffer.Clear();
-                _objects.Remove(items); 
+                _objects.Remove(items);
             }
         }
 
@@ -203,6 +204,7 @@ namespace Elektronik.Containers
             {
                 adding(new SlamLine(_objects[id1].AsPoint(), _objects[id2].AsPoint()));
             }
+
             return res;
         }
 
@@ -300,7 +302,7 @@ namespace Elektronik.Containers
         #endregion
 
         #region ILookable implementation
-        
+
         public (Vector3 pos, Quaternion rot) Look(Transform transform)
         {
             return (_objects as ILookable)?.Look(transform) ?? (transform.position, transform.rotation);
@@ -309,7 +311,7 @@ namespace Elektronik.Containers
         #endregion
 
         #region IVisible
-        
+
         public bool IsVisible
         {
             get => _isVisible;
@@ -321,13 +323,16 @@ namespace Elektronik.Containers
                 }
 
                 _isVisible = value;
+                OnVisibleChanged?.Invoke(_isVisible);
             }
         }
+
+        public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
 
         #endregion
-        
+
         #region Private definitions
 
         private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
@@ -358,6 +363,7 @@ namespace Elektronik.Containers
                     removing(new SlamLine(_objects[id1].AsPoint(), _objects[id2].AsPoint()));
                     return true;
                 }
+
                 Debug.LogWarning($"Connection {id1} - {id2} not exists.");
             }
 
@@ -365,6 +371,5 @@ namespace Elektronik.Containers
         }
 
         #endregion
-
     }
 }

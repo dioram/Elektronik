@@ -14,9 +14,15 @@ namespace Elektronik.Clusterization.Containers
         public ClustersContainer(string displayName, List<List<SlamPoint>> data, IVisible sourceContainer)
         {
             DisplayName = displayName;
-            _sourceContainer = sourceContainer;
+            SourceContainer = sourceContainer;
             CreateClusters(data);
+            SourceContainer.OnVisibleChanged += visible =>
+            {
+                if (visible) IsVisible = false;
+            };
         }
+        
+        public IVisible SourceContainer { get; private set; }
 
         #region ISourceTree
 
@@ -56,8 +62,14 @@ namespace Elektronik.Clusterization.Containers
                 {
                     child.IsVisible = value;
                 }
+
+                if (_isVisible) SourceContainer.IsVisible = false; 
+
+                OnVisibleChanged?.Invoke(_isVisible);
             }
         }
+
+        public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
 
@@ -70,7 +82,7 @@ namespace Elektronik.Clusterization.Containers
             Clear();
             _childrenList.Clear();
             OnRemoved?.Invoke();
-            _sourceContainer.IsVisible = true;
+            if (_isVisible) SourceContainer.IsVisible = true;
         }
 
         public event Action OnRemoved;
@@ -80,9 +92,8 @@ namespace Elektronik.Clusterization.Containers
         #region Private
 
         private readonly List<object> _renderers = new List<object>();
-        private bool _isVisible = true;
+        private bool _isVisible;
         private readonly List<ISourceTree> _childrenList = new List<ISourceTree>();
-        private readonly IVisible _sourceContainer;
 
         private void CreateClusters(List<List<SlamPoint>> data)
         {

@@ -297,6 +297,8 @@ namespace Elektronik.Containers
             {
                 if (_isVisible == value) return;
                 _isVisible = value;
+                OnVisibleChanged?.Invoke(_isVisible);
+                
                 if (_isVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
@@ -311,6 +313,8 @@ namespace Elektronik.Containers
                 OnRemoved?.Invoke(this, new RemovedEventArgs(items));
             }
         }
+
+        public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
 

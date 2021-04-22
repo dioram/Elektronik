@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
@@ -48,7 +49,9 @@ namespace Elektronik.RosPlugin.Common.Containers
             get => _isVisible;
             set
             {
+                if (_isVisible == value) return;
                 _isVisible = value;
+                OnVisibleChanged?.Invoke(_isVisible);
                 foreach (var child in Children.OfType<IVisible>())
                 {
                     child.IsVisible = IsVisible;
@@ -57,6 +60,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         }
 
         public bool ShowButton { get; private set; }
+        public event Action<bool>? OnVisibleChanged;
 
         #endregion
 

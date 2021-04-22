@@ -46,8 +46,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             {
                 lock (this)
                 {
-                    if (_isVisible == value) return;
-                    _isVisible = value;
+                    base.IsVisible = value;
                     if (!_isVisible) Clear();
                     else SetData();
                 }

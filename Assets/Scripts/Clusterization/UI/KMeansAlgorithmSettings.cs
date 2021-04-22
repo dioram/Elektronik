@@ -12,7 +12,7 @@ namespace Elektronik.Clusterization.UI
         {
             ComputeButton.OnClickAsObservable()
                     .Select(_ => int.Parse(KInput.text))
-                    .Subscribe(k => OnComputePressed.Invoke(new KMeansClusterization(k)));
+                    .Subscribe(k => OnComputePressed?.Invoke(this, new KMeansClusterization(k)));
         }
     }
 }

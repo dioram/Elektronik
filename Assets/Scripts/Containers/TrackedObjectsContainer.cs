@@ -359,6 +359,8 @@ namespace Elektronik.Containers
                 }
 
                 _isVisible = value;
+                OnVisibleChanged?.Invoke(_isVisible);
+                
                 if (_isVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
@@ -373,6 +375,8 @@ namespace Elektronik.Containers
                 OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
             }
         }
+
+        public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
 

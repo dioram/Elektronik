@@ -18,7 +18,7 @@ namespace Elektronik.Clusterization.UI
                     .Select(_ => new Vector3(float.Parse(XInput.text),
                                              float.Parse(YInput.text),
                                              float.Parse(ZInput.text)))
-                    .Subscribe(v => OnComputePressed.Invoke(new Simple3PlaneClusterization(v)));
+                    .Subscribe(v => OnComputePressed?.Invoke(this, new Simple3PlaneClusterization(v)));
         }
     }
 }

@@ -22,7 +22,6 @@ namespace Elektronik.UI.Windows
 
         public int ObservationContainer => _observation.Container.GetHashCode();
 
-
         public void Hide()
         {
             gameObject.SetActive(false);

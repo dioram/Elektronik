@@ -292,11 +292,25 @@ namespace Elektronik.Containers
             {
                 if (_isVisible == value) return;
                 _isVisible = value;
+                OnVisibleChanged?.Invoke(_isVisible);
 
-                if (_isVisible) OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
-                else OnRemoved?.Invoke(this, new RemovedEventArgs(_connections.Keys.ToList()));
+                if (_isVisible)
+                {
+                    OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                    return;
+                }
+
+                int[] ids;
+                lock (_connections)
+                {
+                    ids = _connections.Keys.ToArray();
+                }
+
+                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
             }
         }
+
+        public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
 

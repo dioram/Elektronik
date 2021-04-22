@@ -9,6 +9,21 @@ namespace Elektronik.Clusterization.UI
             where TAlgorithm : IClusterizationAlgorithm
     {
         public Button ComputeButton;
-        public UnityEvent<TAlgorithm> OnComputePressed;
+        public UnityEvent<MonoBehaviour, TAlgorithm> OnComputePressed;
+
+        private void Awake()
+        {
+            OnComputePressed.AddListener(((arg0, algorithm) => enabled = false));
+        }
+
+        private void OnEnable()
+        {
+            ComputeButton.interactable = true;
+        }
+
+        private void OnDisable()
+        {
+            ComputeButton.interactable = false;
+        }
     }
 }
