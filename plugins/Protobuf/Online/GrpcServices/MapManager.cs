@@ -50,12 +50,11 @@ namespace Elektronik.Protobuf.Online.GrpcServices
         }
         
         protected IContainer<T> Container;
+        protected Stopwatch Timer;
 
         protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, IList<T> data)
         {
             var readOnlyData = new ReadOnlyCollection<T>(data);
-            var timer = new Stopwatch();
-            timer.Restart();
             ErrorStatusPb errorStatus = new ErrorStatusPb() { ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded };
             try
             {
@@ -83,8 +82,9 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 errorStatus.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                 errorStatus.Message = err.Message;
             }
-            timer.Stop();
-            UnityDebug.Log($"[MapManager.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms");
+            Timer.Stop();
+            UnityDebug.Log($"[MapManager.Handle] {DateTime.Now} Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
+                           $"Error status: {errorStatus}");
             return Task.FromResult(errorStatus);
         }
     }

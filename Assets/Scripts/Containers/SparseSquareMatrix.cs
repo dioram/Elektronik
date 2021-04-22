@@ -23,14 +23,14 @@ namespace Elektronik.Containers
         public IEnumerable<TElemType> GetRow(int row)
         {
             if (_table.ContainsKey(row))
-                return _table[row].Values;
+                return _table[row].Values.ToList();
             return Enumerable.Empty<TElemType>();
         }
 
         public IEnumerable<int> GetColIndices(int row)
         {
             if (_table.ContainsKey(row))
-                return _table[row].Keys;
+                return _table[row].Keys.ToList();
             return Enumerable.Empty<int>();
         }
 

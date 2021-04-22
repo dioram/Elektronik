@@ -29,18 +29,25 @@ namespace Elektronik.Clusterization.UI
 
             Task.Run(() =>
             {
-                var data = algorithm.Compute(list);
-                MainThreadInvoker.Instance.Enqueue(() =>
+                try
                 {
-                    var go = Instantiate(TreeElementPrefab, TreeView);
-                    var treeElement = go.GetComponent<SourceTreeElement>();
-                    var localizedName = TextLocalizationExtender.GetLocalizedString("Clustered {0}", 
-                        new List<object>{pair.name});
-                    var clustered = new ClustersContainer(localizedName, data, pair.container as IVisible);
-                    treeElement.Node = clustered;
-                    clustered.SetRenderer(Renderer);
-                    (pair.container as IVisible).IsVisible = false;
-                });
+                    var data = algorithm.Compute(list);
+                    MainThreadInvoker.Instance.Enqueue(() =>
+                    {
+                        var go = Instantiate(TreeElementPrefab, TreeView);
+                        var treeElement = go.GetComponent<SourceTreeElement>();
+                        var localizedName = TextLocalizationExtender.GetLocalizedString("Clustered {0}",
+                            new List<object> {pair.name});
+                        var clustered = new ClustersContainer(localizedName, data, pair.container as IVisible);
+                        treeElement.Node = clustered;
+                        clustered.SetRenderer(Renderer);
+                        (pair.container as IVisible).IsVisible = false;
+                    });
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.Message);
+                }
             });
         }
 
@@ -63,7 +70,7 @@ namespace Elektronik.Clusterization.UI
             if (element is IClusterable) _clusterableContainers.Add((element, fullName));
         }
 
-        private readonly List<(ISourceTree container, string name)> _clusterableContainers 
+        private readonly List<(ISourceTree container, string name)> _clusterableContainers
                 = new List<(ISourceTree container, string name)>();
 
         #endregion
