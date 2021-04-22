@@ -24,6 +24,14 @@ namespace Elektronik.Clouds
             }
         }
 
+        public List<DataComponent<TCloudItem>> GetObjects()
+        {
+            lock (GameObjects)
+            {
+                return GameObjects.Select(pair => pair.Value.GetComponent<DataComponent<TCloudItem>>()).ToList();
+            }
+        }
+
         #region ICloudRenderer implementaion
 
         public override void ShowItems(object sender, IEnumerable<TCloudItem> items)

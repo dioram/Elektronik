@@ -251,6 +251,14 @@ MonoBehaviour:
     m_Key: Simple 3 plane clusterization
     m_Metadata:
       m_Items: []
+  - m_Id: 3665984348360704
+    m_Key: Previous observation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3666025003749376
+    m_Key: Next observation
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
