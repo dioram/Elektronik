@@ -34,6 +34,7 @@ namespace Elektronik.Clouds
         {
             renderMaterial.SetBuffer(_pointsBufferShaderProp, _pointsBuffer);
         }
+        
         protected override void OnUpdated()
         {
             _pointsBuffer.SetData(Points);
