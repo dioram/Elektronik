@@ -170,6 +170,7 @@ namespace Elektronik.Clouds
                 new SortedDictionary<(int, int), GameObject>();
 
         protected ObjectPool ObservationsPool;
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
         protected abstract Pose GetObjectPose(TCloudItem obj);

@@ -259,6 +259,10 @@ MonoBehaviour:
     m_Key: Next observation
     m_Metadata:
       m_Items: []
+  - m_Id: 3982083857727488
+    m_Key: K-means clusterisation
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

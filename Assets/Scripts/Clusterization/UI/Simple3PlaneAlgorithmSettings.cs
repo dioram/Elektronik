@@ -1,5 +1,4 @@
-﻿using System;
-using Elektronik.Clusterization.Algorithms;
+﻿using Elektronik.Clusterization.Algorithms;
 using TMPro;
 using UniRx;
 using UnityEngine;
