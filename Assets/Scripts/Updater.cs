@@ -108,6 +108,7 @@ namespace Elektronik
                         IsPreRelease = (bool) field["prerelease"],
                     });
                 }
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch
                 {
                 }

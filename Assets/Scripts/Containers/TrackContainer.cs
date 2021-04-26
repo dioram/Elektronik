@@ -162,22 +162,24 @@ namespace Elektronik.Containers
 
         public void AddRange(IEnumerable<SlamLine> items)
         {
+            var list = items.ToList();
             lock (_lines)
             {
-                _lines.AddRange(items);
+                _lines.AddRange(list);
             }
 
             if (IsVisible)
             {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(items));
+                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(list));
             }
         }
 
         public void Remove(IEnumerable<SlamLine> items)
         {
+            var list = items.ToList();
             lock (_lines)
             {
-                foreach (var item in items)
+                foreach (var item in list)
                 {
                     _lines.Remove(item);
                 }
@@ -185,7 +187,7 @@ namespace Elektronik.Containers
 
             if (IsVisible)
             {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id)));
+                OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
             }
         }
 
@@ -205,9 +207,10 @@ namespace Elektronik.Containers
 
         public void Update(IEnumerable<SlamLine> items)
         {
+            var list = items.ToList();
             lock (_lines)
             {
-                foreach (var item in items)
+                foreach (var item in list)
                 {
                     var index = _lines.FindIndex(l => l.Id == item.Id);
                     _lines[index] = item;
@@ -216,7 +219,7 @@ namespace Elektronik.Containers
 
             if (IsVisible)
             {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(items));
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(list));
             }
         }
 

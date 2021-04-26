@@ -263,6 +263,10 @@ MonoBehaviour:
     m_Key: K-means clusterisation
     m_Metadata:
       m_Items: []
+  - m_Id: 5097350304071680
+    m_Key: Convex hull
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

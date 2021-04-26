@@ -62,7 +62,11 @@ namespace Elektronik.Cameras
         // Will be called after all regular rendering is done
         public void OnRenderObject()
         {
-            if (Mode == GridModes.Disabled) return;
+            if (Mode == GridModes.Disabled)
+            {
+                _labelsPool.DespawnAllActiveObjects();
+                return;
+            }
 
             // Apply the line material
             _lineMaterial.SetPass(0);

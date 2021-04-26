@@ -41,6 +41,7 @@ namespace Elektronik.Clouds
                 Renderer.transform.localScale = new Vector3(Scale * aspect, 1, Scale);
                 yield return new WaitForSeconds(1);
             }
+            // ReSharper disable once IteratorNeverReturns
         }
     }
 }

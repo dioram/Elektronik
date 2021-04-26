@@ -17,17 +17,20 @@ namespace Elektronik.UI
     public class SourceTreeElement : MonoBehaviour
     {
         public ISourceTree Node;
+        public Text NameLabel;
+        public RectTransform Content;
+        public GameObject Spacer;
+        public GameObject SelfPrefab;
+        public int MinHeight = 40;
+        
+        [Space]
         public ButtonChangingIcons TreeButton;
         public Button WindowButton;
         public ButtonChangingIcons VisibleButton;
         public ButtonChangingIcons TraceButton;
         public Button RemoveButton;
         public Button CameraButton;
-        public Text NameLabel;
-        public RectTransform Content;
-        public GameObject Spacer;
-        public GameObject SelfPrefab;
-        public int MinHeight = 40;
+        public ButtonChangingIcons ConvexHullButton;
 
         public event Action OnSizeChanged;
 
@@ -85,7 +88,7 @@ namespace Elektronik.UI
 
             if (Node is IVisible v)
             {
-                VisibleButton.OnStateChanged += _ => v.IsVisible = VisibleButton.State == 0;
+                VisibleButton.OnStateChanged += state => v.IsVisible = state == 0;
             }
             else
             {
@@ -94,7 +97,7 @@ namespace Elektronik.UI
 
             if (Node is ITraceable t)
             {
-                TraceButton.OnStateChanged += _ => t.TraceEnabled = TraceButton.State == 1;
+                TraceButton.OnStateChanged += state => t.TraceEnabled = state == 1;
             }
             else
             {
@@ -112,6 +115,16 @@ namespace Elektronik.UI
             else
             {
                 RemoveButton.gameObject.SetActive(false);
+            }
+            
+            if (Node is IConvexHull ch)
+            {
+                ConvexHullButton.InitState(ch.HullVisible ? 1 : 0);
+                ConvexHullButton.OnStateChanged += state => ch.HullVisible = state == 1;
+            }
+            else
+            {
+                ConvexHullButton.gameObject.SetActive(false);
             }
 
             TreeButton.OnStateChanged += _ => ChangeState();

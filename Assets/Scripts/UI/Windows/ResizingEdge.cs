@@ -231,6 +231,7 @@ namespace Elektronik.UI.Windows
 
                 yield return new WaitForSeconds(2);
             }
+            // ReSharper disable once IteratorNeverReturns
         }
 
         #endregion

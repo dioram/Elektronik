@@ -22,11 +22,12 @@ namespace Elektronik.Clusterization.UI
         public RectTransform TreeView;
         public GameObject TreeElementPrefab;
         public TMP_Dropdown ContainersSelector;
+        public GameObject ConvexHullPrefab;
 
         public void Compute(MonoBehaviour settings, IClusterizationAlgorithm algorithm)
         {
             var pair = _clusterableContainers[ContainersSelector.value];
-            var list = (pair.container as IClusterable).GetAllPoints().ToList();
+            var list = (pair.container as IClusterable)!.GetAllPoints().ToList();
 
             Task.Run(() =>
             {
@@ -90,6 +91,14 @@ namespace Elektronik.Clusterization.UI
             treeElement.Node = clustered;
             clustered.SetRenderer(Renderer);
             clustered.IsVisible = true;
+
+            foreach (var cluster in data)
+            {
+                var ch = Instantiate(ConvexHullPrefab);
+                var mesh = ch.GetComponent<ConvexMesh>();
+                mesh.CreateHull(cluster);
+                clustered.Hulls.Add(mesh);
+            }
         }
 
 

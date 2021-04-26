@@ -206,15 +206,16 @@ namespace Elektronik.Containers
         {
             lock (_items)
             {
-                CreateTraces(items);
-                foreach (var ci in items)
+                var list = items.ToList();
+                CreateTraces(list);
+                foreach (var ci in list)
                 {
                     _items[ci.Id] = ci;
                 }
 
                 if (IsVisible)
                 {
-                    OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(items));
+                    OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
                 }
             }
         }
@@ -340,10 +341,11 @@ namespace Elektronik.Containers
         {
             if (Duration <= 0 || !TraceEnabled) return;
 
-            var traces = new List<SlamLine>(items.Count());
+            var list = items.ToList();
+            var traces = new List<SlamLine>(list.Count());
             lock (_traceContainer)
             {
-                foreach (var ci in items)
+                foreach (var ci in list)
                 {
                     var point = ci.AsPoint();
                     point.Id = _tasks;

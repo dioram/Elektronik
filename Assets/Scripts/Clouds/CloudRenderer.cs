@@ -141,15 +141,16 @@ namespace Elektronik.Clouds
         public override void ShowItems(object sender, IEnumerable<TCloudItem> items)
         {
             OnClear(sender);
+            var list = items.ToList();
             lock (_pointPlaces)
             {
-                _amountOfItems += items.Count();
+                _amountOfItems += list.Count();
                 if (_amountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
                 {
                     _needNewBlock = true;
                 }
 
-                foreach (var item in items)
+                foreach (var item in list)
                 {
                     if (item.Message == GridMessage && item is SlamInfinitePlane plane)
                     {

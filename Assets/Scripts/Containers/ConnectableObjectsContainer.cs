@@ -103,9 +103,10 @@ namespace Elektronik.Containers
         {
             lock (_table)
             {
-                _objects.Update(items);
+                var list = items.ToList();
+                _objects.Update(list);
                 Debug.Assert(_linesBuffer.Count == 0);
-                foreach (var pt1 in items)
+                foreach (var pt1 in list)
                 {
                     foreach (var pt2Id in _table.GetColIndices(pt1.Id))
                     {
@@ -149,7 +150,8 @@ namespace Elektronik.Containers
             {
                 Debug.Assert(_linesBuffer.Count == 0);
 
-                foreach (var obj in items)
+                var list = items.ToList();
+                foreach (var obj in list)
                 {
                     int id = _objects.IndexOf(obj);
                     if (id != -1)
@@ -169,7 +171,7 @@ namespace Elektronik.Containers
 
                 _connects.Remove(_linesBuffer);
                 _linesBuffer.Clear();
-                _objects.Remove(items);
+                _objects.Remove(list);
             }
         }
 

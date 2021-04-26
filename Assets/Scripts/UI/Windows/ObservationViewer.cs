@@ -111,6 +111,7 @@ namespace Elektronik.UI.Windows
                 yield return new WaitForSeconds(1);
                 SetData();
             }
+            // ReSharper disable once IteratorNeverReturns
         }
 
         private void SetData()

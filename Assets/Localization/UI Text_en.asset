@@ -272,6 +272,10 @@ MonoBehaviour:
     m_Localized: K-means clusterisation
     m_Metadata:
       m_Items: []
+  - m_Id: 5097350304071680
+    m_Localized: Convex hull
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

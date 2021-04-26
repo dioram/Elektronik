@@ -10,7 +10,7 @@ namespace Elektronik.Commands.Generic
         private readonly IList<(int, int)> _connections;
         private readonly IConnectableObjectsContainer<T> _container;
 
-        public ConnectableRemoveCommand(IConnectableObjectsContainer<T> container, IEnumerable<T> objects)
+        public ConnectableRemoveCommand(IConnectableObjectsContainer<T> container, IList<T> objects)
                 : base(container, objects)
         {
             _container = container;

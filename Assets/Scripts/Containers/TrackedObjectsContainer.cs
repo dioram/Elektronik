@@ -35,6 +35,7 @@ namespace Elektronik.Containers
                 var container = CreateTrackContainer(item);
                 _objects[item.Id] = (item, container);
             }
+
             if (IsVisible)
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
@@ -113,7 +114,7 @@ namespace Elektronik.Containers
             {
                 lock (_objects)
                 {
-                    return _objects.Count; 
+                    return _objects.Count;
                 }
             }
         }
@@ -137,6 +138,7 @@ namespace Elektronik.Containers
 
                 _objects.Remove(index);
             }
+
             if (IsVisible)
             {
                 OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
@@ -159,6 +161,7 @@ namespace Elektronik.Containers
                 {
                     contains = _objects.ContainsKey(value.Id);
                 }
+
                 if (contains)
                 {
                     Update(value);
@@ -178,9 +181,10 @@ namespace Elektronik.Containers
 
         public void AddRange(IEnumerable<SlamTrackedObject> items)
         {
+            var list = items.ToList();
             lock (_objects)
             {
-                foreach (var item in items)
+                foreach (var item in list)
                 {
                     var container = CreateTrackContainer(item);
                     _objects[item.Id] = (item, container);
@@ -189,15 +193,16 @@ namespace Elektronik.Containers
 
             if (IsVisible)
             {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
+                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
             }
         }
 
         public void Remove(IEnumerable<SlamTrackedObject> items)
         {
+            var list = items.ToList();
             lock (_objects)
             {
-                foreach (var item in items)
+                foreach (var item in list)
                 {
                     if (!_objects.ContainsKey(item.Id)) continue;
                     _objects[item.Id].Item2.Clear();
@@ -212,7 +217,7 @@ namespace Elektronik.Containers
 
             if (IsVisible)
             {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id)));
+                OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
             }
         }
 
@@ -222,6 +227,7 @@ namespace Elektronik.Containers
             {
                 PureUpdate(item);
             }
+
             if (IsVisible)
             {
                 OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new[] {item}));
@@ -230,9 +236,10 @@ namespace Elektronik.Containers
 
         public void Update(IEnumerable<SlamTrackedObject> items)
         {
+            var list = items.ToList();
             lock (_objects)
             {
-                foreach (var item in items)
+                foreach (var item in list)
                 {
                     PureUpdate(item);
                 }
@@ -240,7 +247,7 @@ namespace Elektronik.Containers
 
             if (IsVisible)
             {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(items));
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(list));
             }
         }
 
@@ -301,6 +308,7 @@ namespace Elektronik.Containers
                 _objects.Add(item.Id, (item, container));
                 _maxId = history.Count > 0 ? history.Max(l => l.Id) : 0;
             }
+
             if (IsVisible)
             {
                 OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
@@ -309,9 +317,11 @@ namespace Elektronik.Containers
 
         public void AddRangeWithHistory(IEnumerable<SlamTrackedObject> items, IEnumerable<IList<SlamLine>> histories)
         {
+            var list = items.ToList();
+            var historiesList = histories.ToList();
             lock (_objects)
             {
-                foreach (var (i, h) in items.Zip(histories, (i, h) => (i, h)))
+                foreach (var (i, h) in list.Zip(historiesList, (i, h) => (i, h)))
                 {
                     if (_objects.ContainsKey(i.Id)) return;
 
@@ -319,11 +329,12 @@ namespace Elektronik.Containers
                     _objects.Add(i.Id, (i, container));
                 }
 
-                _maxId = histories.SelectMany(l => l).Max(l => l.Id);
+                _maxId = historiesList.SelectMany(l => l).Max(l => l.Id);
             }
+
             if (IsVisible)
             {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
+                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
             }
         }
 
@@ -360,7 +371,7 @@ namespace Elektronik.Containers
 
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
-                
+
                 if (_isVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
@@ -372,6 +383,7 @@ namespace Elektronik.Containers
                 {
                     ids = _objects.Keys.ToArray();
                 }
+
                 OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
             }
         }
@@ -381,7 +393,7 @@ namespace Elektronik.Containers
         public bool ShowButton => true;
 
         #endregion
-        
+
         #region Private definitions
 
         private ICloudRenderer<SlamLine> _lineRenderer;
