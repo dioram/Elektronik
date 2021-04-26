@@ -75,7 +75,7 @@ namespace Protobuf.Tests
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(3), Repeat(5)]
+        [Test, Order(3)]
         public void UpdateConnections()
         {
             var packet = new PacketPb()

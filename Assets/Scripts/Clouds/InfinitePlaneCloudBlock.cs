@@ -7,6 +7,8 @@ namespace Elektronik.Clouds
     {
         public GPUItem[] Planes;
 
+        public override GPUItem[] GetItems() => Planes;
+
         public override void Clear()
         {
             ClearArray(Planes);

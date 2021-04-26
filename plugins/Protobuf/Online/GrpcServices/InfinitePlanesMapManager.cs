@@ -6,7 +6,6 @@ using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
-using Debug = UnityEngine.Debug;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
@@ -22,14 +21,9 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
-            if (request.DataCase == PacketPb.DataOneofCase.InfinitePlanes)
-            {
-                Debug.Log("[InfinitePlanesMapManager.Handle]");
-                Timer = Stopwatch.StartNew();
-                return Handle(request.Action, request.ExtractInfinitePlanes(_converter).ToList());
-            }
-
-            return base.Handle(request, context);
+            if (request.DataCase != PacketPb.DataOneofCase.InfinitePlanes) return base.Handle(request, context);
+            Timer = Stopwatch.StartNew();
+            return Handle(request.Action, request.ExtractInfinitePlanes(_converter).ToList());
         }
     }
 }

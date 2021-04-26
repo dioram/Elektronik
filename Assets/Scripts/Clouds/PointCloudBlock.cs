@@ -7,6 +7,8 @@ namespace Elektronik.Clouds
     {
         public GPUItem[] Points;
 
+        public override GPUItem[] GetItems() => Points;
+
         public override void Clear()
         {
             ClearArray(Points);

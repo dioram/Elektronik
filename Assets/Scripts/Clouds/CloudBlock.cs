@@ -9,6 +9,8 @@ namespace Elektronik.Clouds
         public bool Updated;
         public float ItemSize = 1f;
 
+        public abstract GPUItem[] GetItems();
+
         public virtual void Clear()
         {
             Updated = true;

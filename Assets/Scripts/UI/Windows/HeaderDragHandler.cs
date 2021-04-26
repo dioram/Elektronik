@@ -25,7 +25,7 @@ namespace Elektronik.UI.Windows
 
         private void OnDestroy()
         {
-            if (Manager != null)
+            if (Manager != null && _windowTransform != null)
             {
                 Manager.OnWindowDestroyed(_windowTransform.GetComponent<Window>());
             }

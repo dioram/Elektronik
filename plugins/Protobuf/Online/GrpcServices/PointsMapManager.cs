@@ -6,7 +6,6 @@ using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
-using Debug = UnityEngine.Debug;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
@@ -22,15 +21,10 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
-            if (request.DataCase == PacketPb.DataOneofCase.Points)
-            {
-                Debug.Log("[PointsMapManager.Handle]");
-                Timer = Stopwatch.StartNew();
-                var pts = request.ExtractPoints(_converter).ToList();
-                return HandleConnections(request, Handle(request.Action, pts));
-            }
-
-            return base.Handle(request, context);
+            if (request.DataCase != PacketPb.DataOneofCase.Points) return base.Handle(request, context);
+            Timer = Stopwatch.StartNew();
+            var pts = request.ExtractPoints(_converter).ToList();
+            return HandleConnections(request, Handle(request.Action, pts));
         }
     }
 }

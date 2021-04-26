@@ -83,7 +83,8 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 errorStatus.Message = err.Message;
             }
             Timer.Stop();
-            UnityDebug.Log($"[MapManager.Handle] {DateTime.Now} Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
+            UnityDebug.Log($"[{GetType().Name}.Handle] {DateTime.Now} " +
+                           $"Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
                            $"Error status: {errorStatus}");
             return Task.FromResult(errorStatus);
         }

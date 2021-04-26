@@ -19,7 +19,6 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         public override Task<ErrorStatusPb> Handle(ImagePacketPb request, ServerCallContext context)
         {
-            Debug.Log("[ImageMapManager.Handle]");
             var timer = Stopwatch.StartNew();
             var err = new ErrorStatusPb()
             {
@@ -35,7 +34,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 err.Message = e.Message;
             }
             timer.Stop();
-            Debug.Log($"[MapManager.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. " +
+            Debug.Log($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. " +
                       $"ErrorStatus: {err}");
             return Task.FromResult(err);
         }

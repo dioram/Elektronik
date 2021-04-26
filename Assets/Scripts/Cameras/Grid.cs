@@ -22,6 +22,8 @@ namespace Elektronik.Cameras
         private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
         private Camera _camera;
         private ObjectPool _labelsPool;
+        private Vector3 _position;
+        private Vector3 _up;
 
         public enum GridModes
         {
@@ -32,8 +34,8 @@ namespace Elektronik.Cameras
 
         public void SetPlane(SlamInfinitePlane plane)
         {
-            transform.position = plane.Offset;
-            transform.up = plane.Normal;
+            _position = plane.Offset;
+            _up = plane.Normal;
         }
 
         public void SetMode(int modeId)
@@ -76,7 +78,13 @@ namespace Elektronik.Cameras
             // match our transform
             if (Mode == GridModes.EnabledOrientedGrid)
             {
+                transform.position = _position;
+                transform.up = _up;
                 GL.MultMatrix(transform.localToWorldMatrix);
+            }
+            else
+            {
+                transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             }
 
             // Draw lines

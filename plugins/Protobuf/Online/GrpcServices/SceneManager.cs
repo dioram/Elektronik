@@ -20,7 +20,6 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         public override Task<ErrorStatusPb> Clear(Empty request, ServerCallContext context)
         {
-            Debug.Log("[SceneManager.Handle]");
             var timer = Stopwatch.StartNew();
             var err = new ErrorStatusPb()
             {
@@ -39,7 +38,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 err.Message = e.Message;
             }
             timer.Stop();
-            Debug.Log($"[MapManager.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms." +
+            Debug.Log($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms." +
                       $"ErrorStatus: {err.Message}");
             return Task.FromResult(err);
         }

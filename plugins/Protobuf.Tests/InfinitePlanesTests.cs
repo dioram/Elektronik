@@ -50,7 +50,7 @@ namespace Protobuf.Tests
             }).ToArray();
         }
         
-        [Test, Order(0)]
+        [Test, Explicit]
         public void Grid()
         {
             var packet = new PacketPb()

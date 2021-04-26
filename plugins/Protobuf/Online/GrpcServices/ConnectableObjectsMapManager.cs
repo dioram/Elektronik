@@ -20,7 +20,6 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         protected virtual Task<ErrorStatusPb> HandleConnections(PacketPb request, Task<ErrorStatusPb> baseStatus)
         {
-            Debug.Log("[HandleConnections]");
             var timer = Stopwatch.StartNew();
             var status = baseStatus.Result;
 
@@ -28,10 +27,6 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 request.Action != PacketPb.Types.ActionType.Update)
             {
                 timer.Stop();
-                Debug.Log($"[HandleConnections] {DateTime.Now} " +
-                          $"Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
-                          $"BaseStatus: {baseStatus.Result} " +
-                          $"Action: {request.Action}");
                 return Task.FromResult(status);
             }
 
@@ -55,11 +50,12 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                     status.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                     status.Message = e.Message;
                 }
+                timer.Stop();
+                Debug.Log($"[HandleConnections] {DateTime.Now} " +
+                          $"Elapsed time: {timer.ElapsedMilliseconds} ms. " +
+                          $"ErrorStatus: {status}");
             }
             timer.Stop();
-            Debug.Log($"[HandleConnections] {DateTime.Now} " +
-                      $"Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
-                      $"ErrorStatus: {status}");
             return Task.FromResult(status);
         }
     }

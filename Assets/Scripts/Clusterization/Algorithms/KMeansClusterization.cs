@@ -13,6 +13,17 @@ namespace Elektronik.Clusterization.Algorithms
     {
         public KMeansClusterization(int k)
         {
+            _colors = new List<Color>()
+            {
+                Color.blue,
+                Color.red,
+                Color.green,
+                Color.yellow,
+                Color.magenta,
+                new Color(0.5f, 0.5f, 1f),
+                new Color(1f, 0.5f, 0),
+                new Color(0.5f, 0, 1)
+            };
             _k = k;
             for (int i = _colors.Count; i < k; i++)
             {
@@ -77,16 +88,6 @@ namespace Elektronik.Clusterization.Algorithms
 
         private readonly int _k;
 
-        private readonly List<Color> _colors = new List<Color>
-        {
-            Color.blue,
-            Color.red,
-            Color.green,
-            Color.yellow,
-            Color.magenta,
-            new Color(0.5f, 0.5f, 1f),
-            new Color(1f, 0.5f, 0),
-            new Color(0.5f, 0, 1)
-        };
+        private readonly List<Color> _colors;
     }
 }

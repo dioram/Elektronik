@@ -22,6 +22,10 @@ namespace Elektronik.Clouds
 
         public float ItemSize;
 
+        public IEnumerable<Vector3> GetPoints() => _pointPlaces.Values
+                .Select(v => _blocks[v / CloudBlock.Capacity].GetItems()[v % CloudBlock.Capacity])
+                .Select(i => i.Position);
+
         public void SetSize(float newSize)
         {
             ItemSize = newSize;

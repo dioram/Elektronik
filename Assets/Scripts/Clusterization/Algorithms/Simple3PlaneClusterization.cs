@@ -10,6 +10,17 @@ namespace Elektronik.Clusterization.Algorithms
         public Simple3PlaneClusterization(Vector3 offset)
         {
             _offset = offset;
+            _colors = new[]
+            {
+                Color.blue,
+                Color.red,
+                Color.green,
+                Color.yellow,
+                Color.magenta,
+                new Color(0.5f, 0.5f, 1f),
+                new Color(1f, 0.5f, 0),
+                new Color(0.5f, 0, 1)
+            };
         }
 
         public List<List<SlamPoint>> Compute(IList<SlamPoint> items)
@@ -55,16 +66,6 @@ namespace Elektronik.Clusterization.Algorithms
 
         private readonly Vector3 _offset;
 
-        private readonly Color[] _colors =
-        {
-            Color.blue,
-            Color.red,
-            Color.green,
-            Color.yellow,
-            Color.magenta,
-            new Color(0.5f, 0.5f, 1f),
-            new Color(1f, 0.5f, 0),
-            new Color(0.5f, 0, 1)
-        };
+        private readonly Color[] _colors;
     }
 }
