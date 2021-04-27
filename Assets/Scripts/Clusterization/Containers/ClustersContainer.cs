@@ -23,7 +23,7 @@ namespace Elektronik.Clusterization.Containers
                 if (visible) IsVisible = false;
             };
         }
-        
+
         public IVisible SourceContainer { get; private set; }
 
         #region ISourceTree
@@ -65,7 +65,7 @@ namespace Elektronik.Clusterization.Containers
                     child.IsVisible = value;
                 }
 
-                if (_isVisible) SourceContainer.IsVisible = false; 
+                if (_isVisible) SourceContainer.IsVisible = false;
 
                 OnVisibleChanged?.Invoke(_isVisible);
             }
@@ -88,6 +88,7 @@ namespace Elektronik.Clusterization.Containers
             {
                 Object.Destroy(hull.gameObject);
             }
+
             if (_isVisible) SourceContainer.IsVisible = true;
         }
 
@@ -137,7 +138,7 @@ namespace Elektronik.Clusterization.Containers
             for (var i = 0; i < data.Count; i++)
             {
                 var cluster = data[i];
-                var localizedName = TextLocalizationExtender.GetLocalizedString("Cluster #{0}", new List<object> {i});
+                var localizedName = TextLocalizationExtender.GetLocalizedString("Cluster #{0}", i);
                 var container = new CloudContainer<SlamPoint>(localizedName);
                 foreach (object renderer in _renderers)
                 {

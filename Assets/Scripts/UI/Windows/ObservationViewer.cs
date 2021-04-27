@@ -64,7 +64,7 @@ namespace Elektronik.UI.Windows
             {
                 gameObject.SetActive(true);
                 _observation = data;
-                Window.TitleLabel.SetLocalizedText("Observation #{0}", new List<object> {data.Data.Id});
+                Window.TitleLabel.SetLocalizedText("Observation #{0}", data.Data.Id);
                 SetData();
             });
         }
@@ -98,7 +98,7 @@ namespace Elektronik.UI.Windows
                     if (previous && i == 0 || !previous && i == observations.Length - 1) return;
                     _observation = previous ? observations[i - 1] : observations[i + 1];
                     SetData();
-                    Window.TitleLabel.SetLocalizedText("Observation #{0}", new List<object> {_observation.Data.Id});
+                    Window.TitleLabel.SetLocalizedText("Observation #{0}", _observation.Data.Id);
                     return;
                 }
             }

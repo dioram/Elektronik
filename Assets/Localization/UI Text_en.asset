@@ -280,9 +280,23 @@ MonoBehaviour:
     m_Localized: Ruler
     m_Metadata:
       m_Items: []
+  - m_Id: 5189368552325120
+    m_Localized: 'Points: {0}
+
+      Lines: {1}
+
+      Planes: {2}
+
+      Observations:
+      {3}
+
+      Tracked objects: {4}'
+    m_Metadata:
+      m_Items:
+      - id: 0
   references:
     version: 1
     00000000:
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010625840000000001062f6fb2e00000010a2d4f6480000001062dd11490000001096df08780a000010563345790a00
+        m_Entries: 0010625840000000001062f6fb2e00000010a2d4f6480000001062dd11490000001096df08780a000010563345790a0000802b05b46f1200

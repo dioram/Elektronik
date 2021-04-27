@@ -12,6 +12,17 @@ namespace Elektronik.Clouds
     {
         public GameObject ItemPrefab;
 
+        public override int ItemsCount
+        {
+            get
+            {
+                lock (GameObjects)
+                {
+                    return GameObjects.Count;
+                }
+            }
+        }
+
         public void Clear()
         {
             lock (GameObjects)

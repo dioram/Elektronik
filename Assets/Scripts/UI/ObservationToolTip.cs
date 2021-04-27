@@ -70,7 +70,7 @@ namespace Elektronik.UI
                                                                 window.GetComponent<ObservationViewer>());
                                                             viewer.ObservationsCloud = ObservationsCloud;
                                                         },
-                                                        new List<object> {data.Data.Id});
+                                                        data.Data.Id);
             }
             else
             {

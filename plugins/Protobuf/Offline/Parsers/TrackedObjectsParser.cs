@@ -19,7 +19,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
             _container = container;
         }
 
-        protected virtual ICommand GetCommand(IEnumerable<SlamTrackedObject> objs, PacketPb.Types.ActionType action)
+        protected virtual ICommand GetCommand(IList<SlamTrackedObject> objs, PacketPb.Types.ActionType action)
         {
             switch (action)
             {

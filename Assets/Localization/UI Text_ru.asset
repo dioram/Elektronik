@@ -293,9 +293,17 @@ MonoBehaviour:
     m_Localized: "\u041B\u0438\u043D\u0435\u0439\u043A\u0430"
     m_Metadata:
       m_Items: []
+  - m_Id: 5189368552325120
+    m_Localized: "\u0422\u043E\u0447\u043A\u0438: {0}\n\u041B\u0438\u043D\u0438\u0438:
+      {1}\n\u041F\u043B\u043E\u0441\u043A\u043E\u0441\u0442\u0438: {2}\n\u041D\u0430\u0431\u043B\u044E\u0434\u0435\u043D\u0438\u044F:
+      {3}\n\u041E\u0442\u0441\u043B\u0435\u0436\u0438\u0432\u0430\u0435\u043C\u044B\u0435
+      \u043E\u0431\u044A\u0435\u043A\u0442\u044B: {4}"
+    m_Metadata:
+      m_Items:
+      - id: 0
   references:
     version: 1
     00000000:
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 00106258400000000010e2c922000000001062f6fb2e00000010a2d4f6480000001062dd11490000001096df08780a000010563345790a00
+        m_Entries: 00106258400000000010e2c922000000001062f6fb2e00000010a2d4f6480000001062dd11490000001096df08780a000010563345790a0000802b05b46f1200

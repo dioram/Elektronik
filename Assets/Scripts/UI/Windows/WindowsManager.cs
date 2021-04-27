@@ -25,7 +25,7 @@ namespace Elektronik.UI.Windows
         }
 
         public void CreateWindow<TComponent>(string title, Action<TComponent, Window> callback,
-                                             IList<object> titleFormatArgs = null)
+                                             params object[] titleFormatArgs)
         {
             MainThreadInvoker.Instance.Enqueue(() =>
             {

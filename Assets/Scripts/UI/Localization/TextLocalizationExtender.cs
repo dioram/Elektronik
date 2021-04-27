@@ -40,17 +40,17 @@ namespace Elektronik.UI.Localization
             }
         }
 
-        public static void SetLocalizedText(this Text label, string text, IList<object> args = null)
+        public static void SetLocalizedText(this Text label, string text, params object[] args)
         {
             label.text = GetLocalizedString(text, args);
         }
 
-        public static void SetLocalizedText(this TMP_Text label, string text, IList<object> args = null)
+        public static void SetLocalizedText(this TMP_Text label, string text, params object[] args)
         {
             label.text = GetLocalizedString(text, args);
         }
 
-        public static string GetLocalizedString(string text, IList<object> args = null)
+        public static string GetLocalizedString(string text, params object[] args)
         {
             var defaultTable = LocalizationSettings.Instance.GetStringDatabase().GetDefaultTableAsync().Result;
             if (defaultTable != null)

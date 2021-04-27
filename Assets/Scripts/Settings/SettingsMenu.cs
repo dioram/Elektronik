@@ -137,8 +137,7 @@ namespace Elektronik.Settings
                     .OfType<PluginListBoxItem>()
                     .Where(lbi => !lbi.Plugin.Settings.Validate())
                     .Select(lbi => lbi.Plugin.DisplayName);
-            ErrorLabel.SetLocalizedText("Wrong settings for plugins",
-                                        new List<object> {string.Join(", ", plugins)});
+            ErrorLabel.SetLocalizedText("Wrong settings for plugins", string.Join(", ", plugins));
         }
 
         private void RecentSelected(object sender, ListBox.SelectionChangedEventArgs e)

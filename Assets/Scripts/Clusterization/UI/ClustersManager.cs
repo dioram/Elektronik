@@ -43,10 +43,7 @@ namespace Elektronik.Clusterization.UI
                 catch (Exception e)
                 {
                     Debug.LogError(e.Message);
-                    MainThreadInvoker.Instance.Enqueue(() =>
-                    {
-                        settings.enabled = true;
-                    });
+                    MainThreadInvoker.Instance.Enqueue(() => { settings.enabled = true; });
                 }
             });
         }
@@ -79,15 +76,13 @@ namespace Elektronik.Clusterization.UI
         {
             var go = Instantiate(TreeElementPrefab, TreeView);
             var treeElement = go.GetComponent<SourceTreeElement>();
-            
-            var localizedName = TextLocalizationExtender.GetLocalizedString("Clustered {0}",
-                                                                            new List<object> {displayName});
-            
+            var localizedName = TextLocalizationExtender.GetLocalizedString("Clustered {0}", displayName);
             var clustered = new ClustersContainer(localizedName, data, source);
+            
             _containers.Add(clustered);
             clustered.OnVisibleChanged += visible => SetVisibility(clustered, source, visible);
             clustered.OnRemoved += () => _containers.Remove(clustered);
-            
+
             treeElement.Node = clustered;
             clustered.SetRenderer(Renderer);
             clustered.IsVisible = true;
@@ -111,7 +106,7 @@ namespace Elektronik.Clusterization.UI
             }
 
             if (!isVisible) return;
-            foreach (var container in _containers.Where(container => container != sender 
+            foreach (var container in _containers.Where(container => container != sender
                                                                 && container.SourceContainer == source))
             {
                 container.IsVisible = false;
