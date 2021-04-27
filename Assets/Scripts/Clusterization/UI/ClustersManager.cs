@@ -86,6 +86,7 @@ namespace Elektronik.Clusterization.UI
             treeElement.Node = clustered;
             clustered.SetRenderer(Renderer);
             clustered.IsVisible = true;
+            source.IsVisible = false;
 
             foreach (var cluster in data)
             {

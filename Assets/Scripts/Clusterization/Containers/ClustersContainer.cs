@@ -131,7 +131,7 @@ namespace Elektronik.Clusterization.Containers
         private readonly List<object> _renderers = new List<object>();
         private bool _isVisible = true;
         private readonly List<ISourceTree> _childrenList = new List<ISourceTree>();
-        private bool _hullVisible;
+        private bool _hullVisible = true;
 
         private void CreateClusters(List<List<SlamPoint>> data)
         {
