@@ -39,11 +39,11 @@ namespace Elektronik.PluginsSystem.UnitySide
             }
         }
 
-        public static void MapSourceTree(Action<ISourceTree> action)
+        public static void MapSourceTree(Action<ISourceTree, string> action)
         {
             foreach (var treeElement in Plugins.OfType<IDataSourcePlugin>().Select(p => p.Data))
             {
-                MapSourceTree(treeElement, action);
+                MapSourceTree(treeElement, "", action);
             }
         }
         
@@ -125,12 +125,13 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         private readonly List<Thread> _startupThreads = new List<Thread>();
 
-        private static void MapSourceTree(ISourceTree treeElement, Action<ISourceTree> action)
+        private static void MapSourceTree(ISourceTree treeElement, string path, Action<ISourceTree, string> action)
         {
-            action(treeElement);
+            var fullName = $"{path}/{treeElement.DisplayName}";
+            action(treeElement, fullName);
             foreach (var child in treeElement.Children)
             {
-                MapSourceTree(child, action);
+                MapSourceTree(child, fullName, action);
             }
         }
 

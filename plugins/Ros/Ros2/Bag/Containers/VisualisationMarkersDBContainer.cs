@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Elektronik.Containers;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.RosMessages;
@@ -83,17 +84,19 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             {
                 lock (this)
                 {
+                    if (_isVisible == value) return;
+                    _isVisible = value;
+                    OnVisibleChanged?.Invoke(_isVisible);
                     foreach (var child in _children.Values.OfType<IVisible>())
                     {
                         child.IsVisible = value;
                     }
-
-                    _isVisible = value;
                 }
             }
         }
-        
+
         public bool ShowButton => true;
+        public event Action<bool>? OnVisibleChanged;
 
         #endregion
 

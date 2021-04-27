@@ -11,11 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ros", "Ros\Ros.csproj", "{A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ros.Tests", "Ros.Tests\Ros.Tests.csproj", "{D2126F38-46AF-4335-B005-2B2AE4A76A09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContextMenuSetter", "ContextMenuSetter\ContextMenuSetter.csproj", "{18ECD5A4-6E6E-40AB-8B0D-8D9C45CD32A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContextMenuSetter", "ContextMenuSetter\ContextMenuSetter.csproj", "{18ECD5A4-6E6E-40AB-8B0D-8D9C45CD32A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RosMessageParserGenerator", "RosMessageParserGenerator\RosMessageParserGenerator.csproj", "{CA207A65-DF3B-42A8-B3C0-67A80A1F1681}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RosMessageParserGenerator", "RosMessageParserGenerator\RosMessageParserGenerator.csproj", "{CA207A65-DF3B-42A8-B3C0-67A80A1F1681}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{9DA6D04C-77E8-4D8D-96DD-32BC848DBE51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Updater", "Updater\Updater.csproj", "{9DA6D04C-77E8-4D8D-96DD-32BC848DBE51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

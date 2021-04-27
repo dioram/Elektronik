@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -17,6 +18,10 @@ namespace Elektronik.UI.Windows
             Right = 2,
             Bottom = 4,
             Left = 8,
+            TopLeft = Top | Left,
+            TopRight = Top | Right,
+            BottomLeft = Bottom | Left,
+            BottomRight = Bottom | Right,
         }
 
         public EdgeSide Side;
@@ -37,32 +42,39 @@ namespace Elektronik.UI.Windows
                 _canvas = testCanvas.GetComponent<Canvas>();
                 testCanvas = testCanvas.parent as RectTransform;
             }
+
+            StartCoroutine(ReturnToScreenRect());
+        }
+
+        private void OnDestroy()
+        {
+            StopAllCoroutines();
         }
 
         private void Update()
         {
             if (!_hovered) return;
-            if (((Side & (EdgeSide.Left | EdgeSide.Top)) == (EdgeSide.Left | EdgeSide.Top))
-                || ((Side & (EdgeSide.Right | EdgeSide.Bottom)) == (EdgeSide.Right | EdgeSide.Bottom)))
+
+            switch (Side)
             {
-                SetCursor(LoadCursor(IntPtr.Zero,
-                                     (int) WindowsCursors.DoublePointedArrowPointingNorthwestAndSoutheast));
-            }
-            else if (((Side & (EdgeSide.Left | EdgeSide.Bottom)) == (EdgeSide.Left | EdgeSide.Bottom))
-                || ((Side & (EdgeSide.Right | EdgeSide.Top)) == (EdgeSide.Right | EdgeSide.Top)))
-            {
-                SetCursor(LoadCursor(IntPtr.Zero,
-                                     (int) WindowsCursors.DoublePointedArrowPointingNortheastAndSouthwest));
-            }
-            else if (((Side & EdgeSide.Top) == EdgeSide.Top)
-                || ((Side & EdgeSide.Bottom) == EdgeSide.Bottom))
-            {
-                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.DoublePointedArrowPointingNorthAndSouth));
-            }
-            else if (((Side & EdgeSide.Left) == EdgeSide.Left)
-                || ((Side & EdgeSide.Right) == EdgeSide.Right))
-            {
-                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.DoublePointedArrowPointingWestAndEast));
+            case EdgeSide.Top:
+            case EdgeSide.Bottom:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNorthAndSouth));
+                break;
+            case EdgeSide.Right:
+            case EdgeSide.Left:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeWestAndEast));
+                break;
+            case EdgeSide.TopLeft:
+            case EdgeSide.BottomRight:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNorthwestAndSoutheast));
+                break;
+            case EdgeSide.TopRight:
+            case EdgeSide.BottomLeft:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNortheastAndSouthwest));
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -131,7 +143,7 @@ namespace Elektronik.UI.Windows
                 var rightAligns = Manager.NearestAlign(WindowsManager.Direction.Vertical, right);
                 if (rightAligns.Length > 0)
                 {
-                    newWidth += right - rightAligns.First();
+                    newWidth = rightAligns.First() - ResizeTarget.anchoredPosition.x;
                     Manager.ShowLine(WindowsManager.Direction.Vertical, rightAligns.First());
                     StartCoroutine(Manager.HideAlignLine(WindowsManager.Direction.Vertical));
                 }
@@ -143,8 +155,7 @@ namespace Elektronik.UI.Windows
 
             if (newHeight < _minHeight || newWidth < _minWidth) return;
             ResizeTarget.anchoredPosition = newPos;
-            ResizeTarget.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, newHeight);
-            ResizeTarget.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, newWidth);
+            ResizeTarget.sizeDelta = new Vector2(newWidth, newHeight);
             OnResized?.Invoke(new Rect(ResizeTarget.anchoredPosition, ResizeTarget.sizeDelta));
         }
 
@@ -185,10 +196,42 @@ namespace Elektronik.UI.Windows
         private enum WindowsCursors
         {
             StandardArrow = 32512,
-            DoublePointedArrowPointingNortheastAndSouthwest = 32643,
-            DoublePointedArrowPointingNorthAndSouth = 32645,
-            DoublePointedArrowPointingNorthwestAndSoutheast = 32642,
-            DoublePointedArrowPointingWestAndEast = 32644,
+            EdgeNortheastAndSouthwest = 32643,
+            EdgeNorthAndSouth = 32645,
+            EdgeNorthwestAndSoutheast = 32642,
+            EdgeWestAndEast = 32644,
+        }
+
+        private IEnumerator ReturnToScreenRect()
+        {
+            while (true)
+            {
+                var pos = ResizeTarget.anchoredPosition;
+                var size = ResizeTarget.sizeDelta;
+
+                if (pos.x < 0)
+                {
+                    pos.x = 0;
+                }
+                else if (pos.x + size.x > Screen.width)
+                {
+                    pos.x = Screen.width - size.x;
+                }
+
+                if (pos.y > 0)
+                {
+                    pos.y = 0;
+                }
+                else if (pos.y - size.y < -Screen.height)
+                {
+                    pos.y = size.y - Screen.height;
+                }
+
+                ResizeTarget.anchoredPosition = pos;
+
+                yield return new WaitForSeconds(2);
+            }
+            // ReSharper disable once IteratorNeverReturns
         }
 
         #endregion

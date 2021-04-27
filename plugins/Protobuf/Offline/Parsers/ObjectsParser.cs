@@ -28,7 +28,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
         }
 
         private ICommand GetCommandForConnectableObjects<T>(IConnectableObjectsContainer<T> map,
-                                                            IEnumerable<T> objects, PacketPb packet)
+                                                            IList<T> objects, PacketPb packet)
                 where T : struct, ICloudItem
         {
             switch (packet.Action)
@@ -62,7 +62,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
             }
         }
 
-        private ICommand GetCommand<T>(IContainer<T> map, IEnumerable<T> objects, PacketPb packet)
+        private ICommand GetCommand<T>(IContainer<T> map, IList<T> objects, PacketPb packet)
                 where T : struct, ICloudItem
         {
             switch (packet.Action)

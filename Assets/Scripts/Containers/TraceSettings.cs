@@ -1,4 +1,5 @@
-﻿using Elektronik.PluginsSystem.UnitySide;
+﻿using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.PluginsSystem.UnitySide;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -10,7 +11,7 @@ namespace Elektronik.Containers
         public void SetDuration(float duration)
         {
             Duration = (int) duration;
-            PluginsPlayer.MapSourceTree(tree =>
+            PluginsPlayer.MapSourceTree((tree, str) =>
             {
                 if (tree is ITraceable traceable) traceable.Duration = Duration;
             });

@@ -1,4 +1,4 @@
-﻿using Elektronik.Containers;
+﻿using Elektronik.Containers.SpecialInterfaces;
 using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects

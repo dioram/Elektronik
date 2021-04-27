@@ -14,7 +14,7 @@ namespace Elektronik.Commands.Generic
 
         protected readonly IContainer<T> Container;
 
-        public UpdateCommand(IContainer<T> container, IEnumerable<T> objects)
+        public UpdateCommand(IContainer<T> container, IList<T> objects)
         {
             Container = container;
             Objs2Restore = new ReadOnlyCollection<T>(objects.Select(p => container[p.Id]).ToList());

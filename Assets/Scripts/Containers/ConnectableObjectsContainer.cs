@@ -3,13 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers.EventArgs;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTree, ILookable, IVisible
+    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTree,
+                                                           ILookable, IVisible
             where TCloudItem : struct, ICloudItem
     {
         public ConnectableObjectsContainer(IContainer<TCloudItem> objects,
@@ -20,8 +22,8 @@ namespace Elektronik.Containers
             _objects = objects;
             Children = new[]
             {
-                    (ISourceTree) _connects,
-                    (ISourceTree) _objects,
+                (ISourceTree) _connects,
+                (ISourceTree) _objects,
             };
 
             DisplayName = string.IsNullOrEmpty(displayName) ? GetType().Name : displayName;
@@ -63,89 +65,124 @@ namespace Elektronik.Containers
 
         public void Add(TCloudItem obj)
         {
-            _objects.Add(obj);
+            lock (_table)
+            {
+                _objects.Add(obj);
+            }
         }
 
-        public void Insert(int index, TCloudItem item) => _objects.Insert(index, item);
+        public void Insert(int index, TCloudItem item)
+        {
+            lock (_table)
+            {
+                _objects.Insert(index, item);
+            }
+        }
 
-        public void AddRange(IEnumerable<TCloudItem> items) => _objects.AddRange(items);
+        public void AddRange(IEnumerable<TCloudItem> items)
+        {
+            lock (_table)
+            {
+                _objects.AddRange(items);
+            }
+        }
 
         public void Update(TCloudItem item)
         {
-            _objects.Update(item);
-            foreach (var secondId in _table.GetColIndices(item.Id))
+            lock (_table)
             {
-                _connects.Update(new SlamLine(item.Id, secondId));
+                _objects.Update(item);
+                foreach (var secondId in _table.GetColIndices(item.Id))
+                {
+                    _connects.Update(new SlamLine(item.Id, secondId));
+                }
             }
         }
 
         public void Update(IEnumerable<TCloudItem> items)
         {
-            _objects.Update(items);
-            Debug.Assert(_linesBuffer.Count == 0);
-            foreach (var pt1 in items)
+            lock (_table)
             {
-                foreach (var pt2Id in _table.GetColIndices(pt1.Id))
+                var list = items.ToList();
+                _objects.Update(list);
+                Debug.Assert(_linesBuffer.Count == 0);
+                foreach (var pt1 in list)
                 {
-                    _linesBuffer.Add(new SlamLine(pt1.AsPoint(), _objects[pt2Id].AsPoint()));
+                    foreach (var pt2Id in _table.GetColIndices(pt1.Id))
+                    {
+                        _linesBuffer.Add(new SlamLine(pt1.AsPoint(), _objects[pt2Id].AsPoint()));
+                    }
                 }
-            }
 
-            _connects.Update(_linesBuffer);
-            _linesBuffer.Clear();
+                _connects.Update(_linesBuffer);
+                _linesBuffer.Clear();
+            }
         }
 
         public void RemoveAt(int id)
         {
-            RemoveConnections(id);
-            _objects.RemoveAt(id);
+            lock (_table)
+            {
+                RemoveConnections(id);
+                _objects.RemoveAt(id);
+            }
         }
 
         public bool Remove(TCloudItem obj)
         {
-            int index = _objects.IndexOf(obj);
-            if (index != -1)
+            lock (_table)
             {
-                RemoveConnections(index);
-                _objects.Remove(obj);
-                return true;
-            }
+                int index = _objects.IndexOf(obj);
+                if (index != -1)
+                {
+                    RemoveConnections(index);
+                    _objects.Remove(obj);
+                    return true;
+                }
 
-            return false;
+                return false;
+            }
         }
 
         public void Remove(IEnumerable<TCloudItem> items)
         {
-            Debug.Assert(_linesBuffer.Count == 0);
-
-            foreach (var obj in items)
+            lock (_table)
             {
-                int id = _objects.IndexOf(obj);
-                if (id != -1)
+                Debug.Assert(_linesBuffer.Count == 0);
+
+                var list = items.ToList();
+                foreach (var obj in list)
                 {
-                    foreach (var col in _table.GetColIndices(id))
+                    int id = _objects.IndexOf(obj);
+                    if (id != -1)
                     {
-                        _linesBuffer.Add(
+                        foreach (var col in _table.GetColIndices(id))
+                        {
+                            _linesBuffer.Add(
                                 new SlamLine(
-                                        new SlamPoint(id, default, default),
-                                        new SlamPoint(col, default, default)));
-                        _table.Remove(col, id);
+                                    new SlamPoint(id, default, default),
+                                    new SlamPoint(col, default, default)));
+                            _table.Remove(col, id);
+                        }
+
+                        _table.RemoveRow(id);
                     }
-
-                    _table.RemoveRow(id);
                 }
-            }
 
-            _connects.Remove(_linesBuffer);
-            _linesBuffer.Clear();
-            _objects.Remove(items);
+                _connects.Remove(_linesBuffer);
+                _linesBuffer.Clear();
+                _objects.Remove(list);
+            }
         }
 
         public void Clear()
         {
-            _table.Clear();
-            _connects.Clear();
-            _objects.Clear();
+            lock (_table)
+            {
+                _table.Clear();
+                _connects.Clear();
+                _objects.Clear();
+            }
         }
 
         #endregion
@@ -169,6 +206,7 @@ namespace Elektronik.Containers
             {
                 adding(new SlamLine(_objects[id1].AsPoint(), _objects[id2].AsPoint()));
             }
+
             return res;
         }
 
@@ -266,7 +304,7 @@ namespace Elektronik.Containers
         #endregion
 
         #region ILookable implementation
-        
+
         public (Vector3 pos, Quaternion rot) Look(Transform transform)
         {
             return (_objects as ILookable)?.Look(transform) ?? (transform.position, transform.rotation);
@@ -275,7 +313,7 @@ namespace Elektronik.Containers
         #endregion
 
         #region IVisible
-        
+
         public bool IsVisible
         {
             get => _isVisible;
@@ -287,13 +325,16 @@ namespace Elektronik.Containers
                 }
 
                 _isVisible = value;
+                OnVisibleChanged?.Invoke(_isVisible);
             }
         }
+
+        public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
 
         #endregion
-        
+
         #region Private definitions
 
         private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
@@ -324,6 +365,7 @@ namespace Elektronik.Containers
                     removing(new SlamLine(_objects[id1].AsPoint(), _objects[id2].AsPoint()));
                     return true;
                 }
+
                 Debug.LogWarning($"Connection {id1} - {id2} not exists.");
             }
 
@@ -331,6 +373,5 @@ namespace Elektronik.Containers
         }
 
         #endregion
-
     }
 }

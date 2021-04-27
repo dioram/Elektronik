@@ -9,6 +9,7 @@ namespace Elektronik.Clouds
     public abstract class CloudRendererComponent<TCloudItem> : MonoBehaviour, ICloudRenderer<TCloudItem> 
             where TCloudItem : struct, ICloudItem
     {
+        public abstract int ItemsCount {get; }
         public abstract void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e);
         public abstract void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e);
         public abstract void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e);

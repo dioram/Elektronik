@@ -27,7 +27,6 @@
 /plugins/ROS2DDS/CMakeSettings.json
 
 /Assets/generatedFiles/
-/Assets/Packages/
 
 # Unity3D generated meta files
 *.pidb.meta

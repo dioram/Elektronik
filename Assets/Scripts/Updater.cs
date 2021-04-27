@@ -43,7 +43,6 @@ namespace Elektronik
         {
             public string Version;
             public string ReleaseNotes;
-            public string URL;
             public bool IsPreRelease;
 
             public void Update()
@@ -106,10 +105,10 @@ namespace Elektronik
                     {
                         Version = (string) field["tag_name"],
                         ReleaseNotes = (string) field["body"],
-                        URL = (string) field["assets"][0]["browser_download_url"],
                         IsPreRelease = (bool) field["prerelease"],
                     });
                 }
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch
                 {
                 }

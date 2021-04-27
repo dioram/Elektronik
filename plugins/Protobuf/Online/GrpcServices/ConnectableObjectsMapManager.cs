@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
+using Debug = UnityEngine.Debug;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public abstract class ConnectableObjectsMapManager<T> : MapManager<T> where T : ICloudItem
     {
         private readonly IConnectableObjectsContainer<T> _connectableContainer;
-        
+
         protected ConnectableObjectsMapManager(IConnectableObjectsContainer<T> container) : base(container)
         {
             _connectableContainer = container;
@@ -18,11 +20,13 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         protected virtual Task<ErrorStatusPb> HandleConnections(PacketPb request, Task<ErrorStatusPb> baseStatus)
         {
+            var timer = Stopwatch.StartNew();
             var status = baseStatus.Result;
 
             if (status.ErrType != ErrorStatusPb.Types.ErrorStatusEnum.Succeeded ||
                 request.Action != PacketPb.Types.ActionType.Update)
             {
+                timer.Stop();
                 return Task.FromResult(status);
             }
 
@@ -46,8 +50,12 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                     status.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                     status.Message = e.Message;
                 }
+                timer.Stop();
+                Debug.Log($"[HandleConnections] {DateTime.Now} " +
+                          $"Elapsed time: {timer.ElapsedMilliseconds} ms. " +
+                          $"ErrorStatus: {status}");
             }
-
+            timer.Stop();
             return Task.FromResult(status);
         }
     }

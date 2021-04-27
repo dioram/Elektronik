@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Elektronik.Clouds;
-using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using Elektronik.UI.Windows;
@@ -10,11 +10,12 @@ namespace Elektronik.UI
 {
     public class ObservationToolTip : MonoBehaviour
     {
+        public GameObjectCloud<SlamObservation> ObservationsCloud;
+        public bool Enable3DImages { get; set; }
         [SerializeField] private WindowsManager Manager;
         private Camera _camera;
         private ObservationViewer _floatingViewer;
-        private readonly Dictionary<(int, int), Window> _pinnedViewers = new Dictionary<(int, int), Window>();
-        private readonly List<IContainer<SlamObservation>> _containers = new List<IContainer<SlamObservation>>();
+        private readonly List<ObservationViewer> _pinnedViewers = new List<ObservationViewer>();
 
         void Start()
         {
@@ -32,12 +33,18 @@ namespace Elektronik.UI
             if (Physics.Raycast(ray, out RaycastHit hitInfo) && hitInfo.transform.CompareTag("Observation"))
             {
                 var data = hitInfo.transform.GetComponent<DataComponent<SlamObservation>>();
-                if (Input.GetMouseButton(0))
+                if (Input.GetMouseButtonUp(0))
                 {
                     CreateOrShowWindow(data, "Observation #{0}");
+                    var image3D = data.GetComponent<Observation3DImage>();
+                    if (Enable3DImages && image3D != null)
+                    {
+                        image3D.enabled = !image3D.enabled;
+                    }
                 }
                 else
                 {
+                    if (_floatingViewer.gameObject.activeInHierarchy) return;
                     _floatingViewer.Render(data);
                     _floatingViewer.transform.position = Input.mousePosition;
                 }
@@ -50,25 +57,24 @@ namespace Elektronik.UI
 
         private void CreateOrShowWindow(DataComponent<SlamObservation> data, string title)
         {
-            var key = (data.Container.GetHashCode(), data.Data.Id);
-            if (!_containers.Contains(data.Container))
-            {
-                _containers.Add(data.Container);
-                data.Container.OnRemoved += DestroyObsoleteWindows;
-            }
+            var v = _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == data.Container.GetHashCode()
+                                                          && w.ObservationId == data.Data.Id);
 
-            if (!_pinnedViewers.ContainsKey(key))
+            if (v is null)
             {
+                data.Container.OnRemoved += DestroyObsoleteWindows;
                 Manager.CreateWindow<ObservationViewer>(title, (viewer, window) =>
                                                         {
                                                             viewer.Render(data);
-                                                            _pinnedViewers.Add(key, window);
+                                                            _pinnedViewers.Add(
+                                                                window.GetComponent<ObservationViewer>());
+                                                            viewer.ObservationsCloud = ObservationsCloud;
                                                         },
-                                                        new List<object> {data.Data.Id});
+                                                        data.Data.Id);
             }
             else
             {
-                _pinnedViewers[key].Show();
+                v.GetComponent<Window>().Show();
             }
         }
 
@@ -76,13 +82,14 @@ namespace Elektronik.UI
         {
             foreach (var id in args.RemovedIds)
             {
-                var key = (container.GetHashCode(), id);
-                if (_pinnedViewers.ContainsKey(key))
+                var v = _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == container.GetHashCode()
+                                                              && w.ObservationId == id);
+                if (v != null)
                 {
                     MainThreadInvoker.Instance.Enqueue(() =>
                     {
-                        Destroy(_pinnedViewers[key].gameObject);
-                        _pinnedViewers.Remove(key);
+                        Destroy(v.gameObject);
+                        _pinnedViewers.Remove(v);
                     });
                 }
             }

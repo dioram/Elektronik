@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Clouds;
-using Elektronik.Containers;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
@@ -46,8 +46,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             {
                 lock (this)
                 {
-                    if (_isVisible == value) return;
-                    _isVisible = value;
+                    base.IsVisible = value;
                     if (!_isVisible) Clear();
                     else SetData();
                 }

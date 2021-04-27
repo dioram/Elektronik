@@ -4,12 +4,12 @@ namespace Elektronik.Clouds
 {
     public class XYZAxis : MonoBehaviour
     {
+        public bool DrawBackwardAxis;
         public float LengthOfAxis = 0.5f;
         private static Material _lineMaterial;
         private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
         private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
         private static readonly int Cull = Shader.PropertyToID("_Cull");
-        private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
 
         static void CreateLineMaterial()
         {
@@ -21,12 +21,10 @@ namespace Elektronik.Clouds
                 _lineMaterial = new Material(shader);
                 _lineMaterial.hideFlags = HideFlags.HideAndDontSave;
                 // Turn on alpha blending
-                _lineMaterial.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                _lineMaterial.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                _lineMaterial.SetInt(SrcBlend, (int) UnityEngine.Rendering.BlendMode.SrcAlpha);
+                _lineMaterial.SetInt(DstBlend, (int) UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                 // Turn backface culling off
-                _lineMaterial.SetInt(Cull, (int)UnityEngine.Rendering.CullMode.Off);
-                // Turn off depth writes
-                _lineMaterial.SetInt(ZWrite, 0);
+                _lineMaterial.SetInt(Cull, (int) UnityEngine.Rendering.CullMode.Off);
             }
         }
 
@@ -56,6 +54,20 @@ namespace Elektronik.Clouds
             GL.Color(Color.blue);
             GL.Vertex3(0, 0, 0);
             GL.Vertex3(0.0f, 0.0f, LengthOfAxis);
+
+            if (DrawBackwardAxis)
+            {
+                GL.Color(Color.red / 2);
+                GL.Vertex3(0, 0, 0);
+                GL.Vertex3(-LengthOfAxis, 0.0f, 0.0f);
+                GL.Color(Color.green / 2);
+                GL.Vertex3(0, 0, 0);
+                GL.Vertex3(0.0f, -LengthOfAxis, 0.0f);
+                GL.Color(Color.blue / 2);
+                GL.Vertex3(0, 0, 0);
+                GL.Vertex3(0.0f, 0.0f, -LengthOfAxis);
+            }
+            
             GL.End();
             GL.PopMatrix();
         }

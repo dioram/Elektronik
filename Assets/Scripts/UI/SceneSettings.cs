@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Elektronik.Settings;
 using Elektronik.Settings.Bags;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +15,7 @@ namespace Elektronik.UI
 
         private SceneSettingsBag _bag;
 
-        [SerializeField] private ChangingButton GridButton;
+        [SerializeField] private TMP_Dropdown GridDropdown;
         [SerializeField] private ChangingButton AxisButton;
         [SerializeField] private Slider PointSizeSlider;
         [SerializeField] private Slider DurationSlider;
@@ -28,7 +29,7 @@ namespace Elektronik.UI
             if (_bag == null) _bag = new SceneSettingsBag();
             else
             {
-                GridButton.InitState(_bag.GridState);
+                GridDropdown.value = _bag.GridState;
                 AxisButton.InitState(_bag.AxisState);
                 DurationSlider.value = _bag.Duration;
                 PointSizeSlider.value = _bag.PointSize;
@@ -37,11 +38,11 @@ namespace Elektronik.UI
 
             _inited = true;
 
-            GridButton.OnStateChanged += i =>
+            GridDropdown.onValueChanged.AddListener(i =>
             {
                 _bag.GridState = i;
                 SaveSettings();
-            };
+            });
             AxisButton.OnStateChanged += i =>
             {
                 _bag.AxisState = i;

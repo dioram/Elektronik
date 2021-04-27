@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.Presenters;
 using Grpc.Core;
+using Debug = UnityEngine.Debug;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
@@ -17,6 +19,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         public override Task<ErrorStatusPb> Handle(ImagePacketPb request, ServerCallContext context)
         {
+            var timer = Stopwatch.StartNew();
             var err = new ErrorStatusPb()
             {
                 ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded,
@@ -30,7 +33,9 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 err.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                 err.Message = e.Message;
             }
-
+            timer.Stop();
+            Debug.Log($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. " +
+                      $"ErrorStatus: {err}");
             return Task.FromResult(err);
         }
     }

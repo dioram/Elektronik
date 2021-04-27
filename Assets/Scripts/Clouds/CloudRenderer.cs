@@ -4,6 +4,7 @@ using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
+using Grid = Elektronik.Cameras.Grid;
 
 namespace Elektronik.Clouds
 {
@@ -15,9 +16,17 @@ namespace Elektronik.Clouds
             where TCloudItem : struct, ICloudItem
             where TCloudBlock : CloudBlock
     {
+        public const string GridMessage = "Grid";
+        public Grid Grid;
         public Shader CloudShader;
 
         public float ItemSize;
+
+        public IEnumerable<Vector3> GetPoints() => _pointPlaces.Values
+                .Select(v => _blocks[v / CloudBlock.Capacity].GetItems()[v % CloudBlock.Capacity])
+                .Select(i => i.Position);
+
+        public override int ItemsCount => _amountOfItems;
         
         public void SetSize(float newSize)
         {
@@ -40,7 +49,7 @@ namespace Elektronik.Clouds
         {
             if (_needNewBlock)
             {
-                var go = new GameObject($"{GetType().ToString().Split('.').Last()} {_blocks.Count}");
+                var go = new GameObject($"{GetType().Name} {_blocks.Count}");
                 go.transform.SetParent(transform);
                 var block = go.AddComponent<TCloudBlock>();
                 block.CloudShader = CloudShader;
@@ -68,9 +77,15 @@ namespace Elektronik.Clouds
                 {
                     _needNewBlock = true;
                 }
-            
+
                 foreach (var item in e.AddedItems)
                 {
+                    if (item.Message == GridMessage && item is SlamInfinitePlane plane)
+                    {
+                        MainThreadInvoker.Instance.Enqueue(() => Grid.SetPlane(plane));
+                        continue;
+                    }
+
                     var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
                     _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
                     int layer = index / CloudBlock.Capacity;
@@ -90,6 +105,7 @@ namespace Elektronik.Clouds
             {
                 foreach (var item in e.UpdatedItems)
                 {
+                    if (item.Message == GridMessage && item is SlamInfinitePlane) continue;
                     var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
                     int layer = index / CloudBlock.Capacity;
                     int inLayerId = index % CloudBlock.Capacity;
@@ -109,12 +125,12 @@ namespace Elektronik.Clouds
                 foreach (var itemId in e.RemovedIds)
                 {
                     if (!_pointPlaces.ContainsKey((sender.GetHashCode(), itemId))) continue;
-                
+
                     var index = _pointPlaces[(sender.GetHashCode(), itemId)];
                     _pointPlaces.Remove((sender.GetHashCode(), itemId));
                     if (index == _maxPlace - 1) _maxPlace--;
                     else _freePlaces.Enqueue(index);
-                
+
                     int layer = index / CloudBlock.Capacity;
                     int inLayerId = index % CloudBlock.Capacity;
                     lock (_blocks[layer])
@@ -131,16 +147,23 @@ namespace Elektronik.Clouds
         public override void ShowItems(object sender, IEnumerable<TCloudItem> items)
         {
             OnClear(sender);
+            var list = items.ToList();
             lock (_pointPlaces)
             {
-                _amountOfItems += items.Count();
+                _amountOfItems += list.Count();
                 if (_amountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
                 {
                     _needNewBlock = true;
                 }
-            
-                foreach (var item in items)
+
+                foreach (var item in list)
                 {
+                    if (item.Message == GridMessage && item is SlamInfinitePlane plane)
+                    {
+                        MainThreadInvoker.Instance.Enqueue(() => Grid.SetPlane(plane));
+                        continue;
+                    }
+
                     var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
                     _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
                     int layer = index / CloudBlock.Capacity;
@@ -165,7 +188,7 @@ namespace Elektronik.Clouds
                     _pointPlaces.Remove(key);
                     if (index == _maxPlace - 1) _maxPlace--;
                     else _freePlaces.Enqueue(index);
-                
+
                     int layer = index / CloudBlock.Capacity;
                     int inLayerId = index % CloudBlock.Capacity;
                     lock (_blocks[layer])

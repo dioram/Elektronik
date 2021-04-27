@@ -7,6 +7,8 @@ namespace Elektronik.Clouds
     {
         public GPUItem[] Points;
 
+        public override GPUItem[] GetItems() => Points;
+
         public override void Clear()
         {
             ClearArray(Points);
@@ -34,6 +36,7 @@ namespace Elektronik.Clouds
         {
             renderMaterial.SetBuffer(_pointsBufferShaderProp, _pointsBuffer);
         }
+        
         protected override void OnUpdated()
         {
             _pointsBuffer.SetData(Points);

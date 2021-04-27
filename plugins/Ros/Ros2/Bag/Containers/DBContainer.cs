@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Containers;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
@@ -51,8 +52,19 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region IVisible
 
-        public virtual bool IsVisible { get; set; } = true;
+        public virtual bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible == value) return;
+                _isVisible = value;
+                OnVisibleChanged?.Invoke(_isVisible);
+            }
+        }
+
         public virtual bool ShowButton { get; } = false;
+        public event Action<bool>? OnVisibleChanged;
 
         #endregion
 
@@ -60,6 +72,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         protected TRenderType? Current;
         private int _pos;
+        private bool _isVisible = true;
 
         protected (long time, int pos) GetValidTimestamp(long newTimestamp)
         {

@@ -8,7 +8,7 @@ namespace Protobuf.Tests
 {
     public class InfinitePlanesTests : TestsBase
     {
-        private InfinitePlanePb[] m_planes;
+        private readonly InfinitePlanePb[] _planes;
         private string filename = nameof(InfinitePlanesTests);
 
         private readonly ColorPb[] _colors =
@@ -40,7 +40,7 @@ namespace Protobuf.Tests
 
         public InfinitePlanesTests()
         {
-            m_planes = Enumerable.Range(0, 5).Select(id => new InfinitePlanePb()
+            _planes = Enumerable.Range(0, 5).Select(id => new InfinitePlanePb()
             {
                 Id = id,
                 Message = $"{id}",
@@ -48,6 +48,30 @@ namespace Protobuf.Tests
                 Normal = _normals[id],
                 Offset = _offsets[id],
             }).ToArray();
+        }
+        
+        [Test, Explicit]
+        public void Grid()
+        {
+            var packet = new PacketPb()
+            {
+                Special = true,
+                Action = PacketPb.Types.ActionType.Add,
+                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+            };
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb
+            {
+                Id = -10000,
+                Message = "Grid",
+                Normal = new Vector3Pb {X = 1, Y = 1, Z = 1},
+                Offset = new Vector3Pb {X = 1, Y = 1, Z = 1},
+            });
+            
+            using var file = File.Open(filename, FileMode.Create);
+            packet.WriteDelimitedTo(file);
+
+            var response = MapClient.Handle(packet);
+            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
         
         [Test, Order(1)]
@@ -59,7 +83,7 @@ namespace Protobuf.Tests
                 Action = PacketPb.Types.ActionType.Add,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
-            packet.InfinitePlanes.Data.Add(m_planes);
+            packet.InfinitePlanes.Data.Add(_planes);
             
             using var file = File.Open(filename, FileMode.Create);
             packet.WriteDelimitedTo(file);
@@ -77,11 +101,11 @@ namespace Protobuf.Tests
                 Action = PacketPb.Types.ActionType.Update,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
-            m_planes[0].Color = new ColorPb{B = 128, G = 128, R = 128};
-            m_planes[2].Offset = new Vector3Pb {X = 0, Y = 0, Z = -50};
-            m_planes[4].Normal = new Vector3Pb {X = 1, Y = 1, Z = 1};
+            _planes[0].Color = new ColorPb{B = 128, G = 128, R = 128};
+            _planes[2].Offset = new Vector3Pb {X = 0, Y = 0, Z = -50};
+            _planes[4].Normal = new Vector3Pb {X = 1, Y = 1, Z = 1};
 
-            packet.InfinitePlanes.Data.Add(m_planes);
+            packet.InfinitePlanes.Data.Add(_planes);
             
             using var file = File.Open(filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
@@ -100,7 +124,7 @@ namespace Protobuf.Tests
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
 
-            packet.InfinitePlanes.Data.Add(new[] { m_planes[1], m_planes[3] });
+            packet.InfinitePlanes.Data.Add(new[] { _planes[1], _planes[3] });
             
             using var file = File.Open(filename, FileMode.Append);
             packet.WriteDelimitedTo(file);

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Data.Converters;
@@ -19,12 +20,10 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
-            if (request.DataCase == PacketPb.DataOneofCase.TrackedObjs)
-            {
-                var objs = request.ExtractTrackedObjects(_converter).ToList();
-                return base.Handle(request.Action, objs);
-            }
-            return base.Handle(request, context);
+            if (request.DataCase != PacketPb.DataOneofCase.TrackedObjs) return base.Handle(request, context);
+            Timer = Stopwatch.StartNew();
+            var objs = request.ExtractTrackedObjects(_converter).ToList();
+            return base.Handle(request.Action, objs);
         }
     }
 }

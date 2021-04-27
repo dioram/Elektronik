@@ -11,7 +11,6 @@ namespace Elektronik.Ros.Tests.Rosbag2
 {
     public class Parsers
     {
-
         [Test, Explicit]
         public void ImageParsing()
         {

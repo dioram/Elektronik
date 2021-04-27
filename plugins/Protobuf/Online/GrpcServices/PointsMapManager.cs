@@ -1,11 +1,11 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
-using UnityEngine;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
@@ -21,14 +21,10 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
-            Debug.Log("[PointsMapManager.Handle]");
-            if (request.DataCase == PacketPb.DataOneofCase.Points)
-            {
-                var pts = request.ExtractPoints(_converter).ToList();
-                return HandleConnections(request, Handle(request.Action, pts));
-            }
-
-            return base.Handle(request, context);
+            if (request.DataCase != PacketPb.DataOneofCase.Points) return base.Handle(request, context);
+            Timer = Stopwatch.StartNew();
+            var pts = request.ExtractPoints(_converter).ToList();
+            return HandleConnections(request, Handle(request.Action, pts));
         }
     }
 }

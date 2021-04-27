@@ -12,6 +12,17 @@ namespace Elektronik.Clouds
     {
         public GameObject ItemPrefab;
 
+        public override int ItemsCount
+        {
+            get
+            {
+                lock (GameObjects)
+                {
+                    return GameObjects.Count;
+                }
+            }
+        }
+
         public void Clear()
         {
             lock (GameObjects)
@@ -21,6 +32,14 @@ namespace Elektronik.Clouds
                 {
                     MainThreadInvoker.Instance.Enqueue(() => ObservationsPool?.DespawnAllActiveObjects());
                 }
+            }
+        }
+
+        public List<DataComponent<TCloudItem>> GetObjects()
+        {
+            lock (GameObjects)
+            {
+                return GameObjects.Select(pair => pair.Value.GetComponent<DataComponent<TCloudItem>>()).ToList();
             }
         }
 
@@ -162,6 +181,7 @@ namespace Elektronik.Clouds
                 new SortedDictionary<(int, int), GameObject>();
 
         protected ObjectPool ObservationsPool;
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
         protected abstract Pose GetObjectPose(TCloudItem obj);

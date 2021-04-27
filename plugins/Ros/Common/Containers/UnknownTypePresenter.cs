@@ -20,13 +20,13 @@ namespace Elektronik.RosPlugin.Common.Containers
                 Renderer.SetHeader(RosMessageConvertExtender.GetMessagePropertyNames(message.GetType()));
                 _isFirstMessage = false;
             }
-            return  message.GetData();
+
+            return message.GetData();
         }
 
         public static bool CanParseTopic(string topic)
         {
-            return SupportedTypes
-                            .FirstOrDefault(t => (string) t.GetField("RosMessageName")?.GetValue(null) == topic)
+            return SupportedTypes.FirstOrDefault(t => (string) t.GetField("RosMessageName")?.GetValue(null) == topic)
                     != null;
         }
 
