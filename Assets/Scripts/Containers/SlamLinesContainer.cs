@@ -254,6 +254,18 @@ namespace Elektronik.Containers
             }
         }
 
+        public ISourceTree ContainersOnlyCopy()
+        {
+            var res = new SlamLinesContainer(DisplayName);
+            List<SlamLine> list;
+            lock (_connections)
+            {
+                list = _connections.Values.ToList();
+            }
+            res.AddRange(list);
+            return res;
+        }
+
         #endregion
 
         #region ILookable implementation

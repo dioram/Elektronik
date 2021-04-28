@@ -54,7 +54,7 @@ namespace Elektronik.Containers
 
                 ids = _objects.Keys.ToArray();
 
-                lock (Children)
+                lock (_lineContainers)
                 {
                     _lineContainers.Clear();
                 }
@@ -92,7 +92,7 @@ namespace Elektronik.Containers
             {
                 if (!_objects.ContainsKey(item.Id)) return false;
                 _objects[item.Id].Item2.Clear();
-                lock (Children)
+                lock (_lineContainers)
                 {
                     _lineContainers.Remove(_objects[item.Id].Item2);
                 }
@@ -131,7 +131,7 @@ namespace Elektronik.Containers
             {
                 if (!_objects.ContainsKey(index)) return;
                 _objects[index].Item2.Clear();
-                lock (Children)
+                lock (_lineContainers)
                 {
                     _lineContainers.Remove(_objects[index].Item2);
                 }
@@ -206,7 +206,7 @@ namespace Elektronik.Containers
                 {
                     if (!_objects.ContainsKey(item.Id)) continue;
                     _objects[item.Id].Item2.Clear();
-                    lock (Children)
+                    lock (_lineContainers)
                     {
                         _lineContainers.Remove(_objects[item.Id].Item2);
                     }
@@ -286,6 +286,14 @@ namespace Elektronik.Containers
             }
         }
 
+        public ISourceTree ContainersOnlyCopy()
+        {
+            var res = new TrackedObjectsContainer(DisplayName);
+            AddRangeWithHistory(_objects.Values.Select(p => p.Item1), 
+                                _objects.Values.Select(p => p.Item2));
+            return res;
+        }
+
         #endregion
 
         #region ITrackedContainer implementation
@@ -329,7 +337,10 @@ namespace Elektronik.Containers
                     _objects.Add(i.Id, (i, container));
                 }
 
-                _maxId = historiesList.SelectMany(l => l).Max(l => l.Id);
+                if (historiesList.Count != 0)
+                {
+                    _maxId = historiesList.SelectMany(l => l).Max(l => l.Id);
+                }
             }
 
             if (IsVisible)
@@ -407,7 +418,7 @@ namespace Elektronik.Containers
 
         private TrackContainer CreateTrackContainer(SlamTrackedObject obj, IList<SlamLine> history = null)
         {
-            lock (Children)
+            lock (_lineContainers)
             {
                 var res = new TrackContainer();
                 res.SetRenderer(_lineRenderer);

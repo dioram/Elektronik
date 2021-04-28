@@ -4,13 +4,14 @@ using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 
-namespace Elektronik.RosPlugin.Common.Containers
+namespace Elektronik.Containers
 {
     public class VirtualContainer : ISourceTree, IVisible
     {
-        public VirtualContainer(string displayName)
+        public VirtualContainer(string displayName, List<ISourceTree> children = null)
         {
             DisplayName = displayName;
+            ChildrenList = children ?? new List<ISourceTree>();
         }
 
         public void AddChild(ISourceTree child)
@@ -36,6 +37,11 @@ namespace Elektronik.RosPlugin.Common.Containers
             }
         }
 
+        public ISourceTree ContainersOnlyCopy()
+        {
+            return new VirtualContainer(DisplayName, ChildrenList.Select(ch => ch.ContainersOnlyCopy()).ToList());
+        }
+
         public string DisplayName { get; set; }
 
         public IEnumerable<ISourceTree> Children => ChildrenList;
@@ -59,8 +65,8 @@ namespace Elektronik.RosPlugin.Common.Containers
             }
         }
 
-        public bool ShowButton { get; private set; }
-        public event Action<bool>? OnVisibleChanged;
+        public bool ShowButton { get; private set; } = true;
+        public event Action<bool> OnVisibleChanged;
 
         #endregion
 
@@ -70,7 +76,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         {
             for (int i = 0; i < ChildrenList.Count(); i++)
             {
-                if (ChildrenList[i] is not VirtualContainer @virtual) continue;
+                if (!(ChildrenList[i] is VirtualContainer @virtual)) continue;
 
                 @virtual.Squeeze();
                 if (@virtual.ChildrenList.Count != 1) continue;
@@ -87,7 +93,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         #region Private
 
         private bool _isVisible = true;
-        protected readonly List<ISourceTree> ChildrenList = new();
+        protected readonly List<ISourceTree> ChildrenList;
 
         private bool CheckShowButton()
         {
@@ -107,7 +113,7 @@ namespace Elektronik.RosPlugin.Common.Containers
             ShowButton = false;
             return false;
         }
-        
+
         #endregion
     }
 }

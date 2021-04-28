@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Clouds;
+using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
@@ -14,8 +16,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
     public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable
     {
-        private bool _isVisible = true;
-
         public PointsDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps)
                 : base(displayName, dbModel, topic, actualTimestamps)
         {
@@ -39,15 +39,22 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             OnClear += pointRenderer.OnClear;
         }
 
+        public override ISourceTree? ContainersOnlyCopy()
+        {
+            var res = new CloudContainer<SlamPoint>();
+            res.AddRange(Current);
+            return res;
+        }
+
         public override bool IsVisible
         {
-            get => _isVisible;
+            get => base.IsVisible;
             set
             {
                 lock (this)
                 {
                     base.IsVisible = value;
-                    if (!_isVisible) Clear();
+                    if (!base.IsVisible) Clear();
                     else SetData();
                 }
             }

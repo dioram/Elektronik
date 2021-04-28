@@ -43,6 +43,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             _renderers.Add(renderer);
         }
 
+        public ISourceTree? ContainersOnlyCopy()
+        {
+            return null;
+        }
+
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTree> Children => _children.Values.ToList();
 

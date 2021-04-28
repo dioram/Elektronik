@@ -245,6 +245,17 @@ namespace Elektronik.Containers
             }
         }
 
+        public ISourceTree ContainersOnlyCopy()
+        {
+            var res = new TrackContainer();
+            lock (_lines)
+            {
+                res.AddRange(_lines);
+            }
+
+            return res;
+        }
+
         #endregion
 
         #region ILookable implementaion

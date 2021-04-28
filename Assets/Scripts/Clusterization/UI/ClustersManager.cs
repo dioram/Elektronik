@@ -9,7 +9,6 @@ using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem.UnitySide;
-using Elektronik.UI;
 using Elektronik.UI.Localization;
 using TMPro;
 using UnityEngine;
@@ -18,11 +17,9 @@ namespace Elektronik.Clusterization.UI
 {
     public class ClustersManager : MonoBehaviour
     {
-        public PointCloudRenderer Renderer;
-        public RectTransform TreeView;
-        public GameObject TreeElementPrefab;
         public TMP_Dropdown ContainersSelector;
         public GameObject ConvexHullPrefab;
+        public DataSourcesManager DataSourcesManager;
 
         public void Compute(MonoBehaviour settings, IClusterizationAlgorithm algorithm)
         {
@@ -74,17 +71,18 @@ namespace Elektronik.Clusterization.UI
 
         private void CreateClustersContainers(IVisible source, string displayName, List<List<SlamPoint>> data)
         {
-            var go = Instantiate(TreeElementPrefab, TreeView);
-            var treeElement = go.GetComponent<SourceTreeElement>();
             var localizedName = TextLocalizationExtender.GetLocalizedString("Clustered {0}", displayName);
             var clustered = new ClustersContainer(localizedName, data, source);
             
+            DataSourcesManager.AddDataSource(clustered);
+            foreach (var container in _containers)
+            {
+                container.IsVisible = false;
+            }
             _containers.Add(clustered);
             clustered.OnVisibleChanged += visible => SetVisibility(clustered, source, visible);
             clustered.OnRemoved += () => _containers.Remove(clustered);
 
-            treeElement.Node = clustered;
-            clustered.SetRenderer(Renderer);
             clustered.IsVisible = true;
             source.IsVisible = false;
 

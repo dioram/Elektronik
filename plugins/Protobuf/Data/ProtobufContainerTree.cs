@@ -49,6 +49,20 @@ namespace Elektronik.Protobuf.Data
 
         #region ISourceTree implementation
 
+        public ISourceTree ContainersOnlyCopy()
+        {
+            var children = new List<ISourceTree>()
+            {
+                (TrackedObjs as ISourceTree)!.ContainersOnlyCopy(),
+                (Observations as ISourceTree)!.ContainersOnlyCopy(),
+                (Points as ISourceTree)!.ContainersOnlyCopy(),
+                (Lines as ISourceTree)!.ContainersOnlyCopy(),
+                (InfinitePlanes as ISourceTree)!.ContainersOnlyCopy(),
+            };
+            
+            return new VirtualContainer(DisplayName, children);
+        }
+
         public string DisplayName { get; set; }
 
         public IEnumerable<ISourceTree> Children { get; }

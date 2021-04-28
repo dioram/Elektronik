@@ -16,10 +16,12 @@ namespace Elektronik.Containers
     {
         public ConnectableObjectsContainer(IContainer<TCloudItem> objects,
                                            IContainer<SlamLine> connects,
-                                           string displayName = "")
+                                           string displayName = "",
+                                           SparseSquareMatrix<bool> table = null)
         {
             _connects = connects;
             _objects = objects;
+            _table = table ?? new SparseSquareMatrix<bool>();
             Children = new[]
             {
                 (ISourceTree) _connects,
@@ -291,14 +293,20 @@ namespace Elektronik.Containers
         public string DisplayName { get; set; }
 
         public IEnumerable<ISourceTree> Children { get; }
-
-
+        
         public void SetRenderer(object renderer)
         {
             foreach (var child in Children)
             {
                 child.SetRenderer(renderer);
             }
+        }
+
+        public ISourceTree ContainersOnlyCopy()
+        {
+            var objects = (_objects as ISourceTree)!.ContainersOnlyCopy() as IContainer<TCloudItem>;
+            var connects = (_connects as ISourceTree)!.ContainersOnlyCopy() as IContainer<SlamLine>;
+            return new ConnectableObjectsContainer<TCloudItem>(objects, connects, DisplayName, _table.DeepCopy());
         }
 
         #endregion
@@ -338,7 +346,7 @@ namespace Elektronik.Containers
         #region Private definitions
 
         private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
-        private readonly SparseSquareMatrix<bool> _table = new SparseSquareMatrix<bool>();
+        private readonly SparseSquareMatrix<bool> _table;
         private readonly IContainer<SlamLine> _connects;
         private readonly IContainer<TCloudItem> _objects;
         private bool _isVisible = true;

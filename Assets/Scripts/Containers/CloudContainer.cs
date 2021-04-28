@@ -22,7 +22,7 @@ namespace Elektronik.Containers
         {
             DisplayName = string.IsNullOrEmpty(displayName) ? typeof(TCloudItem).Name : displayName;
         }
-
+        
         #region IContainer implementation
 
         public IEnumerator<TCloudItem> GetEnumerator()
@@ -241,6 +241,18 @@ namespace Elektronik.Containers
                     OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
                 }
             }
+        }
+
+        public ISourceTree ContainersOnlyCopy()
+        {
+            var res = new CloudContainer<TCloudItem>(DisplayName);
+            List<TCloudItem> list;
+            lock (_items)
+            {
+                list = _items.Values.ToList();
+            }
+            res.AddRange(list);
+            return res;
         }
 
         #endregion

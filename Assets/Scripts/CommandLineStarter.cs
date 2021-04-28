@@ -17,6 +17,7 @@ namespace Elektronik
             if (args.Length < 2 || !File.Exists(args[1])) return;
             var extension = Path.GetExtension(args[1]);
             var plugin = PluginsLoader.Plugins
+                    .Value
                     .OfType<IDataSourcePluginOffline>()
                     .First(p => p.SupportedExtensions.Contains(extension));
             ModeSelector.Mode = Mode.Offline;

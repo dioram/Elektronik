@@ -2,30 +2,25 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Elektronik.Clouds;
 using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Offline;
-using Elektronik.UI;
-using Elektronik.UI.Windows;
+using Elektronik.Settings;
 using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
 {
     public class PluginsPlayer : MonoBehaviour
     {
-        public static readonly ReadOnlyCollection<IElektronikPlugin> Plugins = PluginsLoader.ActivePlugins.AsReadOnly();
-        public GameObject Renderers;
+        public static ReadOnlyCollection<IElektronikPlugin> Plugins = PluginsLoader.ActivePlugins.AsReadOnly();
         public CSConverter Converter;
         public PlayerEventsManager PlayerEvents;
-        public GameObject ContainerTreePrefab;
-        public RectTransform TreeView;
         public GameObject ScreenLocker;
+        public DataSourcesManager DataSourcesManager;
 
-        public event Action PluginsStarted; 
+        public event Action PluginsStarted;
 
         public void ClearMap()
         {
@@ -33,6 +28,7 @@ namespace Elektronik.PluginsSystem.UnitySide
             {
                 dataSourceOnline.Data.Clear();
             }
+
             foreach (var dataSourceOffline in PluginsLoader.ActivePlugins.OfType<IDataSourcePluginOffline>())
             {
                 dataSourceOffline.StopPlaying();
@@ -46,36 +42,28 @@ namespace Elektronik.PluginsSystem.UnitySide
                 MapSourceTree(treeElement, "", action);
             }
         }
-        
+
         #region Unity events
 
         private void Start()
         {
+#if UNITY_EDITOR
+            if (ModeSelector.Mode == Mode.Online)
+            {
+                Plugins = PluginsLoader.Plugins.Value
+                        .OfType<IDataSourcePluginOnline>()
+                        .Select(p => (IElektronikPlugin) p)
+                        .ToList()
+                        .AsReadOnly();
+            }
+#endif
+
             ScreenLocker.SetActive(true);
-            
-            var cloudRenderers = Assembly.GetExecutingAssembly()
-                    .GetTypes()
-                    .Where(t => t.GetInterfaces()
-                                   .Where(i => i.IsGenericType)
-                                   .Any(i => i.GetGenericTypeDefinition() == typeof(ICloudRenderer<>)))
-                    .SelectMany(t => Renderers.GetComponentsInChildren(t))
-                    .Concat(new []{Renderers.transform.Find("Windows").GetComponent<WindowsManager>()})
-                    .ToArray();
-            
+
             foreach (var dataSource in Plugins.OfType<IDataSourcePlugin>())
             {
-                foreach (var r in cloudRenderers)
-                {
-                    dataSource.Data.SetRenderer(r);
-                }
-
                 dataSource.Converter = Converter;
-                var treeElement = Instantiate(ContainerTreePrefab, TreeView).GetComponent<SourceTreeElement>();
-                treeElement.Node = dataSource.Data;
-                if (Plugins.OfType<IDataSourcePlugin>().Count() == 1)
-                {
-                    treeElement.ChangeState();
-                }
+                DataSourcesManager.AddDataSource(dataSource.Data);
             }
 
             foreach (var dataSource in Plugins.OfType<IDataSourcePluginOffline>())

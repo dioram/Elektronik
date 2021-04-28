@@ -14,6 +14,11 @@ namespace Elektronik.Protobuf.Data
         
         #region ISourceTree
 
+        public ISourceTree ContainersOnlyCopy()
+        {
+            return null;
+        }
+
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTree> Children => new ISourceTree[0];
 
