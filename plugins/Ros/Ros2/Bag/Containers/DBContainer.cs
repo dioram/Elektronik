@@ -22,11 +22,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region ISourceTree
 
-        public virtual ISourceTree? ContainersOnlyCopy()
-        {
-            return null;
-        }
-
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
 

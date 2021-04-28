@@ -6,7 +6,7 @@ using Elektronik.Data;
 
 namespace Elektronik.Containers
 {
-    public class VirtualContainer : ISourceTree, IVisible
+    public class VirtualContainer : ISourceTree, IVisible, ISnapshotable
     {
         public VirtualContainer(string displayName, List<ISourceTree> children = null)
         {
@@ -35,11 +35,6 @@ namespace Elektronik.Containers
             {
                 child.SetRenderer(renderer);
             }
-        }
-
-        public ISourceTree ContainersOnlyCopy()
-        {
-            return new VirtualContainer(DisplayName, ChildrenList.Select(ch => ch.ContainersOnlyCopy()).ToList());
         }
 
         public string DisplayName { get; set; }
@@ -86,6 +81,18 @@ namespace Elektronik.Containers
             }
 
             ShowButton = CheckShowButton();
+        }
+
+        #endregion
+
+        #region ISnapshotable
+        
+        public ISnapshotable TakeSnapshot()
+        {
+            return new VirtualContainer(DisplayName, ChildrenList.OfType<ISnapshotable>()
+                                                .Select(ch => ch.TakeSnapshot())
+                                                .Select(ch => ch as ISourceTree)
+                                                .ToList());
         }
 
         #endregion

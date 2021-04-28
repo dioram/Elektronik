@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable
+    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable, ISnapshotable
     {
         public PointsDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps)
                 : base(displayName, dbModel, topic, actualTimestamps)
@@ -37,13 +37,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
             OnShow += pointRenderer.ShowItems;
             OnClear += pointRenderer.OnClear;
-        }
-
-        public override ISourceTree? ContainersOnlyCopy()
-        {
-            var res = new CloudContainer<SlamPoint>();
-            res.AddRange(Current);
-            return res;
         }
 
         public override bool IsVisible
@@ -82,6 +75,17 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (float.IsNaN(_bounds.x)) return (transform.position, transform.rotation);
 
             return (_center + _bounds / 2 + _bounds.normalized, Quaternion.LookRotation(-_bounds));
+        }
+
+        #endregion
+
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var res = new CloudContainer<SlamPoint>();
+            res.AddRange(Current);
+            return res;
         }
 
         #endregion

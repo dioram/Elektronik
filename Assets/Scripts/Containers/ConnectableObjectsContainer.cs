@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTree,
-                                                           ILookable, IVisible
+                                                           ILookable, IVisible, ISnapshotable
             where TCloudItem : struct, ICloudItem
     {
         public ConnectableObjectsContainer(IContainer<TCloudItem> objects,
@@ -302,13 +302,6 @@ namespace Elektronik.Containers
             }
         }
 
-        public ISourceTree ContainersOnlyCopy()
-        {
-            var objects = (_objects as ISourceTree)!.ContainersOnlyCopy() as IContainer<TCloudItem>;
-            var connects = (_connects as ISourceTree)!.ContainersOnlyCopy() as IContainer<SlamLine>;
-            return new ConnectableObjectsContainer<TCloudItem>(objects, connects, DisplayName, _table.DeepCopy());
-        }
-
         #endregion
 
         #region ILookable implementation
@@ -340,6 +333,17 @@ namespace Elektronik.Containers
         public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
+
+        #endregion
+
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var objects = (_objects as ISnapshotable)!.TakeSnapshot() as IContainer<TCloudItem>;
+            var connects = (_connects as ISnapshotable)!.TakeSnapshot() as IContainer<SlamLine>;
+            return new ConnectableObjectsContainer<TCloudItem>(objects, connects, DisplayName, _table.DeepCopy());
+        }
 
         #endregion
 

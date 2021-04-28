@@ -15,7 +15,7 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     public class CloudContainer<TCloudItem>
-            : IContainer<TCloudItem>, ISourceTree, ILookable, IVisible, ITraceable, IClusterable
+            : IContainer<TCloudItem>, ISourceTree, ILookable, IVisible, ITraceable, IClusterable, ISnapshotable
             where TCloudItem : struct, ICloudItem
     {
         public CloudContainer(string displayName = "")
@@ -243,18 +243,6 @@ namespace Elektronik.Containers
             }
         }
 
-        public ISourceTree ContainersOnlyCopy()
-        {
-            var res = new CloudContainer<TCloudItem>(DisplayName);
-            List<TCloudItem> list;
-            lock (_items)
-            {
-                list = _items.Values.ToList();
-            }
-            res.AddRange(list);
-            return res;
-        }
-
         #endregion
 
         #region ILookable implementation
@@ -330,6 +318,22 @@ namespace Elektronik.Containers
         public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
+
+        #endregion
+
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var res = new CloudContainer<TCloudItem>(DisplayName);
+            List<TCloudItem> list;
+            lock (_items)
+            {
+                list = _items.Values.ToList();
+            }
+            res.AddRange(list);
+            return res;
+        }
 
         #endregion
 

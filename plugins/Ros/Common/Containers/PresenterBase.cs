@@ -30,11 +30,6 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #region ISourceTree
 
-        public ISourceTree? ContainersOnlyCopy()
-        {
-            return null;
-        }
-
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
 

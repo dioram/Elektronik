@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Elektronik.Clouds;
@@ -20,6 +21,14 @@ namespace Elektronik.Data
         private readonly List<ISourceTree> _dataSources = new List<ISourceTree>();
         private readonly List<SourceTreeElement> _roots = new List<SourceTreeElement>();
         private Component[] _renderers;
+
+        public void MapSourceTree(Action<ISourceTree, string> action)
+        {
+            foreach (var treeElement in _dataSources)
+            {
+                MapSourceTree(treeElement, "", action);
+            }
+        }
 
         private void Awake()
         {
@@ -60,9 +69,23 @@ namespace Elektronik.Data
         {
             // ReSharper disable once LocalVariableHidesMember
             var name = TextLocalizationExtender.GetLocalizedString("Snapshot", _snapshotsCount++);
-            var snapshot = new SnapshotContainer(name, _dataSources.Select(s => s.ContainersOnlyCopy())
-                                                         .Where(s => s != null).ToList());
+            var snapshot = new SnapshotContainer(name, _dataSources
+                                                         .OfType<ISnapshotable>()
+                                                         .Select(s => s.TakeSnapshot())
+                                                         .Select(s => s as ISourceTree)
+                                                         .ToList());
             AddDataSource(snapshot);
+        }
+        
+        
+        private static void MapSourceTree(ISourceTree treeElement, string path, Action<ISourceTree, string> action)
+        {
+            var fullName = $"{path}/{treeElement.DisplayName}";
+            action(treeElement, fullName);
+            foreach (var child in treeElement.Children)
+            {
+                MapSourceTree(child, fullName, action);
+            }
         }
     }
 }

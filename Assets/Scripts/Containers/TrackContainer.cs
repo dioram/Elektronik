@@ -12,7 +12,7 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     /// <summary> Contains lines in strict order. </summary>
-    public class TrackContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible
+    public class TrackContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible, ISnapshotable
     {
         #region IContainer implementaion
 
@@ -245,17 +245,6 @@ namespace Elektronik.Containers
             }
         }
 
-        public ISourceTree ContainersOnlyCopy()
-        {
-            var res = new TrackContainer();
-            lock (_lines)
-            {
-                res.AddRange(_lines);
-            }
-
-            return res;
-        }
-
         #endregion
 
         #region ILookable implementaion
@@ -305,6 +294,21 @@ namespace Elektronik.Containers
         public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
+
+        #endregion
+
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var res = new TrackContainer();
+            lock (_lines)
+            {
+                res.AddRange(_lines);
+            }
+
+            return res;
+        }
 
         #endregion
 

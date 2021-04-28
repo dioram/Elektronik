@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Elektronik.Containers;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Offline.Presenters;
 
 namespace Elektronik.Protobuf.Data
 {
-    public class ProtobufContainerTree : ISourceTree
+    public class ProtobufContainerTree : ISourceTree, ISnapshotable
     {
         public readonly ITrackedContainer<SlamTrackedObject> TrackedObjs;
         public readonly IConnectableObjectsContainer<SlamObservation> Observations;
@@ -49,20 +50,6 @@ namespace Elektronik.Protobuf.Data
 
         #region ISourceTree implementation
 
-        public ISourceTree ContainersOnlyCopy()
-        {
-            var children = new List<ISourceTree>()
-            {
-                (TrackedObjs as ISourceTree)!.ContainersOnlyCopy(),
-                (Observations as ISourceTree)!.ContainersOnlyCopy(),
-                (Points as ISourceTree)!.ContainersOnlyCopy(),
-                (Lines as ISourceTree)!.ContainersOnlyCopy(),
-                (InfinitePlanes as ISourceTree)!.ContainersOnlyCopy(),
-            };
-            
-            return new VirtualContainer(DisplayName, children);
-        }
-
         public string DisplayName { get; set; }
 
         public IEnumerable<ISourceTree> Children { get; }
@@ -81,6 +68,24 @@ namespace Elektronik.Protobuf.Data
             {
                 child.SetRenderer(renderer);
             }
+        }
+
+        #endregion
+
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var children = new List<ISourceTree>()
+            {
+                (TrackedObjs as ISnapshotable)!.TakeSnapshot() as ISourceTree,
+                (Observations as ISnapshotable)!.TakeSnapshot() as ISourceTree,
+                (Points as ISnapshotable)!.TakeSnapshot() as ISourceTree,
+                (Lines as ISnapshotable)!.TakeSnapshot() as ISourceTree,
+                (InfinitePlanes as ISnapshotable)!.TakeSnapshot() as ISourceTree,
+            };
+            
+            return new VirtualContainer(DisplayName, children);
         }
 
         #endregion

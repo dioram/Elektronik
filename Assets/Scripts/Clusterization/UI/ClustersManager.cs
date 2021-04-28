@@ -49,7 +49,7 @@ namespace Elektronik.Clusterization.UI
 
         private void Start()
         {
-            PluginsPlayer.MapSourceTree(FindClusterableContainers);
+            DataSourcesManager.MapSourceTree(FindClusterableContainers);
             ContainersSelector.options = _clusterableContainers
                     .Select(c => new TMP_Dropdown.OptionData(c.name))
                     .ToList();

@@ -730,6 +730,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3654434711664828000}
   - component: {fileID: 3654434711664828001}
+  - component: {fileID: 3203600022186940607}
   - component: {fileID: 3654434711664828003}
   m_Layer: 0
   m_Name: UI Tree View Element
@@ -778,6 +779,18 @@ MonoBehaviour:
     type: 3}
   MinHeight: 40
   TreeButton: {fileID: 3654434712922454082}
+--- !u!114 &3203600022186940607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3654434711664828031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a31de8d8f1b48539c8475b0f1f03864, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   WindowButton: {fileID: 8519741931512456391}
   VisibleButton: {fileID: 3654434712273500218}
   TraceButton: {fileID: 8599606782316953650}

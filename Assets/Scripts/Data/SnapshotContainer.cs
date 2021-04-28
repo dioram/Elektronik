@@ -5,7 +5,7 @@ using Elektronik.Containers.SpecialInterfaces;
 
 namespace Elektronik.Data
 {
-    public class SnapshotContainer : ISourceTree, IRemovable, IVisible
+    public class SnapshotContainer : ISourceTree, IRemovable, IVisible, ISnapshotable
     {
         public SnapshotContainer(string displayName, IEnumerable<ISourceTree> children)
         {
@@ -31,12 +31,6 @@ namespace Elektronik.Data
             {
                 child.SetRenderer(renderer);
             }
-        }
-
-        public ISourceTree ContainersOnlyCopy()
-        {
-            return new SnapshotContainer(DisplayName, Children.Select(ch => ch.ContainersOnlyCopy())
-                                                 .Where(ch => ch != null));
         }
 
         #endregion
@@ -75,9 +69,22 @@ namespace Elektronik.Data
 
         #endregion
 
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            return new SnapshotContainer(DisplayName, Children
+                                                 .OfType<ISnapshotable>()
+                                                 .Select(ch => ch.TakeSnapshot())
+                                                 .Select(ch => ch as ISourceTree)
+                                                 .ToList());
+        }
+
+        #endregion
+
         #region Private
 
-        private bool _isVisible = true;
+        private bool _isVisible;
 
         #endregion
     }

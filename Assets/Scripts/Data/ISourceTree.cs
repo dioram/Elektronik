@@ -32,9 +32,5 @@ namespace Elektronik.Data
         /// </example>
         /// <param name="renderer"> Content renderer </param>
         void SetRenderer(object renderer);
-
-        /// <summary> Make deep copy of all child containers </summary>
-        /// <returns> Copied container or null if it is not a container. </returns>
-        [CanBeNull] ISourceTree ContainersOnlyCopy();
     }
 }

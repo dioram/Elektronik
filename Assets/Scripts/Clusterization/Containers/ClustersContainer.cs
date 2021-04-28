@@ -49,11 +49,6 @@ namespace Elektronik.Clusterization.Containers
             }
         }
 
-        public ISourceTree ContainersOnlyCopy()
-        {
-            return null;
-        }
-
         #endregion
 
         #region IVisible
