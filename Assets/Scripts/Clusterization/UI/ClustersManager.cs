@@ -8,7 +8,6 @@ using Elektronik.Clusterization.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Localization;
 using TMPro;
 using UnityEngine;
@@ -89,9 +88,17 @@ namespace Elektronik.Clusterization.UI
             foreach (var cluster in data)
             {
                 var ch = Instantiate(ConvexHullPrefab);
-                var mesh = ch.GetComponent<ConvexMesh>();
-                mesh.CreateHull(cluster);
-                clustered.Hulls.Add(mesh);
+                try
+                {
+                    var mesh = ch.GetComponent<ConvexMesh>();
+                    mesh.CreateHull(cluster);
+                    clustered.Hulls.Add(mesh);
+                }
+                catch (Exception e)
+                {
+                    Destroy(ch);
+                    Debug.LogError(e.Message);
+                }
             }
         }
 

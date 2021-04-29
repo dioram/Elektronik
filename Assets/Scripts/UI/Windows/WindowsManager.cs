@@ -96,20 +96,17 @@ namespace Elektronik.UI.Windows
 
         public void ShowLine(Direction direction, float value)
         {
+            var size = ((RectTransform) VerticalRenderer.transform.parent).rect.size;
             switch (direction)
             {
-            case Direction.Vertical when VerticalRenderer != null:
+            case Direction.Vertical:
                 VerticalRenderer.enabled = true;
-                VerticalRenderer.Points = new[] {new Vector2(value, 0), new Vector2(value, Screen.height)};
+                VerticalRenderer.Points = new[] {new Vector2(value, 0), new Vector2(value, size.y)};
                 VerticalRenderer.SetAllDirty();
                 break;
-            case Direction.Horizontal when HorizontalRenderer != null:
+            case Direction.Horizontal:
                 HorizontalRenderer.enabled = true;
-                HorizontalRenderer.Points = new[]
-                {
-                    new Vector2(0, Screen.height + value),
-                    new Vector2(Screen.width, Screen.height + value)
-                };
+                HorizontalRenderer.Points = new[] {new Vector2(0, size.y + value), new Vector2(size.x, size.y + value)};
                 HorizontalRenderer.SetAllDirty();
                 break;
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
+using Newtonsoft.Json.Linq;
 
 namespace Elektronik.Containers
 {
@@ -86,13 +87,27 @@ namespace Elektronik.Containers
         #endregion
 
         #region ISnapshotable
-        
+
         public ISnapshotable TakeSnapshot()
         {
             return new VirtualContainer(DisplayName, ChildrenList.OfType<ISnapshotable>()
                                                 .Select(ch => ch.TakeSnapshot())
                                                 .Select(ch => ch as ISourceTree)
                                                 .ToList());
+        }
+        
+
+        public string Serialize()
+        {
+            var data = string.Join(",", ChildrenList.OfType<ISnapshotable>().Select(ch => ch.Serialize()));
+            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\",\"data\":[{data}]}}";
+        }
+
+        public static VirtualContainer Deserialize(JToken token)
+        {
+            return new VirtualContainer(token["displayName"].ToString(),
+                                        token["data"].Where(t => t.HasValues)
+                                                .Select(SnapshotableDeserializer.Deserialize).ToList());
         }
 
         #endregion

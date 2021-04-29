@@ -24,15 +24,11 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         public void ClearMap()
         {
-            foreach (var dataSourceOnline in PluginsLoader.ActivePlugins.OfType<IDataSourcePluginOnline>())
-            {
-                dataSourceOnline.Data.Clear();
-            }
-
-            foreach (var dataSourceOffline in PluginsLoader.ActivePlugins.OfType<IDataSourcePluginOffline>())
+            foreach (var dataSourceOffline in Plugins.OfType<IDataSourcePluginOffline>())
             {
                 dataSourceOffline.StopPlaying();
             }
+            DataSourcesManager.ClearMap();
         }
 
         #region Unity events

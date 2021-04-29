@@ -293,7 +293,7 @@ namespace Elektronik.Containers
         public string DisplayName { get; set; }
 
         public IEnumerable<ISourceTree> Children { get; }
-        
+
         public void SetRenderer(object renderer)
         {
             foreach (var child in Children)
@@ -343,6 +343,13 @@ namespace Elektronik.Containers
             var objects = (_objects as ISnapshotable)!.TakeSnapshot() as IContainer<TCloudItem>;
             var connects = (_connects as ISnapshotable)!.TakeSnapshot() as IContainer<SlamLine>;
             return new ConnectableObjectsContainer<TCloudItem>(objects, connects, DisplayName, _table.DeepCopy());
+        }
+
+        public string Serialize()
+        {
+            var objects = (_objects as ISnapshotable)!.Serialize();
+            var connects = (_connects as ISnapshotable)!.Serialize();
+            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\",\"data\":[{objects},{connects}]}}";
         }
 
         #endregion

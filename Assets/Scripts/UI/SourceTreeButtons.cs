@@ -17,12 +17,14 @@ namespace Elektronik.UI
         public Button RemoveButton;
         public Button CameraButton;
         public ButtonChangingIcons ConvexHullButton;
+        public Button SaveButton;
 
         private ISourceTree _node;
 
         public void Start()
         {
             _node = GetComponent<SourceTreeElement>().Node;
+            // ReSharper disable once SuspiciousTypeConversion.Global
             if (_node is IRendersToWindow rendersToWindow)
             {
                 WindowButton.OnClickAsObservable().Subscribe(_ => rendersToWindow.Window.Show());
@@ -80,6 +82,15 @@ namespace Elektronik.UI
             else
             {
                 CameraButton.gameObject.SetActive(false);
+            }
+
+            if (_node is ISave s)
+            {
+                SaveButton.OnClickAsObservable().Subscribe(_ => s.Save());
+            }
+            else
+            {
+                SaveButton.gameObject.SetActive(false);
             }
         }
 

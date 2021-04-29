@@ -302,6 +302,22 @@ MonoBehaviour:
     m_Localized: Snapshot #{0}
     m_Metadata:
       m_Items: []
+  - m_Id: 5836048343728128
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5837748177698816
+    m_Localized: Load snapshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5845141053734912
+    m_Localized: Load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5845323099111424
+    m_Localized: Save snapshot
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

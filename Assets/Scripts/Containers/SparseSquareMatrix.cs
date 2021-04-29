@@ -12,10 +12,10 @@ namespace Elektronik.Containers
             var res = new SparseSquareMatrix<TElemType>();
             foreach (var row in _table)
             {
-                if (!_table.ContainsKey(row.Key)) _table[row.Key] = new SortedDictionary<int, TElemType>();
+                if (!res._table.ContainsKey(row.Key)) res._table[row.Key] = new SortedDictionary<int, TElemType>();
                 foreach (var col in row.Value)
                 {
-                    _table[row.Key][col.Key] = col.Value;
+                    res._table[row.Key][col.Key] = col.Value;
                 }
             }
 

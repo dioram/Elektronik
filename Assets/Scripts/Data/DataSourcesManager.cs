@@ -7,6 +7,7 @@ using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.UI;
 using Elektronik.UI.Localization;
 using Elektronik.UI.Windows;
+using SimpleFileBrowser;
 using UnityEngine;
 
 namespace Elektronik.Data
@@ -21,6 +22,19 @@ namespace Elektronik.Data
         private readonly List<ISourceTree> _dataSources = new List<ISourceTree>();
         private readonly List<SourceTreeElement> _roots = new List<SourceTreeElement>();
         private Component[] _renderers;
+
+        public void ClearMap()
+        {
+            var removable = _dataSources.OfType<IRemovable>().ToList();
+            foreach (var r in removable)
+            {
+                r.RemoveSelf(); 
+            }
+            foreach (var source in _dataSources)
+            {
+                source.Clear();
+            }
+        }
 
         public void MapSourceTree(Action<ISourceTree, string> action)
         {
@@ -55,7 +69,11 @@ namespace Elektronik.Data
 
             if (source is IRemovable r)
             {
-                r.OnRemoved += () => _dataSources.Remove(source);
+                r.OnRemoved += () =>
+                {
+                    _dataSources.Remove(source);
+                    Destroy(treeElement.gameObject);
+                };
             }
 
             // ReSharper disable once LocalVariableHidesMember
@@ -76,8 +94,24 @@ namespace Elektronik.Data
                                                          .ToList());
             AddDataSource(snapshot);
         }
-        
-        
+
+        public void LoadSnapshot()
+        {
+            FileBrowser.ShowLoadDialog(paths =>
+                                       {
+                                           foreach (var path in paths)
+                                           {
+                                               AddDataSource(SnapshotContainer.Load(path));
+                                           }
+                                       },
+                                       () => { },
+                                       false,
+                                       true,
+                                       "",
+                                       TextLocalizationExtender.GetLocalizedString("Load snapshot"),
+                                       TextLocalizationExtender.GetLocalizedString("Load"));
+        }
+
         private static void MapSourceTree(ISourceTree treeElement, string path, Action<ISourceTree, string> action)
         {
             var fullName = $"{path}/{treeElement.DisplayName}";

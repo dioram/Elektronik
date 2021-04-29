@@ -9,7 +9,10 @@ using Elektronik.Clusterization.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -22,7 +25,7 @@ namespace Elektronik.Containers
         {
             DisplayName = string.IsNullOrEmpty(displayName) ? typeof(TCloudItem).Name : displayName;
         }
-        
+
         #region IContainer implementation
 
         public IEnumerator<TCloudItem> GetEnumerator()
@@ -299,7 +302,7 @@ namespace Elektronik.Containers
                 if (_isVisible == value) return;
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
-                
+
                 if (_isVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
@@ -311,6 +314,7 @@ namespace Elektronik.Containers
                 {
                     items = _items.Keys.ToList();
                 }
+
                 OnRemoved?.Invoke(this, new RemovedEventArgs(items));
             }
         }
@@ -331,7 +335,26 @@ namespace Elektronik.Containers
             {
                 list = _items.Values.ToList();
             }
+
             res.AddRange(list);
+            return res;
+        }
+
+        public string Serialize()
+        {
+            var type = typeof(TCloudItem).Name;
+            var converter = new UnityJsonConverter();
+            lock (_items)
+            {
+                return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"{type}\"," +
+                        $"\"data\":{JsonConvert.SerializeObject(_items.Values.ToList(), converter)}}}";
+            }
+        }
+
+        public static CloudContainer<TCloudItem> Deserialize(JToken token)
+        {
+            var res = new CloudContainer<TCloudItem>(token["displayName"].ToString());
+            res.AddRange(JsonConvert.DeserializeObject<TCloudItem[]>(token["data"].ToString()));
             return res;
         }
 

@@ -2,6 +2,7 @@
 
 namespace Elektronik.Data.PackageObjects
 {
+    [Serializable]
     public struct SlamLine : IComparable<SlamLine>, ICloudItem
     {
         public int Id { get; set; }

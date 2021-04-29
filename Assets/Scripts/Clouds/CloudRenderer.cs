@@ -115,7 +115,7 @@ namespace Elektronik.Clouds
         {
             OnClear(sender);
             var list = items.ToList();
-            CheckAndCreateReserves(sender, list);
+            if (CheckAndCreateReserves(sender, list)) return;
             AddItems(sender, list);
         }
 

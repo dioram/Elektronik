@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
@@ -7,7 +9,7 @@ using Elektronik.Protobuf.Offline.Presenters;
 
 namespace Elektronik.Protobuf.Data
 {
-    public class ProtobufContainerTree : ISourceTree, ISnapshotable
+    public class ProtobufContainerTree : ISourceTree, ISnapshotable, IVisible
     {
         public readonly ITrackedContainer<SlamTrackedObject> TrackedObjs;
         public readonly IConnectableObjectsContainer<SlamObservation> Observations;
@@ -87,6 +89,45 @@ namespace Elektronik.Protobuf.Data
             
             return new VirtualContainer(DisplayName, children);
         }
+
+        public string Serialize()
+        {
+            var tracked = (TrackedObjs as ISnapshotable)!.Serialize();
+            var observations = (Observations as ISnapshotable)!.Serialize();
+            var points = (Points as ISnapshotable)!.Serialize();
+            var lines = (Lines as ISnapshotable)!.Serialize();
+            var planes = (InfinitePlanes as ISnapshotable)!.Serialize();
+            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\"," +
+                    $"\"data\":[{tracked},{observations},{points},{lines},{planes}]}}";
+        }
+
+        #endregion
+
+        #region IVisible
+
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible == value) return;
+                _isVisible = value;
+                foreach (var child in Children.OfType<IVisible>())
+                {
+                    child.IsVisible = value;
+                }
+                OnVisibleChanged?.Invoke(value);
+            }
+        }
+
+        public bool ShowButton { get; } = true;
+        public event Action<bool> OnVisibleChanged;
+
+        #endregion
+
+        #region Private
+
+        private bool _isVisible = true;
 
         #endregion
     }

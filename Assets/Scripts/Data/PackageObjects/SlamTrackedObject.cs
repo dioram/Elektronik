@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
 {
+    [Serializable]
     public struct SlamTrackedObject : ICloudItem
     {
         public int Id { get; set; }

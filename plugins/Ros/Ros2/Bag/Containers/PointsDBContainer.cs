@@ -4,10 +4,11 @@ using System.Linq;
 using Elektronik.Clouds;
 using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
-using Elektronik.Data;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
+using Newtonsoft.Json;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using SQLite;
 using UnityEngine;
@@ -22,7 +23,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         }
 
         #region DBContainer
-        
+
         public override bool ShowButton { get; } = true;
 
         public override void Clear()
@@ -86,6 +87,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             var res = new CloudContainer<SlamPoint>();
             res.AddRange(Current);
             return res;
+        }
+
+        public string Serialize()
+        {
+            var converter = new UnityJsonConverter();
+            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"SlamPoint\"," +
+                    $"\"data\":[{JsonConvert.SerializeObject(Current, converter)}]}}";
         }
 
         #endregion

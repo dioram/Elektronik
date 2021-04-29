@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.UI.Localization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SimpleFileBrowser;
 
 namespace Elektronik.Data
 {
-    public class SnapshotContainer : ISourceTree, IRemovable, IVisible, ISnapshotable
+    public class SnapshotContainer : ISourceTree, IRemovable, IVisible, ISnapshotable, ISave
     {
         public SnapshotContainer(string displayName, IEnumerable<ISourceTree> children)
         {
@@ -13,16 +18,31 @@ namespace Elektronik.Data
             Children = children;
         }
 
+        public static SnapshotContainer Load(string filename)
+        {
+            var serializer = new JsonSerializer();
+            using var file = File.OpenText(filename);
+            using var jsonTextReader = new JsonTextReader(file);
+            var arr = serializer.Deserialize<JToken>(jsonTextReader)["data"];
+            
+            return new SnapshotContainer($"Snapshot: {Path.GetFileName(filename)}", 
+                                         arr.Where(t => t.HasValues)
+                                                 .Select(SnapshotableDeserializer.Deserialize).ToList());
+        }
+
         #region ISourceTree
 
         public string DisplayName { get; set; }
-        
+
         public IEnumerable<ISourceTree> Children { get; private set; }
-        
+
         public void Clear()
         {
+            foreach (var child in Children)
+            {
+                child.Clear();
+            }
             Children = new ISourceTree[0];
-            // do nothing
         }
 
         public void SetRenderer(object renderer)
@@ -60,6 +80,7 @@ namespace Elektronik.Data
                 {
                     child.IsVisible = value;
                 }
+
                 OnVisibleChanged?.Invoke(value);
             }
         }
@@ -80,11 +101,39 @@ namespace Elektronik.Data
                                                  .ToList());
         }
 
+        public string Serialize()
+        {
+            var data = string.Join(",", Children.OfType<ISnapshotable>().Select(ch => ch.Serialize()));
+            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\",\"data\":[{data}]}}";
+        }
+
+        #endregion
+
+        #region ISave
+
+        public void Save()
+        {
+            FileBrowser.SetFilters(true, "snapshot.json");
+            FileBrowser.ShowSaveDialog(path => WriteToFile(path[0]),
+                                       () => { },
+                                       false,
+                                       false,
+                                       "",
+                                       TextLocalizationExtender.GetLocalizedString("Save snapshot"),
+                                       TextLocalizationExtender.GetLocalizedString("Save"));
+        }
+
         #endregion
 
         #region Private
 
-        private bool _isVisible;
+        private bool _isVisible = true;
+
+        private void WriteToFile(string filename)
+        {
+            using var file = File.CreateText(filename);
+            file.Write(Serialize());
+        }
 
         #endregion
     }

@@ -6,7 +6,10 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -308,6 +311,12 @@ namespace Elektronik.Containers
             }
 
             return res;
+        }
+
+        public string Serialize()
+        {
+            // Serialisation handles by TrackedObjectsContainer
+            return "{}";
         }
 
         #endregion
