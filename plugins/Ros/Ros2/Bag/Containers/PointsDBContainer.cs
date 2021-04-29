@@ -2,27 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Clouds;
+using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
+using Newtonsoft.Json;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using SQLite;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable
+    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable, ISnapshotable
     {
-        private bool _isVisible = true;
-
         public PointsDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps)
                 : base(displayName, dbModel, topic, actualTimestamps)
         {
         }
 
         #region DBContainer
-        
+
         public override bool ShowButton { get; } = true;
 
         public override void Clear()
@@ -41,13 +42,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         public override bool IsVisible
         {
-            get => _isVisible;
+            get => base.IsVisible;
             set
             {
                 lock (this)
                 {
                     base.IsVisible = value;
-                    if (!_isVisible) Clear();
+                    if (!base.IsVisible) Clear();
                     else SetData();
                 }
             }
@@ -75,6 +76,24 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (float.IsNaN(_bounds.x)) return (transform.position, transform.rotation);
 
             return (_center + _bounds / 2 + _bounds.normalized, Quaternion.LookRotation(-_bounds));
+        }
+
+        #endregion
+
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var res = new CloudContainer<SlamPoint>();
+            res.AddRange(Current);
+            return res;
+        }
+
+        public string Serialize()
+        {
+            var converter = new UnityJsonConverter();
+            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"SlamPoint\"," +
+                    $"\"data\":[{JsonConvert.SerializeObject(Current, converter)}]}}";
         }
 
         #endregion

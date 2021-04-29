@@ -6,12 +6,16 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class TrackedObjectsContainer : ITrackedContainer<SlamTrackedObject>, ISourceTree, ILookable, IVisible
+    public class TrackedObjectsContainer
+            : ITrackedContainer<SlamTrackedObject>, ISourceTree, ILookable, IVisible, ISnapshotable
     {
         public TrackedObjectsContainer(string displayName = "")
         {
@@ -54,7 +58,7 @@ namespace Elektronik.Containers
 
                 ids = _objects.Keys.ToArray();
 
-                lock (Children)
+                lock (_lineContainers)
                 {
                     _lineContainers.Clear();
                 }
@@ -92,7 +96,7 @@ namespace Elektronik.Containers
             {
                 if (!_objects.ContainsKey(item.Id)) return false;
                 _objects[item.Id].Item2.Clear();
-                lock (Children)
+                lock (_lineContainers)
                 {
                     _lineContainers.Remove(_objects[item.Id].Item2);
                 }
@@ -131,7 +135,7 @@ namespace Elektronik.Containers
             {
                 if (!_objects.ContainsKey(index)) return;
                 _objects[index].Item2.Clear();
-                lock (Children)
+                lock (_lineContainers)
                 {
                     _lineContainers.Remove(_objects[index].Item2);
                 }
@@ -206,7 +210,7 @@ namespace Elektronik.Containers
                 {
                     if (!_objects.ContainsKey(item.Id)) continue;
                     _objects[item.Id].Item2.Clear();
-                    lock (Children)
+                    lock (_lineContainers)
                     {
                         _lineContainers.Remove(_objects[item.Id].Item2);
                     }
@@ -253,7 +257,7 @@ namespace Elektronik.Containers
 
         #endregion
 
-        #region IContainerTree implementation
+        #region ISourceTree implementation
 
         public string DisplayName { get; set; }
 
@@ -270,8 +274,9 @@ namespace Elektronik.Containers
 
         public void SetRenderer(object renderer)
         {
-            if (renderer is ICloudRenderer<SlamTrackedObject> trackedRenderer)
+            switch (renderer)
             {
+            case ICloudRenderer<SlamTrackedObject> trackedRenderer:
                 OnAdded += trackedRenderer.OnItemsAdded;
                 OnUpdated += trackedRenderer.OnItemsUpdated;
                 OnRemoved += trackedRenderer.OnItemsRemoved;
@@ -279,10 +284,19 @@ namespace Elektronik.Containers
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
                 }
-            }
-            else if (renderer is ICloudRenderer<SlamLine> lineRenderer)
-            {
+
+                break;
+            case ICloudRenderer<SlamLine> lineRenderer:
                 _lineRenderer = lineRenderer;
+                lock (_lineContainers)
+                {
+                    foreach (var container in _lineContainers)
+                    {
+                        container.SetRenderer(_lineRenderer);
+                    }
+                }
+
+                break;
             }
         }
 
@@ -329,7 +343,10 @@ namespace Elektronik.Containers
                     _objects.Add(i.Id, (i, container));
                 }
 
-                _maxId = historiesList.SelectMany(l => l).Max(l => l.Id);
+                if (historiesList.Count != 0)
+                {
+                    _maxId = historiesList.SelectMany(l => l).Max(l => l.Id);
+                }
             }
 
             if (IsVisible)
@@ -394,6 +411,39 @@ namespace Elektronik.Containers
 
         #endregion
 
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var res = new TrackedObjectsContainer(DisplayName);
+            res.AddRangeWithHistory(_objects.Values.Select(p => p.Item1).ToList(),
+                                    _objects.Values.Select(p => p.Item2.ToList()).ToList());
+            return res;
+        }
+
+        public string Serialize()
+        {
+            var type = nameof(SlamTrackedObject);
+            var converter = new UnityJsonConverter();
+            lock (_objects)
+            {
+                return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"{type}\"," +
+                        $"\"objects\":{JsonConvert.SerializeObject(_objects.Values.Select(o => o.Item1).ToList(), converter)}," +
+                        $"\"tracks\":{JsonConvert.SerializeObject(_objects.Values.Select(o => o.Item2).ToList(), converter)}}}";
+            }
+        }
+
+        public static TrackedObjectsContainer Deserialize(JToken token)
+        {
+            var res = new TrackedObjectsContainer(token["displayName"].ToString());
+            var objects = JsonConvert.DeserializeObject<SlamTrackedObject[]>(token["objects"].ToString());
+            var histories = JsonConvert.DeserializeObject<SlamLine[][]>(token["tracks"].ToString());
+            res.AddRangeWithHistory(objects, histories);
+            return res;
+        }
+
+        #endregion
+
         #region Private definitions
 
         private ICloudRenderer<SlamLine> _lineRenderer;
@@ -407,7 +457,7 @@ namespace Elektronik.Containers
 
         private TrackContainer CreateTrackContainer(SlamTrackedObject obj, IList<SlamLine> history = null)
         {
-            lock (Children)
+            lock (_lineContainers)
             {
                 var res = new TrackContainer();
                 res.SetRenderer(_lineRenderer);

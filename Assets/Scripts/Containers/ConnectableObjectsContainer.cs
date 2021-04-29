@@ -11,15 +11,17 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTree,
-                                                           ILookable, IVisible
+                                                           ILookable, IVisible, ISnapshotable
             where TCloudItem : struct, ICloudItem
     {
         public ConnectableObjectsContainer(IContainer<TCloudItem> objects,
                                            IContainer<SlamLine> connects,
-                                           string displayName = "")
+                                           string displayName = "",
+                                           SparseSquareMatrix<bool> table = null)
         {
             _connects = connects;
             _objects = objects;
+            _table = table ?? new SparseSquareMatrix<bool>();
             Children = new[]
             {
                 (ISourceTree) _connects,
@@ -292,7 +294,6 @@ namespace Elektronik.Containers
 
         public IEnumerable<ISourceTree> Children { get; }
 
-
         public void SetRenderer(object renderer)
         {
             foreach (var child in Children)
@@ -335,10 +336,28 @@ namespace Elektronik.Containers
 
         #endregion
 
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var objects = (_objects as ISnapshotable)!.TakeSnapshot() as IContainer<TCloudItem>;
+            var connects = (_connects as ISnapshotable)!.TakeSnapshot() as IContainer<SlamLine>;
+            return new ConnectableObjectsContainer<TCloudItem>(objects, connects, DisplayName, _table.DeepCopy());
+        }
+
+        public string Serialize()
+        {
+            var objects = (_objects as ISnapshotable)!.Serialize();
+            var connects = (_connects as ISnapshotable)!.Serialize();
+            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\",\"data\":[{objects},{connects}]}}";
+        }
+
+        #endregion
+
         #region Private definitions
 
         private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
-        private readonly SparseSquareMatrix<bool> _table = new SparseSquareMatrix<bool>();
+        private readonly SparseSquareMatrix<bool> _table;
         private readonly IContainer<SlamLine> _connects;
         private readonly IContainer<TCloudItem> _objects;
         private bool _isVisible = true;

@@ -9,7 +9,7 @@ namespace Elektronik.PluginsSystem
             where TSettings : SettingsBag, new()
     {
         // ReSharper disable once NotNullMemberIsNotInitialized
-        public DataSourcePluginBase()
+        protected DataSourcePluginBase()
         {
             var sh = new SettingsHistory<TSettings>($"{GetType().FullName}.json");
             SettingsHistory = sh;

@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
+using Newtonsoft.Json.Linq;
 
-namespace Elektronik.RosPlugin.Common.Containers
+namespace Elektronik.Containers
 {
-    public class VirtualContainer : ISourceTree, IVisible
+    public class VirtualContainer : ISourceTree, IVisible, ISnapshotable
     {
-        public VirtualContainer(string displayName)
+        public VirtualContainer(string displayName, List<ISourceTree> children = null)
         {
             DisplayName = displayName;
+            ChildrenList = children ?? new List<ISourceTree>();
         }
 
         public void AddChild(ISourceTree child)
@@ -59,8 +61,8 @@ namespace Elektronik.RosPlugin.Common.Containers
             }
         }
 
-        public bool ShowButton { get; private set; }
-        public event Action<bool>? OnVisibleChanged;
+        public bool ShowButton { get; private set; } = true;
+        public event Action<bool> OnVisibleChanged;
 
         #endregion
 
@@ -70,7 +72,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         {
             for (int i = 0; i < ChildrenList.Count(); i++)
             {
-                if (ChildrenList[i] is not VirtualContainer @virtual) continue;
+                if (!(ChildrenList[i] is VirtualContainer @virtual)) continue;
 
                 @virtual.Squeeze();
                 if (@virtual.ChildrenList.Count != 1) continue;
@@ -84,10 +86,36 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #endregion
 
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            return new VirtualContainer(DisplayName, ChildrenList.OfType<ISnapshotable>()
+                                                .Select(ch => ch.TakeSnapshot())
+                                                .Select(ch => ch as ISourceTree)
+                                                .ToList());
+        }
+        
+
+        public string Serialize()
+        {
+            var data = string.Join(",", ChildrenList.OfType<ISnapshotable>().Select(ch => ch.Serialize()));
+            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\",\"data\":[{data}]}}";
+        }
+
+        public static VirtualContainer Deserialize(JToken token)
+        {
+            return new VirtualContainer(token["displayName"].ToString(),
+                                        token["data"].Where(t => t.HasValues)
+                                                .Select(SnapshotableDeserializer.Deserialize).ToList());
+        }
+
+        #endregion
+
         #region Private
 
         private bool _isVisible = true;
-        protected readonly List<ISourceTree> ChildrenList = new();
+        protected readonly List<ISourceTree> ChildrenList;
 
         private bool CheckShowButton()
         {
@@ -107,7 +135,7 @@ namespace Elektronik.RosPlugin.Common.Containers
             ShowButton = false;
             return false;
         }
-        
+
         #endregion
     }
 }

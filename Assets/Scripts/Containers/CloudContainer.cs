@@ -9,13 +9,16 @@ using Elektronik.Clusterization.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Elektronik.Containers
 {
     public class CloudContainer<TCloudItem>
-            : IContainer<TCloudItem>, ISourceTree, ILookable, IVisible, ITraceable, IClusterable
+            : IContainer<TCloudItem>, ISourceTree, ILookable, IVisible, ITraceable, IClusterable, ISnapshotable
             where TCloudItem : struct, ICloudItem
     {
         public CloudContainer(string displayName = "")
@@ -299,7 +302,7 @@ namespace Elektronik.Containers
                 if (_isVisible == value) return;
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
-                
+
                 if (_isVisible)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
@@ -311,6 +314,7 @@ namespace Elektronik.Containers
                 {
                     items = _items.Keys.ToList();
                 }
+
                 OnRemoved?.Invoke(this, new RemovedEventArgs(items));
             }
         }
@@ -318,6 +322,41 @@ namespace Elektronik.Containers
         public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
+
+        #endregion
+
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var res = new CloudContainer<TCloudItem>(DisplayName);
+            List<TCloudItem> list;
+            lock (_items)
+            {
+                list = _items.Values.ToList();
+            }
+
+            res.AddRange(list);
+            return res;
+        }
+
+        public string Serialize()
+        {
+            var type = typeof(TCloudItem).Name;
+            var converter = new UnityJsonConverter();
+            lock (_items)
+            {
+                return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"{type}\"," +
+                        $"\"data\":{JsonConvert.SerializeObject(_items.Values.ToList(), converter)}}}";
+            }
+        }
+
+        public static CloudContainer<TCloudItem> Deserialize(JToken token)
+        {
+            var res = new CloudContainer<TCloudItem>(token["displayName"].ToString());
+            res.AddRange(JsonConvert.DeserializeObject<TCloudItem[]>(token["data"].ToString()));
+            return res;
+        }
 
         #endregion
 

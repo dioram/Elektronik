@@ -6,13 +6,16 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Elektronik.Containers
 {
     /// <summary> Contains lines in strict order. </summary>
-    public class TrackContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible
+    public class TrackContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible, ISnapshotable
     {
         #region IContainer implementaion
 
@@ -294,6 +297,27 @@ namespace Elektronik.Containers
         public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
+
+        #endregion
+
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var res = new TrackContainer();
+            lock (_lines)
+            {
+                res.AddRange(_lines);
+            }
+
+            return res;
+        }
+
+        public string Serialize()
+        {
+            // Serialisation handles by TrackedObjectsContainer
+            return "{}";
+        }
 
         #endregion
 

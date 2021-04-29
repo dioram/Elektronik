@@ -152,10 +152,10 @@ namespace Elektronik.Settings
             switch (ModeSelector.Mode)
             {
             case Mode.Online:
-                availablePlugins.AddRange(PluginsLoader.Plugins.OfType<IDataSourcePluginOnline>());
+                availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataSourcePluginOnline>());
                 break;
             case Mode.Offline:
-                availablePlugins.AddRange(PluginsLoader.Plugins.OfType<IDataSourcePluginOffline>());
+                availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataSourcePluginOffline>());
                 break;
             }
 

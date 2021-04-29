@@ -6,12 +6,15 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class SlamLinesContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible
+    public class SlamLinesContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible, ISnapshotable
     {
         public SlamLinesContainer(string displayName = "")
         {
@@ -313,6 +316,36 @@ namespace Elektronik.Containers
         public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
+
+        #endregion
+
+        #region ISnapshotable
+        
+        public ISnapshotable TakeSnapshot()
+        {
+            var res = new SlamLinesContainer(DisplayName);
+            List<SlamLine> list;
+            lock (_connections)
+            {
+                list = _connections.Values.ToList();
+            }
+            res.AddRange(list);
+            return res;
+        }
+        
+        public string Serialize()
+        {
+            var converter = new UnityJsonConverter();
+            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"SlamLine\"," +
+                    $"\"data\":{JsonConvert.SerializeObject(_connections.Values.ToList(), converter)}}}";
+        }
+
+        public static SlamLinesContainer Deserialize(JToken token)
+        {
+            var res = new SlamLinesContainer(token["displayName"].ToString());
+            res.AddRange(JsonConvert.DeserializeObject<SlamLine[]>(token["data"].ToString()));
+            return res;
+        }
 
         #endregion
         

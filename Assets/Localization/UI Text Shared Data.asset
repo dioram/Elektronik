@@ -275,6 +275,30 @@ MonoBehaviour:
     m_Key: Scene info
     m_Metadata:
       m_Items: []
+  - m_Id: 5581543878393856
+    m_Key: Take snapshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5808047010840576
+    m_Key: Snapshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5836048343728128
+    m_Key: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5837748177698816
+    m_Key: Load snapshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5845141053734912
+    m_Key: Load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5845323099111424
+    m_Key: Save snapshot
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

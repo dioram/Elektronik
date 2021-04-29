@@ -13,27 +13,39 @@ namespace Elektronik.Settings
         public Text OnlineLabel;
         public Text OfflineLabel;
 
-        private void Start()
+        private void Awake()
         {
             switch (Mode)
             {
                 case Mode.Offline:
-                {
-                    if (FilePlayer != null) FilePlayer.SetActive(true);
-                    if (OnlineLabel != null) OnlineLabel.enabled = false;
-                    if (OfflineLabel != null) OfflineLabel.enabled = true;
+                    InitOffline();
                     break;
-                }
                 case Mode.Online:
-                {
-                    if (OnlinePlayer != null) OnlinePlayer.SetActive(true);
-                    if (OnlineLabel != null) OnlineLabel.enabled = true;
-                    if (OfflineLabel != null) OfflineLabel.enabled = false;
+                    InitOnline();
                     break;
-                }
-                default:
+                case Mode.Invalid:
+#if UNITY_EDITOR
+                    Mode = Mode.Online;
+                    InitOnline();
+                    break;
+#else
                     throw new NullReferenceException("No modes are initialized");
+#endif
             }
+        }
+
+        private void InitOffline()
+        {
+            if (FilePlayer != null) FilePlayer.SetActive(true);
+            if (OnlineLabel != null) OnlineLabel.enabled = false;
+            if (OfflineLabel != null) OfflineLabel.enabled = true;
+        }
+
+        private void InitOnline()
+        {
+            if (OnlinePlayer != null) OnlinePlayer.SetActive(true);
+            if (OnlineLabel != null) OnlineLabel.enabled = true;
+            if (OfflineLabel != null) OfflineLabel.enabled = false;
         }
     }
 }

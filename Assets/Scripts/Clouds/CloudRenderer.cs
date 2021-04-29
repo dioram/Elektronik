@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
@@ -27,7 +29,7 @@ namespace Elektronik.Clouds
                 .Select(i => i.Position);
 
         public override int ItemsCount => _amountOfItems;
-        
+
         public void SetSize(float newSize)
         {
             ItemSize = newSize;
@@ -42,22 +44,11 @@ namespace Elektronik.Clouds
 
         private void Start()
         {
-            _needNewBlock = true;
+            CreateNewBlock();
         }
 
         private void Update()
         {
-            if (_needNewBlock)
-            {
-                var go = new GameObject($"{GetType().Name} {_blocks.Count}");
-                go.transform.SetParent(transform);
-                var block = go.AddComponent<TCloudBlock>();
-                block.CloudShader = CloudShader;
-                block.Updated = true;
-                _blocks.Add(block);
-                _needNewBlock = false;
-            }
-
             foreach (var block in _blocks)
             {
                 block.ItemSize = ItemSize;
@@ -70,33 +61,9 @@ namespace Elektronik.Clouds
 
         public override void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e)
         {
-            lock (_pointPlaces)
-            {
-                _amountOfItems += e.AddedItems.Count();
-                if (_amountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
-                {
-                    _needNewBlock = true;
-                }
-
-                foreach (var item in e.AddedItems)
-                {
-                    if (item.Message == GridMessage && item is SlamInfinitePlane plane)
-                    {
-                        MainThreadInvoker.Instance.Enqueue(() => Grid.SetPlane(plane));
-                        continue;
-                    }
-
-                    var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
-                    _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
-                    int layer = index / CloudBlock.Capacity;
-                    int inLayerId = index % CloudBlock.Capacity;
-                    lock (_blocks[layer])
-                    {
-                        ProcessItem(_blocks[layer], item, inLayerId);
-                        _blocks[layer].Updated = true;
-                    }
-                }
-            }
+            var list = e.AddedItems.ToList();
+            if (CheckAndCreateReserves(sender, list)) return;
+            AddItems(sender, list);
         }
 
         public override void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e)
@@ -148,33 +115,8 @@ namespace Elektronik.Clouds
         {
             OnClear(sender);
             var list = items.ToList();
-            lock (_pointPlaces)
-            {
-                _amountOfItems += list.Count();
-                if (_amountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
-                {
-                    _needNewBlock = true;
-                }
-
-                foreach (var item in list)
-                {
-                    if (item.Message == GridMessage && item is SlamInfinitePlane plane)
-                    {
-                        MainThreadInvoker.Instance.Enqueue(() => Grid.SetPlane(plane));
-                        continue;
-                    }
-
-                    var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
-                    _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
-                    int layer = index / CloudBlock.Capacity;
-                    int inLayerId = index % CloudBlock.Capacity;
-                    lock (_blocks[layer])
-                    {
-                        ProcessItem(_blocks[layer], item, inLayerId);
-                        _blocks[layer].Updated = true;
-                    }
-                }
-            }
+            if (CheckAndCreateReserves(sender, list)) return;
+            AddItems(sender, list);
         }
 
         public override void OnClear(object sender)
@@ -218,8 +160,82 @@ namespace Elektronik.Clouds
         private readonly Dictionary<(int, int), int> _pointPlaces = new Dictionary<(int, int), int>();
         private readonly Queue<int> _freePlaces = new Queue<int>();
         private int _maxPlace = 0;
-        private bool _needNewBlock;
         private int _amountOfItems;
+
+        private void CreateNewBlock()
+        {
+            var go = new GameObject($"{GetType().Name} {_blocks.Count}");
+            go.transform.SetParent(transform);
+            var block = go.AddComponent<TCloudBlock>();
+            block.CloudShader = CloudShader;
+            block.Updated = true;
+            _blocks.Add(block);
+        }
+
+        private void AddItems(object sender, IList<TCloudItem> items, bool takeLock = true)
+        {
+            if (takeLock) Monitor.Enter(_pointPlaces);
+            foreach (var item in items)
+            {
+                if (item.Message == GridMessage && item is SlamInfinitePlane plane)
+                {
+                    MainThreadInvoker.Instance.Enqueue(() => Grid.SetPlane(plane));
+                    continue;
+                }
+
+                var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
+                _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
+                int layer = index / CloudBlock.Capacity;
+                int inLayerId = index % CloudBlock.Capacity;
+                lock (_blocks[layer])
+                {
+                    ProcessItem(_blocks[layer], item, inLayerId);
+                    _blocks[layer].Updated = true;
+                }
+            }
+
+            _amountOfItems += items.Count;
+            if (takeLock) Monitor.Exit(_pointPlaces);
+        }
+
+        private bool CheckAndCreateReserves(object sender, IList<TCloudItem> items)
+        {
+            var newAmountOfItems = _amountOfItems + items.Count;
+            if (newAmountOfItems > _blocks.Count * CloudBlock.Capacity)
+            {
+                // reserves overloaded
+                MainThreadInvoker.Instance.Enqueue(() =>
+                {
+                    lock (_pointPlaces)
+                    {
+                        var requiredSpace = (newAmountOfItems - _blocks.Count * CloudBlock.Capacity) +
+                                CloudBlock.Capacity;
+                        var requiredBlocks = requiredSpace / CloudBlock.Capacity;
+                        if (requiredBlocks < 0)
+                        {
+                            throw new ArgumentOutOfRangeException(nameof(requiredBlocks),
+                                                                  "Can't be negative required blocks");
+                        }
+
+                        for (int i = 0; i < requiredBlocks; i++)
+                        {
+                            CreateNewBlock();
+                        }
+
+                        AddItems(sender, items, false);
+                    }
+                });
+                return true;
+            }
+
+            if (newAmountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
+            {
+                // add reserves
+                MainThreadInvoker.Instance.Enqueue(CreateNewBlock);
+            }
+
+            return false;
+        }
 
         #endregion
     }

@@ -1,8 +1,10 @@
-﻿using Elektronik.Containers.SpecialInterfaces;
+﻿using System;
+using Elektronik.Containers.SpecialInterfaces;
 using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
 {
+    [Serializable]
     public struct SlamPoint : ICloudItem, ILookable
     {
         public int Id { get; set; }

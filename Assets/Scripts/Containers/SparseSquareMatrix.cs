@@ -7,6 +7,21 @@ namespace Elektronik.Containers
     {
         private readonly IDictionary<int, IDictionary<int, TElemType>> _table;
 
+        public SparseSquareMatrix<TElemType> DeepCopy()
+        {
+            var res = new SparseSquareMatrix<TElemType>();
+            foreach (var row in _table)
+            {
+                if (!res._table.ContainsKey(row.Key)) res._table[row.Key] = new SortedDictionary<int, TElemType>();
+                foreach (var col in row.Value)
+                {
+                    res._table[row.Key][col.Key] = col.Value;
+                }
+            }
+
+            return res;
+        }
+
         public bool Contains(int row, int col)
         {
             return _table.ContainsKey(row) && _table[row].ContainsKey(col);
