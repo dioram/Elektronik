@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Protobuf Include="Data\MapTypes.proto">
+      <Protobuf Include="MapTypes.proto">
         <GrpcServices>Both</GrpcServices>
         <Access>Public</Access>
         <ProtoCompile>True</ProtoCompile>
@@ -23,7 +23,7 @@
         <OutputDir>obj\Release\</OutputDir>
         <Generator>MSBuild:Compile</Generator>
       </Protobuf>
-      <Protobuf Include="Data\UpdateMapService.proto">
+      <Protobuf Include="UpdateMapService.proto">
         <GrpcServices>Both</GrpcServices>
         <Access>Public</Access>
         <ProtoCompile>True</ProtoCompile>
