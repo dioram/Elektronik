@@ -5,7 +5,7 @@ using Elektronik.Protobuf.Data;
 using Google.Protobuf;
 using NUnit.Framework;
 
-namespace Protobuf.Tests
+namespace Protobuf.Tests.Elektronik
 {
     public class ImagesTests : TestsBase
     {

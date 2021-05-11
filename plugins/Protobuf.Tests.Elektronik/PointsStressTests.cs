@@ -1,18 +1,18 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Elektronik.Protobuf.Data;
 using Google.Protobuf;
+using NUnit.Framework;
 
-namespace Protobuf.Tests
+namespace Protobuf.Tests.Elektronik
 {
     public class PointsStressTests : TestsBase
     {
         private readonly PointPb[] _map;
         private readonly ConnectionPb[] _connections;
-        private readonly string _filename = $"{nameof(PointsStressTests)}.dat";
+        private static readonly string Filename = $"{nameof(PointsStressTests)}.dat";
 
         public PointsStressTests()
         {
@@ -21,7 +21,7 @@ namespace Protobuf.Tests
             {
                 Id = id,
                 Message = $"{id}",
-                Position = new Vector3Pb() { X = rand.NextDouble(), Y = rand.NextDouble(), Z = rand.NextDouble(), },
+                Position = new Vector3Pb { X = rand.NextDouble(), Y = rand.NextDouble(), Z = rand.NextDouble(), },
                 Color = new ColorPb {B = rand.Next(255), G = rand.Next(255), R = rand.Next(255)},
             }).ToArray();
 
@@ -31,7 +31,7 @@ namespace Protobuf.Tests
         [Test, Order(1)]
         public void Create()
         {
-            var packet = new PacketPb()
+            var packet = new PacketPb
             {
                 Special = true,
                 Action = PacketPb.Types.ActionType.Add,
@@ -45,7 +45,7 @@ namespace Protobuf.Tests
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
 
-            using var file = File.Open(_filename, FileMode.Create);
+            using var file = File.Open(Filename, FileMode.Create);
             packet.WriteDelimitedTo(file);
 
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -54,7 +54,7 @@ namespace Protobuf.Tests
         [Test, Order(2), Repeat(5)]
         public void Update()
         {
-            var packet = new PacketPb()
+            var packet = new PacketPb
             {
                 Special = true,
                 Action = PacketPb.Types.ActionType.Update,
@@ -69,7 +69,7 @@ namespace Protobuf.Tests
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
 
-            using var file = File.Open(_filename, FileMode.Append);
+            using var file = File.Open(Filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -96,7 +96,7 @@ namespace Protobuf.Tests
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
 
-            using var file = File.Open(_filename, FileMode.Append);
+            using var file = File.Open(Filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -105,7 +105,7 @@ namespace Protobuf.Tests
         [Test, Order(4)]
         public void Remove()
         {
-            var packet = new PacketPb()
+            var packet = new PacketPb
             {
                 Special = true,
                 Action = PacketPb.Types.ActionType.Remove,
@@ -120,7 +120,7 @@ namespace Protobuf.Tests
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
 
-            using var file = File.Open(_filename, FileMode.Append);
+            using var file = File.Open(Filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -129,7 +129,7 @@ namespace Protobuf.Tests
         [Test, Order(5)]
         public void Clear()
         {
-            var packet = new PacketPb()
+            var packet = new PacketPb
             {
                 Special = true,
                 Action = PacketPb.Types.ActionType.Clear,
@@ -142,7 +142,7 @@ namespace Protobuf.Tests
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
 
-            using var file = File.Open(_filename, FileMode.Append);
+            using var file = File.Open(Filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
@@ -151,10 +151,9 @@ namespace Protobuf.Tests
         [Test, Order(5)]
         public void AddMetaData()
         {
-            using var file = File.Open(_filename, FileMode.Append);
-            byte[] buffer;
+            using var file = File.Open(Filename, FileMode.Append);
             uint marker = 0xDEADBEEF;
-            buffer = BitConverter.GetBytes(marker);
+            byte[] buffer = BitConverter.GetBytes(marker);
             file.Write(buffer,0, 4);
             buffer = BitConverter.GetBytes(13);
             file.Write(buffer,0, 4);

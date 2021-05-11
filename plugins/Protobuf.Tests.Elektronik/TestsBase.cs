@@ -1,8 +1,8 @@
-﻿using Grpc.Core;
-using System;
+﻿using System;
 using Elektronik.Protobuf.Data;
+using Grpc.Core;
 
-namespace Protobuf.Tests
+namespace Protobuf.Tests.Elektronik
 {
     public abstract class TestsBase
     {
