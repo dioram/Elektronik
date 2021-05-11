@@ -14,13 +14,13 @@ namespace Elektronik.Data.PackageObjects
 
         public SlamPoint AsPoint() => new SlamPoint(Id, Position, Color);
 
-        public SlamTrackedObject(int id, Vector3 position, Quaternion rotation, Color color = default)
+        public SlamTrackedObject(int id, Vector3 position, Quaternion rotation, Color color = default, string message = "")
         {
             Id = id;
             Color = color;
             Position = position;
             Rotation = rotation;
-            Message = "";
+            Message = message;
         }
     }
 }

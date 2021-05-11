@@ -41,7 +41,8 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public void Clear()
         {
-            MainThreadInvoker.Instance.Enqueue(() => _info.Clear());
+            if (MainThreadInvoker.Instance is null) return;
+            MainThreadInvoker.Instance.Enqueue(() => _info?.Clear());
         }
 
         #endregion

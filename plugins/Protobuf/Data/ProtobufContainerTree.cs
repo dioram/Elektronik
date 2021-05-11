@@ -19,7 +19,7 @@ namespace Elektronik.Protobuf.Data
         public readonly ISourceTree Image;
         public readonly SlamDataInfoPresenter SpecialInfo;
 
-        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo)
+        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo = null)
         {
             DisplayName = displayName;
             Image = image;
@@ -121,6 +121,7 @@ namespace Elektronik.Protobuf.Data
         }
 
         public bool ShowButton { get; } = true;
+        
         public event Action<bool> OnVisibleChanged;
 
         #endregion

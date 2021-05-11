@@ -191,27 +191,6 @@ namespace Elektronik.Containers
 
         #region IConnectableObjectsContainer implementation
 
-        public IEnumerable<SlamLine> Connections => _connects;
-
-        public bool AddConnection(int id1, int id2)
-        {
-            if (_table[id1, id2].HasValue) return false;
-
-            _table[id1, id2] = _table[id2, id1] = true;
-            return true;
-        }
-
-        private bool AddConnection(int id1, int id2, Action<SlamLine> adding)
-        {
-            var res = AddConnection(id1, id2);
-            if (res && _objects.Contains(new TCloudItem {Id = id1}) && _objects.Contains(new TCloudItem {Id = id2}))
-            {
-                adding(new SlamLine(_objects[id1].AsPoint(), _objects[id2].AsPoint()));
-            }
-
-            return res;
-        }
-
         public bool AddConnection(TCloudItem obj1, TCloudItem obj2) => AddConnection(obj1.Id, obj2.Id, _connects.Add);
 
         public bool RemoveConnection(int id1, int id2) => RemoveConnection(id1, id2, l => _connects.Remove(l));
@@ -288,7 +267,7 @@ namespace Elektronik.Containers
 
         #endregion
 
-        #region IContainerTree imlementation
+        #region ISourceTree imlementation
 
         public string DisplayName { get; set; }
 
@@ -362,6 +341,27 @@ namespace Elektronik.Containers
         private readonly IContainer<TCloudItem> _objects;
         private bool _isVisible = true;
 
+        public IEnumerable<SlamLine> Connections => _connects;
+
+        private bool AddConnection(int id1, int id2)
+        {
+            if (_table[id1, id2].HasValue) return false;
+
+            _table[id1, id2] = _table[id2, id1] = true;
+            return true;
+        }
+
+        private bool AddConnection(int id1, int id2, Action<SlamLine> adding)
+        {
+            var res = AddConnection(id1, id2);
+            if (res && _objects.Contains(new TCloudItem {Id = id1}) && _objects.Contains(new TCloudItem {Id = id2}))
+            {
+                adding(new SlamLine(_objects[id1].AsPoint(), _objects[id2].AsPoint()));
+            }
+
+            return res;
+        }
+        
         private void RemoveConnections(int id)
         {
             foreach (var col in _table.GetColIndices(id))

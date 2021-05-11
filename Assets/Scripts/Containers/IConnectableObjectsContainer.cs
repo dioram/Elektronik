@@ -8,7 +8,6 @@ namespace Elektronik.Containers
     public interface IConnectableObjectsContainer<T> : IContainer<T> where T: ICloudItem
     {
         IEnumerable<SlamLine> Connections { get; }
-        bool AddConnection(int id1, int id2);
         void AddConnections(IEnumerable<(int id1, int id2)> connections);
         bool AddConnection(T obj1, T obj2);
         void AddConnections(IEnumerable<(T obj1, T obj2)> connections);

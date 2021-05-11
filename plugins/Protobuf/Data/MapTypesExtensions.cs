@@ -47,7 +47,6 @@ namespace Elektronik.Protobuf.Data
 
         public static IEnumerable<SlamLine> ExtractLines(this PacketPb packet, ICSConverter converter = null)
         {
-            Debug.Assert(packet.DataCase == PacketPb.DataOneofCase.Lines);
             foreach (var l in packet.Lines.Data)
             {
                 SlamLine line = l;
@@ -123,7 +122,7 @@ namespace Elektronik.Protobuf.Data
     public partial class TrackedObjPb
     {
         public static implicit operator SlamTrackedObject(TrackedObjPb o)
-            => o != null ? new SlamTrackedObject(o.id_, o.translation_, o.rotation_, o.trackColor_) : default;
+            => o != null ? new SlamTrackedObject(o.id_, o.translation_, o.rotation_, o.trackColor_, o.message_) : default;
     }
 
     public partial class InfinitePlanePb

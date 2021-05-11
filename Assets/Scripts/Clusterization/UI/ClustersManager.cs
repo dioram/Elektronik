@@ -17,7 +17,6 @@ namespace Elektronik.Clusterization.UI
     public class ClustersManager : MonoBehaviour
     {
         public TMP_Dropdown ContainersSelector;
-        public GameObject ConvexHullPrefab;
         public DataSourcesManager DataSourcesManager;
 
         public void Compute(MonoBehaviour settings, IClusterizationAlgorithm algorithm)
@@ -84,22 +83,6 @@ namespace Elektronik.Clusterization.UI
 
             clustered.IsVisible = true;
             source.IsVisible = false;
-
-            foreach (var cluster in data)
-            {
-                var ch = Instantiate(ConvexHullPrefab);
-                try
-                {
-                    var mesh = ch.GetComponent<ConvexMesh>();
-                    mesh.CreateHull(cluster);
-                    clustered.Hulls.Add(mesh);
-                }
-                catch (Exception e)
-                {
-                    Destroy(ch);
-                    Debug.LogError(e.Message);
-                }
-            }
         }
 
 
