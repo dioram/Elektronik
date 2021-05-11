@@ -28,7 +28,7 @@ jobs:
       - name: Run plugins tests
         run: |
           cd ./plugins
-          dotnet test --no-build --configuration Release
+          dotnet test --configuration Release
       - name: Generate coverage report
         run: |
           dotnet test /p:CollectCoverage=true /p:CoverletOutput=./ /p:CoverletOutputFormat=lcov
