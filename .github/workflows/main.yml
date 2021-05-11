@@ -23,15 +23,6 @@ jobs:
         run: |
           cd ./plugins
           dotnet test --configuration Release
-      - name: Generate coverage report
-        run: |
-          cd ./plugins
-          dotnet test /p:CollectCoverage=true /p:CoverletOutput=./ /p:CoverletOutputFormat=lcov
-      - name: Publish coverage report to coveralls.io
-        uses: coverallsapp/github-action@v1.0.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./plugins/coverage.info  
       - uses: actions/upload-artifact@v1
         with:
           name: Build

@@ -29,15 +29,6 @@ jobs:
         run: |
           cd ./plugins
           dotnet test --configuration Release
-      - name: Generate coverage report
-        run: |
-          cd ./plugins
-          dotnet test /p:CollectCoverage=true /p:CoverletOutput=./ /p:CoverletOutputFormat=lcov
-      - name: Publish coverage report to coveralls.io
-        uses: coverallsapp/github-action@v1.0.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./plugins/coverage.info
       - name: Zip artifact
         run: powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\Build', 'build.zip'); }"
       - name: Create Release
