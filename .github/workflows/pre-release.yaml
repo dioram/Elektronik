@@ -25,14 +25,14 @@ jobs:
           arch: x64
       - name: Build unity player
         run: .\.github\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
-      - name: Run unit tests
+      - name: Run plugins tests
         run: |
           cd ./plugins
           dotnet test --no-build --configuration Release
       - name: Generate coverage report
         run: |
-          cd ./plugins
           dotnet test /p:CollectCoverage=true /p:CoverletOutput=./ /p:CoverletOutputFormat=lcov
+          cd ..
       - name: Publish coverage report to coveralls.io
         uses: coverallsapp/github-action@v1.0.1
         with:

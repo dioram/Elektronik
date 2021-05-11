@@ -50,7 +50,7 @@ namespace Protobuf.Tests.Elektronik
             }).ToArray();
         }
         
-        [Test]
+        [Test, Explicit]
         public void Grid()
         {
             var packet = new PacketPb
@@ -74,7 +74,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
         
-        [Test, Order(1)]
+        [Test, Order(1), Explicit]
         public void Create()
         {
             var packet = new PacketPb
@@ -92,7 +92,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(2)]
+        [Test, Order(2), Explicit]
         public void Update()
         {
             var packet = new PacketPb
@@ -114,7 +114,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(3)]
+        [Test, Order(3), Explicit]
         public void Remove()
         {
             var packet = new PacketPb
@@ -133,7 +133,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(4)]
+        [Test, Order(4), Explicit]
         public void Clear()
         {
             var packet = new PacketPb

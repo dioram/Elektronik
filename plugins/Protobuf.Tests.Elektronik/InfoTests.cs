@@ -26,7 +26,7 @@ namespace Protobuf.Tests.Elektronik
             _map[4].Position = new Vector3Pb {X = .5, Y = 0};
         }
 
-        [Test, Order(1)]
+        [Test, Order(1), Explicit]
         public void Create()
         {
             var packet = new PacketPb
@@ -41,7 +41,7 @@ namespace Protobuf.Tests.Elektronik
             packet.WriteDelimitedTo(file);
         }
 
-        [Test, Order(2), Repeat(10)]
+        [Test, Order(2), Repeat(10), Explicit]
         public void SendInfoPackage()
         {
             var packet = new PacketPb
@@ -57,7 +57,7 @@ namespace Protobuf.Tests.Elektronik
             packet.WriteDelimitedTo(file);
         }
 
-        [Test, Order(3)]
+        [Test, Order(3), Explicit]
         public void Add()
         {
             var packet = new PacketPb

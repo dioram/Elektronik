@@ -11,7 +11,7 @@ namespace Protobuf.Tests.Elektronik
     {
         private readonly string _filename = $"{nameof(ImagesTests)}.dat";
 
-        [Test]
+        [Test, Explicit]
         public void OnlineImage()
         {
             for (int i = 1; i < 4; i++)
@@ -30,7 +30,7 @@ namespace Protobuf.Tests.Elektronik
             }
         }
 
-        [Test]
+        [Test, Explicit]
         public void OfflineImage()
         {
             using var f = File.Open(_filename, FileMode.Create);
