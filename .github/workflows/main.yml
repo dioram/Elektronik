@@ -19,6 +19,10 @@ jobs:
           arch: x64
       - name: Build unity player
         run: .\.github\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
+      - name: Run plugins tests
+        run: |
+          cd ./plugins
+          dotnet test --configuration Release
       - uses: actions/upload-artifact@v1
         with:
           name: Build

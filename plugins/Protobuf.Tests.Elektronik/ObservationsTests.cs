@@ -48,7 +48,7 @@ namespace Protobuf.Tests.Elektronik
             };
         }
 
-        [Test, Order(1)]
+        [Test, Order(1), Explicit]
         public void Create()
         {
             var packet = new PacketPb
@@ -66,7 +66,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(2)]
+        [Test, Order(2), Explicit]
         public void Update()
         {
             var packet = new PacketPb
@@ -99,7 +99,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(3)]
+        [Test, Order(3), Explicit]
         public void UpdateConnections()
         {
             var packet = new PacketPb
@@ -121,7 +121,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(4)]
+        [Test, Order(4), Explicit]
         public void RemoveConnections()
         {
             var packet = new PacketPb
@@ -143,7 +143,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(5)]
+        [Test, Order(5), Explicit]
         public void Remove()
         {
             var packet = new PacketPb
@@ -162,7 +162,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(6)]
+        [Test, Order(6), Explicit]
         public void Clear()
         {
             var packet = new PacketPb

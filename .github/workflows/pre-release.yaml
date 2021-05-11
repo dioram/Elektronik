@@ -25,6 +25,10 @@ jobs:
           arch: x64
       - name: Build unity player
         run: .\.github\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
+      - name: Run plugins tests
+        run: |
+          cd ./plugins
+          dotnet test --configuration Release
       - name: Zip artifact
         run: powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\Build', 'build.zip'); }"
       - name: Create Release
