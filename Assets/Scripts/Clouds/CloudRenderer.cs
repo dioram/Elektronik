@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
@@ -59,14 +58,14 @@ namespace Elektronik.Clouds
 
         #region ICloudRenderer implementation
 
-        public override void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e)
+        public override void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
             var list = e.AddedItems.ToList();
             if (CheckAndCreateReserves(sender, list)) return;
             AddItems(sender, list);
         }
 
-        public override void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e)
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
             lock (_pointPlaces)
             {
@@ -85,7 +84,7 @@ namespace Elektronik.Clouds
             }
         }
 
-        public override void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e)
+        public override void OnItemsRemoved(object sender, RemovedEventArgs e)
         {
             lock (_pointPlaces)
             {

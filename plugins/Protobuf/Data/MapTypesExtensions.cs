@@ -28,8 +28,9 @@ namespace Elektronik.Protobuf.Data
                 converter?.Convert(ref observation.Point.Position, ref observation.Rotation);
                 if (!Path.IsPathRooted(observation.FileName))
                 {
-                    observation.FileName = Path.Combine(imageDir, observation.FileName); 
+                    observation.FileName = Path.Combine(imageDir, observation.FileName);
                 }
+
                 yield return observation;
             }
         }
@@ -73,12 +74,17 @@ namespace Elektronik.Protobuf.Data
     {
         public static implicit operator Vector3(Vector3Pb v)
             => v != null ? new Vector3((float) v.X, (float) v.Y, (float) v.Z) : Vector3.zero;
+
+        public static implicit operator Vector3Pb(Vector3 v)
+            => new Vector3Pb {X = v.x, Y = v.y, Z = v.z};
     }
 
     public partial class Vector4Pb
     {
         public static implicit operator Quaternion(Vector4Pb v)
             => v != null ? new Quaternion((float) v.X, (float) v.Y, (float) v.Z, (float) v.W) : Quaternion.identity;
+
+        public static implicit operator Vector4Pb(Quaternion v) => new Vector4Pb {X = v.x, Y = v.y, Z = v.z, W = v.w};
     }
 
     public partial class ColorPb
@@ -88,6 +94,10 @@ namespace Elektronik.Protobuf.Data
 
         public static implicit operator Color(ColorPb c)
             => (Color32) c;
+
+        public static implicit operator ColorPb(Color c) => (Color32) c;
+
+        public static implicit operator ColorPb(Color32 c) => new ColorPb {R = c.r, G = c.g, B = c.b,};
     }
 
     public partial class PointPb
@@ -96,12 +106,18 @@ namespace Elektronik.Protobuf.Data
             => p != null
                     ? new SlamPoint() {Id = p.id_, Position = p.position_, Color = p.color_, Message = p.message_}
                     : default;
+
+        public static implicit operator PointPb(SlamPoint p)
+            => new PointPb {Id = p.Id, Position = p.Position, Color = p.Color, Message = p.Message ?? ""};
     }
 
     public partial class LinePb
     {
         public static implicit operator SlamLine(LinePb c)
             => c != null ? new SlamLine(c.pt1_, c.pt2_) : default;
+        
+        public static implicit operator LinePb(SlamLine l)
+            => new LinePb {Pt1 = l.Point1, Pt2 = l.Point2};
     }
 
     public partial class ObservationPb
@@ -112,17 +128,35 @@ namespace Elektronik.Protobuf.Data
             {
                 public static implicit operator SlamObservation.Stats(Stats s)
                     => default; // TODO: make statistics
+
+                public static implicit operator Stats(SlamObservation.Stats s)
+                    => default; // TODO: make statistics
             }
         }
 
         public static implicit operator SlamObservation(ObservationPb o)
             => o != null ? new SlamObservation(o.point_, o.orientation_, o.message_, o.filename_, o.stats_) : default;
+
+        public static implicit operator ObservationPb(SlamObservation o)
+            => new ObservationPb
+            {
+                Point = o.Point, Orientation = o.Rotation, Message = o.Message, Filename = o.FileName,
+                Stats = o.Statistics
+            };
     }
 
     public partial class TrackedObjPb
     {
         public static implicit operator SlamTrackedObject(TrackedObjPb o)
-            => o != null ? new SlamTrackedObject(o.id_, o.translation_, o.rotation_, o.trackColor_, o.message_) : default;
+            => o != null
+                    ? new SlamTrackedObject(o.id_, o.translation_, o.rotation_, o.trackColor_, o.message_)
+                    : default;
+
+        public static implicit operator TrackedObjPb(SlamTrackedObject o)
+            => new TrackedObjPb
+            {
+                Id = o.Id, Translation = o.Position, Rotation = o.Rotation, TrackColor = o.Color, Message = o.Message
+            };
     }
 
     public partial class InfinitePlanePb
@@ -132,5 +166,8 @@ namespace Elektronik.Protobuf.Data
                     ? new SlamInfinitePlane
                             {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset}
                     : default;
+
+        public static implicit operator InfinitePlanePb(SlamInfinitePlane p)
+            => new InfinitePlanePb {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset};
     }
 }

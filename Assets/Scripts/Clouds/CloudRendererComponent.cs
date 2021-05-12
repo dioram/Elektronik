@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
@@ -10,9 +9,9 @@ namespace Elektronik.Clouds
             where TCloudItem : struct, ICloudItem
     {
         public abstract int ItemsCount {get; }
-        public abstract void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e);
-        public abstract void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e);
-        public abstract void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e);
+        public abstract void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e);
+        public abstract void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e);
+        public abstract void OnItemsRemoved(object sender, RemovedEventArgs e);
         public abstract void ShowItems(object sender, IEnumerable<TCloudItem> items);
         public abstract void OnClear(object sender);
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿// ReSharper disable once RedundantUsingDirective
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 

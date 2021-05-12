@@ -148,13 +148,23 @@ namespace Elektronik.Protobuf.Offline
 
         private const int MetadataOffset = 8;
 
-        private IEnumerator<Frame> ReadCommands(bool isSizeKnown)
+        private IEnumerator<Frame> ReadCommands(int size)
         {
-            var length = _input.Length - (isSizeKnown ? MetadataOffset : 0);
-            while (_input.Position < length)
+            if (size > 0)
             {
-                var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
-                yield return Frame.ParsePacket(packet, _parsersChain);
+                for (int i = 0; i < size; i++)
+                {
+                    var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
+                    yield return Frame.ParsePacket(packet, _parsersChain);
+                }
+            }
+            else
+            {
+                while (_input.Position < _input.Length)
+                {
+                    var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
+                    yield return Frame.ParsePacket(packet, _parsersChain);
+                }
             }
 
             _input.Dispose();

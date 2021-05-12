@@ -23,11 +23,11 @@ namespace Elektronik.Containers
 
         #region IContaitner implementation
 
-        public event Action<IContainer<SlamLine>, AddedEventArgs<SlamLine>> OnAdded;
+        public event EventHandler<AddedEventArgs<SlamLine>> OnAdded;
 
-        public event Action<IContainer<SlamLine>, UpdatedEventArgs<SlamLine>> OnUpdated;
+        public event EventHandler<UpdatedEventArgs<SlamLine>> OnUpdated;
 
-        public event Action<IContainer<SlamLine>, RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs> OnRemoved;
 
         public int Count
         {

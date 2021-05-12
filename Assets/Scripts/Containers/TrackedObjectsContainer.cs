@@ -177,11 +177,11 @@ namespace Elektronik.Containers
             }
         }
 
-        public event Action<IContainer<SlamTrackedObject>, AddedEventArgs<SlamTrackedObject>> OnAdded;
+        public event EventHandler<AddedEventArgs<SlamTrackedObject>> OnAdded;
 
-        public event Action<IContainer<SlamTrackedObject>, UpdatedEventArgs<SlamTrackedObject>> OnUpdated;
+        public event EventHandler<UpdatedEventArgs<SlamTrackedObject>> OnUpdated;
 
-        public event Action<IContainer<SlamTrackedObject>, RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs> OnRemoved;
 
         public void AddRange(IEnumerable<SlamTrackedObject> items)
         {

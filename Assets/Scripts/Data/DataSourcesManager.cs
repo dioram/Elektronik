@@ -28,8 +28,9 @@ namespace Elektronik.Data
             var removable = _dataSources.OfType<IRemovable>().ToList();
             foreach (var r in removable)
             {
-                r.RemoveSelf(); 
+                r.RemoveSelf();
             }
+
             foreach (var source in _dataSources)
             {
                 source.Clear();
@@ -37,6 +38,22 @@ namespace Elektronik.Data
         }
 
         public void MapSourceTree(Action<ISourceTree, string> action)
+        {
+            foreach (var treeElement in _dataSources)
+            {
+                MapSourceTree(treeElement, "", (tree, s) =>
+                {
+                    action(tree, s);
+                    return true;
+                });
+            }
+        }
+
+        /// <summary> Maps tree using dfs. </summary>
+        /// <param name="action">
+        /// Action for each node. Return true if you want to go deeper and false otherwise.
+        /// </param>
+        public void MapSourceTree(Func<ISourceTree, string, bool> action)
         {
             foreach (var treeElement in _dataSources)
             {
@@ -112,10 +129,11 @@ namespace Elektronik.Data
                                        TextLocalizationExtender.GetLocalizedString("Load"));
         }
 
-        private static void MapSourceTree(ISourceTree treeElement, string path, Action<ISourceTree, string> action)
+        private static void MapSourceTree(ISourceTree treeElement, string path, Func<ISourceTree, string, bool> action)
         {
             var fullName = $"{path}/{treeElement.DisplayName}";
-            action(treeElement, fullName);
+            bool deeper = action(treeElement, fullName);
+            if (!deeper) return;
             foreach (var child in treeElement.Children)
             {
                 MapSourceTree(child, fullName, action);

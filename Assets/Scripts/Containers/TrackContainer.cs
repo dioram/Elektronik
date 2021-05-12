@@ -6,10 +6,7 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
-using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -157,11 +154,11 @@ namespace Elektronik.Containers
             }
         }
 
-        public event Action<IContainer<SlamLine>, AddedEventArgs<SlamLine>> OnAdded;
+        public event EventHandler<AddedEventArgs<SlamLine>> OnAdded;
 
-        public event Action<IContainer<SlamLine>, UpdatedEventArgs<SlamLine>> OnUpdated;
+        public event EventHandler<UpdatedEventArgs<SlamLine>> OnUpdated;
 
-        public event Action<IContainer<SlamLine>, RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs> OnRemoved;
 
         public void AddRange(IEnumerable<SlamLine> items)
         {

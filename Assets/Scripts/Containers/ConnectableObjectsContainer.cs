@@ -33,17 +33,11 @@ namespace Elektronik.Containers
 
         #region IContainer implementation
 
-        /// <summary> This event will be raised when any new objects would be added. </summary>
-        /// <remarks> Never raised for now. </remarks>
-        public event Action<IContainer<TCloudItem>, AddedEventArgs<TCloudItem>> OnAdded;
+        public event EventHandler<AddedEventArgs<TCloudItem>> OnAdded;
 
-        /// <summary> This event will be raised when any objects would be updated. </summary>
-        /// <remarks> Never raised for now. </remarks>
-        public event Action<IContainer<TCloudItem>, UpdatedEventArgs<TCloudItem>> OnUpdated;
+        public event EventHandler<UpdatedEventArgs<TCloudItem>> OnUpdated;
 
-        /// <summary> This event will be raised when any objects would be removed. </summary>
-        /// <remarks> Never raised for now. </remarks>
-        public event Action<IContainer<TCloudItem>, RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs> OnRemoved;
 
         public int Count => _objects.Count;
 
@@ -71,6 +65,7 @@ namespace Elektronik.Containers
             {
                 _objects.Add(obj);
             }
+            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new []{obj}));
         }
 
         public void Insert(int index, TCloudItem item)
@@ -79,14 +74,17 @@ namespace Elektronik.Containers
             {
                 _objects.Insert(index, item);
             }
+            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new []{item}));
         }
 
         public void AddRange(IEnumerable<TCloudItem> items)
         {
+            var list = items.ToList();
             lock (_table)
             {
-                _objects.AddRange(items);
+                _objects.AddRange(list);
             }
+            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(list));
         }
 
         public void Update(TCloudItem item)
@@ -99,13 +97,14 @@ namespace Elektronik.Containers
                     _connects.Update(new SlamLine(item.Id, secondId));
                 }
             }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new []{item}));
         }
 
         public void Update(IEnumerable<TCloudItem> items)
         {
+            var list = items.ToList();
             lock (_table)
             {
-                var list = items.ToList();
                 _objects.Update(list);
                 Debug.Assert(_linesBuffer.Count == 0);
                 foreach (var pt1 in list)
@@ -119,6 +118,7 @@ namespace Elektronik.Containers
                 _connects.Update(_linesBuffer);
                 _linesBuffer.Clear();
             }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
         }
 
         public void RemoveAt(int id)
@@ -128,6 +128,7 @@ namespace Elektronik.Containers
                 RemoveConnections(id);
                 _objects.RemoveAt(id);
             }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{id}));
         }
 
         public bool Remove(TCloudItem obj)
@@ -139,6 +140,7 @@ namespace Elektronik.Containers
                 {
                     RemoveConnections(index);
                     _objects.Remove(obj);
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(new []{obj.Id}));
                     return true;
                 }
 
@@ -148,11 +150,10 @@ namespace Elektronik.Containers
 
         public void Remove(IEnumerable<TCloudItem> items)
         {
+            Debug.Assert(_linesBuffer.Count == 0);
+            var list = items.ToList();
             lock (_table)
             {
-                Debug.Assert(_linesBuffer.Count == 0);
-
-                var list = items.ToList();
                 foreach (var obj in list)
                 {
                     int id = _objects.IndexOf(obj);
@@ -175,75 +176,51 @@ namespace Elektronik.Containers
                 _linesBuffer.Clear();
                 _objects.Remove(list);
             }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
         }
 
         public void Clear()
         {
+            var list = _objects.ToList();
             lock (_table)
             {
                 _table.Clear();
                 _connects.Clear();
                 _objects.Clear();
             }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
         }
 
         #endregion
 
         #region IConnectableObjectsContainer implementation
 
-        public bool AddConnection(TCloudItem obj1, TCloudItem obj2) => AddConnection(obj1.Id, obj2.Id, _connects.Add);
-
-        public bool RemoveConnection(int id1, int id2) => RemoveConnection(id1, id2, l => _connects.Remove(l));
-
-        public bool RemoveConnection(TCloudItem obj1, TCloudItem obj2) =>
-                RemoveConnection(_objects.IndexOf(obj1), _objects.IndexOf(obj2));
-
         public void AddConnections(IEnumerable<(int id1, int id2)> connections)
         {
             Debug.Assert(_linesBuffer.Count == 0);
-            foreach (var c in connections)
+            var list = connections.ToList();
+            foreach (var c in list)
             {
                 AddConnection(c.id1, c.id2, line => _linesBuffer.Add(line));
             }
 
             _connects.AddRange(_linesBuffer);
             _linesBuffer.Clear();
-        }
-
-        public void AddConnections(IEnumerable<(TCloudItem obj1, TCloudItem obj2)> connections)
-        {
-            Debug.Assert(_linesBuffer.Count == 0);
-            foreach (var c in connections)
-            {
-                AddConnection(c.obj1.Id, c.obj2.Id, line => _linesBuffer.Add(line));
-            }
-
-            _connects.AddRange(_linesBuffer);
-            _linesBuffer.Clear();
+            OnConnectionsUpdated?.Invoke(this, new ConnectionsEventArgs(list));
         }
 
         public void RemoveConnections(IEnumerable<(int id1, int id2)> connections)
         {
             Debug.Assert(_linesBuffer.Count == 0);
-            foreach (var c in connections)
+            var list = connections.ToList();
+            foreach (var c in list)
             {
                 RemoveConnection(c.id1, c.id2, _linesBuffer.Add);
             }
 
             _connects.Remove(_linesBuffer);
             _linesBuffer.Clear();
-        }
-
-        public void RemoveConnections(IEnumerable<(TCloudItem obj1, TCloudItem obj2)> connections)
-        {
-            Debug.Assert(_linesBuffer.Count == 0);
-            foreach (var c in connections)
-            {
-                RemoveConnection(c.obj1.Id, c.obj2.Id, line => _linesBuffer.Add(line));
-            }
-
-            _connects.Remove(_linesBuffer);
-            _linesBuffer.Clear();
+            OnConnectionsRemoved?.Invoke(this, new ConnectionsEventArgs(list));
         }
 
         public IEnumerable<(int, int)> GetAllConnections(int id)
@@ -264,6 +241,10 @@ namespace Elektronik.Containers
 
             return Enumerable.Empty<(int, int)>();
         }
+
+        public event EventHandler<ConnectionsEventArgs> OnConnectionsUpdated;
+        
+        public event EventHandler<ConnectionsEventArgs> OnConnectionsRemoved;
 
         #endregion
 

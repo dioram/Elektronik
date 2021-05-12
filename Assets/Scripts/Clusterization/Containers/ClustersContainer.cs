@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Clouds;
 using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.UI.Localization;
-using Object = UnityEngine.Object;
 
 namespace Elektronik.Clusterization.Containers
 {
@@ -97,7 +95,6 @@ namespace Elektronik.Clusterization.Containers
         private readonly List<object> _renderers = new List<object>();
         private bool _isVisible = true;
         private readonly List<ISourceTree> _childrenList = new List<ISourceTree>();
-        private bool _hullVisible = true;
 
         private void CreateClusters(List<List<SlamPoint>> data)
         {

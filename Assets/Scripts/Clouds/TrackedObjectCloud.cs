@@ -8,7 +8,7 @@ namespace Elektronik.Clouds
 {
     public class TrackedObjectCloud : GameObjectCloud<SlamTrackedObject>
     {
-        public override void OnItemsAdded(IContainer<SlamTrackedObject> sender, AddedEventArgs<SlamTrackedObject> e)
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamTrackedObject> e)
         {
             lock (GameObjects)
             {
@@ -24,7 +24,7 @@ namespace Elektronik.Clouds
                         if (dc == null) dc = go.AddComponent(DataComponent<SlamTrackedObject>.GetInstantiable());
                         var dataComponent = (DataComponent<SlamTrackedObject>) dc;
                         dataComponent.Data = obj;
-                        dataComponent.Container = sender;
+                        dataComponent.Container = sender as IContainer<SlamTrackedObject>;
 
                         go.transform.Find("Label").GetComponent<TMP_Text>().text =
                                 $"{(sender as TrackedObjectsContainer)?.ObjectLabel} #{obj.Id}";

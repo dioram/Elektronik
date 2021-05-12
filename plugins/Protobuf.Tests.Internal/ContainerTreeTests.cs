@@ -32,7 +32,7 @@ namespace Protobuf.Tests.Internal
             var p2 = new SlamPoint(2, Vector3.zero, Color.black);
             _tree.Points.Add(p1);
             _tree.Points.Add(p2);
-            _tree.Points.AddConnection(p1, p2);
+            _tree.Points.AddConnections(new []{(p1.Id, p2.Id)});
         }
 
         [Test]

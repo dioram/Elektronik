@@ -153,9 +153,9 @@ namespace Elektronik.Containers
             }
         }
 
-        public event Action<IContainer<TCloudItem>, AddedEventArgs<TCloudItem>> OnAdded;
-        public event Action<IContainer<TCloudItem>, UpdatedEventArgs<TCloudItem>> OnUpdated;
-        public event Action<IContainer<TCloudItem>, RemovedEventArgs> OnRemoved;
+        public event EventHandler<AddedEventArgs<TCloudItem>> OnAdded;
+        public event EventHandler<UpdatedEventArgs<TCloudItem>> OnUpdated;
+        public event EventHandler<RemovedEventArgs> OnRemoved;
 
         public void AddRange(IEnumerable<TCloudItem> items)
         {

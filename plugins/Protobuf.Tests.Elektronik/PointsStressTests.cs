@@ -10,22 +10,26 @@ namespace Protobuf.Tests.Elektronik
 {
     public class PointsStressTests : TestsBase
     {
-        private readonly PointPb[] _map;
-        private readonly ConnectionPb[] _connections;
         private static readonly string Filename = $"{nameof(PointsStressTests)}.dat";
 
-        public PointsStressTests()
+        private PointPb[] GeneratePoints()
         {
             var rand = new Random();
-            _map = Enumerable.Range(0, 20000).Select(id => new PointPb()
+            return Enumerable.Range(0, 20000).Select(id => new PointPb()
             {
                 Id = id,
                 Message = $"{id}",
-                Position = new Vector3Pb { X = rand.NextDouble(), Y = rand.NextDouble(), Z = rand.NextDouble(), },
+                Position = new Vector3Pb {X = rand.NextDouble(), Y = rand.NextDouble(), Z = rand.NextDouble(),},
                 Color = new ColorPb {B = rand.Next(255), G = rand.Next(255), R = rand.Next(255)},
             }).ToArray();
+        }
 
-            _connections = Enumerable.Range(0, 5000).Select(_ => new ConnectionPb() { Id1 = rand.Next(0, 19999), Id2 = rand.Next(0, 19999), }).ToArray();
+        private ConnectionPb[] GenerateConnections()
+        {
+            var rand = new Random();
+            return Enumerable.Range(0, 5000)
+                    .Select(_ => new ConnectionPb() {Id1 = rand.Next(0, 19999), Id2 = rand.Next(0, 19999),})
+                    .ToArray();
         }
 
         [Test, Order(1), Explicit]
@@ -37,7 +41,7 @@ namespace Protobuf.Tests.Elektronik
                 Action = PacketPb.Types.ActionType.Add,
                 Points = new PacketPb.Types.Points(),
             };
-            packet.Points.Data.Add(_map);
+            packet.Points.Data.Add(GeneratePoints());
 
             var t = new Stopwatch();
             t.Start();
@@ -61,7 +65,7 @@ namespace Protobuf.Tests.Elektronik
                 Points = new PacketPb.Types.Points(),
             };
 
-            packet.Points.Data.Add(_map);
+            packet.Points.Data.Add(GeneratePoints());
 
             var t = new Stopwatch();
             t.Start();
@@ -88,7 +92,7 @@ namespace Protobuf.Tests.Elektronik
                     Action = PacketPb.Types.Connections.Types.Action.Add,
                 },
             };
-            packet.Connections.Data.Add(_connections);
+            packet.Connections.Data.Add(GenerateConnections());
 
             var t = new Stopwatch();
             t.Start();
@@ -112,7 +116,7 @@ namespace Protobuf.Tests.Elektronik
                 Points = new PacketPb.Types.Points(),
             };
 
-            packet.Points.Data.Add(_map.Take(5000));
+            packet.Points.Data.Add(GeneratePoints().Take(5000));
 
             var t = new Stopwatch();
             t.Start();
@@ -154,9 +158,9 @@ namespace Protobuf.Tests.Elektronik
             using var file = File.Open(Filename, FileMode.Append);
             uint marker = 0xDEADBEEF;
             byte[] buffer = BitConverter.GetBytes(marker);
-            file.Write(buffer,0, 4);
+            file.Write(buffer, 0, 4);
             buffer = BitConverter.GetBytes(13);
-            file.Write(buffer,0, 4);
+            file.Write(buffer, 0, 4);
         }
     }
 }
