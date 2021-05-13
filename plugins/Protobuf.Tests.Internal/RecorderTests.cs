@@ -252,12 +252,6 @@ namespace Protobuf.Tests.Internal
             CheckMetadata(input, 5);
         }
 
-        [Test]
-        public void FailedTest()
-        {
-            Assert.Fail();
-        }
-
         #region Not tests
 
         private void CheckPoints(IEnumerable<ICloudItem> points, PacketPb packet)

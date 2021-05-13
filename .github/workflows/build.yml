@@ -24,14 +24,12 @@ jobs:
     runs-on: self-hosted
     needs: build
     steps:
-      - name: Report unity editor tests
-        uses: zyborg/dotnet-tests-report@v1
+      - uses: game-ci/unity-test-runner@v2
+        id: unity_editor_tests
         with:
-          test_results_path: .\tests.xml
-          set_check_status_from_test_outcome: true
-          report_name: unity_editor_tests
-          report_title: Unity editor tests
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          projectPath: ./
+          testMode: editmode
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
         with:
