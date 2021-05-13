@@ -22,6 +22,7 @@ jobs:
   runTest:
     name: Run tests
     runs-on: self-hosted
+    needs: buildForSomePlatforms
     steps:
      - name: Report unity editor tests
        uses: zyborg/dotnet-tests-report@v1
@@ -47,11 +48,3 @@ jobs:
          report_name: ros_unit_tests
          report_title: ROS unit tests
          github_token: ${{ secrets.GITHUB_TOKEN }}
-  uploadArtifact:
-    name: Upload artifact
-    runs-on: self-hosted
-    steps:
-      - uses: actions/upload-artifact@v1
-        with:
-          name: Build
-          path: build
