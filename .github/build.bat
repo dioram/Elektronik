@@ -1,6 +1,7 @@
 ﻿"C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe" -quit -accept-apiupdate -batchmode -serial %1 -username %2 -password %3 -logFile .\Logs\pre_build.log -executeMethod Elektronik.Editor.PlayerBuildScript.BuildAddressables -projectPath .\
 "C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe" -quit -accept-apiupdate -batchmode -serial %1 -username %2 -password %3 -logFile .\Logs\build.log -projectPath .\ -buildWindows64Player .\Build\Elektronik.exe 
-"C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe" -quit -accept-apiupdate -batchmode -serial %1 -username %2 -password %3 -logFile .\Logs\tests.log -projectPath .\ -runTests -testResults .\tests.xml
+"C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe" -accept-apiupdate -batchmode -serial %1 -username %2 -password %3 -logFile .\Logs\tests.log -projectPath .\ -runTests -testResults .\tests.xml -runSynchronously
+dotnet .\Assets\Editor\TestReporter\UnityTestRunnerResultsReporter.dll --resultsPath=.\ --XMLName=tests.xml --LogName=.\Logs\tests.log
 
 cd plugins
 dotnet publish ContextMenuSetter -o ../Build/Plugins/ContextMenuSetter
