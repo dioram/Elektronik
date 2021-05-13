@@ -7,7 +7,7 @@ on:
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 jobs:
-  buildForSomePlatforms:
+  build:
     name: Build for StandaloneWindows64
     runs-on: self-hosted
     steps:
@@ -22,7 +22,7 @@ jobs:
   runTest:
     name: Run tests
     runs-on: self-hosted
-    needs: buildForSomePlatforms
+    needs: build
     steps:
      - name: Report unity editor tests
        uses: zyborg/dotnet-tests-report@v1
