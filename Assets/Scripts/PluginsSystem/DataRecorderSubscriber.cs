@@ -13,13 +13,16 @@ namespace Elektronik.PluginsSystem
 {
     public static class DataRecorderSubscriber
     {
-        public static readonly Dictionary<IDataRecorderPlugin, Dictionary<ISourceTree, List<IDisposable>>> Subscriptions =
-                new Dictionary<IDataRecorderPlugin, Dictionary<ISourceTree, List<IDisposable>>>();
+        public static readonly Dictionary<IDataRecorderPlugin, Dictionary<ISourceTree, List<IDisposable>>>
+                Subscriptions =
+                        new Dictionary<IDataRecorderPlugin, Dictionary<ISourceTree, List<IDisposable>>>();
 
         public static bool SubscribeOn(this IDataRecorderPlugin recorder, ISourceTree source, string topicName)
         {
-            if (!Subscriptions.ContainsKey(recorder)) Subscriptions.Add(recorder, new Dictionary<ISourceTree, List<IDisposable>>());
-            if (!Subscriptions[recorder].ContainsKey(source)) Subscriptions[recorder].Add(source, new List<IDisposable>());
+            if (!Subscriptions.ContainsKey(recorder))
+                Subscriptions.Add(recorder, new Dictionary<ISourceTree, List<IDisposable>>());
+            if (!Subscriptions[recorder].ContainsKey(source))
+                Subscriptions[recorder].Add(source, new List<IDisposable>());
 
             if (source is IRemovable r)
             {
@@ -60,16 +63,17 @@ namespace Elektronik.PluginsSystem
                                                                         string topicName)
                 where TCloudItem : ICloudItem
         {
+            var type = source.GetType().GetInterfaces().First(i => i.IsGenericType).GenericTypeArguments[0];
             var connectionsUpdatedName = nameof(IConnectableObjectsContainer<ICloudItem>.OnConnectionsUpdated);
             var connectionsUpdated = Observable.FromEvent<EventHandler<ConnectionsEventArgs>>(
-                        h => (sender, args) => recorder.OnConnectionsUpdated(topicName, args.Items.ToList()),
+                        h => (sender, args) => recorder.OnConnectionsUpdated<TCloudItem>(topicName, args.Items.ToList()),
                         h => source.GetType().GetEvent(connectionsUpdatedName).AddEventHandler(source, h),
                         h => source.GetType().GetEvent(connectionsUpdatedName).RemoveEventHandler(source, h))
                     .Subscribe();
 
             var connectionsRemovedName = nameof(IConnectableObjectsContainer<ICloudItem>.OnConnectionsRemoved);
             var connectionsRemoved = Observable.FromEvent<EventHandler<ConnectionsEventArgs>>(
-                        h => (sender, args) => recorder.OnConnectionsRemoved(topicName, args.Items.ToList()),
+                        h => (sender, args) => recorder.OnConnectionsRemoved<TCloudItem>(topicName, args.Items.ToList()),
                         h => source.GetType().GetEvent(connectionsRemovedName).AddEventHandler(source, h),
                         h => source.GetType().GetEvent(connectionsRemovedName).RemoveEventHandler(source, h))
                     .Subscribe();
@@ -83,30 +87,24 @@ namespace Elektronik.PluginsSystem
                                                                   string topicName)
                 where TCloudItem : ICloudItem
         {
+            var type = source.GetType().GetInterfaces().First(i => i.IsGenericType).GenericTypeArguments[0];
             var addedName = nameof(IContainer<ICloudItem>.OnAdded);
             var add = Observable.FromEvent<EventHandler<AddedEventArgs<TCloudItem>>>(
-                        h => (sender, args) =>
-                                recorder.OnAdded(topicName, args.AddedItems.OfType<ICloudItem>().ToList()),
+                        h => (sender, args) => recorder.OnAdded(topicName, args.AddedItems.ToList()),
                         h => source.GetType().GetEvent(addedName).AddEventHandler(source, h),
                         h => source.GetType().GetEvent(addedName).RemoveEventHandler(source, h))
                     .Subscribe();
 
             var updatedName = nameof(IContainer<ICloudItem>.OnUpdated);
             var updated = Observable.FromEvent<EventHandler<UpdatedEventArgs<TCloudItem>>>(
-                        h => (sender, args) =>
-                                recorder.OnUpdated(topicName, args.UpdatedItems.OfType<ICloudItem>().ToList()),
+                        h => (sender, args) => recorder.OnUpdated<TCloudItem>(topicName, args.UpdatedItems.ToList()),
                         h => source.GetType().GetEvent(updatedName).AddEventHandler(source, h),
                         h => source.GetType().GetEvent(updatedName).RemoveEventHandler(source, h))
                     .Subscribe();
 
             var removedName = nameof(IContainer<ICloudItem>.OnRemoved);
             var removed = Observable.FromEvent<EventHandler<RemovedEventArgs>>(
-                        h => (sender, args) =>
-                                recorder.OnRemoved(
-                                    topicName,
-                                    source.GetType().GetInterfaces().First(i => i.IsGenericType)
-                                            .GenericTypeArguments[0],
-                                    args.RemovedIds.ToList()),
+                        h => (sender, args) => recorder.OnRemoved<TCloudItem>(topicName, args.RemovedIds.ToList()),
                         h => source.GetType().GetEvent(removedName).AddEventHandler(source, h),
                         h => source.GetType().GetEvent(removedName).RemoveEventHandler(source, h))
                     .Subscribe();
@@ -126,6 +124,7 @@ namespace Elektronik.PluginsSystem
                     disposable.Dispose();
                 }
             }
+
             Subscriptions.Remove(recorder);
         }
 

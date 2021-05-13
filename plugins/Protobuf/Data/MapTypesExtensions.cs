@@ -115,7 +115,7 @@ namespace Elektronik.Protobuf.Data
     {
         public static implicit operator SlamLine(LinePb c)
             => c != null ? new SlamLine(c.pt1_, c.pt2_) : default;
-        
+
         public static implicit operator LinePb(SlamLine l)
             => new LinePb {Pt1 = l.Point1, Pt2 = l.Point2};
     }
@@ -168,6 +168,7 @@ namespace Elektronik.Protobuf.Data
                     : default;
 
         public static implicit operator InfinitePlanePb(SlamInfinitePlane p)
-            => new InfinitePlanePb {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset};
+            => new InfinitePlanePb
+                    {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset};
     }
 }

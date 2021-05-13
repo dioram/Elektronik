@@ -23,14 +23,6 @@ jobs:
     runs-on: self-hosted
     needs: build
     steps:
-      - name: Report unity editor tests
-        uses: zyborg/dotnet-tests-report@v1
-        with:
-          test_results_path: .\tests.xml
-          fail_build_on_failed_tests: true
-          report_name: unity_editor_tests
-          report_title: Unity editor tests
-          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
         with:

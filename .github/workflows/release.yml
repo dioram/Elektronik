@@ -23,14 +23,6 @@ jobs:
     runs-on: self-hosted
     needs: build
     steps:
-      - name: Report unity editor tests
-        uses: zyborg/dotnet-tests-report@v1
-        with:
-          test_results_path: .\tests.xml
-          fail_build_on_failed_tests: true
-          report_name: unity_editor_tests
-          report_title: Unity editor tests
-          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
         with:
@@ -58,7 +50,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
           tag_name: ${{ steps.previoustag.outputs.tag }}
           release_name: Release ${{ steps.previoustag.outputs.tag }}
@@ -71,7 +63,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  
           asset_path: build.zip
           asset_name: Release.zip
           asset_content_type: application/zip

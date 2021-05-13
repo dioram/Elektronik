@@ -9,8 +9,8 @@ using Elektronik.Clusterization.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
-using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -340,15 +340,9 @@ namespace Elektronik.Containers
             return res;
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var type = typeof(TCloudItem).Name;
-            var converter = new UnityJsonConverter();
-            lock (_items)
-            {
-                return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"{type}\"," +
-                        $"\"data\":{JsonConvert.SerializeObject(_items.Values.ToList(), converter)}}}";
-            }
+            recorder.OnAdded(DisplayName, this.OfType<SlamInfinitePlane>().ToList());
         }
 
         public static CloudContainer<TCloudItem> Deserialize(JToken token)

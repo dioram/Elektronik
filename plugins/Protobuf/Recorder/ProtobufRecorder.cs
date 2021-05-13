@@ -30,7 +30,7 @@ namespace Elektronik.Protobuf.Recorder
 
         public string DisplayName { get; } = "Recorder to Protobuf";
         public string Description { get; } = "Records data to Protobuf file";
-        public string Extension { get; } = "dat";
+        public string Extension { get; } = ".dat";
         public string FileName { get; set; }
         public const uint Marker = 0xDEADBEEF;
 
@@ -54,7 +54,7 @@ namespace Elektronik.Protobuf.Recorder
             _file.Dispose();
         }
 
-        public void OnAdded(string topicName, IList<ICloudItem> args)
+        public void OnAdded<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : ICloudItem
         {
             if (!_isRecording) return;
             _amountOfFrames++;
@@ -67,7 +67,7 @@ namespace Elektronik.Protobuf.Recorder
             packet.WriteDelimitedTo(_file);
         }
 
-        public void OnUpdated(string topicName, IList<ICloudItem> args)
+        public void OnUpdated<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : ICloudItem
         {
             if (!_isRecording) return;
             _amountOfFrames++;
@@ -79,8 +79,8 @@ namespace Elektronik.Protobuf.Recorder
             SetData(args, packet);
             packet.WriteDelimitedTo(_file);
         }
-
-        public void OnRemoved(string topicName, Type itemType, IList<int> args)
+        
+        public void OnRemoved<TCloudItem>(string topicName, IList<int> args) where TCloudItem : ICloudItem
         {
             if (!_isRecording) return;
             _amountOfFrames++;
@@ -89,42 +89,44 @@ namespace Elektronik.Protobuf.Recorder
                 Action = PacketPb.Types.ActionType.Remove,
                 Timestamp = GetTimestamp(),
             };
-            SetData(itemType, args, packet);
+            SetData<TCloudItem>(args, packet);
             packet.WriteDelimitedTo(_file);
         }
 
-        public void OnConnectionsUpdated(string topicName, IList<(int id1, int id2)> items)
+        public void OnConnectionsUpdated<TCloudItem>(string topicName, IList<(int id1, int id2)> items) where TCloudItem : ICloudItem
         {
             if (!_isRecording) return;
             _amountOfFrames++;
             var packet = new PacketPb()
             {
                 Action = PacketPb.Types.ActionType.Update,
-                Points = new PacketPb.Types.Points(),
                 Timestamp = GetTimestamp(),
                 Connections = new PacketPb.Types.Connections()
                 {
                     Action = PacketPb.Types.Connections.Types.Action.Add,
                 },
             };
+            SetData<TCloudItem>(new List<int>(), packet);
+            
             packet.Connections.Data.Add(items.Select(i => new ConnectionPb {Id1 = i.id1, Id2 = i.id2}));
             packet.WriteDelimitedTo(_file);
         }
 
-        public void OnConnectionsRemoved(string topicName, IList<(int id1, int id2)> items)
+        public void OnConnectionsRemoved<TCloudItem>(string topicName, IList<(int id1, int id2)> items) where TCloudItem : ICloudItem
         {
             if (!_isRecording) return;
             _amountOfFrames++;
             var packet = new PacketPb()
             {
                 Action = PacketPb.Types.ActionType.Update,
-                Points = new PacketPb.Types.Points(),
                 Timestamp = GetTimestamp(),
                 Connections = new PacketPb.Types.Connections()
                 {
                     Action = PacketPb.Types.Connections.Types.Action.Remove,
                 },
             };
+            SetData<TCloudItem>(new List<int>(), packet);
+            
             packet.Connections.Data.Add(items.Select(i => new ConnectionPb {Id1 = i.id1, Id2 = i.id2}));
             packet.WriteDelimitedTo(_file);
         }
@@ -141,57 +143,57 @@ namespace Elektronik.Protobuf.Recorder
             return (int)(DateTime.Now - _recordingStart).TotalMilliseconds;
         }
 
-        private void SetData(IList<ICloudItem> items, PacketPb packet)
+        private void SetData<TCloudItem>(IList<TCloudItem> items, PacketPb packet) where TCloudItem : ICloudItem
         {
             var first = items.FirstOrDefault();
             switch (first)
             {
-            case SlamPoint p:
+            case SlamPoint _:
                 packet.Points = new PacketPb.Types.Points();
-                packet.Points.Data.AddRange(items.Select(i => (PointPb) (SlamPoint) i));
+                packet.Points.Data.AddRange(items.OfType<SlamPoint>().Select(s => (PointPb)s));
                 break;
-            case SlamObservation o:
+            case SlamObservation _:
                 packet.Observations = new PacketPb.Types.Observations();
-                packet.Observations.Data.AddRange(items.Select(i => (ObservationPb) (SlamObservation) i));
+                packet.Observations.Data.AddRange(items.OfType<SlamObservation>().Select(s => (ObservationPb)s));
                 break;
-            case SlamTrackedObject t:
+            case SlamTrackedObject _:
                 packet.TrackedObjs = new PacketPb.Types.TrackedObjs();
-                packet.TrackedObjs.Data.AddRange(items.Select(i => (TrackedObjPb) (SlamTrackedObject) i));
+                packet.TrackedObjs.Data.AddRange(items.OfType<SlamTrackedObject>().Select(s => (TrackedObjPb)s));
                 break;
-            case SlamInfinitePlane p:
+            case SlamInfinitePlane _:
                 packet.InfinitePlanes = new PacketPb.Types.InfinitePlanes();
-                packet.InfinitePlanes.Data.AddRange(items.Select(i => (InfinitePlanePb) (SlamInfinitePlane) i));
+                packet.InfinitePlanes.Data.AddRange(items.OfType<SlamInfinitePlane>().Select(s => (InfinitePlanePb)s));
                 break;
-            case SlamLine l:
+            case SlamLine _:
                 packet.Lines = new PacketPb.Types.Lines();
-                packet.Lines.Data.AddRange(items.Select(i => (LinePb) (SlamLine) i));
+                packet.Lines.Data.AddRange(items.OfType<SlamLine>().Select(s => (LinePb)s));
                 break;
             }
         }
 
-        private void SetData(Type itemType, IList<int> args, PacketPb packet)
+        private void SetData<TCloudItem>(IList<int> args, PacketPb packet) where TCloudItem : ICloudItem
         {
-            if (itemType.IsAssignableFrom(typeof(SlamPoint)))
+            if (typeof(TCloudItem).IsAssignableFrom(typeof(SlamPoint)))
             {
                 packet.Points = new PacketPb.Types.Points();
                 packet.Points.Data.AddRange(args.Select(i => new PointPb {Id = i}));
             }
-            else if (itemType.IsAssignableFrom(typeof(SlamObservation)))
+            else if (typeof(TCloudItem).IsAssignableFrom(typeof(SlamObservation)))
             {
                 packet.Observations = new PacketPb.Types.Observations();
                 packet.Observations.Data.AddRange(args.Select(i => new ObservationPb {Point = new PointPb {Id = i}}));
             }
-            else if (itemType.IsAssignableFrom(typeof(SlamTrackedObject)))
+            else if (typeof(TCloudItem).IsAssignableFrom(typeof(SlamTrackedObject)))
             {
                 packet.TrackedObjs = new PacketPb.Types.TrackedObjs();
                 packet.TrackedObjs.Data.AddRange(args.Select(i => new TrackedObjPb {Id = i}));
             }
-            else if (itemType.IsAssignableFrom(typeof(SlamInfinitePlane)))
+            else if (typeof(TCloudItem).IsAssignableFrom(typeof(SlamInfinitePlane)))
             {
                 packet.InfinitePlanes = new PacketPb.Types.InfinitePlanes();
                 packet.InfinitePlanes.Data.AddRange(args.Select(i => new InfinitePlanePb {Id = i}));
             }
-            else if (itemType.IsAssignableFrom(typeof(SlamLine)))
+            else if (typeof(TCloudItem).IsAssignableFrom(typeof(SlamLine)))
             {
                 packet.Lines = new PacketPb.Types.Lines();
                 packet.Lines.Data.AddRange(args.Select(i => new LinePb

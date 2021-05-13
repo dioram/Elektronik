@@ -24,19 +24,19 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void PointsTest()
         {
-            ICloudItem[] points =
+            var points = new []
             {
                 new SlamPoint(0, Vector3.one, Color.blue),
                 new SlamPoint(1, Vector3.down, Color.red),
                 new SlamPoint(-10, Vector3.forward, Color.gray, "test message")
             };
-            ICloudItem[] morePoints =
+            var morePoints = new []
             {
                 new SlamPoint(0, Vector3.zero, Color.red, "Another message"),
                 new SlamPoint(-10, Vector3.up, Color.white, "test message")
             };
 
-            Record<SlamPoint>(points, morePoints);
+            Record(points, morePoints);
 
             using var input = File.OpenRead(Filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
@@ -58,14 +58,14 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void ObservationsTest()
         {
-            ICloudItem[] observations =
+            var observations = new []
             {
                 new SlamObservation(new SlamPoint(0, Vector3.one, Color.blue), Quaternion.identity, "123", "f.jpg"),
                 new SlamObservation(new SlamPoint(1, Vector3.down, Color.red), new Quaternion(0, 5, 15, 3), "321", ""),
                 new SlamObservation(new SlamPoint(-10, Vector3.forward, Color.gray, "test message"),
                                     new Quaternion(59, 46, 3, 24), "adsf", "f.jpg"),
             };
-            ICloudItem[] moreObservations =
+            var moreObservations = new []
             {
                 new SlamObservation(new SlamPoint(0, Vector3.zero, Color.red, "Another message"),
                                     new Quaternion(6, 2, 1, 0), "123", "f.jpg"),
@@ -73,7 +73,7 @@ namespace Protobuf.Tests.Internal
                                     "123", "f.jpg"),
             };
 
-            Record<SlamObservation>(observations, moreObservations);
+            Record(observations, moreObservations);
 
             using var input = File.OpenRead(Filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
@@ -95,19 +95,19 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void TrackedObjectsTest()
         {
-            ICloudItem[] trackedObjects =
+            var trackedObjects = new []
             {
                 new SlamTrackedObject(0, Vector3.one, Quaternion.identity, Color.blue),
                 new SlamTrackedObject(1, Vector3.down, new Quaternion(1, 2, 3, 1), Color.red),
                 new SlamTrackedObject(-10, Vector3.forward, new Quaternion(3, 2, 1, 2), Color.gray, "test message")
             };
-            ICloudItem[] moreTrackedObjects =
+            var moreTrackedObjects = new []
             {
                 new SlamTrackedObject(0, Vector3.zero, new Quaternion(5, 6, 7, 0), Color.red, "Another message"),
                 new SlamTrackedObject(-10, Vector3.up, Quaternion.identity, Color.white, "test message")
             };
 
-            Record<SlamTrackedObject>(trackedObjects, moreTrackedObjects);
+            Record(trackedObjects, moreTrackedObjects);
 
             using var input = File.OpenRead(Filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
@@ -129,19 +129,19 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void InfinitePlanesTest()
         {
-            ICloudItem[] planes =
+            var planes = new []
             {
                 new SlamInfinitePlane(0, Vector3.one, Vector3.zero, Color.blue),
                 new SlamInfinitePlane(1, Vector3.down, Vector3.up, Color.red),
                 new SlamInfinitePlane(-10, Vector3.forward, Vector3.back, Color.gray, "test message")
             };
-            ICloudItem[] morePlanes =
+            var morePlanes = new []
             {
                 new SlamInfinitePlane(0, Vector3.zero, Vector3.left, Color.red, "Another message"),
                 new SlamInfinitePlane(-10, Vector3.up, Vector3.right, Color.white, "test message")
             };
 
-            Record<SlamInfinitePlane>(planes, morePlanes);
+            Record(planes, morePlanes);
 
             using var input = File.OpenRead(Filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
@@ -163,19 +163,19 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void LinesTest()
         {
-            ICloudItem[] lines =
+            var lines = new []
             {
                 new SlamLine(0, 1),
                 new SlamLine(1, 2),
                 new SlamLine(-10, -6)
             };
-            ICloudItem[] moreLines =
+            var moreLines = new []
             {
                 new SlamLine(0, 3),
                 new SlamLine(-10, 4)
             };
 
-            Record<SlamLine>(lines, moreLines);
+            Record(lines, moreLines);
 
             using var input = File.OpenRead(Filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
@@ -195,15 +195,41 @@ namespace Protobuf.Tests.Internal
         }
 
         [Test]
-        public void ConnectionsTest()
+        public void PointConnectionsTest()
         {
             (int id1, int id2)[] connections = {(0, 1), (0, 3), (3, 2), (-10, 9)};
             (int id1, int id2)[] removed = {connections[1], connections[3]};
             IDataRecorderPlugin recorder = new ProtobufRecorder();
             recorder.FileName = Filename;
             recorder.StartRecording();
-            recorder.OnConnectionsUpdated("Connections", connections);
-            recorder.OnConnectionsRemoved("Connections", removed);
+            recorder.OnConnectionsUpdated<SlamPoint>("Connections", connections);
+            recorder.OnConnectionsRemoved<SlamPoint>("Connections", removed);
+            recorder.StopRecording();
+            Assert.IsTrue(File.Exists(Filename));
+
+            using var input = File.OpenRead(Filename);
+            var packet = PacketPb.Parser.ParseDelimitedFrom(input);
+            Assert.AreEqual(PacketPb.Types.ActionType.Update, packet.Action);
+            Assert.AreEqual(PacketPb.Types.Connections.Types.Action.Add, packet.Connections.Action);
+            CheckConnections(connections, packet);
+            
+            var anotherPacket = PacketPb.Parser.ParseDelimitedFrom(input);
+            Assert.AreEqual(PacketPb.Types.ActionType.Update, anotherPacket.Action);
+            Assert.AreEqual(PacketPb.Types.Connections.Types.Action.Remove, anotherPacket.Connections.Action);
+            CheckConnections(removed, anotherPacket);
+            CheckMetadata(input, 2);
+        }
+
+        [Test]
+        public void ObservationsConnectionsTest()
+        {
+            (int id1, int id2)[] connections = {(0, 1), (0, 3), (3, 2), (-10, 9)};
+            (int id1, int id2)[] removed = {connections[1], connections[3]};
+            IDataRecorderPlugin recorder = new ProtobufRecorder();
+            recorder.FileName = Filename;
+            recorder.StartRecording();
+            recorder.OnConnectionsUpdated<SlamObservation>("Connections", connections);
+            recorder.OnConnectionsRemoved<SlamObservation>("Connections", removed);
             recorder.StopRecording();
             Assert.IsTrue(File.Exists(Filename));
 
@@ -236,17 +262,17 @@ namespace Protobuf.Tests.Internal
             recorder.FileName = Filename;
             recorder.OnAdded("", points);
             recorder.OnUpdated("", points);
-            recorder.OnRemoved("", typeof(SlamPoint), points.Select(p => p.Id).ToList());
-            recorder.OnConnectionsUpdated("", connections);
-            recorder.OnConnectionsRemoved("", connections);
+            recorder.OnRemoved<SlamPoint>("", points.Select(p => p.Id).ToList());
+            recorder.OnConnectionsUpdated<SlamPoint>("", connections);
+            recorder.OnConnectionsRemoved<SlamPoint>("", connections);
             Assert.IsFalse(File.Exists(Filename));
             recorder.StartRecording();
             recorder.OnAdded("", points);
             recorder.OnUpdated("", points);
-            recorder.OnRemoved("", typeof(SlamPoint), points.Select(p => p.Id).ToList());
-            recorder.OnConnectionsUpdated("", connections);
-            recorder.OnConnectionsRemoved("", connections);
-            Assert.IsTrue(File.Exists(Filename));;
+            recorder.OnRemoved<SlamPoint>("", points.Select(p => p.Id).ToList());
+            recorder.OnConnectionsUpdated<SlamPoint>("", connections);
+            recorder.OnConnectionsRemoved<SlamPoint>("", connections);
+            Assert.IsTrue(File.Exists(Filename));
             recorder.StopRecording();
             using var input = File.OpenRead(Filename);
             CheckMetadata(input, 5);
@@ -254,43 +280,43 @@ namespace Protobuf.Tests.Internal
 
         #region Not tests
 
-        private void CheckPoints(IEnumerable<ICloudItem> points, PacketPb packet)
+        private void CheckPoints(IEnumerable<SlamPoint> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Points, packet.DataCase);
             Assert.IsTrue(packet.ExtractPoints()
-                                  .Zip(points, (point, item) => (point, (SlamPoint) item))
+                                  .Zip(points, (point, item) => (point, item))
                                   .All(d => d.point.Equals(d.Item2)));
         }
 
-        private void CheckObservations(IEnumerable<ICloudItem> points, PacketPb packet)
+        private void CheckObservations(IEnumerable<SlamObservation> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Observations, packet.DataCase);
             Assert.IsTrue(packet.ExtractObservations(null, "")
-                                  .Zip(points, (point, item) => (point, (SlamObservation) item))
+                                  .Zip(points, (point, item) => (point, item))
                                   .All(d => d.point.Equals(d.Item2)));
         }
 
-        private void CheckTrackedObjects(IEnumerable<ICloudItem> points, PacketPb packet)
+        private void CheckTrackedObjects(IEnumerable<SlamTrackedObject> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.TrackedObjs, packet.DataCase);
             Assert.IsTrue(packet.ExtractTrackedObjects()
-                                  .Zip(points, (point, item) => (point, (SlamTrackedObject) item))
+                                  .Zip(points, (point, item) => (point, item))
                                   .All(d => d.point.Equals(d.Item2)));
         }
 
-        private void CheckPlanes(IEnumerable<ICloudItem> points, PacketPb packet)
+        private void CheckPlanes(IEnumerable<SlamInfinitePlane> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.InfinitePlanes, packet.DataCase);
             Assert.IsTrue(packet.ExtractInfinitePlanes()
-                                  .Zip(points, (point, item) => (point, (SlamInfinitePlane) item))
+                                  .Zip(points, (point, item) => (point, item))
                                   .All(d => d.point.Equals(d.Item2)));
         }
 
-        private void CheckLines(IEnumerable<ICloudItem> points, PacketPb packet)
+        private void CheckLines(IEnumerable<SlamLine> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Lines, packet.DataCase);
             Assert.IsTrue(packet.ExtractLines()
-                                  .Zip(points, (point, item) => (point, (SlamLine) item))
+                                  .Zip(points, (point, item) => (point, item))
                                   .All(d => d.point.Equals(d.Item2)));
         }
         
@@ -311,14 +337,14 @@ namespace Protobuf.Tests.Internal
             Assert.AreEqual(BitConverter.GetBytes(expectedFrames), buffer);
         }
 
-        private void Record<T>(ICloudItem[] first, ICloudItem[] second) where T : ICloudItem
+        private void Record<TCloudItem>(TCloudItem[] first, TCloudItem[] second) where TCloudItem : ICloudItem
         {
             IDataRecorderPlugin recorder = new ProtobufRecorder();
             recorder.FileName = Filename;
             recorder.StartRecording();
-            recorder.OnAdded(typeof(T).Name, first);
-            recorder.OnUpdated(typeof(T).Name, second);
-            recorder.OnRemoved(typeof(T).Name, typeof(T), new List<int> {0});
+            recorder.OnAdded(typeof(TCloudItem).Name, first);
+            recorder.OnUpdated(typeof(TCloudItem).Name, second);
+            recorder.OnRemoved<TCloudItem>(typeof(TCloudItem).Name, new List<int> {0});
             recorder.StopRecording();
             Assert.IsTrue(File.Exists(Filename));
         }

@@ -45,7 +45,7 @@ namespace Elektronik.Protobuf.Offline
         {
             _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(TypedSettings.FilePath)}";
             _input = File.OpenRead(TypedSettings.FilePath!);
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
             _parsersChain.SetConverter(Converter);
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
@@ -145,8 +145,6 @@ namespace Elektronik.Protobuf.Offline
         private readonly DataParser<PacketPb> _parsersChain;
         private bool _playing = false;
         private ThreadWorker _threadWorker;
-
-        private const int MetadataOffset = 8;
 
         private IEnumerator<Frame> ReadCommands(int size)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using Newtonsoft.Json.Linq;
 
 namespace Elektronik.Containers.SpecialInterfaces
@@ -8,8 +9,8 @@ namespace Elektronik.Containers.SpecialInterfaces
     public interface ISnapshotable
     {
         ISnapshotable TakeSnapshot();
-        
-        string Serialize();
+
+        void WriteSnapshot(IDataRecorderPlugin recorder);
     }
 
     public static class SnapshotableDeserializer

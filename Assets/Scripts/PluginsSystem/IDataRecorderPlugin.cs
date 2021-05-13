@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.PluginsSystem
@@ -12,10 +11,14 @@ namespace Elektronik.PluginsSystem
         void StartRecording();
         void StopRecording();
 
-        void OnAdded(string topicName, IList<ICloudItem> args);
-        void OnUpdated(string topicName, IList<ICloudItem> args);
-        void OnRemoved(string topicName, Type itemType, IList<int> args);
-        void OnConnectionsUpdated(string topicName, IList<(int id1, int id2)> items);
-        void OnConnectionsRemoved(string topicName, IList<(int id1, int id2)> items);
+        void OnAdded<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : ICloudItem;
+        void OnUpdated<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : ICloudItem;
+        void OnRemoved<TCloudItem>(string topicName, IList<int> args) where TCloudItem : ICloudItem;
+
+        void OnConnectionsUpdated<TCloudItem>(string topicName, IList<(int id1, int id2)> items)
+                where TCloudItem : ICloudItem;
+
+        void OnConnectionsRemoved<TCloudItem>(string topicName, IList<(int id1, int id2)> items)
+                where TCloudItem : ICloudItem;
     }
 }

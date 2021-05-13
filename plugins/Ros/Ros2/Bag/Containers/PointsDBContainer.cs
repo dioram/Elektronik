@@ -5,10 +5,9 @@ using Elektronik.Clouds;
 using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using SQLite;
 using UnityEngine;
@@ -89,50 +88,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             return res;
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var converter = new UnityJsonConverter();
-            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"SlamPoint\"," +
-                    $"\"data\":[{JsonConvert.SerializeObject(Current, converter)}]}}";
-        }
-        
-        private class UnityJsonConverter : JsonConverter
-        {
-            public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-            {
-                var o = new JObject();
-                switch (value)
-                {
-                case Vector3 v:
-                    o.Add("x", JToken.FromObject(v.x));
-                    o.Add("y", JToken.FromObject(v.y));
-                    o.Add("z", JToken.FromObject(v.z));
-                    break;
-                case Quaternion q:
-                    o.Add("x", JToken.FromObject(q.x));
-                    o.Add("y", JToken.FromObject(q.y));
-                    o.Add("z", JToken.FromObject(q.z));
-                    o.Add("w", JToken.FromObject(q.w));
-                    break;
-                case Color c:
-                    o.Add("r", JToken.FromObject(c.r));
-                    o.Add("g", JToken.FromObject(c.g));
-                    o.Add("b", JToken.FromObject(c.b));
-                    o.Add("a", JToken.FromObject(c.a));
-                    break;
-                }
-                o.WriteTo(writer);
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-            {
-                return "";
-            }
-
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(Vector3) || objectType == typeof(Quaternion) || objectType == typeof(Color);
-            }
+            recorder.OnAdded(DisplayName, Current?.OfType<ICloudItem>().ToList() ?? new List<ICloudItem>());
         }
 
         #endregion

@@ -6,6 +6,7 @@ using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -65,7 +66,8 @@ namespace Elektronik.Containers
             {
                 _objects.Add(obj);
             }
-            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new []{obj}));
+
+            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new[] {obj}));
         }
 
         public void Insert(int index, TCloudItem item)
@@ -74,7 +76,8 @@ namespace Elektronik.Containers
             {
                 _objects.Insert(index, item);
             }
-            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new []{item}));
+
+            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new[] {item}));
         }
 
         public void AddRange(IEnumerable<TCloudItem> items)
@@ -84,6 +87,7 @@ namespace Elektronik.Containers
             {
                 _objects.AddRange(list);
             }
+
             OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(list));
         }
 
@@ -97,7 +101,8 @@ namespace Elektronik.Containers
                     _connects.Update(new SlamLine(item.Id, secondId));
                 }
             }
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new []{item}));
+
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new[] {item}));
         }
 
         public void Update(IEnumerable<TCloudItem> items)
@@ -118,6 +123,7 @@ namespace Elektronik.Containers
                 _connects.Update(_linesBuffer);
                 _linesBuffer.Clear();
             }
+
             OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
         }
 
@@ -128,7 +134,8 @@ namespace Elektronik.Containers
                 RemoveConnections(id);
                 _objects.RemoveAt(id);
             }
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new []{id}));
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {id}));
         }
 
         public bool Remove(TCloudItem obj)
@@ -140,7 +147,7 @@ namespace Elektronik.Containers
                 {
                     RemoveConnections(index);
                     _objects.Remove(obj);
-                    OnRemoved?.Invoke(this, new RemovedEventArgs(new []{obj.Id}));
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {obj.Id}));
                     return true;
                 }
 
@@ -176,6 +183,7 @@ namespace Elektronik.Containers
                 _linesBuffer.Clear();
                 _objects.Remove(list);
             }
+
             OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
         }
 
@@ -188,6 +196,7 @@ namespace Elektronik.Containers
                 _connects.Clear();
                 _objects.Clear();
             }
+
             OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
         }
 
@@ -243,7 +252,7 @@ namespace Elektronik.Containers
         }
 
         public event EventHandler<ConnectionsEventArgs> OnConnectionsUpdated;
-        
+
         public event EventHandler<ConnectionsEventArgs> OnConnectionsRemoved;
 
         #endregion
@@ -305,11 +314,10 @@ namespace Elektronik.Containers
             return new ConnectableObjectsContainer<TCloudItem>(objects, connects, DisplayName, _table.DeepCopy());
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var objects = (_objects as ISnapshotable)!.Serialize();
-            var connects = (_connects as ISnapshotable)!.Serialize();
-            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\",\"data\":[{objects},{connects}]}}";
+            recorder.OnAdded(DisplayName, _objects.ToList());
+            recorder.OnConnectionsUpdated<TCloudItem>(DisplayName, _connects.Select(l => (l.Point1.Id, l.Point2.Id)).ToList());
         }
 
         #endregion
@@ -342,7 +350,7 @@ namespace Elektronik.Containers
 
             return res;
         }
-        
+
         private void RemoveConnections(int id)
         {
             foreach (var col in _table.GetColIndices(id))

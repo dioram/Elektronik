@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.PluginsSystem;
+using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -24,8 +26,8 @@ namespace Elektronik.Data
             using var file = File.OpenText(filename);
             using var jsonTextReader = new JsonTextReader(file);
             var arr = serializer.Deserialize<JToken>(jsonTextReader)["data"];
-            
-            return new SnapshotContainer($"Snapshot: {Path.GetFileName(filename)}", 
+
+            return new SnapshotContainer($"Snapshot: {Path.GetFileName(filename)}",
                                          arr.Where(t => t.HasValues)
                                                  .Select(SnapshotableDeserializer.Deserialize).ToList());
         }
@@ -42,6 +44,7 @@ namespace Elektronik.Data
             {
                 child.Clear();
             }
+
             Children = new ISourceTree[0];
         }
 
@@ -101,10 +104,12 @@ namespace Elektronik.Data
                                                  .ToList());
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var data = string.Join(",", Children.OfType<ISnapshotable>().Select(ch => ch.Serialize()));
-            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\",\"data\":[{data}]}}";
+            foreach (var snapshotable in Children.OfType<ISnapshotable>())
+            {
+                snapshotable.WriteSnapshot(recorder);
+            }
         }
 
         #endregion
@@ -113,8 +118,9 @@ namespace Elektronik.Data
 
         public void Save()
         {
-            FileBrowser.SetFilters(true, "snapshot.json");
-            FileBrowser.ShowSaveDialog(path => WriteToFile(path[0]),
+            var recorders = PluginsLoader.Plugins.Value.OfType<IDataRecorderPlugin>().ToList();
+            FileBrowser.SetFilters(false, recorders.Select(r => r.Extension));
+            FileBrowser.ShowSaveDialog(path => Save(path[0]),
                                        () => { },
                                        false,
                                        false,
@@ -129,10 +135,15 @@ namespace Elektronik.Data
 
         private bool _isVisible = true;
 
-        private void WriteToFile(string filename)
+        private void Save(string filename)
         {
-            using var file = File.CreateText(filename);
-            file.Write(Serialize());
+            var recorder = PluginsLoader.Plugins.Value
+                    .OfType<IDataRecorderPlugin>()
+                    .First(r => filename.EndsWith(r.Extension));
+            recorder.FileName = filename;
+            recorder.StartRecording();
+            WriteSnapshot(recorder);
+            recorder.StopRecording();
         }
 
         #endregion

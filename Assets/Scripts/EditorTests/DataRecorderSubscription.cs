@@ -14,7 +14,7 @@ namespace Elektronik.EditorTests
         [Test]
         public void SubscribePointCloudContainer()
         {
-            var points = new List<ICloudItem>
+            var points = new []
             {
                 new SlamPoint(0, Vector3.back, Color.black),
                 new SlamPoint(1, Vector3.down, Color.blue),
@@ -25,60 +25,29 @@ namespace Elektronik.EditorTests
             
             Assert.AreEqual(3, DataRecorderSubscriber.Subscriptions[mockedRecorder.Object].SelectMany(s => s.Value).Count());
 
-            container.AddRange(points.OfType<SlamPoint>());
-            container.Update(points.OfType<SlamPoint>());
-            container.Remove(points.OfType<SlamPoint>());
+            container.AddRange(points);
+            container.Update(points);
+            container.Remove(points);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), points), Times.Once());
             mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), points), Times.Once());
-            mockedRecorder.Verify(r => r.OnRemoved(It.IsAny<string>(), typeof(SlamPoint), It.IsAny<List<int>>()),
+            mockedRecorder.Verify(r => r.OnRemoved<SlamPoint>(It.IsAny<string>(), It.IsAny<List<int>>()),
                                    Times.Once());
             
             mockedRecorder.Object.UnsubscribeFromEverything();
 
-            container.AddRange(points.OfType<SlamPoint>());
-            container.Update(points.OfType<SlamPoint>());
-            container.Remove(points.OfType<SlamPoint>());
+            container.AddRange(points);
+            container.Update(points);
+            container.Remove(points);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), points), Times.Once());
             mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), points), Times.Once());
-            mockedRecorder.Verify(r => r.OnRemoved(It.IsAny<string>(), typeof(SlamPoint), It.IsAny<List<int>>()),
-                                   Times.Once());
-        }
-
-        [Test]
-        public void SubscribeObservationCloudContainer()
-        {
-            var observations = new List<ICloudItem>
-            {
-                new SlamObservation(new SlamPoint(0, Vector3.back, Color.black), Quaternion.identity, "", ""),
-                new SlamObservation(new SlamPoint(1, Vector3.down, Color.blue), Quaternion.identity, "", ""),
-            };
-            var container = new CloudContainer<SlamObservation>();
-            var mockedRecorder = new Mock<IDataRecorderPlugin>();
-            mockedRecorder.Object.SubscribeOn(container, "");
-
-            container.AddRange(observations.OfType<SlamObservation>());
-            container.Update(observations.OfType<SlamObservation>());
-            container.Remove(observations.OfType<SlamObservation>());
-            mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), observations), Times.Once());
-            mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), observations), Times.Once());
-            mockedRecorder.Verify(r => r.OnRemoved(It.IsAny<string>(), typeof(SlamObservation), It.IsAny<List<int>>()),
-                                   Times.Once());
-            
-            mockedRecorder.Object.UnsubscribeFromEverything();
-
-            container.AddRange(observations.OfType<SlamObservation>());
-            container.Update(observations.OfType<SlamObservation>());
-            container.Remove(observations.OfType<SlamObservation>());
-            mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), observations), Times.Once());
-            mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), observations), Times.Once());
-            mockedRecorder.Verify(r => r.OnRemoved(It.IsAny<string>(), typeof(SlamObservation), It.IsAny<List<int>>()),
+            mockedRecorder.Verify(r => r.OnRemoved<SlamPoint>(It.IsAny<string>(), It.IsAny<List<int>>()),
                                    Times.Once());
         }
 
         [Test]
         public void SubscribeTrackedCloudContainer()
         {
-            var tracked = new List<ICloudItem>
+            var tracked = new []
             {
                 new SlamTrackedObject(0, Vector3.back, Quaternion.identity),
                 new SlamTrackedObject(1, Vector3.down, Quaternion.identity),
@@ -87,63 +56,104 @@ namespace Elektronik.EditorTests
             var mockedRecorder = new Mock<IDataRecorderPlugin>();
             mockedRecorder.Object.SubscribeOn(container, "");
 
-            container.AddRange(tracked.OfType<SlamTrackedObject>());
-            container.Update(tracked.OfType<SlamTrackedObject>());
-            container.Remove(tracked.OfType<SlamTrackedObject>());
+            container.AddRange(tracked);
+            container.Update(tracked);
+            container.Remove(tracked);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), tracked), Times.Once());
             mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), tracked), Times.Once());
-            mockedRecorder.Verify(r => r.OnRemoved(It.IsAny<string>(), typeof(SlamTrackedObject), It.IsAny<List<int>>()),
+            mockedRecorder.Verify(r => r.OnRemoved<SlamTrackedObject>(It.IsAny<string>(), It.IsAny<List<int>>()),
                                    Times.Once());
             
             mockedRecorder.Object.UnsubscribeFromEverything();
 
-            container.AddRange(tracked.OfType<SlamTrackedObject>());
-            container.Update(tracked.OfType<SlamTrackedObject>());
-            container.Remove(tracked.OfType<SlamTrackedObject>());
+            container.AddRange(tracked);
+            container.Update(tracked);
+            container.Remove(tracked);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), tracked), Times.Once());
             mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), tracked), Times.Once());
-            mockedRecorder.Verify(r => r.OnRemoved(It.IsAny<string>(), typeof(SlamTrackedObject), It.IsAny<List<int>>()),
+            mockedRecorder.Verify(r => r.OnRemoved<SlamTrackedObject>(It.IsAny<string>(), It.IsAny<List<int>>()),
                                    Times.Once());
         }
 
         [Test]
-        public void SubscribeConnectableCloudContainer()
+        public void SubscribeConnectablePointCloudContainer()
         {
             var container = new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
                                                                        new SlamLinesContainer());
             var mockedRecorder = new Mock<IDataRecorderPlugin>();
             mockedRecorder.Object.SubscribeOn(container, "");
 
-            var points = new List<ICloudItem>
+            var points = new []
             {
                 new SlamPoint(0, Vector3.back, Color.black),
                 new SlamPoint(1, Vector3.down, Color.blue),
             };
             var connections = new List<(int, int)> {(0, 1)};
-            container.AddRange(points.OfType<SlamPoint>());
-            container.Update(points.OfType<SlamPoint>());
+            container.AddRange(points);
+            container.Update(points);
             container.AddConnections(connections);
             container.RemoveConnections(connections);
-            container.Remove(points.OfType<SlamPoint>());
-            mockedRecorder.Verify(r => r.OnConnectionsUpdated(It.IsAny<string>(), connections), Times.Once());
-            mockedRecorder.Verify(r => r.OnConnectionsRemoved(It.IsAny<string>(), connections), Times.Once());
+            container.Remove(points);
+            mockedRecorder.Verify(r => r.OnConnectionsUpdated<SlamPoint>(It.IsAny<string>(), connections), Times.Once());
+            mockedRecorder.Verify(r => r.OnConnectionsRemoved<SlamPoint>(It.IsAny<string>(), connections), Times.Once());
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), points), Times.Once());
             mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), points), Times.Once());
-            mockedRecorder.Verify(r => r.OnRemoved(It.IsAny<string>(), typeof(SlamPoint), It.IsAny<List<int>>()),
+            mockedRecorder.Verify(r => r.OnRemoved<SlamPoint>(It.IsAny<string>(), It.IsAny<List<int>>()),
                                    Times.Once());
             
             mockedRecorder.Object.UnsubscribeFromEverything();
             
-            container.AddRange(points.OfType<SlamPoint>());
-            container.Update(points.OfType<SlamPoint>());
+            container.AddRange(points);
+            container.Update(points);
             container.AddConnections(connections);
             container.RemoveConnections(connections);
-            container.Remove(points.OfType<SlamPoint>());
-            mockedRecorder.Verify(r => r.OnConnectionsUpdated(It.IsAny<string>(), connections), Times.Once());
-            mockedRecorder.Verify(r => r.OnConnectionsRemoved(It.IsAny<string>(), connections), Times.Once());
+            container.Remove(points);
+            mockedRecorder.Verify(r => r.OnConnectionsUpdated<SlamPoint>(It.IsAny<string>(), connections), Times.Once());
+            mockedRecorder.Verify(r => r.OnConnectionsRemoved<SlamPoint>(It.IsAny<string>(), connections), Times.Once());
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), points), Times.Once());
             mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), points), Times.Once());
-            mockedRecorder.Verify(r => r.OnRemoved(It.IsAny<string>(), typeof(SlamPoint), It.IsAny<List<int>>()),
+            mockedRecorder.Verify(r => r.OnRemoved<SlamPoint>(It.IsAny<string>(), It.IsAny<List<int>>()),
+                                   Times.Once());
+        }
+
+        [Test]
+        public void SubscribeConnectableObservationCloudContainer()
+        {
+            var container = new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
+                                                                       new SlamLinesContainer());
+            var mockedRecorder = new Mock<IDataRecorderPlugin>();
+            mockedRecorder.Object.SubscribeOn(container, "");
+
+            var points = new []
+            {
+                new SlamObservation(new SlamPoint(0, Vector3.back, Color.black), Quaternion.identity, "", ""),
+                new SlamObservation(new SlamPoint(1, Vector3.down, Color.blue), Quaternion.identity, "", ""),
+            };
+            var connections = new List<(int, int)> {(0, 1)};
+            container.AddRange(points);
+            container.Update(points);
+            container.AddConnections(connections);
+            container.RemoveConnections(connections);
+            container.Remove(points);
+            mockedRecorder.Verify(r => r.OnConnectionsUpdated<SlamObservation>(It.IsAny<string>(), connections), Times.Once());
+            mockedRecorder.Verify(r => r.OnConnectionsRemoved<SlamObservation>(It.IsAny<string>(), connections), Times.Once());
+            mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), points), Times.Once());
+            mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), points), Times.Once());
+            mockedRecorder.Verify(r => r.OnRemoved<SlamObservation>(It.IsAny<string>(), It.IsAny<List<int>>()),
+                                   Times.Once());
+            
+            mockedRecorder.Object.UnsubscribeFromEverything();
+            
+            container.AddRange(points);
+            container.Update(points);
+            container.AddConnections(connections);
+            container.RemoveConnections(connections);
+            container.Remove(points);
+            mockedRecorder.Verify(r => r.OnConnectionsUpdated<SlamObservation>(It.IsAny<string>(), connections), Times.Once());
+            mockedRecorder.Verify(r => r.OnConnectionsRemoved<SlamObservation>(It.IsAny<string>(), connections), Times.Once());
+            mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), points), Times.Once());
+            mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), points), Times.Once());
+            mockedRecorder.Verify(r => r.OnRemoved<SlamObservation>(It.IsAny<string>(),  It.IsAny<List<int>>()),
                                    Times.Once());
         }
 

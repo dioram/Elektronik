@@ -6,8 +6,8 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
-using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -421,15 +421,18 @@ namespace Elektronik.Containers
             return res;
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var type = nameof(SlamTrackedObject);
-            var converter = new UnityJsonConverter();
-            lock (_objects)
+            foreach (var pair in _objects.Values)
             {
-                return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"{type}\"," +
-                        $"\"objects\":{JsonConvert.SerializeObject(_objects.Values.Select(o => o.Item1).ToList(), converter)}," +
-                        $"\"tracks\":{JsonConvert.SerializeObject(_objects.Values.Select(o => o.Item2).ToList(), converter)}}}";
+                var obj = pair.Item1;
+                obj.Position = pair.Item2[0].Point1.Position;
+                recorder.OnAdded(DisplayName, new [] {obj});
+                foreach (var line in pair.Item2)
+                {
+                    obj.Position = line.Point2.Position;
+                    recorder.OnUpdated(DisplayName, new []{obj});
+                }
             }
         }
 

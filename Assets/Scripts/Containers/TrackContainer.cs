@@ -7,6 +7,7 @@ using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -310,10 +311,12 @@ namespace Elektronik.Containers
             return res;
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            // Serialisation handles by TrackedObjectsContainer
-            return "{}";
+            lock (_lines)
+            {
+                recorder.OnAdded(DisplayName, _lines.OfType<ICloudItem>().ToList());
+            }
         }
 
         #endregion

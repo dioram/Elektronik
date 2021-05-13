@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Presenters;
 using Elektronik.Renderers;
@@ -32,7 +34,7 @@ namespace Protobuf.Tests.Internal
             var p2 = new SlamPoint(2, Vector3.zero, Color.black);
             _tree.Points.Add(p1);
             _tree.Points.Add(p2);
-            _tree.Points.AddConnections(new []{(p1.Id, p2.Id)});
+            _tree.Points.AddConnections(new[] {(p1.Id, p2.Id)});
         }
 
         [Test]
@@ -74,17 +76,22 @@ namespace Protobuf.Tests.Internal
         }
 
         [Test]
-        public void Serialize()
+        public void WriteSnapshot()
         {
-            var tracked = (_tree.TrackedObjs as ISnapshotable)!.Serialize();
-            var observations = (_tree.Observations as ISnapshotable)!.Serialize();
-            var points = (_tree.Points as ISnapshotable)!.Serialize();
-            var lines = (_tree.Lines as ISnapshotable)!.Serialize();
-            var planes = (_tree.InfinitePlanes as ISnapshotable)!.Serialize();
-            var json = _tree.Serialize();
-            Assert.AreEqual($"{{\"displayName\":\"Protobuf\",\"type\":\"virtual\"," +
-                            $"\"data\":[{tracked},{observations},{points},{lines},{planes}]}}",
-                            json);
+            var mockedRecorder = new Mock<IDataRecorderPlugin>();
+            var container = new ProtobufContainerTree("Test", _image.Object);
+
+            container.WriteSnapshot(mockedRecorder.Object);
+            mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamPoint>>()), Times.Once);
+            mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamObservation>>()), Times.Once);
+            mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamTrackedObject>>()), Times.Once);
+            mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamLine>>()), Times.Once);
+            mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamInfinitePlane>>()), Times.Once);
+            mockedRecorder.Verify(
+                r => r.OnConnectionsUpdated<SlamPoint>(It.IsAny<string>(), It.IsAny<IList<(int, int)>>()), Times.Once);
+            mockedRecorder.Verify(
+                r => r.OnConnectionsUpdated<SlamObservation>(It.IsAny<string>(), It.IsAny<IList<(int, int)>>()),
+                Times.Once);
         }
 
         [Test]
@@ -106,6 +113,7 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void Renderer()
         {
+            // ReSharper disable once Unity.IncorrectMonoBehaviourInstantiation
             var renderer = new ImageRenderer();
             _tree.SetRenderer(renderer);
 

@@ -6,8 +6,8 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
-using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -332,12 +332,10 @@ namespace Elektronik.Containers
             res.AddRange(list);
             return res;
         }
-        
-        public string Serialize()
+
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var converter = new UnityJsonConverter();
-            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"SlamLine\"," +
-                    $"\"data\":{JsonConvert.SerializeObject(_connections.Values.ToList(), converter)}}}";
+            recorder.OnAdded(DisplayName,this.ToList());
         }
 
         public static SlamLinesContainer Deserialize(JToken token)
