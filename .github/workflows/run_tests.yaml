@@ -1,0 +1,42 @@
+name: Run unit tests
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Build"]
+    types: [completed]
+
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  
+jobs:
+  runTest:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: Run tests
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Report unity editor tests
+        uses: zyborg/dotnet-tests-report@v1
+        with:
+          test_results_path: .\tests.xml
+          fail_build_on_failed_tests: true
+          report_name: unity_editor_tests
+          report_title: Unity editor tests
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run protobuf plugin unit tests
+        uses: zyborg/dotnet-tests-report@v1
+        with:
+          project_path: plugins/Protobuf.Tests.Internal
+          fail_build_on_failed_tests: true
+          report_name: protobuf_unit_tests
+          report_title: Protobuf unit tests
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run ROS plugin unit tests
+        uses: zyborg/dotnet-tests-report@v1
+        with:
+          project_path: plugins/ROS.Tests
+          fail_build_on_failed_tests: true
+          report_name: ros_unit_tests
+          report_title: ROS unit tests
+          github_token: ${{ secrets.GITHUB_TOKEN }}
