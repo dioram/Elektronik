@@ -19,8 +19,11 @@ jobs:
           arch: x64
       - name: Build unity player
         run: .\.github\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
-      - name: Run unity editor tests
-        run: dotnet .\Assets\Editor\TestReporter\UnityTestRunnerResultsReporter.dll --resultsPath=.\ --XMLName=tests.xml --LogName=.\Logs\tests.log
+      - uses: MirrorNG/nunit-reporter@v1.0.9
+          if: always()
+          with:
+            path: tests.xml
+            access-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run plugins tests
         run: |
           cd ./plugins
