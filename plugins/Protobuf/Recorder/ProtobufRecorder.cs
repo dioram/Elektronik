@@ -37,7 +37,7 @@ namespace Elektronik.Protobuf.Recorder
         public const uint Marker = 0xDEADBEEF;
 
         public SettingsBag Settings { get; set; } = new SettingsBag();
-        public ISettingsHistory SettingsHistory { get; } = new SettingsHistory<SettingsBag>("recorder");
+        public ISettingsHistory SettingsHistory { get; } = new FakeSettingsHistory();
 
         public void StartRecording()
         {
