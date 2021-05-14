@@ -27,6 +27,11 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 "<#7f7fe5><u><link=\"https://www.ros.org\">ROS</link></u></color>" +
                 " using <#7f7fe5><u><link=\"http://wiki.ros.org/rosbag\">rosbag</link></u></color>.";
 
+        public void SetFileName(string filename)
+        {
+            TypedSettings.FilePath = filename;
+        }
+
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
 
         public string CurrentTimestamp

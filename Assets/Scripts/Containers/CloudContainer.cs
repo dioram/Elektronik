@@ -11,8 +11,6 @@ using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -147,6 +145,7 @@ namespace Elektronik.Containers
 
         public void AddRange(IEnumerable<TCloudItem> items)
         {
+            if (items is null) return;
             lock (_items)
             {
                 var list = items.ToList();
@@ -161,6 +160,7 @@ namespace Elektronik.Containers
 
         public void Remove(IEnumerable<TCloudItem> items)
         {
+            if (items is null) return;
             lock (_items)
             {
                 var list = items.ToList();
@@ -186,6 +186,7 @@ namespace Elektronik.Containers
 
         public void Update(IEnumerable<TCloudItem> items)
         {
+            if (items is null) return;
             lock (_items)
             {
                 var list = items.ToList();
@@ -310,14 +311,7 @@ namespace Elektronik.Containers
 
         public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            recorder.OnAdded(DisplayName, this.OfType<SlamInfinitePlane>().ToList());
-        }
-
-        public static CloudContainer<TCloudItem> Deserialize(JToken token)
-        {
-            var res = new CloudContainer<TCloudItem>(token["displayName"].ToString());
-            res.AddRange(JsonConvert.DeserializeObject<TCloudItem[]>(token["data"].ToString()));
-            return res;
+            recorder.OnAdded(DisplayName, this.ToList());
         }
 
         #endregion

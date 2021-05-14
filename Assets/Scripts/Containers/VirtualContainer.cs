@@ -4,7 +4,6 @@ using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.PluginsSystem;
-using Newtonsoft.Json.Linq;
 
 namespace Elektronik.Containers
 {
@@ -103,13 +102,6 @@ namespace Elektronik.Containers
             {
                 snapshotable.WriteSnapshot(recorder);
             }
-        }
-
-        public static VirtualContainer Deserialize(JToken token)
-        {
-            return new VirtualContainer(token["displayName"].ToString(),
-                                        token["data"].Where(t => t.HasValues)
-                                                .Select(SnapshotableDeserializer.Deserialize).ToList());
         }
 
         #endregion

@@ -148,6 +148,7 @@ namespace Elektronik.Containers
 
         public void AddRange(IEnumerable<SlamLine> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_lines)
             {
@@ -159,6 +160,7 @@ namespace Elektronik.Containers
 
         public void Remove(IEnumerable<SlamLine> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_lines)
             {
@@ -184,6 +186,7 @@ namespace Elektronik.Containers
 
         public void Update(IEnumerable<SlamLine> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_lines)
             {

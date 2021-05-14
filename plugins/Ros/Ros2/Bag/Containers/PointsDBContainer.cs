@@ -83,14 +83,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         public ISnapshotable TakeSnapshot()
         {
-            var res = new CloudContainer<SlamPoint>();
+            var res = new CloudContainer<SlamPoint>(DisplayName);
             res.AddRange(Current);
             return res;
         }
 
         public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            recorder.OnAdded(DisplayName, Current?.OfType<ICloudItem>().ToList() ?? new List<ICloudItem>());
+            recorder.OnAdded(DisplayName, Current);
         }
 
         #endregion

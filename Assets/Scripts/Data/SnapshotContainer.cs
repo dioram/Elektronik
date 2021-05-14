@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SimpleFileBrowser;
 
 namespace Elektronik.Data
@@ -18,18 +15,6 @@ namespace Elektronik.Data
         {
             DisplayName = displayName;
             Children = children;
-        }
-
-        public static SnapshotContainer Load(string filename)
-        {
-            var serializer = new JsonSerializer();
-            using var file = File.OpenText(filename);
-            using var jsonTextReader = new JsonTextReader(file);
-            var arr = serializer.Deserialize<JToken>(jsonTextReader)["data"];
-
-            return new SnapshotContainer($"Snapshot: {Path.GetFileName(filename)}",
-                                         arr.Where(t => t.HasValues)
-                                                 .Select(SnapshotableDeserializer.Deserialize).ToList());
         }
 
         #region ISourceTree

@@ -82,6 +82,7 @@ namespace Elektronik.Containers
 
         public void AddRange(IEnumerable<TCloudItem> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_table)
             {
@@ -107,6 +108,7 @@ namespace Elektronik.Containers
 
         public void Update(IEnumerable<TCloudItem> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_table)
             {
@@ -157,6 +159,7 @@ namespace Elektronik.Containers
 
         public void Remove(IEnumerable<TCloudItem> items)
         {
+            if (items is null) return;
             Debug.Assert(_linesBuffer.Count == 0);
             var list = items.ToList();
             lock (_table)
@@ -206,6 +209,7 @@ namespace Elektronik.Containers
 
         public void AddConnections(IEnumerable<(int id1, int id2)> connections)
         {
+            if (connections is null) return;
             Debug.Assert(_linesBuffer.Count == 0);
             var list = connections.ToList();
             foreach (var c in list)
@@ -220,6 +224,7 @@ namespace Elektronik.Containers
 
         public void RemoveConnections(IEnumerable<(int id1, int id2)> connections)
         {
+            if (connections is null) return;
             Debug.Assert(_linesBuffer.Count == 0);
             var list = connections.ToList();
             foreach (var c in list)

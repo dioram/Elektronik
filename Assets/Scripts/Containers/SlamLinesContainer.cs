@@ -8,8 +8,6 @@ using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -113,6 +111,7 @@ namespace Elektronik.Containers
 
         public void AddRange(IEnumerable<SlamLine> items)
         {
+            if (items is null) return;
             var buffer = new List<SlamLine>();
             lock (_connections)
             {
@@ -143,6 +142,7 @@ namespace Elektronik.Containers
 
         public void Update(IEnumerable<SlamLine> items)
         {
+            if (items is null) return;
             var buffer = new List<SlamLine>();
             lock (_connections)
             {
@@ -175,6 +175,7 @@ namespace Elektronik.Containers
 
         public void Remove(IEnumerable<SlamLine> items)
         {
+            if (items is null) return;
             var ids = new List<int>();
             lock (_connections)
             {
@@ -312,13 +313,6 @@ namespace Elektronik.Containers
         public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
             recorder.OnAdded(DisplayName, this.ToList());
-        }
-
-        public static SlamLinesContainer Deserialize(JToken token)
-        {
-            var res = new SlamLinesContainer(token["displayName"].ToString());
-            res.AddRange(JsonConvert.DeserializeObject<SlamLine[]>(token["data"].ToString()));
-            return res;
         }
 
         #endregion

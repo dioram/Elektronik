@@ -71,6 +71,11 @@ namespace Elektronik.Protobuf.Offline
             }));
         }
 
+        public void SetFileName(string filename)
+        {
+            TypedSettings.FilePath = filename;
+        }
+
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
 
         public string CurrentTimestamp => $"{_frames?.Current?.Timestamp ?? 0}";

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Elektronik.Clouds;
 using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.PluginsSystem;
+using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI;
 using Elektronik.UI.Localization;
 using Elektronik.UI.Windows;
@@ -114,13 +117,10 @@ namespace Elektronik.Data
 
         public void LoadSnapshot()
         {
-            FileBrowser.ShowLoadDialog(paths =>
-                                       {
-                                           foreach (var path in paths)
-                                           {
-                                               AddDataSource(SnapshotContainer.Load(path));
-                                           }
-                                       },
+            FileBrowser.SetFilters(false, PluginsLoader.Plugins.Value
+                                           .OfType<IDataSourcePluginOffline>()
+                                           .SelectMany(r => r.SupportedExtensions));
+            FileBrowser.ShowLoadDialog(LoadSnapshot,
                                        () => { },
                                        false,
                                        true,
@@ -138,6 +138,22 @@ namespace Elektronik.Data
             {
                 MapSourceTree(child, fullName, action);
             }
+        }
+
+        private void LoadSnapshot(string[] files)
+        {
+            foreach (var path in files)
+            {
+                var playerPrefab = PluginsLoader.Plugins.Value
+                        .OfType<IDataSourcePluginOffline>()
+                        .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
+                if (playerPrefab is null) return;
+                var player = (IDataSourcePluginOffline) Activator.CreateInstance(playerPrefab.GetType());
+                player.SetFileName(path);
+                player.Start();
+                player.CurrentPosition = player.AmountOfFrames - 1;
+                AddDataSource(new SnapshotContainer(Path.GetFileName(path), player.Data.Children));
+            } 
         }
     }
 }

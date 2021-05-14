@@ -8,8 +8,6 @@ using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -174,6 +172,7 @@ namespace Elektronik.Containers
 
         public void AddRange(IEnumerable<SlamTrackedObject> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_objects)
             {
@@ -189,6 +188,7 @@ namespace Elektronik.Containers
 
         public void Remove(IEnumerable<SlamTrackedObject> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_objects)
             {
@@ -220,6 +220,7 @@ namespace Elektronik.Containers
 
         public void Update(IEnumerable<SlamTrackedObject> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_objects)
             {
@@ -397,16 +398,7 @@ namespace Elektronik.Containers
                 }
             }
         }
-
-        public static TrackedObjectsContainer Deserialize(JToken token)
-        {
-            var res = new TrackedObjectsContainer(token["displayName"].ToString());
-            var objects = JsonConvert.DeserializeObject<SlamTrackedObject[]>(token["objects"].ToString());
-            var histories = JsonConvert.DeserializeObject<SlamLine[][]>(token["tracks"].ToString());
-            res.AddRangeWithHistory(objects, histories);
-            return res;
-        }
-
+        
         #endregion
 
         #region Private definitions
