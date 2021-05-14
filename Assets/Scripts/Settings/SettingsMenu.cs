@@ -113,11 +113,11 @@ namespace Elektronik.Settings
 
         private void PluginSelected(PluginListBoxItem pluginListBoxItem)
         {
-            foreach (var plugin in PluginsListBox.Select(lbi=> (PluginListBoxItem)lbi))
+            foreach (var plugin in PluginsListBox.Select(lbi => (PluginListBoxItem) lbi))
             {
                 plugin.HideDescription();
             }
-            
+
             _selectedPlugin = pluginListBoxItem;
             _selectedPlugin.ShowDescription();
             SettingsGenerator.Generate(_selectedPlugin.Plugin.Settings);
@@ -159,6 +159,8 @@ namespace Elektronik.Settings
                 break;
             }
 
+            availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataRecorderPlugin>());
+
             foreach (var plugin in availablePlugins)
             {
                 var pluginUIItem = (PluginListBoxItem) PluginsListBox.Add();
@@ -183,7 +185,7 @@ namespace Elektronik.Settings
         private void DisableOfflinePlugins(IElektronikPlugin except)
         {
             var plugins = PluginsListBox.OfType<PluginListBoxItem>()
-                    .Where(lbi => lbi.Plugin != except);
+                    .Where(lbi => lbi.Plugin is IDataSourcePluginOffline && lbi.Plugin != except);
 
             foreach (var plugin in plugins)
             {

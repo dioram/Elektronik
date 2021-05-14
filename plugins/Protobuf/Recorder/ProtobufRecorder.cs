@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
@@ -32,10 +33,11 @@ namespace Elektronik.Protobuf.Recorder
         public string Description { get; } = "Records data to Protobuf file";
         public string Extension { get; } = ".dat";
         public string FileName { get; set; }
+        public ICSConverter Converter { get; set; }
         public const uint Marker = 0xDEADBEEF;
 
-        public SettingsBag Settings { get; set; }
-        public ISettingsHistory SettingsHistory { get; }
+        public SettingsBag Settings { get; set; } = new SettingsBag();
+        public ISettingsHistory SettingsHistory { get; } = new SettingsHistory<SettingsBag>("recorder");
 
         public void StartRecording()
         {
@@ -150,23 +152,23 @@ namespace Elektronik.Protobuf.Recorder
             {
             case SlamPoint _:
                 packet.Points = new PacketPb.Types.Points();
-                packet.Points.Data.AddRange(items.OfType<SlamPoint>().Select(s => (PointPb)s));
+                packet.Points.Data.AddRange(items.OfType<SlamPoint>().Select(s => s.ToProtobuf(Converter)));
                 break;
             case SlamObservation _:
                 packet.Observations = new PacketPb.Types.Observations();
-                packet.Observations.Data.AddRange(items.OfType<SlamObservation>().Select(s => (ObservationPb)s));
+                packet.Observations.Data.AddRange(items.OfType<SlamObservation>().Select(s => s.ToProtobuf(Converter)));
                 break;
             case SlamTrackedObject _:
                 packet.TrackedObjs = new PacketPb.Types.TrackedObjs();
-                packet.TrackedObjs.Data.AddRange(items.OfType<SlamTrackedObject>().Select(s => (TrackedObjPb)s));
+                packet.TrackedObjs.Data.AddRange(items.OfType<SlamTrackedObject>().Select(s => s.ToProtobuf(Converter)));
                 break;
             case SlamInfinitePlane _:
                 packet.InfinitePlanes = new PacketPb.Types.InfinitePlanes();
-                packet.InfinitePlanes.Data.AddRange(items.OfType<SlamInfinitePlane>().Select(s => (InfinitePlanePb)s));
+                packet.InfinitePlanes.Data.AddRange(items.OfType<SlamInfinitePlane>().Select(s => s.ToProtobuf(Converter)));
                 break;
             case SlamLine _:
                 packet.Lines = new PacketPb.Types.Lines();
-                packet.Lines.Data.AddRange(items.OfType<SlamLine>().Select(s => (LinePb)s));
+                packet.Lines.Data.AddRange(items.OfType<SlamLine>().Select(s => s.ToProtobuf(Converter)));
                 break;
             }
         }

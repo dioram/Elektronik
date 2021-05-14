@@ -48,13 +48,14 @@ namespace Elektronik.Data
 
         private void Record(string filename)
         {
-            _currentRecorder = PluginsLoader.Plugins.Value
+            _currentRecorder = PluginsPlayer.Plugins
                     .OfType<IDataRecorderPlugin>()
                     .FirstOrDefault(r => filename.EndsWith(r.Extension));
 
             if (_currentRecorder is null) return;
 
             _currentRecorder.FileName = filename;
+            _currentRecorder.Converter = DataSourcesManager.Converter;
             DataSourcesManager.MapSourceTree((elem, topic) => !_currentRecorder.SubscribeOn(elem, topic));
             _currentRecorder.StartRecording();
         }

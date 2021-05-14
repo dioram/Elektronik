@@ -332,7 +332,6 @@ MonoBehaviour:
   TraceButton: {fileID: 3962600556216843210}
   RemoveButton: {fileID: 5503487687246944818}
   CameraButton: {fileID: 8339740205041348444}
-  ConvexHullButton: {fileID: 0}
   SaveButton: {fileID: 1460589859745634328}
 --- !u!114 &3654434711664828003
 MonoBehaviour:
@@ -1846,6 +1845,7 @@ GameObject:
   - component: {fileID: 1460589859745634328}
   - component: {fileID: 643394507355593769}
   - component: {fileID: 8742264064907900979}
+  - component: {fileID: 6466396109237468014}
   m_Layer: 0
   m_Name: SaveButton
   m_TagString: Untagged
@@ -1991,6 +1991,18 @@ MonoBehaviour:
     type: 3}
   TooltipText: Save
   Offset: {x: 0, y: 40}
+--- !u!114 &6466396109237468014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7823014613547710428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81564c95490e4c7abd88898c69e394ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9021074657261402607
 GameObject:
   m_ObjectHideFlags: 0

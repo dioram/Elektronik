@@ -74,17 +74,12 @@ namespace Elektronik.Protobuf.Data
     {
         public static implicit operator Vector3(Vector3Pb v)
             => v != null ? new Vector3((float) v.X, (float) v.Y, (float) v.Z) : Vector3.zero;
-
-        public static implicit operator Vector3Pb(Vector3 v)
-            => new Vector3Pb {X = v.x, Y = v.y, Z = v.z};
     }
 
     public partial class Vector4Pb
     {
         public static implicit operator Quaternion(Vector4Pb v)
             => v != null ? new Quaternion((float) v.X, (float) v.Y, (float) v.Z, (float) v.W) : Quaternion.identity;
-
-        public static implicit operator Vector4Pb(Quaternion v) => new Vector4Pb {X = v.x, Y = v.y, Z = v.z, W = v.w};
     }
 
     public partial class ColorPb
@@ -106,18 +101,12 @@ namespace Elektronik.Protobuf.Data
             => p != null
                     ? new SlamPoint() {Id = p.id_, Position = p.position_, Color = p.color_, Message = p.message_}
                     : default;
-
-        public static implicit operator PointPb(SlamPoint p)
-            => new PointPb {Id = p.Id, Position = p.Position, Color = p.Color, Message = p.Message ?? ""};
     }
 
     public partial class LinePb
     {
         public static implicit operator SlamLine(LinePb c)
             => c != null ? new SlamLine(c.pt1_, c.pt2_) : default;
-
-        public static implicit operator LinePb(SlamLine l)
-            => new LinePb {Pt1 = l.Point1, Pt2 = l.Point2};
     }
 
     public partial class ObservationPb
@@ -136,13 +125,6 @@ namespace Elektronik.Protobuf.Data
 
         public static implicit operator SlamObservation(ObservationPb o)
             => o != null ? new SlamObservation(o.point_, o.orientation_, o.message_, o.filename_, o.stats_) : default;
-
-        public static implicit operator ObservationPb(SlamObservation o)
-            => new ObservationPb
-            {
-                Point = o.Point, Orientation = o.Rotation, Message = o.Message, Filename = o.FileName,
-                Stats = o.Statistics
-            };
     }
 
     public partial class TrackedObjPb
@@ -151,12 +133,6 @@ namespace Elektronik.Protobuf.Data
             => o != null
                     ? new SlamTrackedObject(o.id_, o.translation_, o.rotation_, o.trackColor_, o.message_)
                     : default;
-
-        public static implicit operator TrackedObjPb(SlamTrackedObject o)
-            => new TrackedObjPb
-            {
-                Id = o.Id, Translation = o.Position, Rotation = o.Rotation, TrackColor = o.Color, Message = o.Message
-            };
     }
 
     public partial class InfinitePlanePb
@@ -166,9 +142,64 @@ namespace Elektronik.Protobuf.Data
                     ? new SlamInfinitePlane
                             {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset}
                     : default;
+    }
 
-        public static implicit operator InfinitePlanePb(SlamInfinitePlane p)
+    public static class Conversions
+    {
+        public static Vector3Pb ToProtobuf(this Vector3 v, ICSConverter converter)
+        {
+            if (converter != null) converter.ConvertBack(ref v);
+            return new Vector3Pb {X = v.x, Y = v.y, Z = v.z};
+        }
+
+        public static Vector4Pb ToProtobuf(this Quaternion q, ICSConverter converter)
+        {
+            if (converter != null)
+            {
+                var v = Vector3.zero;
+                converter.ConvertBack(ref v, ref q);
+            }
+
+            return new Vector4Pb {X = q.x, Y = q.y, Z = q.z, W = q.w};
+        }
+
+        public static PointPb ToProtobuf(this SlamPoint p, ICSConverter converter)
+            => new PointPb
+            {
+                Id = p.Id, Position = p.Position.ToProtobuf(converter), Color = p.Color, Message = p.Message ?? ""
+            };
+
+        public static LinePb ToProtobuf(this SlamLine l, ICSConverter converter)
+            => new LinePb {Pt1 = l.Point1.ToProtobuf(converter), Pt2 = l.Point2.ToProtobuf(converter)};
+        
+        public static ObservationPb ToProtobuf(this SlamObservation o, ICSConverter converter)
+            => new ObservationPb
+            {
+                Point = o.Point.ToProtobuf(converter), 
+                Orientation = o.Rotation.ToProtobuf(converter), 
+                Message = o.Message, 
+                Filename = o.FileName,
+                Stats = o.Statistics
+            };
+
+        public static TrackedObjPb ToProtobuf(this SlamTrackedObject o, ICSConverter converter)
+            => new TrackedObjPb
+            {
+                Id = o.Id, 
+                Translation = o.Position.ToProtobuf(converter), 
+                Rotation = o.Rotation.ToProtobuf(converter), 
+                TrackColor = o.Color, 
+                Message = o.Message
+            };
+
+        public static InfinitePlanePb ToProtobuf(this SlamInfinitePlane p, ICSConverter converter)
             => new InfinitePlanePb
-                    {Color = p.Color, Id = p.Id, Message = p.Message, Normal = p.Normal, Offset = p.Offset};
+            {
+                Color = p.Color, 
+                Id = p.Id, 
+                Message = p.Message, 
+                Normal = p.Normal.ToProtobuf(converter), 
+                Offset = p.Offset.ToProtobuf(converter)
+            };
     }
 }

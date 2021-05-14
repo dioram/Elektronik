@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.Data.Converters;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Localization;
@@ -11,8 +12,9 @@ namespace Elektronik.Data
 {
     public class SnapshotContainer : ISourceTree, IRemovable, IVisible, ISnapshotable, ISave
     {
-        public SnapshotContainer(string displayName, IEnumerable<ISourceTree> children)
+        public SnapshotContainer(string displayName, IEnumerable<ISourceTree> children, ICSConverter converter)
         {
+            _converter = converter;
             DisplayName = displayName;
             Children = children;
         }
@@ -86,7 +88,8 @@ namespace Elektronik.Data
                                                  .OfType<ISnapshotable>()
                                                  .Select(ch => ch.TakeSnapshot())
                                                  .Select(ch => ch as ISourceTree)
-                                                 .ToList());
+                                                 .ToList(),
+                                         _converter);
         }
 
         public void WriteSnapshot(IDataRecorderPlugin recorder)
@@ -119,13 +122,15 @@ namespace Elektronik.Data
         #region Private
 
         private bool _isVisible = true;
+        private readonly ICSConverter _converter;
 
         private void Save(string filename)
         {
-            var recorder = PluginsLoader.Plugins.Value
+            var recorder = PluginsPlayer.Plugins
                     .OfType<IDataRecorderPlugin>()
                     .First(r => filename.EndsWith(r.Extension));
             recorder.FileName = filename;
+            recorder.Converter = _converter;
             recorder.StartRecording();
             WriteSnapshot(recorder);
             recorder.StopRecording();

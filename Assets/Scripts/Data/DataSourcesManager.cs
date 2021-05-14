@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Elektronik.Clouds;
 using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.Data.Converters;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI;
@@ -17,6 +18,7 @@ namespace Elektronik.Data
 {
     public class DataSourcesManager : MonoBehaviour
     {
+        public CSConverter Converter;
         private static int _snapshotsCount = 0;
         [SerializeField] private RectTransform SourceTreeView;
         [SerializeField] private GameObject TreeElementPrefab;
@@ -107,11 +109,13 @@ namespace Elektronik.Data
         {
             // ReSharper disable once LocalVariableHidesMember
             var name = TextLocalizationExtender.GetLocalizedString("Snapshot", _snapshotsCount++);
-            var snapshot = new SnapshotContainer(name, _dataSources
+            var snapshot = new SnapshotContainer(name,
+                                                 _dataSources
                                                          .OfType<ISnapshotable>()
                                                          .Select(s => s.TakeSnapshot())
                                                          .Select(s => s as ISourceTree)
-                                                         .ToList());
+                                                         .ToList(),
+                                                 Converter);
             AddDataSource(snapshot);
         }
 
@@ -149,11 +153,12 @@ namespace Elektronik.Data
                         .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
                 if (playerPrefab is null) return;
                 var player = (IDataSourcePluginOffline) Activator.CreateInstance(playerPrefab.GetType());
+                player.Converter = Converter;
                 player.SetFileName(path);
                 player.Start();
                 player.CurrentPosition = player.AmountOfFrames - 1;
-                AddDataSource(new SnapshotContainer(Path.GetFileName(path), player.Data.Children));
-            } 
+                AddDataSource(new SnapshotContainer(Path.GetFileName(path), player.Data.Children, Converter));
+            }
         }
     }
 }

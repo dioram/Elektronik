@@ -84,6 +84,11 @@ namespace Protobuf.Tests.Elektronik
             _map[4].Point.Position.Z += .5;
             _map[4].Point.Color = new ColorPb {R = 255, B = 255};
             _map[4].Filename = "";
+            _map[0].Orientation = new Vector4Pb {X = 0, Y = .5, Z = 0, W = 1};
+            _map[1].Orientation = new Vector4Pb {X = 0, Y = .5, Z = 0, W = 1};
+            _map[2].Orientation = new Vector4Pb {X = 0, Y = .5, Z = 0, W = 1};
+            _map[3].Orientation = new Vector4Pb {X = 0, Y = .5, Z = 0, W = 1};
+            _map[4].Orientation = new Vector4Pb {X = 0, Y = .5, Z = 0, W = 1};
 
             foreach (var pb in _map)
             {
