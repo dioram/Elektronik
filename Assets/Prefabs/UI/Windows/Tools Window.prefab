@@ -5433,6 +5433,7 @@ GameObject:
   - component: {fileID: 36302757057697636}
   - component: {fileID: 2229850655315381987}
   - component: {fileID: 1003570951893957605}
+  - component: {fileID: 8042277810472182100}
   m_Layer: 0
   m_Name: RecordButton
   m_TagString: Untagged
@@ -5607,6 +5608,22 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 45d1958d5ed42a34785eb4ca3f9ded3a, type: 3}
   - {fileID: 21300000, guid: 0317306be8e92094f9a957e335cc4a39, type: 3}
   TargetImage: {fileID: 8173430475853980217}
+--- !u!114 &8042277810472182100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7082707908978111299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
+    type: 3}
+  TooltipText: Record
+  Offset: {x: 0, y: 40}
 --- !u!1 &7433819710035952488
 GameObject:
   m_ObjectHideFlags: 0

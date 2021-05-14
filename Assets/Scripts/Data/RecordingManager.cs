@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Localization;
@@ -56,8 +57,8 @@ namespace Elektronik.Data
 
             _currentRecorder.FileName = filename;
             _currentRecorder.Converter = DataSourcesManager.Converter;
-            DataSourcesManager.MapSourceTree((elem, topic) => !_currentRecorder.SubscribeOn(elem, topic));
             _currentRecorder.StartRecording();
+            DataSourcesManager.MapSourceTree((elem, topic) => !_currentRecorder.SubscribeOn(elem, topic));
         }
     }
 }

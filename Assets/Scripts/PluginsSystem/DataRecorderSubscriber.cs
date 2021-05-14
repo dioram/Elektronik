@@ -57,7 +57,7 @@ namespace Elektronik.PluginsSystem
 
             return false;
         }
-
+        
         private static void SubscribeOnConnectableContainer<TCloudItem>(this IDataRecorderPlugin recorder,
                                                                         ISourceTree source,
                                                                         string topicName)
@@ -80,6 +80,10 @@ namespace Elektronik.PluginsSystem
 
             Subscriptions[recorder][source].Add(connectionsUpdated);
             Subscriptions[recorder][source].Add(connectionsRemoved);
+            recorder.OnConnectionsUpdated<TCloudItem>(source.DisplayName, (source as IConnectableObjectsContainer<TCloudItem>)?
+                                                      .Connections
+                                                      .Select(l => (l.Point1.Id, l.Point2.Id))
+                                                      .ToList());
             recorder.SubscribeOnCloudContainer<TCloudItem>(source, topicName);
         }
 
@@ -97,7 +101,7 @@ namespace Elektronik.PluginsSystem
 
             var updatedName = nameof(IContainer<ICloudItem>.OnUpdated);
             var updated = Observable.FromEvent<EventHandler<UpdatedEventArgs<TCloudItem>>>(
-                        h => (sender, args) => recorder.OnUpdated<TCloudItem>(topicName, args.UpdatedItems.ToList()),
+                        h => (sender, args) => recorder.OnUpdated(topicName, args.UpdatedItems.ToList()),
                         h => source.GetType().GetEvent(updatedName).AddEventHandler(source, h),
                         h => source.GetType().GetEvent(updatedName).RemoveEventHandler(source, h))
                     .Subscribe();
@@ -112,6 +116,8 @@ namespace Elektronik.PluginsSystem
             Subscriptions[recorder][source].Add(add);
             Subscriptions[recorder][source].Add(updated);
             Subscriptions[recorder][source].Add(removed);
+
+            recorder.OnAdded(source.DisplayName, (source as IContainer<TCloudItem>)?.ToList());
         }
 
         public static void UnsubscribeFromEverything(this IDataRecorderPlugin recorder)
