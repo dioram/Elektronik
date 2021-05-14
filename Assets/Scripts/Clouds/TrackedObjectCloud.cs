@@ -10,6 +10,7 @@ namespace Elektronik.Clouds
     {
         public override void OnItemsAdded(object sender, AddedEventArgs<SlamTrackedObject> e)
         {
+            if (!IsSenderVisible(sender)) return;
             lock (GameObjects)
             {
                 foreach (var obj in e.AddedItems)

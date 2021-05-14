@@ -2,7 +2,9 @@
 using System.Linq;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
+using Elektronik.UI.Localization;
 using JetBrains.Annotations;
+using SimpleFileBrowser;
 using UnityEngine;
 
 namespace Elektronik.Data
@@ -26,19 +28,35 @@ namespace Elektronik.Data
 
         public void StartRecording()
         {
-            _currentRecorder = _recorders.FirstOrDefault();
-            if (_currentRecorder is null) return;
-
-            _currentRecorder.FileName = @$"D://test.{_currentRecorder.Extension}";
-            DataSourcesManager.MapSourceTree((elem, topic) => !_currentRecorder.SubscribeOn(elem, topic));
-            _currentRecorder.StartRecording();
+            FileBrowser.SetFilters(false, _recorders.Select(r => r.Extension));
+            FileBrowser.ShowSaveDialog(path => Record(path[0]),
+                                       () => { },
+                                       false,
+                                       false,
+                                       "",
+                                       TextLocalizationExtender.GetLocalizedString("Save record"),
+                                       TextLocalizationExtender.GetLocalizedString("Save"));
         }
 
         public void StopRecording()
         {
             _currentRecorder?.StopRecording();
+            _currentRecorder = null;
         }
 
         [CanBeNull] private IDataRecorderPlugin _currentRecorder;
+
+        private void Record(string filename)
+        {
+            _currentRecorder = PluginsLoader.Plugins.Value
+                    .OfType<IDataRecorderPlugin>()
+                    .FirstOrDefault(r => filename.EndsWith(r.Extension));
+
+            if (_currentRecorder is null) return;
+
+            _currentRecorder.FileName = filename;
+            DataSourcesManager.MapSourceTree((elem, topic) => !_currentRecorder.SubscribeOn(elem, topic));
+            _currentRecorder.StartRecording();
+        }
     }
 }

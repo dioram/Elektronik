@@ -60,6 +60,7 @@ namespace Elektronik.Clouds
 
         public override void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
+            if (!IsSenderVisible(sender)) return;
             var list = e.AddedItems.ToList();
             if (CheckAndCreateReserves(sender, list)) return;
             AddItems(sender, list);
@@ -67,6 +68,7 @@ namespace Elektronik.Clouds
 
         public override void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
+            if (!IsSenderVisible(sender)) return;
             lock (_pointPlaces)
             {
                 foreach (var item in e.UpdatedItems)
@@ -112,6 +114,7 @@ namespace Elektronik.Clouds
 
         public override void ShowItems(object sender, IEnumerable<TCloudItem> items)
         {
+            if (!IsSenderVisible(sender)) return;
             OnClear(sender);
             var list = items.ToList();
             if (CheckAndCreateReserves(sender, list)) return;

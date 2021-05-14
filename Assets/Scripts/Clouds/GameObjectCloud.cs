@@ -47,6 +47,7 @@ namespace Elektronik.Clouds
 
         public override void ShowItems(object sender, IEnumerable<TCloudItem> items)
         {
+            if (!IsSenderVisible(sender)) return;
             OnClear(sender);
             lock (GameObjects)
             {
@@ -86,6 +87,7 @@ namespace Elektronik.Clouds
 
         public override void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
+            if (!IsSenderVisible(sender)) return;
             lock (GameObjects)
             {
                 foreach (var obj in e.AddedItems)
@@ -109,6 +111,7 @@ namespace Elektronik.Clouds
 
         public override void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
+            if (!IsSenderVisible(sender)) return;
             lock (GameObjects)
             {
                 foreach (var obj in e.UpdatedItems)

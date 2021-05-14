@@ -42,7 +42,6 @@ namespace Elektronik.Containers
 
         public bool IsReadOnly => false;
 
-
         public IEnumerator<SlamLine> GetEnumerator()
         {
             lock (_connections)
@@ -106,10 +105,8 @@ namespace Elektronik.Containers
                 _connectionsIndices[obj] = obj.Id;
                 _connections[obj.Id] = obj;
             }
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {obj}));
-            }
+
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {obj}));
         }
 
         public void Insert(int index, SlamLine item) => Add(item);
@@ -129,10 +126,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(buffer));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(buffer));
         }
 
         public void Update(SlamLine item)
@@ -143,10 +137,8 @@ namespace Elektronik.Containers
                 item.Id = index;
                 _connections[item.Id] = item;
             }
-            if (IsVisible)
-            {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {item}));
-            }
+
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {item}));
         }
 
         public void Update(IEnumerable<SlamLine> items)
@@ -163,10 +155,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(buffer));
-            }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(buffer));
         }
 
         public bool Remove(SlamLine obj)
@@ -178,10 +167,9 @@ namespace Elektronik.Containers
                 _connections.Remove(index);
                 _freeIds.Enqueue(index);
             }
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {obj.Id}));
-            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {obj.Id}));
+
             return true;
         }
 
@@ -202,10 +190,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
         }
 
         public void RemoveAt(int index)
@@ -215,6 +200,7 @@ namespace Elektronik.Containers
             {
                 line = _connections[index];
             }
+
             Remove(line);
         }
 
@@ -229,10 +215,8 @@ namespace Elektronik.Containers
                 _freeIds.Clear();
                 _maxId = 0;
             }
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
-            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
         }
 
         #endregion
@@ -250,6 +234,11 @@ namespace Elektronik.Containers
                 OnAdded += typedRenderer.OnItemsAdded;
                 OnUpdated += typedRenderer.OnItemsUpdated;
                 OnRemoved += typedRenderer.OnItemsRemoved;
+                OnVisibleChanged += visible =>
+                {
+                    if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<SlamLine>(this));
+                    else typedRenderer.OnClear(this);
+                };
                 if (Count > 0)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
@@ -266,7 +255,7 @@ namespace Elektronik.Containers
             lock (_connections)
             {
                 if (_connectionsIndices.Count == 0) return (transform.position, transform.rotation);
-            
+
                 Vector3 min = Vector3.positiveInfinity;
                 Vector3 max = Vector3.negativeInfinity;
                 foreach (var point in _connectionsIndices
@@ -296,20 +285,6 @@ namespace Elektronik.Containers
                 if (_isVisible == value) return;
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
-
-                if (_isVisible)
-                {
-                    OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
-                    return;
-                }
-
-                int[] ids;
-                lock (_connections)
-                {
-                    ids = _connections.Keys.ToArray();
-                }
-
-                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
             }
         }
 
@@ -320,7 +295,7 @@ namespace Elektronik.Containers
         #endregion
 
         #region ISnapshotable
-        
+
         public ISnapshotable TakeSnapshot()
         {
             var res = new SlamLinesContainer(DisplayName);
@@ -329,13 +304,14 @@ namespace Elektronik.Containers
             {
                 list = _connections.Values.ToList();
             }
+
             res.AddRange(list);
             return res;
         }
 
         public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            recorder.OnAdded(DisplayName,this.ToList());
+            recorder.OnAdded(DisplayName, this.ToList());
         }
 
         public static SlamLinesContainer Deserialize(JToken token)
@@ -346,9 +322,9 @@ namespace Elektronik.Containers
         }
 
         #endregion
-        
+
         #region Private definitions
-        
+
         private bool _isVisible = true;
 
         private readonly IDictionary<int, SlamLine> _connections = new SortedDictionary<int, SlamLine>();

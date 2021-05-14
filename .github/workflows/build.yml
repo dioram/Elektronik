@@ -24,11 +24,6 @@ jobs:
     runs-on: self-hosted
     needs: build
     steps:
-      - name: Run unity tests
-        uses: MirrorNG/nunit-reporter@v1.0.9
-        with:
-          path: tests.xml
-          access-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
         with:

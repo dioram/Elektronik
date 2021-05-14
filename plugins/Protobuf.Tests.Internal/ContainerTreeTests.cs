@@ -81,10 +81,20 @@ namespace Protobuf.Tests.Internal
             var mockedRecorder = new Mock<IDataRecorderPlugin>();
             var container = new ProtobufContainerTree("Test", _image.Object);
 
+            container.TrackedObjs.AddWithHistory(new SlamTrackedObject(0, Vector3.back, Quaternion.identity),
+                                                 new[]
+                                                 {
+                                                     new SlamLine(new SlamPoint(0, Vector3.up, Color.black),
+                                                                  new SlamPoint(1, Vector3.forward, Color.black)),
+                                                     new SlamLine(new SlamPoint(1, Vector3.forward, Color.black),
+                                                                  new SlamPoint(2, Vector3.back, Color.black))
+                                                 });
+
             container.WriteSnapshot(mockedRecorder.Object);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamPoint>>()), Times.Once);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamObservation>>()), Times.Once);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamTrackedObject>>()), Times.Once);
+            mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), It.IsAny<IList<SlamTrackedObject>>()), Times.Exactly(2));
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamLine>>()), Times.Once);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamInfinitePlane>>()), Times.Once);
             mockedRecorder.Verify(

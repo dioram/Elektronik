@@ -40,10 +40,7 @@ namespace Elektronik.Containers
                 _objects[item.Id] = (item, container);
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
         }
 
         public void Clear()
@@ -66,10 +63,7 @@ namespace Elektronik.Containers
                 _objects.Clear();
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
         }
 
         public bool Contains(SlamTrackedObject item)
@@ -104,10 +98,8 @@ namespace Elektronik.Containers
                 _objects.Remove(item.Id);
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
+
 
             return true;
         }
@@ -143,10 +135,7 @@ namespace Elektronik.Containers
                 _objects.Remove(index);
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
         }
 
         public SlamTrackedObject this[int index]
@@ -195,10 +184,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
         }
 
         public void Remove(IEnumerable<SlamTrackedObject> items)
@@ -219,10 +205,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
         }
 
         public void Update(SlamTrackedObject item)
@@ -232,10 +215,7 @@ namespace Elektronik.Containers
                 PureUpdate(item);
             }
 
-            if (IsVisible)
-            {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new[] {item}));
-            }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new[] {item}));
         }
 
         public void Update(IEnumerable<SlamTrackedObject> items)
@@ -249,10 +229,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(list));
-            }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(list));
         }
 
         #endregion
@@ -280,6 +257,11 @@ namespace Elektronik.Containers
                 OnAdded += trackedRenderer.OnItemsAdded;
                 OnUpdated += trackedRenderer.OnItemsUpdated;
                 OnRemoved += trackedRenderer.OnItemsRemoved;
+                OnVisibleChanged += visible =>
+                {
+                    if (visible) trackedRenderer.OnItemsAdded(this, new AddedEventArgs<SlamTrackedObject>(this));
+                    else trackedRenderer.OnClear(this);
+                };
                 if (Count > 0)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
@@ -323,10 +305,7 @@ namespace Elektronik.Containers
                 _maxId = history.Count > 0 ? history.Max(l => l.Id) : 0;
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
         }
 
         public void AddRangeWithHistory(IEnumerable<SlamTrackedObject> items, IEnumerable<IList<SlamLine>> histories)
@@ -349,10 +328,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
         }
 
         #endregion
@@ -388,20 +364,6 @@ namespace Elektronik.Containers
 
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
-
-                if (_isVisible)
-                {
-                    OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
-                    return;
-                }
-
-                int[] ids;
-                lock (_objects)
-                {
-                    ids = _objects.Keys.ToArray();
-                }
-
-                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
             }
         }
 
@@ -427,11 +389,11 @@ namespace Elektronik.Containers
             {
                 var obj = pair.Item1;
                 obj.Position = pair.Item2[0].Point1.Position;
-                recorder.OnAdded(DisplayName, new [] {obj});
+                recorder.OnAdded(DisplayName, new[] {obj});
                 foreach (var line in pair.Item2)
                 {
                     obj.Position = line.Point2.Position;
-                    recorder.OnUpdated(DisplayName, new []{obj});
+                    recorder.OnUpdated(DisplayName, new[] {obj});
                 }
             }
         }
@@ -463,6 +425,7 @@ namespace Elektronik.Containers
             lock (_lineContainers)
             {
                 var res = new TrackContainer();
+                res.IsVisible = IsVisible;
                 res.SetRenderer(_lineRenderer);
                 res.DisplayName = $"Track #{obj.Id}";
                 _lineContainers.Add(res);

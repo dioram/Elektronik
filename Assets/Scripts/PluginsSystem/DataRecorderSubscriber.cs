@@ -21,8 +21,8 @@ namespace Elektronik.PluginsSystem
         {
             if (!Subscriptions.ContainsKey(recorder))
                 Subscriptions.Add(recorder, new Dictionary<ISourceTree, List<IDisposable>>());
-            if (!Subscriptions[recorder].ContainsKey(source))
-                Subscriptions[recorder].Add(source, new List<IDisposable>());
+            if (Subscriptions[recorder].ContainsKey(source)) return true;
+            Subscriptions[recorder].Add(source, new List<IDisposable>());
 
             if (source is IRemovable r)
             {
