@@ -6,10 +6,8 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
-using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Elektronik.PluginsSystem;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -35,10 +33,8 @@ namespace Elektronik.Containers
             {
                 _lines.Add(item);
             }
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {item}));
-            }
+
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {item}));
         }
 
         public void Clear()
@@ -49,10 +45,8 @@ namespace Elektronik.Containers
                 lines = _lines.Select(l => l.Id).ToList();
                 _lines.Clear();
             }
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(lines));
-            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(lines));
         }
 
         public bool Contains(SlamLine item)
@@ -79,10 +73,8 @@ namespace Elektronik.Containers
                 res = _lines.Remove(item);
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
+
 
             return res;
         }
@@ -115,10 +107,7 @@ namespace Elektronik.Containers
                 _lines.Insert(index, item);
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {item}));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {item}));
         }
 
         public void RemoveAt(int index)
@@ -128,10 +117,7 @@ namespace Elektronik.Containers
                 _lines.RemoveAt(index);
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
         }
 
         public SlamLine this[int index]
@@ -150,35 +136,31 @@ namespace Elektronik.Containers
                     _lines[index] = value;
                 }
 
-                if (IsVisible)
-                {
-                    OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {value}));
-                }
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {value}));
             }
         }
 
-        public event Action<IContainer<SlamLine>, AddedEventArgs<SlamLine>> OnAdded;
+        public event EventHandler<AddedEventArgs<SlamLine>> OnAdded;
 
-        public event Action<IContainer<SlamLine>, UpdatedEventArgs<SlamLine>> OnUpdated;
+        public event EventHandler<UpdatedEventArgs<SlamLine>> OnUpdated;
 
-        public event Action<IContainer<SlamLine>, RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs> OnRemoved;
 
         public void AddRange(IEnumerable<SlamLine> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_lines)
             {
                 _lines.AddRange(list);
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(list));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(list));
         }
 
         public void Remove(IEnumerable<SlamLine> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_lines)
             {
@@ -188,10 +170,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
         }
 
         public void Update(SlamLine item)
@@ -202,14 +181,12 @@ namespace Elektronik.Containers
                 _lines[index] = item;
             }
 
-            if (IsVisible)
-            {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {item}));
-            }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {item}));
         }
 
         public void Update(IEnumerable<SlamLine> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_lines)
             {
@@ -220,10 +197,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(list));
-            }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(list));
         }
 
         #endregion
@@ -241,6 +215,11 @@ namespace Elektronik.Containers
                 OnAdded += typedRenderer.OnItemsAdded;
                 OnUpdated += typedRenderer.OnItemsUpdated;
                 OnRemoved += typedRenderer.OnItemsRemoved;
+                OnVisibleChanged += visible =>
+                {
+                    if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<SlamLine>(this));
+                    else typedRenderer.OnClear(this);
+                };
                 if (Count > 0)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
@@ -277,20 +256,6 @@ namespace Elektronik.Containers
                 if (_isVisible == value) return;
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
-                
-                if (_isVisible)
-                {
-                    OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
-                    return;
-                }
-
-                List<int> lines;
-                lock (_lines)
-                {
-                    lines = _lines.Select(l => l.Id).ToList();
-                }
-
-                OnRemoved?.Invoke(this, new RemovedEventArgs(lines));
             }
         }
 
@@ -313,10 +278,12 @@ namespace Elektronik.Containers
             return res;
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            // Serialisation handles by TrackedObjectsContainer
-            return "{}";
+            lock (_lines)
+            {
+                recorder.OnAdded(DisplayName, _lines.OfType<ICloudItem>().ToList());
+            }
         }
 
         #endregion

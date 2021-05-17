@@ -9,10 +9,8 @@ using Elektronik.Clusterization.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
-using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Elektronik.PluginsSystem;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -43,10 +41,7 @@ namespace Elektronik.Containers
             lock (_items)
             {
                 _items.Add(item.Id, item);
-                if (IsVisible)
-                {
-                    OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new[] {item}));
-                }
+                OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new[] {item}));
             }
         }
 
@@ -57,10 +52,7 @@ namespace Elektronik.Containers
                 _traceContainer.Clear();
                 var ids = _items.Keys.ToList();
                 _items.Clear();
-                if (IsVisible)
-                {
-                    OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
-                }
+                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
             }
         }
 
@@ -86,10 +78,7 @@ namespace Elektronik.Containers
             {
                 RemoveTraces(new[] {item});
                 var res = _items.Remove(item.Id);
-                if (IsVisible)
-                {
-                    OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
-                }
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
 
                 return res;
             }
@@ -118,10 +107,7 @@ namespace Elektronik.Containers
             {
                 RemoveTraces(new[] {_items[index]});
                 _items.Remove(index);
-                if (IsVisible)
-                {
-                    OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
-                }
+                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
             }
         }
 
@@ -153,12 +139,13 @@ namespace Elektronik.Containers
             }
         }
 
-        public event Action<IContainer<TCloudItem>, AddedEventArgs<TCloudItem>> OnAdded;
-        public event Action<IContainer<TCloudItem>, UpdatedEventArgs<TCloudItem>> OnUpdated;
-        public event Action<IContainer<TCloudItem>, RemovedEventArgs> OnRemoved;
+        public event EventHandler<AddedEventArgs<TCloudItem>> OnAdded;
+        public event EventHandler<UpdatedEventArgs<TCloudItem>> OnUpdated;
+        public event EventHandler<RemovedEventArgs> OnRemoved;
 
         public void AddRange(IEnumerable<TCloudItem> items)
         {
+            if (items is null) return;
             lock (_items)
             {
                 var list = items.ToList();
@@ -167,15 +154,13 @@ namespace Elektronik.Containers
                     _items.Add(ci.Id, ci);
                 }
 
-                if (IsVisible)
-                {
-                    OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(list));
-                }
+                OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(list));
             }
         }
 
         public void Remove(IEnumerable<TCloudItem> items)
         {
+            if (items is null) return;
             lock (_items)
             {
                 var list = items.ToList();
@@ -185,10 +170,7 @@ namespace Elektronik.Containers
                     _items.Remove(ci.Id);
                 }
 
-                if (IsVisible)
-                {
-                    OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(p => p.Id).ToList()));
-                }
+                OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(p => p.Id).ToList()));
             }
         }
 
@@ -198,15 +180,13 @@ namespace Elektronik.Containers
             {
                 CreateTraces(new[] {item});
                 _items[item.Id] = item;
-                if (IsVisible)
-                {
-                    OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new[] {item}));
-                }
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new[] {item}));
             }
         }
 
         public void Update(IEnumerable<TCloudItem> items)
         {
+            if (items is null) return;
             lock (_items)
             {
                 var list = items.ToList();
@@ -216,10 +196,7 @@ namespace Elektronik.Containers
                     _items[ci.Id] = ci;
                 }
 
-                if (IsVisible)
-                {
-                    OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
-                }
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
             }
         }
 
@@ -239,6 +216,12 @@ namespace Elektronik.Containers
                 OnAdded += typedRenderer.OnItemsAdded;
                 OnUpdated += typedRenderer.OnItemsUpdated;
                 OnRemoved += typedRenderer.OnItemsRemoved;
+                OnVisibleChanged += visible =>
+                {
+                    if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<TCloudItem>(this));
+                    else typedRenderer.OnClear(this);
+                };
+                
                 if (Count > 0)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
@@ -302,20 +285,6 @@ namespace Elektronik.Containers
                 if (_isVisible == value) return;
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
-
-                if (_isVisible)
-                {
-                    OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
-                    return;
-                }
-
-                List<int> items;
-                lock (_items)
-                {
-                    items = _items.Keys.ToList();
-                }
-
-                OnRemoved?.Invoke(this, new RemovedEventArgs(items));
             }
         }
 
@@ -340,22 +309,9 @@ namespace Elektronik.Containers
             return res;
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var type = typeof(TCloudItem).Name;
-            var converter = new UnityJsonConverter();
-            lock (_items)
-            {
-                return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"{type}\"," +
-                        $"\"data\":{JsonConvert.SerializeObject(_items.Values.ToList(), converter)}}}";
-            }
-        }
-
-        public static CloudContainer<TCloudItem> Deserialize(JToken token)
-        {
-            var res = new CloudContainer<TCloudItem>(token["displayName"].ToString());
-            res.AddRange(JsonConvert.DeserializeObject<TCloudItem[]>(token["data"].ToString()));
-            return res;
+            recorder.OnAdded(DisplayName, this.ToList());
         }
 
         #endregion

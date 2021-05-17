@@ -5,6 +5,7 @@ using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Offline.Presenters;
 
 namespace Elektronik.Protobuf.Data
@@ -19,7 +20,7 @@ namespace Elektronik.Protobuf.Data
         public readonly ISourceTree Image;
         public readonly SlamDataInfoPresenter SpecialInfo;
 
-        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo)
+        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo = null)
         {
             DisplayName = displayName;
             Image = image;
@@ -90,15 +91,12 @@ namespace Elektronik.Protobuf.Data
             return new VirtualContainer(DisplayName, children);
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var tracked = (TrackedObjs as ISnapshotable)!.Serialize();
-            var observations = (Observations as ISnapshotable)!.Serialize();
-            var points = (Points as ISnapshotable)!.Serialize();
-            var lines = (Lines as ISnapshotable)!.Serialize();
-            var planes = (InfinitePlanes as ISnapshotable)!.Serialize();
-            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\"," +
-                    $"\"data\":[{tracked},{observations},{points},{lines},{planes}]}}";
+            foreach (var snapshotable in Children.OfType<ISnapshotable>())
+            {
+                snapshotable.WriteSnapshot(recorder);
+            }
         }
 
         #endregion
@@ -121,6 +119,7 @@ namespace Elektronik.Protobuf.Data
         }
 
         public bool ShowButton { get; } = true;
+        
         public event Action<bool> OnVisibleChanged;
 
         #endregion

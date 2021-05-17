@@ -36,5 +36,7 @@ namespace Elektronik.PluginsSystem
 
         /// <summary> Reached end of the file. </summary>
         [CanBeNull] event Action Finished;
+
+        void SetFileName(string filename);
     }
 }

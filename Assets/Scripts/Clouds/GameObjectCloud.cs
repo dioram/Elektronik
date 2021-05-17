@@ -47,6 +47,7 @@ namespace Elektronik.Clouds
 
         public override void ShowItems(object sender, IEnumerable<TCloudItem> items)
         {
+            if (!IsSenderVisible(sender)) return;
             OnClear(sender);
             lock (GameObjects)
             {
@@ -84,8 +85,9 @@ namespace Elektronik.Clouds
             }
         }
 
-        public override void OnItemsAdded(IContainer<TCloudItem> sender, AddedEventArgs<TCloudItem> e)
+        public override void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
+            if (!IsSenderVisible(sender)) return;
             lock (GameObjects)
             {
                 foreach (var obj in e.AddedItems)
@@ -101,14 +103,15 @@ namespace Elektronik.Clouds
                         if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
                         var dataComponent = (DataComponent<TCloudItem>) dc;
                         dataComponent.Data = obj;
-                        dataComponent.Container = sender;
+                        dataComponent.Container = sender as IContainer<TCloudItem>;
                     });
                 }
             }
         }
 
-        public override void OnItemsUpdated(IContainer<TCloudItem> sender, UpdatedEventArgs<TCloudItem> e)
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
+            if (!IsSenderVisible(sender)) return;
             lock (GameObjects)
             {
                 foreach (var obj in e.UpdatedItems)
@@ -125,7 +128,7 @@ namespace Elektronik.Clouds
             }
         }
 
-        public override void OnItemsRemoved(IContainer<TCloudItem> sender, RemovedEventArgs e)
+        public override void OnItemsRemoved(object sender, RemovedEventArgs e)
         {
             lock (GameObjects)
             {

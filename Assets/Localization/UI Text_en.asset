@@ -318,6 +318,10 @@ MonoBehaviour:
     m_Localized: Save snapshot
     m_Metadata:
       m_Items: []
+  - m_Id: 11689901776138240
+    m_Localized: Record
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

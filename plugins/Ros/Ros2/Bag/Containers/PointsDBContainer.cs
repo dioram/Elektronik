@@ -4,11 +4,10 @@ using System.Linq;
 using Elektronik.Clouds;
 using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
-using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
-using Newtonsoft.Json;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using SQLite;
 using UnityEngine;
@@ -84,16 +83,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         public ISnapshotable TakeSnapshot()
         {
-            var res = new CloudContainer<SlamPoint>();
+            var res = new CloudContainer<SlamPoint>(DisplayName);
             res.AddRange(Current);
             return res;
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var converter = new UnityJsonConverter();
-            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"SlamPoint\"," +
-                    $"\"data\":[{JsonConvert.SerializeObject(Current, converter)}]}}";
+            recorder.OnAdded(DisplayName, Current);
         }
 
         #endregion

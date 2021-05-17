@@ -15,13 +15,14 @@ namespace Elektronik.Protobuf.Data
         #region ISourceTree
 
         public string DisplayName { get; set; }
+        
         public IEnumerable<ISourceTree> Children => new ISourceTree[0];
 
         #endregion
 
         public void Clear()
         {
-            Renderer.Clear();
+            Renderer?.Clear();
         }
 
         public abstract void Present(T data);

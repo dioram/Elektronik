@@ -45,7 +45,7 @@ namespace Elektronik.Protobuf.Offline
         {
             _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(TypedSettings.FilePath)}";
             _input = File.OpenRead(TypedSettings.FilePath!);
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
             _parsersChain.SetConverter(Converter);
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
@@ -69,6 +69,11 @@ namespace Elektronik.Protobuf.Offline
                 MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
                 _playing = false;
             }));
+        }
+
+        public void SetFileName(string filename)
+        {
+            TypedSettings.FilePath = filename;
         }
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
@@ -146,15 +151,23 @@ namespace Elektronik.Protobuf.Offline
         private bool _playing = false;
         private ThreadWorker _threadWorker;
 
-        private const int MetadataOffset = 8;
-
-        private IEnumerator<Frame> ReadCommands(bool isSizeKnown)
+        private IEnumerator<Frame> ReadCommands(int size)
         {
-            var length = _input.Length - (isSizeKnown ? MetadataOffset : 0);
-            while (_input.Position < length)
+            if (size > 0)
             {
-                var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
-                yield return Frame.ParsePacket(packet, _parsersChain);
+                for (int i = 0; i < size; i++)
+                {
+                    var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
+                    yield return Frame.ParsePacket(packet, _parsersChain);
+                }
+            }
+            else
+            {
+                while (_input.Position < _input.Length)
+                {
+                    var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
+                    yield return Frame.ParsePacket(packet, _parsersChain);
+                }
             }
 
             _input.Dispose();

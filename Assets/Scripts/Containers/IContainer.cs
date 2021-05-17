@@ -12,11 +12,11 @@ namespace Elektronik.Containers
     /// <typeparam name="T"></typeparam>
     public interface IContainer<T> : IList<T>
     {
-        [CanBeNull] event Action<IContainer<T>, AddedEventArgs<T>> OnAdded;
+        [CanBeNull] event EventHandler<AddedEventArgs<T>> OnAdded;
 
-        [CanBeNull] event Action<IContainer<T>, UpdatedEventArgs<T>> OnUpdated;
+        [CanBeNull] event EventHandler<UpdatedEventArgs<T>> OnUpdated;
 
-        [CanBeNull] event Action<IContainer<T>, RemovedEventArgs> OnRemoved;
+        [CanBeNull] event EventHandler<RemovedEventArgs> OnRemoved;
 
         void AddRange(IEnumerable<T> items);
         void Remove(IEnumerable<T> items);

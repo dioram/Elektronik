@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
-using Newtonsoft.Json.Linq;
+using Elektronik.PluginsSystem;
 
 namespace Elektronik.Containers
 {
@@ -95,19 +95,13 @@ namespace Elektronik.Containers
                                                 .Select(ch => ch as ISourceTree)
                                                 .ToList());
         }
-        
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var data = string.Join(",", ChildrenList.OfType<ISnapshotable>().Select(ch => ch.Serialize()));
-            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\",\"data\":[{data}]}}";
-        }
-
-        public static VirtualContainer Deserialize(JToken token)
-        {
-            return new VirtualContainer(token["displayName"].ToString(),
-                                        token["data"].Where(t => t.HasValues)
-                                                .Select(SnapshotableDeserializer.Deserialize).ToList());
+            foreach (var snapshotable in Children.OfType<ISnapshotable>())
+            {
+                snapshotable.WriteSnapshot(recorder);
+            }
         }
 
         #endregion

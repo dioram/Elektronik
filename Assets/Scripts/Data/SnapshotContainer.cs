@@ -1,33 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.Data.Converters;
+using Elektronik.PluginsSystem;
+using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SimpleFileBrowser;
 
 namespace Elektronik.Data
 {
     public class SnapshotContainer : ISourceTree, IRemovable, IVisible, ISnapshotable, ISave
     {
-        public SnapshotContainer(string displayName, IEnumerable<ISourceTree> children)
+        public SnapshotContainer(string displayName, IEnumerable<ISourceTree> children, ICSConverter converter)
         {
+            _converter = converter;
             DisplayName = displayName;
             Children = children;
-        }
-
-        public static SnapshotContainer Load(string filename)
-        {
-            var serializer = new JsonSerializer();
-            using var file = File.OpenText(filename);
-            using var jsonTextReader = new JsonTextReader(file);
-            var arr = serializer.Deserialize<JToken>(jsonTextReader)["data"];
-            
-            return new SnapshotContainer($"Snapshot: {Path.GetFileName(filename)}", 
-                                         arr.Where(t => t.HasValues)
-                                                 .Select(SnapshotableDeserializer.Deserialize).ToList());
         }
 
         #region ISourceTree
@@ -42,6 +31,7 @@ namespace Elektronik.Data
             {
                 child.Clear();
             }
+
             Children = new ISourceTree[0];
         }
 
@@ -98,13 +88,16 @@ namespace Elektronik.Data
                                                  .OfType<ISnapshotable>()
                                                  .Select(ch => ch.TakeSnapshot())
                                                  .Select(ch => ch as ISourceTree)
-                                                 .ToList());
+                                                 .ToList(),
+                                         _converter);
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var data = string.Join(",", Children.OfType<ISnapshotable>().Select(ch => ch.Serialize()));
-            return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"virtual\",\"data\":[{data}]}}";
+            foreach (var snapshotable in Children.OfType<ISnapshotable>())
+            {
+                snapshotable.WriteSnapshot(recorder);
+            }
         }
 
         #endregion
@@ -113,8 +106,9 @@ namespace Elektronik.Data
 
         public void Save()
         {
-            FileBrowser.SetFilters(true, "snapshot.json");
-            FileBrowser.ShowSaveDialog(path => WriteToFile(path[0]),
+            var recorders = PluginsLoader.Plugins.Value.OfType<IDataRecorderPlugin>().ToList();
+            FileBrowser.SetFilters(false, recorders.Select(r => r.Extension));
+            FileBrowser.ShowSaveDialog(path => Save(path[0]),
                                        () => { },
                                        false,
                                        false,
@@ -128,11 +122,18 @@ namespace Elektronik.Data
         #region Private
 
         private bool _isVisible = true;
+        private readonly ICSConverter _converter;
 
-        private void WriteToFile(string filename)
+        private void Save(string filename)
         {
-            using var file = File.CreateText(filename);
-            file.Write(Serialize());
+            var recorder = PluginsPlayer.Plugins
+                    .OfType<IDataRecorderPlugin>()
+                    .First(r => filename.EndsWith(r.Extension));
+            recorder.FileName = filename;
+            recorder.Converter = _converter;
+            recorder.StartRecording();
+            WriteSnapshot(recorder);
+            recorder.StopRecording();
         }
 
         #endregion

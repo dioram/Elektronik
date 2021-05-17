@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Clouds;
 using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.UI.Localization;
-using Object = UnityEngine.Object;
 
 namespace Elektronik.Clusterization.Containers
 {
-    public class ClustersContainer : ISourceTree, IVisible, IRemovable, IConvexHull
+    public class ClustersContainer : ISourceTree, IVisible, IRemovable
     {
         public ClustersContainer(string displayName, List<List<SlamPoint>> data, IVisible sourceContainer)
         {
@@ -84,10 +82,6 @@ namespace Elektronik.Clusterization.Containers
             Clear();
             _childrenList.Clear();
             OnRemoved?.Invoke();
-            foreach (var hull in Hulls)
-            {
-                Object.Destroy(hull.gameObject);
-            }
 
             if (_isVisible) SourceContainer.IsVisible = true;
         }
@@ -96,42 +90,11 @@ namespace Elektronik.Clusterization.Containers
 
         #endregion
 
-        #region IConvexHull
-
-        public List<ConvexMesh> Hulls { get; set; } = new List<ConvexMesh>();
-
-        public bool HullVisible
-        {
-            get => _hullVisible;
-            set
-            {
-                if (_hullVisible == value) return;
-
-                MainThreadInvoker.Instance.Enqueue(() =>
-                {
-                    for (int i = 0; i < Hulls.Count; i++)
-                    {
-                        if (_childrenList[i] is IVisible v)
-                        {
-                            Hulls[i].gameObject.SetActive(value && v.IsVisible);
-                        }
-                    }
-                });
-                _hullVisible = value;
-                OnHullVisibleChanged?.Invoke(value);
-            }
-        }
-
-        public event Action<bool> OnHullVisibleChanged;
-
-        #endregion
-
         #region Private
 
         private readonly List<object> _renderers = new List<object>();
         private bool _isVisible = true;
         private readonly List<ISourceTree> _childrenList = new List<ISourceTree>();
-        private bool _hullVisible = true;
 
         private void CreateClusters(List<List<SlamPoint>> data)
         {
@@ -148,8 +111,6 @@ namespace Elektronik.Clusterization.Containers
                 container.OnVisibleChanged += visible =>
                 {
                     var i = _childrenList.IndexOf(container);
-                    if (i < 0 || i >= Hulls.Count) return;
-                    Hulls[i].gameObject.SetActive(visible && HullVisible);
                 };
 
                 container.AddRange(cluster);

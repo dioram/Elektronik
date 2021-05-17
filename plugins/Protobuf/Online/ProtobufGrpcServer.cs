@@ -16,7 +16,7 @@ namespace Elektronik.Protobuf.Online
     {
         public ProtobufGrpcServer()
         {
-            _containerTree = new ProtobufContainerTree("Protobuf", new RawImagePresenter("Camera"), null);
+            _containerTree = new ProtobufContainerTree("Protobuf", new RawImagePresenter("Camera"));
             Data = _containerTree;
         }
 

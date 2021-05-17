@@ -115,6 +115,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             });
         }
 
+        public void SetFileName(string filename)
+        {
+            TypedSettings.FilePath = filename;
+        }
+
         public int AmountOfFrames => _actualTimestamps?.Length ?? 0;
 
         public string CurrentTimestamp =>

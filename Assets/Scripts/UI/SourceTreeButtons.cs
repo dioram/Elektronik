@@ -16,7 +16,6 @@ namespace Elektronik.UI
         public ButtonChangingIcons TraceButton;
         public Button RemoveButton;
         public Button CameraButton;
-        public ButtonChangingIcons ConvexHullButton;
         public Button SaveButton;
 
         private ISourceTree _node;
@@ -63,16 +62,6 @@ namespace Elektronik.UI
             else
             {
                 RemoveButton.gameObject.SetActive(false);
-            }
-
-            if (_node is IConvexHull ch)
-            {
-                ConvexHullButton.InitState(ch.HullVisible ? 1 : 0);
-                ConvexHullButton.OnStateChanged += state => ch.HullVisible = state == 1;
-            }
-            else
-            {
-                ConvexHullButton.gameObject.SetActive(false);
             }
 
             if (_node is ILookable lookable && Camera.main.GetComponent<LookableCamera>() is { } cam)

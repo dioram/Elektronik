@@ -6,10 +6,8 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
-using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Elektronik.PluginsSystem;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -40,10 +38,7 @@ namespace Elektronik.Containers
                 _objects[item.Id] = (item, container);
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
         }
 
         public void Clear()
@@ -66,10 +61,7 @@ namespace Elektronik.Containers
                 _objects.Clear();
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
         }
 
         public bool Contains(SlamTrackedObject item)
@@ -104,10 +96,8 @@ namespace Elektronik.Containers
                 _objects.Remove(item.Id);
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
+
 
             return true;
         }
@@ -143,10 +133,7 @@ namespace Elektronik.Containers
                 _objects.Remove(index);
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
         }
 
         public SlamTrackedObject this[int index]
@@ -177,14 +164,15 @@ namespace Elektronik.Containers
             }
         }
 
-        public event Action<IContainer<SlamTrackedObject>, AddedEventArgs<SlamTrackedObject>> OnAdded;
+        public event EventHandler<AddedEventArgs<SlamTrackedObject>> OnAdded;
 
-        public event Action<IContainer<SlamTrackedObject>, UpdatedEventArgs<SlamTrackedObject>> OnUpdated;
+        public event EventHandler<UpdatedEventArgs<SlamTrackedObject>> OnUpdated;
 
-        public event Action<IContainer<SlamTrackedObject>, RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs> OnRemoved;
 
         public void AddRange(IEnumerable<SlamTrackedObject> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_objects)
             {
@@ -195,14 +183,12 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
         }
 
         public void Remove(IEnumerable<SlamTrackedObject> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_objects)
             {
@@ -219,10 +205,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
-            }
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
         }
 
         public void Update(SlamTrackedObject item)
@@ -232,14 +215,12 @@ namespace Elektronik.Containers
                 PureUpdate(item);
             }
 
-            if (IsVisible)
-            {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new[] {item}));
-            }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new[] {item}));
         }
 
         public void Update(IEnumerable<SlamTrackedObject> items)
         {
+            if (items is null) return;
             var list = items.ToList();
             lock (_objects)
             {
@@ -249,10 +230,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(list));
-            }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(list));
         }
 
         #endregion
@@ -280,6 +258,11 @@ namespace Elektronik.Containers
                 OnAdded += trackedRenderer.OnItemsAdded;
                 OnUpdated += trackedRenderer.OnItemsUpdated;
                 OnRemoved += trackedRenderer.OnItemsRemoved;
+                OnVisibleChanged += visible =>
+                {
+                    if (visible) trackedRenderer.OnItemsAdded(this, new AddedEventArgs<SlamTrackedObject>(this));
+                    else trackedRenderer.OnClear(this);
+                };
                 if (Count > 0)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
@@ -323,10 +306,7 @@ namespace Elektronik.Containers
                 _maxId = history.Count > 0 ? history.Max(l => l.Id) : 0;
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
         }
 
         public void AddRangeWithHistory(IEnumerable<SlamTrackedObject> items, IEnumerable<IList<SlamLine>> histories)
@@ -349,10 +329,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            if (IsVisible)
-            {
-                OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
-            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
         }
 
         #endregion
@@ -388,20 +365,6 @@ namespace Elektronik.Containers
 
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
-
-                if (_isVisible)
-                {
-                    OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
-                    return;
-                }
-
-                int[] ids;
-                lock (_objects)
-                {
-                    ids = _objects.Keys.ToArray();
-                }
-
-                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
             }
         }
 
@@ -421,27 +384,21 @@ namespace Elektronik.Containers
             return res;
         }
 
-        public string Serialize()
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            var type = nameof(SlamTrackedObject);
-            var converter = new UnityJsonConverter();
-            lock (_objects)
+            foreach (var pair in _objects.Values)
             {
-                return $"{{\"displayName\":\"{DisplayName}\",\"type\":\"{type}\"," +
-                        $"\"objects\":{JsonConvert.SerializeObject(_objects.Values.Select(o => o.Item1).ToList(), converter)}," +
-                        $"\"tracks\":{JsonConvert.SerializeObject(_objects.Values.Select(o => o.Item2).ToList(), converter)}}}";
+                var obj = pair.Item1;
+                obj.Position = pair.Item2[0].Point1.Position;
+                recorder.OnAdded(DisplayName, new[] {obj});
+                foreach (var line in pair.Item2)
+                {
+                    obj.Position = line.Point2.Position;
+                    recorder.OnUpdated(DisplayName, new[] {obj});
+                }
             }
         }
-
-        public static TrackedObjectsContainer Deserialize(JToken token)
-        {
-            var res = new TrackedObjectsContainer(token["displayName"].ToString());
-            var objects = JsonConvert.DeserializeObject<SlamTrackedObject[]>(token["objects"].ToString());
-            var histories = JsonConvert.DeserializeObject<SlamLine[][]>(token["tracks"].ToString());
-            res.AddRangeWithHistory(objects, histories);
-            return res;
-        }
-
+        
         #endregion
 
         #region Private definitions
@@ -460,6 +417,7 @@ namespace Elektronik.Containers
             lock (_lineContainers)
             {
                 var res = new TrackContainer();
+                res.IsVisible = IsVisible;
                 res.SetRenderer(_lineRenderer);
                 res.DisplayName = $"Track #{obj.Id}";
                 _lineContainers.Add(res);

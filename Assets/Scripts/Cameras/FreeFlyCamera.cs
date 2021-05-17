@@ -110,7 +110,8 @@ namespace Elektronik.Cameras
 
                 if (Input.GetKey(BoostSpeed)) currentSpeed = BoostedSpeed;
 
-                if (Input.GetKey(KeyCode.W)) deltaPosition += transform.forward;
+                if (Input.GetKey(KeyCode.W) || Input.GetMouseButton(0) && Input.GetMouseButton(1)) 
+                    deltaPosition += transform.forward;
 
                 if (Input.GetKey(KeyCode.S)) deltaPosition -= transform.forward;
 

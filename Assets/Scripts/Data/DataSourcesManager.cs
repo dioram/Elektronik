@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Elektronik.Clouds;
 using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.Data.Converters;
+using Elektronik.PluginsSystem;
+using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI;
 using Elektronik.UI.Localization;
 using Elektronik.UI.Windows;
@@ -14,6 +18,7 @@ namespace Elektronik.Data
 {
     public class DataSourcesManager : MonoBehaviour
     {
+        public CSConverter Converter;
         private static int _snapshotsCount = 0;
         [SerializeField] private RectTransform SourceTreeView;
         [SerializeField] private GameObject TreeElementPrefab;
@@ -28,8 +33,9 @@ namespace Elektronik.Data
             var removable = _dataSources.OfType<IRemovable>().ToList();
             foreach (var r in removable)
             {
-                r.RemoveSelf(); 
+                r.RemoveSelf();
             }
+
             foreach (var source in _dataSources)
             {
                 source.Clear();
@@ -37,6 +43,22 @@ namespace Elektronik.Data
         }
 
         public void MapSourceTree(Action<ISourceTree, string> action)
+        {
+            foreach (var treeElement in _dataSources)
+            {
+                MapSourceTree(treeElement, "", (tree, s) =>
+                {
+                    action(tree, s);
+                    return true;
+                });
+            }
+        }
+
+        /// <summary> Maps tree using dfs. </summary>
+        /// <param name="action">
+        /// Action for each node. Return true if you want to go deeper and false otherwise.
+        /// </param>
+        public void MapSourceTree(Func<ISourceTree, string, bool> action)
         {
             foreach (var treeElement in _dataSources)
             {
@@ -87,23 +109,22 @@ namespace Elektronik.Data
         {
             // ReSharper disable once LocalVariableHidesMember
             var name = TextLocalizationExtender.GetLocalizedString("Snapshot", _snapshotsCount++);
-            var snapshot = new SnapshotContainer(name, _dataSources
+            var snapshot = new SnapshotContainer(name,
+                                                 _dataSources
                                                          .OfType<ISnapshotable>()
                                                          .Select(s => s.TakeSnapshot())
                                                          .Select(s => s as ISourceTree)
-                                                         .ToList());
+                                                         .ToList(),
+                                                 Converter);
             AddDataSource(snapshot);
         }
 
         public void LoadSnapshot()
         {
-            FileBrowser.ShowLoadDialog(paths =>
-                                       {
-                                           foreach (var path in paths)
-                                           {
-                                               AddDataSource(SnapshotContainer.Load(path));
-                                           }
-                                       },
+            FileBrowser.SetFilters(false, PluginsLoader.Plugins.Value
+                                           .OfType<IDataSourcePluginOffline>()
+                                           .SelectMany(r => r.SupportedExtensions));
+            FileBrowser.ShowLoadDialog(LoadSnapshot,
                                        () => { },
                                        false,
                                        true,
@@ -112,13 +133,31 @@ namespace Elektronik.Data
                                        TextLocalizationExtender.GetLocalizedString("Load"));
         }
 
-        private static void MapSourceTree(ISourceTree treeElement, string path, Action<ISourceTree, string> action)
+        private static void MapSourceTree(ISourceTree treeElement, string path, Func<ISourceTree, string, bool> action)
         {
             var fullName = $"{path}/{treeElement.DisplayName}";
-            action(treeElement, fullName);
+            bool deeper = action(treeElement, fullName);
+            if (!deeper) return;
             foreach (var child in treeElement.Children)
             {
                 MapSourceTree(child, fullName, action);
+            }
+        }
+
+        private void LoadSnapshot(string[] files)
+        {
+            foreach (var path in files)
+            {
+                var playerPrefab = PluginsLoader.Plugins.Value
+                        .OfType<IDataSourcePluginOffline>()
+                        .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
+                if (playerPrefab is null) return;
+                var player = (IDataSourcePluginOffline) Activator.CreateInstance(playerPrefab.GetType());
+                player.Converter = Converter;
+                player.SetFileName(path);
+                player.Start();
+                player.CurrentPosition = player.AmountOfFrames - 1;
+                AddDataSource(new SnapshotContainer(Path.GetFileName(path), player.Data.Children, Converter));
             }
         }
     }

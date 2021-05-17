@@ -4,43 +4,43 @@ using Elektronik.Protobuf.Data;
 using Google.Protobuf;
 using NUnit.Framework;
 
-namespace Protobuf.Tests
+namespace Protobuf.Tests.Elektronik
 {
     public class InfinitePlanesTests : TestsBase
     {
         private readonly InfinitePlanePb[] _planes;
-        private string filename = nameof(InfinitePlanesTests);
+        private static readonly string Filename = $"{nameof(InfinitePlanesTests)}.dat";
 
         private readonly ColorPb[] _colors =
         {
-            new ColorPb {B = 255, G = 0, R = 0},
-            new ColorPb {B = 0, G = 0, R = 255},
-            new ColorPb {B = 0, G = 255, R = 0},
-            new ColorPb {B = 255, G = 0, R = 255},
-            new ColorPb {B = 255, G = 255, R = 0},
+            new() {B = 255, G = 0, R = 0},
+            new() {B = 0, G = 0, R = 255},
+            new() {B = 0, G = 255, R = 0},
+            new() {B = 255, G = 0, R = 255},
+            new() {B = 255, G = 255, R = 0},
         };
 
         private readonly Vector3Pb[] _offsets =
         {
-            new Vector3Pb {X = 0, Y = 0, Z = 0},
-            new Vector3Pb {X = 0, Y = 0, Z = 0},
-            new Vector3Pb {X = 0, Y = 0, Z = 50},
-            new Vector3Pb {X = 50, Y = 0, Z = 0},
-            new Vector3Pb {X = 0, Y = 50, Z = 0},
+            new() {X = 0, Y = 0, Z = 0},
+            new() {X = 0, Y = 0, Z = 0},
+            new() {X = 0, Y = 0, Z = 50},
+            new() {X = 50, Y = 0, Z = 0},
+            new() {X = 0, Y = 50, Z = 0},
         };
 
         private readonly Vector3Pb[] _normals =
         {
-            new Vector3Pb {X = 0, Y = 1, Z = 0},
-            new Vector3Pb {X = 1, Y = 0, Z = 0},
-            new Vector3Pb {X = 0, Y = 0, Z = 1},
-            new Vector3Pb {X = 1, Y = 0, Z = 1},
-            new Vector3Pb {X = 0, Y = 1, Z = 0},
+            new() {X = 0, Y = 1, Z = 0},
+            new() {X = 1, Y = 0, Z = 0},
+            new() {X = 0, Y = 0, Z = 1},
+            new() {X = 1, Y = 0, Z = 1},
+            new() {X = 0, Y = 1, Z = 0},
         };
 
         public InfinitePlanesTests()
         {
-            _planes = Enumerable.Range(0, 5).Select(id => new InfinitePlanePb()
+            _planes = Enumerable.Range(0, 5).Select(id => new InfinitePlanePb
             {
                 Id = id,
                 Message = $"{id}",
@@ -53,7 +53,7 @@ namespace Protobuf.Tests
         [Test, Explicit]
         public void Grid()
         {
-            var packet = new PacketPb()
+            var packet = new PacketPb
             {
                 Special = true,
                 Action = PacketPb.Types.ActionType.Add,
@@ -67,17 +67,17 @@ namespace Protobuf.Tests
                 Offset = new Vector3Pb {X = 1, Y = 1, Z = 1},
             });
             
-            using var file = File.Open(filename, FileMode.Create);
+            using var file = File.Open(Filename, FileMode.Create);
             packet.WriteDelimitedTo(file);
 
             var response = MapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
         
-        [Test, Order(1)]
+        [Test, Order(1), Explicit]
         public void Create()
         {
-            var packet = new PacketPb()
+            var packet = new PacketPb
             {
                 Special = true,
                 Action = PacketPb.Types.ActionType.Add,
@@ -85,17 +85,17 @@ namespace Protobuf.Tests
             };
             packet.InfinitePlanes.Data.Add(_planes);
             
-            using var file = File.Open(filename, FileMode.Create);
+            using var file = File.Open(Filename, FileMode.Create);
             packet.WriteDelimitedTo(file);
 
             var response = MapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(2)]
+        [Test, Order(2), Explicit]
         public void Update()
         {
-            var packet = new PacketPb()
+            var packet = new PacketPb
             {
                 Special = true,
                 Action = PacketPb.Types.ActionType.Update,
@@ -107,17 +107,17 @@ namespace Protobuf.Tests
 
             packet.InfinitePlanes.Data.Add(_planes);
             
-            using var file = File.Open(filename, FileMode.Append);
+            using var file = File.Open(Filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
             var response = MapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(3)]
+        [Test, Order(3), Explicit]
         public void Remove()
         {
-            var packet = new PacketPb()
+            var packet = new PacketPb
             {
                 Special = true,
                 Action = PacketPb.Types.ActionType.Remove,
@@ -126,24 +126,24 @@ namespace Protobuf.Tests
 
             packet.InfinitePlanes.Data.Add(new[] { _planes[1], _planes[3] });
             
-            using var file = File.Open(filename, FileMode.Append);
+            using var file = File.Open(Filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
 
             var response = MapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(4)]
+        [Test, Order(4), Explicit]
         public void Clear()
         {
-            var packet = new PacketPb()
+            var packet = new PacketPb
             {
                 Special = true,
                 Action = PacketPb.Types.ActionType.Clear,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
             
-            using var file = File.Open(filename, FileMode.Append);
+            using var file = File.Open(Filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
             
             var response = MapClient.Handle(packet);

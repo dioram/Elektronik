@@ -6,25 +6,44 @@ on:
   workflow_dispatch:
 
 jobs:
-  buildAndRelease:
+  build:
     name: Build for StandaloneWindows64
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
         with:
           lfs: true
-      - run: |
-          git fetch --unshallow --tags
-          echo $?
-          git tag --list
-      - name: Get previous tag
-        id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
       - name: Build unity player
         run: .\.github\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
+  runTest:
+    name: Run tests
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Run protobuf plugin unit tests
+        uses: zyborg/dotnet-tests-report@v1
+        with:
+          project_path: plugins/Protobuf.Tests.Internal
+          fail_build_on_failed_tests: true
+          report_name: protobuf_unit_tests
+          report_title: Protobuf unit tests
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run ROS plugin unit tests
+        uses: zyborg/dotnet-tests-report@v1
+        with:
+          project_path: plugins/ROS.Tests
+          fail_build_on_failed_tests: true
+          report_name: ros_unit_tests
+          report_title: ROS unit tests
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+  release:
+    name: Create pre-release
+    runs-on: self-hosted
+    needs: runTests
+    steps:
       - name: Zip artifact
         run: powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\Build', 'build.zip'); }"
       - name: Create Release

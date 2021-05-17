@@ -9,7 +9,7 @@ namespace Elektronik.Protobuf.Offline
     [Serializable]
     public class OfflineSettingsBag : SettingsBag
     {
-        [CheckForEquals, Path(PathAttribute.PathTypes.File, new[] {".bag"}), Tooltip("Path to file")]
+        [CheckForEquals, Path(PathAttribute.PathTypes.File, new[] {".dat"}), Tooltip("Path to file")]
         public string FilePath;
 
         [CheckForEquals, Path(PathAttribute.PathTypes.Directory, new[] {""}), Tooltip("Path to images")]

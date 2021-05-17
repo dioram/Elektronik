@@ -36,7 +36,7 @@ namespace Elektronik.Ros.Tests.Rosbag
         {
             var messages = await _parser
                     .ReadMessagesAsync()
-                    .Select(m => MessageParser.Parse(m.Data, m.TopicType ?? "", false))
+                    .Select(m => MessageParser.Parse(m.Data!, m.TopicType ?? "", false))
                     .Where(m => m is not null)
                     .Select(m => m!)
                     .ToListAsync();

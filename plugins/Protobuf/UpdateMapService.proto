@@ -4,7 +4,7 @@ package Elektronik.Common.Data.Pb;
 option csharp_namespace = "Elektronik.Protobuf.Data";
 
 import "google/protobuf/empty.proto";
-import "Data/MapTypes.proto";
+import "MapTypes.proto";
 
 message ErrorStatusPb {
 	enum ErrorStatusEnum {
