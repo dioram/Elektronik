@@ -147,7 +147,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 80224966545408
-    m_Localized: "\u041D\u0430\u0431\u043B\u044E\u0434\u0435\u043D\u0438\u0435 \u2116{0}"
+    m_Localized: "\u041D\u0430\u0431\u043B\u044E\u0434\u0435\u043D\u0438\u0435 #{0}"
     m_Metadata:
       m_Items:
       - id: 0
