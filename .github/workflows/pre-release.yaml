@@ -44,6 +44,13 @@ jobs:
     runs-on: self-hosted
     needs: runTests
     steps:
+      - run: |
+          git fetch --unshallow --tags
+          echo $?
+          git tag --list
+      - name: Get previous tag
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
       - name: Zip artifact
         run: powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\Build', 'build.zip'); }"
       - name: Create Release
