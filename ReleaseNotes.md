@@ -1,6 +1,6 @@
 # Новое в этой версии:
-- Запись последовательностей
+- Обнаружение плоскостей в облаке точек
 
 # New in this version:
-- Recording of incoming data
+- Planes detection tool
 
