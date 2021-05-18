@@ -6,19 +6,42 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build for StandaloneWindows64
+  init:
+    name: Init build
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
         with:
           lfs: true
+  build_natives:
+    name: Build C++ libs
+    runs-on: self-hosted
+    needs: init
+    steps:
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - run: .\.github\build_natives.bat
+  build_unity:
+    name: Build unity player for StandaloneWindows64
+    runs-on: self-hosted
+    needs: build_natives
+    steps:
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
       - name: Build unity player
-        run: .\.github\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
-  runTests:
+        run: .\.github\build_unity.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
+  build_plugins:
+    name: Build plugins
+    runs-on: self-hosted
+    needs: build_unity
+    steps:
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - run: .\.github\build_plugins.bat
+  runTest:
     name: Run tests
     runs-on: self-hosted
     needs: build
@@ -27,7 +50,7 @@ jobs:
         uses: zyborg/dotnet-tests-report@v1
         with:
           project_path: plugins/Protobuf.Tests.Internal
-          fail_build_on_failed_tests: true
+          set_check_status_from_test_outcome: true
           report_name: protobuf_unit_tests
           report_title: Protobuf unit tests
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,7 +58,7 @@ jobs:
         uses: zyborg/dotnet-tests-report@v1
         with:
           project_path: plugins/ROS.Tests
-          fail_build_on_failed_tests: true
+          set_check_status_from_test_outcome: true
           report_name: ros_unit_tests
           report_title: ROS unit tests
           github_token: ${{ secrets.GITHUB_TOKEN }}
