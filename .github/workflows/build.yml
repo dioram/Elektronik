@@ -45,7 +45,7 @@ jobs:
   runTest:
     name: Run tests
     runs-on: self-hosted
-    needs: build
+    needs: build_plugins
     steps:
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
