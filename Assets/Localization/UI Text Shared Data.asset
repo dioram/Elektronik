@@ -303,6 +303,38 @@ MonoBehaviour:
     m_Key: Record
     m_Metadata:
       m_Items: []
+  - m_Id: 12730009622822912
+    m_Key: Detect planes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13065350977122304
+    m_Key: Scene tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13065452374421504
+    m_Key: Analytical tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13067747757617152
+    m_Key: Metaparameters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13134836195356672
+    m_Key: Gravity delta angle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13135194086928384
+    m_Key: Show only vertical and horizontal planes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13135498807308288
+    m_Key: Gravity vector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13135642911010816
+    m_Key: Planes detection
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

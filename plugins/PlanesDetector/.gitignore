@@ -1,0 +1,10 @@
+obj/
+build/
+bin/
+*.cbp
+*.depend
+*.layout
+*.asc
+*.ply
+*.pro*
+*.3d

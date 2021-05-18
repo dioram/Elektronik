@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Timers;
 using Elektronik.Extensions;
 using Elektronik.Offline;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline
@@ -50,6 +52,17 @@ namespace Elektronik.Protobuf.Offline
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
             _threadWorker = new ThreadWorker();
+            _timer = new Timer(UpdateDeltaMS);
+            _timer.Elapsed += (_, __) =>
+            {
+                Task.Run(() => _threadWorker.Enqueue(() =>
+                {
+                    if (NextFrame()) return;
+                    _timer?.Stop();
+                    MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
+                    
+                }));
+            };
         }
 
         public override void Stop()
@@ -61,14 +74,7 @@ namespace Elektronik.Protobuf.Offline
 
         public override void Update(float delta)
         {
-            if (!_playing) return;
-
-            Task.Run(() => _threadWorker.Enqueue(() =>
-            {
-                if (NextFrame()) return;
-                MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
-                _playing = false;
-            }));
+            // Do nothing
         }
 
         public void SetFileName(string filename)
@@ -91,17 +97,17 @@ namespace Elektronik.Protobuf.Offline
 
         public void Play()
         {
-            _playing = true;
+            _timer?.Start();
         }
 
         public void Pause()
         {
-            _playing = false;
+            _timer?.Start();
         }
 
         public void StopPlaying()
         {
-            _playing = false;
+            _timer?.Stop();
             _threadWorker.Enqueue(() =>
             {
                 Data.Clear();
@@ -144,12 +150,14 @@ namespace Elektronik.Protobuf.Offline
 
         #region Private definitions
 
+        private const int UpdateDeltaMS = 5;
+
         private readonly ProtobufContainerTree _containerTree;
         private FileStream _input;
         private FramesCollection<Frame> _frames;
         private readonly DataParser<PacketPb> _parsersChain;
-        private bool _playing = false;
         private ThreadWorker _threadWorker;
+        [CanBeNull] private Timer _timer;
 
         private IEnumerator<Frame> ReadCommands(int size)
         {

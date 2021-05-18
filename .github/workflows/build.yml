@@ -7,18 +7,41 @@ on:
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 jobs:
-  build:
-    name: Build for StandaloneWindows64
+  init: 
+    name: Init build
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
         with:
           lfs: true
+  build_natives:
+    name: Build C++ libs
+    runs-on: self-hosted
+    needs: init
+    steps:
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - run: .\.github\build_natives.bat
+  build_unity:
+    name: Build unity player for StandaloneWindows64
+    runs-on: self-hosted
+    needs: build_natives
+    steps:
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
       - name: Build unity player
-        run: .\.github\build.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
+        run: .\.github\build_unity.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
+  build_plugins:
+    name: Build plugins
+    runs-on: self-hosted
+    needs: build_unity
+    steps:
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - run: .\.github\build_plugins.bat
   runTest:
     name: Run tests
     runs-on: self-hosted

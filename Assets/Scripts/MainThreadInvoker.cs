@@ -50,7 +50,14 @@ namespace Elektronik
             {
                 if (_actions.TryDequeue(out Action a))
                 {
-                    a();
+                    try
+                    {
+                        a?.Invoke();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
                 }
             }
         }

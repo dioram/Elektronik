@@ -138,8 +138,12 @@ namespace Elektronik.Clouds
                     if (!GameObjects.ContainsKey(key)) continue;
 
                     var go = GameObjects[key];
-                    MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.Despawn(go));
-                    GameObjects.Remove(key);
+                    MainThreadInvoker.Instance.Enqueue(() =>
+                    {
+                        
+                        ObservationsPool.Despawn(go);
+                        GameObjects.Remove(key);
+                    });
                 }
             }
         }

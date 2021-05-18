@@ -6,6 +6,8 @@ using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.UI.Localization;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Elektronik.Clusterization.Containers
 {
@@ -13,8 +15,10 @@ namespace Elektronik.Clusterization.Containers
     {
         public ClustersContainer(string displayName, List<List<SlamPoint>> data, IVisible sourceContainer)
         {
+            
             DisplayName = displayName;
             SourceContainer = sourceContainer;
+            ColorizeData(data);
             CreateClusters(data);
             SourceContainer.OnVisibleChanged += visible =>
             {
@@ -116,6 +120,39 @@ namespace Elektronik.Clusterization.Containers
                 container.AddRange(cluster);
                 _childrenList.Add(container);
             }
+        }
+
+        private void ColorizeData(List<List<SlamPoint>> data)
+        {
+            var colors = GenerateColors(data.Count);
+            for (int i = 0; i < data.Count; i++)
+            {
+                for (int j = 0; j < data[i].Count; j++)
+                {
+                    data[i][j] = new SlamPoint(data[i][j].Id, data[i][j].Position, colors[i], data[i][j].Message);
+                }
+            }
+        }
+
+        private List<Color> GenerateColors(int num)
+        {
+            var colors = new List<Color>
+            {
+                Color.blue,
+                Color.red,
+                Color.green,
+                Color.yellow,
+                Color.magenta,
+                new Color(0.5f, 0.5f, 1f),
+                new Color(1f, 0.5f, 0),
+                new Color(0.5f, 0, 1)
+            };
+            for (int i = colors.Count; i < num; i++)
+            {
+                colors.Add(new Color(Random.value, Random.value, Random.value));
+            }
+
+            return colors;
         }
 
         #endregion

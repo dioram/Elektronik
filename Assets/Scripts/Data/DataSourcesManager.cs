@@ -42,6 +42,20 @@ namespace Elektronik.Data
             }
         }
 
+        public ISourceTree GetByPath(string fullName)
+        {
+            var names = fullName.Split('/');
+
+            var child = FindChildWithName(names[0]);
+            foreach (var n in names.Skip(1))
+            {
+                if (child == null) return null;
+                child = FindChildWithName(child, n);
+            }
+
+            return child;
+        }
+
         public void MapSourceTree(Action<ISourceTree, string> action)
         {
             foreach (var treeElement in _dataSources)
@@ -133,6 +147,18 @@ namespace Elektronik.Data
                                        TextLocalizationExtender.GetLocalizedString("Load"));
         }
 
+        #region Private
+
+        private ISourceTree FindChildWithName(ISourceTree container, string name)
+        {
+            return container.Children.FirstOrDefault(ch => ch.DisplayName == name);
+        }
+
+        private ISourceTree FindChildWithName(string name)
+        {
+            return _dataSources.FirstOrDefault(ch => ch.DisplayName == name);
+        }
+
         private static void MapSourceTree(ISourceTree treeElement, string path, Func<ISourceTree, string, bool> action)
         {
             var fullName = $"{path}/{treeElement.DisplayName}";
@@ -160,5 +186,7 @@ namespace Elektronik.Data
                 AddDataSource(new SnapshotContainer(Path.GetFileName(path), player.Data.Children, Converter));
             }
         }
+
+        #endregion
     }
 }

@@ -31,11 +31,16 @@ namespace Elektronik.UI
                                        () => { },
                                        FolderMode,
                                        false,
-                                       string.IsNullOrEmpty(InitialPath)
-                                               ? Path.GetDirectoryName(_ifFilePath.text)
-                                               : InitialPath,
+                                       GetInitialPath(),
                                        Title,
                                        ButtonText);
+        }
+
+        private string GetInitialPath()
+        {
+            if (!string.IsNullOrWhiteSpace(_ifFilePath.text)) return Path.GetDirectoryName(_ifFilePath.text);
+            if (!string.IsNullOrWhiteSpace(InitialPath)) return InitialPath;
+            return null;
         }
     }
 }

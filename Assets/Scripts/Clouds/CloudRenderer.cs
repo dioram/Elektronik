@@ -27,7 +27,16 @@ namespace Elektronik.Clouds
                 .Select(v => _blocks[v / CloudBlock.Capacity].GetItems()[v % CloudBlock.Capacity])
                 .Select(i => i.Position);
 
-        public override int ItemsCount => _amountOfItems;
+        public override int ItemsCount
+        {
+            get
+            {
+                lock (_pointPlaces)
+                {
+                    return _pointPlaces.Count;
+                }
+            }
+        }
 
         public void SetSize(float newSize)
         {

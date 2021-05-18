@@ -12,14 +12,14 @@ namespace Protobuf.Tests.Elektronik
     {
         private static readonly string Filename = $"{nameof(PointsStressTests)}.dat";
 
-        private PointPb[] GeneratePoints()
+        private PointPb[] GeneratePoints(int amount, int minId = 0, bool in3d = true, double z = 0)
         {
             var rand = new Random();
-            return Enumerable.Range(0, 20000).Select(id => new PointPb()
+            return Enumerable.Range(minId, amount).Select(id => new PointPb()
             {
                 Id = id,
                 Message = $"{id}",
-                Position = new Vector3Pb {X = rand.NextDouble(), Y = rand.NextDouble(), Z = rand.NextDouble(),},
+                Position = new Vector3Pb {X = rand.NextDouble(), Y = rand.NextDouble(), Z = in3d ? rand.NextDouble() : z,},
                 Color = new ColorPb {B = rand.Next(255), G = rand.Next(255), R = rand.Next(255)},
             }).ToArray();
         }
@@ -41,7 +41,32 @@ namespace Protobuf.Tests.Elektronik
                 Action = PacketPb.Types.ActionType.Add,
                 Points = new PacketPb.Types.Points(),
             };
-            packet.Points.Data.Add(GeneratePoints());
+            packet.Points.Data.Add(GeneratePoints(20000));
+
+            var t = new Stopwatch();
+            t.Start();
+            var response = MapClient.Handle(packet);
+            t.Stop();
+            TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
+
+            using var file = File.Open(Filename, FileMode.Create);
+            packet.WriteDelimitedTo(file);
+
+            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+        }
+
+        [Test, Order(1), Explicit]
+        public void CreatePlanes()
+        {
+            var packet = new PacketPb
+            {
+                Special = true,
+                Action = PacketPb.Types.ActionType.Add,
+                Points = new PacketPb.Types.Points(),
+            };
+            packet.Points.Data.Add(GeneratePoints(3000, 0, false, 0));
+            packet.Points.Data.Add(GeneratePoints(3000, 3000, false, -4));
+            packet.Points.Data.Add(GeneratePoints(3000, 6000, false, 3));
 
             var t = new Stopwatch();
             t.Start();
@@ -65,7 +90,7 @@ namespace Protobuf.Tests.Elektronik
                 Points = new PacketPb.Types.Points(),
             };
 
-            packet.Points.Data.Add(GeneratePoints());
+            packet.Points.Data.Add(GeneratePoints(20000));
 
             var t = new Stopwatch();
             t.Start();
@@ -116,7 +141,7 @@ namespace Protobuf.Tests.Elektronik
                 Points = new PacketPb.Types.Points(),
             };
 
-            packet.Points.Data.Add(GeneratePoints().Take(5000));
+            packet.Points.Data.Add(GeneratePoints(5000));
 
             var t = new Stopwatch();
             t.Start();

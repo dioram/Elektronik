@@ -5,7 +5,6 @@ using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using UnityEngine;
 
 namespace Elektronik.Clusterization.Algorithms
 {
@@ -13,22 +12,7 @@ namespace Elektronik.Clusterization.Algorithms
     {
         public KMeansClusterization(int k)
         {
-            _colors = new List<Color>()
-            {
-                Color.blue,
-                Color.red,
-                Color.green,
-                Color.yellow,
-                Color.magenta,
-                new Color(0.5f, 0.5f, 1f),
-                new Color(1f, 0.5f, 0),
-                new Color(0.5f, 0, 1)
-            };
             _k = k;
-            for (int i = _colors.Count; i < k; i++)
-            {
-                _colors.Add(new Color(Random.value, Random.value, Random.value));
-            }
         }
 
         public List<List<SlamPoint>> Compute(IList<SlamPoint> items)
@@ -37,9 +21,7 @@ namespace Elektronik.Clusterization.Algorithms
             var clusters = ComputeClusters(items);
             for (int i = 0; i < clusters.Count; i++)
             {
-                var point = items[i];
-                point.Color = _colors[clusters[i]];
-                res[clusters[i]].Add(point);
+                res[clusters[i]].Add(items[i]);
             }
 
             return res;
@@ -87,7 +69,5 @@ namespace Elektronik.Clusterization.Algorithms
         }
 
         private readonly int _k;
-
-        private readonly List<Color> _colors;
     }
 }
