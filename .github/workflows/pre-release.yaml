@@ -43,11 +43,11 @@ jobs:
     name: Create pre-release
     runs-on: self-hosted
     needs: runTests
-    steps:  
+    steps:
       - run: |
-               git fetch --unshallow --tags
-               echo $?
-               git tag --list
+          git fetch --unshallow --tags
+          echo $?
+          git tag --list
       - name: Get previous tag
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
