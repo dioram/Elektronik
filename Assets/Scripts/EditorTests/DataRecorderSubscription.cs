@@ -156,5 +156,11 @@ namespace Elektronik.EditorTests
             mockedRecorder.Verify(r => r.OnRemoved<SlamObservation>(It.IsAny<string>(),  It.IsAny<List<int>>()),
                                    Times.Once());
         }
+
+        [Test]
+        public void FailedTest()
+        {
+            Assert.Fail();
+        }
     }
 }
