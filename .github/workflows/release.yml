@@ -67,8 +67,8 @@ jobs:
           report_name: ros_unit_tests
           report_title: ROS unit tests
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run unity editor tests
-        run: "\"C:\\Program Files\\Unity\\Hub\\Editor\\2020.2.4f1\\Editor\\Unity.exe\" -accept-apiupdate -batchmode -logFile .\\Logs\\tests.log -projectPath .\\ -runTests -testResults .\\tests.xml -runSynchronously"
+      - name: Run unity tests
+        run: .\.github\run_unity_tests.bat
   release:
     name: Create release
     runs-on: self-hosted
