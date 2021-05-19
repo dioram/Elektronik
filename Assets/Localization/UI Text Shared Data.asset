@@ -337,7 +337,7 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 13163167775158272
     m_Key: Turn on logging (Warning during continious run it can generate gigabytes
-      fo log!!)
+      of log!!)
     m_Metadata:
       m_Items: []
   m_Metadata:

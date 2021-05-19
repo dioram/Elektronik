@@ -1,6 +1,4 @@
-﻿using Elektronik.Data.Converters;
-
-namespace Elektronik.Data.PackageObjects
+﻿namespace Elektronik.Data.PackageObjects
 {
     public interface ICloudItem
     {

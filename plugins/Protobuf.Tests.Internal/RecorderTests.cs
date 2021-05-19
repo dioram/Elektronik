@@ -5,7 +5,7 @@ using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
-using Elektronik.Protobuf.Recorder;
+using Elektronik.Protobuf.Recorders;
 using NUnit.Framework;
 using UnityEngine;
 

@@ -112,11 +112,6 @@ namespace Elektronik.Clusterization.Containers
                     container.SetRenderer(renderer);
                 }
 
-                container.OnVisibleChanged += visible =>
-                {
-                    var i = _childrenList.IndexOf(container);
-                };
-
                 container.AddRange(cluster);
                 _childrenList.Add(container);
             }

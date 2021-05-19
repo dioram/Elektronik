@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
-using Debug = UnityEngine.Debug;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
@@ -50,11 +50,21 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                     status.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                     status.Message = e.Message;
                 }
+
                 timer.Stop();
-                Debug.Log($"[HandleConnections] {DateTime.Now} " +
-                          $"Elapsed time: {timer.ElapsedMilliseconds} ms. " +
-                          $"ErrorStatus: {status}");
+                try
+                {
+                    UnityEngine.Debug.Log($"[HandleConnections] {DateTime.Now} " +
+                                          $"Elapsed time: {timer.ElapsedMilliseconds} ms. " +
+                                          $"ErrorStatus: {status}");
+                }
+                catch (SecurityException e)
+                {
+                    // This will be thrown if code was called in test environment.
+                    // Just ignore it
+                }
             }
+
             timer.Stop();
             return Task.FromResult(status);
         }

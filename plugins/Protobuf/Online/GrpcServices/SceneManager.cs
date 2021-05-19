@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Security;
 using System.Threading.Tasks;
 using Elektronik.Data;
 using Elektronik.Protobuf.Data;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Debug = UnityEngine.Debug;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
@@ -37,9 +37,19 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 err.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                 err.Message = e.Message;
             }
+
             timer.Stop();
-            Debug.Log($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms." +
-                      $"ErrorStatus: {err.Message}");
+            try
+            {
+                UnityEngine.Debug.Log($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms." +
+                                      $"ErrorStatus: {err.Message}");
+            }
+            catch (SecurityException e)
+            {
+                // This will be thrown if code was called in test environment.
+                // Just ignore it
+            }
+
             return Task.FromResult(err);
         }
     }

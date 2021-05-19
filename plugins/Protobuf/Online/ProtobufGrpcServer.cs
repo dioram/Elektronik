@@ -34,17 +34,11 @@ namespace Elektronik.Protobuf.Online
 
         public override void Start()
         {
-            if (Converter == null)
-            {
-                throw new NullReferenceException(
-                    $"Converter is not set for {DisplayName}-{nameof(ProtobufGrpcServer)}");
-            }
-
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             GrpcEnvironment.SetLogger(new UnityLogger());
 
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
 
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
@@ -56,7 +50,9 @@ namespace Elektronik.Protobuf.Online
             }.BuildChain();
 
             _containerTree.DisplayName = $"From gRPC {TypedSettings.IPAddress}:{TypedSettings.Port}";
+#if UNITY_EDITOR || UNITY_STANDALONE
             Debug.Log($"{TypedSettings.IPAddress}:{TypedSettings.Port}");
+#endif
 
             _server = new GrpcServer()
             {
