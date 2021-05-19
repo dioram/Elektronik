@@ -49,7 +49,7 @@ jobs:
       - build_unity
     steps:
       - name: Run unity editor tests
-        run: "C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe" -accept-apiupdate -batchmode -logFile .\Logs\tests.log -projectPath .\ -runTests -testResults .\tests.xml -runSynchronously
+        run: "C:\\Program Files\\Unity\\Hub\\Editor\\2020.2.4f1\\Editor\\Unity.exe" -accept-apiupdate -batchmode -logFile .\Logs\tests.log -projectPath .\ -runTests -testResults .\tests.xml -runSynchronously
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
         with:
