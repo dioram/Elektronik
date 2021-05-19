@@ -48,8 +48,9 @@ jobs:
       - build_plugins
       - build_unity
     steps:
-      - name: Run unity editor tests
-        run: "C:\Program Files\Unity\Hub\Editor\2020.2.4f1\Editor\Unity.exe" -accept-apiupdate -batchmode -logFile .\Logs\tests.log -projectPath .\ -runTests -testResults .\tests.xml -runSynchronously
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
         with:
@@ -66,6 +67,8 @@ jobs:
           report_name: ros_unit_tests
           report_title: ROS unit tests
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run unity tests
+        run: .\.github\run_unity_tests.bat
   release:
     name: Create release
     runs-on: self-hosted
