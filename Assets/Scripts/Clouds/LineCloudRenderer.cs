@@ -4,6 +4,14 @@ namespace Elektronik.Clouds
 {
     public class LineCloudRenderer : CloudRenderer<SlamLine, LineCloudBlock>
     {
+        public void SetAlpha(float alpha)
+        {
+            foreach (var block in Blocks)
+            {
+                block.Alpha = alpha;
+            }
+        }
+        
         protected override void ProcessItem(LineCloudBlock block, SlamLine item, int inBlockId)
         {
             block.Points[inBlockId * 2 + 0] = new GPUItem(item.Point1);

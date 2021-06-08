@@ -2,14 +2,16 @@ Shader "Elektronik/LineCloudShader"
 {
     Properties
     {
-        _PointSize("Point Size", Float) = 0.05
+        _Alpha("Alpha", Float) = 1
     }
     SubShader
     {
         Tags
         {
-            "RenderType"="Opaque"
+            "RenderType"="Transparent"
+            "Queue"="Transparent" 
         }
+        Blend SrcAlpha OneMinusSrcAlpha
         Cull Off
         Pass
         {
@@ -18,14 +20,14 @@ Shader "Elektronik/LineCloudShader"
                 "LightMode"="ForwardBase"
             }
             CGPROGRAM
-            #pragma vertex Vertex
-            #pragma fragment Fragment
+            #pragma vertex Vertex alpha
+            #pragma fragment Fragment alpha
             #pragma multi_compile _ _COMPUTE_BUFFER
             
             #include "UnityCG.cginc"
             #define MAX_BRIGHTNESS 16
 
-            half _Size;
+            half _Alpha;
             StructuredBuffer<float4> _ItemsBuffer;
             
             half3 DecodeColor(uint data)
@@ -57,9 +59,9 @@ Shader "Elektronik/LineCloudShader"
                 return o;
             }
 
-            half3 Fragment(VertexOutput input) : SV_Target
+            half4 Fragment(VertexOutput input) : SV_Target
             {
-                return input.color;
+                return half4(input.color, _Alpha);
             }
 
             ENDCG

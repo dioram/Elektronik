@@ -24,7 +24,7 @@ namespace Elektronik.Clouds
         public float ItemSize;
 
         public IEnumerable<Vector3> GetPoints() => _pointPlaces.Values
-                .Select(v => _blocks[v / CloudBlock.Capacity].GetItems()[v % CloudBlock.Capacity])
+                .Select(v => Blocks[v / CloudBlock.Capacity].GetItems()[v % CloudBlock.Capacity])
                 .Select(i => i.Position);
 
         public override int ItemsCount
@@ -42,7 +42,7 @@ namespace Elektronik.Clouds
         {
             ItemSize = newSize;
 
-            foreach (var block in _blocks)
+            foreach (var block in Blocks)
             {
                 block.ItemSize = ItemSize;
             }
@@ -57,7 +57,7 @@ namespace Elektronik.Clouds
 
         private void Update()
         {
-            foreach (var block in _blocks)
+            foreach (var block in Blocks)
             {
                 block.ItemSize = ItemSize;
             }
@@ -86,10 +86,10 @@ namespace Elektronik.Clouds
                     var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
                     int layer = index / CloudBlock.Capacity;
                     int inLayerId = index % CloudBlock.Capacity;
-                    lock (_blocks[layer])
+                    lock (Blocks[layer])
                     {
-                        ProcessItem(_blocks[layer], item, inLayerId);
-                        _blocks[layer].Updated = true;
+                        ProcessItem(Blocks[layer], item, inLayerId);
+                        Blocks[layer].Updated = true;
                     }
                 }
             }
@@ -110,10 +110,10 @@ namespace Elektronik.Clouds
 
                     int layer = index / CloudBlock.Capacity;
                     int inLayerId = index % CloudBlock.Capacity;
-                    lock (_blocks[layer])
+                    lock (Blocks[layer])
                     {
-                        RemoveItem(_blocks[layer], inLayerId);
-                        _blocks[layer].Updated = true;
+                        RemoveItem(Blocks[layer], inLayerId);
+                        Blocks[layer].Updated = true;
                     }
                 }
 
@@ -144,10 +144,10 @@ namespace Elektronik.Clouds
 
                     int layer = index / CloudBlock.Capacity;
                     int inLayerId = index % CloudBlock.Capacity;
-                    lock (_blocks[layer])
+                    lock (Blocks[layer])
                     {
-                        RemoveItem(_blocks[layer], inLayerId);
-                        _blocks[layer].Updated = true;
+                        RemoveItem(Blocks[layer], inLayerId);
+                        Blocks[layer].Updated = true;
                     }
                 }
 
@@ -163,11 +163,12 @@ namespace Elektronik.Clouds
 
         protected abstract void RemoveItem(TCloudBlock block, int inBlockId);
 
+        protected readonly List<TCloudBlock> Blocks = new List<TCloudBlock>();
+
         #endregion
 
         #region Private definitions
 
-        private readonly List<TCloudBlock> _blocks = new List<TCloudBlock>();
         private readonly Dictionary<(int, int), int> _pointPlaces = new Dictionary<(int, int), int>();
         private readonly Queue<int> _freePlaces = new Queue<int>();
         private int _maxPlace = 0;
@@ -175,12 +176,12 @@ namespace Elektronik.Clouds
 
         private void CreateNewBlock()
         {
-            var go = new GameObject($"{GetType().Name} {_blocks.Count}");
+            var go = new GameObject($"{GetType().Name} {Blocks.Count}");
             go.transform.SetParent(transform);
             var block = go.AddComponent<TCloudBlock>();
             block.CloudShader = CloudShader;
             block.Updated = true;
-            _blocks.Add(block);
+            Blocks.Add(block);
         }
 
         private void AddItems(object sender, IList<TCloudItem> items, bool takeLock = true)
@@ -198,10 +199,10 @@ namespace Elektronik.Clouds
                 _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
                 int layer = index / CloudBlock.Capacity;
                 int inLayerId = index % CloudBlock.Capacity;
-                lock (_blocks[layer])
+                lock (Blocks[layer])
                 {
-                    ProcessItem(_blocks[layer], item, inLayerId);
-                    _blocks[layer].Updated = true;
+                    ProcessItem(Blocks[layer], item, inLayerId);
+                    Blocks[layer].Updated = true;
                 }
             }
 
@@ -212,14 +213,14 @@ namespace Elektronik.Clouds
         private bool CheckAndCreateReserves(object sender, IList<TCloudItem> items)
         {
             var newAmountOfItems = _amountOfItems + items.Count;
-            if (newAmountOfItems > _blocks.Count * CloudBlock.Capacity)
+            if (newAmountOfItems > Blocks.Count * CloudBlock.Capacity)
             {
                 // reserves overloaded
                 MainThreadInvoker.Instance.Enqueue(() =>
                 {
                     lock (_pointPlaces)
                     {
-                        var requiredSpace = (newAmountOfItems - _blocks.Count * CloudBlock.Capacity) +
+                        var requiredSpace = (newAmountOfItems - Blocks.Count * CloudBlock.Capacity) +
                                 CloudBlock.Capacity;
                         var requiredBlocks = requiredSpace / CloudBlock.Capacity;
                         if (requiredBlocks < 0)
@@ -239,7 +240,7 @@ namespace Elektronik.Clouds
                 return true;
             }
 
-            if (newAmountOfItems > (_blocks.Count - 1) * CloudBlock.Capacity)
+            if (newAmountOfItems > (Blocks.Count - 1) * CloudBlock.Capacity)
             {
                 // add reserves
                 MainThreadInvoker.Instance.Enqueue(CreateNewBlock);

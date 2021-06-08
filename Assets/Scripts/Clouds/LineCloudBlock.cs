@@ -7,6 +7,8 @@ namespace Elektronik.Clouds
     {
         public GPUItem[] Points;
 
+        [Range(0, 1)] public float Alpha = 1;
+
         public override GPUItem[] GetItems() => Points;
 
         public override void Clear()
@@ -24,6 +26,8 @@ namespace Elektronik.Clouds
 
         #endregion
 
+        #region Protected
+
         protected override void Init()
         {
             Points = Enumerable.Repeat(default(GPUItem), Capacity * 2).ToArray();
@@ -32,6 +36,7 @@ namespace Elektronik.Clouds
 
         protected override void SendData(Material renderMaterial)
         {
+            renderMaterial.SetFloat(_alphaShaderProp, Alpha);
             renderMaterial.SetBuffer(_pointsBufferShaderProp, _pointsBuffer);
         }
 
@@ -45,10 +50,13 @@ namespace Elektronik.Clouds
             Graphics.DrawProceduralNow(MeshTopology.Lines, _pointsBuffer.count);
         }
 
+        #endregion
+
         #region Private definitions
 
         private readonly int _pointsBufferShaderProp = Shader.PropertyToID("_ItemsBuffer");
         private ComputeBuffer _pointsBuffer;
+        private readonly int _alphaShaderProp = Shader.PropertyToID("_Alpha");
 
         #endregion
     }

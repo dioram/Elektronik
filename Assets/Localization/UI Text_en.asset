@@ -359,6 +359,10 @@ MonoBehaviour:
       gigabytes of log!!)
     m_Metadata:
       m_Items: []
+  - m_Id: 20769850134511616
+    m_Localized: 'Lines transparency:'
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:
