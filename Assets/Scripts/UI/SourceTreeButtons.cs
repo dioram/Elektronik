@@ -1,9 +1,11 @@
 ﻿using Elektronik.Cameras;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
+using Elektronik.Data.PackageObjects;
 using Elektronik.UI.Windows;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Elektronik.UI
@@ -15,7 +17,8 @@ namespace Elektronik.UI
         public ButtonChangingIcons VisibleButton;
         public ButtonChangingIcons TraceButton;
         public Button RemoveButton;
-        public Button CameraButton;
+        [FormerlySerializedAs("CameraButton")] public Button LookAtButton;
+        public ButtonChangingIcons FollowButton;
         public Button SaveButton;
 
         private ISourceTree _node;
@@ -64,13 +67,34 @@ namespace Elektronik.UI
                 RemoveButton.gameObject.SetActive(false);
             }
 
-            if (_node is ILookable lookable && Camera.main.GetComponent<LookableCamera>() is { } cam)
+            if (Camera.main.GetComponent<LookableCamera>() is { } cam)
             {
-                CameraButton.OnClickAsObservable().Subscribe(_ => cam.Look(lookable.Look(cam.transform)));
-            }
-            else
-            {
-                CameraButton.gameObject.SetActive(false);
+                switch (_node)
+                {
+                case IFollowable<SlamTrackedObject> followable when _node is ILookable l:
+                    FollowButton.OnStateChanged += state =>
+                    {
+                        if (state == 0)
+                        {
+                            followable.Unfollow();
+                        }
+                        else
+                        {
+                            cam.Look(l.Look(cam.transform));
+                            followable.Follow();
+                        }
+                    };
+                    LookAtButton.gameObject.SetActive(false);
+                    break;
+                case ILookable lookable:
+                    LookAtButton.OnClickAsObservable().Subscribe(_ => cam.Look(lookable.Look(cam.transform)));
+                    FollowButton.gameObject.SetActive(false);
+                    break;
+                default:
+                    LookAtButton.gameObject.SetActive(false);
+                    FollowButton.gameObject.SetActive(false);
+                    break;
+                }
             }
 
             if (_node is ISave s)
@@ -85,10 +109,16 @@ namespace Elektronik.UI
 
         private void Update()
         {
-            if (!(_node is IVisible v)) return;
-            
-            VisibleButton.State = v.IsVisible ? 0 : 1;
-            VisibleButton.gameObject.SetActive(v.ShowButton);
+            if (_node is IVisible v)
+            {
+                VisibleButton.State = v.IsVisible ? 0 : 1;
+                VisibleButton.gameObject.SetActive(v.ShowButton);
+            }
+
+            if (_node is IFollowable<SlamTrackedObject> f)
+            {
+                FollowButton.SilentSetState(f.IsFollowed ? 1 : 0);
+            }
         }
     }
 }

@@ -363,6 +363,10 @@ MonoBehaviour:
     m_Localized: 'Lines transparency:'
     m_Metadata:
       m_Items: []
+  - m_Id: 21477263954251776
+    m_Localized: Follow
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

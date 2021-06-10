@@ -344,6 +344,10 @@ MonoBehaviour:
     m_Key: Lines transparency
     m_Metadata:
       m_Items: []
+  - m_Id: 21477263954251776
+    m_Key: Follow
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

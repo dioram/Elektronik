@@ -13,8 +13,14 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     /// <summary> Contains lines in strict order. </summary>
-    public class TrackContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible, ISnapshotable
+    public class TrackContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible, ISnapshotable, IFollowable<SlamTrackedObject>
     {
+        public TrackContainer(TrackedObjectsContainer parent, SlamTrackedObject trackedObject)
+        {
+            _parent = parent;
+            _trackedObject = trackedObject;
+        }
+        
         #region IContainer implementaion
 
         public IEnumerator<SlamLine> GetEnumerator()
@@ -225,11 +231,16 @@ namespace Elektronik.Containers
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
                 }
             }
+            else if (renderer is TrackedObjectCloud trackedRenderer)
+            {
+                OnFollowed += trackedRenderer.FollowCamera;
+                OnUnfollowed += trackedRenderer.StopFollowCamera;
+            }
         }
 
         #endregion
 
-        #region ILookable implementaion
+        #region ILookable
 
         public (Vector3 pos, Quaternion rot) Look(Transform transform)
         {
@@ -269,7 +280,7 @@ namespace Elektronik.Containers
 
         public ISnapshotable TakeSnapshot()
         {
-            var res = new TrackContainer();
+            var res = new TrackContainer(_parent, _trackedObject);
             lock (_lines)
             {
                 res.AddRange(_lines);
@@ -288,10 +299,32 @@ namespace Elektronik.Containers
 
         #endregion
 
+        #region IFollowable
+
+        public void Follow()
+        {
+            IsFollowed = true;
+            OnFollowed?.Invoke(this, _parent, _trackedObject);
+        }
+
+        public void Unfollow()
+        {
+            IsFollowed = false;
+            OnUnfollowed?.Invoke(_parent, _trackedObject);
+        }
+
+        public event Action<IFollowable<SlamTrackedObject>, IContainer<SlamTrackedObject>, SlamTrackedObject> OnFollowed;
+        public event Action<IContainer<SlamTrackedObject>, SlamTrackedObject> OnUnfollowed;
+        public bool IsFollowed { get; private set; }
+
+        #endregion
+        
         #region Private definition
 
         private readonly List<SlamLine> _lines = new List<SlamLine>();
         private bool _isVisible = true;
+        private readonly TrackedObjectsContainer _parent;
+        private readonly SlamTrackedObject _trackedObject;
 
         #endregion
     }

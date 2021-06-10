@@ -1,5 +1,8 @@
-﻿using Elektronik.Containers;
+﻿using System.Linq;
+using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
+using Elektronik.Containers.SpecialInterfaces;
+using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using TMPro;
 using UnityEngine;
@@ -37,6 +40,26 @@ namespace Elektronik.Clouds
         protected override Pose GetObjectPose(SlamTrackedObject obj)
         {
             return new Pose(obj.Position, obj.Rotation);
+        }
+
+        public void FollowCamera(IFollowable<SlamTrackedObject> sender, IContainer<SlamTrackedObject> container,
+                                 SlamTrackedObject obj)
+        {
+            (Camera.main.transform.parent?
+                            .GetComponent<DataComponent<SlamTrackedObject>>()?
+                            .Container as ISourceTree)?.Children
+                    .OfType<IFollowable<SlamTrackedObject>>()
+                    .FirstOrDefault(f => f != sender && f.IsFollowed)?
+                    .Unfollow();
+            Camera.main.transform.parent = GameObjects[(container.GetHashCode(), obj.Id)].transform;
+        }
+
+        public void StopFollowCamera(IContainer<SlamTrackedObject> container, SlamTrackedObject obj)
+        {
+            if (Camera.main.transform.parent == GameObjects[(container.GetHashCode(), obj.Id)].transform)
+            {
+                Camera.main.transform.parent = null;
+            }
         }
     }
 }
