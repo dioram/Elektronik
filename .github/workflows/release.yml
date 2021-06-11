@@ -13,6 +13,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
           lfs: true
+      - name: Cache Library
+        id: cache-library
+        uses: actions/cache@v2
+        with:
+          path: Library
+          key: library
   build_natives:
     name: Build C++ libs
     runs-on: self-hosted
