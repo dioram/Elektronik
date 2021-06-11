@@ -41,13 +41,22 @@ namespace Protobuf.Tests.Internal
             };
             _retranslator.Start();
 
+            var logger = new TestsLogger();
+            var pointsMapManager = new PointsMapManager(_mockedPointsContainer.Object, null);
+            var observationsMapManager = new ObservationsMapManager(_mockedObservationsContainer.Object, null);
+            var trackedObjsMapManager = new TrackedObjsMapManager(_mockedTrackedObjectsContainer.Object, null);
+            var linesMapManager = new LinesMapManager(_mockedLinesContainer.Object, null);
+            var infinitePlanesMapManager = new InfinitePlanesMapManager(_mockedInfinitePlanesContainer.Object, null);
+            pointsMapManager.Logger = logger;
+            observationsMapManager.Logger = logger;
+            trackedObjsMapManager.Logger = logger;
+            linesMapManager.Logger = logger;
+            infinitePlanesMapManager.Logger = logger;
+            
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
-                new PointsMapManager(_mockedPointsContainer.Object, null),
-                new ObservationsMapManager(_mockedObservationsContainer.Object, null),
-                new TrackedObjsMapManager(_mockedTrackedObjectsContainer.Object, null),
-                new LinesMapManager(_mockedLinesContainer.Object, null),
-                new InfinitePlanesMapManager(_mockedInfinitePlanesContainer.Object, null)
+                pointsMapManager, observationsMapManager, trackedObjsMapManager, linesMapManager,
+                infinitePlanesMapManager
             }.BuildChain();
             GrpcEnvironment.SetLogger(new TestsLogger());
 
@@ -219,7 +228,8 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnConnectionsRemoved<SlamObservation>("", removedConnections);
             Thread.Sleep(100);
             _mockedObservationsContainer.Verify(c => c.AddConnections(It.IsAny<IEnumerable<(int, int)>>()), Times.Once);
-            _mockedObservationsContainer.Verify(c => c.RemoveConnections(It.IsAny<IEnumerable<(int, int)>>()), Times.Once);
+            _mockedObservationsContainer.Verify(c => c.RemoveConnections(It.IsAny<IEnumerable<(int, int)>>()),
+                                                Times.Once);
         }
     }
 }

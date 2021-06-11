@@ -6,11 +6,13 @@ using Elektronik.Data;
 using Elektronik.Protobuf.Data;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {
+        public ILogger Logger = new UnityLogger();
         private readonly ISourceTree _container;
 
         public SceneManager(ISourceTree container)
@@ -39,16 +41,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             }
 
             timer.Stop();
-            try
-            {
-                UnityEngine.Debug.Log($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms." +
-                                      $"ErrorStatus: {err.Message}");
-            }
-            catch (SecurityException e)
-            {
-                // This will be thrown if code was called in test environment.
-                // Just ignore it
-            }
+            Logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err.Message}");
 
             return Task.FromResult(err);
         }

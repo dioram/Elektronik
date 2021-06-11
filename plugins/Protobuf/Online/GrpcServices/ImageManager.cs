@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.Presenters;
 using Grpc.Core;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class ImageManager : ImageManagerPb.ImageManagerPbBase
     {
+        public ILogger Logger = new UnityLogger();
+
         private readonly RawImagePresenter _presenter;
 
         public ImageManager(RawImagePresenter presenter)
@@ -35,16 +38,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             }
 
             timer.Stop();
-            try
-            {
-                UnityEngine.Debug.Log($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. " +
-                                      $"ErrorStatus: {err}");
-            }
-            catch (SecurityException e)
-            {
-                // This will be thrown if code was called in test environment.
-                // Just ignore it
-            }
+            Logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err}");
 
             return Task.FromResult(err);
         }

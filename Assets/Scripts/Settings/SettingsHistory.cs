@@ -16,15 +16,7 @@ namespace Elektronik.Settings
         {
             _maxCountOfRecentFiles = maxCountOfRecentFiles;
             _fileName = filename;
-            try
-            {
-                Deserialize();
-            }
-            catch (SecurityException e)
-            {
-                // This will be thrown if constructor was called in test environment.
-                // Just ignore it
-            }
+            Deserialize();
         }
 
         public ReadOnlyCollection<SettingsBag> Recent =>
@@ -71,9 +63,23 @@ namespace Elektronik.Settings
         private readonly int _maxCountOfRecentFiles;
         private RecentItems _recent;
 
+        private readonly Lazy<string> _savePath = new Lazy<string>(() =>
+        {
+            try
+            {
+                return Application.persistentDataPath;
+            }
+            catch (SecurityException e)
+            {
+                Console.WriteLine("Security exception was raised. " +
+                                  "Probably because you are running UnityEngine.dll outside Unity player.");
+                return "./";
+            }
+        });
+
         private void Deserialize()
         {
-            string pathToAppData = Path.Combine(Application.persistentDataPath, _fileName);
+            string pathToAppData = Path.Combine(_savePath.Value, _fileName);
             if (File.Exists(pathToAppData))
             {
                 _recent = JsonConvert.DeserializeObject<RecentItems>(File.ReadAllText(pathToAppData));
@@ -86,7 +92,7 @@ namespace Elektronik.Settings
 
         private void Serialize()
         {
-            string pathToAppData = Path.Combine(Application.persistentDataPath, _fileName);
+            string pathToAppData = Path.Combine(_savePath.Value, _fileName);
             var fi = new FileInfo(pathToAppData);
             if (!fi.Directory.Exists) fi.Directory.Create();
             File.WriteAllText(pathToAppData, JsonConvert.SerializeObject(_recent));

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Security;
 using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
@@ -18,6 +18,8 @@ namespace Elektronik.Protobuf.Online.GrpcServices
     /// <typeparam name="T"></typeparam>
     public abstract class MapManager<T> : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
     {
+        public ILogger Logger = new UnityLogger();
+
         public MapManager(IContainer<T> container)
         {
             Container = container;
@@ -85,17 +87,9 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             }
 
             Timer.Stop();
-            try
-            {
-                UnityDebug.Log($"[{GetType().Name}.Handle] {DateTime.Now} " +
-                               $"Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
-                               $"Error status: {errorStatus}");
-            }
-            catch (SecurityException e)
-            {
-                // This will be thrown if code was called in test environment.
-                // Just ignore it
-            }
+            Logger.Info($"[{GetType().Name}.Handle] {DateTime.Now} " +
+                        $"Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
+                        $"Error status: {errorStatus}");
 
             return Task.FromResult(errorStatus);
         }

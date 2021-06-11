@@ -52,17 +52,9 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 }
 
                 timer.Stop();
-                try
-                {
-                    UnityEngine.Debug.Log($"[HandleConnections] {DateTime.Now} " +
-                                          $"Elapsed time: {timer.ElapsedMilliseconds} ms. " +
-                                          $"ErrorStatus: {status}");
-                }
-                catch (SecurityException e)
-                {
-                    // This will be thrown if code was called in test environment.
-                    // Just ignore it
-                }
+                Logger.Info($"[HandleConnections] {DateTime.Now} " +
+                                      $"Elapsed time: {timer.ElapsedMilliseconds} ms. " +
+                                      $"ErrorStatus: {status}");
             }
 
             timer.Stop();
