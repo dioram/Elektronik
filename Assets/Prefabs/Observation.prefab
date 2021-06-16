@@ -212,9 +212,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7271603601776688529}
   - component: {fileID: 4387772045971922720}
-  - component: {fileID: 765128139237899810}
   - component: {fileID: 4759715668034685124}
   - component: {fileID: 1685917250229235409}
+  - component: {fileID: 5648204574656304001}
   m_Layer: 0
   m_Name: Observation
   m_TagString: Observation
@@ -279,20 +279,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &765128139237899810
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8044058260571547435}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -6053382344825935911, guid: cc16d2b495d82aa409f0d53516a55a94, type: 3}
 --- !u!33 &4759715668034685124
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -315,3 +301,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Scale: 0.5
   Renderer: {fileID: 2447554274084923329}
+--- !u!135 &5648204574656304001
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8044058260571547435}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3
+  m_Center: {x: 0, y: 0, z: 0}
