@@ -12,4 +12,4 @@
 - Plugin that allows Elektronik to transmit data from one instance to another
 - Semitransparent lines
 - Camera can follow tracked objects
-- Observation render was optimized
+- Observation render was optimized 
