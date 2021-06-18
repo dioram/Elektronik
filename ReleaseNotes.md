@@ -4,6 +4,7 @@
 - Возможность передавать данные на другие запущенные экземпляры приложения
 - Возможность менять прозрачность линий
 - Камера может следовать за отслеживаемым объектом
+- Оптимизировано отображение наблюдений
 
 # New in this version:
 - Planes detection tool
@@ -11,3 +12,4 @@
 - Plugin that allows Elektronik to transmit data from one instance to another
 - Semitransparent lines
 - Camera can follow tracked objects
+- Observation render was optimized
