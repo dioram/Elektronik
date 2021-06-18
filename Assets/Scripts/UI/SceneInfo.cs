@@ -11,7 +11,7 @@ namespace Elektronik.UI
         [SerializeField] private PointCloudRenderer PointCloudRenderer;
         [SerializeField] private LineCloudRenderer LineCloudRenderer;
         [SerializeField] private InfinitePlaneCloudRenderer InfinitePlaneCloudRenderer;
-        [SerializeField] private ObservationCloud ObservationCloud;
+        [SerializeField] private ObservationCloudRenderer ObservationCloudRenderer;
         [SerializeField] private TrackedObjectCloud TrackedObjectCloud;
 
         [HideInInspector] public int PointsCount;
@@ -32,7 +32,7 @@ namespace Elektronik.UI
             bool isUpdated = UpdateValue(ref PointsCount, PointCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref LinesCount, LineCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref InfinitePlanesCount, InfinitePlaneCloudRenderer.ItemsCount);
-            isUpdated = isUpdated || UpdateValue(ref ObservationsCount, ObservationCloud.ItemsCount);
+            isUpdated = isUpdated || UpdateValue(ref ObservationsCount, ObservationCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref TrackedObjectsCount, TrackedObjectCloud.ItemsCount);
 
             if (isUpdated)

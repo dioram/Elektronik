@@ -72,7 +72,7 @@ namespace Elektronik.Settings
             {
                 pathToAppData = Path.Combine(SavePath, _fileName);
             }
-            catch (SecurityException e)
+            catch (SecurityException)
             {
                 Console.WriteLine("Security exception was raised. " +
                                   "Probably because you are running UnityEngine.dll outside Unity player.");
@@ -96,7 +96,7 @@ namespace Elektronik.Settings
             {
                 pathToAppData = Path.Combine(SavePath, _fileName);
             }
-            catch (SecurityException e)
+            catch (SecurityException)
             {
                 Console.WriteLine("Security exception was raised. " +
                                   "Probably because you are running UnityEngine.dll outside Unity player.");

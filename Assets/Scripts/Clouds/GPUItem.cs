@@ -1,4 +1,6 @@
-﻿using Elektronik.Data.PackageObjects;
+﻿using System;
+using Elektronik.Data.PackageObjects;
+using Elektronik.Extensions;
 using UnityEngine;
 
 namespace Elektronik.Clouds
@@ -20,6 +22,12 @@ namespace Elektronik.Clouds
         {
             Position = offset;
             Color = EncodeColor(color);
+        }
+
+        public GPUItem(Quaternion rotation)
+        {
+            Position = new Vector3(rotation.x, rotation.y, rotation.z);
+            Color = BitConverterEx.ToUInt32(BitConverter.GetBytes(rotation.w), 0);
         }
             
         static uint EncodeColor(Color c)

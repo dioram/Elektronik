@@ -4,7 +4,7 @@ namespace Elektronik.Clouds
 {
     public abstract class CloudBlock : MonoBehaviour
     {
-        public const int Capacity = 512 * 512;
+        public const int Capacity = 256 * 256;
         public Shader CloudShader;
         public bool Updated;
         public float ItemSize = 1f;

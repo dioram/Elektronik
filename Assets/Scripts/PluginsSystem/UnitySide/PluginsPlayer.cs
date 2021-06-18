@@ -24,6 +24,8 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         public void ClearMap()
         {
+            Camera.main.transform.parent = null;
+            
             foreach (var dataSourceOffline in Plugins.OfType<IDataSourcePluginOffline>())
             {
                 dataSourceOffline.StopPlaying();

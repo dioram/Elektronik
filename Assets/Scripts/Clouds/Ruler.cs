@@ -37,6 +37,7 @@ namespace Elektronik.Clouds
         private Camera _camera;
         private float _distance;
         private bool _isSecondPointSet = false;
+        private bool _destroyStarted = false;
         private Vector3 _secondPoint;
 
         public float Distance
@@ -65,12 +66,10 @@ namespace Elektronik.Clouds
                 pos.z = 1;
                 _renderer.SetPosition(1, _camera.ScreenToWorldPoint(pos));
             }
-            
-            if (Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out var hit)
-                && hit.transform == DeleteButton
-                && Input.GetMouseButtonUp(0))
+            else if (!_destroyStarted)
             {
-                Destroy(gameObject);
+                Destroy(gameObject, 10f);
+                _destroyStarted = true;
             }
         }
     }

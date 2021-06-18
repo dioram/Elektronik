@@ -63,7 +63,6 @@ namespace Elektronik.PluginsSystem
                                                                         string topicName)
                 where TCloudItem : ICloudItem
         {
-            var type = source.GetType().GetInterfaces().First(i => i.IsGenericType).GenericTypeArguments[0];
             var connectionsUpdatedName = nameof(IConnectableObjectsContainer<ICloudItem>.OnConnectionsUpdated);
             var connectionsUpdated = Observable.FromEvent<EventHandler<ConnectionsEventArgs>>(
                         h => (sender, args) => recorder.OnConnectionsUpdated<TCloudItem>(topicName, args.Items.ToList()),
@@ -91,7 +90,6 @@ namespace Elektronik.PluginsSystem
                                                                   string topicName)
                 where TCloudItem : ICloudItem
         {
-            var type = source.GetType().GetInterfaces().First(i => i.IsGenericType).GenericTypeArguments[0];
             var addedName = nameof(IContainer<ICloudItem>.OnAdded);
             var add = Observable.FromEvent<EventHandler<AddedEventArgs<TCloudItem>>>(
                         h => (sender, args) => recorder.OnAdded(topicName, args.AddedItems.ToList()),

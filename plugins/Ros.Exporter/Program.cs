@@ -22,7 +22,10 @@ namespace Ros.Exporter
             switch (format)
             {
             case TextureFormat.Alpha8:
-                return Color.FromArgb(stream.ReadByte(), Color.Black);
+            {
+                var a = stream.ReadByte();
+                return Color.FromArgb(255, a, a, a);
+            }
             case TextureFormat.RGB24:
                 return Color.FromArgb(255, stream.ReadByte(), stream.ReadByte(), stream.ReadByte());
             case TextureFormat.RGBA32:
@@ -68,28 +71,29 @@ namespace Ros.Exporter
 
         private static Dictionary<string, StreamWriter> _files = new();
 
-        static void CreateHeader(string topicName, MessageData data)
+        static void CreateHeader(MessageData data)
         {
             var first = MessageParser.Parse(data.Data!, data.TopicType!, false);
             if (first is RosImage)
             {
                 Directory.CreateDirectory(data.TopicName.Replace("/", "_"));
-                _files[topicName] = null;
+                _files[data.TopicName] = null;
                 return;
             }
             var file = File.CreateText($"{data.TopicName.Replace("/", "_")}.csv");
             var header = RosMessageConvertExtender.GetMessagePropertyNames(first.GetType());
+            _files[data.TopicName] = file;
             file.WriteLine(string.Join(',', header));
         }
         
         static async Task<bool> ExportData(MessageData data)
         {
-            if (!_files.ContainsKey(data.TopicName)) CreateHeader(data.TopicName, data);
+            if (!_files.ContainsKey(data.TopicName)) CreateHeader(data);
             
             var mess = MessageParser.Parse(data.Data!, data.TopicType!, false);
-            if (mess is RosImage)
+            if (mess is RosImage image)
             {
-                var imageMessage = ImageDataExt.FromImageMessage((RosImage) mess);
+                var imageMessage = ImageDataExt.FromImageMessage(image);
                 var im = new Bitmap(imageMessage.Width, imageMessage.Height);
                 using var stream = new MemoryStream(imageMessage.Data);
                 for (int j = 0; j < imageMessage.Height; j++)
@@ -99,7 +103,7 @@ namespace Ros.Exporter
                         im.SetPixel(i, j, ReadColor(stream, imageMessage.Encoding));
                     }
                 }
-
+                
                 im.Save($"{data.TopicName.Replace("/", "_")}//{data.Timestamp}.png", ImageFormat.Png);
                 return true;
             }
