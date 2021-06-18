@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Security;
 using System.Threading.Tasks;
 using Elektronik.Data;
 using Elektronik.Protobuf.Data;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Debug = UnityEngine.Debug;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {
+        public ILogger Logger = new UnityLogger();
         private readonly ISourceTree _container;
 
         public SceneManager(ISourceTree container)
@@ -37,9 +39,10 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 err.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                 err.Message = e.Message;
             }
+
             timer.Stop();
-            Debug.Log($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms." +
-                      $"ErrorStatus: {err.Message}");
+            Logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err.Message}");
+
             return Task.FromResult(err);
         }
     }

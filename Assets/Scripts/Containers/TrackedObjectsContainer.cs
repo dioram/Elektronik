@@ -268,6 +268,7 @@ namespace Elektronik.Containers
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
                 }
 
+                _trackedObjsRenderer = trackedRenderer;
                 break;
             case ICloudRenderer<SlamLine> lineRenderer:
                 _lineRenderer = lineRenderer;
@@ -404,6 +405,7 @@ namespace Elektronik.Containers
         #region Private definitions
 
         private ICloudRenderer<SlamLine> _lineRenderer;
+        private ICloudRenderer<SlamTrackedObject> _trackedObjsRenderer;
         private readonly List<ISourceTree> _lineContainers = new List<ISourceTree>();
 
         private readonly Dictionary<int, (SlamTrackedObject, TrackContainer)> _objects =
@@ -416,9 +418,10 @@ namespace Elektronik.Containers
         {
             lock (_lineContainers)
             {
-                var res = new TrackContainer();
+                var res = new TrackContainer(this, obj);
                 res.IsVisible = IsVisible;
                 res.SetRenderer(_lineRenderer);
+                res.SetRenderer(_trackedObjsRenderer);
                 res.DisplayName = $"Track #{obj.Id}";
                 _lineContainers.Add(res);
                 if (history == null)

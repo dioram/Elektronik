@@ -54,7 +54,7 @@ namespace Elektronik.Containers
         {
             lock (_connections)
             {
-                return _connectionsIndices.ContainsKey(item);
+                return _connectionsIndices.ContainsKey(item.GetIds());
             }
         }
 
@@ -100,7 +100,7 @@ namespace Elektronik.Containers
             lock (_connections)
             {
                 obj.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
-                _connectionsIndices[obj] = obj.Id;
+                _connectionsIndices[obj.GetIds()] = obj.Id;
                 _connections[obj.Id] = obj;
             }
 
@@ -120,7 +120,7 @@ namespace Elektronik.Containers
                     var line = obj;
                     line.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
                     _connections[line.Id] = line;
-                    _connectionsIndices[line] = line.Id;
+                    _connectionsIndices[line.GetIds()] = line.Id;
                     buffer.Add(line);
                 }
             }
@@ -132,7 +132,7 @@ namespace Elektronik.Containers
         {
             lock (_connections)
             {
-                int index = _connectionsIndices[item];
+                int index = _connectionsIndices[item.GetIds()];
                 item.Id = index;
                 _connections[item.Id] = item;
             }
@@ -143,27 +143,35 @@ namespace Elektronik.Containers
         public void Update(IEnumerable<SlamLine> items)
         {
             if (items is null) return;
-            var buffer = new List<SlamLine>();
+            var updatedItems = new List<SlamLine>();
+            var addedItems = new List<SlamLine>();
             lock (_connections)
             {
                 foreach (var obj in items)
                 {
+                    if (!_connectionsIndices.ContainsKey(obj.GetIds()))
+                    {
+                        addedItems.Add(obj);
+                        continue;
+                    }
                     var line = obj;
-                    line.Id = _connectionsIndices[line];
+                    line.Id = _connectionsIndices[line.GetIds()];
                     _connections[line.Id] = line;
-                    buffer.Add(line);
+                    updatedItems.Add(line);
                 }
             }
 
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(buffer));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(updatedItems));
+            
+            if (addedItems.Count > 0) AddRange(addedItems);
         }
 
         public bool Remove(SlamLine obj)
         {
             lock (_connections)
             {
-                if (!_connectionsIndices.ContainsKey(obj)) return false;
-                var index = _connectionsIndices[obj];
+                if (!_connectionsIndices.ContainsKey(obj.GetIds())) return false;
+                var index = _connectionsIndices[obj.GetIds()];
                 _connections.Remove(index);
                 _freeIds.Enqueue(index);
             }
@@ -181,9 +189,9 @@ namespace Elektronik.Containers
             {
                 foreach (var line in items)
                 {
-                    if (!_connectionsIndices.ContainsKey(line)) continue;
-                    var index = _connectionsIndices[line];
-                    _connectionsIndices.Remove(line);
+                    if (!_connectionsIndices.ContainsKey(line.GetIds())) continue;
+                    var index = _connectionsIndices[line.GetIds()];
+                    _connectionsIndices.Remove(line.GetIds());
                     if (!_connections.ContainsKey(index)) continue;
                     ids.Add(index);
                     _connections.Remove(index);
@@ -259,8 +267,8 @@ namespace Elektronik.Containers
 
                 Vector3 min = Vector3.positiveInfinity;
                 Vector3 max = Vector3.negativeInfinity;
-                foreach (var point in _connectionsIndices
-                        .Keys
+                foreach (var point in _connections
+                        .Values
                         .SelectMany(l => new[] {l.Point1.Position, l.Point2.Position}))
                 {
                     min = new Vector3(Mathf.Min(min.x, point.x), Mathf.Min(min.y, point.y), Mathf.Min(min.z, point.z));
@@ -322,7 +330,7 @@ namespace Elektronik.Containers
         private bool _isVisible = true;
 
         private readonly IDictionary<int, SlamLine> _connections = new SortedDictionary<int, SlamLine>();
-        private readonly IDictionary<SlamLine, int> _connectionsIndices = new SortedDictionary<SlamLine, int>();
+        private readonly IDictionary<(int, int), int> _connectionsIndices = new SortedDictionary<(int, int), int>();
 
         private int _maxId = 0;
         private readonly Queue<int> _freeIds = new Queue<int>();

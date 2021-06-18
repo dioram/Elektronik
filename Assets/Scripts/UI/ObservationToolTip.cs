@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Clouds;
+using Elektronik.Collision;
+using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using Elektronik.UI.Windows;
@@ -10,8 +11,7 @@ namespace Elektronik.UI
 {
     public class ObservationToolTip : MonoBehaviour
     {
-        public GameObjectCloud<SlamObservation> ObservationsCloud;
-        public bool Enable3DImages { get; set; }
+        public ObservationCollisionCloud CollisionCloud;
         [SerializeField] private WindowsManager Manager;
         private Camera _camera;
         private ObservationViewer _floatingViewer;
@@ -30,47 +30,42 @@ namespace Elektronik.UI
         private void Update()
         {
             var ray = _camera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hitInfo) && hitInfo.transform.CompareTag("Observation"))
+            var collision = CollisionCloud.FindCollided(ray);
+            if (collision.HasValue)
             {
-                var data = hitInfo.transform.GetComponent<DataComponent<SlamObservation>>();
+                var (container, observation) = collision.Value;
                 if (Input.GetMouseButtonUp(0))
                 {
-                    CreateOrShowWindow(data, "Observation #{0}");
-                    var image3D = data.GetComponent<Observation3DImage>();
-                    if (Enable3DImages && image3D != null)
-                    {
-                        image3D.enabled = !image3D.enabled;
-                    }
+                    CreateOrShowWindow(container, observation, "Observation #{0}");
                 }
                 else
                 {
                     if (_floatingViewer.gameObject.activeInHierarchy) return;
-                    _floatingViewer.Render(data);
+                    _floatingViewer.Render((container, observation));
                     _floatingViewer.transform.position = Input.mousePosition;
                 }
             }
             else
             {
-                if (_floatingViewer is { }) _floatingViewer.Hide();
+                if (_floatingViewer != null) _floatingViewer.Hide();
             }
         }
-
-        private void CreateOrShowWindow(DataComponent<SlamObservation> data, string title)
+        
+        private void CreateOrShowWindow(IContainer<SlamObservation> container, SlamObservation observation, string title)
         {
-            var v = _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == data.Container.GetHashCode()
-                                                          && w.ObservationId == data.Data.Id);
+            var v = _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == container.GetHashCode()
+                                                          && w.ObservationId == observation.Id);
 
             if (v is null)
             {
-                data.Container.OnRemoved += DestroyObsoleteWindows;
+                container.OnRemoved += DestroyObsoleteWindows;
                 Manager.CreateWindow<ObservationViewer>(title, (viewer, window) =>
                                                         {
-                                                            viewer.Render(data);
+                                                            viewer.Render((container, observation));
                                                             _pinnedViewers.Add(
                                                                 window.GetComponent<ObservationViewer>());
-                                                            viewer.ObservationsCloud = ObservationsCloud;
                                                         },
-                                                        data.Data.Id);
+                                                        observation.Id);
             }
             else
             {

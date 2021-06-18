@@ -17,12 +17,15 @@ namespace Elektronik.Cameras
         public UILineRenderer XLine;
         public UILineRenderer YLine;
         public UILineRenderer ZLine;
+        public bool ShowCoordinates = true;
         private Transform _camera;
         private bool _rotating;
 
         private void Start()
         {
             _camera = Camera.main.transform;
+            ShowCoordinates = ShowCoordinates && (PositionLabel != null);
+            
             AxisLabels[0].GetComponent<Button>().OnClickAsObservable()
                     .Subscribe(_ => StartCoroutine(RotateCamera(Vector3.forward)));
             AxisLabels[1].GetComponent<Button>().OnClickAsObservable()
@@ -39,10 +42,7 @@ namespace Elektronik.Cameras
 
         protected void Update()
         {
-            if (PositionLabel != null)
-            {
-                PositionLabel.text = $"({_camera.position.x:f2}, {_camera.position.y:f2}, {_camera.position.z:f2})";
-            }
+            UpdateCoordinatesLabel();
             
             var cameraAxis = new[]
             {
@@ -75,6 +75,14 @@ namespace Elektronik.Cameras
                     AxisLabels[i].sizeDelta = new Vector2(MarkerSize * 0.75f, MarkerSize * 0.75f);
                 }
             }
+        }
+
+        private void UpdateCoordinatesLabel()
+        {
+            if (PositionLabel == null) return;
+            PositionLabel.gameObject.SetActive(ShowCoordinates);
+            if (!ShowCoordinates) return;
+            PositionLabel.text = $"({_camera.position.x:f2}, {_camera.position.y:f2}, {_camera.position.z:f2})";
         }
 
         private IEnumerator RotateCamera(Vector3 forward)

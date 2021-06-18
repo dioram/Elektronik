@@ -322,6 +322,51 @@ MonoBehaviour:
     m_Localized: Record
     m_Metadata:
       m_Items: []
+  - m_Id: 12730009622822912
+    m_Localized: Detect planes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13065350977122304
+    m_Localized: Scene tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13065452374421504
+    m_Localized: Analytical tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13067747757617152
+    m_Localized: Metaparameters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13134836195356672
+    m_Localized: 'Gravity delta angle:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13135194086928384
+    m_Localized: Show only vertical and horizontal planes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13135498807308288
+    m_Localized: 'Gravity vector:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13135642911010816
+    m_Localized: Planes detection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13163167775158272
+    m_Localized: Turn on logging (Warning! During continious run it can generate
+      gigabytes of log!!)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20769850134511616
+    m_Localized: 'Lines transparency:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21477263954251776
+    m_Localized: Follow
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

@@ -32,6 +32,11 @@ namespace Elektronik.Data.PackageObjects
             Message = "";
         }
 
+        public (int Id1, int Id2) GetIds()
+        {
+            return (Point1.Id, Point2.Id);
+        }
+
         public int CompareTo(SlamLine other) => GetInternalID().CompareTo(other.GetInternalID());
 
         public bool Equals(SlamLine other) => GetInternalID() == other.GetInternalID();

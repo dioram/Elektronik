@@ -29678,7 +29678,7 @@ MonoBehaviour:
     atlasWidth: 1024
     atlasHeight: 1024
     characterSetSelectionMode: 6
-    characterSequence: 20-7E,A0-36F,374-375,37A-37E,384-38A,38C,38E-3A1,3A3-3CE,3D0-4FF
+    characterSequence: 20-7E,A0-36F,374-375,37A-37E,384-38A,38C,38E-3A1,3A3-3CE,3D0-4FF,844
     referencedFontAssetGUID: 1f50e686876162448a97c5de561725d5
     referencedTextAssetGUID: 
     fontStyle: 0

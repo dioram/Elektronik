@@ -113,7 +113,7 @@ namespace Elektronik.Containers
             lock (_table)
             {
                 _objects.Update(list);
-                Debug.Assert(_linesBuffer.Count == 0);
+                _linesBuffer.Clear();
                 foreach (var pt1 in list)
                 {
                     foreach (var pt2Id in _table.GetColIndices(pt1.Id))
@@ -123,7 +123,6 @@ namespace Elektronik.Containers
                 }
 
                 _connects.Update(_linesBuffer);
-                _linesBuffer.Clear();
             }
 
             OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
@@ -160,8 +159,8 @@ namespace Elektronik.Containers
         public void Remove(IEnumerable<TCloudItem> items)
         {
             if (items is null) return;
-            Debug.Assert(_linesBuffer.Count == 0);
             var list = items.ToList();
+            _linesBuffer.Clear();
             lock (_table)
             {
                 foreach (var obj in list)
@@ -183,7 +182,6 @@ namespace Elektronik.Containers
                 }
 
                 _connects.Remove(_linesBuffer);
-                _linesBuffer.Clear();
                 _objects.Remove(list);
             }
 
@@ -210,7 +208,7 @@ namespace Elektronik.Containers
         public void AddConnections(IEnumerable<(int id1, int id2)> connections)
         {
             if (connections is null) return;
-            Debug.Assert(_linesBuffer.Count == 0);
+            _linesBuffer.Clear();
             var list = connections.ToList();
             foreach (var c in list)
             {
@@ -218,14 +216,13 @@ namespace Elektronik.Containers
             }
 
             _connects.AddRange(_linesBuffer);
-            _linesBuffer.Clear();
             OnConnectionsUpdated?.Invoke(this, new ConnectionsEventArgs(list));
         }
 
         public void RemoveConnections(IEnumerable<(int id1, int id2)> connections)
         {
             if (connections is null) return;
-            Debug.Assert(_linesBuffer.Count == 0);
+            _linesBuffer.Clear();
             var list = connections.ToList();
             foreach (var c in list)
             {
@@ -233,7 +230,6 @@ namespace Elektronik.Containers
             }
 
             _connects.Remove(_linesBuffer);
-            _linesBuffer.Clear();
             OnConnectionsRemoved?.Invoke(this, new ConnectionsEventArgs(list));
         }
 

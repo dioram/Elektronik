@@ -21,11 +21,12 @@
 !/plugins/**
 /plugins/**/bin
 /plugins/**/obj
-/plugins/Ros/Ros2/Online/SWIG_generated
-/plugins/ROS2DDS/ConnectorCSHARP*
-/plugins/ROS2DDS/cmake-build-*
+/**/SWIG_generated
+/plugins/*/*CSHARP_wrap*
+/plugins/*/cmake-build-*
 /plugins/ROS2DDS/CMakeSettings.json
-
+/Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative
+/Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative.meta
 /Assets/generatedFiles/
 
 # Unity3D generated meta files

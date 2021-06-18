@@ -6,27 +6,30 @@ using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     using UnityDebug = UnityEngine.Debug;
-    
+
     /// <summary> 
     /// Base class for handle data in online mode. Used in pattern "Chain of responsibility".
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class MapManager<T> : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
     {
+        public ILogger Logger = new UnityLogger();
+
         public MapManager(IContainer<T> container)
         {
             Container = container;
         }
 
         MapsManagerPb.MapsManagerPbBase _link;
-        
-        public IChainable<MapsManagerPb.MapsManagerPbBase> SetSuccessor(IChainable<MapsManagerPb.MapsManagerPbBase> link)
+
+        public IChainable<MapsManagerPb.MapsManagerPbBase> SetSuccessor(
+            IChainable<MapsManagerPb.MapsManagerPbBase> link)
         {
-            UnityDebug.Assert(link != this, "[DataParser.SetSuccessor] Cyclic reference!");
             _link = link as MapsManagerPb.MapsManagerPbBase;
             return link;
         }
@@ -41,39 +44,39 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             if (_link != null)
                 status = _link.Handle(request, context);
             else
-                status = Task.FromResult(new ErrorStatusPb() 
+                status = Task.FromResult(new ErrorStatusPb()
                 {
-                    ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Unknown, 
-                    Message = "Valid MapManager not found for this message" 
+                    ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Unknown,
+                    Message = "Valid MapManager not found for this message"
                 });
             return status;
         }
-        
+
         protected IContainer<T> Container;
         protected Stopwatch Timer;
 
         protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, IList<T> data)
         {
             var readOnlyData = new ReadOnlyCollection<T>(data);
-            ErrorStatusPb errorStatus = new ErrorStatusPb() { ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded };
+            ErrorStatusPb errorStatus = new ErrorStatusPb() {ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded};
             try
             {
-                lock(Container)
+                lock (Container)
                 {
                     switch (action)
                     {
-                        case PacketPb.Types.ActionType.Add:
-                            Container.AddRange(readOnlyData);
-                            break;
-                        case PacketPb.Types.ActionType.Update:
-                            Container.Update(readOnlyData);
-                            break;
-                        case PacketPb.Types.ActionType.Remove:
-                            Container.Remove(readOnlyData);
-                            break;
-                        case PacketPb.Types.ActionType.Clear:
-                            Container.Clear();
-                            break;
+                    case PacketPb.Types.ActionType.Add:
+                        Container.AddRange(readOnlyData);
+                        break;
+                    case PacketPb.Types.ActionType.Update:
+                        Container.Update(readOnlyData);
+                        break;
+                    case PacketPb.Types.ActionType.Remove:
+                        Container.Remove(readOnlyData);
+                        break;
+                    case PacketPb.Types.ActionType.Clear:
+                        Container.Clear();
+                        break;
                     }
                 }
             }
@@ -82,10 +85,12 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 errorStatus.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                 errorStatus.Message = err.Message;
             }
+
             Timer.Stop();
-            UnityDebug.Log($"[{GetType().Name}.Handle] {DateTime.Now} " +
-                           $"Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
-                           $"Error status: {errorStatus}");
+            Logger.Info($"[{GetType().Name}.Handle] {DateTime.Now} " +
+                        $"Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
+                        $"Error status: {errorStatus}");
+
             return Task.FromResult(errorStatus);
         }
     }

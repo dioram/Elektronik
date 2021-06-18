@@ -28,6 +28,8 @@ namespace Elektronik.Data
         private readonly List<SourceTreeElement> _roots = new List<SourceTreeElement>();
         private Component[] _renderers;
 
+        public event Action<ISourceTree> OnSourceAdded;
+
         public void ClearMap()
         {
             var removable = _dataSources.OfType<IRemovable>().ToList();
@@ -103,6 +105,7 @@ namespace Elektronik.Data
             {
                 source.SetRenderer(renderer);
             }
+            OnSourceAdded?.Invoke(source);
         }
 
         public void TakeSnapshot()
@@ -133,6 +136,8 @@ namespace Elektronik.Data
                                        TextLocalizationExtender.GetLocalizedString("Load"));
         }
 
+        #region Private
+
         private static void MapSourceTree(ISourceTree treeElement, string path, Func<ISourceTree, string, bool> action)
         {
             var fullName = $"{path}/{treeElement.DisplayName}";
@@ -160,5 +165,7 @@ namespace Elektronik.Data
                 AddDataSource(new SnapshotContainer(Path.GetFileName(path), player.Data.Children, Converter));
             }
         }
+
+        #endregion
     }
 }

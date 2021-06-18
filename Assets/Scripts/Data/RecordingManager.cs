@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Localization;
@@ -12,14 +12,30 @@ namespace Elektronik.Data
 {
     public class RecordingManager : MonoBehaviour
     {
+        public PluginsPlayer PluginsPlayer;
         public DataSourcesManager DataSourcesManager;
 
         private List<IDataRecorderPlugin> _recorders;
 
-        private void Start()
+        private void Awake()
         {
-            Debug.Assert(DataSourcesManager != null, "DataSourcesManager != null");
-            _recorders = PluginsLoader.Plugins.Value.OfType<IDataRecorderPlugin>().ToList();
+            _recorders = PluginsPlayer.Plugins.OfType<IDataRecorderPlugin>().ToList();
+            foreach (var recorder in _recorders.Where(r => r.StartsFromSceneLoading))
+            {
+                recorder.Converter = DataSourcesManager.Converter;
+            }
+            DataSourcesManager.OnSourceAdded += _ =>
+            {
+                DataSourcesManager.MapSourceTree((elem, topic) =>
+                {
+                    var subscribed = false;
+                    foreach (var recorder in _recorders.Where(r => r.StartsFromSceneLoading))
+                    {
+                        subscribed = subscribed || recorder.SubscribeOn(elem, topic);
+                    }
+                    return !subscribed;
+                });
+            };
         }
 
         private void OnDestroy()
@@ -29,7 +45,7 @@ namespace Elektronik.Data
 
         public void StartRecording()
         {
-            FileBrowser.SetFilters(false, _recorders.Select(r => r.Extension));
+            FileBrowser.SetFilters(false, _recorders.Select(r => r.Extension).Where(s => !string.IsNullOrEmpty(s)));
             FileBrowser.ShowSaveDialog(path => Record(path[0]),
                                        () => { },
                                        false,

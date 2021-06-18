@@ -37,7 +37,7 @@ namespace Elektronik
                 {
                     try
                     {
-                        a();
+                        a?.Invoke();
                     }
                     catch (Exception e)
                     {

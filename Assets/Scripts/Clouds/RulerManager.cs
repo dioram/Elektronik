@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Elektronik.Collision;
 using UnityEngine;
 
 namespace Elektronik.Clouds
@@ -6,8 +7,7 @@ namespace Elektronik.Clouds
     public class RulerManager : MonoBehaviour
     {
         public GameObject LineRendererPrefab;
-        public float MaxDistance = 100f;
-        [SerializeField] private PointCloudRenderer PointCloudRenderer;
+        [SerializeField] private PointCollisionCloud PointCollisionCloud;
         public Transform Cursor;
 
         private Camera _camera;
@@ -52,52 +52,21 @@ namespace Elektronik.Clouds
 
         #region Private
 
-        
-        
-        private bool RaySphereIntersection(Ray ray, Vector3 sphereOrigin, float radius)
-        {
-            var k = ray.origin - sphereOrigin;
-            var b = Vector3.Dot(k, ray.direction);
-            var c = Vector3.Dot(k, k) - radius * radius;
-            var d = b * b - c;
-
-            if (d < 0) return false;
-            var sqrtD = Mathf.Sqrt(d);
-
-            var t1 = -b + sqrtD;
-            var t2 = -b - sqrtD;
-            var minT = Mathf.Min(t1, t2);
-            var maxT = Mathf.Max(t1, t2);
-            var t = (minT >= 0) ? minT : maxT;
-
-            return t > 0;
-        }
-
         private IEnumerator FindHoveredPoint()
         {
             while (true)
             {
                 var ray = _camera.ScreenPointToRay(Input.mousePosition);
-                var radius = PointCloudRenderer.ItemSize;
-                var point = Vector3.positiveInfinity;
-                var cameraPos = _camera.transform.position;
-
-                foreach (var item in PointCloudRenderer.GetPoints())
+                var pointData = PointCollisionCloud.FindCollided(ray);
+                if (pointData.HasValue)
                 {
-                    if (!RaySphereIntersection(ray, item, radius)) continue;
-                    if ((cameraPos - item).magnitude < (cameraPos - point).magnitude)
-                    {
-                        point = item;
-                    }
+                    Cursor.gameObject.SetActive(true);
+                    Cursor.position = pointData.Value.item.Position;
+                    Cursor.localScale = Vector3.one * (PointCollisionCloud.Radius * 2.2f);
                 }
-
-                var found = (cameraPos - point).magnitude < MaxDistance;
-                Cursor.gameObject.SetActive(found);
-
-                if (found)
+                else
                 {
-                    Cursor.position = point;
-                    Cursor.localScale = Vector3.one * (radius * 2.2f);
+                    Cursor.gameObject.SetActive(false);
                 }
                 
                 yield return new WaitForSeconds(0.1f);

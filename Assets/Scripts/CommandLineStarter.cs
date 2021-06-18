@@ -22,6 +22,7 @@ namespace Elektronik
                     .First(p => p.SupportedExtensions.Contains(extension));
             ModeSelector.Mode = Mode.Offline;
             PluginsLoader.ActivePlugins.Add(plugin);
+            plugin.SetFileName(args[1]);
             SceneManager.LoadScene("Scenes/Empty", LoadSceneMode.Single);
         }
     }

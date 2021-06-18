@@ -148,7 +148,7 @@ namespace Elektronik.Protobuf.Data
     {
         public static Vector3Pb ToProtobuf(this Vector3 v, ICSConverter converter)
         {
-            if (converter != null) converter.ConvertBack(ref v);
+            converter?.ConvertBack(ref v);
             return new Vector3Pb {X = v.x, Y = v.y, Z = v.z};
         }
 
