@@ -47,7 +47,7 @@ jobs:
         with:
           arch: x64
       - run: .\.github\build_plugins.bat
-  runTest:
+  runTests:
     name: Run tests
     runs-on: self-hosted
     needs:
