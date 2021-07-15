@@ -26,12 +26,19 @@ namespace Elektronik.RosPlugin.Common.RosMessages
 
         public static string[] GetMessagePropertyNames(Type messageType, string prefix = "")
         {
-            if (!messageType.IsSubclassOf(typeof(RosMessage))
-                || messageType.Name == "Vector3"
-                || messageType.Name == nameof(Point)
-                || messageType.Name == "Quaternion")
+            if (!messageType.IsSubclassOf(typeof(RosMessage)))
             {
                 return new[] {prefix};
+            }
+
+            if (messageType.Namespace == "Vector3" || messageType.Name == nameof(Point))
+            {
+                return new[] {$"{prefix}.x", $"{prefix}.y", $"{prefix}.z"};
+            }
+
+            if (messageType.Namespace == "Quaternion")
+            {
+                return new[] {$"{prefix}.x", $"{prefix}.y", $"{prefix}.z", $"{prefix}.w"};
             }
 
             if (messageType.Name == nameof(Header)) return new[] {"timestamp"};
@@ -181,17 +188,18 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             case RosQuaternion quaternion:
                 return new[] {$"{quaternion.x:F3}, {quaternion.y:F3}, {quaternion.z:F3}, {quaternion.w:F3}"};
             case Header header:
-                return new[] {$"{header.stamp.secs}.{header.stamp.nsecs/1000000:000}"};
+                return new[] {$"{header.stamp.secs}.{header.stamp.nsecs:000000000}"};
             case RosMessage message:
                 return GetData(message);
+            case string str:
+                return new []{str};
             case IEnumerable arr:
                 var builder = new StringBuilder();
                 foreach (var o in arr)
                 {
                     builder.Append($"{o.GetData()[0]}, ");
                 }
-
-                builder.Remove(builder.Length - 2, 2);
+                if (builder.Length >= 2) builder.Remove(builder.Length - 2, 2);
                 return new[] {builder.ToString()};
             default:
                 return new[] {value.ToString()};

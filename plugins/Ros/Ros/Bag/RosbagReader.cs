@@ -154,7 +154,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 }
                 else
                 {
-                    MainThreadInvoker.Instance.Enqueue(Finished!);
+                    MainThreadInvoker.Enqueue(Finished!);
                 }
             });
         }
