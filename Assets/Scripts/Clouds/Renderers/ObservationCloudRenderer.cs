@@ -6,18 +6,17 @@ namespace Elektronik.Clouds
 {
     public class ObservationCloudRenderer : CloudRenderer<SlamObservation, ObservationCloudBlock>
     {
+        private static readonly Vector3[] points = new[]
+        {
+            new Vector3(0, 0, -0.5f),
+            new Vector3(0, Mathf.Sqrt(8 / 9f), 1 / 3f),
+            new Vector3(Mathf.Sqrt(2 / 3f), -Mathf.Sqrt(2 / 9f), 1 / 3f),
+            new Vector3(-Mathf.Sqrt(2 / 3f), -Mathf.Sqrt(2 / 9f), 1 / 3f),
+        };
+
         protected override void ProcessItem(ObservationCloudBlock block, SlamObservation item, int inBlockId)
         {
-            float halfSide = ItemSize / 2;
-            // TODO: Сделать правильную пирамиду
-            var vs = new []
-            {
-                new Vector3(0, 0, -halfSide),
-                new Vector3(0, -halfSide, halfSide),
-                new Vector3(halfSide, halfSide, halfSide),
-                new Vector3(-halfSide, halfSide, halfSide),
-            }.Select(v => item.Rotation * v + item.Point.Position).ToArray();
-
+            var vs = points.Select(v => item.Rotation * (v * ItemSize) + item.Point.Position).ToArray();
             var vertices = new[]
             {
                 vs[0], vs[1], vs[2],

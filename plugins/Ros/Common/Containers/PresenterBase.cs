@@ -38,7 +38,7 @@ namespace Elektronik.RosPlugin.Common.Containers
             if (Renderer is not null) Renderer.Clear();
         }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is WindowsManager factory)
             {

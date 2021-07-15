@@ -5,6 +5,7 @@ using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Mesh;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Offline.Presenters;
 
@@ -18,9 +19,10 @@ namespace Elektronik.Protobuf.Data
         public readonly IContainer<SlamLine> Lines;
         public readonly IContainer<SlamInfinitePlane> InfinitePlanes;
         public readonly ISourceTree Image;
+        public readonly IMeshContainer MeshContainer;
         public readonly SlamDataInfoPresenter SpecialInfo;
 
-        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo = null)
+        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo = null, bool drawMesh = true)
         {
             DisplayName = displayName;
             Image = image;
@@ -35,6 +37,7 @@ namespace Elektronik.Protobuf.Data
                 new CloudContainer<SlamPoint>("Points"),
                 new SlamLinesContainer("Connections"),
                 "Points");
+            if (drawMesh) MeshContainer = new MeshReconstructor(Points, Observations, "Mesh");
 
             Lines = new SlamLinesContainer("Lines");
             InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
@@ -47,6 +50,7 @@ namespace Elektronik.Protobuf.Data
                 (ISourceTree) InfinitePlanes,
                 Image,
             };
+            if (drawMesh) ch.Add(MeshContainer);
             if (SpecialInfo != null) ch.Add(SpecialInfo);
             Children = ch.ToArray();
         }
@@ -65,7 +69,7 @@ namespace Elektronik.Protobuf.Data
             }
         }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             foreach (var child in Children)
             {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
@@ -124,14 +125,17 @@ namespace Elektronik.Protobuf.Data
         }
 
         public static implicit operator SlamObservation(ObservationPb o)
-            => o != null ? new SlamObservation(o.point_, o.orientation_, o.message_, o.filename_, o.stats_) : default;
+            => o != null
+                    ? new SlamObservation(o.point_, o.orientation_, o.message_, o.filename_,
+                                          o.observedPoints_.ToArray(), o.stats_)
+                    : default;
     }
 
     public partial class TrackedObjPb
     {
         public static implicit operator SlamTrackedObject(TrackedObjPb o)
             => o != null
-                    ? new SlamTrackedObject(o.id_, o.translation_, o.rotation_, o.trackColor_, o.message_)
+                    ? new SlamTrackedObject(o.id_, o.position_, o.orientation_, o.color_, o.message_)
                     : default;
     }
 
@@ -171,13 +175,13 @@ namespace Elektronik.Protobuf.Data
 
         public static LinePb ToProtobuf(this SlamLine l, ICSConverter converter)
             => new LinePb {Pt1 = l.Point1.ToProtobuf(converter), Pt2 = l.Point2.ToProtobuf(converter)};
-        
+
         public static ObservationPb ToProtobuf(this SlamObservation o, ICSConverter converter)
             => new ObservationPb
             {
-                Point = o.Point.ToProtobuf(converter), 
-                Orientation = o.Rotation.ToProtobuf(converter), 
-                Message = o.Message, 
+                Point = o.Point.ToProtobuf(converter),
+                Orientation = o.Rotation.ToProtobuf(converter),
+                Message = o.Message,
                 Filename = o.FileName,
                 Stats = o.Statistics
             };
@@ -185,20 +189,20 @@ namespace Elektronik.Protobuf.Data
         public static TrackedObjPb ToProtobuf(this SlamTrackedObject o, ICSConverter converter)
             => new TrackedObjPb
             {
-                Id = o.Id, 
-                Translation = o.Position.ToProtobuf(converter), 
-                Rotation = o.Rotation.ToProtobuf(converter), 
-                TrackColor = o.Color, 
+                Id = o.Id,
+                Position = o.Position.ToProtobuf(converter),
+                Orientation = o.Rotation.ToProtobuf(converter),
+                Color = o.Color,
                 Message = o.Message
             };
 
         public static InfinitePlanePb ToProtobuf(this SlamInfinitePlane p, ICSConverter converter)
             => new InfinitePlanePb
             {
-                Color = p.Color, 
-                Id = p.Id, 
-                Message = p.Message, 
-                Normal = p.Normal.ToProtobuf(converter), 
+                Color = p.Color,
+                Id = p.Id,
+                Message = p.Message,
+                Normal = p.Normal.ToProtobuf(converter),
                 Offset = p.Offset.ToProtobuf(converter)
             };
     }

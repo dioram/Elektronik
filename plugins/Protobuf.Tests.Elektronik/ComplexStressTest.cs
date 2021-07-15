@@ -91,7 +91,7 @@ namespace Protobuf.Tests.Elektronik
                 Action = PacketPb.Types.ActionType.Add,
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
-            trackedPacket.TrackedObjs.Data.Add(new[] {new TrackedObjPb {Id = 1, Rotation = new Vector4Pb {W = 1}}});
+            trackedPacket.TrackedObjs.Data.Add(new[] {new TrackedObjPb {Id = 1, Orientation = new Vector4Pb {W = 1}}});
             var response = MapClient.Handle(trackedPacket);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
 
@@ -125,8 +125,8 @@ namespace Protobuf.Tests.Elektronik
                     new TrackedObjPb
                     {
                         Id = 1,
-                        Translation = observations.Last().Point.Position,
-                        Rotation = observations.Last().Orientation
+                        Position = observations.Last().Point.Position,
+                        Orientation = observations.Last().Orientation
                     }
                 });
 

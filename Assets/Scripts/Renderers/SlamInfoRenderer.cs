@@ -31,7 +31,7 @@ namespace Elektronik.Renderers
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
+                MainThreadInvoker.Enqueue(() => gameObject.SetActive(_isShowing));
             }
         }
 

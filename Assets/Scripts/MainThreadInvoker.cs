@@ -9,14 +9,13 @@ namespace Elektronik
     {
         public static MainThreadInvoker Instance { get; private set; }
 
-        private Thread _mainThread;
+        private static Thread _mainThread;
 
-        private ConcurrentQueue<Action> _actions;
+        private static readonly ConcurrentQueue<Action> Actions = new ConcurrentQueue<Action>();
 
         private void Awake()
         {
             _mainThread = Thread.CurrentThread;
-            _actions = new ConcurrentQueue<Action>();
             if (Instance == null)
             {
                 Instance = this;
@@ -32,11 +31,11 @@ namespace Elektronik
             Instance = null;
         }
 
-        public void Enqueue(Action action)
+        public static void Enqueue(Action action)
         {
             if (Thread.CurrentThread != _mainThread)
             {
-                _actions.Enqueue(action);
+                Actions.Enqueue(action);
             }
             else
             {
@@ -46,9 +45,9 @@ namespace Elektronik
 
         private void Update()
         {
-            while (_actions.Count != 0)
+            while (Actions.Count != 0)
             {
-                if (_actions.TryDequeue(out Action a))
+                if (Actions.TryDequeue(out Action a))
                 {
                     try
                     {

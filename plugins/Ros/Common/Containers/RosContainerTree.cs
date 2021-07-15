@@ -23,7 +23,7 @@ namespace Elektronik.RosPlugin.Common.Containers
             ChildrenList.Clear();
         }
 
-        public override void SetRenderer(object renderer)
+        public override void SetRenderer(ISourceRenderer renderer)
         {
             _renderers.Add(renderer);
             base.SetRenderer(renderer);
@@ -43,7 +43,7 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #region Private
 
-        private readonly List<object> _renderers = new ();
+        private readonly List<ISourceRenderer> _renderers = new ();
 
         private void BuildTree()
         {

@@ -39,7 +39,7 @@ namespace Elektronik.RosMessageParserGenerator
                                                   "namespace Elektronik.RosPlugin.Common.RosMessages {\n" +
                                                   "public static partial class MessageParser {\n");
             // Static Constructor will be inserted here
-            var insertIndex = sourceBuilder.Length;
+            var insertIndex = sourceBuilder.Length; 
 
             foreach (var type in _ros!.ExportedTypes.Where(t => t.IsSubclassOf(_baseType)
                                                                    && !t.Name.Contains("`")

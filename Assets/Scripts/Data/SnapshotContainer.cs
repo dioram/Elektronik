@@ -35,7 +35,7 @@ namespace Elektronik.Data
             Children = new ISourceTree[0];
         }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             foreach (var child in Children)
             {

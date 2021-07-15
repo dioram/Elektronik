@@ -56,11 +56,13 @@ namespace Elektronik.Containers
             }
         }
 
-        public bool Contains(TCloudItem item)
+        public bool Contains(TCloudItem item) => Contains(item.Id);
+
+        public bool Contains(int id)
         {
             lock (_items)
             {
-                return _items.ContainsKey(item.Id);
+                return _items.ContainsKey(id);
             }
         }
 
@@ -208,7 +210,7 @@ namespace Elektronik.Containers
 
         public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             _traceContainer.SetRenderer(renderer);
             if (renderer is ICloudRenderer<TCloudItem> typedRenderer)

@@ -27,7 +27,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         public abstract void Clear();
 
-        public abstract void SetRenderer(object renderer);
+        public abstract void SetRenderer(ISourceRenderer renderer);
 
         #endregion
 

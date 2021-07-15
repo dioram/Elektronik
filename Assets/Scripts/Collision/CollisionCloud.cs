@@ -3,6 +3,7 @@ using System.Linq;
 using Elektronik.Clouds;
 using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
 
@@ -34,6 +35,7 @@ namespace Elektronik.Collision
 
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
+            if (!IsSenderVisible(sender)) return;
             foreach (var item in e.AddedItems)
             {
                 var id = _maxId;
@@ -47,6 +49,7 @@ namespace Elektronik.Collision
 
         public void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
+            if (!IsSenderVisible(sender)) return;
             foreach (var item in e.UpdatedItems)
             {
                 var key = (sender, item.Id);
@@ -62,6 +65,7 @@ namespace Elektronik.Collision
             foreach (var senderId in e.RemovedIds)
             {
                 var key = (sender, senderId);
+                if (!_data.ContainsKey(key)) continue;
                 var (id, pos) = _data[key];
                 _data.Remove(key);
                 _dataReverse.Remove(id);
@@ -94,6 +98,9 @@ namespace Elektronik.Collision
                 new Dictionary<int, (object sender, int id)>();
 
         private int _maxId = 0;
+        
+        private static bool IsSenderVisible(object sender) => (sender as IVisible)?.IsVisible ?? true;
+        
         #endregion
     }
 }

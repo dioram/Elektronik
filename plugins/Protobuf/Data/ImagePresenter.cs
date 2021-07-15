@@ -27,7 +27,7 @@ namespace Elektronik.Protobuf.Data
 
         public abstract void Present(T data);
 
-        public void SetRenderer(object dataRenderer)
+        public void SetRenderer(ISourceRenderer dataRenderer)
         {
             if (dataRenderer is WindowsManager factory)
             {

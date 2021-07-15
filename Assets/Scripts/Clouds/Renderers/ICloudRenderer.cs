@@ -4,7 +4,7 @@ using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Clouds
 {
-    public interface ICloudRenderer<TCloudItem>
+    public interface ICloudRenderer<TCloudItem> : ISourceRenderer
             where TCloudItem : struct, ICloudItem
     {
         void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e);

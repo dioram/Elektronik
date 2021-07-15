@@ -191,12 +191,12 @@ namespace Elektronik.Clouds
             {
                 if (item.Message == GridMessage && item is SlamInfinitePlane plane)
                 {
-                    MainThreadInvoker.Instance.Enqueue(() => Grid.SetPlane(plane));
+                    MainThreadInvoker.Enqueue(() => Grid.SetPlane(plane));
                     continue;
                 }
 
                 var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
-                _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
+                _pointPlaces[(sender.GetHashCode(), item.Id)] = index;
                 int layer = index / CloudBlock.Capacity;
                 int inLayerId = index % CloudBlock.Capacity;
                 lock (Blocks[layer])
@@ -216,7 +216,7 @@ namespace Elektronik.Clouds
             if (newAmountOfItems > Blocks.Count * CloudBlock.Capacity)
             {
                 // reserves overloaded
-                MainThreadInvoker.Instance.Enqueue(() =>
+                MainThreadInvoker.Enqueue(() =>
                 {
                     lock (_pointPlaces)
                     {
@@ -243,7 +243,7 @@ namespace Elektronik.Clouds
             if (newAmountOfItems > (Blocks.Count - 1) * CloudBlock.Capacity)
             {
                 // add reserves
-                MainThreadInvoker.Instance.Enqueue(CreateNewBlock);
+                MainThreadInvoker.Enqueue(CreateNewBlock);
             }
 
             return false;

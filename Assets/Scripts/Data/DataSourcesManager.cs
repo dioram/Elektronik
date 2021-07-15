@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using Elektronik.Clouds;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.Converters;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI;
 using Elektronik.UI.Localization;
-using Elektronik.UI.Windows;
 using SimpleFileBrowser;
 using UnityEngine;
 
@@ -22,11 +19,11 @@ namespace Elektronik.Data
         private static int _snapshotsCount = 0;
         [SerializeField] private RectTransform SourceTreeView;
         [SerializeField] private GameObject TreeElementPrefab;
-        [SerializeField] private GameObject Renderers;
+        [SerializeField] private GameObject RenderersRoot;
 
         private readonly List<ISourceTree> _dataSources = new List<ISourceTree>();
         private readonly List<SourceTreeElement> _roots = new List<SourceTreeElement>();
-        private Component[] _renderers;
+        private ISourceRenderer[] _renderers;
 
         public event Action<ISourceTree> OnSourceAdded;
 
@@ -70,14 +67,7 @@ namespace Elektronik.Data
 
         private void Awake()
         {
-            _renderers = Assembly.GetExecutingAssembly()
-                    .GetTypes()
-                    .Where(t => t.GetInterfaces()
-                                   .Where(i => i.IsGenericType)
-                                   .Any(i => i.GetGenericTypeDefinition() == typeof(ICloudRenderer<>)))
-                    .SelectMany(t => Renderers.GetComponentsInChildren(t))
-                    .Concat(new[] {Renderers.transform.Find("Windows").GetComponent<WindowsManager>()})
-                    .ToArray();
+            _renderers = RenderersRoot.GetComponentsInChildren<ISourceRenderer>();
         }
 
         public void AddDataSource(ISourceTree source)
@@ -105,6 +95,7 @@ namespace Elektronik.Data
             {
                 source.SetRenderer(renderer);
             }
+
             OnSourceAdded?.Invoke(source);
         }
 

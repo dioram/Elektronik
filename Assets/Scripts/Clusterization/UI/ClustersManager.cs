@@ -28,7 +28,7 @@ namespace Elektronik.Clusterization.UI
                 try
                 {
                     var data = algorithm.Compute(list);
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    MainThreadInvoker.Enqueue(() =>
                     {
                         CreateClustersContainers(pair.container as IVisible, pair.name, data);
                         settings.enabled = true;
@@ -37,7 +37,7 @@ namespace Elektronik.Clusterization.UI
                 catch (Exception e)
                 {
                     Debug.LogError(e.Message);
-                    MainThreadInvoker.Instance.Enqueue(() => { settings.enabled = true; });
+                    MainThreadInvoker.Enqueue(() => { settings.enabled = true; });
                 }
             });
         }

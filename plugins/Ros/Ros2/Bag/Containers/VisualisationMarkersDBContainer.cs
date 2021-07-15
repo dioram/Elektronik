@@ -38,7 +38,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             }
         }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             _renderers.Add(renderer);
         }
@@ -105,7 +105,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         private bool _isVisible = true;
         private int _pos;
         private readonly SortedDictionary<string, ISourceTree> _children = new();
-        private readonly List<object> _renderers = new List<object>();
+        private readonly List<ISourceRenderer> _renderers = new ();
         private readonly Dictionary<long, List<Marker>> _delayedRemoving = new();
 
         private (long time, int pos) GetValidTimestamp(long newTimestamp)

@@ -21,15 +21,17 @@ namespace Elektronik.Data.PackageObjects
         public SlamPoint AsPoint() => Point;
 
         public string FileName;
+        public int[] ObservedPoints;
 
-        public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName,
-                               Stats stats = new Stats())
+        public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName, 
+                               int[] observedPoints = null, Stats stats = new Stats())
         {
             Point = pt;
             Rotation = orientation;
             Statistics = stats;
             Message = message;
             FileName = fileName;
+            ObservedPoints = observedPoints ?? new int[0];
         }
 
         public static implicit operator SlamPoint(SlamObservation obs) => obs.Point;

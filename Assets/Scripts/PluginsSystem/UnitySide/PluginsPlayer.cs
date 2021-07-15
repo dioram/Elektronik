@@ -77,7 +77,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                     thread.Join();
                 }
 
-                MainThreadInvoker.Instance.Enqueue(() => PluginsStarted?.Invoke());
+                MainThreadInvoker.Enqueue(() => PluginsStarted?.Invoke());
             });
         }
 

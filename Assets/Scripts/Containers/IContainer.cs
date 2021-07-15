@@ -22,5 +22,6 @@ namespace Elektronik.Containers
         void Remove(IEnumerable<T> items);
         void Update(T item);
         void Update(IEnumerable<T> items);
+        bool Contains(int id);
     }
 }

@@ -8,7 +8,7 @@ using UnityEngine.UI.Extensions;
 
 namespace Elektronik.UI.Windows
 {
-    public class WindowsManager : MonoBehaviour
+    public class WindowsManager : MonoBehaviour, ISourceRenderer
     {
         [Range(0f, 10f)] public float AlignDistance;
         public RectTransform Canvas;
@@ -27,7 +27,7 @@ namespace Elektronik.UI.Windows
         public void CreateWindow<TComponent>(string title, Action<TComponent, Window> callback,
                                              params object[] titleFormatArgs)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            MainThreadInvoker.Enqueue(() =>
             {
                 var prefab = RendererWindowsPrefabs.First(g => g.GetComponent<TComponent>() != null);
                 var go = Instantiate(prefab, Canvas);

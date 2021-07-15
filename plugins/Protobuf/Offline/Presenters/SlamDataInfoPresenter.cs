@@ -18,16 +18,16 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public void Present(PacketPb data, ICSConverter converter)
         {
-            MainThreadInvoker.Instance.Enqueue(() => _info.Clear());
+            MainThreadInvoker.Enqueue(() => _info.Clear());
             IEnumerable<ICloudItem> objects = Pkg2Pts(data, converter).ToArray();
-            MainThreadInvoker.Instance.Enqueue(() => _info.Render((data.Message, objects)));
+            MainThreadInvoker.Enqueue(() => _info.Render((data.Message, objects)));
         }
 
         #region ISourceTree
 
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
-        public void SetRenderer(object dataRenderer)
+        public void SetRenderer(ISourceRenderer dataRenderer)
         {
             if (dataRenderer is WindowsManager factory)
             {
@@ -41,8 +41,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public void Clear()
         {
-            if (MainThreadInvoker.Instance is null) return;
-            MainThreadInvoker.Instance.Enqueue(() => _info?.Clear());
+            MainThreadInvoker.Enqueue(() => _info?.Clear());
         }
 
         #endregion

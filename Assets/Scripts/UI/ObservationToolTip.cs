@@ -81,7 +81,7 @@ namespace Elektronik.UI
                                                               && w.ObservationId == id);
                 if (v != null)
                 {
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    MainThreadInvoker.Enqueue(() =>
                     {
                         Destroy(v.gameObject);
                         _pinnedViewers.Remove(v);

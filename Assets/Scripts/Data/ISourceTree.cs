@@ -31,6 +31,6 @@ namespace Elektronik.Data
         /// }
         /// </example>
         /// <param name="renderer"> Content renderer </param>
-        void SetRenderer(object renderer);
+        void SetRenderer(ISourceRenderer renderer);
     }
 }

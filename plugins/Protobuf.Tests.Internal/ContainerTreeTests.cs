@@ -28,7 +28,8 @@ namespace Protobuf.Tests.Internal
 
             _tree = new ProtobufContainerTree("Protobuf",
                                               _image.Object,
-                                              new SlamDataInfoPresenter("Special info"));
+                                              new SlamDataInfoPresenter("Special info"),
+                                              false);
 
             var p1 = new SlamPoint(1, Vector3.zero, Color.black);
             var p2 = new SlamPoint(2, Vector3.zero, Color.black);
@@ -94,7 +95,8 @@ namespace Protobuf.Tests.Internal
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamPoint>>()), Times.Once);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamObservation>>()), Times.Once);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamTrackedObject>>()), Times.Once);
-            mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), It.IsAny<IList<SlamTrackedObject>>()), Times.Exactly(2));
+            mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), It.IsAny<IList<SlamTrackedObject>>()),
+                                  Times.Exactly(2));
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamLine>>()), Times.Once);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamInfinitePlane>>()), Times.Once);
             mockedRecorder.Verify(

@@ -37,6 +37,7 @@ message ObservationPb {
   Vector4Pb orientation = 2;
   string message = 3;
   string filename = 4;
+  repeated int32 observedPoints = 5;
   Stats stats = 16;
 }
 
@@ -60,9 +61,9 @@ message InfinitePlanePb {
 
 message TrackedObjPb {
   int32 id = 1;
-  Vector3Pb translation = 2;
-  Vector4Pb rotation = 3;
-  ColorPb trackColor = 4;
+  Vector3Pb position = 2;
+  Vector4Pb orientation = 3;
+  ColorPb color = 4;
   string message = 5;
 }
 

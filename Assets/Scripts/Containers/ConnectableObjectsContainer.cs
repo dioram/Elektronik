@@ -44,7 +44,10 @@ namespace Elektronik.Containers
 
         public bool IsReadOnly => false;
 
-        public bool Contains(TCloudItem obj) => _objects.Contains(obj);
+        
+        public bool Contains(int id) => _objects.Contains(id);
+        
+        public bool Contains(TCloudItem obj) => Contains(obj.Id);
 
         public IEnumerator<TCloudItem> GetEnumerator() => _objects.GetEnumerator();
 
@@ -264,7 +267,7 @@ namespace Elektronik.Containers
 
         public IEnumerable<ISourceTree> Children { get; }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             foreach (var child in Children)
             {

@@ -42,7 +42,7 @@ namespace Elektronik.Clusterization.Containers
             }
         }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             _renderers.Add(renderer);
             foreach (var child in Children)
@@ -96,7 +96,7 @@ namespace Elektronik.Clusterization.Containers
 
         #region Private
 
-        private readonly List<object> _renderers = new List<object>();
+        private readonly List<ISourceRenderer> _renderers = new List<ISourceRenderer>();
         private bool _isVisible = true;
         private readonly List<ISourceTree> _childrenList = new List<ISourceTree>();
 
@@ -107,7 +107,7 @@ namespace Elektronik.Clusterization.Containers
                 var cluster = data[i];
                 var localizedName = TextLocalizationExtender.GetLocalizedString("Cluster #{0}", i);
                 var container = new CloudContainer<SlamPoint>(localizedName);
-                foreach (object renderer in _renderers)
+                foreach (ISourceRenderer renderer in _renderers)
                 {
                     container.SetRenderer(renderer);
                 }

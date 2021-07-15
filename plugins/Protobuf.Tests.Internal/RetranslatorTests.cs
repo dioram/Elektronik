@@ -17,7 +17,7 @@ namespace Protobuf.Tests.Internal
     public class RetranslatorTests
     {
         private const string Address = "127.0.0.1";
-        private const int Port = 63784;
+        private const int Port = 45983;
         private Server _grpcServer;
         private ProtobufRetranslator _retranslator;
 

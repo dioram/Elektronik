@@ -55,6 +55,15 @@ namespace Elektronik.Containers
             OnRemoved?.Invoke(this, new RemovedEventArgs(lines));
         }
 
+        public bool Contains(int id)
+        {
+            lock (_lines)
+            {
+                return _lines.Any(l => l.Id == id);
+            }
+        }
+
+
         public bool Contains(SlamLine item)
         {
             lock (_lines)
@@ -214,7 +223,7 @@ namespace Elektronik.Containers
 
         public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is ICloudRenderer<SlamLine> typedRenderer)
             {

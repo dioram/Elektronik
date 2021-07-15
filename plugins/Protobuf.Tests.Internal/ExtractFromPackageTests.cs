@@ -91,9 +91,9 @@ namespace Protobuf.Tests.Internal
             {
                 Id = 1,
                 Message = "message",
-                Rotation = new Vector4Pb{X = 5, Y = 6, Z = 7, W = 8},
-                Translation = new Vector3Pb{X = 2, Y = 3, Z = 4},
-                TrackColor = new ColorPb{B = 255, G = 255, R = 255},
+                Orientation = new Vector4Pb{X = 5, Y = 6, Z = 7, W = 8},
+                Position = new Vector3Pb{X = 2, Y = 3, Z = 4},
+                Color = new ColorPb{B = 255, G = 255, R = 255},
             });
             var trackedObjects = packet.ExtractTrackedObjects(_mockedConverter.Object).ToArray();
             Assert.AreEqual(1, trackedObjects.Count());

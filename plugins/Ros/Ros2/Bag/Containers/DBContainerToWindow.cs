@@ -23,7 +23,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (Renderer is not null) Renderer.Clear();
         }
 
-        public override void SetRenderer(object renderer)
+        public override void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is WindowsManager factory)
             {

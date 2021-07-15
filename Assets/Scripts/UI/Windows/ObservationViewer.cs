@@ -56,7 +56,7 @@ namespace Elektronik.UI.Windows
 
         public void Render((IContainer<SlamObservation>, SlamObservation) data)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            MainThreadInvoker.Enqueue(() =>
             {
                 gameObject.SetActive(true);
                 _container = data.Item1;

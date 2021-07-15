@@ -58,6 +58,14 @@ namespace Elektronik.Containers
             }
         }
 
+        public bool Contains(int id)
+        {
+            lock (_connections)
+            {
+                return _connections.ContainsKey(id);
+            }
+        }
+
         public void CopyTo(SlamLine[] array, int arrayIndex)
         {
             lock (_connections)
@@ -236,7 +244,7 @@ namespace Elektronik.Containers
 
         public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is ICloudRenderer<SlamLine> typedRenderer)
             {

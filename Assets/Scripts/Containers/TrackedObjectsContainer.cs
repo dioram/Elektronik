@@ -66,11 +66,16 @@ namespace Elektronik.Containers
 
         public bool Contains(SlamTrackedObject item)
         {
+            return Contains(item.Id);
+        }
+
+        public bool Contains(int id)
+        {
             lock (_objects)
             {
                 return _objects.Values
                         .Select(p => p.Item1)
-                        .Any(o => o.Id == item.Id);
+                        .Any(o => o.Id == id);
             }
         }
 
@@ -250,7 +255,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             switch (renderer)
             {

@@ -32,7 +32,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             OnClear?.Invoke(this);
         }
 
-        public override void SetRenderer(object renderer)
+        public override void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
             OnShow += pointRenderer.ShowItems;

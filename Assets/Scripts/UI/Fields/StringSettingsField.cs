@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Reflection;
 using Elektronik.Settings;
 using UniRx;
@@ -43,7 +44,7 @@ namespace Elektronik.UI.Fields
             }
             else if (FieldType == typeof(float))
             {
-                if (float.TryParse(text, out float val))
+                if (float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out float val))
                 {
                     SettingsBag.GetType().GetField(FieldName).SetValue(SettingsBag, val);
                 }

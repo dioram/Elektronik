@@ -19,7 +19,7 @@ namespace Elektronik.Clouds
                 foreach (var obj in e.AddedItems)
                 {
                     Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    MainThreadInvoker.Enqueue(() =>
                     {
                         var go = ObservationsPool.Spawn(pose.position, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
