@@ -45,7 +45,7 @@ namespace Elektronik.Mesh
         private Vector3[] _vertices;
         private Vector3[] _normals;
         private int[] _triangles;
-        private object _lock = new object();
+        private readonly object _lock = new object();
 
         private IEnumerator UpdateMeshCoroutine()
         {
@@ -74,6 +74,7 @@ namespace Elektronik.Mesh
 
                 yield return new WaitForSeconds(2);
             }
+            // ReSharper disable once IteratorNeverReturns
         }
         
         #endregion

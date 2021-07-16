@@ -30,7 +30,6 @@ namespace Elektronik.Clouds
             }
         }
 
-        [SerializeField] private Transform DeleteButton;
         [SerializeField] private TMP_Text Label;
         
         private LineRenderer _renderer;

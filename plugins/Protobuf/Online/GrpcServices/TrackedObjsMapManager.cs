@@ -9,7 +9,7 @@ using Grpc.Core;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    public class TrackedObjsMapManager : MapManager<SlamTrackedObject>
+    public class TrackedObjsMapManager : MapManager<SlamTrackedObject, SlamTrackedObjectDiff>
     {
         private readonly ICSConverter _converter;
 

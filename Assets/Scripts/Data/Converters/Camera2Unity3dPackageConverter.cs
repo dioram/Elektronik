@@ -14,6 +14,25 @@ namespace Elektronik.Data.Converters
             pos.z *= _scale.z;
         }
 
+        public override Vector3 Convert(Vector3 pos)
+        {
+            Convert(ref pos);
+            return pos;
+        }
+
+        public override Quaternion Convert(Quaternion rot)
+        {
+            rot.y = -rot.y;
+            rot.w = -rot.w;
+            return rot;
+        }
+
+        public override (Vector3 pos, Quaternion rot) Convert(Vector3 pos, Quaternion rot)
+        {
+            Convert(ref pos, ref rot);
+            return (pos, rot);
+        }
+
         public override void ConvertBack(ref Vector3 pos)
         {
             pos.x /= _scale.x;

@@ -9,7 +9,7 @@ using Grpc.Core;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    public class LinesMapManager : MapManager<SlamLine>
+    public class LinesMapManager : MapManager<SlamLine, SlamLineDiff>
     {
         private readonly ICSConverter _converter;
 

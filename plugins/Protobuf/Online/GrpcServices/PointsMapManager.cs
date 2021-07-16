@@ -9,7 +9,7 @@ using Grpc.Core;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    public class PointsMapManager : ConnectableObjectsMapManager<SlamPoint>
+    public class PointsMapManager : ConnectableObjectsMapManager<SlamPoint, SlamPointDiff>
     {
         private readonly ICSConverter _converter;
 

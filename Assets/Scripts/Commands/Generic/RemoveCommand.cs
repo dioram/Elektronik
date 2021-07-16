@@ -21,4 +21,20 @@ namespace Elektronik.Commands.Generic
         public virtual void Execute() => _container.Remove(Objs2Remove);
         public virtual void UnExecute() => _container.AddRange(Objs2Remove);
     }
+    public class RemoveCommand<TCloudItem, TCloudItemDiff> : ICommand 
+            where TCloudItem: struct, ICloudItem
+            where TCloudItemDiff: struct, ICloudItemDiff<TCloudItem>
+    {
+        protected readonly ReadOnlyCollection<TCloudItem> Objs2Remove;
+        private readonly IContainer<TCloudItem> _container;
+
+        public RemoveCommand(IContainer<TCloudItem> container, IEnumerable<TCloudItemDiff> objects)
+        {
+            _container = container;
+            Objs2Remove = new ReadOnlyCollection<TCloudItem>(objects.Select(p => _container[p.Id]).ToList());
+        }
+
+        public virtual void Execute() => _container.Remove(Objs2Remove);
+        public virtual void UnExecute() => _container.AddRange(Objs2Remove);
+    }
 }

@@ -9,7 +9,9 @@ using Elektronik.Protobuf.Data;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    public abstract class ConnectableObjectsMapManager<T> : MapManager<T> where T : ICloudItem
+    public abstract class ConnectableObjectsMapManager<T, U> : MapManager<T, U> 
+            where T : struct, ICloudItem
+            where U : struct, ICloudItemDiff<T>
     {
         private readonly IConnectableObjectsContainer<T> _connectableContainer;
 

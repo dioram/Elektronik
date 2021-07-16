@@ -26,6 +26,12 @@ namespace Protobuf.Tests.Internal
                     }));
             _mockedConverter.Setup(c => c.Convert(ref It.Ref<Vector3>.IsAny))
                     .Callback(new Convert1Callback(((ref Vector3 v) => v.x = -v.x)));
+            _mockedConverter.Setup(c => c.Convert(It.IsAny<Vector3>()))
+                    .Returns<Vector3>(v => new Vector3(-v.x, v.y, v.z));
+            _mockedConverter.Setup(c => c.Convert(It.IsAny<Quaternion>()))
+                    .Returns<Quaternion>(q => new Quaternion(q.x, q.y, q.z, -q.w));
+            _mockedConverter.Setup(c => c.Convert(It.IsAny<Vector3>(), It.IsAny<Quaternion>()))
+                    .Returns((Vector3 v, Quaternion q) => (new Vector3(-v.x, v.y, v.z), new Quaternion(q.x, q.y, q.z, -q.w)));
         }
 
         [Test]

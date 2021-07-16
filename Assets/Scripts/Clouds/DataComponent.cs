@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Elektronik.Clouds
 {
-    public abstract class DataComponent<TCloudItem> : MonoBehaviour
+    public abstract class DataComponent<TCloudItem> : MonoBehaviour where TCloudItem : ICloudItem
     {
         public TCloudItem Data;
         public IContainer<TCloudItem> Container;

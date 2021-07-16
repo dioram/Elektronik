@@ -64,7 +64,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
             case PacketPb.DataOneofCase.Points:
                 foreach (var pointPb in packet.Points.Data)
                 {
-                    SlamPoint point = pointPb;
+                    var point = ((SlamPointDiff)pointPb).Apply();
                     converter.Convert(ref point.Position);
                     yield return point;
                 }
@@ -72,7 +72,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
             case PacketPb.DataOneofCase.Observations:
                 foreach (var observationPb in packet.Observations.Data)
                 {
-                    SlamObservation observation = observationPb;
+                    var observation = ((SlamObservationDiff)observationPb).Apply();
                     converter.Convert(ref observation.Point.Position, ref observation.Rotation);
                     yield return observation;
                 }

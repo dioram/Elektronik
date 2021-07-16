@@ -9,7 +9,7 @@ using Grpc.Core;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    public class InfinitePlanesMapManager : MapManager<SlamInfinitePlane>
+    public class InfinitePlanesMapManager : MapManager<SlamInfinitePlane, SlamInfinitePlaneDiff>
     {
         private readonly ICSConverter _converter;
 

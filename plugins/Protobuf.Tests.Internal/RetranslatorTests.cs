@@ -97,8 +97,8 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnUpdated("", morePoints);
             _retranslator.OnRemoved<SlamPoint>("", new List<int> {1});
             Thread.Sleep(100);
-            _mockedPointsContainer.Verify(c => c.AddRange(points), Times.Once);
-            _mockedPointsContainer.Verify(c => c.Update(morePoints), Times.Once);
+            _mockedPointsContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamPoint>>()), Times.Once);
+            _mockedPointsContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamPoint>>()), Times.Once);
             _mockedPointsContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamPoint>>()), Times.Once);
         }
 

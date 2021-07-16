@@ -36,41 +36,59 @@ namespace Elektronik.Collision
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
-            foreach (var item in e.AddedItems)
+            _threadWorker.Enqueue(() =>
             {
-                var id = _maxId;
-                var pos = item.AsPoint().Position;
-                _data.Add((sender, item.Id), (id, pos));
-                _dataReverse.Add(id, (sender, item.Id));
-                _topBlock.AddItem(id, pos);
-                _maxId++;
-            }
+                lock (_data)
+                {
+                    foreach (var item in e.AddedItems)
+                    {
+                        var id = _maxId;
+                        var pos = item.AsPoint().Position;
+                        _data.Add((sender, item.Id), (id, pos));
+                        _dataReverse.Add(id, (sender, item.Id));
+                        _topBlock.AddItem(id, pos);
+                        _maxId++;
+                    }
+                }
+            });
         }
 
         public void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
-            foreach (var item in e.UpdatedItems)
+            _threadWorker.Enqueue(() =>
             {
-                var key = (sender, item.Id);
-                var newPos = item.AsPoint().Position;
-                var (id, oldPos) = _data[key];
-                _data[key] = (id, newPos);
-                _topBlock.UpdateItem(id, oldPos, newPos);
-            }
+                lock (_data)
+                {
+                    foreach (var item in e.UpdatedItems)
+                    {
+                        var key = (sender, item.Id);
+                        var newPos = item.AsPoint().Position;
+                        var (id, oldPos) = _data[key];
+                        _data[key] = (id, newPos);
+                        _topBlock.UpdateItem(id, oldPos, newPos);
+                    }
+                }
+            });
         }
 
         public void OnItemsRemoved(object sender, RemovedEventArgs e)
         {
-            foreach (var senderId in e.RemovedIds)
+            _threadWorker.Enqueue(() =>
             {
-                var key = (sender, senderId);
-                if (!_data.ContainsKey(key)) continue;
-                var (id, pos) = _data[key];
-                _data.Remove(key);
-                _dataReverse.Remove(id);
-                _topBlock.RemoveItem(id, pos);
-            }
+                lock (_data)
+                {
+                    foreach (var senderId in e.RemovedIds)
+                    {
+                        var key = (sender, senderId);
+                        if (!_data.ContainsKey(key)) continue;
+                        var (id, pos) = _data[key];
+                        _data.Remove(key);
+                        _dataReverse.Remove(id);
+                        _topBlock.RemoveItem(id, pos);
+                    }
+                }
+            });
         }
 
         public void ShowItems(object sender, IEnumerable<TCloudItem> items)
@@ -81,7 +99,11 @@ namespace Elektronik.Collision
 
         public void OnClear(object sender)
         {
-            var keys = _data.Keys.Where(k => k.sender == sender).Select(k => k.id).ToList();
+            List<int> keys;
+            lock (_dataReverse)
+            {
+                keys = _data.Keys.Where(k => k.sender == sender).Select(k => k.id).ToList();
+            }
             OnItemsRemoved(sender, new RemovedEventArgs(keys));
         }
 
@@ -98,6 +120,7 @@ namespace Elektronik.Collision
                 new Dictionary<int, (object sender, int id)>();
 
         private int _maxId = 0;
+        private ThreadWorker _threadWorker = new ThreadWorker();
         
         private static bool IsSenderVisible(object sender) => (sender as IVisible)?.IsVisible ?? true;
         

@@ -24,7 +24,7 @@ namespace Protobuf.Tests.Elektronik
                     Message = $"{id}",
                 },
                 Message = $"Observation #{id}",
-                Filename = $"{id}.png",
+                Filename = Path.Combine(Directory.GetCurrentDirectory(), $"{id}.png"),
             }).ToArray();
 
             _map[0].Point.Position = new Vector3Pb {X = 0, Y = .5};
@@ -62,12 +62,13 @@ namespace Protobuf.Tests.Elektronik
             using var file = File.Open(Filename, FileMode.Create);
             packet.WriteDelimitedTo(file);
 
+
             var response = MapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
-
+        
         [Test, Order(2), Explicit]
-        public void Update()
+        public void UpdatePositions()
         {
             var packet = new PacketPb
             {
@@ -75,27 +76,81 @@ namespace Protobuf.Tests.Elektronik
                 Observations = new PacketPb.Types.Observations(),
                 Timestamp = ++_timestamp,
             };
-            _map[0].Point.Position.Z += .5;
-            _map[0].Point.Color = new ColorPb {R = 255};
-            _map[0].Filename = "";
-            _map[2].Point.Position.Z += .5;
-            _map[2].Point.Color = new ColorPb {B = 255};
-            _map[2].Filename = "";
-            _map[4].Point.Position.Z += .5;
-            _map[4].Point.Color = new ColorPb {R = 255, B = 255};
-            _map[4].Filename = "";
-            _map[0].Orientation = new Vector4Pb {X = 0, Y = .5, Z = 0, W = 1};
-            _map[1].Orientation = new Vector4Pb {X = 0, Y = .5, Z = 0, W = 1};
-            _map[2].Orientation = new Vector4Pb {X = 0, Y = .5, Z = 0, W = 1};
-            _map[3].Orientation = new Vector4Pb {X = 0, Y = .5, Z = 0, W = 1};
-            _map[4].Orientation = new Vector4Pb {X = 0, Y = .5, Z = 0, W = 1};
+            
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 0, Position = new Vector3Pb{Z = 0.5}}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 1, Position = new Vector3Pb{Z = 1}}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 2, Position = new Vector3Pb{Z = 1.5}}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3, Position = new Vector3Pb{Z = 2}}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4, Position = new Vector3Pb{Z = 2.5}}});
 
-            foreach (var pb in _map)
+            using var file = File.Open(Filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
+
+            var response = MapClient.Handle(packet);
+            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+        }
+        
+        [Test, Order(3), Explicit]
+        public void UpdateOrientations()
+        {
+            var packet = new PacketPb
             {
-                pb.Message = $"{pb.Point.Position.X}";
-            }
+                Action = PacketPb.Types.ActionType.Update,
+                Observations = new PacketPb.Types.Observations(),
+                Timestamp = ++_timestamp,
+            };
+            
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 0}, Orientation = new Vector4Pb {W = 1, X = 1}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 1}, Orientation = new Vector4Pb {W = 1, X = 1}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 2}, Orientation = new Vector4Pb {W = 1, X = 1}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3}, Orientation = new Vector4Pb {W = 1, X = 1}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4}, Orientation = new Vector4Pb {W = 1, X = 1}});
 
-            packet.Observations.Data.Add(_map);
+            using var file = File.Open(Filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
+
+            var response = MapClient.Handle(packet);
+            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+        }
+        
+        [Test, Order(4), Explicit]
+        public void UpdateColors()
+        {
+            var packet = new PacketPb
+            {
+                Action = PacketPb.Types.ActionType.Update,
+                Observations = new PacketPb.Types.Observations(),
+                Timestamp = ++_timestamp,
+            };
+            
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 0, Color = new ColorPb{R = 255, G = 255, B = 255}}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 1, Color = new ColorPb{R = 255, G = 255, B = 255}}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 2, Color = new ColorPb{R = 255, G = 255, B = 255}}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3, Color = new ColorPb{R = 255, G = 255, B = 255}}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4, Color = new ColorPb{R = 255, G = 255, B = 255}}});
+
+            using var file = File.Open(Filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
+
+            var response = MapClient.Handle(packet);
+            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+        }
+        
+        [Test, Order(5), Explicit]
+        public void UpdateMessages()
+        {
+            var packet = new PacketPb
+            {
+                Action = PacketPb.Types.ActionType.Update,
+                Observations = new PacketPb.Types.Observations(),
+                Timestamp = ++_timestamp,
+            };
+            
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 0}, Message = "0", Filename = ""});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 1}, Message = "1", Filename = ""});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 2}, Message = "2", Filename = ""});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3}, Message = "3", Filename = ""});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4}, Message = "4", Filename = ""});
 
             using var file = File.Open(Filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
@@ -104,7 +159,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(3), Explicit]
+        [Test, Order(6), Explicit]
         public void UpdateConnections()
         {
             var packet = new PacketPb
@@ -126,7 +181,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(4), Explicit]
+        [Test, Order(7), Explicit]
         public void RemoveConnections()
         {
             var packet = new PacketPb
@@ -148,7 +203,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(5), Explicit]
+        [Test, Order(8), Explicit]
         public void Remove()
         {
             var packet = new PacketPb
@@ -167,7 +222,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(6), Explicit]
+        [Test, Order(9), Explicit]
         public void Clear()
         {
             var packet = new PacketPb

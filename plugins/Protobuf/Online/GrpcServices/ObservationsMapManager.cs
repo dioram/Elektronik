@@ -10,7 +10,7 @@ using Grpc.Core;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    public class ObservationsMapManager : ConnectableObjectsMapManager<SlamObservation>
+    public class ObservationsMapManager : ConnectableObjectsMapManager<SlamObservation, SlamObservationDiff>
     {
         private readonly ICSConverter _converter;
 

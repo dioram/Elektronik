@@ -58,32 +58,52 @@ namespace Protobuf.Tests.Elektronik
             packet.WriteDelimitedTo(file);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
-
+        
         [Test, Order(2), Explicit]
-        public void Update()
+        public void UpdatePositions()
         {
             var packet = new PacketPb
             {
-                Special = true,
                 Action = PacketPb.Types.ActionType.Update,
                 Points = new PacketPb.Types.Points(),
             };
-            _map[0].Position.Z += .5;
-            _map[0].Color = new ColorPb {R = 255};
-            _map[2].Position.Z += .5;
-            _map[2].Color = new ColorPb {B = 255};
-            _map[4].Position.Z += .5;
-            _map[4].Color = new ColorPb {R = 255, B = 255};
+            
+            packet.Points.Data.Add(new PointPb{Id = 0, Position = new Vector3Pb {X = 0.5f}});
+            packet.Points.Data.Add(new PointPb{Id = 1, Position = new Vector3Pb {X = 1f}});
+            packet.Points.Data.Add(new PointPb{Id = 2, Position = new Vector3Pb {X = 1.5f}});
+            packet.Points.Data.Add(new PointPb{Id = 3, Position = new Vector3Pb {X = 2f}});
+            packet.Points.Data.Add(new PointPb{Id = 4, Position = new Vector3Pb {X = 2.5f}});
 
-            packet.Points.Data.Add(_map);
-
-            var response = MapClient.Handle(packet);
             using var file = File.Open(Filename, FileMode.Append);
             packet.WriteDelimitedTo(file);
+
+            var response = MapClient.Handle(packet);
+            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+        }
+        
+        [Test, Order(3), Explicit]
+        public void UpdateColors()
+        {
+            var packet = new PacketPb
+            {
+                Action = PacketPb.Types.ActionType.Update,
+                Points = new PacketPb.Types.Points(),
+            };
+            
+            packet.Points.Data.Add(new PointPb{Id = 0, Color = new ColorPb {R = 255, G = 255, B = 255}});
+            packet.Points.Data.Add(new PointPb{Id = 1, Color = new ColorPb {R = 255, G = 255, B = 255}});
+            packet.Points.Data.Add(new PointPb{Id = 2, Color = new ColorPb {R = 255, G = 255, B = 255}});
+            packet.Points.Data.Add(new PointPb{Id = 3, Color = new ColorPb {R = 255, G = 255, B = 255}});
+            packet.Points.Data.Add(new PointPb{Id = 4, Color = new ColorPb {R = 255, G = 255, B = 255}});
+
+            using var file = File.Open(Filename, FileMode.Append);
+            packet.WriteDelimitedTo(file);
+
+            var response = MapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(3), Explicit]
+        [Test, Order(4), Explicit]
         public void UpdateConnections()
         {
             var packet = new PacketPb
@@ -103,7 +123,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(4), Explicit]
+        [Test, Order(5), Explicit]
         public void RemoveConnections()
         {
             var packet = new PacketPb
@@ -123,7 +143,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(5), Explicit]
+        [Test, Order(6), Explicit]
         public void Remove()
         {
             var packet = new PacketPb
@@ -141,7 +161,7 @@ namespace Protobuf.Tests.Elektronik
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
-        [Test, Order(6), Explicit]
+        [Test, Order(7), Explicit]
         public void Clear()
         {
             var packet = new PacketPb()

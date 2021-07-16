@@ -6,8 +6,7 @@ namespace Elektronik.Clouds
 {
     public class ObservationCloudRenderer : CloudRenderer<SlamObservation, ObservationCloudBlock>
     {
-        private static readonly Vector3[] points = new[]
-        {
+        private static readonly Vector3[] Points = {
             new Vector3(0, 0, -0.5f),
             new Vector3(0, Mathf.Sqrt(8 / 9f), 1 / 3f),
             new Vector3(Mathf.Sqrt(2 / 3f), -Mathf.Sqrt(2 / 9f), 1 / 3f),
@@ -16,7 +15,7 @@ namespace Elektronik.Clouds
 
         protected override void ProcessItem(ObservationCloudBlock block, SlamObservation item, int inBlockId)
         {
-            var vs = points.Select(v => item.Rotation * (v * ItemSize) + item.Point.Position).ToArray();
+            var vs = Points.Select(v => item.Rotation * (v * ItemSize) + item.Point.Position).ToArray();
             var vertices = new[]
             {
                 vs[0], vs[1], vs[2],

@@ -1,6 +1,7 @@
 ﻿using System;
 using Elektronik.Extensions;
 using NUnit.Framework;
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 
 namespace Elektronik.EditorTests
 {
@@ -15,7 +16,7 @@ namespace Elektronik.EditorTests
         [Test]
         public void MaxByFound()
         {
-            var list = new TestStruct[]
+            var list = new []
             {
                 new TestStruct {Id = 0, F = 15f,},
                 new TestStruct {Id = 10, F = 2f,},
@@ -44,7 +45,7 @@ namespace Elektronik.EditorTests
         [Test]
         public void MinByFound()
         {
-            var list = new TestStruct[]
+            var list = new []
             {
                 new TestStruct {Id = 0, F = 15f,},
                 new TestStruct {Id = 10, F = 2f,},

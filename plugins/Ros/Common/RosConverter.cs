@@ -25,6 +25,23 @@ namespace Elektronik.RosPlugin.Common
             pos.z = tmp * _scale.z;
         }
 
+        public Vector3 Convert(Vector3 pos)
+        {
+            Convert(ref pos);
+            return pos;
+        }
+
+        public Quaternion Convert(Quaternion rot)
+        {
+            return rot;
+        }
+
+        public (Vector3 pos, Quaternion rot) Convert(Vector3 pos, Quaternion rot)
+        {
+            Convert(pos, rot);
+            return (pos, rot);
+        }
+
         public void ConvertBack(ref Vector3 pos)
         {
             pos.x /= _scale.x;

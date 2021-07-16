@@ -45,13 +45,15 @@ namespace Elektronik.Clouds
         public void FollowCamera(IFollowable<SlamTrackedObject> sender, IContainer<SlamTrackedObject> container,
                                  SlamTrackedObject obj)
         {
-            (Camera.main.transform.parent?
+            if (Camera.main == null) return;
+            var cameraTransform = Camera.main.transform;
+            (cameraTransform.parent?
                             .GetComponent<DataComponent<SlamTrackedObject>>()?
                             .Container as ISourceTree)?.Children
                     .OfType<IFollowable<SlamTrackedObject>>()
                     .FirstOrDefault(f => f != sender && f.IsFollowed)?
                     .Unfollow();
-            Camera.main.transform.parent = GameObjects[(container.GetHashCode(), obj.Id)].transform;
+            cameraTransform.parent = GameObjects[(container.GetHashCode(), obj.Id)].transform;
         }
 
         public void StopFollowCamera(IContainer<SlamTrackedObject> container, SlamTrackedObject obj)

@@ -82,6 +82,7 @@ namespace Protobuf.Tests.Elektronik
         [Test, Explicit]
         public void ComplexTest()
         {
+            int iterations = 1000;
             int pointsAmount = 600;
             int obsAmount = 5;
             float scale = 1f;
@@ -98,7 +99,7 @@ namespace Protobuf.Tests.Elektronik
             var points = GeneratePoints(pointsAmount, scale);
             var observations = GenerateObservations(obsAmount, scale);
 
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < iterations; i++)
             {
                 var pointsPacket = new PacketPb
                 {
