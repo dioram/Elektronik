@@ -20,6 +20,7 @@ namespace Elektronik.Protobuf.Data
         public readonly IContainer<SlamInfinitePlane> InfinitePlanes;
         public readonly ISourceTree Image;
         public readonly IMeshContainer MeshContainer;
+        public readonly Connector Connector;
         public readonly SlamDataInfoPresenter SpecialInfo;
 
         public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo = null, bool drawMesh = true)
@@ -37,17 +38,22 @@ namespace Elektronik.Protobuf.Data
                 new CloudContainer<SlamPoint>("Points"),
                 new SlamLinesContainer("Connections"),
                 "Points");
+            Connector = new Connector(Points, Observations, "Connections");
             if (drawMesh) MeshContainer = new MeshReconstructor(Points, Observations, "Mesh");
 
             Lines = new SlamLinesContainer("Lines");
             InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
+            var observationsGraph = new VirtualContainer("Observations graph", new List<ISourceTree>
+            {
+                (ISourceTree) Observations,
+                Connector
+            });
             var ch =  new List<ISourceTree>
             {
                 (ISourceTree) Points,
                 (ISourceTree) TrackedObjs,
-                (ISourceTree) Observations,
+                observationsGraph,
                 (ISourceTree) Lines,
-                (ISourceTree) InfinitePlanes,
                 Image,
             };
             if (drawMesh) ch.Add(MeshContainer);

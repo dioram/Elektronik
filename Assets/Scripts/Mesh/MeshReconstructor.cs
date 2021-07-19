@@ -84,7 +84,17 @@ namespace Elektronik.Mesh
         {
             if (!_isVisible) return;
 
-            if (!_isWorking) Task.Run(CalculateMesh);
+            if (!_isWorking) Task.Run(() =>
+            {
+                try
+                {
+                    CalculateMesh();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            });
             else _calculationRequested = true;
         }
 
@@ -104,7 +114,7 @@ namespace Elektronik.Mesh
             var pointsViewsArr = new Dictionary<int, List<int>>();
             foreach (var observation in observations)
             {
-                foreach (var id in observation.ObservedPoints)
+                foreach (var id in observation.ObservedPoints.ToArray())
                 {
                     if (!_points.Contains(id)) continue;
                     if (!pointsViewsArr.ContainsKey(id)) pointsViewsArr.Add(id, new List<int>());

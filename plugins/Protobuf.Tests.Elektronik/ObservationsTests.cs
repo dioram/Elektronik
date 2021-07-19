@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
 using Elektronik.Protobuf.Data;
-using Google.Protobuf;
 using NUnit.Framework;
 
 namespace Protobuf.Tests.Elektronik
@@ -59,12 +58,7 @@ namespace Protobuf.Tests.Elektronik
             };
             packet.Observations.Data.Add(_map);
 
-            using var file = File.Open(Filename, FileMode.Create);
-            packet.WriteDelimitedTo(file);
-
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename, true);
         }
         
         [Test, Order(2), Explicit]
@@ -83,11 +77,7 @@ namespace Protobuf.Tests.Elektronik
             packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3, Position = new Vector3Pb{Z = 2}}});
             packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4, Position = new Vector3Pb{Z = 2.5}}});
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
         
         [Test, Order(3), Explicit]
@@ -106,11 +96,7 @@ namespace Protobuf.Tests.Elektronik
             packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3}, Orientation = new Vector4Pb {W = 1, X = 1}});
             packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4}, Orientation = new Vector4Pb {W = 1, X = 1}});
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
         
         [Test, Order(4), Explicit]
@@ -129,11 +115,7 @@ namespace Protobuf.Tests.Elektronik
             packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3, Color = new ColorPb{R = 255, G = 255, B = 255}}});
             packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4, Color = new ColorPb{R = 255, G = 255, B = 255}}});
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
         
         [Test, Order(5), Explicit]
@@ -152,11 +134,7 @@ namespace Protobuf.Tests.Elektronik
             packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3}, Message = "3", Filename = ""});
             packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4}, Message = "4", Filename = ""});
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(6), Explicit]
@@ -174,11 +152,7 @@ namespace Protobuf.Tests.Elektronik
             };
             packet.Connections.Data.Add(_connections);
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(7), Explicit]
@@ -196,11 +170,7 @@ namespace Protobuf.Tests.Elektronik
             };
             packet.Connections.Data.Add(new[] {_connections[0], _connections[1]});
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(8), Explicit]
@@ -215,11 +185,7 @@ namespace Protobuf.Tests.Elektronik
 
             packet.Observations.Data.Add(new[] {_map[1], _map[3]});
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(9), Explicit]
@@ -232,11 +198,7 @@ namespace Protobuf.Tests.Elektronik
                 Timestamp = ++_timestamp,
             };
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
@@ -21,9 +22,9 @@ namespace Elektronik.Data.PackageObjects
         public SlamPoint AsPoint() => Point;
 
         public string FileName;
-        public int[] ObservedPoints;
+        public HashSet<int> ObservedPoints;
 
-        public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName, 
+        public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName,
                                int[] observedPoints = null, Stats stats = new Stats())
         {
             Point = pt;
@@ -31,7 +32,7 @@ namespace Elektronik.Data.PackageObjects
             Statistics = stats;
             Message = message;
             FileName = fileName;
-            ObservedPoints = observedPoints ?? new int[0];
+            ObservedPoints = new HashSet<int>(observedPoints ?? new int[0]);
         }
 
         public static implicit operator SlamPoint(SlamObservation obs) => obs.Point;

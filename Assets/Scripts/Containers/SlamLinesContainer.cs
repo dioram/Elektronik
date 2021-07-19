@@ -19,6 +19,37 @@ namespace Elektronik.Containers
             DisplayName = string.IsNullOrEmpty(displayName) ? "Lines" : displayName;
         }
 
+        public void UpdatePositions(IEnumerable<SlamPoint> points)
+        {
+            var lines = new List<SlamLine>();
+            foreach (var point in points)
+            {
+                foreach (var pair in _connections)
+                {
+                    SlamPoint p1;
+                    SlamPoint p2;
+                    if (pair.Value.Point1.Id == point.Id)
+                    {
+                        p1 = point;
+                        p2 = pair.Value.Point2;
+                    }
+                    else if (pair.Value.Point2.Id == point.Id)
+                    {
+                        p1 = pair.Value.Point1;
+                        p2 = point;
+                    }
+                    else continue;
+
+                    var line = new SlamLine(p1, p2);
+                    _connections[pair.Key] = line;
+                    _connectionsIndices.Remove(pair.Value.GetIds());
+                    _connectionsIndices[line.GetIds()] = pair.Key;
+                    lines.Add(line);
+                }
+            }
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(lines));
+        }
+
         #region IContaitner implementation
 
         public event EventHandler<AddedEventArgs<SlamLine>> OnAdded;
@@ -197,9 +228,20 @@ namespace Elektronik.Containers
             {
                 foreach (var line in items)
                 {
-                    if (!_connectionsIndices.ContainsKey(line.GetIds())) continue;
-                    var index = _connectionsIndices[line.GetIds()];
-                    _connectionsIndices.Remove(line.GetIds());
+                    var key = line.GetIds();
+                    int index;
+                    if (_connectionsIndices.ContainsKey(key))
+                    {
+                        index = _connectionsIndices[key];
+                        _connectionsIndices.Remove(key);
+                    }
+                    else if (_connectionsIndices.ContainsKey((key.Id2, key.Id1)))
+                    {
+                        index = _connectionsIndices[(key.Id2, key.Id1)];
+                        _connectionsIndices.Remove((key.Id2, key.Id1));
+                    }
+                    else continue;
+                    
                     if (!_connections.ContainsKey(index)) continue;
                     ids.Add(index);
                     _connections.Remove(index);

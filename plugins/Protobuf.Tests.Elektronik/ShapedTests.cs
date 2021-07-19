@@ -227,16 +227,11 @@ namespace Protobuf.Tests.Elektronik
             var defaultPlane = GeneratePlaneOfPoints(amount, side);
             var (packet, obsPacket) = GenerateCube(defaultPlane, side);
 
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
-
+            SendAndCheck(packet);
             Thread.Sleep(200);
-            response = MapClient.Handle(obsPacket);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
-            
+            SendAndCheck(obsPacket);
             Thread.Sleep(200);
-            response = MapClient.Handle(GenerateAdditionalObservations(amount, side));
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(GenerateAdditionalObservations(amount, side));
         }
 
         [Test, Explicit]
@@ -248,12 +243,9 @@ namespace Protobuf.Tests.Elektronik
             var (packet, obsPacket) = GenerateCube(defaultPlane, side);
 
 
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
-
+            SendAndCheck(packet);
             Thread.Sleep(200);
-            response = MapClient.Handle(obsPacket);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(obsPacket);
         }
     }
 }

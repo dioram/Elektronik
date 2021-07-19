@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using Elektronik.Protobuf.Data;
-using Google.Protobuf;
 using NUnit.Framework;
 
 namespace Protobuf.Tests.Elektronik
@@ -42,11 +40,7 @@ namespace Protobuf.Tests.Elektronik
             _objects[2].Color = new ColorPb {B = 255,};
             packet.TrackedObjs.Data.Add(_objects);
 
-            using var file = File.Open(Filename, FileMode.Create);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(2), Explicit]
@@ -62,11 +56,8 @@ namespace Protobuf.Tests.Elektronik
             packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 0, Position = new Vector3Pb {X = 0, Z = 0.5f}});
             packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 1, Position = new Vector3Pb {X = 0.5f, Z = 0.5f}});
             packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 2, Position = new Vector3Pb {X = -0.5f, Z = 0.5f}});
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(3), Explicit]
@@ -82,11 +73,8 @@ namespace Protobuf.Tests.Elektronik
             packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 0, Orientation = new Vector4Pb {X = 1, W = 1}});
             packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 1, Orientation = new Vector4Pb {X = 1, W = 1}});
             packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 2, Orientation = new Vector4Pb {X = 1, W = 1}});
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(4), Explicit]
@@ -111,11 +99,8 @@ namespace Protobuf.Tests.Elektronik
             {
                 Id = 2, Position = new Vector3Pb {X = Rand.NextDouble(), Y = Rand.NextDouble(), Z = Rand.NextDouble()}
             });
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(5), Explicit]
@@ -131,11 +116,8 @@ namespace Protobuf.Tests.Elektronik
             packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 0, Color = new ColorPb{R = 255, G = 255, B = 255}});
             packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 1, Color = new ColorPb{R = 255, G = 255, B = 255}});
             packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 2, Color = new ColorPb{R = 255, G = 255, B = 255}});
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(6), Explicit]
@@ -149,11 +131,8 @@ namespace Protobuf.Tests.Elektronik
                 Special = true,
             };
             packet.TrackedObjs.Data.Add(new[] {_objects[1]});
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(7), Explicit]
@@ -166,11 +145,8 @@ namespace Protobuf.Tests.Elektronik
                 Timestamp = ++_timestamp,
                 Special = true,
             };
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
     }
 }

@@ -22,8 +22,7 @@ namespace Elektronik.Mesh
         #endregion
 
         #region Unity events
-
-
+        
         private void Start()
         {
             _meshFilter = GetComponent<MeshFilter>();

@@ -44,8 +44,8 @@ namespace Elektronik.Collision
                     {
                         var id = _maxId;
                         var pos = item.AsPoint().Position;
-                        _data.Add((sender, item.Id), (id, pos));
-                        _dataReverse.Add(id, (sender, item.Id));
+                        _data[(sender, item.Id)] =  (id, pos);
+                        _dataReverse[id] = (sender, item.Id);
                         _topBlock.AddItem(id, pos);
                         _maxId++;
                     }
@@ -64,6 +64,7 @@ namespace Elektronik.Collision
                     {
                         var key = (sender, item.Id);
                         var newPos = item.AsPoint().Position;
+                        if (!_data.ContainsKey(key)) continue;
                         var (id, oldPos) = _data[key];
                         _data[key] = (id, newPos);
                         _topBlock.UpdateItem(id, oldPos, newPos);
@@ -100,7 +101,7 @@ namespace Elektronik.Collision
         public void OnClear(object sender)
         {
             List<int> keys;
-            lock (_dataReverse)
+            lock (_data)
             {
                 keys = _data.Keys.Where(k => k.sender == sender).Select(k => k.id).ToList();
             }
@@ -120,7 +121,7 @@ namespace Elektronik.Collision
                 new Dictionary<int, (object sender, int id)>();
 
         private int _maxId = 0;
-        private ThreadWorker _threadWorker = new ThreadWorker();
+        private readonly ThreadWorker _threadWorker = new ThreadWorker();
         
         private static bool IsSenderVisible(object sender) => (sender as IVisible)?.IsVisible ?? true;
         

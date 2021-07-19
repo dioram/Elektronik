@@ -130,14 +130,11 @@ namespace Protobuf.Tests.Elektronik
                         Orientation = observations.Last().Orientation
                     }
                 });
-
-                var response1 = MapClient.Handle(pointsPacket);
-                var response2 = MapClient.Handle(obsPacket);
-                var response3 = MapClient.Handle(trackedPacket);
-
-                Assert.True(response1.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response1.Message);
-                Assert.True(response2.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response2.Message);
-                Assert.True(response3.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response3.Message);
+                
+                SendAndCheck(pointsPacket);
+                SendAndCheck(obsPacket);
+                SendAndCheck(trackedPacket);
+                
                 Thread.Sleep(25);
                 MoveData(points, observations, pointsAmount, obsAmount, scale, (i+1) % 100 == 0);
             }

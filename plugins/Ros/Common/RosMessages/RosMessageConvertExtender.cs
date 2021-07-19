@@ -41,7 +41,7 @@ namespace Elektronik.RosPlugin.Common.RosMessages
                 return new[] {$"{prefix}.x", $"{prefix}.y", $"{prefix}.z", $"{prefix}.w"};
             }
 
-            if (messageType.Name == nameof(Header)) return new[] {"timestamp"};
+            if (messageType.Name == nameof(Header)) return new[] {"timestamp, frame_id"};
             
             return messageType
                     .GetProperties()
@@ -54,7 +54,7 @@ namespace Elektronik.RosPlugin.Common.RosMessages
         {
             return message.GetType()
                     .GetProperties()
-                    .Where(p => p.Name != nameof(Header.seq) && p.Name != nameof(Header.frame_id))
+                    .Where(p => p.Name != nameof(Header.seq))
                     .SelectMany(p => GetData(p.GetValue(message)))
                     .ToArray();
         }
@@ -188,7 +188,7 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             case RosQuaternion quaternion:
                 return new[] {$"{quaternion.x:F3}, {quaternion.y:F3}, {quaternion.z:F3}, {quaternion.w:F3}"};
             case Header header:
-                return new[] {$"{header.stamp.secs}.{header.stamp.nsecs:000000000}"};
+                return new[] {$"{header.stamp.secs}.{header.stamp.nsecs:000000000},{header.frame_id}"};
             case RosMessage message:
                 return GetData(message);
             case string str:

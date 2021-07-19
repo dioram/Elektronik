@@ -150,7 +150,7 @@ namespace Elektronik.Protobuf.Offline
 
         #region Private definitions
 
-        private const int UpdateDeltaMS = 5;
+        private const int UpdateDeltaMS = 2;
 
         private readonly ProtobufContainerTree _containerTree;
         private FileStream _input;

@@ -85,11 +85,7 @@ namespace Protobuf.Tests.Elektronik
             };
             packet.InfinitePlanes.Data.Add(_planes);
 
-            using var file = File.Open(Filename, FileMode.Create);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename, true);
         }
 
         [Test, Order(2), Explicit]
@@ -109,11 +105,7 @@ namespace Protobuf.Tests.Elektronik
 
             packet.InfinitePlanes.Data.Add(_planes);
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(3), Explicit]
@@ -138,11 +130,7 @@ namespace Protobuf.Tests.Elektronik
 
             packet.InfinitePlanes.Data.Add(_planes);
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(4), Explicit]
@@ -167,11 +155,7 @@ namespace Protobuf.Tests.Elektronik
 
             packet.InfinitePlanes.Data.Add(_planes);
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(5), Explicit]
@@ -186,11 +170,7 @@ namespace Protobuf.Tests.Elektronik
 
             packet.InfinitePlanes.Data.Add(new[] {_planes[1], _planes[3]});
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(6), Explicit]
@@ -202,12 +182,8 @@ namespace Protobuf.Tests.Elektronik
                 Action = PacketPb.Types.ActionType.Clear,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
     }
 }

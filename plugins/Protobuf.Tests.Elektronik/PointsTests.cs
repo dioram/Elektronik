@@ -1,7 +1,5 @@
-using System.IO;
 using System.Linq;
 using Elektronik.Protobuf.Data;
-using Google.Protobuf;
 using NUnit.Framework;
 
 namespace Protobuf.Tests.Elektronik
@@ -52,11 +50,7 @@ namespace Protobuf.Tests.Elektronik
             };
             packet.Points.Data.Add(_map);
 
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
         
         [Test, Order(2), Explicit]
@@ -74,11 +68,7 @@ namespace Protobuf.Tests.Elektronik
             packet.Points.Data.Add(new PointPb{Id = 3, Position = new Vector3Pb {X = 2f}});
             packet.Points.Data.Add(new PointPb{Id = 4, Position = new Vector3Pb {X = 2.5f}});
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
         
         [Test, Order(3), Explicit]
@@ -96,11 +86,7 @@ namespace Protobuf.Tests.Elektronik
             packet.Points.Data.Add(new PointPb{Id = 3, Color = new ColorPb {R = 255, G = 255, B = 255}});
             packet.Points.Data.Add(new PointPb{Id = 4, Color = new ColorPb {R = 255, G = 255, B = 255}});
 
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(4), Explicit]
@@ -116,11 +102,8 @@ namespace Protobuf.Tests.Elektronik
                     Action = PacketPb.Types.Connections.Types.Action.Add,
                 },
             };
-            packet.Connections.Data.Add(_connections);
-            var response = MapClient.Handle(packet);
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(5), Explicit]
@@ -136,11 +119,8 @@ namespace Protobuf.Tests.Elektronik
                     Action = PacketPb.Types.Connections.Types.Action.Remove,
                 },
             };
-            packet.Connections.Data.Add(_connections);
-            var response = MapClient.Handle(packet);
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(6), Explicit]
@@ -155,10 +135,7 @@ namespace Protobuf.Tests.Elektronik
 
             packet.Points.Data.Add(new[] {_map[1], _map[3]});
 
-            var response = MapClient.Handle(packet);
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(7), Explicit]
@@ -171,10 +148,7 @@ namespace Protobuf.Tests.Elektronik
                 Points = new PacketPb.Types.Points(),
             };
 
-            var response = MapClient.Handle(packet);
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
     }
 }

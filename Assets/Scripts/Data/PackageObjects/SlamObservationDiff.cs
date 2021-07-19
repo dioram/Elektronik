@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
@@ -27,7 +28,10 @@ namespace Elektronik.Data.PackageObjects
             item.Rotation = Rotation ?? item.Rotation;
             item.Message = string.IsNullOrEmpty(Message) ? item.Message : Message;
             item.FileName = string.IsNullOrEmpty(FileName) ? item.FileName : FileName;
-            item.ObservedPoints = ObservedPoints ?? item.ObservedPoints;
+            if (ObservedPoints != null && ObservedPoints.Length > 0)
+            {
+                item.ObservedPoints = new HashSet<int>(ObservedPoints);
+            }
             return item;
         }
     }
