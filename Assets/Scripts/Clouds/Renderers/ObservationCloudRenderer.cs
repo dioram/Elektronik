@@ -7,10 +7,11 @@ namespace Elektronik.Clouds
     public class ObservationCloudRenderer : CloudRenderer<SlamObservation, ObservationCloudBlock>
     {
         private static readonly Vector3[] Points = {
-            new Vector3(0, 0, -0.5f),
-            new Vector3(0, Mathf.Sqrt(8 / 9f), 1 / 3f),
-            new Vector3(Mathf.Sqrt(2 / 3f), -Mathf.Sqrt(2 / 9f), 1 / 3f),
-            new Vector3(-Mathf.Sqrt(2 / 3f), -Mathf.Sqrt(2 / 9f), 1 / 3f),
+            new Vector3(0, 0, -1f),
+            new Vector3( Mathf.Sqrt(0.5f),  Mathf.Sqrt(0.5f), 1 / 3f),
+            new Vector3( Mathf.Sqrt(0.5f), -Mathf.Sqrt(0.5f), 1 / 3f),
+            new Vector3(-Mathf.Sqrt(0.5f), -Mathf.Sqrt(0.5f), 1 / 3f),
+            new Vector3(-Mathf.Sqrt(0.5f),  Mathf.Sqrt(0.5f), 1 / 3f),
         };
 
         protected override void ProcessItem(ObservationCloudBlock block, SlamObservation item, int inBlockId)
@@ -19,9 +20,11 @@ namespace Elektronik.Clouds
             var vertices = new[]
             {
                 vs[0], vs[1], vs[2],
-                vs[0], vs[1], vs[3],
                 vs[0], vs[2], vs[3],
+                vs[0], vs[3], vs[4],
+                vs[0], vs[4], vs[1],
                 vs[1], vs[2], vs[3],
+                vs[3], vs[4], vs[1],
             };
             for (int i = 0; i < vertices.Length; i++)
             {

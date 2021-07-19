@@ -6,7 +6,7 @@ namespace Elektronik.Clouds
     public class ObservationCloudBlock : CloudBlock
     {
         public GPUItem[] Points;
-        public const int CapacityMultiplier = 12;
+        public const int CapacityMultiplier = 18;
 
         public override GPUItem[] GetItems() => Points;
 
