@@ -367,6 +367,14 @@ MonoBehaviour:
     m_Localized: Follow
     m_Metadata:
       m_Items: []
+  - m_Id: 35524816610934784
+    m_Localized: Connections weight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35557840274735104
+    m_Localized: Observations graph
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

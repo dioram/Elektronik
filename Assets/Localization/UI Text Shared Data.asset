@@ -348,6 +348,14 @@ MonoBehaviour:
     m_Key: Follow
     m_Metadata:
       m_Items: []
+  - m_Id: 35524816610934784
+    m_Key: Connections weight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35557840274735104
+    m_Key: Observations graph
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
