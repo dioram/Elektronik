@@ -206,30 +206,5 @@ namespace Protobuf.Tests.Internal
             _mockedInfinitePlanesContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamInfinitePlane>>()),
                                                   Times.Once);
         }
-
-        [Test]
-        public void ConnectedPointsTest()
-        {
-            var connections = new List<(int, int)> {(0, 1), (1, 5), (3, 7), (6, 4)};
-            var removedConnections = new List<(int, int)> {(1, 5), (3, 7)};
-            _retranslator.OnConnectionsUpdated<SlamPoint>("", connections);
-            _retranslator.OnConnectionsRemoved<SlamPoint>("", removedConnections);
-            Thread.Sleep(100);
-            _mockedPointsContainer.Verify(c => c.AddConnections(It.IsAny<IEnumerable<(int, int)>>()), Times.Once);
-            _mockedPointsContainer.Verify(c => c.RemoveConnections(It.IsAny<IEnumerable<(int, int)>>()), Times.Once);
-        }
-
-        [Test]
-        public void ConnectedObservationsTest()
-        {
-            var connections = new List<(int, int)> {(0, 1), (1, 5), (3, 7), (6, 4)};
-            var removedConnections = new List<(int, int)> {(1, 5), (3, 7)};
-            _retranslator.OnConnectionsUpdated<SlamObservation>("", connections);
-            _retranslator.OnConnectionsRemoved<SlamObservation>("", removedConnections);
-            Thread.Sleep(100);
-            _mockedObservationsContainer.Verify(c => c.AddConnections(It.IsAny<IEnumerable<(int, int)>>()), Times.Once);
-            _mockedObservationsContainer.Verify(c => c.RemoveConnections(It.IsAny<IEnumerable<(int, int)>>()),
-                                                Times.Once);
-        }
     }
 }
