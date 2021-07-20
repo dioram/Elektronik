@@ -76,6 +76,8 @@ namespace Elektronik.Protobuf.Online
             _server.ShutdownAsync().Wait();
             _serverStarted = false;
             Data.Clear();
+            GrpcEnvironment.ShutdownChannelsAsync().Wait();
+            GrpcEnvironment.KillServersAsync().Wait();
         }
 
         public override void Update(float delta)

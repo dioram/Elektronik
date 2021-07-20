@@ -12,17 +12,17 @@ find_package(SWIG REQUIRED)
 
 include(${SWIG_USE_FILE})
 set_source_files_properties(Builder.i PROPERTIES CPLUSPLUS ON)
+set_property(SOURCE Builder.i PROPERTY COMPILE_OPTIONS -namespace Elektronik.Mesh.MeshBuildNative)
 
 swig_add_library(MeshBuilder
         TYPE SHARED
         LANGUAGE csharp
-        OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Mesh/MeshBuildNative/SWIG_generated
+        OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Mesh/MeshBuildNative
         OUTFILE_DIR ${PROJECT_SOURCE_DIR}
         SOURCES MeshBuilder.h MeshBuilder.cpp Builder.i)
 target_link_libraries(MeshBuilder ${OpenMVS_LIBRARIES})
 
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Mesh/MeshBuildNative CACHE PATH "installation prefix")
-set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Mesh/MeshBuildNative)
+set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../Assets/Plugins/Native)
 set(DEPLOY_DLLS)
 file(GLOB DEPLOY_DLLS ${CMAKE_BINARY_DIR}/*.dll)
 set(DEPLOY_LIBS)

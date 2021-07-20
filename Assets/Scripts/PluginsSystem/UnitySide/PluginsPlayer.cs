@@ -97,6 +97,13 @@ namespace Elektronik.PluginsSystem.UnitySide
             }
         }
 
+        private void OnApplicationQuit()
+        {
+#if !UNITY_EDITOR
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+#endif
+        }
+
         #endregion
 
         #region Private

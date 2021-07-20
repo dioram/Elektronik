@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Mesh.MeshBuildNative;
 using UnityEngine;
 
 namespace Elektronik.Mesh
