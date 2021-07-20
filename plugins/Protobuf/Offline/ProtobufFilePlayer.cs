@@ -102,7 +102,7 @@ namespace Elektronik.Protobuf.Offline
 
         public void Pause()
         {
-            _timer?.Start();
+            _timer?.Stop();
         }
 
         public void StopPlaying()
