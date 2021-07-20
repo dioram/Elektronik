@@ -33,12 +33,6 @@ jobs:
           arch: x64
       - name: Build unity player
         run: .\.github\build_unity.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
-      - name: Cache Library
-        id: cache-library
-        uses: actions/cache@v2
-        with:
-          path: Library
-          key: library
   build_plugins:
     name: Build plugins
     runs-on: self-hosted
