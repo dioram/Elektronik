@@ -379,6 +379,25 @@ MonoBehaviour:
     m_Localized: Mesh
     m_Metadata:
       m_Items: []
+  - m_Id: 35963052214861824
+    m_Localized: Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36000339791331328
+    m_Localized: Main
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36000456325873664
+    m_Localized: Alternative
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36004087943020544
+    m_Localized: 'LMB + RMB: moving forward.
+
+      Mouse wheel: moving forward and
+      backward.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

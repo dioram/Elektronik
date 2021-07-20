@@ -360,6 +360,22 @@ MonoBehaviour:
     m_Key: Mesh
     m_Metadata:
       m_Items: []
+  - m_Id: 35963052214861824
+    m_Key: Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36000339791331328
+    m_Key: Main
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36000456325873664
+    m_Key: Alternative
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36004087943020544
+    m_Key: Controls big
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
