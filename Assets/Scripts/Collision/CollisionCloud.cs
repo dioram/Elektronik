@@ -27,6 +27,7 @@ namespace Elektronik.Collision
             
             var (sender, senderId) = _dataReverse[id.Value];
             var container = sender as IContainer<TCloudItem>;
+            if (container == null || !container.Contains(senderId)) return null;
             var item = container[senderId];
             return (container, item);
         }

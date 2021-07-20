@@ -213,21 +213,19 @@ namespace Elektronik.Containers
         public void SetRenderer(ISourceRenderer renderer)
         {
             _traceContainer.SetRenderer(renderer);
-            if (renderer is ICloudRenderer<TCloudItem> typedRenderer)
+            if (!(renderer is ICloudRenderer<TCloudItem> typedRenderer)) return;
+            OnAdded += typedRenderer.OnItemsAdded;
+            OnUpdated += typedRenderer.OnItemsUpdated;
+            OnRemoved += typedRenderer.OnItemsRemoved;
+            OnVisibleChanged += visible =>
             {
-                OnAdded += typedRenderer.OnItemsAdded;
-                OnUpdated += typedRenderer.OnItemsUpdated;
-                OnRemoved += typedRenderer.OnItemsRemoved;
-                OnVisibleChanged += visible =>
-                {
-                    if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<TCloudItem>(this));
-                    else typedRenderer.OnClear(this);
-                };
+                if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<TCloudItem>(this));
+                else typedRenderer.OnClear(this);
+            };
                 
-                if (Count > 0)
-                {
-                    OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
-                }
+            if (Count > 0)
+            {
+                typedRenderer.OnItemsAdded(this, new AddedEventArgs<TCloudItem>(this));
             }
         }
 

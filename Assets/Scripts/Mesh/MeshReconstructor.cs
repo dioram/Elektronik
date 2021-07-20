@@ -75,7 +75,7 @@ namespace Elektronik.Mesh
 
         #region Private
 
-        private bool _isVisible = true;
+        private bool _isVisible = false;
         private readonly IContainer<SlamPoint> _points;
         private readonly IContainer<SlamObservation> _observations;
         private bool _isWorking;

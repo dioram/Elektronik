@@ -356,6 +356,10 @@ MonoBehaviour:
     m_Key: Observations graph
     m_Metadata:
       m_Items: []
+  - m_Id: 35938884576493568
+    m_Key: Mesh
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

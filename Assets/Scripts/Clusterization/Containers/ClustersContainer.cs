@@ -79,7 +79,7 @@ namespace Elektronik.Clusterization.Containers
 
         #endregion
 
-        #region Removable
+        #region IRemovable
 
         public void RemoveSelf()
         {

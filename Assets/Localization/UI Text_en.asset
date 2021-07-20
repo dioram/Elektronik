@@ -375,6 +375,10 @@ MonoBehaviour:
     m_Localized: Observations graph
     m_Metadata:
       m_Items: []
+  - m_Id: 35938884576493568
+    m_Localized: Mesh
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:
