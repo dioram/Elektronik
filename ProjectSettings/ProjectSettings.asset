@@ -133,6 +133,7 @@ PlayerSettings:
   bundleVersion: 3.2.0-rc6
   preloadedAssets:
   - {fileID: 11400000, guid: 643c9912d14026240bf6e70b352818ad, type: 2}
+  - {fileID: 11400000, guid: 4d9278389e577024194549bb444fcd74, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -793,7 +794,7 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 6
-  activeInputHandler: 0
+  activeInputHandler: 1
   cloudProjectId: 59a799d2-5839-4c31-b8d7-4cc4eebc4252
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames:
