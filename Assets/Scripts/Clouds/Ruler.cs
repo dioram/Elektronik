@@ -1,6 +1,7 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Elektronik.Clouds
 {
@@ -61,7 +62,7 @@ namespace Elektronik.Clouds
         {
             if (!_isSecondPointSet)
             {
-                var pos = Input.mousePosition;
+                var pos = (Vector3)Mouse.current.position.ReadValue();
                 pos.z = 1;
                 _renderer.SetPosition(1, _camera.ScreenToWorldPoint(pos));
             }

@@ -1,41 +1,39 @@
-﻿using System.Linq;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Elektronik.UI
 {
     public class ControlsPanel : MonoBehaviour
     {
         [SerializeField] private GameObject RowPrefab;
-        
+
+        struct Row
+        {
+            public string Name;
+            public string Main;
+            public string Alternative;
+        }
+
+        private readonly Row[] _controls =
+        {
+            new Row {Name = "X", Main = "A/D"},
+            new Row {Name = "Y", Main = "Q/E"},
+            new Row {Name = "Z", Main = "W/S", Alternative = "Mouse wheel"},
+            new Row {Name = "Forward", Main = "LMB + RMB"},
+            new Row {Name = "Yaw", Main = "Left/Right", Alternative = "Mouse X"},
+            new Row {Name = "Pitch", Main = "Up/Down", Alternative = "Mouse Y"},
+            new Row {Name = "Reset", Main = "Backspace"},
+        };
+
         private void Start()
         {
-            var inputManager = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/InputManager.asset")[0];
-            SerializedObject obj = new SerializedObject(inputManager);
-            SerializedProperty axisArray = obj.FindProperty("m_Axes");
-
-            for (int i = 0; i < axisArray.arraySize; ++i)
+            foreach (var control in _controls)
             {
-                var axis = axisArray.GetArrayElementAtIndex(i);
-
-                var name = axis.FindPropertyRelative("m_Name").stringValue;
-                if (name == "Reserved") continue;
-
-                var negative = axis.FindPropertyRelative("negativeButton").stringValue;
-                var positive = axis.FindPropertyRelative("positiveButton").stringValue;
-                var altNegative = axis.FindPropertyRelative("altNegativeButton").stringValue;
-                var altPositive = axis.FindPropertyRelative("altPositiveButton").stringValue;
-
-                var data = new[] {negative, positive, altNegative, altPositive};
-
-                if (data.All(string.IsNullOrEmpty)) continue;
-
                 var row = Instantiate(RowPrefab, transform).GetComponent<ControlsRow>();
                 if (row is null) return;
-
-                row.NameLabel.text = name;
-                row.MainInput.text = string.Join(" / ", data.Take(2).Where(s => !string.IsNullOrEmpty(s)));
-                row.AltInput.text = string.Join(" / ", data.Skip(2).Take(2).Where(s => !string.IsNullOrEmpty(s)));
+            
+                row.NameLabel.text = control.Name;
+                row.MainInput.text = control.Main;
+                row.AltInput.text = control.Alternative;
             }
         }
     }

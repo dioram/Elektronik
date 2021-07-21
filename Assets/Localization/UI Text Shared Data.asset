@@ -376,6 +376,10 @@ MonoBehaviour:
     m_Key: Controls big
     m_Metadata:
       m_Items: []
+  - m_Id: 36005840151265280
+    m_Key: Help
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

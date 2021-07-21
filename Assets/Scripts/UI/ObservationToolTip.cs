@@ -6,6 +6,7 @@ using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using Elektronik.UI.Windows;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Elektronik.UI
 {
@@ -29,12 +30,13 @@ namespace Elektronik.UI
 
         private void Update()
         {
-            var ray = _camera.ScreenPointToRay(Input.mousePosition);
+            var mousePosition = Mouse.current.position.ReadValue();
+            var ray = _camera.ScreenPointToRay(mousePosition);
             var collision = CollisionCloud.FindCollided(ray);
             if (collision.HasValue)
             {
                 var (container, observation) = collision.Value;
-                if (Input.GetMouseButtonUp(0))
+                if (Mouse.current.leftButton.wasReleasedThisFrame)
                 {
                     CreateOrShowWindow(container, observation, "Observation #{0}");
                 }
@@ -42,7 +44,7 @@ namespace Elektronik.UI
                 {
                     if (_floatingViewer.gameObject.activeInHierarchy) return;
                     _floatingViewer.Render((container, observation));
-                    _floatingViewer.transform.position = Input.mousePosition;
+                    _floatingViewer.transform.position = mousePosition;
                 }
             }
             else
