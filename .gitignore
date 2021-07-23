@@ -25,10 +25,9 @@
 /plugins/*/*CSHARP_wrap*
 /plugins/*/cmake-build-*
 /plugins/ROS2DDS/CMakeSettings.json
-/Assets/Plugins/NativeMath.meta
+!/Assets/Plugins/NativeMath/NativeMathPlugin.asmdef
+!/Assets/Plugins/NativeMath/NativeMathPlugin.asmdef.meta
 /Assets/Plugins/NativeMath/
-!/Assets/Plugins/NativeMath/NativeMath.asmdef
-!/Assets/Plugins/NativeMath/NativeMath.asmdef.meta
 /Assets/generatedFiles/
 
 # Unity3D generated meta files
