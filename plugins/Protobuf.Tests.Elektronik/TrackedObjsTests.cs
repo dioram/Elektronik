@@ -77,7 +77,7 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(4), Explicit]
+        [Test, Order(4), Repeat(5), Explicit]
         public void UpdatePositionsRandom()
         {
             var packet = new PacketPb
