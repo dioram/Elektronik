@@ -37,6 +37,11 @@ namespace Elektronik.Clouds
             Graphics.DrawProceduralNow(MeshTopology.Triangles, _pointsBuffer.count);
         }
 
+        protected override void ReleaseBuffers()
+        {
+            _pointsBuffer.Release();
+        }
+
         #region Private
         
         private readonly int _pointsBufferShaderProp = Shader.PropertyToID("_ItemsBuffer");

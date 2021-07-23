@@ -78,7 +78,7 @@ Shader "Elektronik/PointCloudShader"
                 o.position.xzw = origin.xzw;
                 outStream.Append(o);
 
-                UNITY_LOOP for (uint i = 1; i < slices; i++)
+                UNITY_LOOP for (int i = 1; i < slices; i++)
                 {
                     float sn, cs;
                     sincos(UNITY_PI / slices * i, sn, cs);

@@ -25,12 +25,10 @@
 /plugins/*/*CSHARP_wrap*
 /plugins/*/cmake-build-*
 /plugins/ROS2DDS/CMakeSettings.json
-/Assets/Scripts/Mesh/MeshBuildNative
-/Assets/Scripts/Mesh/MeshBuildNative.meta
-/Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative
-/Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative.meta
-/Assets/Plugins/Native.meta
-/Assets/Plugins/Native
+/Assets/Plugins/NativeMath.meta
+/Assets/Plugins/NativeMath/
+!/Assets/Plugins/NativeMath/NativeMath.asmdef
+!/Assets/Plugins/NativeMath/NativeMath.asmdef.meta
 /Assets/generatedFiles/
 
 # Unity3D generated meta files

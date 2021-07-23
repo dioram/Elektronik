@@ -231,7 +231,8 @@ namespace Elektronik.Protobuf.Data
             => new LinePb {Pt1 = l.Point1.ToProtobuf(converter), Pt2 = l.Point2.ToProtobuf(converter)};
 
         public static ObservationPb ToProtobuf(this SlamObservation o, ICSConverter converter)
-            => new ObservationPb
+        {
+            var pb = new ObservationPb
             {
                 Point = o.Point.ToProtobuf(converter),
                 Orientation = o.Rotation.ToProtobuf(converter),
@@ -239,6 +240,9 @@ namespace Elektronik.Protobuf.Data
                 Filename = o.FileName,
                 Stats = o.Statistics
             };
+            pb.ObservedPoints.AddRange(o.ObservedPoints);
+            return pb;
+        }
 
         public static TrackedObjPb ToProtobuf(this SlamTrackedObject o, ICSConverter converter)
             => new TrackedObjPb

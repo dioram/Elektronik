@@ -45,9 +45,9 @@ public:
     // Merge plane p into this.
     void merge(Plane& p, UnionFindPlanes& colors);
 
-    Vec3d getNormal() {return normal;}
+    Vec3d getNormal() const {return normal;}
 
-    Vec3d getCenter() {return center;}
+    Vec3d getCenter() const {return center;}
 
     inline unsigned int getCount()
         {return count;}

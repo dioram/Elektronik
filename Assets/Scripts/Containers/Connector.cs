@@ -5,6 +5,7 @@ using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Threading;
 
 namespace Elektronik.Containers
 {
@@ -83,12 +84,11 @@ namespace Elektronik.Containers
 
         public void Clear()
         {
+            _connections.Clear();
             lock (_weights)
             {
                 _weights.Clear();
             }
-
-            _connections.Clear();
         }
 
         public void SetRenderer(ISourceRenderer renderer)

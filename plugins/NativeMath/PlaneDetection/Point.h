@@ -1,7 +1,7 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include "Vec3.h"
+#include "Vector3.h"
 #include <memory>
 
 typedef Vec3d Point;

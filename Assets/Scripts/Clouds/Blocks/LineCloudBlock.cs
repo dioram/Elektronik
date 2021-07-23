@@ -17,15 +17,6 @@ namespace Elektronik.Clouds
             base.Clear();
         }
 
-        #region Unity events
-
-        private void OnDestroy()
-        {
-            _pointsBuffer.Release();
-        }
-
-        #endregion
-
         #region Protected
 
         protected override void Init()
@@ -48,6 +39,11 @@ namespace Elektronik.Clouds
         protected override void Draw()
         {
             Graphics.DrawProceduralNow(MeshTopology.Lines, _pointsBuffer.count);
+        }
+        
+        protected override void ReleaseBuffers()
+        {
+            _pointsBuffer.Release();
         }
 
         #endregion

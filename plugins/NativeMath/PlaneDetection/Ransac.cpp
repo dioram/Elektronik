@@ -1,4 +1,4 @@
-#include "../include/Ransac.h"
+#include "Ransac.h"
 
 // Find a plane with RANSAC algorithm.
 SharedPlane Ransac::ransac(std::vector<SharedPoint>& points, double epsilon, int numStartPoints, int numPoints, int steps, std::default_random_engine& generator, UnionFindPlanes& colors)

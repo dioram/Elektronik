@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Threading;
 using UnityEngine;
 using Grid = Elektronik.Cameras.Grid;
 
@@ -114,6 +115,7 @@ namespace Elektronik.Clouds
                     {
                         RemoveItem(Blocks[layer], inLayerId);
                         Blocks[layer].Updated = true;
+                        Blocks[layer].ItemsCount--;
                     }
                 }
 
@@ -148,6 +150,7 @@ namespace Elektronik.Clouds
                     {
                         RemoveItem(Blocks[layer], inLayerId);
                         Blocks[layer].Updated = true;
+                        Blocks[layer].ItemsCount--;
                     }
                 }
 
@@ -203,6 +206,7 @@ namespace Elektronik.Clouds
                 {
                     ProcessItem(Blocks[layer], item, inLayerId);
                     Blocks[layer].Updated = true;
+                    Blocks[layer].ItemsCount++;
                 }
             }
 

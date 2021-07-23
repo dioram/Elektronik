@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Mesh.MeshBuildNative;
+using Elektronik.NativeMath;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.Mesh
@@ -37,7 +37,7 @@ namespace Elektronik.Mesh
 
         public void Clear()
         {
-            OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(new Vector3[0], new Vector3[0], new int[0]));
+            OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(new Vector3[0], new int[0]));
         }
 
         public void SetRenderer(ISourceRenderer renderer)
@@ -78,32 +78,18 @@ namespace Elektronik.Mesh
         private bool _isVisible = false;
         private readonly IContainer<SlamPoint> _points;
         private readonly IContainer<SlamObservation> _observations;
-        private bool _isWorking;
-        private bool _calculationRequested;
+        private readonly ThreadWorkerSingleAwaiter _threadWorker = new ThreadWorkerSingleAwaiter();
 
         private void RequestCalculation()
         {
             if (!_isVisible) return;
 
-            if (!_isWorking) Task.Run(() =>
-            {
-                try
-                {
-                    CalculateMesh();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
-            });
-            else _calculationRequested = true;
+            _threadWorker.Enqueue(CalculateMesh);
         }
 
         private void CalculateMesh()
         {
-            _isWorking = true;
-            
-            var points = _points.OrderBy(p => p.Id).ToArray();
+            var points = _points.ToArray();
             var observations = _observations.ToArray();
             var obsId2Index = new Dictionary<int, int>();
             for (int i = 0; i < observations.Length; i++)
@@ -124,11 +110,7 @@ namespace Elektronik.Mesh
                 }
             }
 
-            if (connectionsNotSet)
-            {
-                _isWorking = false;
-                return;
-            }
+            if (connectionsNotSet) return;
 
             var cPoints = new vectorv(points.Select(p => p.ToNative()));
             var cViews = new vectori2d(points.Select(p => pointsViewsArr.ContainsKey(p.Id)
@@ -140,16 +122,11 @@ namespace Elektronik.Mesh
             var output = builder.FromPointsAndObservations(cPoints, cViews, cObservations);
 
             var vertices = output.points.Select(p => p.ToUnity()).ToArray();
-            var normals = output.points.Select(p => p.ToUnity()).ToArray();
 
             if (_isVisible)
             {
-                OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(vertices, normals, output.triangles.ToArray()));
-
-                if (_calculationRequested) CalculateMesh();
-                _calculationRequested = false;
+                OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(vertices, output.triangles.ToArray()));
             }
-            _isWorking = false;
         }
 
         #endregion
@@ -178,6 +155,7 @@ namespace Elektronik.Mesh
             };
         }
 
-        public static Vector3 ToUnity(this NativeVector vector) => new Vector3(vector.x, vector.y, vector.z);
+        public static Vector3 ToUnity(this NativeVector vector)
+            => new Vector3((float) vector.x, (float) vector.y, (float) vector.z);
     }
 }

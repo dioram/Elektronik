@@ -1,6 +1,6 @@
-#include "../include/Ransac.h"
-#include "../include/PointCloud.h"
-#include "../include/Octree.h"
+#include "Ransac.h"
+#include "PointCloud.h"
+#include "Octree.h"
 #include <algorithm>
 
 // Build a tree from a point cloud.

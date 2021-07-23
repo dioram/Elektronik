@@ -1,4 +1,4 @@
-#include "../include/Plane.h"
+#include "Plane.h"
 #include <cmath>
 
 // Print the plane.

@@ -5,6 +5,7 @@ using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.Collision
@@ -26,18 +27,26 @@ namespace Elektronik.Collision
             if (!id.HasValue) return null;
             
             var (sender, senderId) = _dataReverse[id.Value];
-            var container = sender as IContainer<TCloudItem>;
-            if (container == null || !container.Contains(senderId)) return null;
+            if (!(sender is IContainer<TCloudItem> container) || !container.Contains(senderId)) return null;
             var item = container[senderId];
             return (container, item);
         }
+
+        #region Unity events
+
+        private void OnDestroy()
+        {
+            _threadQueueWorker.Dispose();
+        }
+
+        #endregion
         
         #region ICloudRenderer
 
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
-            _threadWorker.Enqueue(() =>
+            _threadQueueWorker.Enqueue(() =>
             {
                 lock (_data)
                 {
@@ -57,7 +66,7 @@ namespace Elektronik.Collision
         public void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
-            _threadWorker.Enqueue(() =>
+            _threadQueueWorker.Enqueue(() =>
             {
                 lock (_data)
                 {
@@ -76,7 +85,7 @@ namespace Elektronik.Collision
 
         public void OnItemsRemoved(object sender, RemovedEventArgs e)
         {
-            _threadWorker.Enqueue(() =>
+            _threadQueueWorker.Enqueue(() =>
             {
                 lock (_data)
                 {
@@ -122,7 +131,7 @@ namespace Elektronik.Collision
                 new Dictionary<int, (object sender, int id)>();
 
         private int _maxId = 0;
-        private readonly ThreadWorker _threadWorker = new ThreadWorker();
+        private readonly ThreadQueueWorker _threadQueueWorker = new ThreadQueueWorker();
         
         private static bool IsSenderVisible(object sender) => (sender as IVisible)?.IsVisible ?? true;
         

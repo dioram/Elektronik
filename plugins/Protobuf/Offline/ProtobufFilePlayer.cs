@@ -9,6 +9,7 @@ using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
+using Elektronik.Threading;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -51,17 +52,16 @@ namespace Elektronik.Protobuf.Offline
             _parsersChain.SetConverter(Converter);
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
-            _threadWorker = new ThreadWorker();
+            _threadWorker = new ThreadQueueWorker();
             _timer = new Timer(UpdateDeltaMS);
             _timer.Elapsed += (_, __) =>
             {
-                Task.Run(() => _threadWorker.Enqueue(() =>
+                _threadWorker.Enqueue(() =>
                 {
                     if (NextFrame()) return;
                     _timer?.Stop();
                     MainThreadInvoker.Enqueue(() => Finished?.Invoke());
-                    
-                }));
+                });
             };
         }
 
@@ -156,7 +156,7 @@ namespace Elektronik.Protobuf.Offline
         private FileStream _input;
         private FramesCollection<Frame> _frames;
         private readonly DataParser<PacketPb> _parsersChain;
-        private ThreadWorker _threadWorker;
+        private ThreadQueueWorker _threadWorker;
         [CanBeNull] private Timer _timer;
 
         private IEnumerator<Frame> ReadCommands(int size)

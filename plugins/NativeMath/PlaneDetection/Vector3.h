@@ -5,7 +5,7 @@
 
 // 3D-vector
 template <typename T>
-struct Vec3 {
+struct Vector3 {
     // Members.
     union {
         struct {
@@ -15,9 +15,9 @@ struct Vec3 {
     };
 
     // Constructors.
-    inline Vec3() :
+    inline Vector3() :
         x(0), y(0), z(0) {}
-    inline Vec3(T _x, T _y, T _z) :
+    inline Vector3(T _x, T _y, T _z) :
         x(_x), y(_y), z(_z) {}
 
     inline bool nonNull()
@@ -30,35 +30,35 @@ struct Vec3 {
         {return D[i];}
 
     // Operations.
-    inline Vec3 operator+(const Vec3& p) const
-        {return Vec3(x + p.x, y + p.y, z + p.z);}
-    inline Vec3 operator-(const Vec3& p) const
-        {return Vec3(x - p.x, y - p.y, z - p.z);}
+    inline Vector3 operator+(const Vector3& p) const
+        {return Vector3(x + p.x, y + p.y, z + p.z);}
+    inline Vector3 operator-(const Vector3& p) const
+        {return Vector3(x - p.x, y - p.y, z - p.z);}
 
     // Multiply/Divide by component.
-    inline Vec3 cmul(const Vec3& p) const
-        {return Vec3(x * p.x, y * p.y, z * p.z);}
-    inline Vec3 cdiv(const Vec3& p) const
-        {return Vec3(x / p.x, y / p.y, z / p.z);}
+    inline Vector3 cmul(const Vector3& p) const
+        {return Vector3(x * p.x, y * p.y, z * p.z);}
+    inline Vector3 cdiv(const Vector3& p) const
+        {return Vector3(x / p.x, y / p.y, z / p.z);}
 
     // External product.
-    inline Vec3 operator*(T t) const
-        {return Vec3(x * t, y * t, z * t);}
-    inline Vec3 operator/(T t) const
-        {return Vec3(x / t, y / t, z / t);}
+    inline Vector3 operator*(T t) const
+        {return Vector3(x * t, y * t, z * t);}
+    inline Vector3 operator/(T t) const
+        {return Vector3(x / t, y / t, z / t);}
 
-    inline Vec3& operator+=(const Vec3& r)
+    inline Vector3& operator+=(const Vector3& r)
         {x += r.x; y += r.y; z += r.z; return *this;}
-    inline Vec3& operator-=(const Vec3& r)
+    inline Vector3& operator-=(const Vector3& r)
         {x -= r.x; y -= r.y; z -= r.z; return *this;}
 
-    inline Vec3& operator*=(T t)
+    inline Vector3& operator*=(T t)
         {x *= t; y *= t; z *= t; return *this;}
-    inline Vec3& operator/=(T t)
+    inline Vector3& operator/=(T t)
         {x /= t; y /= t; z /= t; return *this;}
 
     // Inner/dot product
-    inline T operator*(const Vec3& p) const
+    inline T operator*(const Vector3& p) const
         {return x * p.x + y * p.y + z * p.z;}
 
     inline T norm() const
@@ -68,32 +68,32 @@ struct Vec3 {
 
     inline void normalize()
         {*this /= norm();}
-    inline Vec3 normalized() const
+    inline Vector3 normalized() const
         {return *this / norm();}
 
-    inline T distance(const Vec3& r) const
+    inline T distance(const Vector3& r) const
         {return (*this - r).norm();}
-    inline T squareDistance(const Vec3& r) const
+    inline T squareDistance(const Vector3& r) const
         {return (*this - r).normSquared();}
 
     // Cross product
-    Vec3 operator^(const Vec3& r) const
+    Vector3 operator^(const Vector3& r) const
     {
-        return Vec3(
+        return Vector3(
                 y * r.z - z * r.y,
                 z * r.x - x * r.z,
                 x * r.y - y * r.x
                 );
     }
 
-    void max(const Vec3& p)
+    void max(const Vector3& p)
     {
         x = p.x > x ? p.x : x;
         y = p.y > y ? p.y : y;
         z = p.z > z ? p.z : z;
     }
 
-    void min(const Vec3& p)
+    void min(const Vector3& p)
     {
         x = p.x < x ? p.x : x;
         y = p.y < y ? p.y : y;
@@ -102,10 +102,10 @@ struct Vec3 {
 };
 
 template <typename T>
-inline Vec3<T> operator*(T t, const Vec3<T>& v) {
-    return Vec3<T>(v.x * t, v.y * t, v.z * t);
+inline Vector3<T> operator*(T t, const Vector3<T>& v) {
+    return Vector3<T>(v.x * t, v.y * t, v.z * t);
 }
 
-typedef Vec3<double> Vec3d;
+typedef Vector3<double> Vec3d;
 
 #endif

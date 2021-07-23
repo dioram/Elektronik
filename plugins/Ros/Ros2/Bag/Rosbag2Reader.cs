@@ -4,6 +4,7 @@ using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Containers;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag
@@ -27,7 +28,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public override void Start()
         {
-            _threadWorker = new ThreadWorker();
+            _threadWorker = new ThreadQueueWorker();
             _data.Init(TypedSettings);
 
             _actualTimestamps = _data.RealChildren.Values
@@ -49,7 +50,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public override void Update(float delta)
         {
-            if (_threadWorker == null || _threadWorker.AmountOfActions > 0) return;
+            if (_threadWorker == null) return;
             if (_playing)
             {
                 if (CurrentPosition == AmountOfFrames - 1)
@@ -147,7 +148,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
         #region Private definitions
 
         private readonly Rosbag2ContainerTree _data;
-        private ThreadWorker? _threadWorker;
+        private ThreadQueueWorker? _threadWorker;
         private bool _playing;
         private int _currentPosition;
         private long[]? _actualTimestamps;

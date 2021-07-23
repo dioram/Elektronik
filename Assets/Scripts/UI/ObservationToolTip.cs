@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Elektronik.Collision;
 using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Threading;
 using Elektronik.UI.Windows;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,11 +15,11 @@ namespace Elektronik.UI
 {
     public class ObservationToolTip : MonoBehaviour
     {
-        public ObservationCollisionCloud CollisionCloud;
+        [SerializeField] private ObservationCollisionCloud CollisionCloud;
         [SerializeField] private WindowsManager Manager;
-        private Camera _camera;
-        private ObservationViewer _floatingViewer;
-        private readonly List<ObservationViewer> _pinnedViewers = new List<ObservationViewer>();
+        [SerializeField] [Range(0, 1f)] private float CollisionCheckTimeout = 0.1f;
+
+        #region Unity events
 
         void Start()
         {
@@ -26,34 +29,68 @@ namespace Elektronik.UI
                 _floatingViewer = viewer;
                 viewer.Hide();
             });
+            StartCoroutine(CheckCollisionCoroutine());
         }
 
-        private void Update()
+        private void OnDestroy()
         {
-            var mousePosition = Mouse.current.position.ReadValue();
-            var ray = _camera.ScreenPointToRay(mousePosition);
-            var collision = CollisionCloud.FindCollided(ray);
-            if (collision.HasValue)
+            StopAllCoroutines();
+        }
+
+        #endregion
+
+        #region Private
+
+        private Camera _camera;
+        private ObservationViewer _floatingViewer;
+        private readonly List<ObservationViewer> _pinnedViewers = new List<ObservationViewer>();
+
+        private IEnumerator CheckCollisionCoroutine()
+        {
+            while (true)
             {
-                var (container, observation) = collision.Value;
-                if (Mouse.current.leftButton.wasReleasedThisFrame)
+                var mousePosition = Mouse.current.position.ReadValue();
+                var ray = _camera.ScreenPointToRay(mousePosition);
+                Task.Run(() =>
                 {
-                    CreateOrShowWindow(container, observation, "Observation #{0}");
-                }
-                else
-                {
-                    if (_floatingViewer.gameObject.activeInHierarchy) return;
-                    _floatingViewer.Render((container, observation));
-                    _floatingViewer.transform.position = mousePosition;
-                }
+                    var collision = CollisionCloud.FindCollided(ray);
+
+                    if (collision.HasValue)
+                    {
+                        MainThreadInvoker.Enqueue(
+                            () => ProcessRaycast(collision.Value.container, collision.Value.item, mousePosition));
+                    }
+                    else
+                    {
+                        MainThreadInvoker.Enqueue(HideViewer);
+                    }
+                });
+                yield return new WaitForSeconds(CollisionCheckTimeout);
+            }
+        }
+
+        private void ProcessRaycast(IContainer<SlamObservation> container, SlamObservation observation,
+                                    Vector3 mousePosition)
+        {
+            if (Mouse.current.leftButton.wasReleasedThisFrame)
+            {
+                CreateOrShowWindow(container, observation, "Observation #{0}");
             }
             else
             {
-                if (_floatingViewer != null) _floatingViewer.Hide();
+                if (_floatingViewer.gameObject.activeInHierarchy) return;
+                _floatingViewer.Render((container, observation));
+                _floatingViewer.transform.position = mousePosition;
             }
         }
-        
-        private void CreateOrShowWindow(IContainer<SlamObservation> container, SlamObservation observation, string title)
+
+        private void HideViewer()
+        {
+            if (_floatingViewer != null) _floatingViewer.Hide();
+        }
+
+        private void CreateOrShowWindow(IContainer<SlamObservation> container, SlamObservation observation,
+                                        string title)
         {
             var v = _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == container.GetHashCode()
                                                           && w.ObservationId == observation.Id);
@@ -91,5 +128,7 @@ namespace Elektronik.UI
                 }
             }
         }
+
+        #endregion
     }
 }

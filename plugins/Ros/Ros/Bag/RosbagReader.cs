@@ -6,6 +6,7 @@ using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros.Bag.Parsers;
 using Elektronik.RosPlugin.Ros.Bag.Parsers.Records;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Bag
@@ -77,7 +78,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
             Converter = new RosConverter();
             Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
             RosMessageConvertExtender.Converter = Converter;
-            _threadWorker = new ThreadWorker();
+            _threadWorker = new ThreadQueueWorker();
         }
 
         public override void Stop()
@@ -88,7 +89,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         public override void Update(float delta)
         {
-            if (_threadWorker == null || _threadWorker.AmountOfActions > 0) return;
+            if (_threadWorker == null/* || _threadWorker.AmountOfActions > 0*/) return;
             if (_playing)
             {
                 NextKeyFrame();
@@ -165,7 +166,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         private readonly RosbagContainerTree _container;
         private FramesAsyncCollection<Frame>? _frames;
-        private ThreadWorker? _threadWorker;
+        private ThreadQueueWorker? _threadWorker;
         private bool _playing;
         private long _startTimestamp = 0;
         private int _rewindAt = -1;

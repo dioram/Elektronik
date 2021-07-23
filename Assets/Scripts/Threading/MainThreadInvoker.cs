@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using UnityEngine;
 
-namespace Elektronik
+namespace Elektronik.Threading
 {
     public class MainThreadInvoker : MonoBehaviour
     {
