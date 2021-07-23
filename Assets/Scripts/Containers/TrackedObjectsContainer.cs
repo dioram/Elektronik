@@ -34,6 +34,7 @@ namespace Elektronik.Containers
         {
             lock (_objects)
             {
+                if (_objects.ContainsKey(item.Id)) return;
                 var container = CreateTrackContainer(item);
                 _objects[item.Id] = (item, container);
             }
@@ -178,17 +179,19 @@ namespace Elektronik.Containers
         public void AddRange(IEnumerable<SlamTrackedObject> items)
         {
             if (items is null) return;
-            var list = items.ToList();
+            var added = new List<SlamTrackedObject>();
             lock (_objects)
             {
-                foreach (var item in list)
+                foreach (var item in items)
                 {
+                    if (_objects.ContainsKey(item.Id)) continue;
                     var container = CreateTrackContainer(item);
                     _objects[item.Id] = (item, container);
+                    added.Add(item);
                 }
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(added));
         }
 
         public void Remove(IEnumerable<SlamTrackedObject> items)
@@ -297,7 +300,7 @@ namespace Elektronik.Containers
         {
             lock (_objects)
             {
-                return _objects[id].Item2.ToList();
+                return _objects.ContainsKey(id) ? _objects[id].Item2.ToList() : new List<SlamLine>();
             }
         }
 
@@ -445,6 +448,7 @@ namespace Elektronik.Containers
 
         private void PureUpdate(SlamTrackedObject item)
         {
+            if (!_objects.ContainsKey(item.Id)) return;
             var container = _objects[item.Id].Item2;
             if (container.Count == 0)
             {
