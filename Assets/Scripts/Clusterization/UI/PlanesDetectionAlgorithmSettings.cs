@@ -1,11 +1,9 @@
 ﻿using Elektronik.Clusterization.Algorithms;
+using Elektronik.Clusterization.Algorithms.PlanesDetectionNative;
 using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-using Elektronik.NativeMath;
-#endif
 
 namespace Elektronik.Clusterization.UI
 {
@@ -32,7 +30,6 @@ namespace Elektronik.Clusterization.UI
 
         private PlanesDetectionAlgorithm CreateAlgorithm()
         {
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             return new PlanesDetectionAlgorithm(new Preferences()
             {
                 DepthThreshold = int.Parse(DepthThreshold.text),
@@ -43,13 +40,10 @@ namespace Elektronik.Clusterization.UI
                 CountRatio = double.Parse(CountRation.text),
                 DCos = Mathf.Deg2Rad * float.Parse(DCos.text),
                 UseGravity = UseGravity.isOn,
-                Gravity =
- new NativeVector(float.Parse(GravityX.text), float.Parse(GravityY.text), float.Parse(GravityZ.text)),
+                Gravity = new Vector3d(float.Parse(GravityX.text), float.Parse(GravityY.text),
+                    float.Parse(GravityZ.text)),
                 GravityDCos = Mathf.Cos(Mathf.Deg2Rad * float.Parse(GravityDeltaAngle.text))
             });
-#else
-            return new PlanesDetectionAlgorithm();
-#endif
         }
     }
 }

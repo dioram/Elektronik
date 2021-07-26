@@ -1,10 +1,10 @@
 #include "MeshBuilder.h"
 
-#include <MVS.h>
+#include <OpenMVS/MVS.h>
 
 using namespace MVS;
 
-NativeMesh MeshBuilder::FromPointsAndObservations(const std::vector<Vector3<double>>& points,
+NativeMesh MeshBuilder::FromPointsAndObservations(const std::vector<NativeVector>& points,
                                                   const std::vector<std::vector<int>>& views,
                                                   const std::vector<NativeTransform>& observations)
 {
@@ -38,7 +38,10 @@ NativeMesh MeshBuilder::FromPointsAndObservations(const std::vector<Vector3<doub
     // Output processing
     NativeMesh result;
     for (const auto& v: scene.mesh.vertices) {
-        result.points.emplace_back(Vector3<double>(v.x, v.y, v.z));
+        result.points.emplace_back(NativeVector(v.x, v.y, v.z));
+    }
+    for (const auto& v: scene.mesh.vertexNormals) {
+        result.normals.emplace_back(NativeVector(v.x, v.y, v.z));
     }
     for (const auto& f: scene.mesh.faces) {
         result.triangles.emplace_back(f.x);

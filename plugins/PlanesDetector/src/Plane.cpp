@@ -1,16 +1,18 @@
-#include "Plane.h"
+#include "../include/Plane.h"
 #include <cmath>
 
 // Print the plane.
 std::ostream& operator<<(std::ostream& os, const Plane& p)
 {
-    return os << "{" << p.normal[0] << "x + " << p.normal[1] << "y + " << p.normal[2] << "z + " << p.d << " : " << p.count << " points, center = (" << p.center[0] << ", " << p.center[1] << ", " << p.center[2] << "), radius = " << p.radius << ", thickness = " << p.thickness << "}";
+    return os << "{" << p.normal[0] << "x + " << p.normal[1] << "y + " << p.normal[2] << "z + " << p.d << " : "
+              << p.count << " points, center = (" << p.center[0] << ", " << p.center[1] << ", " << p.center[2]
+              << "), radius = " << p.radius << ", thickness = " << p.thickness << "}";
 }
 
 
 // Invalid plane.
 Plane::Plane() :
-    m(3, 3, CV_64FC1)
+        m(3, 3, CV_64FC1)
 {
     this->init();
     d = 0;
@@ -18,7 +20,7 @@ Plane::Plane() :
 
 // Plane that best fit the points with least squares minimization.
 Plane::Plane(const std::vector<SharedPoint>& pts) :
-    m(3, 3, CV_64FC1)
+        m(3, 3, CV_64FC1)
 {
     this->setPoints(pts);
 }
@@ -50,7 +52,7 @@ bool Plane::accept(SharedPoint p)
 }
 
 
-bool Plane::accept(Vec3d p)
+bool Plane::accept(Vector3d p)
 {
     return (center.distance(p) < 3 * radius) && (this->distance(p) < 2 * thickness);
 }
@@ -104,7 +106,8 @@ void Plane::merge(Plane& p, UnionFindPlanes& colors)
 }
 
 // Decides whether p is mergeable with this.
-bool Plane::mergeableWith(const Plane& p, double dCos) const {
+bool Plane::mergeableWith(const Plane& p, double dCos) const
+{
     // Empty plane.
     if (!(count && p.count))
         return false;
@@ -149,12 +152,12 @@ void Plane::init()
 {
     count = 0;
 
-    for (unsigned int i = 0 ; i < 3 ; ++i)
-        for (unsigned int j = 0 ; j < 3 ; ++j)
+    for (unsigned int i = 0; i < 3; ++i)
+        for (unsigned int j = 0; j < 3; ++j)
             m.at<double>(i, j) = 0;
-    sum = Vec3d();
+    sum = Vector3d();
 
-    center = Vec3d();
+    center = Vector3d();
     radius = 0;
 }
 
@@ -182,8 +185,8 @@ void Plane::addPoint(const Point& p)
 void Plane::leastSquares()
 {
     cv::Mat mat(3, 3, CV_64FC1);
-    for (unsigned int i = 0 ; i < 3 ; ++i)
-        for (unsigned int j = 0 ; j < 3 ; ++j)
+    for (unsigned int i = 0; i < 3; ++i)
+        for (unsigned int j = 0; j < 3; ++j)
             mat.at<double>(i, j) = m.at<double>(i, j) - sum[i] * sum[j] / count;
 
     cv::Mat eigenvals;
@@ -194,7 +197,7 @@ void Plane::leastSquares()
     normal[1] = eigenvects.at<double>(2, 1);
     normal[2] = eigenvects.at<double>(2, 2);
     normal.normalize();
-    d = - (normal * sum) / count;
+    d = -(normal * sum) / count;
 }
 
 // Compute equation and attributes of the plane (radius, thickness)
@@ -205,14 +208,14 @@ void Plane::computeEquation()
     center = sum / count;
 
     // Var(X) = Mean(X^2) - Mean(X)^2
-    Vec3d stddev = (Vec3d(m.at<double>(0, 0), m.at<double>(1, 1), m.at<double>(2, 2)) / count)
-            - center.cmul(center);
+    Vector3d stddev = (Vector3d(m.at<double>(0, 0), m.at<double>(1, 1), m.at<double>(2, 2)) / count)
+                      - center.cmul(center);
     radius = std::sqrt(stddev.x + stddev.y + stddev.z);
 
     // Var(X dot U) = Mean((X dot U)^2) - Mean(X dot U)^2
     double meansq = 0;
-    for (unsigned int i = 0 ; i < 3 ; ++i)
-        for (unsigned int j = 0 ; j < 3 ; ++j)
+    for (unsigned int i = 0; i < 3; ++i)
+        for (unsigned int j = 0; j < 3; ++j)
             meansq += m.at<double>(i, j) * normal[i] * normal[j];
     meansq /= count;
 
@@ -230,7 +233,7 @@ void Plane::computeEquation()
 }
 
 // Distance betwen u and v along the normal.
-double Plane::distanceAlong(Vec3d u, Vec3d v) const
+double Plane::distanceAlong(Vector3d u, Vector3d v) const
 {
     return std::abs((v - u) * normal);
 }

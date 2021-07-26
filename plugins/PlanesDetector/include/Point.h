@@ -1,10 +1,7 @@
-#ifndef POINT_H
-#define POINT_H
+#pragma once
 
 #include "Vector3.h"
 #include <memory>
 
-typedef Vec3d Point;
+typedef Vector3d Point;
 typedef std::shared_ptr<Point> SharedPoint;
-
-#endif

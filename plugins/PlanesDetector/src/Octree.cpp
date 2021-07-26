@@ -1,11 +1,11 @@
-#include "Ransac.h"
-#include "PointCloud.h"
-#include "Octree.h"
+#include "../include/Ransac.h"
+#include "../include/PointCloud.h"
+#include "../include/Octree.h"
 #include <algorithm>
 
 // Build a tree from a point cloud.
 Octree::Octree(PointCloud& cloud, unsigned int maxdepth) :
-    mRoot(cloud.center(), cloud.halfDimension()), mCloud(cloud)
+        mRoot(cloud.center(), cloud.halfDimension()), mCloud(cloud)
 {
     for (auto&& p : cloud.points())
         mRoot.insert(p, maxdepth);
@@ -13,48 +13,48 @@ Octree::Octree(PointCloud& cloud, unsigned int maxdepth) :
 
 
 // Detect planes in the point cloud.
-void Octree::detectPlanes(int depthThreshold, double epsilon, int numStartPoints, int numPoints, int steps, double countRatio, std::default_random_engine& generator, std::vector<SharedPlane>& planes, UnionFindPlanes& colors, double dCos) const
+void Octree::detectPlanes(int depthThreshold, double epsilon, int numStartPoints, int numPoints, int steps,
+                          double countRatio, std::default_random_engine& generator, std::vector<SharedPlane>& planes,
+                          UnionFindPlanes& colors, double dCos) const
 {
     std::vector<SharedPoint> pts;
-    mRoot.detectPlanes(depthThreshold, epsilon, numStartPoints, numPoints, steps, countRatio, generator, planes, colors, dCos, pts);
+    mRoot.detectPlanes(depthThreshold, epsilon, numStartPoints, numPoints, steps, countRatio, generator, planes, colors,
+                       dCos, pts);
 }
 
 
 // Create a node.
-Octree::Node::Node(const Vec3d& center, const Vec3d& halfSize) :
-    center(center), halfSize(halfSize), count(0)
+Octree::Node::Node(const Vector3d& center, const Vector3d& halfSize) :
+        center(center), halfSize(halfSize), count(0)
 {
 }
 
 // Collect all the points in this subtree.
 void Octree::Node::getPoints(std::vector<SharedPoint>& pts) const
 {
-    if (isLeafNode())
-    {
+    if (isLeafNode()) {
         if (point.get() != nullptr)
             pts.push_back(point);
-    }
-    else
+    } else
         for (auto&& child : children)
             child->getPoints(pts);
 }
 
 // Remove planes that have too few points, according to countRatio.
-void Octree::Node::removeSmallPlanes(std::vector<SharedPlane>& planes, double countRatio, UnionFind<SharedPoint, std::pair<RGB, bool>>& colors)
+void Octree::Node::removeSmallPlanes(std::vector<SharedPlane>& planes, double countRatio,
+                                     UnionFind<SharedPoint, std::pair<RGB, bool>>& colors)
 {
     // Remove planes that are too small.
-    if (!planes.empty())
-    {
-        static auto comp = [](const SharedPlane& a, const SharedPlane& b){return a && b ? a->getCount() > b->getCount() : (bool)a;};
+    if (!planes.empty()) {
+        static auto comp = [](const SharedPlane& a, const SharedPlane& b) {
+            return a && b ? a->getCount() > b->getCount() : (bool) a;
+        };
         std::sort(planes.begin(), planes.end(), comp);
 
-        if (planes[0])
-        {
+        if (planes[0]) {
             double minCount = planes[0]->getCount() * countRatio;
-            for (SharedPlane& p : planes)
-            {
-                if (p && p->getCount() <= minCount)
-                {
+            for (SharedPlane& p : planes) {
+                if (p && p->getCount() <= minCount) {
                     p->destroy(colors);
                     p.reset();
                 }
@@ -64,19 +64,20 @@ void Octree::Node::removeSmallPlanes(std::vector<SharedPlane>& planes, double co
 }
 
 // Detect planes in this subtree.
-void Octree::Node::detectPlanes(int depthThreshold, double epsilon, int numStartPoints, int numPoints, int steps, double countRatio, std::default_random_engine& generator, std::vector<SharedPlane>& planes, UnionFind<SharedPoint, std::pair<RGB, bool>>& colors, double dCos, std::vector<SharedPoint>& pts) const
+void Octree::Node::detectPlanes(int depthThreshold, double epsilon, int numStartPoints, int numPoints, int steps,
+                                double countRatio, std::default_random_engine& generator,
+                                std::vector<SharedPlane>& planes, UnionFind<SharedPoint, std::pair<RGB, bool>>& colors,
+                                double dCos, std::vector<SharedPoint>& pts) const
 {
     // Node => recursion.
-    if (count > depthThreshold)
-    {
+    if (count > depthThreshold) {
         // Get planes from children.
         std::vector<SharedPlane> plns;
-        for (auto&& child : children)
-        {
+        for (auto&& child : children) {
             std::vector<SharedPoint> child_pts;
-            if (child.get() != nullptr)
-            {
-                child->detectPlanes(depthThreshold, epsilon, numStartPoints, numPoints, steps, countRatio, generator, plns, colors, dCos, child_pts);
+            if (child.get() != nullptr) {
+                child->detectPlanes(depthThreshold, epsilon, numStartPoints, numPoints, steps, countRatio, generator,
+                                    plns, colors, dCos, child_pts);
                 for (auto&& p : child_pts)
                     pts.push_back(p);
             }
@@ -92,12 +93,9 @@ void Octree::Node::detectPlanes(int depthThreshold, double epsilon, int numStart
         removeSmallPlanes(plns, countRatio, colors);
 
         // Try to merge planes.
-        for (unsigned int i = 0 ; i < plns.size() ; ++i)
-        {
-            for (unsigned int j = 0 ; j < i ; ++j)
-            {
-                if (plns[i] && plns[j] && plns[i]->mergeableWith(*plns[j], dCos))
-                {
+        for (unsigned int i = 0; i < plns.size(); ++i) {
+            for (unsigned int j = 0; j < i; ++j) {
+                if (plns[i] && plns[j] && plns[i]->mergeableWith(*plns[j], dCos)) {
                     plns[i]->merge(*plns[j], colors);
                     plns[j].reset();
                 }
@@ -107,10 +105,8 @@ void Octree::Node::detectPlanes(int depthThreshold, double epsilon, int numStart
         removeSmallPlanes(plns, countRatio, colors);
 
         // Try to match free points to planes.
-        for (auto&& p : pts)
-        {
-            if (!colors.at(p).second)
-            {
+        for (auto&& p : pts) {
+            if (!colors.at(p).second) {
                 // Get best plane for this point.
                 std::vector<std::pair<SharedPlane, double> > dist;
                 for (SharedPlane plane : plns)
@@ -118,35 +114,34 @@ void Octree::Node::detectPlanes(int depthThreshold, double epsilon, int numStart
                         dist.push_back(std::make_pair(plane, plane->squareDistance(p)));
 
                 // We have a candidate.
-                if (!dist.empty())
-                {
-                    std::sort(dist.begin(), dist.end(), [](const std::pair<SharedPlane, double>& a, const std::pair<SharedPlane, double>& b){ return a.second < b.second; });
+                if (!dist.empty()) {
+                    std::sort(dist.begin(), dist.end(), [](const std::pair<SharedPlane, double>& a,
+                                                           const std::pair<SharedPlane, double>& b) {
+                        return a.second < b.second;
+                    });
                     dist[0].first->addPoint(p, colors);
                 }
             }
         }
 
         // Recompute equations of planes (with new points).
-        for (SharedPlane plane : plns)
-        {
-            if (plane)
-            {
+        for (SharedPlane plane : plns) {
+            if (plane) {
                 plane->computeEquation();
                 planes.push_back(plane);
             }
         }
     }
-    // Small number of points => find planes.
-    else
-    {
+        // Small number of points => find planes.
+    else {
         // Collect points.
         this->getPoints(pts);
 
         // Find planes.
         std::vector<SharedPoint> remaining_pts = pts;
-        for (int i = 0 ; i < 2 ; ++i)
-        {
-            SharedPlane plane = Ransac::ransac(remaining_pts, epsilon, numStartPoints, numPoints, steps, generator, colors);
+        for (int i = 0; i < 2; ++i) {
+            SharedPlane plane = Ransac::ransac(remaining_pts, epsilon, numStartPoints, numPoints, steps, generator,
+                                               colors);
             if (!plane)
                 return;
 
@@ -182,8 +177,7 @@ bool Octree::Node::insert(SharedPoint p, unsigned int depth)
 {
     bool result = false;
 
-    if (depth == 0)
-    {
+    if (depth == 0) {
         //std::cerr << "Max depth reached. Point not added : [" << p->x << ", " << p->y << ", " << p->z << "]" << std::endl;
         return result;
     }
@@ -192,38 +186,33 @@ bool Octree::Node::insert(SharedPoint p, unsigned int depth)
     // Not a leaf => recursion.
     if (!isLeafNode())
         result = children[findOctant(p)]->insert(p, depth);
-    // Leaf => insert here.
-    else
-    {
+        // Leaf => insert here.
+    else {
         // Empty leaf => set point.
-        if (point.get() == nullptr)
-        {
+        if (point.get() == nullptr) {
             point = p;
             result = true;
         }
-        // Non-empty leaf => split it.
-        else
-        {
+            // Non-empty leaf => split it.
+        else {
             SharedPoint oldPoint = point;
             point.reset();
 
-            for (int i = 0 ; i < 8 ; ++i)
-            {
-                Vec3d newCenter = center;
-                newCenter.x += halfSize.x * (i&4 ? 0.5 : -0.5);
-                newCenter.y += halfSize.y * (i&2 ? 0.5 : -0.5);
-                newCenter.z += halfSize.z * (i&1 ? 0.5 : -0.5);
+            for (int i = 0; i < 8; ++i) {
+                Vector3d newCenter = center;
+                newCenter.x += halfSize.x * (i & 4 ? 0.5 : -0.5);
+                newCenter.y += halfSize.y * (i & 2 ? 0.5 : -0.5);
+                newCenter.z += halfSize.z * (i & 1 ? 0.5 : -0.5);
                 children[i] = std::make_shared<Node>(newCenter, halfSize / 2);
             }
 
             // Insert old point and new point.
             result = children[findOctant(oldPoint)]->insert(oldPoint, depth)
-                    && children[findOctant(p)]->insert(p, depth);
+                     && children[findOctant(p)]->insert(p, depth);
 
             // If an error occured, reset to previous status.
-            if (!result)
-            {
-                for (int i = 0 ; i < 8 ; ++i)
+            if (!result) {
+                for (int i = 0; i < 8; ++i)
                     children[i].reset();
                 point = oldPoint;
             }

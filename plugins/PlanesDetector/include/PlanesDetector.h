@@ -2,8 +2,7 @@
 
 #include <vector>
 
-#include "NativeStructs.h"
-#include "PlaneDetection/Plane.h"
+#include "Vector3.h"
 
 class Preferences
 {
@@ -23,9 +22,6 @@ public:
 class PlanesDetector
 {
 public:
-    std::vector<int> FindPlanes(const std::vector<Vector3<double>>& points, const Preferences& preferences) const;
-
-private:
-    std::vector<Plane> FilterPlanes(const std::vector<Plane>& planes, const Preferences& preferences) const;
+    std::vector<int> FindPlanes(const std::vector<Vector3d>& points, const Preferences& preferences) const;
 };
 

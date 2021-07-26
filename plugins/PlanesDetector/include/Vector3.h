@@ -1,5 +1,4 @@
-#ifndef Vec3_h_
-#define Vec3_h_
+#pragma once
 
 #include <cmath>
 
@@ -106,6 +105,4 @@ inline Vector3<T> operator*(T t, const Vector3<T>& v) {
     return Vector3<T>(v.x * t, v.y * t, v.z * t);
 }
 
-typedef Vector3<double> Vec3d;
-
-#endif
+typedef Vector3<double> Vector3d;
