@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Linq.Expressions;
 using UnityEditor.SceneManagement;
 using UnityEditor.Callbacks;
-using Valve.Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace Valve.VR
 {

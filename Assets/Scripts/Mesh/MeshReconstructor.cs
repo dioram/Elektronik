@@ -4,16 +4,19 @@ using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.NativeMath;
 using Elektronik.Threading;
 using UnityEngine;
+
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+using Elektronik.NativeMath;
+#endif
 
 namespace Elektronik.Mesh
 {
     public class MeshReconstructor : IMeshContainer
     {
         public MeshReconstructor(IContainer<SlamPoint> points, IContainer<SlamObservation> observations,
-                                 string displayName = "Mesh")
+            string displayName = "Mesh")
         {
             _points = points;
             _observations = observations;
@@ -89,6 +92,7 @@ namespace Elektronik.Mesh
 
         private void CalculateMesh()
         {
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             var points = _points.ToArray();
             var observations = _observations.ToArray();
             var obsId2Index = new Dictionary<int, int>();
@@ -127,11 +131,13 @@ namespace Elektronik.Mesh
             {
                 OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(vertices, output.triangles.ToArray()));
             }
+#endif
         }
 
         #endregion
     }
 
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
     internal static class CastExtensions
     {
         public static NativeVector ToNative(this SlamPoint point)
@@ -158,4 +164,5 @@ namespace Elektronik.Mesh
         public static Vector3 ToUnity(this NativeVector vector)
             => new Vector3((float) vector.x, (float) vector.y, (float) vector.z);
     }
+#endif
 }
