@@ -52,6 +52,7 @@ namespace Elektronik.Protobuf.Data
             {
                 (ISourceTree) Points,
                 (ISourceTree) TrackedObjs,
+                (ISourceTree) InfinitePlanes,
                 observationsGraph,
                 (ISourceTree) Lines,
                 Image,

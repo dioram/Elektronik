@@ -97,14 +97,12 @@ namespace Protobuf.Tests.Elektronik
                 Action = PacketPb.Types.ActionType.Update,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
-            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 0, Offset = new Vector3Pb {X = 0, Y = 0, Z = 1}});
-            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 1, Offset = new Vector3Pb {X = 0, Y = 1, Z = 0}});
-            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 2, Offset = new Vector3Pb {X = 1, Y = 0, Z = 0}});
-            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 3, Offset = new Vector3Pb {X = 0, Y = 1, Z = 1}});
-            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 4, Offset = new Vector3Pb {X = 1, Y = 1, Z = 0}});
-
-            packet.InfinitePlanes.Data.Add(_planes);
-
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 0, Offset = new Vector3Pb {X = 0, Y = 0, Z = 100}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 1, Offset = new Vector3Pb {X = 0, Y = 100, Z = 0}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 2, Offset = new Vector3Pb {X = 100, Y = 0, Z = 0}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 3, Offset = new Vector3Pb {X = 0, Y = 100, Z = 100}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 4, Offset = new Vector3Pb {X = 100, Y = 100, Z = 0}});
+            
             SendAndCheck(packet, Filename);
         }
 
@@ -128,8 +126,6 @@ namespace Protobuf.Tests.Elektronik
             packet.InfinitePlanes.Data.Add(new InfinitePlanePb
                                                    {Id = 4, Normal = new Vector3Pb {X = -10, Y = -50, Z = -10}});
 
-            packet.InfinitePlanes.Data.Add(_planes);
-
             SendAndCheck(packet, Filename);
         }
 
@@ -152,8 +148,6 @@ namespace Protobuf.Tests.Elektronik
                 new InfinitePlanePb {Id = 3, Color = new ColorPb {R = 255, G = 255, B = 255}});
             packet.InfinitePlanes.Data.Add(
                 new InfinitePlanePb {Id = 4, Color = new ColorPb {R = 255, G = 255, B = 255}});
-
-            packet.InfinitePlanes.Data.Add(_planes);
 
             SendAndCheck(packet, Filename);
         }

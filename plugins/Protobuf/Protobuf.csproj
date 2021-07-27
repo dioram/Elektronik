@@ -157,8 +157,4 @@
       </Reference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="libraries" />
-    </ItemGroup>
-
 </Project>
