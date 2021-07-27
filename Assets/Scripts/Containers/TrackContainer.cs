@@ -185,7 +185,27 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id).ToList()));
+        }
+
+        public IEnumerable<SlamLine> Remove(IEnumerable<int> items)
+        {
+            if (items is null) return new List<SlamLine>();
+            var list = items.ToList();
+            var removed = new List<SlamLine>();
+            lock (_lines)
+            {
+                foreach (var id in list)
+                {
+                    var index = _lines.FindIndex(l => l.Id == id);
+                    if (index == -1) continue;
+                    removed.Add(_lines[index]);
+                    _lines.RemoveAt(index);
+                }
+            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list));
+            return removed;
         }
 
         public void Update(SlamLine item)

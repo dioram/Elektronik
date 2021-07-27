@@ -58,7 +58,7 @@ namespace Elektronik.Commands.TrackedObj
 
         public override void UnExecute()
         {
-            _container.AddRangeWithHistory(Objs2Remove.OrderBy(i => i.Id), _tracks.Values);
+            _container.AddRangeWithHistory(Objs2Remove.OrderBy(i => i.Id).Select(d => _container[d.Id]), _tracks.Values);
         }
     }
 }

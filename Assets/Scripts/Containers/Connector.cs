@@ -161,7 +161,7 @@ namespace Elektronik.Containers
             var obsWithChangedConnections = e.UpdatedItems
                     .Where(o => o.ObservedPoints.Count != 0)
                     .ToArray();
-            OnObservationsRemoved(sender, new RemovedEventArgs(obsWithChangedConnections.Select(o => o.Id)));
+            OnObservationsRemoved(sender, new RemovedEventArgs(obsWithChangedConnections.Select(o => o.Id).ToList()));
             OnObservationsAdded(sender, new AddedEventArgs<SlamObservation>(obsWithChangedConnections));
         }
 

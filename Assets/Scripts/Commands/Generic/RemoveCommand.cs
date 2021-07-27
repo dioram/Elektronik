@@ -6,8 +6,8 @@ using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Commands.Generic
 {
-    public class RemoveCommand<T> : ICommand 
-        where T: struct, ICloudItem
+    public class RemoveCommand<T> : ICommand
+            where T : struct, ICloudItem
     {
         protected readonly ReadOnlyCollection<T> Objs2Remove;
         private readonly IContainer<T> _container;
@@ -21,20 +21,26 @@ namespace Elektronik.Commands.Generic
         public virtual void Execute() => _container.Remove(Objs2Remove);
         public virtual void UnExecute() => _container.AddRange(Objs2Remove);
     }
-    public class RemoveCommand<TCloudItem, TCloudItemDiff> : ICommand 
-            where TCloudItem: struct, ICloudItem
-            where TCloudItemDiff: struct, ICloudItemDiff<TCloudItem>
+
+    public class RemoveCommand<TCloudItem, TCloudItemDiff> : ICommand
+            where TCloudItem : struct, ICloudItem
+            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
     {
-        protected readonly ReadOnlyCollection<TCloudItem> Objs2Remove;
+        protected readonly ReadOnlyCollection<TCloudItemDiff> Objs2Remove;
+        protected List<TCloudItem> Objs2Add;
         private readonly IContainer<TCloudItem> _container;
 
         public RemoveCommand(IContainer<TCloudItem> container, IEnumerable<TCloudItemDiff> objects)
         {
             _container = container;
-            Objs2Remove = new ReadOnlyCollection<TCloudItem>(objects.Select(p => _container[p.Id]).ToList());
+            Objs2Remove = new ReadOnlyCollection<TCloudItemDiff>(objects.ToList());
         }
 
-        public virtual void Execute() => _container.Remove(Objs2Remove);
-        public virtual void UnExecute() => _container.AddRange(Objs2Remove);
+        public virtual void Execute()
+        {
+            Objs2Add = _container.Remove(Objs2Remove.Select(o => o.Id)).ToList();
+        }
+
+        public virtual void UnExecute() => _container.AddRange(Objs2Add);
     }
 }
