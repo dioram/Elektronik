@@ -1,5 +1,4 @@
-#ifndef POINTCLOUD_H
-#define POINTCLOUD_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -15,10 +14,14 @@ class PointCloud
 public:
     // Empty cloud.
     PointCloud();
+
     // Load from file.
     void loadPly(const std::string& filename);
+
     void load3D(const std::string& filename);
-    void loadVector(const std::vector<Vec3d>& points);
+
+    void loadVector(const std::vector<Vector3d>& points);
+
     // Save to file.
     bool toPly(const std::string& filename, bool showPlanes) const;
 
@@ -26,28 +29,30 @@ public:
     void merge(const PointCloud& other);
 
     // Accessors.
-    inline Vec3d center() const
-        {return mCenter;}
-    inline Vec3d halfDimension() const
-        {return mHalfDimension;}
+    inline Vector3d center() const
+    { return mCenter; }
+
+    inline Vector3d halfDimension() const
+    { return mHalfDimension; }
+
     inline const std::vector<SharedPoint>& points() const
-        {return mPoints;}
+    { return mPoints; }
+
     inline UnionFindPlanes& colors()
-        {return mColors;}
-    
+    { return mColors; }
+
 private:
     // Add point.
     void addPoint(SharedPoint p, RGB color);
+
     // Compute bounding box.
     void boundingBox();
 
     // Points and bounding box.
-    Vec3d mCenter;
-    Vec3d mHalfDimension;
-    Vec3d min;
-    Vec3d max;
+    Vector3d mCenter;
+    Vector3d mHalfDimension;
+    Vector3d min;
+    Vector3d max;
     std::vector<SharedPoint> mPoints;
     UnionFindPlanes mColors;
 };
-
-#endif // POINTCLOUD_H

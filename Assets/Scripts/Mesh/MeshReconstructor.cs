@@ -4,7 +4,6 @@ using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.NativeMath;
 using Elektronik.Threading;
 using UnityEngine;
 
@@ -13,7 +12,7 @@ namespace Elektronik.Mesh
     public class MeshReconstructor : IMeshContainer
     {
         public MeshReconstructor(IContainer<SlamPoint> points, IContainer<SlamObservation> observations,
-                                 string displayName = "Mesh")
+            string displayName = "Mesh")
         {
             _points = points;
             _observations = observations;
@@ -87,6 +86,29 @@ namespace Elektronik.Mesh
             _threadWorker.Enqueue(CalculateMesh);
         }
 
+        private static NativeVector ToNative(SlamPoint point) =>
+            new NativeVector(point.Position.x, point.Position.y, point.Position.z);
+
+        private static NativeTransform ToNative(SlamObservation observation)
+        {
+            var m = Matrix4x4.Rotate(observation.Rotation);
+            return new NativeTransform
+            {
+                position = ToNative(observation.Point),
+                r11 = m.m00,
+                r12 = m.m01,
+                r13 = m.m02,
+                r21 = m.m10,
+                r22 = m.m11,
+                r23 = m.m12,
+                r31 = m.m20,
+                r32 = m.m21,
+                r33 = m.m22,
+            };
+        }
+
+        private static Vector3 ToUnity(NativeVector vector) => new Vector3(vector.x, vector.y, vector.z);
+
         private void CalculateMesh()
         {
             var points = _points.ToArray();
@@ -112,16 +134,16 @@ namespace Elektronik.Mesh
 
             if (connectionsNotSet) return;
 
-            var cPoints = new vectorv(points.Select(p => p.ToNative()));
+            var cPoints = new vectorv(points.Select(ToNative));
             var cViews = new vectori2d(points.Select(p => pointsViewsArr.ContainsKey(p.Id)
-                                                             ? new vectori(pointsViewsArr[p.Id].OrderBy(i => i))
-                                                             : new vectori()));
-            var cObservations = new vectort(observations.Select(o => o.ToNative()));
+                ? new vectori(pointsViewsArr[p.Id].OrderBy(i => i))
+                : new vectori()));
+            var cObservations = new vectort(observations.Select(ToNative));
 
             var builder = new MeshBuilder();
             var output = builder.FromPointsAndObservations(cPoints, cViews, cObservations);
 
-            var vertices = output.points.Select(p => p.ToUnity()).ToArray();
+            var vertices = output.points.Select(ToUnity).ToArray();
 
             if (_isVisible)
             {
@@ -130,32 +152,5 @@ namespace Elektronik.Mesh
         }
 
         #endregion
-    }
-
-    internal static class CastExtensions
-    {
-        public static NativeVector ToNative(this SlamPoint point)
-            => new NativeVector(point.Position.x, point.Position.y, point.Position.z);
-
-        public static NativeTransform ToNative(this SlamObservation observation)
-        {
-            var m = Matrix4x4.Rotate(observation.Rotation);
-            return new NativeTransform
-            {
-                position = observation.Point.ToNative(),
-                r11 = m.m00,
-                r12 = m.m01,
-                r13 = m.m02,
-                r21 = m.m10,
-                r22 = m.m11,
-                r23 = m.m12,
-                r31 = m.m20,
-                r32 = m.m21,
-                r33 = m.m22,
-            };
-        }
-
-        public static Vector3 ToUnity(this NativeVector vector)
-            => new Vector3((float) vector.x, (float) vector.y, (float) vector.z);
     }
 }

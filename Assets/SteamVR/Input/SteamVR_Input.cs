@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using Valve.Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Text;
 
 namespace Valve.VR

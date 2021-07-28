@@ -35,6 +35,8 @@ set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../build/Plugins/Ros/libraries
 
 set(DEPLOY_DLLS)
 file(GLOB DEPLOY_DLLS ${CMAKE_BINARY_DIR}/*.dll)
+set(DEPLOY_SOS)
+file(GLOB DEPLOY_SOS ${CMAKE_BINARY_DIR}/*.so)
 set(DEPLOY_LIBS)
 target_copy_libs(ROS2DDS foonathan_memory)
 file(GLOB DEPLOY_LIBS ${CMAKE_BINARY_DIR}/*.lib)

@@ -1,9 +1,9 @@
 #include "PlanesDetector.h"
 
-#include "PlaneDetection/PointCloud.h"
-#include "PlaneDetection/Octree.h"
+#include "PointCloud.h"
+#include "Octree.h"
 
-std::vector<Plane> PlanesDetector::FilterPlanes(const std::vector<Plane>& planes, const Preferences& preferences) const
+std::vector<Plane> FilterPlanes(const std::vector<Plane>& planes, const Preferences& preferences)
 {
     std::vector<Plane> res;
     for (const auto& plane: planes) {
@@ -14,7 +14,7 @@ std::vector<Plane> PlanesDetector::FilterPlanes(const std::vector<Plane>& planes
 }
 
 std::vector<int>
-PlanesDetector::FindPlanes(const std::vector<Vector3<double>>& points, const Preferences& preferences) const
+PlanesDetector::FindPlanes(const std::vector<Vector3d>& points, const Preferences& preferences) const
 {
     auto cloud = PointCloud();
     cloud.loadVector(points);

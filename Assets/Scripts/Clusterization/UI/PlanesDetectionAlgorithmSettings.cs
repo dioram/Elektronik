@@ -1,5 +1,5 @@
 ﻿using Elektronik.Clusterization.Algorithms;
-using Elektronik.NativeMath;
+using Elektronik.Clusterization.Algorithms.PlanesDetectionNative;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -25,7 +25,7 @@ namespace Elektronik.Clusterization.UI
         private void Start()
         {
             ComputeButton.OnClickAsObservable()
-                    .Subscribe(k => OnComputePressed?.Invoke(this, CreateAlgorithm()));
+                .Subscribe(k => OnComputePressed?.Invoke(this, CreateAlgorithm()));
         }
 
         private PlanesDetectionAlgorithm CreateAlgorithm()
@@ -40,7 +40,8 @@ namespace Elektronik.Clusterization.UI
                 CountRatio = double.Parse(CountRation.text),
                 DCos = Mathf.Deg2Rad * float.Parse(DCos.text),
                 UseGravity = UseGravity.isOn,
-                Gravity = new NativeVector(float.Parse(GravityX.text), float.Parse(GravityY.text), float.Parse(GravityZ.text)),
+                Gravity = new Vector3d(float.Parse(GravityX.text), float.Parse(GravityY.text),
+                    float.Parse(GravityZ.text)),
                 GravityDCos = Mathf.Cos(Mathf.Deg2Rad * float.Parse(GravityDeltaAngle.text))
             });
         }
