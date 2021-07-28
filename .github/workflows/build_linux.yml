@@ -1,0 +1,67 @@
+name: Build project on Linux
+
+on:
+  push:
+    branches:
+      - Linux-CI
+  workflow_dispatch:
+
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  buildNativeDir: '${{ github.workspace }}/buildNative/'
+jobs:
+  init: 
+    name: Init build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - uses: actions/cache@v2
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+            
+      - name: Install apt packages
+        run: sudo apt -y install make swig curl python
+  
+      - uses: lukka/get-cmake@latest
+        
+      - name: Restore artifacts, or setup vcpkg (do not install any package)
+        uses: lukka/run-vcpkg@v7
+        with:
+          setupOnly: true
+          appendedCacheKey: ${{ hashFiles( '${{ github.workspace }}/Plugins/vcpkg.json' ) }}
+          vcpkgGitCommitId: 1257354a3ab0bebd8abe95281ca561537853578c
+          vcpkgTriplet: ${{ matrix.triplet }}
+          additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
+          
+      - name: Install vcpkg packages 
+        run: $VCPKG_ROOT/vcpkg install fastrtps opencv
+        
+      - name: Upload vcpkg logs if failed
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: vcspkg_logs
+          path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
+  
+      - name: Build Unity player addressables
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          buildMethod: Elektronik.Editor.PlayerBuildScript.BuildAddressables
+          targetPlatform: StandaloneLinux64
+
+      - name: Build Unity player itself
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          targetPlatform: StandaloneLinux64
+      
