@@ -61,7 +61,7 @@ namespace Protobuf.Tests.Elektronik
                 }),
             };
             var allPoints = faces.SelectMany(p => p).ToArray();
-            
+
             var packet = new PacketPb
             {
                 Special = true,
@@ -69,8 +69,8 @@ namespace Protobuf.Tests.Elektronik
                 Points = new PacketPb.Types.Points(),
             };
             packet.Points.Data.Add(allPoints);
-            
-            var cameraPoses = new []
+
+            var cameraPoses = new[]
             {
                 new Vector3Pb {X = 0, Y = 0, Z = -side},
                 new Vector3Pb {X = 0, Y = 0, Z = side},
@@ -79,7 +79,7 @@ namespace Protobuf.Tests.Elektronik
                 new Vector3Pb {X = -side, Y = 0, Z = 0},
                 new Vector3Pb {X = side, Y = 0, Z = 0},
             };
-            var cameraColors = new []
+            var cameraColors = new[]
             {
                 new ColorPb {R = 0, G = 0, B = 127},
                 new ColorPb {R = 0, G = 0, B = 255},
@@ -122,78 +122,13 @@ namespace Protobuf.Tests.Elektronik
             return (packet, obsPacket);
         }
 
-        private PacketPb GenerateAdditionalObservations(int pointsAmount, float side)
+        private PacketPb BuildPacket(Vector3Pb[] cameraPoses, ColorPb[] cameraColors, Quaternion[] cameraOrientations,
+                                     int[][] points, int pointsAmount, int firstId)
         {
-            var cameraPoses = new []
-            {
-                new Vector3Pb {X = side, Y = 0, Z = side},
-                new Vector3Pb {X = side, Y = 0, Z = -side},
-                new Vector3Pb {X = side, Y = side, Z = 0},
-                new Vector3Pb {X = side, Y = -side, Z = 0},
-                
-                new Vector3Pb {X = -side, Y = 0, Z = side},
-                new Vector3Pb {X = -side, Y = 0, Z = -side},
-                new Vector3Pb {X = -side, Y = side, Z = 0},
-                new Vector3Pb {X = -side, Y = -side, Z = 0},
-                
-                new Vector3Pb {X = 0, Y = side, Z = side},
-                new Vector3Pb {X = 0, Y = side, Z = -side},
-                new Vector3Pb {X = 0, Y = -side, Z = side},
-                new Vector3Pb {X = 0, Y = -side, Z = -side},
-            };
-            var cameraColors = new []
-            {
-                new ColorPb{R = 255, G = 0, B = 255},
-                new ColorPb{R = 255, G = 0, B = 64},
-                new ColorPb{R = 255, G = 255, B = 0},
-                new ColorPb{R = 255, G = 64, B = 0},
-                
-                new ColorPb{R = 64, G = 0, B = 255},
-                new ColorPb{R = 64, G = 0, B = 64},
-                new ColorPb{R = 64, G = 255, B = 0},
-                new ColorPb{R = 64, G = 64, B = 0},
-                
-                new ColorPb{R = 0, G = 255, B = 255},
-                new ColorPb{R = 0, G = 255, B = 64},
-                new ColorPb{R = 0, G = 64, B = 255},
-                new ColorPb{R = 0, G = 64, B = 64},
-            };
-            var cameraOrientations = new[]
-            {
-                Quaternion.CreateFromYawPitchRoll(-3 * (float) Math.PI / 4, 0, 0),
-                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 4, 0, 0),
-                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 2, (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 2, -(float) Math.PI / 4, 0),
-                
-                Quaternion.CreateFromYawPitchRoll(3 * (float) Math.PI / 4, 0, 0),
-                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 4, 0, 0),
-                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 2, (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 2, -(float) Math.PI / 4, 0),
-                
-                Quaternion.CreateFromYawPitchRoll(0, 3 * (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(0, (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(0, -3 * (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(0, -(float) Math.PI / 4, 0),
-            };
+            // if (cameraPoses.Length != cameraColors.Length
+            //     || cameraColors.Length != cameraOrientations.Length
+            //     || cameraOrientations.Length != points.Length) throw new Exception();
 
-            var points = new[]
-            {
-                new[] {2, 6},
-                new[] {1, 6},
-                new[] {4, 6},
-                new[] {3, 6},
-
-                new[] {2, 5},
-                new[] {1, 5},
-                new[] {4, 5},
-                new[] {3, 5},
-
-                new[] {2, 4},
-                new[] {1, 4},
-                new[] {2, 3,},
-                new[] {1, 3,},
-            };
-            
             var obsPacket = new PacketPb
             {
                 Special = true,
@@ -204,7 +139,7 @@ namespace Protobuf.Tests.Elektronik
             {
                 obsPacket.Observations.Data.Add(new ObservationPb
                 {
-                    Point = new PointPb {Id = -i, Position = cameraPoses[i], Color = cameraColors[i]},
+                    Point = new PointPb {Id = -i - firstId, Position = cameraPoses[i], Color = cameraColors[i]},
                     Orientation = new Vector4Pb
                     {
                         X = cameraOrientations[i].X,
@@ -212,18 +147,142 @@ namespace Protobuf.Tests.Elektronik
                         Z = cameraOrientations[i].Z,
                         W = cameraOrientations[i].W,
                     },
-                    ObservedPoints = { points[i].SelectMany(p => Enumerable.Range(p * pointsAmount, pointsAmount))},
+                    ObservedPoints = {points[i].SelectMany(p => Enumerable.Range(p * pointsAmount, pointsAmount))},
                 });
             }
 
             return obsPacket;
         }
-        
+
+        private PacketPb GenerateEdgeObservations(int pointsAmount, float side)
+        {
+            var cameraPoses = new[]
+            {
+                new Vector3Pb {X = side, Y = 0, Z = side},
+                new Vector3Pb {X = side, Y = 0, Z = -side},
+                new Vector3Pb {X = side, Y = side, Z = 0},
+                new Vector3Pb {X = side, Y = -side, Z = 0},
+
+                new Vector3Pb {X = -side, Y = 0, Z = side},
+                new Vector3Pb {X = -side, Y = 0, Z = -side},
+                new Vector3Pb {X = -side, Y = side, Z = 0},
+                new Vector3Pb {X = -side, Y = -side, Z = 0},
+
+                new Vector3Pb {X = 0, Y = side, Z = side},
+                new Vector3Pb {X = 0, Y = side, Z = -side},
+                new Vector3Pb {X = 0, Y = -side, Z = side},
+                new Vector3Pb {X = 0, Y = -side, Z = -side},
+            };
+            var cameraColors = new[]
+            {
+                new ColorPb {R = 255, G = 0, B = 255},
+                new ColorPb {R = 255, G = 0, B = 64},
+                new ColorPb {R = 255, G = 255, B = 0},
+                new ColorPb {R = 255, G = 64, B = 0},
+
+                new ColorPb {R = 64, G = 0, B = 255},
+                new ColorPb {R = 64, G = 0, B = 64},
+                new ColorPb {R = 64, G = 255, B = 0},
+                new ColorPb {R = 64, G = 64, B = 0},
+
+                new ColorPb {R = 0, G = 255, B = 255},
+                new ColorPb {R = 0, G = 255, B = 64},
+                new ColorPb {R = 0, G = 64, B = 255},
+                new ColorPb {R = 0, G = 64, B = 64},
+            };
+            var cameraOrientations = new[]
+            {
+                Quaternion.CreateFromYawPitchRoll(-3 * (float) Math.PI / 4, 0, 0),
+                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 4, 0, 0),
+                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 2, (float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 2, -(float) Math.PI / 4, 0),
+
+                Quaternion.CreateFromYawPitchRoll(3 * (float) Math.PI / 4, 0, 0),
+                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 4, 0, 0),
+                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 2, (float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 2, -(float) Math.PI / 4, 0),
+
+                Quaternion.CreateFromYawPitchRoll(0, 3 * (float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(0, (float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(0, -3 * (float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(0, -(float) Math.PI / 4, 0),
+            };
+
+            var points = new[]
+            {
+                new[] {1, 5},
+                new[] {0, 5},
+                new[] {3, 5},
+                new[] {2, 5},
+
+                new[] {1, 4},
+                new[] {0, 4},
+                new[] {3, 4},
+                new[] {2, 4},
+
+                new[] {1, 3},
+                new[] {0, 3},
+                new[] {1, 2},
+                new[] {0, 2},
+            };
+            return BuildPacket(cameraPoses, cameraColors, cameraOrientations, points, pointsAmount, 0);
+        }
+
+        private PacketPb GenerateCornerObservations(int pointsAmount, float side)
+        {
+            var cameraPoses = new[]
+            {
+                new Vector3Pb {X = side, Y = side, Z = side},
+                new Vector3Pb {X = side, Y = side, Z = -side},
+                new Vector3Pb {X = side, Y = -side, Z = side},
+                new Vector3Pb {X = side, Y = -side, Z = -side},
+                new Vector3Pb {X = -side, Y = side, Z = side},
+                new Vector3Pb {X = -side, Y = side, Z = -side},
+                new Vector3Pb {X = -side, Y = -side, Z = side},
+                new Vector3Pb {X = -side, Y = -side, Z = -side},
+            };
+            var cameraColors = new[]
+            {
+                new ColorPb {R = 255, G = 255, B = 255},
+                new ColorPb {R = 255, G = 255, B = 255},
+                new ColorPb {R = 255, G = 255, B = 255},
+                new ColorPb {R = 255, G = 255, B = 255},
+                new ColorPb {R = 255, G = 255, B = 255},
+                new ColorPb {R = 255, G = 255, B = 255},
+                new ColorPb {R = 255, G = 255, B = 255},
+                new ColorPb {R = 255, G = 255, B = 255},
+            };
+            var cameraOrientations = new[]
+            {
+                Quaternion.CreateFromYawPitchRoll(-3 * (float) Math.PI / 4, (float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 4, (float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(-3 * (float) Math.PI / 4, -(float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 4, -(float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(3 * (float) Math.PI / 4, (float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 4, (float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(3 * (float) Math.PI / 4, -(float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 4, -(float) Math.PI / 4, 0),
+            };
+            var points = new[]
+            {
+                new[] {1, 3, 5},
+                new[] {0, 3, 5},
+                new[] {1, 2, 5},
+                new[] {0, 2, 5},
+                new[] {1, 3, 4},
+                new[] {0, 3, 4},
+                new[] {1, 2, 4},
+                new[] {0, 2, 4},
+            };
+
+            return BuildPacket(cameraPoses, cameraColors, cameraOrientations, points, pointsAmount, -12);
+        }
+
         [Test, Explicit]
         public void Cube()
         {
-            var amount = 200;
-            var side = 2f;
+            var amount = 2000;
+            var side = 4f;
             var defaultPlane = GeneratePlaneOfPoints(amount, side);
             var (packet, obsPacket) = GenerateCube(defaultPlane, side);
 
@@ -231,21 +290,26 @@ namespace Protobuf.Tests.Elektronik
             Thread.Sleep(200);
             SendAndCheck(obsPacket);
             Thread.Sleep(200);
-            SendAndCheck(GenerateAdditionalObservations(amount, side));
+            SendAndCheck(GenerateEdgeObservations(amount, side));
+            Thread.Sleep(200);
+            SendAndCheck(GenerateCornerObservations(amount, side));
         }
 
         [Test, Explicit]
         public void NoisedCube()
         {
-            var amount = 1000;
-            var side = 2f;
-            var defaultPlane = GeneratePlaneOfPoints(amount, side, 0.1f);
+            var amount = 5000;
+            var side = 4f;
+            var defaultPlane = GeneratePlaneOfPoints(amount, side, 0.3f);
             var (packet, obsPacket) = GenerateCube(defaultPlane, side);
 
 
             SendAndCheck(packet);
             Thread.Sleep(200);
             SendAndCheck(obsPacket);
+            SendAndCheck(GenerateEdgeObservations(amount, side));
+            Thread.Sleep(200);
+            SendAndCheck(GenerateCornerObservations(amount, side));
         }
     }
 }
