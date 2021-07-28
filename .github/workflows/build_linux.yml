@@ -13,6 +13,8 @@ jobs:
     name: Init build
     runs-on: ubuntu-latest
     steps:
+      - name: Install apt packages
+        run: sudo apt-get install libxml2-utils 
       - uses: actions/checkout@v2
         with:
           lfs: true
@@ -22,9 +24,11 @@ jobs:
         with:
           setupOnly: true
           appendedCacheKey: ${{ hashFiles( '**/vcpkg_manifest/vcpkg.json' ) }}
+          vcpkgGitCommitId: 1257354a3ab0bebd8abe95281ca561537853578c
           vcpkgTriplet: ${{ matrix.triplet }}
           additionalCachedPaths: ${{ env.buildDir }}/vcpkg_installed
-      - run: |
+      - name: Install vcpkg packages 
+        run: |
           $VCPKG_ROOT/vcpkg install fastrtps oppenmvs
           shell: bash
  
