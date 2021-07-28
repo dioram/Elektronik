@@ -30,6 +30,6 @@ jobs:
           additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
       - name: Install vcpkg packages 
         run: |
-          $VCPKG_ROOT/vcpkg install fastrtps oppenmvs
+          $VCPKG_ROOT/vcpkg install fastrtps openmvs
           shell: bash
  
