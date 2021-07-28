@@ -8,6 +8,7 @@ on:
 
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  buildNativeDir: '${{ github.workspace }}/buildNative/'
 jobs:
   init: 
     name: Init build
@@ -23,10 +24,10 @@ jobs:
         uses: lukka/run-vcpkg@v7
         with:
           setupOnly: true
-          appendedCacheKey: ${{ hashFiles( '**/vcpkg_manifest/vcpkg.json' ) }}
+          appendedCacheKey: ${{ hashFiles( '${{ github.workspace }}/Plugins/vcpkg.json' ) }}
           vcpkgGitCommitId: 1257354a3ab0bebd8abe95281ca561537853578c
           vcpkgTriplet: ${{ matrix.triplet }}
-          additionalCachedPaths: ${{ env.buildDir }}/vcpkg_installed
+          additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
       - name: Install vcpkg packages 
         run: |
           $VCPKG_ROOT/vcpkg install fastrtps oppenmvs
