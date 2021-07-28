@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install apt packages
-        run: sudo apt-get install gfortran libx11-dev mesa-common-dev libxi-dev make swig
+        run: sudo apt -y install gfortran libx11-dev mesa-common-dev libxi-dev make swig autoconf autoconf-archive libtool texinfo curl autopoint libgl1-mesa-dev libglu1-mesa-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxkbcommon-dev libxkbcommon-x11-dev libfontconfig1-dev libfreetype6-dev '^libxcb.*-dev' python
       - uses: actions/checkout@v2
         with:
           lfs: true
@@ -36,6 +36,6 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
-          name: dist-without-markdown
+          name: vcspkg_logs
           path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
  
