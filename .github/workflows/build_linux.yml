@@ -1,6 +1,9 @@
 name: Build project on Linux
 
 on:
+  push:
+    branches:
+      - Linux-CI
   workflow_dispatch:
 
 env:
