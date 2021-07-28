@@ -46,20 +46,29 @@ namespace Elektronik.Mesh
             if (!_meshUpdated) return;
             lock (_vertices)
             {
-                _vertsBuffer.SetData(_vertices);
+                lock (_vertsBuffer)
+                {
+                    _vertsBuffer.SetData(_vertices);
+                }
                 _meshUpdated = false;
             }
         }
 
         private void OnDestroy()
         {
-            _vertsBuffer.Dispose();
+            lock (_vertsBuffer)
+            {
+                _vertsBuffer.Dispose();
+            }
         }
 
         private void OnRenderObject()
         {
             _renderMaterial.SetPass(0);
-            _renderMaterial.SetBuffer(_vertsBufferShaderProp, _vertsBuffer);
+            lock (_vertsBuffer)
+            {
+                _renderMaterial.SetBuffer(_vertsBufferShaderProp, _vertsBuffer);
+            }
             Graphics.DrawProceduralNow(MeshTopology.Triangles, _vertices.Length);
         }
     }
