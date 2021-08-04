@@ -29,9 +29,7 @@ jobs:
           vcpkgTriplet: ${{ matrix.triplet }}
           additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
       - name: Install vcpkg packages 
-        run: |
-          $VCPKG_ROOT/vcpkg install fastrtps opencv
-          shell: bash
+        run: $VCPKG_ROOT/vcpkg install fastrtps opencv
       - name: Upload logs if failed
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
