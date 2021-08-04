@@ -5,3 +5,5 @@
 # New in this version:
 - Surface reconstruction based on point cloud and observations info
 - Now observations graph is building on Elektronik side and user now can filter graph edges by their weight.
+
+
