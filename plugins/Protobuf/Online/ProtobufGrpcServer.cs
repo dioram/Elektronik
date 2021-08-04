@@ -12,7 +12,7 @@ namespace Elektronik.Protobuf.Online
 {
     using GrpcServer = Server;
 
-    public class ProtobufGrpcServer : DataSourcePluginBase<AddressPortScaleSettingsBag>, IDataSourcePluginOnline
+    public class ProtobufGrpcServer : DataSourcePluginBase<PortScaleSettingsBag>, IDataSourcePluginOnline
     {
         public ProtobufGrpcServer()
         {
@@ -49,7 +49,7 @@ namespace Elektronik.Protobuf.Online
                 new InfinitePlanesMapManager(_containerTree.InfinitePlanes, Converter)
             }.BuildChain();
 
-            _containerTree.DisplayName = $"From gRPC {TypedSettings.IPAddress}:{TypedSettings.Port}";
+            _containerTree.DisplayName = $"From gRPC at port {TypedSettings.Port}";
 #if UNITY_EDITOR || UNITY_STANDALONE
             Debug.Log($"{TypedSettings.IPAddress}:{TypedSettings.Port}");
 #endif
@@ -64,7 +64,7 @@ namespace Elektronik.Protobuf.Online
                 },
                 Ports =
                 {
-                    new ServerPort(TypedSettings.IPAddress, TypedSettings.Port, ServerCredentials.Insecure),
+                    new ServerPort("0.0.0.0", TypedSettings.Port, ServerCredentials.Insecure),
                 },
             };
             StartServer();

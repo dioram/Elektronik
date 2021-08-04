@@ -300,7 +300,7 @@ namespace Protobuf.Tests.Elektronik
         {
             var amount = 5000;
             var side = 4f;
-            var defaultPlane = GeneratePlaneOfPoints(amount, side, 0.3f);
+            var defaultPlane = GeneratePlaneOfPoints(amount, side, 0.1f);
             var (packet, obsPacket) = GenerateCube(defaultPlane, side);
 
 
