@@ -82,7 +82,11 @@ For command line build go to root directory of repository and run these commands
 ```
 After that in `./build` you will see Elektronik player.
 
-Or you can build player through Unity editor GUI. In that case choose `./build` as output directory or you will need 
+Or you can build player through Unity editor GUI. 
+
+Before building you need to compile translation files. For that in Unity editor select menu
+`Window->Asset management->Addressables->Gropus` and in newly opened window select `Build->New build->Default Build Script`.
+After compilation is done you can proceed to building player. Choose `./build` as output directory or you will need 
 to change path to dependencies in plugins.
 
 ### Building of plugins
@@ -184,6 +188,14 @@ Example:
   scriptingDefineSymbols:
     1: NO_PLANES_DETECTION
 ```
+
+You can build player through Unity editor GUI.
+
+Before building you need to compile translation files. For that in Unity editor select menu
+`Window->Asset management->Addressables->Gropus` and in newly opened window select `Build->New build->Default Build Script`.
+After compilation is done you can proceed to building player. Choose `./build` as output directory or you will need
+to change path to dependencies in plugins.
+
 ### Building of plugins
 
 If you didn't build library for ROS2 then add then add in project file `./plugins/Ros/Ros.csproj` line
