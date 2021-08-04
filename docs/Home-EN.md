@@ -10,6 +10,7 @@ and many other things related to tracking algorithms and SLAM.
 This documentation will help you to get familiar with the interface of the application and to understand the API.
 
 Choose a section:
+- [Build from source](Build-EN.md)
 - [Usage](Usage-EN.md)
 - [Internal API](API-EN.md)
 - [Write your own plugin](Plugins-EN.md)
