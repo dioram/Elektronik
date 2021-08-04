@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+
+#if !NO_MESH_BUILDER
+using System.Linq;
 using Elektronik.Threading;
 using UnityEngine;
 
@@ -89,10 +91,10 @@ namespace Elektronik.Mesh
         private static NativeVector ToNative(SlamPoint point) =>
             new NativeVector(point.Position.x, point.Position.y, point.Position.z);
 
-        private static NativeTransform ToNative(SlamObservation observation)
+        private static NativeObservation ToNative(SlamObservation observation)
         {
             var m = Matrix4x4.Rotate(observation.Rotation);
-            return new NativeTransform
+            return new NativeObservation
             {
                 position = ToNative(observation.Point),
                 r11 = m.m00,
@@ -154,3 +156,33 @@ namespace Elektronik.Mesh
         #endregion
     }
 }
+#else
+namespace Elektronik.Mesh
+{
+    public class MeshReconstructor : IMeshContainer
+    {
+        public MeshReconstructor(IContainer<SlamPoint> points, IContainer<SlamObservation> observations,
+                                 string displayName = "Mesh")
+        {
+            throw new NotImplementedException();
+        }
+        
+        public string DisplayName { get; set; }
+        public IEnumerable<ISourceTree> Children { get; }
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetRenderer(ISourceRenderer renderer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsVisible { get; set; }
+        public event Action<bool> OnVisibleChanged;
+        public bool ShowButton { get; }
+        public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
+    }
+}
+#endif

@@ -1,4 +1,5 @@
-﻿using Elektronik.Renderers;
+﻿#if !NO_ROS2DDS
+using Elektronik.Renderers;
 using Elektronik.RosPlugin.Common.Containers;
 
 namespace Elektronik.RosPlugin.Ros2.Online.Handlers
@@ -27,3 +28,4 @@ namespace Elektronik.RosPlugin.Ros2.Online.Handlers
         }
     }
 }
+#endif

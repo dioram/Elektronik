@@ -51,6 +51,10 @@ namespace Elektronik.Clusterization.UI
             ContainersSelector.options = _clusterableContainers
                     .Select(c => new TMP_Dropdown.OptionData(c.name))
                     .ToList();
+            foreach (var settings in GetComponentsInChildren<AlgorithmSettings>())
+            {
+                settings.OnComputePressed += Compute;
+            }
         }
 
         #endregion
@@ -71,12 +75,13 @@ namespace Elektronik.Clusterization.UI
         {
             var localizedName = TextLocalizationExtender.GetLocalizedString("Clustered {0}", displayName);
             var clustered = new ClustersContainer(localizedName, data, source);
-            
+
             DataSourcesManager.AddDataSource(clustered);
             foreach (var container in _containers)
             {
                 container.IsVisible = false;
             }
+
             _containers.Add(clustered);
             clustered.OnVisibleChanged += visible => SetVisibility(clustered, source, visible);
             clustered.OnRemoved += () => _containers.Remove(clustered);

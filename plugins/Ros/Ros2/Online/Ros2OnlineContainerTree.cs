@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_ROS2DDS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers;
@@ -6,6 +7,10 @@ using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Ros2.Online.Handlers;
+using ImageHandler = Elektronik.RosPlugin.Ros2.Online.Handlers.ImageHandler;
+using OdometryHandler = Elektronik.RosPlugin.Ros2.Online.Handlers.OdometryHandler;
+using PointCloud2Handler = Elektronik.RosPlugin.Ros2.Online.Handlers.PointCloud2Handler;
+using PoseStampedHandler = Elektronik.RosPlugin.Ros2.Online.Handlers.PoseStampedHandler;
 
 namespace Elektronik.RosPlugin.Ros2.Online
 {
@@ -56,7 +61,7 @@ namespace Elektronik.RosPlugin.Ros2.Online
             {
                 var container = (ISourceTree) Activator.CreateInstance(SupportedMessages[topicType].container,
                                                                        topicName.Split('/').Last());
-                var handler = (MessageHandler) Activator.CreateInstance(SupportedMessages[topicType].handler, container);
+                var handler = (MessageHandler<,>) Activator.CreateInstance(SupportedMessages[topicType].handler, container);
                 _connector?.SubscribeOnMessages(MessageExt.GetDdsTopic(topicName), 
                                                 MessageExt.GetDdsType(topicType),
                                                 handler);
@@ -94,3 +99,4 @@ namespace Elektronik.RosPlugin.Ros2.Online
         #endregion
     }
 }
+#endif

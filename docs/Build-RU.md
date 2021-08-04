@@ -62,15 +62,18 @@ cmake --install .
 Для сборки Unity проигрывателя вам потребуется редактор Unity версии не меньше 2020.3(LTS) и Visual Studio 2019. 
 Установите его с помощью оффициального [лаунчера](https://unity3d.com/ru/get-unity/download).
 
-Если вы не собирали библиотеку для построения меша по облаку точек, добавьте в начало файла `./Assets/Scripts/Mesh/MeshReconstructor.cs`
-строку
-```c#
-#define NO_MESH_BULDER
+Если вы не собирали библиотеку для построения меша по облаку точек или библиотеку для выделения плоскостей,
+найдите в файле `./ProjectSettings/ProjectSettings.asset` строки
+```unityyaml
+  scriptingDefineSymbols:
+    1: 
 ```
-Аналогично если вы не собирали библиотеку для выделения плоскостей, добавьте в начало файла 
-`./Assets/Scripts/Clusterization/PlanesDetectionAlgorithm.cs` строку
-```c#
-#define NO_PLANES_DETECTION
+Добавьте туда значение `NO_MESH_BULDER`, если не собиралась библиотека построения меша,
+и значение `NO_PLANES_DETECTION`, если не собиралась библиотека выделения плоскостей.
+Пример:
+```unityyaml
+  scriptingDefineSymbols:
+    1: NO_MESH_BULDER;NO_PLANES_DETECTION
 ```
 
 Вы можете собрать проигрыватель из командной строки.
@@ -86,10 +89,22 @@ cmake --install .
 
 ### Сборка плагинов
 
-Если вы не собирали библиотеку для получения информации из сети ROS2, добавьте в начало файла
-`./plugins/Ros/Ros2/Online/Ros2Client.cs` строку
-```c#
-#define NO_ROS2DDS
+Если вы не собирали библиотеку для получения информации из сети ROS2, добавьте в файл проекта `./plugins/Ros/Ros.csproj` строку
+```xml
+<DefineConstants>NO_ROS2DDS</DefineConstants>
+```
+в разделе `<PropertyGroup>`. Пример:
+```xml
+<PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Elektronik.RosPlugin</RootNamespace>
+    <Deterministic>False</Deterministic>
+    <AssemblyVersion>1.2.*</AssemblyVersion>
+    <FileVersion>1.2.*</FileVersion>
+    <DefineConstants>NO_ROS2DDS</DefineConstants>
+</PropertyGroup>
 ```
 
 Самый простой способ собрать все плагины - это запустить из корневой директории репозитория скрипт 
@@ -168,15 +183,18 @@ cmake --install .
 Установите Unity с помощью оффициального [лаунчера](https://unity3d.com/ru/get-unity/download).
 Инструкцию по установке .NET вы можете найти на [MSDN](https://docs.microsoft.com/ru-ru/dotnet/core/install/linux).
 
-Если вы не собирали библиотеку для построения меша по облаку точек, добавьте в начало файла `./Assets/Scripts/Mesh/MeshReconstructor.cs`
-строку
-```c#
-#define NO_MESH_BULDER
+Если вы не собирали библиотеку для построения меша по облаку точек или библиотеку для выделения плоскостей,
+найдите в файле `./ProjectSettings/ProjectSettings.asset` строки
+```unityyaml
+  scriptingDefineSymbols:
+    1: 
 ```
-Аналогично если вы не собирали библиотеку для выделения плоскостей, добавьте в начало файла
-`./Assets/Scripts/Clusterization/PlanesDetectionAlgorithm.cs` строку
-```c#
-#define NO_PLANES_DETECTION
+Добавьте туда значение `NO_MESH_BULDER`, если не собиралась библиотека построения меша,
+и значение `NO_PLANES_DETECTION`, если не собиралась библиотека выделения плоскостей.
+Пример:
+```unityyaml
+  scriptingDefineSymbols:
+    1: NO_MESH_BULDER;NO_PLANES_DETECTION
 ```
 
 Соберите проигрыватель через интерфейс редактора Unity. Укажите для сборки
@@ -184,10 +202,22 @@ cmake --install .
 
 ### Сборка плагинов
 
-Если вы не собирали библиотеку для получения информации из сети ROS2, добавьте в начало файла
-`./plugins/Ros/Ros2/Online/Ros2Client.cs` строку
-```c#
-#define NO_ROS2DDS
+Если вы не собирали библиотеку для получения информации из сети ROS2, добавьте в файл проектка `./plugins/Ros/Ros.csproj` строку
+```xml
+<DefineConstants>NO_ROS2DDS</DefineConstants>
+```
+в разделе `<PropertyGroup>`. Пример:
+```xml
+<PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Elektronik.RosPlugin</RootNamespace>
+    <Deterministic>False</Deterministic>
+    <AssemblyVersion>1.2.*</AssemblyVersion>
+    <FileVersion>1.2.*</FileVersion>
+    <DefineConstants>NO_ROS2DDS</DefineConstants>
+</PropertyGroup>
 ```
 
 Самый простой способ собрать все плагины - это запустить из корневой директории репозитория скрипт

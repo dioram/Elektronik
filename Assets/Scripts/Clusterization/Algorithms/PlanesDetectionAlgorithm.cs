@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !NO_PLANES_DETECTION
+using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Clusterization.Algorithms.PlanesDetectionNative;
 using Elektronik.Data.PackageObjects;
@@ -32,3 +33,4 @@ namespace Elektronik.Clusterization.Algorithms
         #endregion
     }
 }
+#endif

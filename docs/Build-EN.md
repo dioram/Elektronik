@@ -61,15 +61,17 @@ You can build other libraries same way. They are in directories `plugins\MeshBui
 For building Unity player you will need Unity editor (2020.3(LTS) or later) and Visual Studio 2019.
 You can install Unity editor using official [launcher](https://unity3d.com/ru/get-unity/download)
 
-If you didn't build library for mesh reconstruction then add then add at start of file `./Assets/Scripts/Mesh/MeshReconstructor.cs`
-this line:
-```c#
-#define NO_MESH_BULDER
+If you didn't build library for mesh reconstruction or for planes detection, then find in file `./ProjectSettings/ProjectSettings.asset` lines
+```unityyaml
+  scriptingDefineSymbols:
+    1: 
 ```
-Same way if you didn't build library for planes detection then add then add at start of file 
-`./Assets/Scripts/Mesh/MeshReconstructor.cs` this line
-```c#
-#define NO_PLANES_DETECTION
+Add there `NO_MESH_BULDER`, if you didn't build library for mesh reconstruction,
+and `NO_PLANES_DETECTION`, if you didn't build library for planes detection.
+Example:
+```unityyaml
+  scriptingDefineSymbols:
+    1: NO_MESH_BULDER;NO_PLANES_DETECTION
 ```
 
 Now you can build player from command line or Unity editor GUI.
@@ -85,10 +87,22 @@ to change path to dependencies in plugins.
 
 ### Building of plugins
 
-If you didn't build library for ROS2 then add then add at start of file `./plugins/Ros/Ros2/Online/Ros2Client.cs`
-this line:
-```c#
-#define NO_ROS2DDS
+If you didn't build library for ROS2 then add then add in project file `./plugins/Ros/Ros.csproj` line
+```xml
+<DefineConstants>NO_ROS2DDS</DefineConstants>
+```
+into section `<PropertyGroup>`. Example:
+```xml
+<PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Elektronik.RosPlugin</RootNamespace>
+    <Deterministic>False</Deterministic>
+    <AssemblyVersion>1.2.*</AssemblyVersion>
+    <FileVersion>1.2.*</FileVersion>
+    <DefineConstants>NO_ROS2DDS</DefineConstants>
+</PropertyGroup>
 ```
 
 The easiest way to build all plugins just run form root directory of repo script [build_plugins.bat](../.github/build_plugins.bat).
@@ -159,21 +173,35 @@ For building Unity player you will need Unity editor (2020.3(LTS) or later) and 
 You can install Unity editor using official [launcher](https://unity3d.com/ru/get-unity/download).
 Manual for .NET installation can be found on [MSDN](https://docs.microsoft.com/ru-ru/dotnet/core/install/linux).
 
-If you didn't build library for planes detection then add then add at start of file
-`./Assets/Scripts/Mesh/MeshReconstructor.cs` this line
-```c#
-#define NO_PLANES_DETECTION
+If you didn't build library for planes detection, then find in file `./ProjectSettings/ProjectSettings.asset` lines
+```unityyaml
+  scriptingDefineSymbols:
+    1: 
 ```
-
-Build player through Unity editor GUI. Choose `./build` as output directory or you will need
-to change path to dependencies in plugins.
-
+Add there `NO_PLANES_DETECTION`.
+Example:
+```unityyaml
+  scriptingDefineSymbols:
+    1: NO_PLANES_DETECTION
+```
 ### Building of plugins
 
-If you didn't build library for ROS2 then add then add at start of file `./plugins/Ros/Ros2/Online/Ros2Client.cs`
-this line:
-```c#
-#define NO_ROS2DDS
+If you didn't build library for ROS2 then add then add in project file `./plugins/Ros/Ros.csproj` line
+```xml
+<DefineConstants>NO_ROS2DDS</DefineConstants>
+```
+into section `<PropertyGroup>`. Example:
+```xml
+<PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Elektronik.RosPlugin</RootNamespace>
+    <Deterministic>False</Deterministic>
+    <AssemblyVersion>1.2.*</AssemblyVersion>
+    <FileVersion>1.2.*</FileVersion>
+    <DefineConstants>NO_ROS2DDS</DefineConstants>
+</PropertyGroup>
 ```
 
 The easiest way to build all plugins just run form root directory of repo script [build_plugins.sh](../.github/build_plugins.sh).
@@ -186,4 +214,4 @@ After that copy files with translations `translations.csv` to `<PATH_TO_ELEKTRON
 
 Congratulations! Elektronik is built and ready to work.
 
-[<- Стартовая страница](Home-RU.md) | [Использование ->](Usage-RU.md)
+[<- Home page](Home-EN.md) | [Usage ->](Usage-EN.md)
