@@ -1,20 +1,23 @@
-﻿using System;
+﻿#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+#define NO_MESH_BUILDER
+#endif
+
+using System;
 using System.Collections.Generic;
 using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-
-#if !NO_MESH_BUILDER
 using System.Linq;
 using Elektronik.Threading;
 using UnityEngine;
 
+#if !NO_MESH_BUILDER
 namespace Elektronik.Mesh
 {
     public class MeshReconstructor : IMeshContainer
     {
         public MeshReconstructor(IContainer<SlamPoint> points, IContainer<SlamObservation> observations,
-            string displayName = "Mesh")
+                                 string displayName = "Mesh")
         {
             _points = points;
             _observations = observations;
@@ -89,12 +92,12 @@ namespace Elektronik.Mesh
         }
 
         private static NativeVector ToNative(SlamPoint point) =>
-            new NativeVector(point.Position.x, point.Position.y, point.Position.z);
+                new NativeVector(point.Position.x, point.Position.y, point.Position.z);
 
-        private static NativeObservation ToNative(SlamObservation observation)
+        private static NativeTransform ToNative(SlamObservation observation)
         {
             var m = Matrix4x4.Rotate(observation.Rotation);
-            return new NativeObservation
+            return new NativeTransform
             {
                 position = ToNative(observation.Point),
                 r11 = m.m00,
@@ -138,8 +141,8 @@ namespace Elektronik.Mesh
 
             var cPoints = new vectorv(points.Select(ToNative));
             var cViews = new vectori2d(points.Select(p => pointsViewsArr.ContainsKey(p.Id)
-                ? new vectori(pointsViewsArr[p.Id].OrderBy(i => i))
-                : new vectori()));
+                                                             ? new vectori(pointsViewsArr[p.Id].OrderBy(i => i))
+                                                             : new vectori()));
             var cObservations = new vectort(observations.Select(ToNative));
 
             var builder = new MeshBuilder();
