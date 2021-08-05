@@ -48,6 +48,9 @@ jobs:
         with:
           name: vcspkg_logs
           path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
+          
+      - name: Build natives
+        run: ./.github/build_natives.sh
   
       - name: Build Unity player addressables
         uses: game-ci/unity-builder@v2
@@ -68,7 +71,7 @@ jobs:
         with:
           targetPlatform: StandaloneLinux64
         
-      - name: Build Unity player itself    
+      - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: Build
