@@ -316,6 +316,63 @@ namespace Elektronik.Input
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Default"",
+            ""id"": ""43f7d51d-be1e-4a53-a233-f4123404cb47"",
+            ""actions"": [
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""ada2bf4e-483f-4dea-bf0a-75d09fdfce1c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Click"",
+                    ""type"": ""Button"",
+                    ""id"": ""a792ad56-9862-4821-bc67-3d01cac4345e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""54ca85f0-f733-41aa-8596-4003d74acbd3"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""59635337-d9ef-4526-a93d-50051d6cf12a"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""242158ca-c282-4009-b032-603d9b1aa2d0"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -327,6 +384,10 @@ namespace Elektronik.Input
             m_Controls_Rotate = m_Controls.FindAction("Rotate", throwIfNotFound: true);
             m_Controls_Boost = m_Controls.FindAction("Boost", throwIfNotFound: true);
             m_Controls_Reset = m_Controls.FindAction("Reset", throwIfNotFound: true);
+            // Default
+            m_Default = asset.FindActionMap("Default", throwIfNotFound: true);
+            m_Default_Cancel = m_Default.FindAction("Cancel", throwIfNotFound: true);
+            m_Default_Click = m_Default.FindAction("Click", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -437,6 +498,47 @@ namespace Elektronik.Input
             }
         }
         public ControlsActions @Controls => new ControlsActions(this);
+
+        // Default
+        private readonly InputActionMap m_Default;
+        private IDefaultActions m_DefaultActionsCallbackInterface;
+        private readonly InputAction m_Default_Cancel;
+        private readonly InputAction m_Default_Click;
+        public struct DefaultActions
+        {
+            private @CameraControls m_Wrapper;
+            public DefaultActions(@CameraControls wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Cancel => m_Wrapper.m_Default_Cancel;
+            public InputAction @Click => m_Wrapper.m_Default_Click;
+            public InputActionMap Get() { return m_Wrapper.m_Default; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(DefaultActions set) { return set.Get(); }
+            public void SetCallbacks(IDefaultActions instance)
+            {
+                if (m_Wrapper.m_DefaultActionsCallbackInterface != null)
+                {
+                    @Cancel.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnCancel;
+                    @Cancel.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnCancel;
+                    @Cancel.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnCancel;
+                    @Click.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnClick;
+                    @Click.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnClick;
+                    @Click.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnClick;
+                }
+                m_Wrapper.m_DefaultActionsCallbackInterface = instance;
+                if (instance != null)
+                {
+                    @Cancel.started += instance.OnCancel;
+                    @Cancel.performed += instance.OnCancel;
+                    @Cancel.canceled += instance.OnCancel;
+                    @Click.started += instance.OnClick;
+                    @Click.performed += instance.OnClick;
+                    @Click.canceled += instance.OnClick;
+                }
+            }
+        }
+        public DefaultActions @Default => new DefaultActions(this);
         public interface IControlsActions
         {
             void OnMoveForward(InputAction.CallbackContext context);
@@ -444,6 +546,11 @@ namespace Elektronik.Input
             void OnRotate(InputAction.CallbackContext context);
             void OnBoost(InputAction.CallbackContext context);
             void OnReset(InputAction.CallbackContext context);
+        }
+        public interface IDefaultActions
+        {
+            void OnCancel(InputAction.CallbackContext context);
+            void OnClick(InputAction.CallbackContext context);
         }
     }
 }

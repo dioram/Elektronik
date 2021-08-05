@@ -28,14 +28,21 @@ namespace Elektronik.Clouds
                 if (_currentRuler is null)
                 {
                     _currentRuler = Instantiate(LineRendererPrefab, transform).GetComponent<Ruler>();
+                    _currentRuler.Destroyed += OnRulerDestroyed;
                     _currentRuler.FirstPoint = Cursor.position;
                 }
                 else
                 {
                     _currentRuler.SecondPoint = Cursor.position;
+                    _currentRuler.Destroyed -= OnRulerDestroyed;
                     _currentRuler = null;
                 }
             }
+        }
+
+        private void OnRulerDestroyed(Ruler ruler)
+        {
+            if (_currentRuler == ruler) _currentRuler = null;
         }
 
         private void OnEnable()

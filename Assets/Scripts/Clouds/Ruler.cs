@@ -11,6 +11,8 @@ namespace Elektronik.Clouds
         public Vector3 Offset = new Vector3(0, 0.2f, 0);
         public Vector3 FirstPoint;
 
+        public event Action<Ruler> Destroyed;
+
         public Vector3 SecondPoint
         {
             get => _secondPoint;
@@ -31,13 +33,13 @@ namespace Elektronik.Clouds
             }
         }
 
+        [SerializeField] private Transform DeleteButton;
         [SerializeField] private TMP_Text Label;
         
         private LineRenderer _renderer;
         private Camera _camera;
         private float _distance;
         private bool _isSecondPointSet = false;
-        private bool _destroyStarted = false;
         private Vector3 _secondPoint;
 
         public float Distance
@@ -51,6 +53,24 @@ namespace Elektronik.Clouds
             }
         }
 
+        public void OnClick()
+        {
+            var mousePos = Mouse.current.position.ReadValue();
+            if (Physics.Raycast(_camera.ScreenPointToRay(mousePos), out var hit)
+                && hit.transform == DeleteButton)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        public void OnCancel()
+        {
+            if (!_isSecondPointSet)
+            {
+                Destroy(gameObject);
+            }
+        }
+
         private void Start()
         {
             _renderer = GetComponent<LineRenderer>();
@@ -60,17 +80,17 @@ namespace Elektronik.Clouds
 
         private void Update()
         {
+            var mousePos = Mouse.current.position.ReadValue();
             if (!_isSecondPointSet)
             {
-                var pos = (Vector3)Mouse.current.position.ReadValue();
-                pos.z = 1;
+                var pos = new Vector3(mousePos.x, mousePos.y, 1);
                 _renderer.SetPosition(1, _camera.ScreenToWorldPoint(pos));
             }
-            else if (!_destroyStarted)
-            {
-                Destroy(gameObject, 10f);
-                _destroyStarted = true;
-            }
+        }
+
+        private void OnDestroy()
+        {
+            Destroyed?.Invoke(this);
         }
     }
 }
