@@ -52,7 +52,7 @@ jobs:
       - name: Build Unity player addressables
         uses: game-ci/unity-builder@v2
         env:
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
@@ -67,4 +67,9 @@ jobs:
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
           targetPlatform: StandaloneLinux64
-      
+        
+      - name: Build Unity player itself    
+        uses: actions/upload-artifact@v2
+        with:
+          name: Build
+          path: build
