@@ -1,4 +1,5 @@
-﻿using Elektronik.Containers;
+﻿#if !NO_ROS2DDS
+using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.RosMessages;
 using UnityEngine;
@@ -31,3 +32,4 @@ namespace Elektronik.RosPlugin.Ros2.Online.Handlers
         }
     }
 }
+#endif

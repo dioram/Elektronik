@@ -29,15 +29,16 @@ namespace Elektronik.Clusterization.UI
                 try
                 {
                     var data = algorithm.Compute(list);
+                    var clustered = CreateClustersContainers(pair.name, data, pair.container as IVisible);
                     MainThreadInvoker.Enqueue(() =>
                     {
-                        CreateClustersContainers(pair.container as IVisible, pair.name, data);
+                        DataSourcesManager.AddDataSource(clustered);
                         settings.enabled = true;
                     });
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError(e.Message);
+                    Debug.LogException(e);
                     MainThreadInvoker.Enqueue(() => { settings.enabled = true; });
                 }
             });
@@ -51,6 +52,10 @@ namespace Elektronik.Clusterization.UI
             ContainersSelector.options = _clusterableContainers
                     .Select(c => new TMP_Dropdown.OptionData(c.name))
                     .ToList();
+            foreach (var settings in GetComponentsInChildren<AlgorithmSettings>())
+            {
+                settings.OnComputePressed += Compute;
+            }
         }
 
         #endregion
@@ -67,22 +72,22 @@ namespace Elektronik.Clusterization.UI
 
         private readonly List<ClustersContainer> _containers = new List<ClustersContainer>();
 
-        private void CreateClustersContainers(IVisible source, string displayName, List<List<SlamPoint>> data)
+        private ClustersContainer CreateClustersContainers(string displayName, List<List<SlamPoint>> data,
+                                                           IVisible source)
         {
-            var localizedName = TextLocalizationExtender.GetLocalizedString("Clustered {0}", displayName);
-            var clustered = new ClustersContainer(localizedName, data, source);
-            
-            DataSourcesManager.AddDataSource(clustered);
+            var clustered = new ClustersContainer($"Clustered {displayName}", data, source);
             foreach (var container in _containers)
             {
                 container.IsVisible = false;
             }
+
             _containers.Add(clustered);
             clustered.OnVisibleChanged += visible => SetVisibility(clustered, source, visible);
             clustered.OnRemoved += () => _containers.Remove(clustered);
 
             clustered.IsVisible = true;
             source.IsVisible = false;
+            return clustered;
         }
 
 

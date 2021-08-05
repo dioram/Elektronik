@@ -1,4 +1,4 @@
-name: Build project on Linux (fork)
+name: Build project on Linux
 
 on:
   push:
@@ -7,19 +7,33 @@ on:
   workflow_dispatch:
 
 env:
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
   buildNativeDir: '${{ github.workspace }}/buildNative/'
 jobs:
   init: 
-    name: Init build
+    name: Linux build
     runs-on: ubuntu-latest
     steps:
-      - name: Install apt packages
-        run: sudo apt -y install make swig curl python
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
         with:
           lfs: true
+          
+      - uses: actions/cache@v2
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+            
+      - name: Install apt packages
+        run: sudo apt -y install make swig curl python
+        
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+          
       - uses: lukka/get-cmake@latest
+        
       - name: Restore artifacts, or setup vcpkg (do not install any package)
         uses: lukka/run-vcpkg@v7
         with:
@@ -28,12 +42,48 @@ jobs:
           vcpkgGitCommitId: 1257354a3ab0bebd8abe95281ca561537853578c
           vcpkgTriplet: ${{ matrix.triplet }}
           additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
+          
       - name: Install vcpkg packages 
         run: $VCPKG_ROOT/vcpkg install fastrtps opencv
-      - name: Upload logs if failed
+        
+      - name: Upload vcpkg logs if failed
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
           name: vcspkg_logs
           path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
- 
+          
+      - name: Build natives
+        run: sh ./.github/build_natives.sh
+  
+      - name: Build Unity player addressables
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: Elektronik
+          allowDirtyBuild: true
+          buildMethod: Elektronik.Editor.PlayerBuildScript.BuildAddressables
+          targetPlatform: StandaloneLinux64
+
+      - name: Build Unity player itself
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: Elektronik
+          allowDirtyBuild: true
+          targetPlatform: StandaloneLinux64
+          
+      - name: Build plugins
+        run: sh ./.github/build_plugins.sh
+        
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Build
+          path: build

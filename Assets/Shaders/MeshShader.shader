@@ -2,7 +2,7 @@ Shader "Elektronik/MeshShader"
 {
     Properties
     {
-		_Tint ("Tint", Color) = (1, 1, 1, 1)
+        _Tint ("Tint", Color) = (1, 1, 1, 1)
         _Smoothness ("Smoothness", Range(0, 1)) = 0.9
         [Gamma] _Metallic ("Metallic", Range(0, 1)) = 0
     }
@@ -21,7 +21,7 @@ Shader "Elektronik/MeshShader"
             }
             CGPROGRAM
             #pragma target 3.0
-            
+
             #pragma vertex Vertex
             #pragma geometry MyGeometryProgram
             #pragma fragment Fragment
@@ -36,7 +36,7 @@ Shader "Elektronik/MeshShader"
             StructuredBuffer<float4> _VertsBuffer;
             StructuredBuffer<float4> _NormalsBuffer;
             float _Metallic;
-			float _Smoothness;
+            float _Smoothness;
             float4 _Tint;
 
             struct VertexInput
@@ -49,6 +49,7 @@ Shader "Elektronik/MeshShader"
                 float4 position : SV_POSITION;
                 float3 worldPos : TEXTCOORD1;
                 half3 normal : TEXTCOORD0;
+                float2 baryCoord: TEXTCOORD2;
             };
 
             VertexOutput Vertex(VertexInput input)
@@ -71,6 +72,9 @@ Shader "Elektronik/MeshShader"
                 i[0].normal = UnityObjectToWorldNormal(triangleNormal);
                 i[1].normal = UnityObjectToWorldNormal(triangleNormal);
                 i[2].normal = UnityObjectToWorldNormal(triangleNormal);
+                i[0].baryCoord = float2(1, 0);
+                i[1].baryCoord = float2(0, 1);
+                i[2].baryCoord = float2(0, 0);
                 stream.Append(i[0]);
                 stream.Append(i[1]);
                 stream.Append(i[2]);
@@ -99,12 +103,20 @@ Shader "Elektronik/MeshShader"
                 indirectLight.diffuse = 0.1;
                 indirectLight.specular = 0.1;
 
-                return UNITY_BRDF_PBS(
+                float3 color = UNITY_BRDF_PBS(
                     albedo, specularTint,
                     oneMinusReflectivity, _Smoothness,
                     i.normal, viewDir,
                     light, indirectLight
                 );
+                float3 barys;
+                barys.xy = i.baryCoord;
+                barys.z = 1 - barys.x - barys.y;
+                float minBary = min(barys.x, min(barys.y, barys.z));
+                float delta = fwidth(minBary);
+                minBary = smoothstep(0.5 * delta, 1.5*delta, minBary);
+
+                return color * minBary;
             }
             ENDCG
         }

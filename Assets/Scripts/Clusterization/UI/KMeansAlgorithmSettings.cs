@@ -4,7 +4,7 @@ using UniRx;
 
 namespace Elektronik.Clusterization.UI
 {
-    public class KMeansAlgorithmSettings : AlgorithmSettings<KMeansClusterization>
+    public class KMeansAlgorithmSettings : AlgorithmSettings
     {
         public TMP_InputField KInput;
 
@@ -12,7 +12,7 @@ namespace Elektronik.Clusterization.UI
         {
             ComputeButton.OnClickAsObservable()
                     .Select(_ => int.Parse(KInput.text))
-                    .Subscribe(k => OnComputePressed?.Invoke(this, new KMeansClusterization(k)));
+                    .Subscribe(k => InvokeComputePressed(this, new KMeansClusterization(k)));
         }
     }
 }

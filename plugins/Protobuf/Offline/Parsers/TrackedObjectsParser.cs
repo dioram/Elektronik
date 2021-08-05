@@ -21,6 +21,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
 
         protected virtual ICommand GetCommand(IList<SlamTrackedObjectDiff> objs, PacketPb.Types.ActionType action)
         {
+            if (objs is null || objs.Count == 0) return null;
             switch (action)
             {
             case PacketPb.Types.ActionType.Add:

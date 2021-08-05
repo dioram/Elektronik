@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Elektronik.Clusterization.UI
 {
-    public class Simple3PlaneAlgorithmSettings : AlgorithmSettings<Simple3PlaneClusterization>
+    public class Simple3PlaneAlgorithmSettings : AlgorithmSettings
     {
         public TMP_InputField XInput;
         public TMP_InputField YInput;
@@ -17,7 +17,7 @@ namespace Elektronik.Clusterization.UI
                     .Select(_ => new Vector3(float.Parse(XInput.text),
                                              float.Parse(YInput.text),
                                              float.Parse(ZInput.text)))
-                    .Subscribe(v => OnComputePressed?.Invoke(this, new Simple3PlaneClusterization(v)));
+                    .Subscribe(v => InvokeComputePressed(this, new Simple3PlaneClusterization(v)));
         }
     }
 }

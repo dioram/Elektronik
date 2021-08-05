@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.IO;
+using Elektronik.Cameras;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Renderers;
@@ -33,6 +34,7 @@ namespace Elektronik.UI.Windows
             Window = GetComponent<Window>();
             NextButton.OnClickAsObservable().Subscribe(_ => ShowNextObservation());
             PreviousButton.OnClickAsObservable().Subscribe(_ => ShowPreviousObservation());
+            MoveToButton.OnClickAsObservable().Subscribe(_ => MoveCameraToObservation());
         }
 
         private void OnEnable()
@@ -82,9 +84,26 @@ namespace Elektronik.UI.Windows
         [SerializeField] private AspectRatioFitter Fitter;
         [SerializeField] private Button PreviousButton;
         [SerializeField] private Button NextButton;
+        [SerializeField] private Button MoveToButton;
 
         private IContainer<SlamObservation> _container;
         private SlamObservation _observation;
+        
+        
+        public void MoveCameraToObservation()
+        {
+            var camera = Camera.main;
+            if (camera is null) return;
+            
+            var lookable = camera.GetComponent<LookableCamera>();
+            if (lookable is null) return;
+
+            var direction = (_observation.Point.Position - camera.transform.position).normalized;
+            var newPos = _observation.Point.Position - direction;
+            var rotation = Quaternion.LookRotation(direction);
+            
+            lookable.Look((newPos, rotation));
+        }
 
         private void ShowNextObservation()
         {

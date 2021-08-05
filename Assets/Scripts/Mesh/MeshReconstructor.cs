@@ -1,18 +1,23 @@
-﻿using System;
+﻿#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+#define NO_MESH_BUILDER
+#endif
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using System.Linq;
 using Elektronik.Threading;
 using UnityEngine;
 
+#if !NO_MESH_BUILDER
 namespace Elektronik.Mesh
 {
     public class MeshReconstructor : IMeshContainer
     {
         public MeshReconstructor(IContainer<SlamPoint> points, IContainer<SlamObservation> observations,
-            string displayName = "Mesh")
+                                 string displayName = "Mesh")
         {
             _points = points;
             _observations = observations;
@@ -87,7 +92,7 @@ namespace Elektronik.Mesh
         }
 
         private static NativeVector ToNative(SlamPoint point) =>
-            new NativeVector(point.Position.x, point.Position.y, point.Position.z);
+                new NativeVector(point.Position.x, point.Position.y, point.Position.z);
 
         private static NativeTransform ToNative(SlamObservation observation)
         {
@@ -136,8 +141,8 @@ namespace Elektronik.Mesh
 
             var cPoints = new vectorv(points.Select(ToNative));
             var cViews = new vectori2d(points.Select(p => pointsViewsArr.ContainsKey(p.Id)
-                ? new vectori(pointsViewsArr[p.Id].OrderBy(i => i))
-                : new vectori()));
+                                                             ? new vectori(pointsViewsArr[p.Id].OrderBy(i => i))
+                                                             : new vectori()));
             var cObservations = new vectort(observations.Select(ToNative));
 
             var builder = new MeshBuilder();
@@ -154,3 +159,33 @@ namespace Elektronik.Mesh
         #endregion
     }
 }
+#else
+namespace Elektronik.Mesh
+{
+    public class MeshReconstructor : IMeshContainer
+    {
+        public MeshReconstructor(IContainer<SlamPoint> points, IContainer<SlamObservation> observations,
+                                 string displayName = "Mesh")
+        {
+            throw new NotImplementedException();
+        }
+        
+        public string DisplayName { get; set; }
+        public IEnumerable<ISourceTree> Children { get; }
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetRenderer(ISourceRenderer renderer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsVisible { get; set; }
+        public event Action<bool> OnVisibleChanged;
+        public bool ShowButton { get; }
+        public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
+    }
+}
+#endif

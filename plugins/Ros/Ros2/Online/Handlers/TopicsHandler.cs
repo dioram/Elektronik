@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_ROS2DDS
+using System;
 
 namespace Elektronik.RosPlugin.Ros2.Online.Handlers
 {
@@ -12,3 +13,4 @@ namespace Elektronik.RosPlugin.Ros2.Online.Handlers
         }
     }
 }
+#endif

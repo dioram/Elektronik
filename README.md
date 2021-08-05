@@ -49,6 +49,8 @@ plugins for new types of data sources (protocols). All useful information can be
 We are trying to make the Elektronik code as convenient 
 as possible for debugging and supporting, so we actively use OOP techniques and patterns.
 
+You can [download](https://github.com/dioram/Elektronik-Tools-2.0/releases) actual release of Elektronik or [build](docs/Build-EN.md) it yourself.
+
 We hope that Elektronik will help you in developing the SLAM of your dream and will be grateful for your help in its development!
 
 Sincerely, Dioram development team.

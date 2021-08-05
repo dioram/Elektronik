@@ -37,6 +37,7 @@ There are four actions over data:
    Note, that without objects adding, you can't interact with them in a future. 
    If you try to apply anything to unexisted object, then an error will raise in Elektronik.
 2. Update. This action changes object parameters according to received data.
+   You don't need to send all data when object updated but only it's updated part.
 3. Remove. Removes an object from a map.
 4. Clear. Clear a map corresponding an object type.
 5. Info. Shows additional information in offline mode.
@@ -104,6 +105,7 @@ Observation object contains:
 3. Message
 4. File name of image taken at this observation
 5. Statistics (not using for now)
+6. List of points visible from this observation. Based on this information Elektronik will build observation graph.
 
 ### Lines
 
@@ -118,7 +120,7 @@ It can be VR-helmet or any other device that taking SLAM-data.
 
 Tracked objects contains:
 1. Object ID
-2. Poistion
+2. Position
 3. Orientation (quaternion)
 4. Trajectory color
 5. Message
@@ -145,7 +147,7 @@ So now metadata is 8 bytes containing marker and amount of packages;
 
 # C#
 
-You can familiar with Elektronik interaction example in the folder Examples/csharp at the root of repo. 
+You can familiar with Elektronik interaction example in the folder [Plugins/Protobuf.Tests.Elektronik](../Plugins/Protobuf.Tests.Elektronik). 
 The example is implemented as Unit-tests. Before starting tests you should run Elektronik in online mode. 
 After tests was ran, there will be files \<TestName\>.dat in the executable files directory folder 
 which can be used as Elektronik opportunities presentation in offline mode.

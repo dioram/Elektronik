@@ -18,7 +18,7 @@ include_directories(include)
 swig_add_library(PlanesDetector
         TYPE SHARED
         LANGUAGE csharp
-        OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative/SWIG_generated
+        OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative
         OUTFILE_DIR ${PROJECT_SOURCE_DIR}
         SOURCES include/Octree.h include/Plane.h include/Point.h include/PointCloud.h include/Ransac.h include/RGB.h
                 include/UnionFind.h include/Vector3.h src/Octree.cpp src/Plane.cpp src/PointCloud.cpp src/Ransac.cpp
@@ -26,8 +26,8 @@ swig_add_library(PlanesDetector
 
 TARGET_LINK_LIBRARIES(PlanesDetector ${OpenCV_LIBS})
 
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative CACHE PATH "installation prefix")
-set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative)
+set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/../../Assets/Plugins/Native CACHE PATH "installation prefix")
+set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../Assets/Plugins/Native)
 
 set(DEPLOY_DLLS)
 file(GLOB DEPLOY_DLLS ${CMAKE_BINARY_DIR}/*.dll)

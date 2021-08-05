@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Elektronik.Threading
 {
@@ -45,6 +47,8 @@ namespace Elektronik.Threading
 
         private void Update()
         {
+            var w = Stopwatch.StartNew();
+            var actionsAmount = Actions.Count;
             while (Actions.Count != 0)
             {
                 if (Actions.TryDequeue(out Action a))
@@ -58,6 +62,12 @@ namespace Elektronik.Threading
                         Debug.LogException(e);
                     }
                 }
+            }
+            w.Stop();
+            if (w.ElapsedMilliseconds > 30)
+            {
+                Debug.LogError($"WARNING!!! Main thread invoker took {w.ElapsedMilliseconds} milliseconds" +
+                               $" in main thread for {actionsAmount} action(s).");
             }
         }
     }

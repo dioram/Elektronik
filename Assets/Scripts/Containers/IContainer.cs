@@ -22,6 +22,11 @@ namespace Elektronik.Containers
 
         void AddRange(IEnumerable<T> items);
         void Remove(IEnumerable<T> items);
+        
+        /// <summary> Removes items by their ids. </summary>
+        /// <param name="itemIds"></param>
+        /// <returns> List of removed items. </returns>
+        IEnumerable<T> Remove(IEnumerable<int> itemIds);
         void Update(T item);
         void Update(IEnumerable<T> items);
         bool Contains(int id);

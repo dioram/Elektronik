@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if !NO_ROS2DDS
+using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Online
 {
@@ -9,3 +10,4 @@ namespace Elektronik.RosPlugin.Ros2.Online
         public override void Info(string message) => Debug.Log(message);
     }
 }
+#endif

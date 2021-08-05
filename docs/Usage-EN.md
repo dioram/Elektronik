@@ -91,4 +91,4 @@ This mode works only if you have connected a VR helmet and it is supported by Un
 for example, if it is supported in SteamVR). In the VR mode you will see the scene from VR helmet 
 and watch the process of building a map.
 
-[<- Start page](Home-EN.md) | [Internal API ->](API-EN.md)
+[<- Build from source](Build-EN.md) | [Internal API ->](API-EN.md)

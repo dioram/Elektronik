@@ -1,29 +1,37 @@
-﻿using Elektronik.Clusterization.Algorithms;
+﻿using System;
+using Elektronik.Clusterization.Algorithms;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Elektronik.Clusterization.UI
 {
-    public class AlgorithmSettings<TAlgorithm> : MonoBehaviour
-            where TAlgorithm : IClusterizationAlgorithm
+    public class AlgorithmSettings : MonoBehaviour
     {
-        public Button ComputeButton;
-        public UnityEvent<MonoBehaviour, TAlgorithm> OnComputePressed;
+        [SerializeField] protected Button ComputeButton;
+        [SerializeField] protected GameObject PanelLocker;
+        
+        public event Action<MonoBehaviour, IClusterizationAlgorithm> OnComputePressed;
 
         private void Awake()
         {
-            OnComputePressed.AddListener(((arg0, algorithm) => enabled = false));
+            OnComputePressed += (_, __) => enabled = false;
         }
 
         private void OnEnable()
         {
             ComputeButton.interactable = true;
+            PanelLocker.SetActive(false);
         }
 
         private void OnDisable()
         {
             ComputeButton.interactable = false;
+            PanelLocker.SetActive(true);
+        }
+
+        protected void InvokeComputePressed(MonoBehaviour sender, IClusterizationAlgorithm algorithm)
+        {
+            OnComputePressed?.Invoke(sender, algorithm);
         }
     }
 }

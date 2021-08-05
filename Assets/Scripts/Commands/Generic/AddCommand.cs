@@ -11,12 +11,10 @@ namespace Elektronik.Commands.Generic
         protected readonly ReadOnlyCollection<T> AddedObjects;
         protected readonly IContainer<T> Container;
         
-        public AddCommand(
-            IContainer<T> container,
-            IEnumerable<T> objects)
+        public AddCommand(IContainer<T> container, IEnumerable<T> objects)
         {
             Container = container;
-            AddedObjects = new ReadOnlyCollection<T>(objects.ToList());
+            AddedObjects = new ReadOnlyCollection<T>(objects.Where(p => !container.Contains(p.Id)).ToList());
         }        
 
         public virtual void Execute() => Container.AddRange(AddedObjects);
@@ -30,9 +28,7 @@ namespace Elektronik.Commands.Generic
         protected readonly ReadOnlyCollection<TCloudItemDiff> AddedObjects;
         protected readonly IContainer<TCloudItem> Container;
         
-        public AddCommand(
-            IContainer<TCloudItem> container,
-            IEnumerable<TCloudItemDiff> objects)
+        public AddCommand(IContainer<TCloudItem> container, IEnumerable<TCloudItemDiff> objects)
         {
             Container = container;
             AddedObjects = new ReadOnlyCollection<TCloudItemDiff>(objects.ToList());

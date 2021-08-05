@@ -7,7 +7,8 @@ std::vector<Plane> FilterPlanes(const std::vector<Plane>& planes, const Preferen
 {
     std::vector<Plane> res;
     for (const auto& plane: planes) {
-        auto dot = std::abs(plane.getNormal() * preferences.Gravity);
+        auto normal = plane.getNormal();
+        auto dot = std::abs(normal * preferences.Gravity) / normal.norm() / preferences.Gravity.norm();
         if (dot < preferences.GravityDCos || dot > 1 - preferences.GravityDCos) res.emplace_back(plane);
     }
     return res;

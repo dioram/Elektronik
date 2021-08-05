@@ -264,6 +264,41 @@ namespace Elektronik.Containers
 
             OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
         }
+        
+        public IEnumerable<SlamLine> Remove(IEnumerable<int> items)
+        {
+            if (items is null) return new List<SlamLine>();
+            var ids = new List<int>();
+            List<SlamLine> removed = new List<SlamLine>();
+            lock (_connections)
+            {
+                foreach (var line in items.Where(i => _connections.ContainsKey(i)))
+                {
+                    removed.Add(_connections[line]);
+                    var key = _connections[line].GetIds();;
+                    int index;
+                    if (_connectionsIndices.ContainsKey(key))
+                    {
+                        index = _connectionsIndices[key];
+                        _connectionsIndices.Remove(key);
+                    }
+                    else if (_connectionsIndices.ContainsKey((key.Id2, key.Id1)))
+                    {
+                        index = _connectionsIndices[(key.Id2, key.Id1)];
+                        _connectionsIndices.Remove((key.Id2, key.Id1));
+                    }
+                    else continue;
+
+                    if (!_connections.ContainsKey(index)) continue;
+                    ids.Add(index);
+                    _connections.Remove(index);
+                    _freeIds.Enqueue(index);
+                }
+            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            return removed;
+        }
 
         public void RemoveAt(int index)
         {

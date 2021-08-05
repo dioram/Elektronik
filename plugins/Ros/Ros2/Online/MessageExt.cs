@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_ROS2DDS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -105,3 +106,4 @@ namespace Elektronik.RosPlugin.Ros2.Online
         }
     }
 }
+#endif

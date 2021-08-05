@@ -33,6 +33,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
                 where TCloudItem : struct, ICloudItem
                 where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
         {
+            if (objects is null || objects.Count == 0) return null;
             switch (packet.Action)
             {
             case PacketPb.Types.ActionType.Add:
@@ -70,6 +71,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
                 where TCloudItem : struct, ICloudItem
                 where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
         {
+            if (objects is null || objects.Count == 0) return null;
             switch (packet.Action)
             {
             case PacketPb.Types.ActionType.Add:
