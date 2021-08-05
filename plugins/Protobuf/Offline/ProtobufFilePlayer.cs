@@ -84,7 +84,7 @@ namespace Elektronik.Protobuf.Offline
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
 
-        public string CurrentTimestamp => $"{_frames?.Current?.Timestamp ?? 0}";
+        public string CurrentTimestamp => $"{_frames?.Current?.Timestamp ?? 0} ({CurrentPosition})";
         public string[] SupportedExtensions { get; } = {".dat"};
 
         public int CurrentPosition

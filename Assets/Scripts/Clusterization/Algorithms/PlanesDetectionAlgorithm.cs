@@ -18,17 +18,18 @@ namespace Elektronik.Clusterization.Algorithms
             var detector = new PlanesDetector();
             var indexes = detector.FindPlanes(new PointsList(items.Select(ToNative)), _settings);
             return items.Zip(indexes, (point, i) => (point, i))
-                .GroupBy(v => v.i)
-                .Select(g => g.Select(v => v.point).ToList())
-                .ToList();
+                    .Where(z => z.i != 0)
+                    .GroupBy(v => v.i)
+                    .Select(g => g.Select(v => v.point).ToList())
+                    .ToList();
         }
 
         #region Private
 
         private readonly Preferences _settings;
-        
+
         private static Vector3d ToNative(SlamPoint point) =>
-            new Vector3d(point.Position.x, point.Position.y, point.Position.z);
+                new Vector3d(point.Position.x, point.Position.y, point.Position.z);
 
         #endregion
     }

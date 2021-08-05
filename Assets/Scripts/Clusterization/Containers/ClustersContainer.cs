@@ -5,9 +5,7 @@ using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.UI.Localization;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Elektronik.Clusterization.Containers
 {
@@ -15,7 +13,6 @@ namespace Elektronik.Clusterization.Containers
     {
         public ClustersContainer(string displayName, List<List<SlamPoint>> data, IVisible sourceContainer)
         {
-            
             DisplayName = displayName;
             SourceContainer = sourceContainer;
             ColorizeData(data);
@@ -105,8 +102,7 @@ namespace Elektronik.Clusterization.Containers
             for (var i = 0; i < data.Count; i++)
             {
                 var cluster = data[i];
-                var localizedName = TextLocalizationExtender.GetLocalizedString("Cluster #{0}", i);
-                var container = new CloudContainer<SlamPoint>(localizedName);
+                var container = new CloudContainer<SlamPoint>($"Cluster {i}");
                 foreach (ISourceRenderer renderer in _renderers)
                 {
                     container.SetRenderer(renderer);
@@ -131,6 +127,7 @@ namespace Elektronik.Clusterization.Containers
 
         private List<Color> GenerateColors(int num)
         {
+            var rand = new System.Random();
             var colors = new List<Color>
             {
                 Color.blue,
@@ -144,7 +141,7 @@ namespace Elektronik.Clusterization.Containers
             };
             for (int i = colors.Count; i < num; i++)
             {
-                colors.Add(new Color(Random.value, Random.value, Random.value));
+                colors.Add(new Color((float) rand.NextDouble(), (float) rand.NextDouble(), (float) rand.NextDouble()));
             }
 
             return colors;

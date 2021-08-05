@@ -25,6 +25,27 @@ namespace Protobuf.Tests.Elektronik
             }).ToArray();
         }
 
+        private PointPb TransformPoint(int deltaId, PointPb point, Quaternion rotation, Vector3 translation)
+        {
+            var vec = new Vector3((float) point.Position.X, (float) point.Position.Y, (float) point.Position.Z);
+            vec = Vector3.Transform(vec, rotation);
+            var newPoint = new PointPb
+            {
+                Id = point.Id + deltaId,
+                Position = new Vector3Pb
+                {
+                    X = vec.X + translation.X,
+                    Y = vec.Y + translation.Y,
+                    Z = vec.Z + translation.Z,
+                },
+                Color = point.Color,
+            };
+            return newPoint;
+        }
+
+        private PointPb[] TransformPlane(int minId, PointPb[] points, Quaternion rotation, Vector3 translation)
+            => points.Select(p => TransformPoint(minId, p, rotation, translation)).ToArray();
+
         private (PacketPb points, PacketPb observations) GenerateCube(PointPb[] plane, float side)
         {
             var faces = new List<IEnumerable<PointPb>>
@@ -125,10 +146,6 @@ namespace Protobuf.Tests.Elektronik
         private PacketPb BuildPacket(Vector3Pb[] cameraPoses, ColorPb[] cameraColors, Quaternion[] cameraOrientations,
                                      int[][] points, int pointsAmount, int firstId)
         {
-            // if (cameraPoses.Length != cameraColors.Length
-            //     || cameraColors.Length != cameraOrientations.Length
-            //     || cameraOrientations.Length != points.Length) throw new Exception();
-
             var obsPacket = new PacketPb
             {
                 Special = true,
@@ -276,6 +293,29 @@ namespace Protobuf.Tests.Elektronik
             };
 
             return BuildPacket(cameraPoses, cameraColors, cameraOrientations, points, pointsAmount, -12);
+        }
+
+        [Test, Explicit]
+        public void Planes45()
+        {
+            var amount = 1000;
+            var side = 4f;
+            var step = 3f;
+            var plane = GeneratePlaneOfPoints(amount, side, 0.3f);
+
+            var rotation = Quaternion.CreateFromYawPitchRoll(0, (float) Math.PI / 4, 0);
+            var translations = Enumerable.Range(0, 10).Select(i => new Vector3(0, i * step, 0));
+
+            var planes = translations.SelectMany((tr, i) => TransformPlane(i * amount, plane, rotation, tr)).ToArray();
+
+            var packet = new PacketPb
+            {
+                Special = true,
+                Action = PacketPb.Types.ActionType.Add,
+                Points = new PacketPb.Types.Points(),
+            };
+            packet.Points.Data.Add(planes);
+            SendAndCheck(packet);
         }
 
         [Test, Explicit]

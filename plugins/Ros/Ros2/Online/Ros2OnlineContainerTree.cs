@@ -61,7 +61,7 @@ namespace Elektronik.RosPlugin.Ros2.Online
             {
                 var container = (ISourceTree) Activator.CreateInstance(SupportedMessages[topicType].container,
                                                                        topicName.Split('/').Last());
-                var handler = (MessageHandler<,>) Activator.CreateInstance(SupportedMessages[topicType].handler, container);
+                var handler = (MessageHandler) Activator.CreateInstance(SupportedMessages[topicType].handler, container);
                 _connector?.SubscribeOnMessages(MessageExt.GetDdsTopic(topicName), 
                                                 MessageExt.GetDdsType(topicType),
                                                 handler);
