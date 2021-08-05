@@ -7,7 +7,6 @@ on:
   workflow_dispatch:
 
 env:
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
   buildNativeDir: '${{ github.workspace }}/buildNative/'
 jobs:
   init: 
@@ -53,7 +52,9 @@ jobs:
       - name: Build Unity player addressables
         uses: game-ci/unity-builder@v2
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
           buildMethod: Elektronik.Editor.PlayerBuildScript.BuildAddressables
           targetPlatform: StandaloneLinux64
@@ -61,7 +62,9 @@ jobs:
       - name: Build Unity player itself
         uses: game-ci/unity-builder@v2
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
           targetPlatform: StandaloneLinux64
       
