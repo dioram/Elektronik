@@ -59,6 +59,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
+          allowDirtyBuild: true
           buildMethod: Elektronik.Editor.PlayerBuildScript.BuildAddressables
           targetPlatform: StandaloneLinux64
 
@@ -69,6 +70,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         with:
+          allowDirtyBuild: true
           targetPlatform: StandaloneLinux64
         
       - name: Upload artifact
