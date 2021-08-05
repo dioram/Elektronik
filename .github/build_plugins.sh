@@ -1,5 +1,5 @@
 cd ./build/
-mv -rf ./StandaloneLinux64/* ./
+mv ./StandaloneLinux64/* ./
 rm ./StandaloneLinux64
 ls -la
 cd ../
