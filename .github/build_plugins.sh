@@ -1,5 +1,6 @@
 ﻿cd ./
 echo $PWD
+ls -la
 cd ./Plugins
 dotnet publish ContextMenuSetter -o ../build/Plugins/ContextMenuSetter
 dotnet publish Updater -o ../build/Plugins/Updater
