@@ -27,7 +27,11 @@ jobs:
             
       - name: Install apt packages
         run: sudo apt -y install make swig curl python
-  
+        
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+          
       - uses: lukka/get-cmake@latest
         
       - name: Restore artifacts, or setup vcpkg (do not install any package)
@@ -72,6 +76,9 @@ jobs:
         with:
           allowDirtyBuild: true
           targetPlatform: StandaloneLinux64
+          
+      - name: Build plugins
+        run: sh ./.github/build_plugins.sh
         
       - name: Upload artifact
         uses: actions/upload-artifact@v2
