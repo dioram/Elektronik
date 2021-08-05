@@ -1,4 +1,6 @@
-cd ./
+cd ./build/Elektronik_Data/Managed
+ls -la
+cd ../../../
 cd ./plugins
 
 sudo dotnet publish Protobuf -o ../build/Plugins/Protobuf/libraries
