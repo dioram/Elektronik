@@ -44,7 +44,7 @@ jobs:
           additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
           
       - name: Install vcpkg packages 
-        run: $VCPKG_ROOT/vcpkg install fastrtps opencv
+        run: $VCPKG_ROOT/vcpkg install openssl fastrtps opencv
         
       - name: Upload vcpkg logs if failed
         if: ${{ failure() }}
