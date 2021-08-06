@@ -14,11 +14,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           lfs: true
-  parallel_job_test:
-    name: Parallel job
-    runs-on: windows-latest
-    steps:
-      - run: tree c:\
   build_natives:
     name: Build C++ libs
     runs-on: self-hosted
@@ -72,11 +67,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run unity tests
         run: .\.github\run_unity_tests.bat
-  join_parallel_tasks:
-    name: Run tests
-    runs-on: windows-latest
-    needs: 
-      - runTest
-      - parallel_job_test
-    steps:
-      - run: echo done
