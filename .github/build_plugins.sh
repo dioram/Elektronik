@@ -1,6 +1,6 @@
 cd ./build/
 mv ./StandaloneLinux64/* ./
-rm ./StandaloneLinux64
+rm -rf ./StandaloneLinux64
 ls -la
 cd ../
 cd ./plugins
