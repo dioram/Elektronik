@@ -53,8 +53,19 @@ jobs:
           name: vcspkg_logs
           path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
           
-      - name: Build natives
-        run: sh ./.github/build_natives.sh
+      - run: sudo chmod +x ./github/*.sh
+          
+      - name: Build ROS2DDS
+        run: ./.github/build_natives.sh -DOPENSSL_ROOT_DIR="$VCPKG_ROOT/installed/x64-linux
+        working-directory: ./plugins/ROS2DDS
+  
+#      - name: Build MeshReconstructor
+#        run: ./.github/build_natives.sh
+#        working-directory: ./plugins/MeshBuilder
+          
+      - name: Build PlanesDetector
+        run: ./.github/build_natives.sh
+        working-directory: ./plugins/PlanesDetector
   
       - name: Build Unity player addressables
         uses: game-ci/unity-builder@v2
@@ -82,7 +93,7 @@ jobs:
       - name: Build plugins
         run: |
           sudo chown -R $USER:$USER ${{ github.workspace }}
-          sh ./.github/build_plugins.sh
+          ./.github/build_plugins.sh
         
       - name: Upload artifact
         uses: actions/upload-artifact@v2
