@@ -55,16 +55,7 @@ jobs:
           
       - run: sudo chmod +x ./.github/*.sh
       - run: |
-          echo debug
-          ls -la $VCPKG_ROOT/installed/x64-linux/debug
-          echo include
-          ls -la $VCPKG_ROOT/installed/x64-linux/include
-          echo lib
-          ls -la $VCPKG_ROOT/installed/x64-linux/lib
-          echo share
-          ls -la $VCPKG_ROOT/installed/x64-linux/share
-          echo tool
-          ls -la $VCPKG_ROOT/installed/x64-linux/tools
+          ls -la $VCPKG_ROOT/installed/x64-linux/share/openssl
           
       - name: Build ROS2DDS
         run: ../../.github/build_natives.sh -DOPENSSL_ROOT_DIR=$VCPKG_ROOT/installed/x64-linux
