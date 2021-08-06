@@ -1,3 +1,5 @@
+set -e
+
 cd ./build/
 mv ./StandaloneLinux64/* ./
 rm -rf ./StandaloneLinux64
