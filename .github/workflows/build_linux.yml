@@ -56,15 +56,15 @@ jobs:
       - run: sudo chmod +x ./.github/*.sh
           
       - name: Build ROS2DDS
-        run: ./.github/build_natives.sh -DOPENSSL_ROOT_DIR="$VCPKG_ROOT/installed/x64-linux"
+        run: bash ./.github/build_natives.sh -DOPENSSL_ROOT_DIR=$VCPKG_ROOT/installed/x64-linux
         working-directory: ./plugins/ROS2DDS
   
 #      - name: Build MeshReconstructor
-#        run: ./.github/build_natives.sh
+#        run: bash ./.github/build_natives.sh
 #        working-directory: ./plugins/MeshBuilder
           
       - name: Build PlanesDetector
-        run: ./.github/build_natives.sh
+        run: bash ./.github/build_natives.sh
         working-directory: ./plugins/PlanesDetector
   
       - name: Build Unity player addressables
@@ -93,7 +93,7 @@ jobs:
       - name: Build plugins
         run: |
           sudo chown -R $USER:$USER ${{ github.workspace }}
-          ./.github/build_plugins.sh
+          bash ./.github/build_plugins.sh
         
       - name: Upload artifact
         uses: actions/upload-artifact@v2
