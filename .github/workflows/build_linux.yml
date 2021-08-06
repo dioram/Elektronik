@@ -56,7 +56,7 @@ jobs:
       - run: sudo chmod +x ./github/*.sh
           
       - name: Build ROS2DDS
-        run: ./.github/build_natives.sh -DOPENSSL_ROOT_DIR="$VCPKG_ROOT/installed/x64-linux
+        run: ./.github/build_natives.sh -DOPENSSL_ROOT_DIR="$VCPKG_ROOT/installed/x64-linux"
         working-directory: ./plugins/ROS2DDS
   
 #      - name: Build MeshReconstructor
