@@ -4,7 +4,7 @@ include(CopyDlls.cmake)
 include(GNUInstallDirs)
 
 find_package(asio REQUIRED)
-find_package(openssl REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(tinyxml2 REQUIRED)
 find_package(foonathan_memory REQUIRED)
 find_package(fastcdr REQUIRED)
