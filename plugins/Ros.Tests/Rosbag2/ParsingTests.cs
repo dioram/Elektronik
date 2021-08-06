@@ -30,7 +30,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             var topic = _dbModel.Table<Topic>().First(t => t.Id == 36);
             var message = _dbModel.Table<Message>().OrderBy(m => m.ID).First(m => m.TopicID == 36);
 
-            var data = (MessageParser.Parse(message.Data, topic.Type, true) as PoseStamped)!;
+            var data = MessageParser.Parse<PoseStamped>(message.Data, topic.Type, true)!;
             var (pos, rot) = data.GetPose()!.ToUnity();
             Assert.AreEqual(new Vector3(18.1172962f, -232.600952f, -0.094754152f), pos);
             Assert.AreEqual(new Quaternion(-0.0218413882f, -0.0231395327f, 0.93242377f, 0.359963149f), rot);
@@ -42,7 +42,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             var topic = _dbModel.Table<Topic>().First(t => t.Id == 60);
             var message = _dbModel.Table<Message>().OrderBy(m => m.ID).First(m => m.TopicID == 60);
 
-            var data = (MessageParser.Parse(message.Data, topic.Type, true) as Odometry)!;
+            var data = MessageParser.Parse<Odometry>(message.Data, topic.Type, true)!;
             var (pos, rot) = data.GetPose()!.ToUnity();
             Assert.AreEqual(new Vector3(13.2799072f, -230.354233f, 0f), pos);
             Assert.AreEqual(new Quaternion(0f, 0f, -0.998499155f, 0.0547673702f), rot);
@@ -54,7 +54,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             var topic = _dbModel.Table<Topic>().First(t => t.Id == 35);
             var message = _dbModel.Table<Message>().OrderBy(m => m.ID).First(m => m.TopicID == 35);
 
-            var data = (MessageParser.Parse(message.Data, topic.Type, true) as PointCloud2)!;
+            var data = MessageParser.Parse<PointCloud2>(message.Data, topic.Type, true)!;
             Assert.AreEqual(0, data.header.seq);
             Assert.AreEqual(1614606828, data.header.stamp.secs);
             Assert.AreEqual(641145056, data.header.stamp.nsecs);
@@ -87,7 +87,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             var topic = _dbModel.Table<Topic>().First(t => t.Id == 29);
             var message = _dbModel.Table<Message>().OrderBy(m => m.ID).First(m => m.TopicID == 29);
 
-            var data = (MessageParser.Parse(message.Data, topic.Type, true) as MarkerArray)!;
+            var data = MessageParser.Parse<MarkerArray>(message.Data, topic.Type, true)!;
             Assert.AreEqual(4, data.Markers.Length);
             var markers = data.Markers.Where(m => m.IsSimple).SelectMany(m => m.GetPoints()).ToArray();
             Assert.AreEqual(2, markers.Length);

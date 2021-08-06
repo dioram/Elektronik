@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using System.Timers;
 using Elektronik.Extensions;
 using Elektronik.Offline;
@@ -128,7 +127,7 @@ namespace Elektronik.Protobuf.Offline
                 do
                 {
                     if (!PreviousFrame()) break;
-                } while (!_frames?.Current?.IsSpecial ?? false);
+                } while (!(_frames?.Current?.IsSpecial) ?? false);
 
             });
         }
@@ -140,7 +139,7 @@ namespace Elektronik.Protobuf.Offline
                 do
                 {
                     if (!NextFrame()) break;
-                } while (!_frames?.Current?.IsSpecial ?? false);
+                } while (!(_frames?.Current?.IsSpecial) ?? false);
             });
         }
 

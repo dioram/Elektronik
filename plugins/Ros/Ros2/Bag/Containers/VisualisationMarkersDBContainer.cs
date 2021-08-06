@@ -14,11 +14,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
     public class VisualisationMarkersDBContainer : ISourceTree, IDBContainer, IVisible
     {
-        public VisualisationMarkersDBContainer(string displayName, SQLiteConnection dbModel, Topic topic,
-                                               long[] actualTimestamps)
+        public VisualisationMarkersDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
+                                               List<long> actualTimestamps)
         {
             DisplayName = displayName;
-            DBModel = dbModel;
+            DBModels = dbModels;
             Topic = topic;
             ActualTimestamps = actualTimestamps;
         }
@@ -51,13 +51,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         #region IDBContainer implementation
 
         public long Timestamp { get; private set; } = -1;
-        public SQLiteConnection DBModel { get; set; }
+        public List<SQLiteConnection> DBModels { get; set; }
         public Topic Topic { get; set; }
-        public long[] ActualTimestamps { get; set; }
+        public List<long> ActualTimestamps { get; set; }
 
         public void ShowAt(long newTimestamp, bool rewind = false)
         {
-            if (ActualTimestamps.Length == 0) return;
+            if (ActualTimestamps.Count == 0) return;
             var (time, pos) = GetValidTimestamp(newTimestamp);
             if (Timestamp == time) return;
             Timestamp = time;
@@ -114,7 +114,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             int pos = _pos;
             if (newTimestamp > Timestamp)
             {
-                for (int i = _pos; i < ActualTimestamps.Length; i++)
+                for (int i = _pos; i < ActualTimestamps.Count; i++)
                 {
                     if (ActualTimestamps[i] > newTimestamp) break;
                     pos = i;
@@ -146,18 +146,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private void SetPoints()
         {
-            var message = DBModel
-                    .Table<Message>()
-                    .Where(m => m.Timestamp < Timestamp && m.TopicID == Topic.Id)
-                    .OrderByDescending(m => m.Timestamp)
-                    .FirstOrDefault();
+            var message = this.FindMessage();
             if (message == null)
             {
                 Clear();
                 return;
             }
 
-            var data = (MessageParser.Parse(message.Data, Topic.Type, true) as MarkerArray)!;
+            var data = MessageParser.Parse<MarkerArray>(message.Data, Topic.Type, true)!;
             if (data.HasDeleteAll)
             {
                 Clear();
@@ -246,12 +242,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         private void Rewind()
         {
             Clear();
-            var message = DBModel
-                    .Table<Message>()
-                    .Where(m => m.Timestamp <= Timestamp && m.TopicID == Topic.Id)
-                    .OrderBy(m => m.Timestamp)
-                    .ToArray()
-                    .Select(m => (MessageParser.Parse(m.Data, Topic.Type, true) as MarkerArray)!)
+            var message = this.FindAllPreviousMessages()
+                    .Select(m => MessageParser.Parse<MarkerArray>(m.Data, Topic.Type, true)!)
                     .ToList();
 
             var lastClear = message.FindLastIndex(ma => ma.Markers.Any(m => m.Action == Marker.MarkerAction.DeleteAll));

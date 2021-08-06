@@ -1,5 +1,4 @@
 ﻿using Elektronik.Renderers;
-using JetBrains.Annotations;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
@@ -10,7 +9,7 @@ namespace Elektronik.RosPlugin.Common.Containers
                 ImageData>
     {
 
-        public ImagePresenter([NotNull] string displayName) : base(displayName)
+        public ImagePresenter(string displayName) : base(displayName)
         {
         }
 

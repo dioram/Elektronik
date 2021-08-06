@@ -1,5 +1,6 @@
 ﻿using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
+// ReSharper disable InconsistentNaming
 
 namespace Elektronik.RosPlugin.Common.RosMessages
 {
@@ -8,7 +9,7 @@ namespace Elektronik.RosPlugin.Common.RosMessages
         
         public const string RosMessageName = "gps_msgs/Gga";
 
-        public Header Header { get; set; }
+        public Header? Header { get; set; }
         public double latitude { get; set; }
         public double longitude { get; set; }
         public byte fix_quality { get; set; }

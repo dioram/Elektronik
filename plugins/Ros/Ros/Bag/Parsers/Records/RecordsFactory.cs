@@ -20,7 +20,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
 
             var res = CreateRecord(header) as TRecord;
             res!.Data = new byte[dataLen];
-            stream.Read(res!.Data, 0, dataLen);
+            stream.Read(res.Data, 0, dataLen);
             return res;
         }
         
@@ -35,8 +35,8 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
             }
 
             var res = CreateRecord(header);
-            res!.Data = new byte[dataLen];
-            stream.Read(res!.Data, 0, dataLen);
+            res.Data = new byte[dataLen];
+            stream.Read(res.Data, 0, dataLen);
             return res;
         }
         

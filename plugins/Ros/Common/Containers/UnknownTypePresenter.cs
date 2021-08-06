@@ -26,7 +26,7 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         public static bool CanParseTopic(string topic)
         {
-            return SupportedTypes.FirstOrDefault(t => (string) t.GetField("RosMessageName")?.GetValue(null) == topic)
+            return SupportedTypes.FirstOrDefault(t => (string?) t.GetField("RosMessageName")?.GetValue(null) == topic)
                     != null;
         }
 

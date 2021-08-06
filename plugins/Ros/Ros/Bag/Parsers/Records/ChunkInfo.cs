@@ -29,7 +29,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
 
         public IEnumerable<int> GetIds()
         {
-            using var stream = new MemoryStream(Data);
+            using var stream = new MemoryStream(Data ?? Array.Empty<byte>());
             while (stream.Position < stream.Length)
             {
                 var conn = stream.ReadInt32();

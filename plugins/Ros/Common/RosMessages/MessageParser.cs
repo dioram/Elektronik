@@ -10,7 +10,7 @@ namespace Elektronik.RosPlugin.Common.RosMessages
 {
     public static partial class MessageParser
     {
-        private static readonly Dictionary<string, Func<Stream, bool, RosMessage>> Parsers = new()
+        private static readonly Dictionary<string, Func<Stream, bool, RosMessage>> CustomParsers = new()
         {
             {"std_msgs/msg/String", ParseStringMessage},
             {"std_msgs/String", ParseStringMessage},
@@ -35,12 +35,19 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             MemoryStream memoryStream = new(data);
             memoryStream.Position = 0;
             return Parse(memoryStream, topic, cdr);
+        }        
+        
+        public static T? Parse<T>(byte[] data, string topic, bool cdr) where T : RosMessage
+        {
+            MemoryStream memoryStream = new(data);
+            memoryStream.Position = 0;
+            return Parse(memoryStream, topic, cdr) as T;
         }
 
         public static RosMessage? Parse(Stream data, string topic, bool cdr)
         {
             ParseInt32(data, cdr);
-            return Parsers.ContainsKey(topic) ? Parsers[topic](data, cdr) : null;
+            return CustomParsers.ContainsKey(topic) ? CustomParsers[topic](data, cdr) : null;
         }
 
         private static RosString ParseStringMessage(Stream data, bool cdr)

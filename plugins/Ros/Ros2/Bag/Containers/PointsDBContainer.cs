@@ -16,8 +16,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
     public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable, ISnapshotable
     {
-        public PointsDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps)
-                : base(displayName, dbModel, topic, actualTimestamps)
+        public PointsDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
+                                 List<long> actualTimestamps)
+                : base(displayName, dbModels, topic, actualTimestamps)
         {
         }
 

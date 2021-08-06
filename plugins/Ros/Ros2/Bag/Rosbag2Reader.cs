@@ -31,9 +31,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             _threadWorker = new ThreadQueueWorker();
             _data.Init(TypedSettings);
 
-            _actualTimestamps = _data.RealChildren.Values
-                    .OfType<IDBContainer>()
-                    .SelectMany(c => c.ActualTimestamps)
+            _actualTimestamps = _data.Timestamps.Values
+                    .SelectMany(l => l)
                     .OrderBy(i => i)
                     .ToArray();
 
@@ -107,6 +106,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public void NextKeyFrame()
         {
+            if ((_threadWorker?.ActiveActions ?? 1) > 0) return;
             _threadWorker?.Enqueue(() =>
             {
                 if (CurrentPosition == AmountOfFrames - 1) return;

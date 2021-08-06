@@ -1,5 +1,6 @@
 ﻿using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
+// ReSharper disable InconsistentNaming
 
 namespace Elektronik.RosPlugin.Common.RosMessages
 {
@@ -7,10 +8,10 @@ namespace Elektronik.RosPlugin.Common.RosMessages
     {
         public const string RosMessageName = "sensing_msgs/VideoFrame";
 
-        public Header Header { get; set; }
+        public Header? Header { get; set; }
         public ulong dts { get; set; }
         public ulong pts { get; set; }
         public ulong Duration { get; set; }
-        public byte[] Data { get; set; }
+        public byte[]? Data { get; set; }
     }
 }

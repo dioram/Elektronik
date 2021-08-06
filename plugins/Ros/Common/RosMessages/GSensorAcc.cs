@@ -1,5 +1,6 @@
 ﻿using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
+// ReSharper disable InconsistentNaming
 
 namespace Elektronik.RosPlugin.Common.RosMessages
 {
@@ -7,7 +8,7 @@ namespace Elektronik.RosPlugin.Common.RosMessages
     {
         public const string RosMessageName = "control_msgs/GSensorAcc";
 
-        public Header Header { get; set; }
+        public Header? Header { get; set; }
 
         public bool valid { get; set; }
         public double lat_accel { get; set; }

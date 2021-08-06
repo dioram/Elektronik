@@ -46,7 +46,7 @@ namespace Updater
             request.UserAgent = "request";
             var response = request.GetResponse();
             using var file = File.OpenWrite("Release.zip");
-            response.GetResponseStream().CopyTo(file);
+            response.GetResponseStream()?.CopyTo(file);
         }
 
         private static string? GetReleaseURL(string version)
@@ -56,7 +56,7 @@ namespace Updater
             var response = request.GetResponse();
             var serializer = new JsonSerializer();
 
-            using var sr = new StreamReader(response.GetResponseStream());
+            using var sr = new StreamReader(response.GetResponseStream()!);
             using var jsonTextReader = new JsonTextReader(sr);
             return (string?) serializer.Deserialize<JArray>(jsonTextReader)?
                     .FirstOrDefault(t => (string) t["tag_name"]! == version)?["assets"]?[0]?["browser_download_url"];

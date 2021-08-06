@@ -29,7 +29,7 @@ namespace Elektronik.RosMessageParserGenerator
         public void Initialize(GeneratorInitializationContext context)
         {
             _ros = Assembly.LoadFile(Path.Combine(GetSourceFileDir(), "RosBridgeClient.dll"));
-            _baseType = _ros!.ExportedTypes.First(t => t.Name == "Message");
+            _baseType = _ros.ExportedTypes.First(t => t.Name == "Message");
         }
 
         public void Execute(GeneratorExecutionContext context)
@@ -41,7 +41,8 @@ namespace Elektronik.RosMessageParserGenerator
             // Static Constructor will be inserted here
             var insertIndex = sourceBuilder.Length; 
 
-            foreach (var type in _ros!.ExportedTypes.Where(t => t.IsSubclassOf(_baseType)
+            foreach (var type in _ros!.ExportedTypes.Where(t => _baseType is not null 
+                                                                   && t.IsSubclassOf(_baseType)
                                                                    && !t.Name.Contains("`")
                                                                    && !t.Name.Contains("Action")
                                                                    && !t.Name.Contains("Request")
@@ -56,7 +57,7 @@ namespace Elektronik.RosMessageParserGenerator
             var constructorBuilder = new StringBuilder("static MessageParser(){\n");
             foreach (var pair in FuncNames)
             {
-                constructorBuilder.Append($"Parsers.Add(\"{pair.Key}\", {pair.Value});\n");
+                constructorBuilder.Append($"CustomParsers.Add(\"{pair.Key}\", {pair.Value});\n");
             }
 
             constructorBuilder.Append("}\n\n");

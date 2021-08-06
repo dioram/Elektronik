@@ -6,7 +6,7 @@ namespace Elektronik.RosPlugin.Common
     public class RosConverter : ICSConverter
     {
         private Vector3 _scale = Vector3.one;
-        
+
         public void SetInitTRS(Vector3 pos, Quaternion rot, Vector3 scale)
         {
             _scale = scale;
@@ -38,7 +38,7 @@ namespace Elektronik.RosPlugin.Common
 
         public (Vector3 pos, Quaternion rot) Convert(Vector3 pos, Quaternion rot)
         {
-            Convert(pos, rot);
+            Convert(ref pos, ref rot);
             return (pos, rot);
         }
 

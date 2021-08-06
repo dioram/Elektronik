@@ -22,7 +22,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
                         "orientation.x,orientation.y,orientation.z,orientation.w");
             foreach (var message in messages)
             {
-                var data = (MessageParser.Parse(message.Data, "sensor_msgs/msg/Imu", true)) as Imu;
+                var data = MessageParser.Parse<Imu>(message.Data, "sensor_msgs/msg/Imu", true);
                 Assert.NotNull(data);
 #pragma warning disable 8602
                 TestContext.WriteLine($"Timestamp: {data.header.stamp.secs}{data.header.stamp.nsecs}");
@@ -45,7 +45,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
                         "orientation.x,orientation.y,orientation.z,orientation.w,");
             foreach (var message in messages)
             {
-                var data = (MessageParser.Parse(message.Data, "sensor_msgs/msg/Imu", true)) as Imu;
+                var data = MessageParser.Parse<Imu>(message.Data, "sensor_msgs/msg/Imu", true);
                 Assert.NotNull(data);
 #pragma warning disable 8602
                 TestContext.WriteLine($"Timestamp: {data.header.stamp.secs}{data.header.stamp.nsecs:000000000}");
@@ -66,7 +66,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             f.WriteLine("timestamp.secs,pose.x,pose.y,pose.z,rot.x,rot.y,rot.x,rot.w");
             foreach (var message in messages)
             {
-                var data = (MessageParser.Parse(message.Data, "geometry_msgs/PoseStamped", true)) as PoseStamped;
+                var data = MessageParser.Parse<PoseStamped>(message.Data, "geometry_msgs/PoseStamped", true);
                 Assert.NotNull(data);
 #pragma warning disable 8602
                 TestContext.WriteLine($"Timestamp: {data.header.stamp.secs}{data.header.stamp.nsecs:000000000}");
@@ -87,7 +87,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             f.WriteLine("timestamp.secs,pose.x,pose.y,pose.z,rot.x,rot.y,rot.x,rot.w");
             foreach (var message in messages)
             {
-                var data = (MessageParser.Parse(message.Data, "nav_msgs/Odometry", true)) as Odometry;
+                var data = MessageParser.Parse<Odometry>(message.Data, "nav_msgs/Odometry", true);
                 Assert.NotNull(data);
 #pragma warning disable 8602
                 TestContext.WriteLine($"Timestamp: {data.header.stamp.secs}{data.header.stamp.nsecs:000000000}");
@@ -108,7 +108,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             f.WriteLine("timestamp.secs,pose.x,pose.y,pose.z,rot.x,rot.y,rot.x,rot.w");
             foreach (var message in messages)
             {
-                var data = (MessageParser.Parse(message.Data, "geometry_msgs/TransformStamped", true)) as TransformStamped;
+                var data = MessageParser.Parse<TransformStamped>(message.Data, "geometry_msgs/TransformStamped", true);
                 Assert.NotNull(data);
 #pragma warning disable 8602
                 TestContext.WriteLine($"Timestamp: {data.header.stamp.secs}{data.header.stamp.nsecs:000000000}");

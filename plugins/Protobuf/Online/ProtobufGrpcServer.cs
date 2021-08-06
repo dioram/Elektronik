@@ -4,7 +4,6 @@ using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.GrpcServices;
 using Elektronik.Protobuf.Online.Presenters;
-using Elektronik.Settings.Bags;
 using Grpc.Core;
 using UnityEngine;
 
