@@ -26,7 +26,7 @@ jobs:
             Library-
             
       - name: Install apt packages
-        run: sudo apt -y install make swig curl python
+        run: sudo apt -y install make swig curl python libssl-dev
         
       - uses: actions/setup-dotnet@v1
         with:
