@@ -54,7 +54,7 @@ jobs:
           path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
           
       - run: sudo chmod +x ./.github/*.sh
-      - run: ls -la $VCPKG_ROOT/installed
+      - run: ls -la $VCPKG_ROOT/installed/x64-linux
           
       - name: Build ROS2DDS
         run: ../../.github/build_natives.sh -DOPENSSL_ROOT_DIR=$VCPKG_ROOT/installed/x64-linux
