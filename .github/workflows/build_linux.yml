@@ -80,7 +80,9 @@ jobs:
           targetPlatform: StandaloneLinux64
           
       - name: Build plugins
-        run: sh ./.github/build_plugins.sh
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}
+          sh ./.github/build_plugins.sh
         
       - name: Upload artifact
         uses: actions/upload-artifact@v2
