@@ -82,7 +82,7 @@ namespace Protobuf.Tests.Elektronik
         [Test, Explicit]
         public void ComplexTest()
         {
-            int iterations = 1000;
+            int iterations = 10000;
             int pointsAmount = 600;
             int obsAmount = 5;
             float scale = 1f;
