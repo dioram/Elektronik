@@ -19,6 +19,9 @@
 !/.github/**
 !/plugins/
 !/plugins/**
+!/package/
+!/package/**
+/package/opt/**/*
 /plugins/**/bin
 /plugins/**/obj
 /**/SWIG_generated

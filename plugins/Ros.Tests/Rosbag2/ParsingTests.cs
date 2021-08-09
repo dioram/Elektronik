@@ -24,7 +24,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             _dbModel = new SQLiteConnection("test_db.db3");
         }
 
-        [Test]
+        [Test, Platform("Win")]
         public void PoseStamped()
         {
             var topic = _dbModel.Table<Topic>().First(t => t.Id == 36);
@@ -36,7 +36,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             Assert.AreEqual(new Quaternion(-0.0218413882f, -0.0231395327f, 0.93242377f, 0.359963149f), rot);
         }
 
-        [Test]
+        [Test, Platform("Win")]
         public void Odometry()
         {
             var topic = _dbModel.Table<Topic>().First(t => t.Id == 60);
@@ -48,7 +48,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             Assert.AreEqual(new Quaternion(0f, 0f, -0.998499155f, 0.0547673702f), rot);
         }
 
-        [Test]
+        [Test, Platform("Win")]
         public void PointCloud2()
         {
             var topic = _dbModel.Table<Topic>().First(t => t.Id == 35);
@@ -81,7 +81,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             Assert.AreEqual(Color.red, cloud[1].Color);
         }
 
-        [Test]
+        [Test, Platform("Win")]
         public void VisualisationArraySimple()
         {
             var topic = _dbModel.Table<Topic>().First(t => t.Id == 29);

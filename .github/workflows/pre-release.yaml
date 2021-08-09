@@ -6,83 +6,194 @@ on:
   workflow_dispatch:
 
 jobs:
-  init:
-    name: Init build
+  build_windows:
+    name: Build for windows
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
         with:
           lfs: true
-  build_natives:
-    name: Build C++ libs
-    runs-on: self-hosted
-    needs: init
-    steps:
+
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-      - run: .\.github\build_natives.bat
-  build_unity:
-    name: Build unity player for StandaloneWindows64
-    runs-on: self-hosted
-    needs: build_natives
-    steps:
-      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Building native libs
+        run: .\.github\build_natives.bat
+
+      - uses: actions/cache@v2
         with:
-          arch: x64
+          path: ./Library
+          key: Library-Windows
+
       - name: Build unity player
         run: .\.github\build_unity.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
-  build_plugins:
-    name: Build plugins
-    runs-on: self-hosted
-    needs: build_unity
-    steps:
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-      - run: .\.github\build_plugins.bat
-  runTest:
-    name: Run tests
-    runs-on: self-hosted
-    needs:
-      - build_plugins
-      - build_unity
-    steps:
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
+
+      - name: Build plugins
+        run: .\.github\build_plugins.bat
+
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
+        if: ${{ always() }}
         with:
           project_path: plugins/Protobuf.Tests.Internal
           set_check_status_from_test_outcome: true
-          report_name: protobuf_unit_tests
-          report_title: Protobuf unit tests
+          report_name: protobuf_unit_tests_windows
+          report_title: Protobuf unit tests windows
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run ROS plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
+        if: ${{ always() }}
         with:
-          project_path: plugins/ROS.Tests
+          project_path: plugins/Ros.Tests
           set_check_status_from_test_outcome: true
-          report_name: ros_unit_tests
-          report_title: ROS unit tests
+          report_name: ros_unit_tests_windows
+          report_title: ROS unit tests windows
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run unity tests
+        if: ${{ always() }}
         run: .\.github\run_unity_tests.bat
+
+
+  build_linux:
+    name: Linux build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - uses: actions/cache@v2
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      - name: Install apt packages
+        run: sudo apt -y install make swig curl python libssl-dev
+
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - uses: lukka/get-cmake@latest
+
+      - name: Restore artifacts, or setup vcpkg (do not install any package)
+        uses: lukka/run-vcpkg@v7
+        with:
+          setupOnly: true
+          appendedCacheKey: ${{ hashFiles( '${{ github.workspace }}/Plugins/vcpkg.json' ) }}
+          vcpkgGitCommitId: 1257354a3ab0bebd8abe95281ca561537853578c
+          vcpkgTriplet: ${{ matrix.triplet }}
+          additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
+
+      - name: Install vcpkg packages
+        run: $VCPKG_ROOT/vcpkg install openssl fastrtps opencv
+
+      - name: Upload vcpkg logs if failed
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: vcspkg_logs
+          path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
+
+      - run: sudo chmod +x ./.github/*.sh
+      - run: |
+          ls -la $VCPKG_ROOT/installed/x64-linux/share/openssl
+
+      - name: Build ROS2DDS
+        run: ../../.github/build_natives.sh -DOPENSSL_ROOT_DIR=$VCPKG_ROOT/installed/x64-linux
+        working-directory: ./plugins/ROS2DDS
+
+          #      - name: Build MeshReconstructor
+          #        run: ../../.github/build_natives.sh
+        #        working-directory: ./plugins/MeshBuilder
+
+      - name: Build PlanesDetector
+        run: ../../.github/build_natives.sh
+        working-directory: ./plugins/PlanesDetector
+
+      - name: Build Unity player addressables
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: Elektronik
+          allowDirtyBuild: true
+          buildMethod: Elektronik.Editor.PlayerBuildScript.BuildAddressables
+          targetPlatform: StandaloneLinux64
+
+      - name: Build Unity player itself
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: Elektronik
+          allowDirtyBuild: true
+          targetPlatform: StandaloneLinux64
+          versioning: None
+
+      - name: Build plugins
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}
+          ./.github/build_plugins.sh
+
+      - name: Run protobuf plugin unit tests
+        uses: zyborg/dotnet-tests-report@v1
+        if: always()
+        with:
+          project_path: plugins/Protobuf.Tests.Internal
+          set_check_status_from_test_outcome: true
+          report_name: protobuf_unit_tests_linux
+          report_title: Protobuf unit tests linux
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run ROS plugin unit tests
+        uses: zyborg/dotnet-tests-report@v1
+        if: always()
+        with:
+          project_path: plugins/Ros.Tests
+          set_check_status_from_test_outcome: true
+          report_name: ros_unit_tests_linux
+          report_title: ROS unit tests linux
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: game-ci/unity-test-runner@v2
+        id: tests
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          testMode: EditMode
+          projectPath: ./
+          artifactsPath: ./test_artifacts
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Unity tests results for linux
+        
+        
   release:
     name: Create pre-release
     runs-on: self-hosted
-    needs: runTests
+    needs: [build_windows, build_linux]
     steps:
       - run: |
           git fetch --unshallow --tags
           echo $?
           git tag --list
+          
       - name: Get previous tag
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      - name: Zip artifact
-        run: powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\Build', 'build.zip'); }"
+        
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -94,13 +205,44 @@ jobs:
           body_path: ReleaseNotes.md
           draft: false
           prerelease: true
-      - name: Upload Release Asset
+
+
+  upload_windows:
+    name: Upload windows build
+    runs-on: self-hosted
+    needs: release
+    steps: 
+      - name: Upload Windows release asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: build.zip
+          asset_path: build
           asset_name: Release.zip
           asset_content_type: application/zip
+
+
+  upload_linux:
+    name: Upload windows build
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Build deb package
+        run: |
+          mkdir -p ./package/opt/elektronik
+          cp -r ./build/* ./package/opt/elektronik
+          sudo dpkg-deb --build package
+          mv package.deb elektronik.deb
+          
+      - name: Upload Linux release asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: elektronik.deb
+          asset_name: elektronik.deb
+          asset_content_type: vnd.debian.binary-package

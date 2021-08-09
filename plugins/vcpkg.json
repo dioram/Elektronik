@@ -1,0 +1,9 @@
+{
+  "name": "ros2dds",
+  "version": "0.9.0",
+  "dependencies": [
+    "openssl",
+    "fastrtps",
+    "opencv"
+  ]
+}

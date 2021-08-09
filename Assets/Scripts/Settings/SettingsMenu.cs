@@ -77,6 +77,14 @@ namespace Elektronik.Settings
             }
 
             PluginSelected(this, new ListBox.SelectionChangedEventArgs(selectedIndex));
+            
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+            var rects = GetComponentsInChildren<ScrollRect>();
+            foreach (var rect in rects)
+            {
+                rect.scrollSensitivity = 300;
+            }
+#endif
         }
 
         private void SetupSettings()

@@ -41,7 +41,7 @@ namespace Elektronik.UI.Windows
         public void Minimize()
         {
             _isMinimized = true;
-            var rect = ((RectTransform) transform);
+            var rect = ((RectTransform)transform);
             _maximizedHeight = rect.sizeDelta.y;
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, 42);
             _content.SetActive(false);
@@ -49,19 +49,21 @@ namespace Elektronik.UI.Windows
             {
                 edge.enabled = false;
             }
+
             SaveSettings();
         }
 
         public void Maximize()
         {
             _isMinimized = false;
-            var rect = ((RectTransform) transform);
+            var rect = ((RectTransform)transform);
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, _maximizedHeight);
             _content.SetActive(true);
             foreach (var edge in _edges)
             {
                 edge.enabled = true;
             }
+
             SaveSettings();
         }
 
@@ -100,6 +102,14 @@ namespace Elektronik.UI.Windows
             }
 
             _isInited = true;
+
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+            var rects = _content.GetComponentsInChildren<ScrollRect>();
+            foreach (var rect in rects)
+            {
+                rect.scrollSensitivity = 300;
+            }
+#endif
         }
 
         #endregion

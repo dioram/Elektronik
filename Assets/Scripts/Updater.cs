@@ -128,7 +128,7 @@ namespace Elektronik
                 var updateButton =  go.transform.Find("Header/UpdateButton").GetComponent<Button>();
                 updateButton.OnClickAsObservable().Subscribe(_ => release.Update());
 #if UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX
-                updateButton.gameobject.SetActive(false);
+                updateButton.gameObject.SetActive(false);
 #endif
             }
 

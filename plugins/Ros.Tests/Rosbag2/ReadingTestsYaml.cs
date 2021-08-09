@@ -10,13 +10,13 @@ namespace Elektronik.Ros.Tests.Rosbag2
     {
         private readonly Rosbag2ContainerTree _tree = new("");
 
-        [SetUp]
+        [SetUp, Platform("Win")]
         public void Setup()
         {
             _tree.Init(new Rosbag2Settings() {FilePath = @"metadata.yaml"});
         }
 
-        [Test]
+        [Test, Platform("Win")]
         public void ActualTimestamps()
         {
             var sum = 0;
@@ -27,7 +27,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             Assert.AreEqual(282, sum);
         }
 
-        [Test]
+        [Test, Platform("Win")]
         public void ContainersTree()
         {
             Assert.AreEqual(20, _tree.ActualTopics.Count);

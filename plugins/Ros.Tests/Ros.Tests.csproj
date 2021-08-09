@@ -23,7 +23,13 @@
         <PackageReference Include="NUnit" Version="3.13.2" />
         <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+        <PackageReference Include="sqlite-net-pcl" Version="1.8.0-beta" />
+        <PackageReference Include="SQLitePCLRaw.bundle_sqlite3" Version="2.0.5-pre20210521085756" />
+        <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
+        <PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="2.0.5-pre20210521085756" />
         <PackageReference Include="System.Linq.Async" Version="5.0.0" />
+        <PackageReference Include="System.Reactive" Version="5.0.0" />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0-preview.6.21352.12" />
     </ItemGroup>
 
     <ItemGroup>

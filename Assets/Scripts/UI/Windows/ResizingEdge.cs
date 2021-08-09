@@ -51,33 +51,6 @@ namespace Elektronik.UI.Windows
             StopAllCoroutines();
         }
 
-        private void Update()
-        {
-            if (!_hovered) return;
-
-            switch (Side)
-            {
-            case EdgeSide.Top:
-            case EdgeSide.Bottom:
-                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNorthAndSouth));
-                break;
-            case EdgeSide.Right:
-            case EdgeSide.Left:
-                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeWestAndEast));
-                break;
-            case EdgeSide.TopLeft:
-            case EdgeSide.BottomRight:
-                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNorthwestAndSoutheast));
-                break;
-            case EdgeSide.TopRight:
-            case EdgeSide.BottomLeft:
-                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNortheastAndSouthwest));
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-            }
-        }
-
         #endregion
 
         #region IDragHandler
@@ -166,6 +139,52 @@ namespace Elektronik.UI.Windows
         public void OnPointerEnter(PointerEventData eventData)
         {
             _hovered = true;
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            switch (Side)
+            {
+            case EdgeSide.Top:
+            case EdgeSide.Bottom:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNorthAndSouth));
+                break;
+            case EdgeSide.Right:
+            case EdgeSide.Left:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeWestAndEast));
+                break;
+            case EdgeSide.TopLeft:
+            case EdgeSide.BottomRight:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNorthwestAndSoutheast));
+                break;
+            case EdgeSide.TopRight:
+            case EdgeSide.BottomLeft:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNortheastAndSouthwest));
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+            }
+#else
+            var center = new Vector2(16, 16);
+            switch (Side)
+            {
+                case EdgeSide.Top:
+                case EdgeSide.Bottom:
+                    Cursor.SetCursor(ImageStore.Instance.TopDownCursor, center, CursorMode.Auto);
+                    break;
+                case EdgeSide.Right:
+                case EdgeSide.Left:
+                    Cursor.SetCursor(ImageStore.Instance.LeftRightCursor, center, CursorMode.Auto);
+                    break;
+                case EdgeSide.TopLeft:
+                case EdgeSide.BottomRight:
+                    Cursor.SetCursor(ImageStore.Instance.NorthWestCursor, center, CursorMode.Auto);
+                    break;
+                case EdgeSide.TopRight:
+                case EdgeSide.BottomLeft:
+                    Cursor.SetCursor(ImageStore.Instance.NorthEastCursor, center, CursorMode.Auto);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+#endif
         }
 
         #endregion
@@ -175,6 +194,11 @@ namespace Elektronik.UI.Windows
         public void OnPointerExit(PointerEventData eventData)
         {
             _hovered = false;
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.StandardArrow));
+#else
+            Cursor.SetCursor(ImageStore.Instance.DefaultCursor, Vector2.zero, CursorMode.Auto);
+#endif
         }
 
         #endregion
@@ -186,13 +210,13 @@ namespace Elektronik.UI.Windows
         private float _minWidth;
         private bool _hovered;
 
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         private static extern IntPtr SetCursor(IntPtr hCursor);
 
         [DllImport("user32.dll")]
         private static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
 
-        [SuppressMessage("ReSharper", "UnusedMember.Local")]
         private enum WindowsCursors
         {
             StandardArrow = 32512,
@@ -201,6 +225,7 @@ namespace Elektronik.UI.Windows
             EdgeNorthwestAndSoutheast = 32642,
             EdgeWestAndEast = 32644,
         }
+#endif
 
         private IEnumerator ReturnToScreenRect()
         {

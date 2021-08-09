@@ -1,0 +1,4 @@
+#!/bin/bash
+
+if which update-menus > /dev/null; then update-menus ; fi
+chmod 777 /opt/elektronik/*
