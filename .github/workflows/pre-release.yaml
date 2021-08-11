@@ -21,11 +21,6 @@ jobs:
       - name: Building native libs
         run: .\.github\build_natives.bat
 
-      - uses: actions/cache@v2
-        with:
-          path: ./Library
-          key: Library-Windows
-
       - name: Build unity player
         run: .\.github\build_unity.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
 

@@ -24,11 +24,6 @@ jobs:
           
       - name: Building native libs
         run: .\.github\build_natives.bat
-        
-      - uses: actions/cache@v2
-        with:
-          path: ./Library
-          key: Library-Windows
 
       - name: Build unity player
         run: .\.github\build_unity.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
@@ -59,12 +54,6 @@ jobs:
       - name: Run unity tests
         if: ${{ always() }}
         run: .\.github\run_unity_tests.bat
-        
-      - name: Upload zip
-        uses: actions/upload-artifact@v2
-        with:
-          name: Windows build
-          path: ./build
           
           
   build_linux:
@@ -188,16 +177,3 @@ jobs:
           artifactsPath: ./test_artifacts
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           checkName: Unity tests results for linux
-
-      - name: Build deb package
-        run: |
-          mkdir -p ./package/opt/elektronik
-          cp -r ./build/* ./package/opt/elektronik
-          sudo dpkg-deb --build package
-          mv package.deb elektronik.deb
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: elektronik.deb
-          path: elektronik.deb
