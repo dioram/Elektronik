@@ -204,7 +204,6 @@ jobs:
           release_name: Pre-release ${{ steps.previoustag.outputs.tag }}
           body_path: ReleaseNotes.md
           draft: false
-          prerelease: true
 
 
   upload_windows:
