@@ -8,7 +8,5 @@ namespace Elektronik.RosPlugin.Ros2.Online
     {
         [CheckForEquals, Tooltip("Domain id")]
         public int DomainId = 0;
-
-        public float Scale = 1;
     }
 }

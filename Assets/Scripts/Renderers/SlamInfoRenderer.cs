@@ -36,6 +36,10 @@ namespace Elektronik.Renderers
             }
         }
 
+        public void SetScale(float value)
+        {
+        }
+
         public void Render((string message, IEnumerable<ICloudItem> points) data)
         {
             MessageLabel.text = $"Package message: {data.message}";

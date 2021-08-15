@@ -11,6 +11,7 @@ namespace Elektronik.Mesh
         private Material _renderMaterial;
         private ComputeBuffer _vertsBuffer;
         private readonly int _vertsBufferShaderProp = Shader.PropertyToID("_VertsBuffer");
+        private readonly int _scaleShaderProp = Shader.PropertyToID("_Scale");
         private GPUItem[] _vertices;
         private bool _meshUpdated = false;
         
@@ -70,6 +71,11 @@ namespace Elektronik.Mesh
                 _renderMaterial.SetBuffer(_vertsBufferShaderProp, _vertsBuffer);
             }
             Graphics.DrawProceduralNow(MeshTopology.Triangles, _vertices.Length);
+        }
+
+        public void SetScale(float value)
+        {
+            _renderMaterial.SetFloat(_scaleShaderProp, value);
         }
     }
 }

@@ -3,6 +3,7 @@ Shader "Elektronik/PlaneCloudShader"
     Properties
     {
         _PointSize("Point Size", Float) = 0.05
+        _Scale("Scale", Float) = 1
     }
     SubShader
     {
@@ -25,6 +26,7 @@ Shader "Elektronik/PlaneCloudShader"
             #include "UnityCG.cginc"
             #define MAX_BRIGHTNESS 16
 
+            half _Scale;
             half _Size;
             StructuredBuffer<float4> _VertsBuffer;
 
@@ -59,7 +61,7 @@ Shader "Elektronik/PlaneCloudShader"
                 }
                 else
                 {
-                    o.position = UnityObjectToClipPos(float4(pt.xyz, 1));
+                    o.position = UnityObjectToClipPos(float4(pt.xyz * _Scale, 1));
                 }
                 o.color = DecodeColor(asuint(pt.w));
                 o.viewPos = UnityObjectToViewPos(o.position);

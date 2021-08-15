@@ -76,7 +76,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
                     .Where(t => _container.ActualTopics.Select(a => a.Name).Contains(t.Topic));
             _frames = new FramesAsyncCollection<Frame>(() => ReadNext(actualConnections));
             Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = Converter;
             _threadWorker = new ThreadQueueWorker();
         }

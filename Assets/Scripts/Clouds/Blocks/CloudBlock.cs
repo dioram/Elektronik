@@ -16,6 +16,11 @@ namespace Elektronik.Clouds
         {
             Updated = true;
         }
+
+        public void SetScale(float value)
+        {
+            _renderMaterial.SetFloat(_scaleShaderProp, value);
+        }
         
         #region Unity events
 
@@ -83,6 +88,7 @@ namespace Elektronik.Clouds
         #region Private definitions
         
         private readonly int _sizeShaderProp = Shader.PropertyToID("_Size");
+        private readonly int _scaleShaderProp = Shader.PropertyToID("_Scale");
         private Material _renderMaterial;
 
         #endregion

@@ -47,7 +47,7 @@ namespace Elektronik.Protobuf.Offline
         {
             _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(TypedSettings.FilePath)}";
             _input = File.OpenRead(TypedSettings.FilePath!);
-            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity);
             _parsersChain.SetConverter(Converter);
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());

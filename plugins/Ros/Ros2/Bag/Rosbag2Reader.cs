@@ -37,7 +37,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
                     .ToArray();
 
             Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = Converter;
         }
 

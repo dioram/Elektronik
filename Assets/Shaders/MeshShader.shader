@@ -5,6 +5,7 @@ Shader "Elektronik/MeshShader"
         _Tint ("Tint", Color) = (1, 1, 1, 1)
         _Smoothness ("Smoothness", Range(0, 1)) = 0.9
         [Gamma] _Metallic ("Metallic", Range(0, 1)) = 0
+        _Scale("Scale", Float) = 1
     }
     SubShader
     {
@@ -32,6 +33,7 @@ Shader "Elektronik/MeshShader"
             #include "UnityLightingCommon.cginc"
             #include "UnityPBSLighting.cginc"
 
+            half _Scale;
             half _Size;
             StructuredBuffer<float4> _VertsBuffer;
             StructuredBuffer<float4> _NormalsBuffer;
@@ -56,8 +58,8 @@ Shader "Elektronik/MeshShader"
             {
                 VertexOutput o;
                 float4 pt = _VertsBuffer[input.vertexID];
-                o.worldPos = pt.xyz;
-                o.position = UnityObjectToClipPos(float4(pt.xyz, 1));
+                o.worldPos = pt.xyz * _Scale;
+                o.position = UnityObjectToClipPos(float4(o.worldPos, 1));
                 o.normal = -_NormalsBuffer[input.vertexID].xyz;
                 return o;
             }

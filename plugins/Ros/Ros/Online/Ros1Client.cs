@@ -29,7 +29,7 @@ namespace Elektronik.RosPlugin.Ros.Online
         {
             _container.Init(TypedSettings);
             Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = Converter;
         }
 

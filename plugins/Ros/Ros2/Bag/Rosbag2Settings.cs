@@ -9,8 +9,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag
     {
         [CheckForEquals, Path(PathAttribute.PathTypes.File, new []{".db3"}), Tooltip("Path to file")]
         public string FilePath = "";
-
-        public float Scale = 1f;
         
         public override bool Validate()
         {

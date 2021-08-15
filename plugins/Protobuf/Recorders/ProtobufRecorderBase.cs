@@ -11,7 +11,7 @@ namespace Elektronik.Protobuf.Recorders
         #region Protected
 
         protected PacketPb CreateAddedPacket<TCloudItem>(IList<TCloudItem> args, int timestamp, ICSConverter converter)
-                where TCloudItem : ICloudItem
+                where TCloudItem : struct, ICloudItem
         {
             var packet = new PacketPb
             {
@@ -24,7 +24,7 @@ namespace Elektronik.Protobuf.Recorders
 
         protected PacketPb CreateUpdatedPacket<TCloudItem>(IList<TCloudItem> args, int timestamp,
                                                            ICSConverter converter)
-                where TCloudItem : ICloudItem
+                where TCloudItem : struct, ICloudItem
         {
             var packet = new PacketPb
             {
@@ -36,7 +36,7 @@ namespace Elektronik.Protobuf.Recorders
         }
 
         protected PacketPb CreateRemovedPacket<TCloudItem>(IList<int> args, int timestamp)
-                where TCloudItem : ICloudItem
+                where TCloudItem : struct, ICloudItem
         {
             var packet = new PacketPb
             {
@@ -49,7 +49,7 @@ namespace Elektronik.Protobuf.Recorders
 
         protected PacketPb CreateConnectionsUpdatedPacket<TCloudItem>(IEnumerable<(int id1, int id2)> items,
                                                                       int timestamp)
-                where TCloudItem : ICloudItem
+                where TCloudItem : struct, ICloudItem
         {
             var packet = new PacketPb()
             {
@@ -67,7 +67,7 @@ namespace Elektronik.Protobuf.Recorders
 
         protected PacketPb CreateConnectionsRemovedPacket<TCloudItem>(IEnumerable<(int id1, int id2)> items,
                                                                       int timestamp)
-                where TCloudItem : ICloudItem
+                where TCloudItem : struct, ICloudItem
         {
             var packet = new PacketPb()
             {
@@ -89,7 +89,7 @@ namespace Elektronik.Protobuf.Recorders
         #region Private
 
         private void SetData<TCloudItem>(IList<TCloudItem> items, PacketPb packet, ICSConverter converter)
-                where TCloudItem : ICloudItem
+                where TCloudItem : struct, ICloudItem
         {
             var first = items.FirstOrDefault();
             switch (first)
@@ -119,7 +119,7 @@ namespace Elektronik.Protobuf.Recorders
             }
         }
 
-        private void SetData<TCloudItem>(IList<int> args, PacketPb packet) where TCloudItem : ICloudItem
+        private void SetData<TCloudItem>(IList<int> args, PacketPb packet) where TCloudItem : struct, ICloudItem
         {
             if (typeof(TCloudItem).IsAssignableFrom(typeof(SlamPoint)))
             {

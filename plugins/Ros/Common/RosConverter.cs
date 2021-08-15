@@ -7,6 +7,8 @@ namespace Elektronik.RosPlugin.Common
     {
         private Vector3 _scale = Vector3.one;
 
+        public void SetInitTRS(Vector3 pos, Quaternion rot) => SetInitTRS(pos, rot, Vector3.one);
+
         public void SetInitTRS(Vector3 pos, Quaternion rot, Vector3 scale)
         {
             _scale = scale;

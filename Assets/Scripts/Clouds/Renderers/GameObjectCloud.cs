@@ -24,6 +24,19 @@ namespace Elektronik.Clouds
             }
         }
 
+        public override void SetScale(float value)
+        {
+            lock (GameObjects)
+            {
+                var factor = value / _scale;
+                _scale = value;
+                foreach (var go in GameObjects.Values)
+                {
+                    go.transform.position *= factor;
+                }
+            }
+        }
+
         public void Clear()
         {
             lock (GameObjects)
@@ -57,7 +70,7 @@ namespace Elektronik.Clouds
                     Pose pose = GetObjectPose(obj);
                     MainThreadInvoker.Enqueue(() =>
                     {
-                        var go = ObservationsPool.Spawn(pose.position, pose.rotation);
+                        var go = ObservationsPool.Spawn(pose.position * _scale, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
                         go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
 
@@ -96,7 +109,7 @@ namespace Elektronik.Clouds
                     Pose pose = GetObjectPose(obj);
                     MainThreadInvoker.Enqueue(() =>
                     {
-                        var go = ObservationsPool.Spawn(pose.position, pose.rotation);
+                        var go = ObservationsPool.Spawn(pose.position * _scale, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
                         go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
 
@@ -121,7 +134,7 @@ namespace Elektronik.Clouds
                     MainThreadInvoker.Enqueue(() =>
                     {
                         var go = GameObjects[(sender.GetHashCode(), obj.Id)];
-                        go.transform.SetPositionAndRotation(pose.position, pose.rotation);
+                        go.transform.SetPositionAndRotation(pose.position * _scale, pose.rotation);
                         go.GetComponent<DataComponent<TCloudItem>>().Data = obj;
                         go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
                     });
@@ -193,6 +206,12 @@ namespace Elektronik.Clouds
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
         protected abstract Pose GetObjectPose(TCloudItem obj);
+
+        #endregion
+
+        #region Private
+
+        public float _scale = 1;
 
         #endregion
     }

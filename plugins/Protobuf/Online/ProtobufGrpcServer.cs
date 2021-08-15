@@ -11,7 +11,7 @@ namespace Elektronik.Protobuf.Online
 {
     using GrpcServer = Server;
 
-    public class ProtobufGrpcServer : DataSourcePluginBase<PortScaleSettingsBag>, IDataSourcePluginOnline
+    public class ProtobufGrpcServer : DataSourcePluginBase<OnlineSettingsBag>, IDataSourcePluginOnline
     {
         public ProtobufGrpcServer()
         {
@@ -37,7 +37,7 @@ namespace Elektronik.Protobuf.Online
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             GrpcEnvironment.SetLogger(new UnityLogger());
 
-            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity);
 
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {

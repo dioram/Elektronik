@@ -42,6 +42,10 @@ namespace Elektronik.Renderers
             }
         }
 
+        public void SetScale(float value)
+        {
+        }
+
         public void Render(byte[] array)
         {
             MainThreadInvoker.Enqueue(() =>

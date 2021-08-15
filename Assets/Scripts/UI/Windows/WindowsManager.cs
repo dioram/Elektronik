@@ -180,5 +180,9 @@ namespace Elektronik.UI.Windows
         }
 
         #endregion
+
+        public void SetScale(float value)
+        {
+        }
     }
 }

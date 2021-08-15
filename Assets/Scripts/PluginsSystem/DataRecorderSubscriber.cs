@@ -61,7 +61,7 @@ namespace Elektronik.PluginsSystem
         private static void SubscribeOnConnectableContainer<TCloudItem>(this IDataRecorderPlugin recorder,
                                                                         ISourceTree source,
                                                                         string topicName)
-                where TCloudItem : ICloudItem
+                where TCloudItem : struct, ICloudItem
         {
             var connectionsUpdatedName = nameof(IConnectableObjectsContainer<ICloudItem>.OnConnectionsUpdated);
             var connectionsUpdated = Observable.FromEvent<EventHandler<ConnectionsEventArgs>>(
@@ -88,7 +88,7 @@ namespace Elektronik.PluginsSystem
 
         private static void SubscribeOnCloudContainer<TCloudItem>(this IDataRecorderPlugin recorder, ISourceTree source,
                                                                   string topicName)
-                where TCloudItem : ICloudItem
+                where TCloudItem : struct, ICloudItem
         {
             var addedName = nameof(IContainer<ICloudItem>.OnAdded);
             var add = Observable.FromEvent<EventHandler<AddedEventArgs<TCloudItem>>>(

@@ -51,6 +51,10 @@ namespace Elektronik.UI.Windows
 
         #region IDataRenderer
 
+        public void SetScale(float value)
+        {
+        }
+        
         public bool IsShowing
         {
             get => gameObject.activeSelf;
@@ -88,7 +92,6 @@ namespace Elektronik.UI.Windows
 
         private IContainer<SlamObservation> _container;
         private SlamObservation _observation;
-        
         
         public void MoveCameraToObservation()
         {

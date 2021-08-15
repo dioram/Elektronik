@@ -322,7 +322,7 @@ namespace Elektronik.Containers
         {
             lock (_lines)
             {
-                recorder.OnAdded(DisplayName, _lines.OfType<ICloudItem>().ToList());
+                recorder.OnAdded(DisplayName, _lines);
             }
         }
 

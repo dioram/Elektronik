@@ -3,6 +3,7 @@ Shader "Elektronik/LineCloudShader"
     Properties
     {
         _Alpha("Alpha", Float) = 1
+        _Scale("Scale", Float) = 1
     }
     SubShader
     {
@@ -28,6 +29,7 @@ Shader "Elektronik/LineCloudShader"
             #define MAX_BRIGHTNESS 16
 
             half _Alpha;
+            half _Scale;
             StructuredBuffer<float4> _ItemsBuffer;
             
             half3 DecodeColor(uint data)
@@ -54,7 +56,7 @@ Shader "Elektronik/LineCloudShader"
             {
                 VertexOutput o;
                 float4 pt = _ItemsBuffer[input.vertexID];
-                o.position = UnityObjectToClipPos(float4(pt.xyz, 1));
+                o.position = UnityObjectToClipPos(float4(pt.xyz * _Scale, 1));
                 o.color = DecodeColor(asuint(pt.w));
                 return o;
             }

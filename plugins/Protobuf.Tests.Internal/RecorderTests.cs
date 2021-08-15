@@ -249,7 +249,7 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void StartStopTest()
         {
-            ICloudItem[] points =
+            SlamPoint[] points =
             {
                 new SlamPoint(0, Vector3.one, Color.blue),
                 new SlamPoint(1, Vector3.down, Color.red),
@@ -392,7 +392,7 @@ namespace Protobuf.Tests.Internal
             Assert.AreEqual(BitConverter.GetBytes(expectedFrames), buffer);
         }
 
-        private void Record<TCloudItem>(TCloudItem[] first, TCloudItem[] second) where TCloudItem : ICloudItem
+        private void Record<TCloudItem>(TCloudItem[] first, TCloudItem[] second) where TCloudItem : struct, ICloudItem
         {
             IDataRecorderPlugin recorder = new ProtobufRecorder();
             recorder.FileName = Filename;

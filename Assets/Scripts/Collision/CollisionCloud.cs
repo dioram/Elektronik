@@ -23,6 +23,7 @@ namespace Elektronik.Collision
 
         public (IContainer<TCloudItem> container, TCloudItem item)? FindCollided(Ray ray)
         {
+            ray.origin /= _scale;
             var id = _topBlock.FindItem(ray, Radius);
             if (!id.HasValue) return null;
             
@@ -42,6 +43,11 @@ namespace Elektronik.Collision
         #endregion
         
         #region ICloudRenderer
+
+        public void SetScale(float value)
+        {
+            _scale = value;
+        }
 
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
@@ -130,6 +136,7 @@ namespace Elektronik.Collision
         private readonly Dictionary<int, (object sender, int id)> _dataReverse =
                 new Dictionary<int, (object sender, int id)>();
 
+        private float _scale = 1;
         private int _maxId = 0;
         private readonly ThreadQueueWorker _threadQueueWorker = new ThreadQueueWorker();
         

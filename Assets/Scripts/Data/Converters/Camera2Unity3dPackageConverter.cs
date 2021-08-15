@@ -57,6 +57,8 @@ namespace Elektronik.Data.Converters
             _initPose = Matrix4x4.TRS(pos, rot, scale);
         }
 
+        public override void SetInitTRS(Vector3 pos, Quaternion rot) => SetInitTRS(pos, rot, Vector3.one);
+
         public override void Convert(ref Vector3 pos, ref Quaternion rot)
         {
             pos.y = -pos.y;
