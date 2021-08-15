@@ -52,7 +52,7 @@ namespace Elektronik.Protobuf.Offline
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
             _threadWorker = new ThreadQueueWorker();
-            _timer = new Timer(UpdateDeltaMS);
+            _timer = new Timer(DelayBetweenFrames);
             _timer.Elapsed += (_, __) =>
             {
                 _threadWorker.Enqueue(() =>
@@ -91,6 +91,8 @@ namespace Elektronik.Protobuf.Offline
             get => _frames?.CurrentIndex ?? 0;
             set => RewindAt(value);
         }
+
+        public int DelayBetweenFrames { get; set; } = 2;
 
         public event Action<bool> Rewind;
 
@@ -148,8 +150,6 @@ namespace Elektronik.Protobuf.Offline
         #endregion
 
         #region Private definitions
-
-        private const int UpdateDeltaMS = 2;
 
         private readonly ProtobufContainerTree _containerTree;
         private FileStream _input;

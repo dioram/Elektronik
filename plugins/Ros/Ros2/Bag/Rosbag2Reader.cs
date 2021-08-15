@@ -139,6 +139,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             }
         }
 
+        public int DelayBetweenFrames { get; set; }
+
         public event Action<bool>? Rewind;
 
         public event Action? Finished;
