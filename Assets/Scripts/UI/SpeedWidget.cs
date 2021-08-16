@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
+using Elektronik.Settings;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ namespace Elektronik.UI
 
         private void Start()
         {
+            if (ModeSelector.Mode != Mode.Offline) gameObject.SetActive(false);
             SpeedSlider.OnValueChangedAsObservable()
                        .Select(v => 1 + (int)SpeedSlider.maxValue - (int)v)
                        .Do(SetDelay)

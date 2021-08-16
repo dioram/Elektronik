@@ -92,7 +92,17 @@ namespace Elektronik.Protobuf.Offline
             set => RewindAt(value);
         }
 
-        public int DelayBetweenFrames { get; set; } = 2;
+        public int DelayBetweenFrames
+        {
+            get => _delayBetweenFrames;
+            set
+            {
+                if (_delayBetweenFrames == value) return;
+
+                _delayBetweenFrames = value;
+                if (_timer != null) _timer.Interval = _delayBetweenFrames;
+            }
+        }
 
         public event Action<bool> Rewind;
 
@@ -157,6 +167,7 @@ namespace Elektronik.Protobuf.Offline
         private readonly DataParser<PacketPb> _parsersChain;
         private ThreadQueueWorker _threadWorker;
         [CanBeNull] private Timer _timer;
+        private int _delayBetweenFrames = 2;
 
         private IEnumerator<Frame> ReadCommands(int size)
         {
