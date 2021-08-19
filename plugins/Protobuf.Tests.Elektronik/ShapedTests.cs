@@ -27,7 +27,7 @@ namespace Protobuf.Tests.Elektronik
 
         private PointPb TransformPoint(int deltaId, PointPb point, Quaternion rotation, Vector3 translation)
         {
-            var vec = new Vector3((float) point.Position.X, (float) point.Position.Y, (float) point.Position.Z);
+            var vec = new Vector3((float)point.Position.X, (float)point.Position.Y, (float)point.Position.Z);
             vec = Vector3.Transform(vec, rotation);
             var newPoint = new PointPb
             {
@@ -52,33 +52,33 @@ namespace Protobuf.Tests.Elektronik
             {
                 plane.Select(s => new PointPb
                 {
-                    Id = s.Id + plane.Length * 0, Color = s.Color,
-                    Position = new Vector3Pb {X = s.Position.X, Y = s.Position.Y, Z = -side / 2 + s.Position.Z}
+                    Id = s.Id + plane.Length * 0, Color = new ColorPb { R = 255 },
+                    Position = new Vector3Pb { X = s.Position.X, Y = s.Position.Y, Z = -side / 2 + s.Position.Z }
                 }),
                 plane.Select(s => new PointPb
                 {
-                    Id = s.Id + plane.Length * 1, Color = s.Color,
-                    Position = new Vector3Pb {X = s.Position.X, Y = s.Position.Y, Z = side / 2 + s.Position.Z}
+                    Id = s.Id + plane.Length * 1, Color = new ColorPb { G = 255 },
+                    Position = new Vector3Pb { X = s.Position.X, Y = s.Position.Y, Z = side / 2 + s.Position.Z }
                 }),
                 plane.Select(s => new PointPb
                 {
-                    Id = s.Id + plane.Length * 2, Color = s.Color,
-                    Position = new Vector3Pb {X = s.Position.X, Y = -side / 2 + s.Position.Z, Z = s.Position.Y}
+                    Id = s.Id + plane.Length * 2, Color = new ColorPb { B = 255 },
+                    Position = new Vector3Pb { X = s.Position.X, Y = -side / 2 + s.Position.Z, Z = s.Position.Y }
                 }),
                 plane.Select(s => new PointPb
                 {
-                    Id = s.Id + plane.Length * 3, Color = s.Color,
-                    Position = new Vector3Pb {X = s.Position.X, Y = side / 2 + s.Position.Z, Z = s.Position.Y}
+                    Id = s.Id + plane.Length * 3, Color = new ColorPb { R = 255, G = 255 },
+                    Position = new Vector3Pb { X = s.Position.X, Y = side / 2 + s.Position.Z, Z = s.Position.Y }
                 }),
                 plane.Select(s => new PointPb
                 {
-                    Id = s.Id + plane.Length * 4, Color = s.Color,
-                    Position = new Vector3Pb {X = -side / 2 + s.Position.Z, Y = s.Position.Y, Z = s.Position.X}
+                    Id = s.Id + plane.Length * 4, Color = new ColorPb { R = 255, B = 255 },
+                    Position = new Vector3Pb { X = -side / 2 + s.Position.Z, Y = s.Position.Y, Z = s.Position.X }
                 }),
                 plane.Select(s => new PointPb
                 {
-                    Id = s.Id + plane.Length * 5, Color = s.Color,
-                    Position = new Vector3Pb {X = side / 2 + s.Position.Z, Y = s.Position.Y, Z = s.Position.X}
+                    Id = s.Id + plane.Length * 5, Color = new ColorPb { G = 255, B = 255 },
+                    Position = new Vector3Pb { X = side / 2 + s.Position.Z, Y = s.Position.Y, Z = s.Position.X }
                 }),
             };
             var allPoints = faces.SelectMany(p => p).ToArray();
@@ -93,30 +93,30 @@ namespace Protobuf.Tests.Elektronik
 
             var cameraPoses = new[]
             {
-                new Vector3Pb {X = 0, Y = 0, Z = -side},
-                new Vector3Pb {X = 0, Y = 0, Z = side},
-                new Vector3Pb {X = 0, Y = -side, Z = 0},
-                new Vector3Pb {X = 0, Y = side, Z = 0},
-                new Vector3Pb {X = -side, Y = 0, Z = 0},
-                new Vector3Pb {X = side, Y = 0, Z = 0},
+                new Vector3Pb { X = 0, Y = 0, Z = -side },
+                new Vector3Pb { X = 0, Y = 0, Z = side },
+                new Vector3Pb { X = 0, Y = -side, Z = 0 },
+                new Vector3Pb { X = 0, Y = side, Z = 0 },
+                new Vector3Pb { X = -side, Y = 0, Z = 0 },
+                new Vector3Pb { X = side, Y = 0, Z = 0 },
             };
             var cameraColors = new[]
             {
-                new ColorPb {R = 0, G = 0, B = 127},
-                new ColorPb {R = 0, G = 0, B = 255},
-                new ColorPb {R = 0, G = 127, B = 0},
-                new ColorPb {R = 0, G = 255, B = 0},
-                new ColorPb {R = 127, G = 0, B = 0},
-                new ColorPb {R = 255, G = 0, B = 0},
+                new ColorPb { R = 0, G = 0, B = 127 },
+                new ColorPb { R = 0, G = 0, B = 255 },
+                new ColorPb { R = 0, G = 127, B = 0 },
+                new ColorPb { R = 0, G = 255, B = 0 },
+                new ColorPb { R = 127, G = 0, B = 0 },
+                new ColorPb { R = 255, G = 0, B = 0 },
             };
             var cameraOrientations = new[]
             {
                 Quaternion.CreateFromYawPitchRoll(0, 0, 0),
-                Quaternion.CreateFromYawPitchRoll((float) Math.PI, 0, 0),
-                Quaternion.CreateFromYawPitchRoll(0, -(float) Math.PI / 2, 0),
-                Quaternion.CreateFromYawPitchRoll(0, (float) Math.PI / 2, 0),
-                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 2, 0, 0),
-                Quaternion.CreateFromYawPitchRoll(3 * (float) Math.PI / 2, 0, 0),
+                Quaternion.CreateFromYawPitchRoll((float)Math.PI, 0, 0),
+                Quaternion.CreateFromYawPitchRoll(0, -(float)Math.PI / 2, 0),
+                Quaternion.CreateFromYawPitchRoll(0, (float)Math.PI / 2, 0),
+                Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, 0, 0),
+                Quaternion.CreateFromYawPitchRoll(3 * (float)Math.PI / 2, 0, 0),
             };
             var obsPacket = new PacketPb
             {
@@ -128,7 +128,8 @@ namespace Protobuf.Tests.Elektronik
             {
                 obsPacket.Observations.Data.Add(new ObservationPb
                 {
-                    Point = new PointPb {Id = 6 * plane.Length + i, Position = cameraPoses[i], Color = cameraColors[i]},
+                    Point = new PointPb
+                            { Id = 6 * plane.Length + i, Position = cameraPoses[i], Color = cameraColors[i] },
                     Orientation = new Vector4Pb
                     {
                         X = cameraOrientations[i].X,
@@ -136,7 +137,7 @@ namespace Protobuf.Tests.Elektronik
                         Z = cameraOrientations[i].Z,
                         W = cameraOrientations[i].W,
                     },
-                    ObservedPoints = {Enumerable.Range(i * plane.Length, plane.Length)},
+                    ObservedPoints = { Enumerable.Range(i * plane.Length, plane.Length) },
                 });
             }
 
@@ -156,7 +157,7 @@ namespace Protobuf.Tests.Elektronik
             {
                 obsPacket.Observations.Data.Add(new ObservationPb
                 {
-                    Point = new PointPb {Id = -i - firstId, Position = cameraPoses[i], Color = cameraColors[i]},
+                    Point = new PointPb { Id = -i - firstId, Position = cameraPoses[i], Color = cameraColors[i] },
                     Orientation = new Vector4Pb
                     {
                         X = cameraOrientations[i].X,
@@ -164,7 +165,7 @@ namespace Protobuf.Tests.Elektronik
                         Z = cameraOrientations[i].Z,
                         W = cameraOrientations[i].W,
                     },
-                    ObservedPoints = {points[i].SelectMany(p => Enumerable.Range(p * pointsAmount, pointsAmount))},
+                    ObservedPoints = { points[i].SelectMany(p => Enumerable.Range(p * pointsAmount, pointsAmount)) },
                 });
             }
 
@@ -175,72 +176,72 @@ namespace Protobuf.Tests.Elektronik
         {
             var cameraPoses = new[]
             {
-                new Vector3Pb {X = side, Y = 0, Z = side},
-                new Vector3Pb {X = side, Y = 0, Z = -side},
-                new Vector3Pb {X = side, Y = side, Z = 0},
-                new Vector3Pb {X = side, Y = -side, Z = 0},
+                new Vector3Pb { X = side, Y = 0, Z = side },
+                new Vector3Pb { X = side, Y = 0, Z = -side },
+                new Vector3Pb { X = side, Y = side, Z = 0 },
+                new Vector3Pb { X = side, Y = -side, Z = 0 },
 
-                new Vector3Pb {X = -side, Y = 0, Z = side},
-                new Vector3Pb {X = -side, Y = 0, Z = -side},
-                new Vector3Pb {X = -side, Y = side, Z = 0},
-                new Vector3Pb {X = -side, Y = -side, Z = 0},
+                new Vector3Pb { X = -side, Y = 0, Z = side },
+                new Vector3Pb { X = -side, Y = 0, Z = -side },
+                new Vector3Pb { X = -side, Y = side, Z = 0 },
+                new Vector3Pb { X = -side, Y = -side, Z = 0 },
 
-                new Vector3Pb {X = 0, Y = side, Z = side},
-                new Vector3Pb {X = 0, Y = side, Z = -side},
-                new Vector3Pb {X = 0, Y = -side, Z = side},
-                new Vector3Pb {X = 0, Y = -side, Z = -side},
+                new Vector3Pb { X = 0, Y = side, Z = side },
+                new Vector3Pb { X = 0, Y = side, Z = -side },
+                new Vector3Pb { X = 0, Y = -side, Z = side },
+                new Vector3Pb { X = 0, Y = -side, Z = -side },
             };
             var cameraColors = new[]
             {
-                new ColorPb {R = 255, G = 0, B = 255},
-                new ColorPb {R = 255, G = 0, B = 64},
-                new ColorPb {R = 255, G = 255, B = 0},
-                new ColorPb {R = 255, G = 64, B = 0},
+                new ColorPb { R = 255, G = 0, B = 255 },
+                new ColorPb { R = 255, G = 0, B = 64 },
+                new ColorPb { R = 255, G = 255, B = 0 },
+                new ColorPb { R = 255, G = 64, B = 0 },
 
-                new ColorPb {R = 64, G = 0, B = 255},
-                new ColorPb {R = 64, G = 0, B = 64},
-                new ColorPb {R = 64, G = 255, B = 0},
-                new ColorPb {R = 64, G = 64, B = 0},
+                new ColorPb { R = 64, G = 0, B = 255 },
+                new ColorPb { R = 64, G = 0, B = 64 },
+                new ColorPb { R = 64, G = 255, B = 0 },
+                new ColorPb { R = 64, G = 64, B = 0 },
 
-                new ColorPb {R = 0, G = 255, B = 255},
-                new ColorPb {R = 0, G = 255, B = 64},
-                new ColorPb {R = 0, G = 64, B = 255},
-                new ColorPb {R = 0, G = 64, B = 64},
+                new ColorPb { R = 0, G = 255, B = 255 },
+                new ColorPb { R = 0, G = 255, B = 64 },
+                new ColorPb { R = 0, G = 64, B = 255 },
+                new ColorPb { R = 0, G = 64, B = 64 },
             };
             var cameraOrientations = new[]
             {
-                Quaternion.CreateFromYawPitchRoll(-3 * (float) Math.PI / 4, 0, 0),
-                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 4, 0, 0),
-                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 2, (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 2, -(float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(-3 * (float)Math.PI / 4, 0, 0),
+                Quaternion.CreateFromYawPitchRoll(-(float)Math.PI / 4, 0, 0),
+                Quaternion.CreateFromYawPitchRoll(-(float)Math.PI / 2, (float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(-(float)Math.PI / 2, -(float)Math.PI / 4, 0),
 
-                Quaternion.CreateFromYawPitchRoll(3 * (float) Math.PI / 4, 0, 0),
-                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 4, 0, 0),
-                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 2, (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 2, -(float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(3 * (float)Math.PI / 4, 0, 0),
+                Quaternion.CreateFromYawPitchRoll((float)Math.PI / 4, 0, 0),
+                Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, (float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, -(float)Math.PI / 4, 0),
 
-                Quaternion.CreateFromYawPitchRoll(0, 3 * (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(0, (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(0, -3 * (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(0, -(float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(0, 3 * (float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(0, (float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(0, -3 * (float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(0, -(float)Math.PI / 4, 0),
             };
 
             var points = new[]
             {
-                new[] {1, 5},
-                new[] {0, 5},
-                new[] {3, 5},
-                new[] {2, 5},
+                new[] { 1, 5 },
+                new[] { 0, 5 },
+                new[] { 3, 5 },
+                new[] { 2, 5 },
 
-                new[] {1, 4},
-                new[] {0, 4},
-                new[] {3, 4},
-                new[] {2, 4},
+                new[] { 1, 4 },
+                new[] { 0, 4 },
+                new[] { 3, 4 },
+                new[] { 2, 4 },
 
-                new[] {1, 3},
-                new[] {0, 3},
-                new[] {1, 2},
-                new[] {0, 2},
+                new[] { 1, 3 },
+                new[] { 0, 3 },
+                new[] { 1, 2 },
+                new[] { 0, 2 },
             };
             return BuildPacket(cameraPoses, cameraColors, cameraOrientations, points, pointsAmount, 0);
         }
@@ -249,47 +250,47 @@ namespace Protobuf.Tests.Elektronik
         {
             var cameraPoses = new[]
             {
-                new Vector3Pb {X = side, Y = side, Z = side},
-                new Vector3Pb {X = side, Y = side, Z = -side},
-                new Vector3Pb {X = side, Y = -side, Z = side},
-                new Vector3Pb {X = side, Y = -side, Z = -side},
-                new Vector3Pb {X = -side, Y = side, Z = side},
-                new Vector3Pb {X = -side, Y = side, Z = -side},
-                new Vector3Pb {X = -side, Y = -side, Z = side},
-                new Vector3Pb {X = -side, Y = -side, Z = -side},
+                new Vector3Pb { X = side, Y = side, Z = side },
+                new Vector3Pb { X = side, Y = side, Z = -side },
+                new Vector3Pb { X = side, Y = -side, Z = side },
+                new Vector3Pb { X = side, Y = -side, Z = -side },
+                new Vector3Pb { X = -side, Y = side, Z = side },
+                new Vector3Pb { X = -side, Y = side, Z = -side },
+                new Vector3Pb { X = -side, Y = -side, Z = side },
+                new Vector3Pb { X = -side, Y = -side, Z = -side },
             };
             var cameraColors = new[]
             {
-                new ColorPb {R = 255, G = 255, B = 255},
-                new ColorPb {R = 255, G = 255, B = 255},
-                new ColorPb {R = 255, G = 255, B = 255},
-                new ColorPb {R = 255, G = 255, B = 255},
-                new ColorPb {R = 255, G = 255, B = 255},
-                new ColorPb {R = 255, G = 255, B = 255},
-                new ColorPb {R = 255, G = 255, B = 255},
-                new ColorPb {R = 255, G = 255, B = 255},
+                new ColorPb { R = 255, G = 255, B = 255 },
+                new ColorPb { R = 255, G = 255, B = 255 },
+                new ColorPb { R = 255, G = 255, B = 255 },
+                new ColorPb { R = 255, G = 255, B = 255 },
+                new ColorPb { R = 255, G = 255, B = 255 },
+                new ColorPb { R = 255, G = 255, B = 255 },
+                new ColorPb { R = 255, G = 255, B = 255 },
+                new ColorPb { R = 255, G = 255, B = 255 },
             };
             var cameraOrientations = new[]
             {
-                Quaternion.CreateFromYawPitchRoll(-3 * (float) Math.PI / 4, (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 4, (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(-3 * (float) Math.PI / 4, -(float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(-(float) Math.PI / 4, -(float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(3 * (float) Math.PI / 4, (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 4, (float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll(3 * (float) Math.PI / 4, -(float) Math.PI / 4, 0),
-                Quaternion.CreateFromYawPitchRoll((float) Math.PI / 4, -(float) Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(-3 * (float)Math.PI / 4, (float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(-(float)Math.PI / 4, (float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(-3 * (float)Math.PI / 4, -(float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(-(float)Math.PI / 4, -(float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(3 * (float)Math.PI / 4, (float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll((float)Math.PI / 4, (float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll(3 * (float)Math.PI / 4, -(float)Math.PI / 4, 0),
+                Quaternion.CreateFromYawPitchRoll((float)Math.PI / 4, -(float)Math.PI / 4, 0),
             };
             var points = new[]
             {
-                new[] {1, 3, 5},
-                new[] {0, 3, 5},
-                new[] {1, 2, 5},
-                new[] {0, 2, 5},
-                new[] {1, 3, 4},
-                new[] {0, 3, 4},
-                new[] {1, 2, 4},
-                new[] {0, 2, 4},
+                new[] { 1, 3, 5 },
+                new[] { 0, 3, 5 },
+                new[] { 1, 2, 5 },
+                new[] { 0, 2, 5 },
+                new[] { 1, 3, 4 },
+                new[] { 0, 3, 4 },
+                new[] { 1, 2, 4 },
+                new[] { 0, 2, 4 },
             };
 
             return BuildPacket(cameraPoses, cameraColors, cameraOrientations, points, pointsAmount, -12);
@@ -303,7 +304,7 @@ namespace Protobuf.Tests.Elektronik
             var step = 3f;
             var plane = GeneratePlaneOfPoints(amount, side, 0.3f);
 
-            var rotation = Quaternion.CreateFromYawPitchRoll(0, (float) Math.PI / 4, 0);
+            var rotation = Quaternion.CreateFromYawPitchRoll(0, (float)Math.PI / 4, 0);
             var translations = Enumerable.Range(0, 10).Select(i => new Vector3(0, i * step, 0));
 
             var planes = translations.SelectMany((tr, i) => TransformPlane(i * amount, plane, rotation, tr)).ToArray();

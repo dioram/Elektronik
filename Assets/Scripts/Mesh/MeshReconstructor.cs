@@ -4,12 +4,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using System.Linq;
 using Elektronik.Threading;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 #if !NO_MESH_BUILDER
 namespace Elektronik.Mesh
@@ -37,11 +39,13 @@ namespace Elektronik.Mesh
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
+        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
 
         public void Clear()
         {
-            OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(new Vector3[0], new int[0]));
+            OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(Array.Empty<Vector3>(),
+                                                                 Array.Empty<int>(),
+                                                                 Array.Empty<Color>()));
         }
 
         public void SetRenderer(ISourceRenderer renderer)
@@ -93,6 +97,9 @@ namespace Elektronik.Mesh
 
         private static NativeVector ToNative(SlamPoint point) =>
                 new NativeVector(point.Position.x, point.Position.y, point.Position.z);
+        
+        private static NativeVector GetColors(SlamPoint point) =>
+                new NativeVector(point.Color.r, point.Color.g, point.Color.b);
 
         private static NativeTransform ToNative(SlamObservation observation)
         {
@@ -116,43 +123,29 @@ namespace Elektronik.Mesh
 
         private void CalculateMesh()
         {
+            var w = Stopwatch.StartNew();
             var points = _points.ToArray();
-            var observations = _observations.ToArray();
-            var obsId2Index = new Dictionary<int, int>();
-            for (int i = 0; i < observations.Length; i++)
-            {
-                obsId2Index[observations[i].Id] = i;
-            }
-
-            var connectionsNotSet = true;
-            var pointsViewsArr = new Dictionary<int, List<int>>();
-            foreach (var observation in observations)
-            {
-                foreach (var id in observation.ObservedPoints.ToArray())
-                {
-                    if (!_points.Contains(id)) continue;
-                    if (!pointsViewsArr.ContainsKey(id)) pointsViewsArr.Add(id, new List<int>());
-                    pointsViewsArr[id].Add(obsId2Index[observation.Point.Id]);
-                    connectionsNotSet = false;
-                }
-            }
-
-            if (connectionsNotSet) return;
 
             var cPoints = new vectorv(points.Select(ToNative));
-            var cViews = new vectori2d(points.Select(p => pointsViewsArr.ContainsKey(p.Id)
-                                                             ? new vectori(pointsViewsArr[p.Id].OrderBy(i => i))
-                                                             : new vectori()));
-            var cObservations = new vectort(observations.Select(ToNative));
+            var cColors = new vectorv(points.Select(GetColors));
 
+            w.Stop();
             var builder = new MeshBuilder();
-            var output = builder.FromPointsAndObservations(cPoints, cViews, cObservations);
-
+            var w1 = Stopwatch.StartNew();
+            var output = builder.FromPoints(cPoints, cColors);
+            w1.Stop();
+            var w2 = Stopwatch.StartNew();
             var vertices = output.points.Select(ToUnity).ToArray();
+            // TODO: Считать цвет на стороне электроника
+            var colors = output.normals.Select(n => new Color(n.x, n.y, n.z)).ToArray();
+            w2.Stop();
+            Debug.LogError($"Input: {cPoints.Count} points\n" +
+                           $"Output: {vertices.Length} points, {colors.Length} colors, {output.triangles.Count / 3} triangles\n" +
+                           $"Time: ToNative: {w.ElapsedMilliseconds}ms, Native: {w1.ElapsedMilliseconds}ms, FromNative: {w2.ElapsedMilliseconds}ms.");
 
             if (_isVisible)
             {
-                OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(vertices, output.triangles.ToArray()));
+                OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(vertices, output.triangles.ToArray(), colors));
             }
         }
 

@@ -2,7 +2,6 @@ Shader "Elektronik/MeshShader"
 {
     Properties
     {
-        _Tint ("Tint", Color) = (1, 1, 1, 1)
         _Smoothness ("Smoothness", Range(0, 1)) = 0.9
         [Gamma] _Metallic ("Metallic", Range(0, 1)) = 0
         _Scale("Scale", Float) = 1
@@ -39,7 +38,7 @@ Shader "Elektronik/MeshShader"
             StructuredBuffer<float4> _NormalsBuffer;
             float _Metallic;
             float _Smoothness;
-            float4 _Tint;
+            #define MAX_BRIGHTNESS 16
 
             struct VertexInput
             {
@@ -52,7 +51,17 @@ Shader "Elektronik/MeshShader"
                 float3 worldPos : TEXTCOORD1;
                 half3 normal : TEXTCOORD0;
                 float2 baryCoord: TEXTCOORD2;
+                half3 color: COLOR;
             };
+
+            half3 DecodeColor(uint data)
+            {
+                half r = (data      ) & 0xff;
+                half g = (data >>  8) & 0xff;
+                half b = (data >> 16) & 0xff;
+                half a = (data >> 24) & 0xff;
+                return half3(r, g, b) * a * MAX_BRIGHTNESS / (255 * 255);
+            }
 
             VertexOutput Vertex(VertexInput input)
             {
@@ -61,6 +70,7 @@ Shader "Elektronik/MeshShader"
                 o.worldPos = pt.xyz * _Scale;
                 o.position = UnityObjectToClipPos(float4(o.worldPos, 1));
                 o.normal = -_NormalsBuffer[input.vertexID].xyz;
+                o.color = DecodeColor(asuint(pt.w));
                 return o;
             }
 
@@ -82,21 +92,19 @@ Shader "Elektronik/MeshShader"
                 stream.Append(i[2]);
             }
 
-            fixed3 Fragment(VertexOutput i) : SV_Target
+            half3 Fragment(VertexOutput i) : SV_Target
             {
                 i.normal = normalize(i.normal);
                 float3 lightDir = _WorldSpaceLightPos0.xyz;
                 float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
-
+                
                 float3 lightColor = _LightColor0.rgb;
-                float3 albedo = _Tint.rgb;
-
+                float3 albedo = i.color.rgb;
+                
                 float3 specularTint;
                 float oneMinusReflectivity;
-                albedo = DiffuseAndSpecularFromMetallic(
-                    albedo, _Metallic, specularTint, oneMinusReflectivity
-                );
-
+                albedo = DiffuseAndSpecularFromMetallic(albedo, _Metallic, specularTint, oneMinusReflectivity);
+                
                 UnityLight light;
                 light.color = lightColor;
                 light.dir = lightDir;
@@ -104,7 +112,7 @@ Shader "Elektronik/MeshShader"
                 UnityIndirect indirectLight;
                 indirectLight.diffuse = 0.1;
                 indirectLight.specular = 0.1;
-
+                
                 float3 color = UNITY_BRDF_PBS(
                     albedo, specularTint,
                     oneMinusReflectivity, _Smoothness,

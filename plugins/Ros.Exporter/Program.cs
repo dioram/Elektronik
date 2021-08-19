@@ -9,8 +9,11 @@ using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros.Bag.Parsers;
 using Elektronik.RosPlugin.Ros.Bag.Parsers.Records;
+using Elektronik.RosPlugin.Ros2.Bag.Data;
+using SQLite;
 using UnityEngine;
 using Color = System.Drawing.Color;
+using RosMessage = RosSharp.RosBridgeClient.Message;
 using RosImage = RosSharp.RosBridgeClient.MessageTypes.Sensor.Image;
 
 namespace Ros.Exporter
@@ -69,28 +72,30 @@ namespace Ros.Exporter
             }
         }
 
-        private static Dictionary<string, StreamWriter> _files = new();
+        private static readonly Dictionary<string, StreamWriter> Files = new();
+        private static readonly Dictionary<int, Topic> Topics = new();
 
-        static void CreateHeader(MessageData data)
+        static void CreateHeader(RosMessage data, string topicName, string path)
         {
-            var first = MessageParser.Parse(data.Data!, data.TopicType!, false);
-            if (first is RosImage)
+            if (data is RosImage)
             {
-                Directory.CreateDirectory(data.TopicName.Replace("/", "_"));
-                _files[data.TopicName] = null;
+                Directory.CreateDirectory(Path.Join(path, topicName.Replace("/", "_")));
+                Files[topicName] = null;
                 return;
             }
-            var file = File.CreateText($"{data.TopicName.Replace("/", "_")}.csv");
-            var header = RosMessageConvertExtender.GetMessagePropertyNames(first.GetType());
-            _files[data.TopicName] = file;
+            if (data is VideoFrame) return;
+            
+            var file = File.CreateText(Path.Join(path, $"{topicName.Replace("/", "_")}.csv"));
+            var header = RosMessageConvertExtender.GetMessagePropertyNames(data.GetType());
+            Files[topicName] = file;
             file.WriteLine(string.Join(',', header));
         }
         
-        static async Task<bool> ExportData(MessageData data)
+        static async Task<bool> ExportData(MessageData data, string path)
         {
-            if (!_files.ContainsKey(data.TopicName)) CreateHeader(data);
-            
             var mess = MessageParser.Parse(data.Data!, data.TopicType!, false);
+            if (!Files.ContainsKey(data.TopicName)) CreateHeader(mess, data.TopicName, path);
+            
             if (mess is RosImage image)
             {
                 var imageMessage = ImageDataExt.FromImageMessage(image);
@@ -107,20 +112,78 @@ namespace Ros.Exporter
                 im.Save($"{data.TopicName.Replace("/", "_")}//{data.Timestamp}.png", ImageFormat.Png);
                 return true;
             }
-
-            await _files[data.TopicName].WriteLineAsync(String.Join(',', mess.GetData()));
+        
+            if (mess is VideoFrame) return true;
+        
+            await Files[data.TopicName].WriteLineAsync(String.Join(',', mess.GetData()));
             return true;
         }
 
+        
+        static async Task<bool> ExportData(Message data, Topic topic, string path)
+        {
+            // if (topic.Type.EndsWith("Path")) return true;
+            var mess = MessageParser.Parse(data.Data, topic.Type, true);
+            if (mess is null) return true;
+            if (!Files.ContainsKey(topic.Name)) CreateHeader(mess, topic.Name, path);
+            
+            if (mess is RosImage image)
+            {
+                var imageMessage = ImageDataExt.FromImageMessage(image);
+                var im = new Bitmap(imageMessage.Width, imageMessage.Height);
+                using var stream = new MemoryStream(imageMessage.Data);
+                for (int j = 0; j < imageMessage.Height; j++)
+                {
+                    for (int i = 0; i < imageMessage.Width; i++)
+                    {
+                        im.SetPixel(i, j, ReadColor(stream, imageMessage.Encoding));
+                    }
+                }
+                
+                im.Save($"{topic.Name.Replace("/", "_")}//{data.Timestamp}.png", ImageFormat.Png);
+                return true;
+            }
+            if (mess is VideoFrame) return true;
+
+            await Files[topic.Name].WriteLineAsync(String.Join(',', mess.GetData()));
+            return true;
+        }
 
         static async Task<int> Main(string[] args)
         {
-            var parser = new BagParser(args[0]);
-            await parser.ReadMessagesAsync()
-                    .Where(m => m.TopicName is not null && m.TopicType is not null)
-                    .Select(ExportData).ToArrayAsync();
-
-            return 0;
+            switch (args[0])
+            {
+            case "-1":
+            {
+                var parser = new BagParser(args[0]);
+                await parser.ReadMessagesAsync()
+                        .Where(m => m.TopicName is not null && m.TopicType is not null)
+                        .Select(m => ExportData(m, args[2])).ToArrayAsync();
+                return 0;
+            }
+            case "-2":
+            {
+                var db_paths = Rosbag2Metadata.ReadFromFile(args[1]).DBPaths(Path.GetDirectoryName(args[1]));
+                foreach (var db in db_paths)
+                {
+                    Topics.Clear();
+                    using var model = new SQLiteConnection(db, SQLiteOpenFlags.ReadOnly);
+                    foreach (var topic in model.Table<Topic>())
+                    {
+                        Topics[topic.Id] = topic;
+                    }
+                    var command = model.CreateCommand("SELECT * FROM messages");
+                    var messages = command.ExecuteQuery<Message>();
+                    foreach (var message in messages)
+                    {
+                        await ExportData(message, Topics[message.TopicID], args[2]);
+                    }
+                }
+                return 0;
+            }
+            default:
+                return 1;
+            }
         }
     }
 }

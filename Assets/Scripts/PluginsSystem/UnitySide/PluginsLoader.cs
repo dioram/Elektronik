@@ -75,7 +75,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                     {
                         FileName = Path.Combine(Path.GetDirectoryName(elektronikExe)!,
                                                 @"Plugins\ContextMenuSetter\ContextMenuSetter.exe"),
-                        Arguments = elektronikExe + " " + string.Join(" ", extensions)
+                        Arguments = $"\"{elektronikExe}\" {string.Join(" ", extensions)}"
                     }
                 };
                 setter.Start();

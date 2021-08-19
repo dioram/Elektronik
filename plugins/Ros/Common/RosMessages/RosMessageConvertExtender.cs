@@ -197,7 +197,7 @@ namespace Elektronik.RosPlugin.Common.RosMessages
                 var builder = new StringBuilder();
                 foreach (var o in arr)
                 {
-                    builder.Append($"{o.GetData()[0]}, ");
+                    builder.Append($"{string.Join(",", o.GetData())}, ");
                 }
                 if (builder.Length >= 2) builder.Remove(builder.Length - 2, 2);
                 return new[] {builder.ToString()};

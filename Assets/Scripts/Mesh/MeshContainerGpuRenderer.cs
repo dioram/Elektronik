@@ -23,7 +23,8 @@ namespace Elektronik.Mesh
                 {
                     if (i < e.Triangles.Length)
                     {
-                        _vertices[i] = new GPUItem {Position = e.Vertices[e.Triangles[i]], Color = 10};
+                        var index = e.Triangles[i];
+                        _vertices[i] = new GPUItem(e.Vertices[index], e.Colors[index]);
                     }
                     else
                     {

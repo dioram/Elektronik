@@ -33,12 +33,6 @@ struct NativeMesh
 class MeshBuilder
 {
 public:
-    /// Reconstructs mesh from points and observations
-    /// \param points
-    /// \param view For each point array of observations seeing this point
-    /// \param observations
-    /// \return
-    NativeMesh FromPointsAndObservations(const std::vector<NativeVector>& points,
-                                         const std::vector<std::vector<int>>& views,
-                                         const std::vector<NativeTransform>& observations);
+
+    NativeMesh FromPoints(const std::vector<NativeVector>& points, const std::vector<NativeVector>& colors);
 };

@@ -7,11 +7,13 @@ namespace Elektronik.Mesh
     {
         public readonly Vector3[] Vertices;
         public readonly int[] Triangles;
+        public readonly Color[] Colors;
 
-        public MeshUpdatedEventArgs(Vector3[] vertices, int[] triangles)
+        public MeshUpdatedEventArgs(Vector3[] vertices, int[] triangles, Color[] colors)
         {
             Vertices = vertices;
             Triangles = triangles;
+            Colors = colors;
         }
     }
 }

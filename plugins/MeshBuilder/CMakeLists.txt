@@ -7,8 +7,8 @@ if (MSVC)
 endif ()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 
-find_package(OpenMVS CONFIG REQUIRED)
 find_package(SWIG REQUIRED)
+find_package(PCL REQUIRED)
 
 include(${SWIG_USE_FILE})
 set_source_files_properties(Builder.i PROPERTIES CPLUSPLUS ON)
@@ -19,7 +19,7 @@ swig_add_library(MeshBuilder
         OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Mesh/MeshBuildNative
         OUTFILE_DIR ${PROJECT_SOURCE_DIR}
         SOURCES MeshBuilder.h MeshBuilder.cpp Builder.i)
-target_link_libraries(MeshBuilder ${OpenMVS_LIBRARIES})
+target_link_libraries(MeshBuilder ${PCL_LIBRARIES})
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/../../Assets/Plugins/Native CACHE PATH "installation prefix")
 set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../Assets/Plugins/Native)
