@@ -24,6 +24,12 @@ namespace Elektronik.Clouds
             Color = EncodeColor(color);
         }
 
+        public GPUItem((Vector3 offset, Color color) vert)
+        {
+            Position = vert.offset;
+            Color = EncodeColor(vert.color);
+        }
+
         public GPUItem(Quaternion rotation)
         {
             Position = new Vector3(rotation.x, rotation.y, rotation.z);

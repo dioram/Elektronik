@@ -24,7 +24,6 @@ namespace Elektronik.Mesh
             _points = points;
             _observations = observations;
             DisplayName = displayName;
-
             _points.OnAdded += (_, __) => RequestCalculation();
             _points.OnUpdated += (_, __) => RequestCalculation();
             _points.OnRemoved += (_, __) => RequestCalculation();
@@ -43,9 +42,8 @@ namespace Elektronik.Mesh
 
         public void Clear()
         {
-            OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(Array.Empty<Vector3>(),
-                                                                 Array.Empty<int>(),
-                                                                 Array.Empty<Color>()));
+            OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(Array.Empty<(Vector3, Color)>(),
+                                                                 Array.Empty<int>()));
         }
 
         public void SetRenderer(ISourceRenderer renderer)
@@ -95,57 +93,18 @@ namespace Elektronik.Mesh
             _threadWorker.Enqueue(CalculateMesh);
         }
 
-        private static NativeVector ToNative(SlamPoint point) =>
-                new NativeVector(point.Position.x, point.Position.y, point.Position.z);
-        
-        private static NativeVector GetColors(SlamPoint point) =>
-                new NativeVector(point.Color.r, point.Color.g, point.Color.b);
-
-        private static NativeTransform ToNative(SlamObservation observation)
-        {
-            var m = Matrix4x4.Rotate(observation.Rotation);
-            return new NativeTransform
-            {
-                position = ToNative(observation.Point),
-                r11 = m.m00,
-                r12 = m.m01,
-                r13 = m.m02,
-                r21 = m.m10,
-                r22 = m.m11,
-                r23 = m.m12,
-                r31 = m.m20,
-                r32 = m.m21,
-                r33 = m.m22,
-            };
-        }
-
-        private static Vector3 ToUnity(NativeVector vector) => new Vector3(vector.x, vector.y, vector.z);
+        private static (Vector3 position, Color color) ToUnity(NativePoint point) =>
+                (new Vector3(point.x, point.y, point.z), new Color(point.r, point.g, point.b));
 
         private void CalculateMesh()
         {
-            var w = Stopwatch.StartNew();
             var points = _points.ToArray();
-
-            var cPoints = new vectorv(points.Select(ToNative));
-            var cColors = new vectorv(points.Select(GetColors));
-
-            w.Stop();
             var builder = new MeshBuilder();
-            var w1 = Stopwatch.StartNew();
-            var output = builder.FromPoints(cPoints, cColors);
-            w1.Stop();
-            var w2 = Stopwatch.StartNew();
-            var vertices = output.points.Select(ToUnity).ToArray();
-            // TODO: Считать цвет на стороне электроника
-            var colors = output.normals.Select(n => new Color(n.x, n.y, n.z)).ToArray();
-            w2.Stop();
-            Debug.LogError($"Input: {cPoints.Count} points\n" +
-                           $"Output: {vertices.Length} points, {colors.Length} colors, {output.triangles.Count / 3} triangles\n" +
-                           $"Time: ToNative: {w.ElapsedMilliseconds}ms, Native: {w1.ElapsedMilliseconds}ms, FromNative: {w2.ElapsedMilliseconds}ms.");
-
+            var output = builder.FromPoints(points);
+            var outputPoints = output.points.Select(ToUnity).ToArray();
             if (_isVisible)
             {
-                OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(vertices, output.triangles.ToArray(), colors));
+                OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(outputPoints, output.triangles.ToArray()));
             }
         }
 

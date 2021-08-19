@@ -2,37 +2,26 @@
 
 #include <vector>
 
-struct NativeVector
+struct NativePoint
 {
-    float x, y, z;
+    float x, y, z, r, g, b;
+    NativePoint() = default;
 
-    NativeVector() = default;
+    NativePoint(float x, float y, float z) : NativePoint(x, y, z, 0, 0, 0)
+    { }
 
-    NativeVector(float x, float y, float z)
-    {
-        this->x = x;
-        this->y = y;
-        this->z = z;
-    }
-};
-
-struct NativeTransform
-{
-    NativeVector position;
-    // Rotation matrix indices
-    float r11, r12, r13, r21, r22, r23, r31, r32, r33;
+    NativePoint(float x, float y, float z, float r, float g, float b) : x(x), y(y), z(z), r(r), g(g), b(b)
+    { }
 };
 
 struct NativeMesh
 {
-    std::vector<NativeVector> points;
-    std::vector<NativeVector> normals;
+    std::vector<NativePoint> points;
     std::vector<int> triangles;
 };
 
 class MeshBuilder
 {
 public:
-
-    NativeMesh FromPoints(const std::vector<NativeVector>& points, const std::vector<NativeVector>& colors);
+    NativeMesh FromPoints(const std::vector<NativePoint>& points);
 };

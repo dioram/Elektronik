@@ -29,13 +29,25 @@ namespace Elektronik.Threading
             Task.Run(() => RunTasks(action));
         }
 
+        private void Invoke(Action action)
+        {
+            try
+            {
+                action?.Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
         private void RunTasks(Action action)
         {
             lock (_locker)
             {
                 _isRunning = true;
             }
-            action?.Invoke();
+            Invoke(action);
 
             while (!(_waitingTask is null))
             {
@@ -45,15 +57,7 @@ namespace Elektronik.Threading
                     tmp = _waitingTask;
                     _waitingTask = null;
                 }
-
-                try
-                {
-                    tmp?.Invoke();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
+                Invoke(tmp);
             }
 
             lock (_locker)

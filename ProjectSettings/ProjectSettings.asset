@@ -134,6 +134,7 @@ PlayerSettings:
   preloadedAssets:
   - {fileID: 11400000, guid: 643c9912d14026240bf6e70b352818ad, type: 2}
   - {fileID: 11400000, guid: 4d9278389e577024194549bb444fcd74, type: 2}
+  - {fileID: -4910998042643817111, guid: d7ae9999363409c4a922750160a37e6e, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -244,6 +245,7 @@ PlayerSettings:
   useCustomGradlePropertiesTemplate: 0
   useCustomProguardFile: 0
   AndroidTargetArchitectures: 5
+  AndroidTargetDevices: 0
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
   AndroidKeystoreName: '{inproject}: '
@@ -260,6 +262,7 @@ PlayerSettings:
     height: 180
     banner: {fileID: 0}
   androidGamepadSupportLevel: 0
+  chromeosInputEmulation: 1
   AndroidMinifyWithR8: 0
   AndroidMinifyRelease: 0
   AndroidMinifyDebug: 0

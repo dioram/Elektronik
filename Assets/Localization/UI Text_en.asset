@@ -459,6 +459,14 @@ MonoBehaviour:
     m_Localized: 'Speed:'
     m_Metadata:
       m_Items: []
+  - m_Id: 46797145714343936
+    m_Localized: Use vertex colors for mesh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46797231349448704
+    m_Localized: Override colors for mesh
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

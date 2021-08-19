@@ -35,6 +35,7 @@
 /Assets/Plugins/Native
 /Assets/Plugins/Native.meta
 /Assets/generatedFiles/
+/Assets/AddressableAssetsData/
 
 # Unity3D generated meta files
 *.pidb.meta

@@ -424,6 +424,14 @@ MonoBehaviour:
     m_Key: 'Speed:'
     m_Metadata:
       m_Items: []
+  - m_Id: 46797145714343936
+    m_Key: Use vertex colors for mesh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46797231349448704
+    m_Key: Override colors for mesh
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

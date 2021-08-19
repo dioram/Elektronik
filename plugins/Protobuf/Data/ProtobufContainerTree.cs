@@ -39,6 +39,7 @@ namespace Elektronik.Protobuf.Data
                 new SlamLinesContainer("Connections"),
                 "Points");
             Connector = new Connector(Points, Observations, "Connections");
+            Lines = new SlamLinesContainer("Lines");
 
             bool meshImplemented = true;
             try
@@ -50,7 +51,6 @@ namespace Elektronik.Protobuf.Data
                 meshImplemented = false;
             }
 
-            Lines = new SlamLinesContainer("Lines");
             InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
             var observationsGraph = new VirtualContainer("Observations graph", new List<ISourceTree>
             {
