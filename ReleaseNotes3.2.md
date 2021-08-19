@@ -23,7 +23,7 @@
 - Возможность выключить/включить логирование в файл.
 - Возможность передавать данные на другие запущенные экземпляры приложения.
 - Возможность менять прозрачность линий.
-- Реконструкция поверхностей по облаку точек и информации о наблюдениях.
+- Реконструкция поверхностей по облаку точек.
 - Теперь построение графа наблюдений происходит на стороне электроника, по этому появилась возможность на ходу фильтровать ребра графа по весу.
 - Линукс версия
 - Добавлена возможность не компилировать нативные библиотеки, если их функции не нужны.
@@ -58,7 +58,7 @@
 - Plugin that allows Elektronik to transmit data from one instance to another.
 - Semitransparent lines.
 - Camera can follow tracked objects.
-- Surface reconstruction based on point cloud and observations info.
+- Surface reconstruction based on point cloud.
 - Now observations graph is building on Elektronik side and user now can filter graph edges by their weight.
 - Linux version
 - Now you don't need to build all native libraries if you think you don't need them.
