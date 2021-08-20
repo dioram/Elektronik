@@ -19,7 +19,7 @@ swig_add_library(MeshBuilder
         OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Mesh/MeshBuildNative
         OUTFILE_DIR ${PROJECT_SOURCE_DIR}
         SOURCES MeshBuilder.h MeshBuilder.cpp Builder.i)
-if (WIN)
+if (WIN32)
     target_link_libraries(MeshBuilder ${PCL_LIBRARIES})
 elseif(UNIX)
     target_link_libraries(MeshBuilder ${PCL_LIBRARIES} -lgomp)

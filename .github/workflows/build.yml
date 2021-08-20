@@ -108,9 +108,9 @@ jobs:
         run: ../../.github/build_natives.sh -DOPENSSL_ROOT_DIR=$VCPKG_ROOT/installed/x64-linux
         working-directory: ./plugins/ROS2DDS
 
-          #      - name: Build MeshReconstructor
-          #        run: ../../.github/build_natives.sh
-          #        working-directory: ./plugins/MeshBuilder
+      - name: Build MeshReconstructor
+        run: ../../.github/build_natives.sh
+        working-directory: ./plugins/MeshBuilder
 
       - name: Build PlanesDetector
         run: ../../.github/build_natives.sh
