@@ -1,4 +1,4 @@
-﻿using Elektronik.Mesh;
+﻿using Elektronik.Clouds;
 using Elektronik.UI.Localization;
 using TMPro;
 using UniRx;
@@ -10,7 +10,7 @@ namespace Elektronik.UI
     [RequireComponent(typeof(Button))]
     public class OverrideColorButton: MonoBehaviour
     {
-        [SerializeField] private MeshContainerGpuRenderer Renderer;
+        [SerializeField] private GpuMeshRenderer Renderer;
         
         private string GetText(bool overrided)
         {

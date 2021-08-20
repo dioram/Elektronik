@@ -180,7 +180,15 @@ namespace Elektronik.Clouds
         private void CreateNewBlock()
         {
             var go = new GameObject($"{GetType().Name} {Blocks.Count}");
-            go.transform.SetParent(transform);
+            try
+            {
+                go.transform.SetParent(transform);
+            }
+            catch (NullReferenceException e)
+            {
+                // Sometimes for unknown reasons this.transform causes NullReferenceException.
+                // We can just live with that.
+            }
             var block = go.AddComponent<TCloudBlock>();
             block.CloudShader = CloudShader;
             block.Updated = true;

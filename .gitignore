@@ -30,8 +30,8 @@
 /plugins/ROS2DDS/CMakeSettings.json
 /Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative
 /Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative.meta
-/Assets/Scripts/Mesh/MeshBuildNative
-/Assets/Scripts/Mesh/MeshBuildNative.meta
+/Assets/Scripts/Containers/MeshBuildNative
+/Assets/Scripts/Containers/MeshBuildNative.meta
 /Assets/Plugins/Native
 /Assets/Plugins/Native.meta
 /Assets/generatedFiles/

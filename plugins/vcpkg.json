@@ -4,6 +4,7 @@
   "dependencies": [
     "openssl",
     "fastrtps",
-    "opencv"
+    "opencv",
+    "pcl"
   ]
 }

@@ -14,6 +14,8 @@ Shader "Elektronik/LineCloudShader"
         }
         Blend SrcAlpha OneMinusSrcAlpha
         Cull Off
+        ZWrite On
+        ZTest Less
         Pass
         {
             Tags

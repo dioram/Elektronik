@@ -12,6 +12,8 @@ Shader "Elektronik/PointCloudShader"
             "RenderType"="Opaque"
         }
         Cull Off
+        ZWrite On
+        ZTest Less
         Pass
         {
             Tags

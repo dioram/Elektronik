@@ -345,12 +345,12 @@ namespace Protobuf.Tests.Elektronik
             var (packet, obsPacket) = GenerateCube(defaultPlane, side);
 
 
-            SendAndCheck(packet);
+            SendAndCheck(packet, "NoisedCube.dat", true);
             Thread.Sleep(200);
-            SendAndCheck(obsPacket);
-            SendAndCheck(GenerateEdgeObservations(amount, side));
+            SendAndCheck(obsPacket, "NoisedCube.dat");
+            SendAndCheck(GenerateEdgeObservations(amount, side), "NoisedCube.dat");
             Thread.Sleep(200);
-            SendAndCheck(GenerateCornerObservations(amount, side));
+            SendAndCheck(GenerateCornerObservations(amount, side), "NoisedCube.dat");
         }
     }
 }

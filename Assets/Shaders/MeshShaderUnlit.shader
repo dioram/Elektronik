@@ -14,6 +14,7 @@ Shader "Elektronik/MeshShaderUnlit"
         }
         Cull Off
         ZWrite On
+        ZTest Less
         Pass
         {
             Tags

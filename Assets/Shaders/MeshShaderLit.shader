@@ -15,6 +15,7 @@ Shader "Elektronik/MeshShaderLit"
         }
         Cull Off
         ZWrite On
+        ZTest Less
         Pass
         {
             Tags
@@ -37,7 +38,6 @@ Shader "Elektronik/MeshShaderLit"
             half _Scale;
             half _Size;
             StructuredBuffer<float4> _VertsBuffer;
-            StructuredBuffer<float4> _NormalsBuffer;
             float _Metallic;
             float _Smoothness;
             half3 _Color;
@@ -71,7 +71,7 @@ Shader "Elektronik/MeshShaderLit"
                 float4 pt = _VertsBuffer[input.vertex_id];
                 o.world_pos = pt.xyz * _Scale;
                 o.position = UnityObjectToClipPos(float4(o.world_pos, 1));
-                o.normal = -_NormalsBuffer[input.vertex_id].xyz;
+                o.normal = float3(0, 0, 0);
                 o.bary_coord = float2(0, 0);
                 return o;
             }
@@ -127,7 +127,7 @@ Shader "Elektronik/MeshShaderLit"
                 const float delta = fwidth(min_bary);
                 min_bary = smoothstep(0.5 * delta, 1.5 * delta, min_bary);
 
-                return _Color * min_bary;
+                return color * min_bary;
             }
             ENDCG
         }

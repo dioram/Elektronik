@@ -17,7 +17,7 @@ namespace Elektronik.Clouds
             Updated = true;
         }
 
-        public void SetScale(float value)
+        public virtual void SetScale(float value)
         {
             _renderMaterial.SetFloat(_scaleShaderProp, value);
         }

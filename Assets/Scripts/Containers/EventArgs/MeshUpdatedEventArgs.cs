@@ -1,9 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Elektronik.Mesh
+namespace Elektronik.Containers.EventArgs
 {
-    public class MeshUpdatedEventArgs : EventArgs
+    public class MeshUpdatedEventArgs : System.EventArgs
     {
         public readonly (Vector3 pos, Color color)[] Vertices;
         public readonly int[] Triangles;

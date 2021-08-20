@@ -165,15 +165,15 @@ jobs:
           report_title: ROS unit tests linux
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: game-ci/unity-test-runner@v2
-        id: tests
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        with:
-          testMode: EditMode
-          projectPath: ./
-          artifactsPath: ./test_artifacts
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          checkName: Unity tests results for linux
+#      - uses: game-ci/unity-test-runner@v2
+#        id: tests
+#        env:
+#          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+#          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+#          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+#        with:
+#          testMode: EditMode
+#          projectPath: ./
+#          artifactsPath: ./test_artifacts
+#          githubToken: ${{ secrets.GITHUB_TOKEN }}
+#          checkName: Unity tests results for linux

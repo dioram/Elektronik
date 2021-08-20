@@ -38,10 +38,16 @@ namespace Elektronik.Threading
             if (Thread.CurrentThread != _mainThread)
             {
                 Actions.Enqueue(action);
+                return;
             }
-            else
+
+            try
             {
                 action();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
         }
 
@@ -51,16 +57,15 @@ namespace Elektronik.Threading
             var actionsAmount = Actions.Count;
             while (Actions.Count != 0)
             {
-                if (Actions.TryDequeue(out Action a))
+                if (!Actions.TryDequeue(out Action a)) continue;
+                
+                try
                 {
-                    try
-                    {
-                        a?.Invoke();
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
+                    a?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
                 }
             }
             w.Stop();

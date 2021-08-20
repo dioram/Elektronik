@@ -1,29 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using Elektronik.Containers;
+using System.Linq;
+using Elektronik.Clouds;
+using Elektronik.Containers.EventArgs;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using System.Linq;
 using Elektronik.Mesh.Native;
 using Elektronik.Threading;
 using UnityEngine;
 
-namespace Elektronik.Mesh
+namespace Elektronik.Containers
 {
     public class MeshReconstructor : IMeshContainer
     {
-        public MeshReconstructor(IContainer<SlamPoint> points, IContainer<SlamObservation> observations,
-                                 string displayName = "Mesh")
+        public MeshReconstructor(IContainer<SlamPoint> points, string displayName = "Mesh")
         {
             _points = points;
-            _observations = observations;
             DisplayName = displayName;
             _points.OnAdded += (_, __) => RequestCalculation();
             _points.OnUpdated += (_, __) => RequestCalculation();
             _points.OnRemoved += (_, __) => RequestCalculation();
-            _observations.OnAdded += (_, __) => RequestCalculation();
-            _observations.OnUpdated += (_, __) => RequestCalculation();
-            _observations.OnRemoved += (_, __) => RequestCalculation();
         }
 
         public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
@@ -77,7 +73,6 @@ namespace Elektronik.Mesh
 
         private bool _isVisible = false;
         private readonly IContainer<SlamPoint> _points;
-        private readonly IContainer<SlamObservation> _observations;
         private readonly ThreadWorkerSingleAwaiter _threadWorker = new ThreadWorkerSingleAwaiter();
 
         private void RequestCalculation()

@@ -17,7 +17,7 @@ namespace Protobuf.Tests.Internal
     public class ContainerTreeTests
     {
         private ProtobufContainerTree _tree;
-        private const int ChildrenCount = 7;
+        private const int ChildrenCount = 8;
         private Mock<ISourceTree> _image;
 
         [SetUp]
@@ -68,7 +68,7 @@ namespace Protobuf.Tests.Internal
         {
             var snapshot = _tree.TakeSnapshot() as VirtualContainer;
             Assert.NotNull(snapshot);
-            Assert.AreEqual(ChildrenCount - 2, snapshot.Children.Count(ch => ch is not null));
+            Assert.AreEqual(ChildrenCount - 3, snapshot.Children.Count(ch => ch is not null));
             var points = snapshot.Children.OfType<IConnectableObjectsContainer<SlamPoint>>().First();
             Assert.AreEqual(2, points.Count);
             Assert.AreEqual(2, _tree.Points.Count);
