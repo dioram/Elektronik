@@ -1,19 +1,13 @@
-﻿#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
-#define NO_MESH_BUILDER
-#endif
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using System.Linq;
+using Elektronik.Mesh.Native;
 using Elektronik.Threading;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
-#if !NO_MESH_BUILDER
 namespace Elektronik.Mesh
 {
     public class MeshReconstructor : IMeshContainer
@@ -111,33 +105,3 @@ namespace Elektronik.Mesh
         #endregion
     }
 }
-#else
-namespace Elektronik.Mesh
-{
-    public class MeshReconstructor : IMeshContainer
-    {
-        public MeshReconstructor(IContainer<SlamPoint> points, IContainer<SlamObservation> observations,
-                                 string displayName = "Mesh")
-        {
-            throw new NotImplementedException();
-        }
-        
-        public string DisplayName { get; set; }
-        public IEnumerable<ISourceTree> Children { get; }
-        public void Clear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetRenderer(ISourceRenderer renderer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsVisible { get; set; }
-        public event Action<bool> OnVisibleChanged;
-        public bool ShowButton { get; }
-        public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
-    }
-}
-#endif

@@ -40,17 +40,7 @@ namespace Elektronik.Protobuf.Data
                 "Points");
             Connector = new Connector(Points, Observations, "Connections");
             Lines = new SlamLinesContainer("Lines");
-
-            bool meshImplemented = true;
-            try
-            {
-                if (drawMesh) MeshContainer = new MeshReconstructor(Points, Observations, "Mesh");
-            }
-            catch (NotImplementedException e)
-            {
-                meshImplemented = false;
-            }
-
+            MeshContainer = new MeshReconstructor(Points, Observations, "Mesh");
             InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
             var observationsGraph = new VirtualContainer("Observations graph", new List<ISourceTree>
             {
@@ -64,9 +54,9 @@ namespace Elektronik.Protobuf.Data
                 (ISourceTree) InfinitePlanes,
                 observationsGraph,
                 (ISourceTree) Lines,
+                MeshContainer,
                 Image,
             };
-            if (drawMesh && meshImplemented) ch.Add(MeshContainer);
             if (SpecialInfo != null) ch.Add(SpecialInfo);
             Children = ch.ToArray();
         }

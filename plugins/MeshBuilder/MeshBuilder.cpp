@@ -3,14 +3,11 @@
 #include <pcl/point_types.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/surface/marching_cubes_hoppe.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/surface/poisson.h>
 #include <set>
 
 #define NEIGHBORS_FOR_COLOR 5
-
-using namespace std::chrono;
 
 void GetColor(const std::vector<NativePoint>& points, const std::vector<int>& indices, NativePoint& point)
 {
