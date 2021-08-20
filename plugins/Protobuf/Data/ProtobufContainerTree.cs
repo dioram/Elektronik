@@ -40,7 +40,7 @@ namespace Elektronik.Protobuf.Data
                 "Points");
             Connector = new Connector(Points, Observations, "Connections");
             Lines = new SlamLinesContainer("Lines");
-            MeshContainer = new MeshReconstructor(Points, Observations, "Mesh");
+            MeshContainer = new MeshReconstructor(Points, "Mesh");
             InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
             var observationsGraph = new VirtualContainer("Observations graph", new List<ISourceTree>
             {
