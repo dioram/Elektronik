@@ -87,7 +87,7 @@ jobs:
           additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
 
       - name: Install vcpkg packages
-        run: $VCPKG_ROOT/vcpkg install openssl fastrtps opencv
+        run: $VCPKG_ROOT/vcpkg install openssl fastrtps opencv pcl
 
       - name: Upload vcpkg logs if failed
         if: ${{ failure() }}
@@ -104,9 +104,9 @@ jobs:
         run: ../../.github/build_natives.sh -DOPENSSL_ROOT_DIR=$VCPKG_ROOT/installed/x64-linux
         working-directory: ./plugins/ROS2DDS
 
-          #      - name: Build MeshReconstructor
-        #        run: ../../.github/build_natives.sh
-        #        working-directory: ./plugins/MeshBuilder
+      - name: Build MeshReconstructor
+        run: ../../.github/build_natives.sh
+        working-directory: ./plugins/MeshBuilder
 
       - name: Build PlanesDetector
         run: ../../.github/build_natives.sh
