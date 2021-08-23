@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace Elektronik.Data.PackageObjects
                                        Rotation ?? Quaternion.identity,
                                        string.IsNullOrEmpty(Message) ? "" : Message,
                                        string.IsNullOrEmpty(FileName) ? "" : FileName,
-                                       ObservedPoints ?? new int[0]);
+                                       ObservedPoints ?? Array.Empty<int>());
         }
 
         public SlamObservation Apply(SlamObservation item)

@@ -95,13 +95,13 @@ namespace Elektronik.UI.Windows
         
         public void MoveCameraToObservation()
         {
-            var camera = Camera.main;
-            if (camera is null) return;
+            var cam = Camera.main;
+            if (cam is null) return;
             
-            var lookable = camera.GetComponent<LookableCamera>();
+            var lookable = cam.GetComponent<LookableCamera>();
             if (lookable is null) return;
 
-            var direction = (_observation.Point.Position - camera.transform.position).normalized;
+            var direction = (_observation.Point.Position - cam.transform.position).normalized;
             var newPos = _observation.Point.Position - direction;
             var rotation = Quaternion.LookRotation(direction);
             

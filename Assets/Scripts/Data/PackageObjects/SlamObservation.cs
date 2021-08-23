@@ -32,7 +32,7 @@ namespace Elektronik.Data.PackageObjects
             Statistics = stats;
             Message = message;
             FileName = fileName;
-            ObservedPoints = new HashSet<int>(observedPoints ?? new int[0]);
+            ObservedPoints = new HashSet<int>(observedPoints ?? Array.Empty<int>());
         }
 
         public static implicit operator SlamPoint(SlamObservation obs) => obs.Point;

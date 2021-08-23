@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Data;
 using Elektronik.Data.Converters;
@@ -27,7 +28,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
         #region ISourceTree
 
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
+        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
         public void SetRenderer(ISourceRenderer dataRenderer)
         {
             if (dataRenderer is WindowsManager factory)

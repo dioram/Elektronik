@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -138,7 +137,6 @@ namespace Elektronik.UI.Windows
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            _hovered = true;
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             switch (Side)
             {
@@ -193,7 +191,6 @@ namespace Elektronik.UI.Windows
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            _hovered = false;
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.StandardArrow));
 #else
@@ -208,7 +205,6 @@ namespace Elektronik.UI.Windows
         private Canvas _canvas;
         private float _minHeight;
         private float _minWidth;
-        private bool _hovered;
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]

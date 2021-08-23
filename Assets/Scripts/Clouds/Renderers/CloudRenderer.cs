@@ -184,10 +184,11 @@ namespace Elektronik.Clouds
             {
                 go.transform.SetParent(transform);
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
                 // Sometimes for unknown reasons this.transform causes NullReferenceException.
                 // We can just live with that.
+                // TODO: Investigate this properly
             }
             var block = go.AddComponent<TCloudBlock>();
             block.CloudShader = CloudShader;

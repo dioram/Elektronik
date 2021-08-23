@@ -97,7 +97,7 @@ namespace Protobuf.Tests.Elektronik
                 new() {Point = new PointPb {Id = 0}, ObservedPoints = {0, 1, 2, 3}},
                 new() {Point = new PointPb {Id = 1}, ObservedPoints = {2, 4}},
                 new() {Point = new PointPb {Id = 2}, ObservedPoints = {3, 4}},
-                new() {Point = new PointPb {Id = 3}, ObservedPoints = { }}, // {0, 4}
+                new() {Point = new PointPb {Id = 3},}, // {0, 4}
             });
 
             // Connections:

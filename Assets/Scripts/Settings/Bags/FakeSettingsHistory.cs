@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 
 namespace Elektronik.Settings.Bags
 {
@@ -10,7 +11,7 @@ namespace Elektronik.Settings.Bags
         }
 
         public ReadOnlyCollection<SettingsBag> Recent { get; } =
-            new ReadOnlyCollection<SettingsBag>(new SettingsBag[0]);
+            new ReadOnlyCollection<SettingsBag>(Array.Empty<SettingsBag>());
 
         public void Save()
         {

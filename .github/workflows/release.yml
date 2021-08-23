@@ -8,7 +8,7 @@ on:
 jobs:
   build_windows:
     name: Build for windows
-    runs-on: self-hosted
+    runs-on: [self-hosted, windows]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -54,7 +54,7 @@ jobs:
 
   build_linux:
     name: Linux build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

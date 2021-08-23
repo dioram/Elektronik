@@ -46,9 +46,10 @@ namespace Elektronik.Clouds
         public void FollowCamera(IFollowable<SlamTrackedObject> sender, IContainer<SlamTrackedObject> container,
                                  SlamTrackedObject obj)
         {
-            if (Camera.main == null) return;
-            var cameraTransform = Camera.main.transform;
-            (cameraTransform.parent?
+            var cam = Camera.main;
+            if (cam == null) return;
+            var cameraTransform = cam.transform!;
+            (cameraTransform.parent
                             .GetComponent<DataComponent<SlamTrackedObject>>()?
                             .Container as ISourceTree)?.Children
                     .OfType<IFollowable<SlamTrackedObject>>()

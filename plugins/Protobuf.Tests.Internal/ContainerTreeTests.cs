@@ -26,10 +26,7 @@ namespace Protobuf.Tests.Internal
             _image = new Mock<ISourceTree>();
             _image.SetupGet(ld => ld.DisplayName).Returns("Camera");
 
-            _tree = new ProtobufContainerTree("Protobuf",
-                                              _image.Object,
-                                              new SlamDataInfoPresenter("Special info"),
-                                              false);
+            _tree = new ProtobufContainerTree("Protobuf", _image.Object, new SlamDataInfoPresenter("Special info"));
 
             var p1 = new SlamPoint(1, Vector3.zero, Color.black);
             var p2 = new SlamPoint(2, Vector3.zero, Color.black);

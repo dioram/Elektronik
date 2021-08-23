@@ -211,7 +211,7 @@ namespace Elektronik.Clouds
 
         #region Private
 
-        public float _scale = 1;
+        private float _scale = 1;
 
         #endregion
     }

@@ -10,8 +10,7 @@ namespace Elektronik.UI
 {
     public class SpeedWidget : MonoBehaviour
     {
-        [SerializeField] private Slider        SpeedSlider;
-        [SerializeField] private PluginsPlayer PluginsPlayer;
+        [SerializeField] private Slider SpeedSlider;
 
         private void Start()
         {

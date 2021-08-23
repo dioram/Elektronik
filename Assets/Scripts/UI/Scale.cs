@@ -29,7 +29,7 @@ namespace Elektronik.UI
             Slider.value = 1;
             SubmitButton.OnClickAsObservable()
                         .Select(_ => InputField.text)
-                        .Select(s => (float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out float v), v))
+                        .Select(s => (float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var v), v))
                         .Where(r => r.Item1)
                         .Select(r => r.v)
                         .Do(v => OnScaleChanged?.Invoke(v))

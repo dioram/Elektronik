@@ -275,7 +275,7 @@ namespace Elektronik.Containers
                 foreach (var line in items.Where(i => _connections.ContainsKey(i)))
                 {
                     removed.Add(_connections[line]);
-                    var key = _connections[line].GetIds();;
+                    var key = _connections[line].GetIds();
                     int index;
                     if (_connectionsIndices.ContainsKey(key))
                     {

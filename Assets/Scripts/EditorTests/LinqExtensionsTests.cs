@@ -30,7 +30,7 @@ namespace Elektronik.EditorTests
         [Test]
         public void MaxByEmpty()
         {
-            var list = new TestStruct[0];
+            var list = Array.Empty<TestStruct>();
             Assert.Catch<InvalidOperationException>(() => list.MaxBy(i => i.F));
         }
 
@@ -38,7 +38,7 @@ namespace Elektronik.EditorTests
         public void MaxByNull()
         {
             Assert.Catch<ArgumentNullException>(() => LinqExtensions.MaxBy<TestStruct, float>(null, null));
-            var list = new TestStruct[0];
+            var list = Array.Empty<TestStruct>();
             Assert.Catch<ArgumentNullException>(() => list.MaxBy<TestStruct, float>(null));
         }
         
@@ -59,7 +59,7 @@ namespace Elektronik.EditorTests
         [Test]
         public void MinByEmpty()
         {
-            var list = new TestStruct[0];
+            var list = Array.Empty<TestStruct>();
             Assert.Catch<InvalidOperationException>(() => list.MinBy(i => i.F));
         }
 
@@ -67,7 +67,7 @@ namespace Elektronik.EditorTests
         public void MinByNull()
         {
             Assert.Catch<ArgumentNullException>(() => LinqExtensions.MinBy<TestStruct, float>(null, null));
-            var list = new TestStruct[0];
+            var list = Array.Empty<TestStruct>();
             Assert.Catch<ArgumentNullException>(() => list.MinBy<TestStruct, float>(null));
         }
     }

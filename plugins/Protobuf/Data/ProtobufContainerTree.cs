@@ -5,7 +5,6 @@ using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Mesh;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Offline.Presenters;
 
@@ -23,7 +22,7 @@ namespace Elektronik.Protobuf.Data
         public readonly Connector Connector;
         public readonly SlamDataInfoPresenter SpecialInfo;
 
-        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo = null, bool drawMesh = true)
+        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo = null)
         {
             DisplayName = displayName;
             Image = image;

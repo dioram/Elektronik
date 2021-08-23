@@ -46,31 +46,14 @@ namespace Elektronik.Containers
             {
                 if (value > _minWeight)
                 {
-                    SlamLine[] toRemove;
-                    lock (_weights)
-                    {
-                        toRemove = _weights.Where(pair => pair.Value >= _minWeight && pair.Value < value)
-                                .Select(p => p.Key)
-                                .Select(k => new SlamLine(k.Item1, k.Item2))
-                                .ToArray();
-                    }
-
-                    _connections.Remove(toRemove);
+                    OnMinWeightIncreased(value);
+                    _minWeight = value;
                 }
                 else if (value < _minWeight)
                 {
-                    SlamLine[] toAdd;
-                    lock (_weights)
-                    {
-                        toAdd = _weights.Where(pair => pair.Value >= value && pair.Value < _minWeight)
-                                .Select(p => p.Key)
-                                .Select(k => new SlamLine(k.Item1, k.Item2))
-                                .ToArray();
-                    }
-                    _connections.AddRange(toAdd);
+                    OnMinWeightDecreased(value);
+                    _minWeight = value;
                 }
-
-                _minWeight = value;
             }
         }
 
@@ -80,7 +63,7 @@ namespace Elektronik.Containers
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
+        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
 
         public void Clear()
         {
@@ -172,9 +155,9 @@ namespace Elektronik.Containers
             {
                 foreach (var id in e.RemovedIds)
                 {
-                    foreach (var key in _weights.Keys)
+                    foreach (var (point1, point2) in _weights.Keys)
                     {
-                        if (key.Item1.Id == id || key.Item2.Id == id) keys.Add(GetKey(key.Item1, key.Item2));
+                        if (point1.Id == id || point2.Id == id) keys.Add(GetKey(point1, point2));
                     }
                 }
 
@@ -205,6 +188,33 @@ namespace Elektronik.Containers
             }
 
             _observations.Update(updatedObservations);
+        }
+
+        private void OnMinWeightIncreased(float value)
+        {
+            SlamLine[] toRemove;
+            lock (_weights)
+            {
+                toRemove = _weights.Where(pair => pair.Value >= _minWeight && pair.Value < value)
+                        .Select(p => p.Key)
+                        .Select(k => new SlamLine(k.Item1, k.Item2))
+                        .ToArray();
+            }
+
+            _connections.Remove(toRemove);
+        }
+
+        private void OnMinWeightDecreased(float value)
+        {
+            SlamLine[] toAdd;
+            lock (_weights)
+            {
+                toAdd = _weights.Where(pair => pair.Value >= value && pair.Value < _minWeight)
+                        .Select(p => p.Key)
+                        .Select(k => new SlamLine(k.Item1, k.Item2))
+                        .ToArray();
+            }
+            _connections.AddRange(toAdd);
         }
 
         #endregion

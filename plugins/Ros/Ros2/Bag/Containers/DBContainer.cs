@@ -23,7 +23,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         #region ISourceTree
 
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
+        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
 
         public abstract void Clear();
 

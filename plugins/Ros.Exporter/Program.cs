@@ -72,7 +72,7 @@ namespace Ros.Exporter
             }
         }
 
-        private static readonly Dictionary<string, StreamWriter> Files = new();
+        private static readonly Dictionary<string, StreamWriter?> Files = new();
         private static readonly Dictionary<int, Topic> Topics = new();
 
         static void CreateHeader(RosMessage data, string topicName, string path)
@@ -94,16 +94,19 @@ namespace Ros.Exporter
         static async Task<bool> ExportData(MessageData data, string path)
         {
             var mess = MessageParser.Parse(data.Data!, data.TopicType!, false);
+            if (mess is null || data.TopicName is null) return false;
             if (!Files.ContainsKey(data.TopicName)) CreateHeader(mess, data.TopicName, path);
             
-            if (mess is RosImage image)
+            switch (mess)
+            {
+            case RosImage image:
             {
                 var imageMessage = ImageDataExt.FromImageMessage(image);
                 var im = new Bitmap(imageMessage.Width, imageMessage.Height);
-                using var stream = new MemoryStream(imageMessage.Data);
-                for (int j = 0; j < imageMessage.Height; j++)
+                await using var stream = new MemoryStream(imageMessage.Data);
+                for (var j = 0; j < imageMessage.Height; j++)
                 {
-                    for (int i = 0; i < imageMessage.Width; i++)
+                    for (var i = 0; i < imageMessage.Width; i++)
                     {
                         im.SetPixel(i, j, ReadColor(stream, imageMessage.Encoding));
                     }
@@ -112,29 +115,31 @@ namespace Ros.Exporter
                 im.Save($"{data.TopicName.Replace("/", "_")}//{data.Timestamp}.png", ImageFormat.Png);
                 return true;
             }
-        
-            if (mess is VideoFrame) return true;
-        
-            await Files[data.TopicName].WriteLineAsync(String.Join(',', mess.GetData()));
-            return true;
+            case VideoFrame:
+                return true;
+            default:
+                await Files[data.TopicName]?.WriteLineAsync(string.Join(',', mess.GetData()))!;
+                return true;
+            }
         }
 
         
         static async Task<bool> ExportData(Message data, Topic topic, string path)
         {
-            // if (topic.Type.EndsWith("Path")) return true;
             var mess = MessageParser.Parse(data.Data, topic.Type, true);
             if (mess is null) return true;
             if (!Files.ContainsKey(topic.Name)) CreateHeader(mess, topic.Name, path);
             
-            if (mess is RosImage image)
+            switch (mess)
+            {
+            case RosImage image:
             {
                 var imageMessage = ImageDataExt.FromImageMessage(image);
                 var im = new Bitmap(imageMessage.Width, imageMessage.Height);
-                using var stream = new MemoryStream(imageMessage.Data);
-                for (int j = 0; j < imageMessage.Height; j++)
+                await using var stream = new MemoryStream(imageMessage.Data);
+                for (var j = 0; j < imageMessage.Height; j++)
                 {
-                    for (int i = 0; i < imageMessage.Width; i++)
+                    for (var i = 0; i < imageMessage.Width; i++)
                     {
                         im.SetPixel(i, j, ReadColor(stream, imageMessage.Encoding));
                     }
@@ -143,10 +148,12 @@ namespace Ros.Exporter
                 im.Save($"{topic.Name.Replace("/", "_")}//{data.Timestamp}.png", ImageFormat.Png);
                 return true;
             }
-            if (mess is VideoFrame) return true;
-
-            await Files[topic.Name].WriteLineAsync(String.Join(',', mess.GetData()));
-            return true;
+            case VideoFrame:
+                return true;
+            default:
+                await Files[topic.Name]?.WriteLineAsync(string.Join(',', mess.GetData()))!;
+                return true;
+            }
         }
 
         static async Task<int> Main(string[] args)
@@ -163,8 +170,8 @@ namespace Ros.Exporter
             }
             case "-2":
             {
-                var db_paths = Rosbag2Metadata.ReadFromFile(args[1]).DBPaths(Path.GetDirectoryName(args[1]));
-                foreach (var db in db_paths)
+                var dbPaths = Rosbag2Metadata.ReadFromFile(args[1]).DBPaths(Path.GetDirectoryName(args[1])!);
+                foreach (var db in dbPaths)
                 {
                     Topics.Clear();
                     using var model = new SQLiteConnection(db, SQLiteOpenFlags.ReadOnly);

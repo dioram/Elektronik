@@ -67,6 +67,7 @@ namespace Elektronik.UI
                 });
                 yield return new WaitForSeconds(CollisionCheckTimeout);
             }
+            // ReSharper disable once IteratorNeverReturns
         }
 
         private void ProcessRaycast(IContainer<SlamObservation> container, SlamObservation observation,
