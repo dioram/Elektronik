@@ -29,8 +29,11 @@
 - Добавлена возможность не компилировать нативные библиотеки, если их функции не нужны.
 - Добавлена возможность менять масштаб сцены "на лету".
 - Добавлена возможность менять скорость воспроизведения в оффлайн режиме.
+- Электроник теперь собирается в двух версиях, с VR и без.
 # Ломающие изменения:
 - Обновлённый протокол protobuf требует поменять названия переменных в коде и перекомпилировать.
+# Известные проблемы
+- Устаревший SteamVR может вызывать проблемы с отрисовкой. См. #55. Обновите SteamVR или используйте сборку без поддержки VR.
 
 -----------------------
 
@@ -64,5 +67,8 @@
 - Now you don't need to build all native libraries if you think you don't need them.
 - Now you can change scene scale on the fly.
 - Now you can change play speed in offline mode.
+- Elektronik now builds in two versions with and without VR.
 # Breaking changes
 - You need to update names in your code and recompile to use updated protobuf protocol.
+# Known issues
+- Obsolete SteamVR can cause render issues. See #55. Update SteamVR or use non-VR build to fix this.

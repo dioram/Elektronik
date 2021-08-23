@@ -81,7 +81,7 @@ jobs:
         uses: lukka/run-vcpkg@v7
         with:
           setupOnly: true
-          appendedCacheKey: ${{ hashFiles( '${{ github.workspace }}/Plugins/vcpkg.json' ) }}
+          appendedCacheKey: 'openssl fastrtps opencv pcl'
           vcpkgGitCommitId: 1257354a3ab0bebd8abe95281ca561537853578c
           vcpkgTriplet: ${{ matrix.triplet }}
           additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed

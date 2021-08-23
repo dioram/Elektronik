@@ -1,0 +1,27 @@
+Index: Assets/Plugins/XR/XRGeneralSettings.asset
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Plugins/XR/XRGeneralSettings.asset b/Assets/Plugins/XR/XRGeneralSettings.asset
+--- a/Assets/Plugins/XR/XRGeneralSettings.asset	(date 1629704953927)
++++ b/Assets/Plugins/XR/XRGeneralSettings.asset	(revision 29b2f810ca956bf1958f5b1194a2ea99eaef9649)
+@@ -15,7 +15,8 @@
+   m_RequiresSettingsUpdate: 1
+   m_AutomaticLoading: 0
+   m_AutomaticRunning: 0
+-  m_Loaders: []
++  m_Loaders:
++  - {fileID: 11400000, guid: cdda66791009feb4497c23ad32a6638a, type: 2}
+ --- !u!114 &-4910998042643817111
+ MonoBehaviour:
+   m_ObjectHideFlags: 0
+@@ -29,7 +30,7 @@
+   m_Name: Standalone Settings
+   m_EditorClassIdentifier: 
+   m_LoaderManagerInstance: {fileID: -7199247072424311729}
+-  m_InitManagerOnStart: 0
++  m_InitManagerOnStart: 1
+ --- !u!114 &11400000
+ MonoBehaviour:
+   m_ObjectHideFlags: 0
