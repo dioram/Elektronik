@@ -22,6 +22,12 @@ jobs:
         with:
           arch: x64
           
+      - name: Get version
+        run: |
+          $global:el=cat .\ProjectSettings\ProjectSettings.asset | Select-String -Pattern '(?:bundleVersion: )(\d*\.\d*\.\d*(?:-rc\d*)?)' | % {$_.Matches.Groups[1].Value}
+          echo $el
+        shell: pwsh
+
       - name: Building native libs
         run: .\.github\build_natives.bat
 
@@ -37,7 +43,7 @@ jobs:
         with:
           project_path: plugins/Protobuf.Tests.Internal
           set_check_status_from_test_outcome: true
-          report_name: protobuf_unit_tests_windows
+          report_name: Protobuf unit tests windows
           report_title: Protobuf unit tests windows
           github_token: ${{ secrets.GITHUB_TOKEN }}
           
@@ -47,7 +53,7 @@ jobs:
         with:
           project_path: plugins/Ros.Tests
           set_check_status_from_test_outcome: true
-          report_name: ros_unit_tests_windows
+          report_name: ROS unit tests windows
           report_title: ROS unit tests windows
           github_token: ${{ secrets.GITHUB_TOKEN }}
           
@@ -58,12 +64,17 @@ jobs:
           
   build_linux:
     name: Linux build
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           lfs: true
+          
+      - name: Get version
+        run: |
+          export el=`cat ./ProjectSettings/ProjectSettings.asset | grep -oP '(?<=bundleVersion: )\d*.\d*.\d*(?:-rc\d*)?'`
+          echo $el
 
       - uses: actions/cache@v2
         with:
@@ -92,6 +103,12 @@ jobs:
 
       - name: Install vcpkg packages
         run: $VCPKG_ROOT/vcpkg install openssl fastrtps opencv pcl
+        
+      - name: Clear vcpkg temp files
+        run: |
+          rm -rf $VCPKG_ROOT/packages
+          rm -rf $VCPKG_ROOT/buildtrees
+          rm -rf $VCPKG_ROOT/downloads
 
       - name: Upload vcpkg logs if failed
         if: ${{ failure() }}
@@ -101,11 +118,9 @@ jobs:
           path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
 
       - run: sudo chmod +x ./.github/*.sh
-      - run: |
-          ls -la $VCPKG_ROOT/installed/x64-linux/share/openssl
 
       - name: Build ROS2DDS
-        run: ../../.github/build_natives.sh -DOPENSSL_ROOT_DIR=$VCPKG_ROOT/installed/x64-linux
+        run: ../../.github/build_natives.sh
         working-directory: ./plugins/ROS2DDS
 
       - name: Build MeshReconstructor
@@ -143,7 +158,7 @@ jobs:
       - name: Enable VR
         run: git apply ./ProjectSettings/EnableVR.patch
 
-      - name: Build Unity player it self (VR version)
+      - name: Build Unity player itself (VR version)
         uses: game-ci/unity-builder@v2
         env:
           UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
@@ -180,16 +195,17 @@ jobs:
           report_name: ros_unit_tests_linux
           report_title: ROS unit tests linux
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-#      - uses: game-ci/unity-test-runner@v2
-#        id: tests
-#        env:
-#          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
-#          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-#          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-#        with:
-#          testMode: EditMode
-#          projectPath: ./
-#          artifactsPath: ./test_artifacts
-#          githubToken: ${{ secrets.GITHUB_TOKEN }}
-#          checkName: Unity tests results for linux
+          
+      - name: Run Unity tests
+        uses: game-ci/unity-test-runner@v2
+        if: always()
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          testMode: EditMode
+          projectPath: ./
+          artifactsPath: ./test_artifacts
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Unity tests results for linux

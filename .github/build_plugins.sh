@@ -1,10 +1,11 @@
 #!/bin/bash
 set -e
 
-cd ./build/
-mv ./StandaloneLinux64/* ./
-rm -rf ./StandaloneLinux64
-cd ../
+mv ./build/StandaloneLinux64/* ./build/
+rm -rf ./build/StandaloneLinux64
+mv ./build_vr/StandaloneLinux64/* ./build_vr/
+rm -rf ./build_vr/StandaloneLinux64
+
 cd ./plugins
 
 dotnet publish Protobuf -o ../build/Plugins/Protobuf/libraries
@@ -20,22 +21,8 @@ mkdir ./data
 mv ./libraries/*.csv ./data
 cd ../../../plugins
 
+# Copy plugins to VR build
 
-cd ../build_vr/
-mv ./StandaloneLinux64/* ./
-rm -rf ./StandaloneLinux64
 cd ../
-cd ./plugins
-
-dotnet publish Protobuf -o ../build_vr/Plugins/Protobuf/libraries
-cd ../build_vr/Plugins/Protobuf
-mkdir ./data
-mv ./libraries/*.csv ./data
-cd ../../../plugins
-cp ./Protobuf/*.proto ../build_vr/Plugins/Protobuf/data
-
-dotnet publish Ros -o ../build_vr/Plugins/Ros/libraries
-cd ../build_vr/Plugins/Ros
-mkdir ./data
-mv ./libraries/*.csv ./data
-cd ../../../plugins
+mkdir -p ./build_vr/Plugins
+cp -r ./build/Plugins/* ./build_vr/Plugins
