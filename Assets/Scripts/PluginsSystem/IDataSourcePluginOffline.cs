@@ -20,20 +20,32 @@ namespace Elektronik.PluginsSystem
         /// <summary> Minimal delay between 2 frames when playing (in ms). </summary>
         int DelayBetweenFrames { get; set; }
 
-        /// <summary> Play button pressed handler. </summary>
+        /// <summary> Starts playing. </summary>
         void Play();
 
-        /// <summary> Next button pressed handler. </summary>
+        /// <summary> Pauses playing. </summary>
         void Pause();
 
-        /// <summary> Stop button pressed handler. </summary>
+        /// <summary> Stops playing. </summary>
         void StopPlaying();
 
-        /// <summary> Previous frame button pressed handler. </summary>
+        /// <summary> Rewind to previous key frame. </summary>
+        /// <remarks>
+        /// If in your plugin there aren't any key frames then this function should just call <c>PreviousFrame()</c>.
+        /// </remarks>
         void PreviousKeyFrame();
 
-        /// <summary> Next frame button pressed handler. </summary>
+        /// <summary> Rewind to next key frame. </summary>
+        /// <remarks>
+        /// If in your plugin there aren't any key frames then this function should just call <c>NextFrame()</c>.
+        /// </remarks>
         void NextKeyFrame();
+
+        /// <summary> Go to next frame. </summary>
+        void PreviousFrame();
+
+        /// <summary> Go to previous frame. </summary>
+        void NextFrame();
 
         [CanBeNull] event Action<bool> Rewind;
 

@@ -45,13 +45,17 @@ namespace Elektronik.UI
             SetValue();
         }
 
+        public void Toggle()
+        {
+            State++;
+        }
 
         #region Unity events
 
         protected virtual void Awake()
         {
             _button = GetComponent<Button>();
-            _button.OnClickAsObservable().Do(_ => State++).Subscribe();
+            _button.OnClickAsObservable().Subscribe(_ => Toggle());
         }
 
         protected virtual void Start()

@@ -219,8 +219,7 @@ MonoBehaviour:
   m_text: 1000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1f50e686876162448a97c5de561725d5, type: 2}
-  m_sharedMaterial: {fileID: -8607631598616168397, guid: 1f50e686876162448a97c5de561725d5,
-    type: 2}
+  m_sharedMaterial: {fileID: -8607631598616168397, guid: 1f50e686876162448a97c5de561725d5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -483,8 +482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
-    type: 3}
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Trace
   Offset: {x: 0, y: 40}
 --- !u!1 &3654434711590099038
@@ -617,8 +615,7 @@ MonoBehaviour:
   NameLabel: {fileID: 3654434711717410252}
   Content: {fileID: 3654434712777490625}
   Spacer: {fileID: 6846926219402473057}
-  SelfPrefab: {fileID: 3654434711664828031, guid: 1a9545bd143119548aa74ea5b8ecb9a6,
-    type: 3}
+  SelfPrefab: {fileID: 3654434711664828031, guid: 1a9545bd143119548aa74ea5b8ecb9a6, type: 3}
   MinHeight: 40
   TreeButton: {fileID: 3654434712922454082}
 --- !u!114 &9017876348287949742
@@ -937,8 +934,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
-    type: 3}
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Visibility
   Offset: {x: 0, y: 40}
 --- !u!1 &3654434712727471053
@@ -1466,8 +1462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
-    type: 3}
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Show window
   Offset: {x: 0, y: 40}
 --- !u!1 &3773877854901122809
@@ -1715,8 +1710,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
-    type: 3}
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Connections weight
   Offset: {x: 0, y: 60}
 --- !u!114 &2376204366747032246
@@ -1954,8 +1948,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
-    type: 3}
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Follow
   Offset: {x: 0, y: 40}
 --- !u!114 &6771997498291883229
@@ -2310,8 +2303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
-    type: 3}
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Remove
   Offset: {x: 0, y: 40}
 --- !u!1 &5427619050523824863
@@ -2766,8 +2758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
-    type: 3}
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Look at
   Offset: {x: 0, y: 40}
 --- !u!1 &6846926219402473057
@@ -3132,8 +3123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0,
-    type: 3}
+  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Save
   Offset: {x: 0, y: 40}
 --- !u!114 &6466396109237468014
@@ -3293,8 +3283,7 @@ MonoBehaviour:
   m_text: 1000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1f50e686876162448a97c5de561725d5, type: 2}
-  m_sharedMaterial: {fileID: -8607631598616168397, guid: 1f50e686876162448a97c5de561725d5,
-    type: 2}
+  m_sharedMaterial: {fileID: -8607631598616168397, guid: 1f50e686876162448a97c5de561725d5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

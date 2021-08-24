@@ -17,10 +17,13 @@ namespace Elektronik.Events
         public void Raise()
         {
             if (objectWithDesiredState.activeInHierarchy)
+            {
                 invokeIfTrue.Invoke();
+            }
             else
+            {
                 invokeIfFalse.Invoke();
+            }
         }
-
     }
 }

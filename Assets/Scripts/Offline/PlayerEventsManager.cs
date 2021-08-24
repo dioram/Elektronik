@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Elektronik.PluginsSystem;
 using Elektronik.UI;
 using UniRx;
@@ -14,6 +15,8 @@ namespace Elektronik.Offline
         public event Action Stop;
         public event Action PreviousKeyFrame;
         public event Action NextKeyFrame;
+        public event Action PreviousFrame;
+        public event Action NextFrame;
 
         public Button PlayButton;
         public Button StopButton;
@@ -29,6 +32,13 @@ namespace Elektronik.Offline
         private Image _playButtonImage;
         private IDataSourcePluginOffline _dataSourcePluginOffline;
 
+        public readonly List<IObservable<Unit>> PlayPauseObservables = new List<IObservable<Unit>>();
+        public readonly List<IObservable<Unit>> StopObservables = new List<IObservable<Unit>>();
+        public readonly List<IObservable<Unit>> NextKeyFrameObservables = new List<IObservable<Unit>>();
+        public readonly List<IObservable<Unit>> PreviousKeyFrameObservables = new List<IObservable<Unit>>();
+        public readonly List<IObservable<Unit>> NextFrameObservables = new List<IObservable<Unit>>();
+        public readonly List<IObservable<Unit>> PreviousFrameObservables = new List<IObservable<Unit>>();
+
         public void SetDataSource(IDataSourcePluginOffline dataSourcePluginOffline)
         {
             _dataSourcePluginOffline = dataSourcePluginOffline;
@@ -41,13 +51,16 @@ namespace Elektronik.Offline
             };
             NextKeyFrame += _dataSourcePluginOffline.NextKeyFrame;
             PreviousKeyFrame += _dataSourcePluginOffline.PreviousKeyFrame;
+            NextFrame += _dataSourcePluginOffline.NextFrame;
+            PreviousFrame += _dataSourcePluginOffline.PreviousFrame;
             _dataSourcePluginOffline.Finished += SetPausedState;
             _dataSourcePluginOffline.Rewind += b => _isRewinding = b;
             TimelineSlider.OnTimelineChanged += f =>
             {
                 if (_isRewinding) return;
                 SetPausedState();
-                _dataSourcePluginOffline.CurrentPosition = (int) Mathf.Round((_dataSourcePluginOffline.AmountOfFrames - 1) * f);
+                _dataSourcePluginOffline.CurrentPosition =
+                        (int)Mathf.Round((_dataSourcePluginOffline.AmountOfFrames - 1) * f);
             };
         }
 
@@ -56,20 +69,48 @@ namespace Elektronik.Offline
         private void Awake()
         {
             _playButtonImage = PlayButton.transform.Find("Image").GetComponent<Image>();
-            PlayButton.OnClickAsObservable()
-                    .Subscribe(_ => PlayPause());
-            StopButton.OnClickAsObservable()
+
+            PlayPauseObservables.Add(PlayButton.OnClickAsObservable());
+            StopObservables.Add(StopButton.OnClickAsObservable());
+            NextKeyFrameObservables.Add(NextKeyFrameButton.OnClickAsObservable());
+            PreviousKeyFrameObservables.Add(PreviousKeyFrameButton.OnClickAsObservable());
+        }
+
+        private void Start()
+        {
+            PlayPauseObservables.Merge()
+                    .Subscribe(_ => PlayPause())
+                    .AddTo(this);
+
+            StopObservables.Merge()
                     .Do(_ => SetPausedState())
                     .Do(_ => UpdateControls(true))
-                    .Subscribe(_ => Stop?.Invoke());
-            NextKeyFrameButton.OnClickAsObservable()
+                    .Subscribe(_ => Stop?.Invoke())
+                    .AddTo(this);
+            
+            NextKeyFrameObservables.Merge()
                     .Do(_ => SetPausedState())
                     .Do(_ => UpdateControls(true))
-                    .Subscribe(_ => NextKeyFrame?.Invoke());
-            PreviousKeyFrameButton.OnClickAsObservable()
+                    .Subscribe(_ => NextKeyFrame?.Invoke())
+                    .AddTo(this);
+            
+            PreviousKeyFrameObservables.Merge()
                     .Do(_ => SetPausedState())
                     .Do(_ => UpdateControls(true))
-                    .Subscribe(_ => PreviousKeyFrame?.Invoke());
+                    .Subscribe(_ => PreviousKeyFrame?.Invoke())
+                    .AddTo(this);
+            
+            NextFrameObservables.Merge()
+                    .Do(_ => SetPausedState())
+                    .Do(_ => UpdateControls(true))
+                    .Subscribe(_ => NextFrame?.Invoke())
+                    .AddTo(this);
+            
+            PreviousFrameObservables.Merge()
+                    .Do(_ => SetPausedState())
+                    .Do(_ => UpdateControls(true))
+                    .Subscribe(_ => PreviousFrame?.Invoke())
+                    .AddTo(this);
         }
 
         private void Update()
@@ -85,9 +126,11 @@ namespace Elektronik.Offline
         {
             if (updateSlider)
             {
-                var pos = _dataSourcePluginOffline.CurrentPosition / (float) (_dataSourcePluginOffline.AmountOfFrames - 1);
+                var pos = _dataSourcePluginOffline.CurrentPosition /
+                        (float)(_dataSourcePluginOffline.AmountOfFrames - 1);
                 if (!float.IsNaN(pos)) TimelineSlider.Value = pos;
             }
+
             Timestamp.text = $"{_dataSourcePluginOffline.CurrentTimestamp}";
         }
 

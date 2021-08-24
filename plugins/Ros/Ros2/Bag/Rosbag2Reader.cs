@@ -94,7 +94,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             });
         }
 
-        public void PreviousKeyFrame()
+        public void PreviousKeyFrame() => PreviousFrame();
+
+        public void NextKeyFrame() => NextFrame();
+
+        public void PreviousFrame()
         {
             _threadWorker?.Enqueue(() =>
             {
@@ -104,7 +108,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             });
         }
 
-        public void NextKeyFrame()
+        public void NextFrame()
         {
             if ((_threadWorker?.ActiveActions ?? 1) > 0) return;
             _threadWorker?.Enqueue(() =>

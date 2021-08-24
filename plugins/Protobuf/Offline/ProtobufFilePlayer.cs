@@ -57,7 +57,7 @@ namespace Elektronik.Protobuf.Offline
             {
                 _threadWorker.Enqueue(() =>
                 {
-                    if (NextFrame()) return;
+                    if (GoToNextFrame()) return;
                     _timer?.Stop();
                     MainThreadInvoker.Enqueue(() => Finished?.Invoke());
                 });
@@ -138,7 +138,7 @@ namespace Elektronik.Protobuf.Offline
                 }
                 do
                 {
-                    if (!PreviousFrame()) break;
+                    if (!GoToPreviousFrame()) break;
                 } while (!(_frames?.Current?.IsSpecial) ?? false);
 
             });
@@ -150,8 +150,31 @@ namespace Elektronik.Protobuf.Offline
             {
                 do
                 {
-                    if (!NextFrame()) break;
+                    if (!GoToNextFrame()) break;
                 } while (!(_frames?.Current?.IsSpecial) ?? false);
+            });
+        }
+
+        public void PreviousFrame()
+        {
+            _threadWorker.Enqueue(() =>
+            {
+                if (_frames?.CurrentIndex == 0)
+                {
+                    _frames?.Current?.Rewind();
+                    _frames?.SoftReset();
+                    return;
+                }
+
+                GoToPreviousFrame();
+            });
+        }
+        
+        public void NextFrame()
+        {
+            _threadWorker.Enqueue(() =>
+            {
+                GoToNextFrame();
             });
         }
 
@@ -208,7 +231,7 @@ namespace Elektronik.Protobuf.Offline
             return 0;
         }
 
-        private bool PreviousFrame()
+        private bool GoToPreviousFrame()
         {
             _frames?.Current?.Rewind();
             if (_frames?.MovePrevious() ?? false)
@@ -220,7 +243,7 @@ namespace Elektronik.Protobuf.Offline
             return false;
         }
 
-        private bool NextFrame()
+        private bool GoToNextFrame()
         {
             if (_frames.MoveNext())
             {
@@ -240,8 +263,8 @@ namespace Elektronik.Protobuf.Offline
             {
                 while (_frames.CurrentIndex != pos)
                 {
-                    if (_frames.CurrentIndex < pos) NextFrame();
-                    else PreviousFrame();
+                    if (_frames.CurrentIndex < pos) GoToNextFrame();
+                    else GoToPreviousFrame();
                 }
             });
         }

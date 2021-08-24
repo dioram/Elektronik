@@ -432,6 +432,74 @@ MonoBehaviour:
     m_Key: Override colors for mesh
     m_Metadata:
       m_Items: []
+  - m_Id: 48610551962755072
+    m_Key: Camera controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48610891395194880
+    m_Key: Forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48610977978212352
+    m_Key: Yaw
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611099944378368
+    m_Key: Pitch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611185839529984
+    m_Key: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611324192841728
+    m_Key: Hot keys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611468233629696
+    m_Key: Play/Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611538907652096
+    m_Key: Rewind forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611623439654912
+    m_Key: Rewind backward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611676921225216
+    m_Key: One frame forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611799805943808
+    m_Key: One frame backward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611844492058624
+    m_Key: Start/Stop recording
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611922602582016
+    m_Key: Show scene tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612417119412224
+    m_Key: Show analytics tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612758997131264
+    m_Key: Toggle grid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612827695636480
+    m_Key: Toggle axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612874097221632
+    m_Key: Toggle mesh color
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
@@ -439,7 +507,6 @@ MonoBehaviour:
   references:
     version: 1
     00000000:
-      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables,
-        asm: Unity.Localization}
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
       data:
         m_CustomEpoch: 1618210911210

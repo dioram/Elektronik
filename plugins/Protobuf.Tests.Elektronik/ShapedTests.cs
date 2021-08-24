@@ -52,7 +52,7 @@ namespace Protobuf.Tests.Elektronik
             {
                 plane.Select(s => new PointPb
                 {
-                    Id = s.Id + plane.Length, Color = new ColorPb { R = 255 },
+                    Id = s.Id, Color = new ColorPb { R = 255 },
                     Position = new Vector3Pb { X = s.Position.X, Y = s.Position.Y, Z = -side / 2 + s.Position.Z }
                 }),
                 plane.Select(s => new PointPb

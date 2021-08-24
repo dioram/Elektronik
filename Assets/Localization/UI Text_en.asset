@@ -207,7 +207,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1179022329516032
-    m_Localized: Show data tree
+    m_Localized: Show source tree
     m_Metadata:
       m_Items: []
   - m_Id: 1180012348837888
@@ -465,6 +465,74 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 46797231349448704
     m_Localized: Override colors for mesh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48610551962755072
+    m_Localized: Camera controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48610891395194880
+    m_Localized: Forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48610977978212352
+    m_Localized: Yaw
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611099944378368
+    m_Localized: Pitch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611185839529984
+    m_Localized: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611324192841728
+    m_Localized: Hot keys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611468233629696
+    m_Localized: Play/Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611538907652096
+    m_Localized: Rewind forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611623439654912
+    m_Localized: Rewind backward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611676921225216
+    m_Localized: One frame forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611799805943808
+    m_Localized: One frame backward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611844492058624
+    m_Localized: Start/Stop recording
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611922602582016
+    m_Localized: Show scene tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612417119412224
+    m_Localized: Show analytics tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612758997131264
+    m_Localized: Toggle grid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612827695636480
+    m_Localized: Toggle axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612874097221632
+    m_Localized: Toggle mesh color
     m_Metadata:
       m_Items: []
   references:

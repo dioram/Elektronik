@@ -136,7 +136,11 @@ namespace Elektronik.RosPlugin.Ros.Bag
             });
         }
 
-        public void PreviousKeyFrame()
+        public void PreviousKeyFrame() => PreviousFrame();
+
+        public void NextKeyFrame() => NextFrame();
+
+        public void PreviousFrame()
         {
             _threadWorker?.Enqueue(() =>
             {
@@ -146,7 +150,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
             });
         }
 
-        public void NextKeyFrame()
+        public void NextFrame()
         {
             _threadWorker?.Enqueue(() =>
             {
@@ -161,7 +165,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 }
             });
         }
-
+        
         #endregion
 
         #region Private
