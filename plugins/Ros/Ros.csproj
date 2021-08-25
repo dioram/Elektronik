@@ -32,6 +32,9 @@
         <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>..\..\build\Elektronik_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
         </Reference>
+        <Reference Include="YamlDotNet, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\..\build\Elektronik_Data\Managed\YamlDotNet.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>
@@ -42,14 +45,16 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="RosSharpRosBridgeClient" Version="1.7.0" />
         <PackageReference Include="SharpZipLib" Version="1.3.2" />
-        <PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
+        <PackageReference Include="sqlite-net-pcl" Version="1.8.0-beta" />
+        <PackageReference Include="SQLitePCLRaw.bundle_sqlite3" Version="2.0.5-pre20210521085756" />
+        <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
         <PackageReference Include="System.Linq.Async" Version="5.0.0" />
         <PackageReference Include="System.Reactive" Version="5.0.0" />
         <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="e_sqlite3.dll">
+        <None Update="sqlite3.dll">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Update="translations.csv">

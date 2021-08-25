@@ -61,6 +61,7 @@ namespace Elektronik.Cameras
             _labelsPool = new ObjectPool(LabelPrefab, transform);
         }
 
+        // TODO: rewrite to Graphics.ProceduralDraw
         // Will be called after all regular rendering is done
         public void OnRenderObject()
         {

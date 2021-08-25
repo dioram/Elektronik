@@ -27,14 +27,17 @@ namespace Elektronik.Protobuf.Offline.Parsers
             _imagePath = imagePath;
         }
 
-        private ICommand GetCommandForConnectableObjects<T>(IConnectableObjectsContainer<T> map,
-                                                            IList<T> objects, PacketPb packet)
-                where T : struct, ICloudItem
+        private ICommand GetCommandForConnectableObjects<TCloudItem, TCloudItemDiff>(
+            IConnectableObjectsContainer<TCloudItem> map,
+            IList<TCloudItemDiff> objects, PacketPb packet)
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
         {
+            if (objects is null || objects.Count == 0) return null;
             switch (packet.Action)
             {
             case PacketPb.Types.ActionType.Add:
-                return new AddCommand<T>(map, objects);
+                return new AddCommand<TCloudItem, TCloudItemDiff>(map, objects);
             case PacketPb.Types.ActionType.Update:
                 var commands = new List<ICommand>();
                 if (packet.Connections != null)
@@ -43,38 +46,42 @@ namespace Elektronik.Protobuf.Offline.Parsers
                     switch (packet.Connections.Action)
                     {
                     case PacketPb.Types.Connections.Types.Action.Add:
-                        commands.Add(new AddConnectionsCommand<T>(map, connections));
+                        commands.Add(new AddConnectionsCommand<TCloudItem>(map, connections));
                         break;
                     case PacketPb.Types.Connections.Types.Action.Remove:
-                        commands.Add(new RemoveConnectionsCommand<T>(map, connections));
+                        commands.Add(new RemoveConnectionsCommand<TCloudItem>(map, connections));
                         break;
                     }
                 }
 
-                commands.Add(new UpdateCommand<T>(map, objects));
+                commands.Add(new UpdateCommand<TCloudItem, TCloudItemDiff>(map, objects));
                 return new MacroCommand(commands);
             case PacketPb.Types.ActionType.Remove:
-                return new ConnectableRemoveCommand<T>(map, objects);
+                return new ConnectableRemoveCommand<TCloudItem, TCloudItemDiff>(map, objects);
             case PacketPb.Types.ActionType.Clear:
-                return new ConnectableClearCommand<T>(map);
+                return new ConnectableClearCommand<TCloudItem>(map);
             default:
                 return null;
             }
         }
 
-        private ICommand GetCommand<T>(IContainer<T> map, IList<T> objects, PacketPb packet)
-                where T : struct, ICloudItem
+        private ICommand GetCommand<TCloudItem, TCloudItemDiff>(IContainer<TCloudItem> map, 
+                                                                IList<TCloudItemDiff> objects,
+                                                                PacketPb packet)
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
         {
+            if (objects is null || objects.Count == 0) return null;
             switch (packet.Action)
             {
             case PacketPb.Types.ActionType.Add:
-                return new AddCommand<T>(map, objects);
+                return new AddCommand<TCloudItem, TCloudItemDiff>(map, objects);
             case PacketPb.Types.ActionType.Update:
-                return new UpdateCommand<T>(map, objects);
+                return new UpdateCommand<TCloudItem, TCloudItemDiff>(map, objects);
             case PacketPb.Types.ActionType.Remove:
-                return new RemoveCommand<T>(map, objects);
+                return new RemoveCommand<TCloudItem, TCloudItemDiff>(map, objects);
             case PacketPb.Types.ActionType.Clear:
-                return new ClearCommand<T>(map);
+                return new ClearCommand<TCloudItem>(map);
             default:
                 return null;
             }

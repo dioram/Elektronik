@@ -39,5 +39,13 @@ namespace Elektronik.Clouds
                 block.Planes[inBlockId * 8 + i] = default;
             }
         }
+
+        public override void SetScale(float value)
+        {
+            foreach (var block in Blocks)
+            {
+                block.SetScale(value);
+            }
+        }
     }
 }

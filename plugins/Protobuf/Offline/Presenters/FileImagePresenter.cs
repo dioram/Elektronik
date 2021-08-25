@@ -15,7 +15,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
         public override void Present(Frame frame)
         {
             if (Renderer == null) return;
-            var fullPath = Path.Combine(_imagePath, $"{frame.Timestamp}.png");
+            var fullPath = Path.Combine(_imagePath ?? "", $"{frame.Timestamp}.png");
             if (!File.Exists(fullPath)) return;
             var currentImage = File.ReadAllBytes(fullPath);
             Renderer.Render(currentImage);

@@ -49,7 +49,7 @@ namespace Protobuf.Tests.Elektronik
                 Offset = _offsets[id],
             }).ToArray();
         }
-        
+
         [Test, Explicit]
         public void Grid()
         {
@@ -66,14 +66,14 @@ namespace Protobuf.Tests.Elektronik
                 Normal = new Vector3Pb {X = 1, Y = 1, Z = 1},
                 Offset = new Vector3Pb {X = 1, Y = 1, Z = 1},
             });
-            
+
             using var file = File.Open(Filename, FileMode.Create);
             packet.WriteDelimitedTo(file);
 
             var response = MapClient.Handle(packet);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
-        
+
         [Test, Order(1), Explicit]
         public void Create()
         {
@@ -84,16 +84,12 @@ namespace Protobuf.Tests.Elektronik
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
             packet.InfinitePlanes.Data.Add(_planes);
-            
-            using var file = File.Open(Filename, FileMode.Create);
-            packet.WriteDelimitedTo(file);
 
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename, true);
         }
 
         [Test, Order(2), Explicit]
-        public void Update()
+        public void UpdateOffsets()
         {
             var packet = new PacketPb
             {
@@ -101,20 +97,62 @@ namespace Protobuf.Tests.Elektronik
                 Action = PacketPb.Types.ActionType.Update,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
-            _planes[0].Color = new ColorPb{B = 128, G = 128, R = 128};
-            _planes[2].Offset = new Vector3Pb {X = 0, Y = 0, Z = -50};
-            _planes[4].Normal = new Vector3Pb {X = 1, Y = 1, Z = 1};
-
-            packet.InfinitePlanes.Data.Add(_planes);
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 0, Offset = new Vector3Pb {X = 0, Y = 0, Z = 100}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 1, Offset = new Vector3Pb {X = 0, Y = 100, Z = 0}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 2, Offset = new Vector3Pb {X = 100, Y = 0, Z = 0}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 3, Offset = new Vector3Pb {X = 0, Y = 100, Z = 100}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb {Id = 4, Offset = new Vector3Pb {X = 100, Y = 100, Z = 0}});
             
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(3), Explicit]
+        public void UpdateNormals()
+        {
+            var packet = new PacketPb
+            {
+                Special = true,
+                Action = PacketPb.Types.ActionType.Update,
+                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+            };
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb
+                                                   {Id = 0, Normal = new Vector3Pb {X = -10, Y = -10, Z = -10}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb
+                                                   {Id = 1, Normal = new Vector3Pb {X = -10, Y = -10, Z = -10}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb
+                                                   {Id = 2, Normal = new Vector3Pb {X = -10, Y = -10, Z = -50}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb
+                                                   {Id = 3, Normal = new Vector3Pb {X = -50, Y = -10, Z = -10}});
+            packet.InfinitePlanes.Data.Add(new InfinitePlanePb
+                                                   {Id = 4, Normal = new Vector3Pb {X = -10, Y = -50, Z = -10}});
+
+            SendAndCheck(packet, Filename);
+        }
+
+        [Test, Order(4), Explicit]
+        public void UpdateColors()
+        {
+            var packet = new PacketPb
+            {
+                Special = true,
+                Action = PacketPb.Types.ActionType.Update,
+                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+            };
+            packet.InfinitePlanes.Data.Add(
+                new InfinitePlanePb {Id = 0, Color = new ColorPb {R = 255, G = 255, B = 255}});
+            packet.InfinitePlanes.Data.Add(
+                new InfinitePlanePb {Id = 1, Color = new ColorPb {R = 255, G = 255, B = 255}});
+            packet.InfinitePlanes.Data.Add(
+                new InfinitePlanePb {Id = 2, Color = new ColorPb {R = 255, G = 255, B = 255}});
+            packet.InfinitePlanes.Data.Add(
+                new InfinitePlanePb {Id = 3, Color = new ColorPb {R = 255, G = 255, B = 255}});
+            packet.InfinitePlanes.Data.Add(
+                new InfinitePlanePb {Id = 4, Color = new ColorPb {R = 255, G = 255, B = 255}});
+
+            SendAndCheck(packet, Filename);
+        }
+
+        [Test, Order(5), Explicit]
         public void Remove()
         {
             var packet = new PacketPb
@@ -124,16 +162,12 @@ namespace Protobuf.Tests.Elektronik
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
 
-            packet.InfinitePlanes.Data.Add(new[] { _planes[1], _planes[3] });
-            
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
+            packet.InfinitePlanes.Data.Add(new[] {_planes[1], _planes[3]});
 
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(4), Explicit]
+        [Test, Order(6), Explicit]
         public void Clear()
         {
             var packet = new PacketPb
@@ -143,11 +177,7 @@ namespace Protobuf.Tests.Elektronik
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
             
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
     }
 }

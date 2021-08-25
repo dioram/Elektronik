@@ -5,12 +5,12 @@
 // Empty cloud.
 PointCloud::PointCloud()
 {
-    min = Vec3d(std::numeric_limits<double>::infinity(),
-                std::numeric_limits<double>::infinity(),
-                std::numeric_limits<double>::infinity());
-    max = Vec3d(-std::numeric_limits<double>::infinity(),
-                -std::numeric_limits<double>::infinity(),
-                -std::numeric_limits<double>::infinity());
+    min = Vector3d(std::numeric_limits<double>::infinity(),
+                   std::numeric_limits<double>::infinity(),
+                   std::numeric_limits<double>::infinity());
+    max = Vector3d(-std::numeric_limits<double>::infinity(),
+                   -std::numeric_limits<double>::infinity(),
+                   -std::numeric_limits<double>::infinity());
 }
 
 
@@ -30,8 +30,7 @@ void PointCloud::loadPly(const std::string& filename)
         return;
     }
 
-    while (std::getline(infile, line))
-    {
+    while (std::getline(infile, line)) {
         std::istringstream iss(line);
         double x, y, z;
         unsigned int r, g, b;
@@ -50,8 +49,7 @@ void PointCloud::load3D(const std::string& filename)
     std::ifstream infile(filename.c_str());
     std::string line;
 
-    while (std::getline(infile, line))
-    {
+    while (std::getline(infile, line)) {
         std::istringstream iss(line);
         double x, y, z;
         if (!(iss >> x >> y >> z))
@@ -90,7 +88,8 @@ bool PointCloud::toPly(const std::string& filename, bool showPlanes) const
             rgb = state.first;
         else
             rgb = state.second ? RGB(255, 255, 255) : RGB(0, 0, 0);
-        out << p->x << " " << p->y << " " << p->z << " " << int(rgb.r) << " " << int(rgb.g) << " " << int(rgb.b) << " " << std::endl;
+        out << p->x << " " << p->y << " " << p->z << " " << int(rgb.r) << " " << int(rgb.g) << " " << int(rgb.b) << " "
+            << std::endl;
     }
 
     out.close();
@@ -127,10 +126,9 @@ void PointCloud::boundingBox()
     mHalfDimension = (max - min) / 2;
 }
 
-void PointCloud::loadVector(const std::vector<Vec3d> &points)
+void PointCloud::loadVector(const std::vector<Vector3d>& points)
 {
-    for (auto p : points)
-    {
+    for (auto p : points) {
         this->addPoint(std::make_shared<Point>(p.x, p.y, p.z), RGB(128, 128, 128));
     }
 

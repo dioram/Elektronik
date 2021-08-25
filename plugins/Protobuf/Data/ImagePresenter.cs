@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Elektronik.Data;
 using Elektronik.Renderers;
 using Elektronik.UI.Windows;
@@ -16,7 +17,7 @@ namespace Elektronik.Protobuf.Data
 
         public string DisplayName { get; set; }
         
-        public IEnumerable<ISourceTree> Children => new ISourceTree[0];
+        public IEnumerable<ISourceTree> Children => Array.Empty<ISourceTree>();
 
         #endregion
 
@@ -27,7 +28,7 @@ namespace Elektronik.Protobuf.Data
 
         public abstract void Present(T data);
 
-        public void SetRenderer(object dataRenderer)
+        public void SetRenderer(ISourceRenderer dataRenderer)
         {
             if (dataRenderer is WindowsManager factory)
             {

@@ -3,6 +3,7 @@ using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.Clouds
@@ -23,6 +24,19 @@ namespace Elektronik.Clouds
             }
         }
 
+        public override void SetScale(float value)
+        {
+            lock (GameObjects)
+            {
+                var factor = value / _scale;
+                _scale = value;
+                foreach (var go in GameObjects.Values)
+                {
+                    go.transform.position *= factor;
+                }
+            }
+        }
+
         public void Clear()
         {
             lock (GameObjects)
@@ -30,7 +44,7 @@ namespace Elektronik.Clouds
                 GameObjects.Clear();
                 if (MainThreadInvoker.Instance != null)
                 {
-                    MainThreadInvoker.Instance.Enqueue(() => ObservationsPool?.DespawnAllActiveObjects());
+                    MainThreadInvoker.Enqueue(() => ObservationsPool?.DespawnAllActiveObjects());
                 }
             }
         }
@@ -54,9 +68,9 @@ namespace Elektronik.Clouds
                 foreach (var obj in items)
                 {
                     Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    MainThreadInvoker.Enqueue(() =>
                     {
-                        var go = ObservationsPool.Spawn(pose.position, pose.rotation);
+                        var go = ObservationsPool.Spawn(pose.position * _scale, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
                         go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
 
@@ -79,7 +93,7 @@ namespace Elektronik.Clouds
                     if (!GameObjects.ContainsKey(key)) continue;
 
                     var go = GameObjects[key];
-                    MainThreadInvoker.Instance.Enqueue(() => ObservationsPool.Despawn(go));
+                    MainThreadInvoker.Enqueue(() => ObservationsPool.Despawn(go));
                     GameObjects.Remove(key);
                 }
             }
@@ -93,9 +107,9 @@ namespace Elektronik.Clouds
                 foreach (var obj in e.AddedItems)
                 {
                     Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    MainThreadInvoker.Enqueue(() =>
                     {
-                        var go = ObservationsPool.Spawn(pose.position, pose.rotation);
+                        var go = ObservationsPool.Spawn(pose.position * _scale, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
                         go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
 
@@ -117,10 +131,10 @@ namespace Elektronik.Clouds
                 foreach (var obj in e.UpdatedItems)
                 {
                     Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    MainThreadInvoker.Enqueue(() =>
                     {
                         var go = GameObjects[(sender.GetHashCode(), obj.Id)];
-                        go.transform.SetPositionAndRotation(pose.position, pose.rotation);
+                        go.transform.SetPositionAndRotation(pose.position * _scale, pose.rotation);
                         go.GetComponent<DataComponent<TCloudItem>>().Data = obj;
                         go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
                     });
@@ -138,7 +152,7 @@ namespace Elektronik.Clouds
                     if (!GameObjects.ContainsKey(key)) continue;
 
                     var go = GameObjects[key];
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    MainThreadInvoker.Enqueue(() =>
                     {
                         
                         ObservationsPool.Despawn(go);
@@ -192,6 +206,12 @@ namespace Elektronik.Clouds
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
         protected abstract Pose GetObjectPose(TCloudItem obj);
+
+        #endregion
+
+        #region Private
+
+        private float _scale = 1;
 
         #endregion
     }

@@ -77,6 +77,14 @@ namespace Elektronik.Settings
             }
 
             PluginSelected(this, new ListBox.SelectionChangedEventArgs(selectedIndex));
+            
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+            var rects = GetComponentsInChildren<ScrollRect>();
+            foreach (var rect in rects)
+            {
+                rect.scrollSensitivity = 300;
+            }
+#endif
         }
 
         private void SetupSettings()
@@ -135,6 +143,7 @@ namespace Elektronik.Settings
             ErrorLabel.enabled = true;
             var plugins = PluginsListBox.AsEnumerable()
                     .OfType<PluginListBoxItem>()
+                    .Where(lbi => lbi.State)
                     .Where(lbi => !lbi.Plugin.Settings.Validate())
                     .Select(lbi => lbi.Plugin.DisplayName);
             ErrorLabel.SetLocalizedText("Wrong settings for plugins", string.Join(", ", plugins));

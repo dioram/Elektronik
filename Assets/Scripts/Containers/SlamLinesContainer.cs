@@ -19,6 +19,49 @@ namespace Elektronik.Containers
             DisplayName = string.IsNullOrEmpty(displayName) ? "Lines" : displayName;
         }
 
+        public void UpdatePositions(IEnumerable<SlamPoint> points)
+        {
+            var lines = new List<(int, SlamLine)>();
+            foreach (var point in points)
+            {
+                lock (_connections)
+                {
+                    foreach (var pair in _connections)
+                    {
+                        SlamPoint p1;
+                        SlamPoint p2;
+                        if (pair.Value.Point1.Id == point.Id)
+                        {
+                            p1 = point;
+                            p2 = pair.Value.Point2;
+                        }
+                        else if (pair.Value.Point2.Id == point.Id)
+                        {
+                            p1 = pair.Value.Point1;
+                            p2 = point;
+                        }
+                        else continue;
+
+                        var line = new SlamLine(p1, p2);
+                        _connectionsIndices.Remove(pair.Value.GetIds());
+                        _connectionsIndices[line.GetIds()] = pair.Key;
+                        lines.Add((pair.Key, line));
+                    }
+                }
+            }
+
+            // Work around for Collection was modified exception
+            lock (_connections)
+            {
+                foreach (var pair in lines)
+                {
+                    _connections[pair.Item1] = pair.Item2;
+                }
+            }
+
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(lines.Select(l => l.Item2)));
+        }
+
         #region IContaitner implementation
 
         public event EventHandler<AddedEventArgs<SlamLine>> OnAdded;
@@ -55,6 +98,14 @@ namespace Elektronik.Containers
             lock (_connections)
             {
                 return _connectionsIndices.ContainsKey(item.GetIds());
+            }
+        }
+
+        public bool Contains(int id)
+        {
+            lock (_connections)
+            {
+                return _connections.ContainsKey(id);
             }
         }
 
@@ -119,6 +170,7 @@ namespace Elektronik.Containers
                 {
                     var line = obj;
                     line.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
+                    if (_connectionsIndices.ContainsKey(line.GetIds())) continue;
                     _connections[line.Id] = line;
                     _connectionsIndices[line.GetIds()] = line.Id;
                     buffer.Add(line);
@@ -154,6 +206,7 @@ namespace Elektronik.Containers
                         addedItems.Add(obj);
                         continue;
                     }
+
                     var line = obj;
                     line.Id = _connectionsIndices[line.GetIds()];
                     _connections[line.Id] = line;
@@ -162,7 +215,7 @@ namespace Elektronik.Containers
             }
 
             OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(updatedItems));
-            
+
             if (addedItems.Count > 0) AddRange(addedItems);
         }
 
@@ -189,9 +242,20 @@ namespace Elektronik.Containers
             {
                 foreach (var line in items)
                 {
-                    if (!_connectionsIndices.ContainsKey(line.GetIds())) continue;
-                    var index = _connectionsIndices[line.GetIds()];
-                    _connectionsIndices.Remove(line.GetIds());
+                    var key = line.GetIds();
+                    int index;
+                    if (_connectionsIndices.ContainsKey(key))
+                    {
+                        index = _connectionsIndices[key];
+                        _connectionsIndices.Remove(key);
+                    }
+                    else if (_connectionsIndices.ContainsKey((key.Id2, key.Id1)))
+                    {
+                        index = _connectionsIndices[(key.Id2, key.Id1)];
+                        _connectionsIndices.Remove((key.Id2, key.Id1));
+                    }
+                    else continue;
+
                     if (!_connections.ContainsKey(index)) continue;
                     ids.Add(index);
                     _connections.Remove(index);
@@ -200,6 +264,41 @@ namespace Elektronik.Containers
             }
 
             OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+        }
+        
+        public IEnumerable<SlamLine> Remove(IEnumerable<int> items)
+        {
+            if (items is null) return new List<SlamLine>();
+            var ids = new List<int>();
+            List<SlamLine> removed = new List<SlamLine>();
+            lock (_connections)
+            {
+                foreach (var line in items.Where(i => _connections.ContainsKey(i)))
+                {
+                    removed.Add(_connections[line]);
+                    var key = _connections[line].GetIds();
+                    int index;
+                    if (_connectionsIndices.ContainsKey(key))
+                    {
+                        index = _connectionsIndices[key];
+                        _connectionsIndices.Remove(key);
+                    }
+                    else if (_connectionsIndices.ContainsKey((key.Id2, key.Id1)))
+                    {
+                        index = _connectionsIndices[(key.Id2, key.Id1)];
+                        _connectionsIndices.Remove((key.Id2, key.Id1));
+                    }
+                    else continue;
+
+                    if (!_connections.ContainsKey(index)) continue;
+                    ids.Add(index);
+                    _connections.Remove(index);
+                    _freeIds.Enqueue(index);
+                }
+            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            return removed;
         }
 
         public void RemoveAt(int index)
@@ -236,7 +335,7 @@ namespace Elektronik.Containers
 
         public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is ICloudRenderer<SlamLine> typedRenderer)
             {

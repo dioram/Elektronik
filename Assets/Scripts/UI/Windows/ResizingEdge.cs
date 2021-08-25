@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -28,33 +27,12 @@ namespace Elektronik.UI.Windows
         public RectTransform ResizeTarget;
         public WindowsManager Manager;
         public Action<Rect> OnResized;
-
-        #region Unity event functions
-
-        private void Start()
+        public bool IsHovered { get; private set; }
+        
+        public void ShowEdgeCursor()
         {
-            var window = ResizeTarget.GetComponent<Window>();
-            _minHeight = window.MinHeight;
-            _minWidth = window.MinWidth;
-            RectTransform testCanvas = ResizeTarget;
-            while (_canvas == null && testCanvas != null)
-            {
-                _canvas = testCanvas.GetComponent<Canvas>();
-                testCanvas = testCanvas.parent as RectTransform;
-            }
-
-            StartCoroutine(ReturnToScreenRect());
-        }
-
-        private void OnDestroy()
-        {
-            StopAllCoroutines();
-        }
-
-        private void Update()
-        {
-            if (!_hovered) return;
-
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            
             switch (Side)
             {
             case EdgeSide.Top:
@@ -76,6 +54,61 @@ namespace Elektronik.UI.Windows
             default:
                 throw new ArgumentOutOfRangeException();
             }
+#else
+            var center = new Vector2(16, 16);
+            switch (Side)
+            {
+                case EdgeSide.Top:
+                case EdgeSide.Bottom:
+                    Cursor.SetCursor(ImageStore.Instance.TopDownCursor, center, CursorMode.Auto);
+                    break;
+                case EdgeSide.Right:
+                case EdgeSide.Left:
+                    Cursor.SetCursor(ImageStore.Instance.LeftRightCursor, center, CursorMode.Auto);
+                    break;
+                case EdgeSide.TopLeft:
+                case EdgeSide.BottomRight:
+                    Cursor.SetCursor(ImageStore.Instance.NorthWestCursor, center, CursorMode.Auto);
+                    break;
+                case EdgeSide.TopRight:
+                case EdgeSide.BottomLeft:
+                    Cursor.SetCursor(ImageStore.Instance.NorthEastCursor, center, CursorMode.Auto);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+#endif
+        }
+        
+        public static void ShowDefaultCursor()
+        {
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.StandardArrow));
+#else
+            Cursor.SetCursor(ImageStore.Instance.DefaultCursor, Vector2.zero, CursorMode.Auto);
+#endif
+        }
+
+        #region Unity event functions
+
+        private void Start()
+        {
+            var window = ResizeTarget.GetComponent<Window>();
+            _minHeight = window.MinHeight;
+            _minWidth = window.MinWidth;
+            RectTransform testCanvas = ResizeTarget;
+            while (_canvas == null && testCanvas != null)
+            {
+                _canvas = testCanvas.GetComponent<Canvas>();
+                testCanvas = testCanvas.parent as RectTransform;
+            }
+
+            StartCoroutine(ReturnToScreenRect());
+        }
+
+        private void OnDestroy()
+        {
+            StopAllCoroutines();
         }
 
         #endregion
@@ -165,7 +198,7 @@ namespace Elektronik.UI.Windows
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            _hovered = true;
+            IsHovered = true;
         }
 
         #endregion
@@ -174,7 +207,7 @@ namespace Elektronik.UI.Windows
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            _hovered = false;
+            IsHovered = false;
         }
 
         #endregion
@@ -184,15 +217,15 @@ namespace Elektronik.UI.Windows
         private Canvas _canvas;
         private float _minHeight;
         private float _minWidth;
-        private bool _hovered;
+        private bool _isHovered;
 
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         private static extern IntPtr SetCursor(IntPtr hCursor);
 
         [DllImport("user32.dll")]
         private static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
 
-        [SuppressMessage("ReSharper", "UnusedMember.Local")]
         private enum WindowsCursors
         {
             StandardArrow = 32512,
@@ -201,6 +234,7 @@ namespace Elektronik.UI.Windows
             EdgeNorthwestAndSoutheast = 32642,
             EdgeWestAndEast = 32644,
         }
+#endif
 
         private IEnumerator ReturnToScreenRect()
         {

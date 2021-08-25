@@ -1,4 +1,5 @@
 ﻿using System;
+using Elektronik.Threading;
 using TMPro;
 using UnityEngine;
 
@@ -37,13 +38,17 @@ namespace Elektronik.Renderers
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
+                MainThreadInvoker.Enqueue(() => gameObject.SetActive(_isShowing));
             }
+        }
+
+        public void SetScale(float value)
+        {
         }
 
         public void Render(string data)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            MainThreadInvoker.Enqueue(() =>
             {
                 switch (Mode)
                 {
@@ -62,7 +67,7 @@ namespace Elektronik.Renderers
 
         public void Clear()
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            MainThreadInvoker.Enqueue(() =>
             {
                 if (Label != null) Label.text = "";
             });

@@ -125,8 +125,11 @@ namespace Elektronik
                 var go = Instantiate(ReleasePrefab, preReleases ? PreReleaseRenderTarget : ReleaseRenderTarget);
                 go.transform.Find("Header/Version").GetComponent<TMP_Text>().text = release.Version;
                 go.transform.Find("Notes").GetComponent<TMP_Text>().text = release.ReleaseNotes;
-                go.transform.Find("Header/UpdateButton").GetComponent<Button>().OnClickAsObservable()
-                        .Subscribe(_ => release.Update());
+                var updateButton =  go.transform.Find("Header/UpdateButton").GetComponent<Button>();
+                updateButton.OnClickAsObservable().Subscribe(_ => release.Update());
+#if UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX
+                updateButton.gameObject.SetActive(false);
+#endif
             }
 
             if (releases.Count > 0)

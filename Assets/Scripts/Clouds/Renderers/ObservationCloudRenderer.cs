@@ -6,24 +6,25 @@ namespace Elektronik.Clouds
 {
     public class ObservationCloudRenderer : CloudRenderer<SlamObservation, ObservationCloudBlock>
     {
+        private static readonly Vector3[] Points = {
+            new Vector3(0, 0, -1f),
+            new Vector3( Mathf.Sqrt(0.5f),  Mathf.Sqrt(0.5f), 1 / 3f),
+            new Vector3( Mathf.Sqrt(0.5f), -Mathf.Sqrt(0.5f), 1 / 3f),
+            new Vector3(-Mathf.Sqrt(0.5f), -Mathf.Sqrt(0.5f), 1 / 3f),
+            new Vector3(-Mathf.Sqrt(0.5f),  Mathf.Sqrt(0.5f), 1 / 3f),
+        };
+
         protected override void ProcessItem(ObservationCloudBlock block, SlamObservation item, int inBlockId)
         {
-            float halfSide = ItemSize / 2;
-            // TODO: Сделать правильную пирамиду
-            var vs = new []
-            {
-                new Vector3(0, 0, -halfSide),
-                new Vector3(0, -halfSide, halfSide),
-                new Vector3(halfSide, halfSide, halfSide),
-                new Vector3(-halfSide, halfSide, halfSide),
-            }.Select(v => item.Rotation * v + item.Point.Position).ToArray();
-
+            var vs = Points.Select(v => item.Rotation * (v * ItemSize) + item.Point.Position).ToArray();
             var vertices = new[]
             {
                 vs[0], vs[1], vs[2],
-                vs[0], vs[1], vs[3],
                 vs[0], vs[2], vs[3],
+                vs[0], vs[3], vs[4],
+                vs[0], vs[4], vs[1],
                 vs[1], vs[2], vs[3],
+                vs[3], vs[4], vs[1],
             };
             for (int i = 0; i < vertices.Length; i++)
             {
@@ -37,6 +38,14 @@ namespace Elektronik.Clouds
             for (int i = 0; i < cm; i++)
             {
                 block.Points[inBlockId * cm + i] = default;
+            }
+        }
+
+        public override void SetScale(float value)
+        {
+            foreach (var block in Blocks)
+            {
+                block.SetScale(value);
             }
         }
     }

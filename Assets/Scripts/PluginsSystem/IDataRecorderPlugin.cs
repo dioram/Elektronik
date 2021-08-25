@@ -15,12 +15,12 @@ namespace Elektronik.PluginsSystem
         void StartRecording();
         void StopRecording();
 
-        void OnAdded<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : ICloudItem;
-        void OnUpdated<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : ICloudItem;
-        void OnRemoved<TCloudItem>(string topicName, IList<int> args) where TCloudItem : ICloudItem;
+        void OnAdded<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : struct, ICloudItem;
+        void OnUpdated<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : struct, ICloudItem;
+        void OnRemoved<TCloudItem>(string topicName, IList<int> args) where TCloudItem : struct, ICloudItem;
         void OnConnectionsUpdated<TCloudItem>(string topicName, IList<(int id1, int id2)> items)
-                where TCloudItem : ICloudItem;
+                where TCloudItem : struct, ICloudItem;
         void OnConnectionsRemoved<TCloudItem>(string topicName, IList<(int id1, int id2)> items)
-                where TCloudItem : ICloudItem;
+                where TCloudItem : struct, ICloudItem;
     }
 }

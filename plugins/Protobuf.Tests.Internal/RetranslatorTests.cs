@@ -17,7 +17,7 @@ namespace Protobuf.Tests.Internal
     public class RetranslatorTests
     {
         private const string Address = "127.0.0.1";
-        private const int Port = 63784;
+        private const int Port = 45983;
         private Server _grpcServer;
         private ProtobufRetranslator _retranslator;
 
@@ -96,9 +96,9 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnAdded("", points);
             _retranslator.OnUpdated("", morePoints);
             _retranslator.OnRemoved<SlamPoint>("", new List<int> {1});
-            Thread.Sleep(100);
-            _mockedPointsContainer.Verify(c => c.AddRange(points), Times.Once);
-            _mockedPointsContainer.Verify(c => c.Update(morePoints), Times.Once);
+            Thread.Sleep(1000);
+            _mockedPointsContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamPoint>>()), Times.Once);
+            _mockedPointsContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamPoint>>()), Times.Once);
             _mockedPointsContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamPoint>>()), Times.Once);
         }
 
@@ -123,7 +123,7 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnAdded("", observations);
             _retranslator.OnUpdated("", moreObservations);
             _retranslator.OnRemoved<SlamObservation>("", new List<int> {1});
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
             _mockedObservationsContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamObservation>>()), Times.Once);
             _mockedObservationsContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamObservation>>()), Times.Once);
             _mockedObservationsContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamObservation>>()), Times.Once);
@@ -147,7 +147,7 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnAdded("", trackedObjects);
             _retranslator.OnUpdated("", moreTrackedObjects);
             _retranslator.OnRemoved<SlamTrackedObject>("", new List<int> {1});
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
             _mockedTrackedObjectsContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamTrackedObject>>()),
                                                   Times.Once);
             _mockedTrackedObjectsContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamTrackedObject>>()),
@@ -174,7 +174,7 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnAdded("", lines);
             _retranslator.OnUpdated("", moreLines);
             _retranslator.OnRemoved<SlamLine>("", new List<int> {1});
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
             _mockedLinesContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamLine>>()), Times.Once);
             _mockedLinesContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamLine>>()), Times.Once);
             _mockedLinesContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamLine>>()), Times.Once);
@@ -198,38 +198,13 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnAdded("", planes);
             _retranslator.OnUpdated("", morePlanes);
             _retranslator.OnRemoved<SlamInfinitePlane>("", new List<int> {1});
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
             _mockedInfinitePlanesContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamInfinitePlane>>()),
                                                   Times.Once);
             _mockedInfinitePlanesContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamInfinitePlane>>()),
                                                   Times.Once);
             _mockedInfinitePlanesContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamInfinitePlane>>()),
                                                   Times.Once);
-        }
-
-        [Test]
-        public void ConnectedPointsTest()
-        {
-            var connections = new List<(int, int)> {(0, 1), (1, 5), (3, 7), (6, 4)};
-            var removedConnections = new List<(int, int)> {(1, 5), (3, 7)};
-            _retranslator.OnConnectionsUpdated<SlamPoint>("", connections);
-            _retranslator.OnConnectionsRemoved<SlamPoint>("", removedConnections);
-            Thread.Sleep(100);
-            _mockedPointsContainer.Verify(c => c.AddConnections(It.IsAny<IEnumerable<(int, int)>>()), Times.Once);
-            _mockedPointsContainer.Verify(c => c.RemoveConnections(It.IsAny<IEnumerable<(int, int)>>()), Times.Once);
-        }
-
-        [Test]
-        public void ConnectedObservationsTest()
-        {
-            var connections = new List<(int, int)> {(0, 1), (1, 5), (3, 7), (6, 4)};
-            var removedConnections = new List<(int, int)> {(1, 5), (3, 7)};
-            _retranslator.OnConnectionsUpdated<SlamObservation>("", connections);
-            _retranslator.OnConnectionsRemoved<SlamObservation>("", removedConnections);
-            Thread.Sleep(100);
-            _mockedObservationsContainer.Verify(c => c.AddConnections(It.IsAny<IEnumerable<(int, int)>>()), Times.Once);
-            _mockedObservationsContainer.Verify(c => c.RemoveConnections(It.IsAny<IEnumerable<(int, int)>>()),
-                                                Times.Once);
         }
     }
 }

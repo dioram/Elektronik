@@ -8,6 +8,7 @@ using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Offline;
 using Elektronik.Settings;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
@@ -77,7 +78,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                     thread.Join();
                 }
 
-                MainThreadInvoker.Instance.Enqueue(() => PluginsStarted?.Invoke());
+                MainThreadInvoker.Enqueue(() => PluginsStarted?.Invoke());
             });
         }
 
@@ -95,6 +96,13 @@ namespace Elektronik.PluginsSystem.UnitySide
             {
                 plugin.Stop();
             }
+        }
+
+        private void OnApplicationQuit()
+        {
+#if !UNITY_EDITOR
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+#endif
         }
 
         #endregion

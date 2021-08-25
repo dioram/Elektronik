@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using System.Timers;
 using Elektronik.Extensions;
 using Elektronik.Offline;
@@ -9,6 +8,7 @@ using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
+using Elektronik.Threading;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -47,21 +47,20 @@ namespace Elektronik.Protobuf.Offline
         {
             _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(TypedSettings.FilePath)}";
             _input = File.OpenRead(TypedSettings.FilePath!);
-            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity);
             _parsersChain.SetConverter(Converter);
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
-            _threadWorker = new ThreadWorker();
-            _timer = new Timer(UpdateDeltaMS);
+            _threadWorker = new ThreadQueueWorker();
+            _timer = new Timer(DelayBetweenFrames);
             _timer.Elapsed += (_, __) =>
             {
-                Task.Run(() => _threadWorker.Enqueue(() =>
+                _threadWorker.Enqueue(() =>
                 {
                     if (NextFrame()) return;
                     _timer?.Stop();
-                    MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
-                    
-                }));
+                    MainThreadInvoker.Enqueue(() => Finished?.Invoke());
+                });
             };
         }
 
@@ -84,13 +83,25 @@ namespace Elektronik.Protobuf.Offline
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
 
-        public string CurrentTimestamp => $"{_frames?.Current?.Timestamp ?? 0}";
+        public string CurrentTimestamp => $"{_frames?.Current?.Timestamp ?? 0} ({CurrentPosition})";
         public string[] SupportedExtensions { get; } = {".dat"};
 
         public int CurrentPosition
         {
             get => _frames?.CurrentIndex ?? 0;
             set => RewindAt(value);
+        }
+
+        public int DelayBetweenFrames
+        {
+            get => _delayBetweenFrames;
+            set
+            {
+                if (_delayBetweenFrames == value) return;
+
+                _delayBetweenFrames = value;
+                if (_timer != null) _timer.Interval = _delayBetweenFrames;
+            }
         }
 
         public event Action<bool> Rewind;
@@ -102,7 +113,7 @@ namespace Elektronik.Protobuf.Offline
 
         public void Pause()
         {
-            _timer?.Start();
+            _timer?.Stop();
         }
 
         public void StopPlaying()
@@ -128,7 +139,7 @@ namespace Elektronik.Protobuf.Offline
                 do
                 {
                     if (!PreviousFrame()) break;
-                } while (!_frames?.Current?.IsSpecial ?? false);
+                } while (!(_frames?.Current?.IsSpecial) ?? false);
 
             });
         }
@@ -140,7 +151,7 @@ namespace Elektronik.Protobuf.Offline
                 do
                 {
                     if (!NextFrame()) break;
-                } while (!_frames?.Current?.IsSpecial ?? false);
+                } while (!(_frames?.Current?.IsSpecial) ?? false);
             });
         }
 
@@ -150,14 +161,13 @@ namespace Elektronik.Protobuf.Offline
 
         #region Private definitions
 
-        private const int UpdateDeltaMS = 5;
-
         private readonly ProtobufContainerTree _containerTree;
         private FileStream _input;
         private FramesCollection<Frame> _frames;
         private readonly DataParser<PacketPb> _parsersChain;
-        private ThreadWorker _threadWorker;
+        private ThreadQueueWorker _threadWorker;
         [CanBeNull] private Timer _timer;
+        private int _delayBetweenFrames = 2;
 
         private IEnumerator<Frame> ReadCommands(int size)
         {

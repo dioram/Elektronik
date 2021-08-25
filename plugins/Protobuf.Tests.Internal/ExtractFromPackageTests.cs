@@ -26,6 +26,12 @@ namespace Protobuf.Tests.Internal
                     }));
             _mockedConverter.Setup(c => c.Convert(ref It.Ref<Vector3>.IsAny))
                     .Callback(new Convert1Callback(((ref Vector3 v) => v.x = -v.x)));
+            _mockedConverter.Setup(c => c.Convert(It.IsAny<Vector3>()))
+                    .Returns<Vector3>(v => new Vector3(-v.x, v.y, v.z));
+            _mockedConverter.Setup(c => c.Convert(It.IsAny<Quaternion>()))
+                    .Returns<Quaternion>(q => new Quaternion(q.x, q.y, q.z, -q.w));
+            _mockedConverter.Setup(c => c.Convert(It.IsAny<Vector3>(), It.IsAny<Quaternion>()))
+                    .Returns((Vector3 v, Quaternion q) => (new Vector3(-v.x, v.y, v.z), new Quaternion(q.x, q.y, q.z, -q.w)));
         }
 
         [Test]
@@ -70,14 +76,14 @@ namespace Protobuf.Tests.Internal
                     Message = "message"
                 }
             });
-            var observations = packet.ExtractObservations(_mockedConverter.Object, @"C:\\").ToArray();
+            var observations = packet.ExtractObservations(_mockedConverter.Object, @"./").ToArray();
             Assert.AreEqual(1, observations.Count());
             Assert.AreEqual(1, observations[0].Id);
             Assert.AreEqual(new Vector3(-2, 3, 4), observations[0].Point.Position);
             Assert.AreEqual(Color.white, observations[0].Point.Color);
             Assert.AreEqual("message", observations[0].Message);
             Assert.AreEqual(new Quaternion(5, 6, 7, -8), observations[0].Rotation);
-            Assert.AreEqual(@"C:\\1.png", observations[0].FileName);
+            Assert.AreEqual(@"./1.png", observations[0].FileName);
         }
 
         [Test]
@@ -91,9 +97,9 @@ namespace Protobuf.Tests.Internal
             {
                 Id = 1,
                 Message = "message",
-                Rotation = new Vector4Pb{X = 5, Y = 6, Z = 7, W = 8},
-                Translation = new Vector3Pb{X = 2, Y = 3, Z = 4},
-                TrackColor = new ColorPb{B = 255, G = 255, R = 255},
+                Orientation = new Vector4Pb{X = 5, Y = 6, Z = 7, W = 8},
+                Position = new Vector3Pb{X = 2, Y = 3, Z = 4},
+                Color = new ColorPb{B = 255, G = 255, R = 255},
             });
             var trackedObjects = packet.ExtractTrackedObjects(_mockedConverter.Object).ToArray();
             Assert.AreEqual(1, trackedObjects.Count());

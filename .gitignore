@@ -19,6 +19,9 @@
 !/.github/**
 !/plugins/
 !/plugins/**
+!/package/
+!/package/**
+/package/opt/**/*
 /plugins/**/bin
 /plugins/**/obj
 /**/SWIG_generated
@@ -27,7 +30,12 @@
 /plugins/ROS2DDS/CMakeSettings.json
 /Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative
 /Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative.meta
+/Assets/Scripts/Containers/MeshBuildNative
+/Assets/Scripts/Containers/MeshBuildNative.meta
+/Assets/Plugins/Native
+/Assets/Plugins/Native.meta
 /Assets/generatedFiles/
+/Assets/AddressableAssetsData/
 
 # Unity3D generated meta files
 *.pidb.meta

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using Elektronik.Protobuf.Data;
-using Google.Protobuf;
 using NUnit.Framework;
 
 namespace Protobuf.Tests.Elektronik
@@ -19,8 +17,8 @@ namespace Protobuf.Tests.Elektronik
             _objects = Enumerable.Range(0, 3).Select(id => new TrackedObjPb()
             {
                 Id = id,
-                Rotation = new Vector4Pb() {W = 1,},
-                Translation = new Vector3Pb(),
+                Orientation = new Vector4Pb() {W = 1,},
+                Position = new Vector3Pb(),
             }).ToArray();
         }
 
@@ -34,23 +32,19 @@ namespace Protobuf.Tests.Elektronik
                 Timestamp = ++_timestamp,
                 Special = true,
             };
-            _objects[0].Translation = new Vector3Pb();
-            _objects[1].Translation = new Vector3Pb {X = 0.5,};
-            _objects[2].Translation = new Vector3Pb {X = -0.5,};
-            _objects[0].TrackColor = new ColorPb {R = 255,};
-            _objects[1].TrackColor = new ColorPb {G = 255,};
-            _objects[2].TrackColor = new ColorPb {B = 255,};
+            _objects[0].Position = new Vector3Pb();
+            _objects[1].Position = new Vector3Pb {X = 0.5,};
+            _objects[2].Position = new Vector3Pb {X = -0.5,};
+            _objects[0].Color = new ColorPb {R = 255,};
+            _objects[1].Color = new ColorPb {G = 255,};
+            _objects[2].Color = new ColorPb {B = 255,};
             packet.TrackedObjs.Data.Add(_objects);
 
-            using var file = File.Open(Filename, FileMode.Create);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            SendAndCheck(packet, Filename);
         }
 
         [Test, Order(2), Explicit]
-        public void Update()
+        public void UpdatePositions()
         {
             var packet = new PacketPb
             {
@@ -59,43 +53,74 @@ namespace Protobuf.Tests.Elektronik
                 Timestamp = ++_timestamp,
                 Special = true,
             };
-            _objects[0].Translation = new Vector3Pb {X = 0.0, Z = 0.5};
-            _objects[1].Translation = new Vector3Pb {X = 0.5, Z = 0.5};
-            _objects[2].Translation = new Vector3Pb {X = -0.5, Z = 0.5};
-            packet.TrackedObjs.Data.Clear();
-            packet.TrackedObjs.Data.Add(_objects);
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 0, Position = new Vector3Pb {X = 0, Z = 0.5f}});
+            packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 1, Position = new Vector3Pb {X = 0.5f, Z = 0.5f}});
+            packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 2, Position = new Vector3Pb {X = -0.5f, Z = 0.5f}});
+            
+            SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(3), Repeat(5), Explicit]
-        public void UpdateRandom()
+        [Test, Order(3), Explicit]
+        public void UpdateOrientations()
         {
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Update,
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
                 Timestamp = ++_timestamp,
+                Special = true,
             };
-            _objects[0].Translation = new Vector3Pb
-                    {X = Rand.NextDouble(), Y = Rand.NextDouble(), Z = Rand.NextDouble()};
-            _objects[1].Translation = new Vector3Pb
-                    {X = Rand.NextDouble(), Y = Rand.NextDouble(), Z = Rand.NextDouble()};
-            _objects[2].Translation = new Vector3Pb
-                    {X = Rand.NextDouble(), Y = Rand.NextDouble(), Z = Rand.NextDouble()};
-            packet.TrackedObjs.Data.Clear();
-            packet.TrackedObjs.Data.Add(_objects);
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 0, Orientation = new Vector4Pb {X = 1, W = 1}});
+            packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 1, Orientation = new Vector4Pb {X = 1, W = 1}});
+            packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 2, Orientation = new Vector4Pb {X = 1, W = 1}});
+            
+            SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(4), Explicit]
+        [Test, Order(4), Repeat(5), Explicit]
+        public void UpdatePositionsRandom()
+        {
+            var packet = new PacketPb
+            {
+                Action = PacketPb.Types.ActionType.Update,
+                TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                Timestamp = ++_timestamp,
+                Special = true,
+            };
+            packet.TrackedObjs.Data.Add(new TrackedObjPb
+            {
+                Id = 0, Position = new Vector3Pb {X = Rand.NextDouble(), Y = Rand.NextDouble(), Z = Rand.NextDouble()}
+            });
+            packet.TrackedObjs.Data.Add(new TrackedObjPb
+            {
+                Id = 1, Position = new Vector3Pb {X = Rand.NextDouble(), Y = Rand.NextDouble(), Z = Rand.NextDouble()}
+            });
+            packet.TrackedObjs.Data.Add(new TrackedObjPb
+            {
+                Id = 2, Position = new Vector3Pb {X = Rand.NextDouble(), Y = Rand.NextDouble(), Z = Rand.NextDouble()}
+            });
+            
+            SendAndCheck(packet, Filename);
+        }
+
+        [Test, Order(5), Explicit]
+        public void UpdateColors()
+        {
+            var packet = new PacketPb
+            {
+                Action = PacketPb.Types.ActionType.Update,
+                TrackedObjs = new PacketPb.Types.TrackedObjs(),
+                Timestamp = ++_timestamp,
+                Special = true,
+            };
+            packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 0, Color = new ColorPb{R = 255, G = 255, B = 255}});
+            packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 1, Color = new ColorPb{R = 255, G = 255, B = 255}});
+            packet.TrackedObjs.Data.Add(new TrackedObjPb {Id = 2, Color = new ColorPb{R = 255, G = 255, B = 255}});
+            
+            SendAndCheck(packet, Filename);
+        }
+
+        [Test, Order(6), Explicit]
         public void Remove()
         {
             var packet = new PacketPb
@@ -106,14 +131,11 @@ namespace Protobuf.Tests.Elektronik
                 Special = true,
             };
             packet.TrackedObjs.Data.Add(new[] {_objects[1]});
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(5), Explicit]
+        [Test, Order(7), Explicit]
         public void Clear()
         {
             var packet = new PacketPb
@@ -123,11 +145,8 @@ namespace Protobuf.Tests.Elektronik
                 Timestamp = ++_timestamp,
                 Special = true,
             };
-            var response = MapClient.Handle(packet);
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            
+            SendAndCheck(packet, Filename);
         }
     }
 }

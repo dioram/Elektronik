@@ -14,28 +14,27 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS -EHsc)
 endif ()
 
-add_executable(PlanesDetectorTester include/Octree.h include/Plane.h include/Point.h include/PointCloud.h
-        include/Ransac.h include/RGB.h include/UnionFind.h include/Vec3.h src/Octree.cpp src/Plane.cpp
-        src/PointCloud.cpp src/Ransac.cpp src/main.cpp)
-TARGET_LINK_LIBRARIES(PlanesDetectorTester ${OpenCV_LIBS})
-
+include_directories(include)
 swig_add_library(PlanesDetector
         TYPE SHARED
         LANGUAGE csharp
-        OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative/SWIG_generated
+        OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative
         OUTFILE_DIR ${PROJECT_SOURCE_DIR}
         SOURCES include/Octree.h include/Plane.h include/Point.h include/PointCloud.h include/Ransac.h include/RGB.h
-                include/UnionFind.h include/Vec3.h src/Octree.cpp src/Plane.cpp src/PointCloud.cpp src/Ransac.cpp
-                include/Detector.i)
+                include/UnionFind.h include/Vector3.h src/Octree.cpp src/Plane.cpp src/PointCloud.cpp src/Ransac.cpp
+                include/Detector.i include/PlanesDetector.h src/PlanesDetector.cpp)
 
 TARGET_LINK_LIBRARIES(PlanesDetector ${OpenCV_LIBS})
 
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative CACHE PATH "installation prefix")
-set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative)
+set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/../../Assets/Plugins/Native CACHE PATH "installation prefix")
+set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../Assets/Plugins/Native)
 
 set(DEPLOY_DLLS)
 file(GLOB DEPLOY_DLLS ${CMAKE_BINARY_DIR}/*.dll)
+set(DEPLOY_SOS)
+file(GLOB DEPLOY_SOS ${CMAKE_BINARY_DIR}/*.so)
 set(DEPLOY_LIBS)
 file(GLOB DEPLOY_LIBS ${CMAKE_BINARY_DIR}/*.lib)
 install(FILES ${DEPLOY_DLLS} DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${DEPLOY_LIBS} DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${DEPLOY_SOS} DESTINATION ${CMAKE_INSTALL_BINDIR})

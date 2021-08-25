@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Elektronik
+Comment=The tool for testing and debugging SLAM
+Keywords=slam;point-cloud;pointcloud;dioram;vr;ar;
+Icon=elektronik
+Exec=/opt/elektronik/Elektronik
+TryExec=/opt/elektronik/Elektronik
+Categories=Development;
+Terminal=false

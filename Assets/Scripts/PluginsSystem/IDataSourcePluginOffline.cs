@@ -16,6 +16,9 @@ namespace Elektronik.PluginsSystem
 
         /// <summary> Number of current frame. </summary>
         int CurrentPosition { get; set; }
+        
+        /// <summary> Minimal delay between 2 frames when playing (in ms). </summary>
+        int DelayBetweenFrames { get; set; }
 
         /// <summary> Play button pressed handler. </summary>
         void Play();

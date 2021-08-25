@@ -8,12 +8,18 @@ namespace Elektronik.Clouds
         public Shader CloudShader;
         public bool Updated;
         public float ItemSize = 1f;
+        public int ItemsCount = 0;
 
         public abstract GPUItem[] GetItems();
 
         public virtual void Clear()
         {
             Updated = true;
+        }
+
+        public virtual void SetScale(float value)
+        {
+            _renderMaterial.SetFloat(_scaleShaderProp, value);
         }
         
         #region Unity events
@@ -25,8 +31,7 @@ namespace Elektronik.Clouds
 
         protected virtual void Start()
         {
-            _renderMaterial = new Material(CloudShader);
-            _renderMaterial.hideFlags = HideFlags.DontSave;
+            _renderMaterial = new Material(CloudShader) {hideFlags = HideFlags.DontSave};
             _renderMaterial.EnableKeyword("_COMPUTE_BUFFER");
         }
 
@@ -44,10 +49,16 @@ namespace Elektronik.Clouds
 
         protected virtual void OnRenderObject()
         {
+            if (ItemsCount <= 0) return;
             _renderMaterial.SetPass(0);
             _renderMaterial.SetFloat(_sizeShaderProp, ItemSize);
             SendData(_renderMaterial);
             Draw();
+        }
+
+        private void OnDestroy()
+        {
+            ReleaseBuffers();
         }
 
         #endregion
@@ -62,6 +73,8 @@ namespace Elektronik.Clouds
 
         protected abstract void Draw();
 
+        protected abstract void ReleaseBuffers();
+
         protected void ClearArray(GPUItem[] array)
         {
             for (int i = 0; i < array.Length; i++)
@@ -75,6 +88,7 @@ namespace Elektronik.Clouds
         #region Private definitions
         
         private readonly int _sizeShaderProp = Shader.PropertyToID("_Size");
+        private readonly int _scaleShaderProp = Shader.PropertyToID("_Scale");
         private Material _renderMaterial;
 
         #endregion

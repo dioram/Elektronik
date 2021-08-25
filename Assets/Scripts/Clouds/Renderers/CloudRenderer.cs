@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Threading;
 using UnityEngine;
 using Grid = Elektronik.Cameras.Grid;
 
@@ -114,6 +115,7 @@ namespace Elektronik.Clouds
                     {
                         RemoveItem(Blocks[layer], inLayerId);
                         Blocks[layer].Updated = true;
+                        Blocks[layer].ItemsCount--;
                     }
                 }
 
@@ -148,6 +150,7 @@ namespace Elektronik.Clouds
                     {
                         RemoveItem(Blocks[layer], inLayerId);
                         Blocks[layer].Updated = true;
+                        Blocks[layer].ItemsCount--;
                     }
                 }
 
@@ -177,7 +180,16 @@ namespace Elektronik.Clouds
         private void CreateNewBlock()
         {
             var go = new GameObject($"{GetType().Name} {Blocks.Count}");
-            go.transform.SetParent(transform);
+            try
+            {
+                go.transform.SetParent(transform);
+            }
+            catch (NullReferenceException)
+            {
+                // Sometimes for unknown reasons this.transform causes NullReferenceException.
+                // We can just live with that.
+                // TODO: Investigate this properly
+            }
             var block = go.AddComponent<TCloudBlock>();
             block.CloudShader = CloudShader;
             block.Updated = true;
@@ -191,18 +203,19 @@ namespace Elektronik.Clouds
             {
                 if (item.Message == GridMessage && item is SlamInfinitePlane plane)
                 {
-                    MainThreadInvoker.Instance.Enqueue(() => Grid.SetPlane(plane));
+                    MainThreadInvoker.Enqueue(() => Grid.SetPlane(plane));
                     continue;
                 }
 
                 var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
-                _pointPlaces.Add((sender.GetHashCode(), item.Id), index);
+                _pointPlaces[(sender.GetHashCode(), item.Id)] = index;
                 int layer = index / CloudBlock.Capacity;
                 int inLayerId = index % CloudBlock.Capacity;
                 lock (Blocks[layer])
                 {
                     ProcessItem(Blocks[layer], item, inLayerId);
                     Blocks[layer].Updated = true;
+                    Blocks[layer].ItemsCount++;
                 }
             }
 
@@ -216,7 +229,7 @@ namespace Elektronik.Clouds
             if (newAmountOfItems > Blocks.Count * CloudBlock.Capacity)
             {
                 // reserves overloaded
-                MainThreadInvoker.Instance.Enqueue(() =>
+                MainThreadInvoker.Enqueue(() =>
                 {
                     lock (_pointPlaces)
                     {
@@ -243,7 +256,7 @@ namespace Elektronik.Clouds
             if (newAmountOfItems > (Blocks.Count - 1) * CloudBlock.Capacity)
             {
                 // add reserves
-                MainThreadInvoker.Instance.Enqueue(CreateNewBlock);
+                MainThreadInvoker.Enqueue(CreateNewBlock);
             }
 
             return false;

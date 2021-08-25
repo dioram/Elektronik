@@ -15,8 +15,6 @@ namespace Elektronik.Protobuf.Offline
         [CheckForEquals, Path(PathAttribute.PathTypes.Directory, new[] {""}), Tooltip("Path to images")]
         public string ImagePath;
 
-        public float Scale = 10;
-
         public override bool Validate()
         {
             return File.Exists(FilePath);

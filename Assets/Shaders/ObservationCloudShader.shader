@@ -2,6 +2,7 @@
 {
     Properties
     {
+        _Scale("Scale", Float) = 1
     }
     SubShader
     {
@@ -10,6 +11,8 @@
             "RenderType"="Opaque"
         }
         Cull Off
+        ZWrite On
+        ZTest Less
         Pass
         {
             Tags
@@ -25,6 +28,7 @@
             #include "UnityCG.cginc"
             #define MAX_BRIGHTNESS 16
 
+            half _Scale;
             StructuredBuffer<float4> _ItemsBuffer;
 
             half3 DecodeColor(uint data)
@@ -58,7 +62,7 @@
                 }
                 else
                 {
-                    o.position = UnityObjectToClipPos(float4(pt.xyz, 1));
+                    o.position = UnityObjectToClipPos(float4(pt.xyz * _Scale, 1));
                 }
                 o.color = DecodeColor(asuint(pt.w));
                 o.barycentricCoords = float2(0, 0);

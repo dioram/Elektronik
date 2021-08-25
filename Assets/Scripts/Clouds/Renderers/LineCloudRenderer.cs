@@ -23,5 +23,13 @@ namespace Elektronik.Clouds
             block.Points[inBlockId * 2 + 0] = default;
             block.Points[inBlockId * 2 + 1] = default;
         }
+
+        public override void SetScale(float value)
+        {
+            foreach (var block in Blocks)
+            {
+                block.SetScale(value);
+            }
+        }
     }
 }

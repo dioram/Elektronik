@@ -10,20 +10,44 @@ namespace Elektronik.RosPlugin.Common.RosMessages
 {
     public static partial class MessageParser
     {
-        private static readonly Dictionary<string, Func<Stream, bool, RosMessage>> Parsers = new()
+        private static readonly Dictionary<string, Func<Stream, bool, RosMessage>> CustomParsers = new()
         {
             {"std_msgs/msg/String", ParseStringMessage},
             {"std_msgs/String", ParseStringMessage},
             {"visualization_msgs/msg/MarkerArray", ParseMarkerArray},
             {"visualization_msgs/MarkerArray", ParseMarkerArray},
+            {"sensing_msgs/VideoFrame", ParseVideoFrame},
+            {"sensing_msgs/msg/VideoFrame", ParseVideoFrame},
+            {"control_msgs/CarState", ParseCarState},
+            {"control_msgs/msg/CarState", ParseCarState},
+            {"control_msgs/Command", ParseCommand},
+            {"control_msgs/msg/Command", ParseCommand},
+            {"gps_msgs/Gga", ParseGga},
+            {"gps_msgs/msg/Gga", ParseGga},
+            {"control_msgs/GSensorAcc", ParseGSensorAcc},
+            {"control_msgs/msg/GSensorAcc", ParseGSensorAcc},
+            {"control_msgs/WheelAxleVelocity", ParseWheelAxleVelocity},
+            {"control_msgs/msg/WheelAxleVelocity", ParseWheelAxleVelocity},
         };
 
         public static RosMessage? Parse(byte[] data, string topic, bool cdr)
         {
             MemoryStream memoryStream = new(data);
             memoryStream.Position = 0;
-            ParseInt32(memoryStream, cdr);
-            return Parsers.ContainsKey(topic) ? Parsers[topic](memoryStream, cdr) : null;
+            return Parse(memoryStream, topic, cdr);
+        }        
+        
+        public static T? Parse<T>(byte[] data, string topic, bool cdr) where T : RosMessage
+        {
+            MemoryStream memoryStream = new(data);
+            memoryStream.Position = 0;
+            return Parse(memoryStream, topic, cdr) as T;
+        }
+
+        public static RosMessage? Parse(Stream data, string topic, bool cdr)
+        {
+            ParseInt32(data, cdr);
+            return CustomParsers.ContainsKey(topic) ? CustomParsers[topic](data, cdr) : null;
         }
 
         private static RosString ParseStringMessage(Stream data, bool cdr)
@@ -31,6 +55,74 @@ namespace Elektronik.RosPlugin.Common.RosMessages
 
         private static MarkerArray ParseMarkerArray(Stream data, bool cdr)
             => new MarkerArray {Markers = ParseArray(data, ParseMarker, cdr)};
+
+        private static VideoFrame ParseVideoFrame(Stream data, bool cdr)
+            => new VideoFrame
+            {
+                Header = ParseHeader(data, cdr),
+                dts = ParseUInt64(data, cdr),
+                pts = ParseUInt64(data, cdr),
+                Duration = ParseUInt64(data, cdr),
+                Data = ParseByteArray(data, cdr),
+            };
+
+        private static CarState ParseCarState(Stream data, bool cdr)
+            => new CarState
+            {
+                Header = ParseHeader(data, cdr),
+                is_brake = ParseBoolean(data, cdr),
+                brake_press = ParseUInt16(data, cdr),
+                is_acceleration = ParseBoolean(data, cdr),
+                acceleration_press = ParseDouble(data, cdr),
+                button_state = ParseBoolean(data, cdr),
+            };
+
+        private static Command ParseCommand(Stream data, bool cdr)
+            => new Command()
+            {
+                Header = ParseHeader(data, cdr),
+                type = ParseByte(data, cdr),
+                acc = ParseDouble(data, cdr),
+                dec = ParseDouble(data, cdr),
+                angle = ParseDouble(data, cdr),
+                current_long_ref = ParseDouble(data, cdr),
+                current_lat_ref = ParseDouble(data, cdr),
+                current_lat_ref_yaw = ParseDouble(data, cdr),
+            };
+
+        private static Gga ParseGga(Stream data, bool cdr)
+            => new Gga()
+            {
+                Header = ParseHeader(data, cdr),
+                latitude = ParseDouble(data, cdr),
+                longitude = ParseDouble(data, cdr),
+                fix_quality = ParseByte(data, cdr),
+                sats_online = ParseUInt16(data, cdr),
+                hdop = ParseSingle(data, cdr),
+                altitude = ParseDouble(data, cdr),
+                height_of_geoid = ParseDouble(data, cdr),
+                time_from_last_update = ParseSingle(data, cdr),
+            };
+        
+        private static GSensorAcc ParseGSensorAcc(Stream data, bool cdr)
+            => new GSensorAcc()
+            {
+                Header = ParseHeader(data, cdr),
+                valid = ParseBoolean(data, cdr),
+                lat_accel = ParseDouble(data, cdr),
+                long_accel = ParseDouble(data, cdr),
+                yaw_rate = ParseDouble(data, cdr),
+                speed = ParseDouble(data, cdr),
+            };
+        
+        private static WheelAxleVelocity ParseWheelAxleVelocity(Stream data, bool cdr)
+            => new WheelAxleVelocity()
+            {
+                Header = ParseHeader(data, cdr),
+                axle = ParseByte(data, cdr),
+                left_wheel = ParseDouble(data, cdr),
+                right_wheel = ParseDouble(data, cdr),
+            };
 
         private static Marker ParseMarker(Stream data, bool cdr) =>
                 new Marker

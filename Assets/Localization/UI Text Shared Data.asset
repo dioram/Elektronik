@@ -348,6 +348,90 @@ MonoBehaviour:
     m_Key: Follow
     m_Metadata:
       m_Items: []
+  - m_Id: 35524816610934784
+    m_Key: Connections weight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35557840274735104
+    m_Key: Observations graph
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35938884576493568
+    m_Key: Mesh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35963052214861824
+    m_Key: Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36000339791331328
+    m_Key: Main
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36000456325873664
+    m_Key: Alternative
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36004087943020544
+    m_Key: Controls big
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36005840151265280
+    m_Key: Help
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36291689841573888
+    m_Key: Help 1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36291901028974592
+    m_Key: Help 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36292451585900544
+    m_Key: Help 3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36292733426352128
+    m_Key: Help 4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36292930021769216
+    m_Key: Help 5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36293536933363712
+    m_Key: Help 6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36294039750721536
+    m_Key: Help 7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36294217106866176
+    m_Key: Help 8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41412972170330112
+    m_Key: Calculation...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45283616971366400
+    m_Key: Set
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45611950332067840
+    m_Key: 'Speed:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46797145714343936
+    m_Key: Use vertex colors for mesh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46797231349448704
+    m_Key: Override colors for mesh
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

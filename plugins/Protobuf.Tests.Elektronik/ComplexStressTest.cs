@@ -82,6 +82,7 @@ namespace Protobuf.Tests.Elektronik
         [Test, Explicit]
         public void ComplexTest()
         {
+            int iterations = 10000;
             int pointsAmount = 600;
             int obsAmount = 5;
             float scale = 1f;
@@ -91,14 +92,14 @@ namespace Protobuf.Tests.Elektronik
                 Action = PacketPb.Types.ActionType.Add,
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
-            trackedPacket.TrackedObjs.Data.Add(new[] {new TrackedObjPb {Id = 1, Rotation = new Vector4Pb {W = 1}}});
+            trackedPacket.TrackedObjs.Data.Add(new[] {new TrackedObjPb {Id = 1, Orientation = new Vector4Pb {W = 1}}});
             var response = MapClient.Handle(trackedPacket);
             Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
 
             var points = GeneratePoints(pointsAmount, scale);
             var observations = GenerateObservations(obsAmount, scale);
 
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < iterations; i++)
             {
                 var pointsPacket = new PacketPb
                 {
@@ -125,18 +126,15 @@ namespace Protobuf.Tests.Elektronik
                     new TrackedObjPb
                     {
                         Id = 1,
-                        Translation = observations.Last().Point.Position,
-                        Rotation = observations.Last().Orientation
+                        Position = observations.Last().Point.Position,
+                        Orientation = observations.Last().Orientation
                     }
                 });
-
-                var response1 = MapClient.Handle(pointsPacket);
-                var response2 = MapClient.Handle(obsPacket);
-                var response3 = MapClient.Handle(trackedPacket);
-
-                Assert.True(response1.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response1.Message);
-                Assert.True(response2.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response2.Message);
-                Assert.True(response3.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response3.Message);
+                
+                SendAndCheck(pointsPacket);
+                SendAndCheck(obsPacket);
+                SendAndCheck(trackedPacket);
+                
                 Thread.Sleep(25);
                 MoveData(points, observations, pointsAmount, obsAmount, scale, (i+1) % 100 == 0);
             }

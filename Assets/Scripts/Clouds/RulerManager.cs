@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Elektronik.Collision;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Elektronik.Clouds
 {
@@ -22,19 +23,26 @@ namespace Elektronik.Clouds
 
         private void Update()
         {
-            if (Cursor.gameObject.activeSelf && Input.GetMouseButtonUp(0))
+            if (Cursor.gameObject.activeSelf && Mouse.current.leftButton.wasReleasedThisFrame)
             {
                 if (_currentRuler is null)
                 {
                     _currentRuler = Instantiate(LineRendererPrefab, transform).GetComponent<Ruler>();
+                    _currentRuler.Destroyed += OnRulerDestroyed;
                     _currentRuler.FirstPoint = Cursor.position;
                 }
                 else
                 {
                     _currentRuler.SecondPoint = Cursor.position;
+                    _currentRuler.Destroyed -= OnRulerDestroyed;
                     _currentRuler = null;
                 }
             }
+        }
+
+        private void OnRulerDestroyed(Ruler ruler)
+        {
+            if (_currentRuler == ruler) _currentRuler = null;
         }
 
         private void OnEnable()
@@ -56,7 +64,8 @@ namespace Elektronik.Clouds
         {
             while (true)
             {
-                var ray = _camera.ScreenPointToRay(Input.mousePosition);
+                var mousePosition = Mouse.current.position.ReadValue();
+                var ray = _camera.ScreenPointToRay(mousePosition);
                 var pointData = PointCollisionCloud.FindCollided(ray);
                 if (pointData.HasValue)
                 {

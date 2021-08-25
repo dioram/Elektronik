@@ -62,7 +62,8 @@ namespace Elektronik.Protobuf.Recorders
             // Do nothing
         }
 
-        public void OnAdded<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : ICloudItem
+        public void OnAdded<TCloudItem>(string topicName, IList<TCloudItem> args) 
+            where TCloudItem : struct, ICloudItem
         {
             var packet = CreateAddedPacket(args, GetTimestamp(), Converter);
             foreach (var client in _clients)
@@ -71,7 +72,8 @@ namespace Elektronik.Protobuf.Recorders
             }
         }
 
-        public void OnUpdated<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : ICloudItem
+        public void OnUpdated<TCloudItem>(string topicName, IList<TCloudItem> args) 
+            where TCloudItem : struct, ICloudItem
         {
             var packet = CreateUpdatedPacket(args, GetTimestamp(), Converter);
             foreach (var client in _clients)
@@ -80,7 +82,8 @@ namespace Elektronik.Protobuf.Recorders
             }
         }
 
-        public void OnRemoved<TCloudItem>(string topicName, IList<int> args) where TCloudItem : ICloudItem
+        public void OnRemoved<TCloudItem>(string topicName, IList<int> args) 
+            where TCloudItem : struct, ICloudItem
         {
             var packet = CreateRemovedPacket<TCloudItem>(args, GetTimestamp());
             foreach (var client in _clients)
@@ -90,7 +93,7 @@ namespace Elektronik.Protobuf.Recorders
         }
 
         public void OnConnectionsUpdated<TCloudItem>(string topicName, IList<(int id1, int id2)> items)
-                where TCloudItem : ICloudItem
+                where TCloudItem : struct, ICloudItem
         {
             var packet = CreateConnectionsUpdatedPacket<TCloudItem>(items, GetTimestamp());
             foreach (var client in _clients)
@@ -100,7 +103,7 @@ namespace Elektronik.Protobuf.Recorders
         }
 
         public void OnConnectionsRemoved<TCloudItem>(string topicName, IList<(int id1, int id2)> items)
-                where TCloudItem : ICloudItem
+                where TCloudItem : struct, ICloudItem
         {
             var packet = CreateConnectionsRemovedPacket<TCloudItem>(items, GetTimestamp());
             foreach (var client in _clients)

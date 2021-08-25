@@ -24,9 +24,9 @@ message ColorPb {
 
 message PointPb {
   int32 id = 1;
-  Vector3Pb position = 2;
-  ColorPb color = 3;
-  string message = 16;
+  optional Vector3Pb position = 2;
+  optional ColorPb color = 3;
+  optional string message = 16;
 }
 
 message ObservationPb {
@@ -34,9 +34,10 @@ message ObservationPb {
     reserved 1 to 4;
   }
   PointPb point = 1;
-  Vector4Pb orientation = 2;
-  string message = 3;
-  string filename = 4;
+  optional Vector4Pb orientation = 2;
+  optional string message = 3;
+  optional string filename = 4;
+  repeated int32 observedPoints = 5;
   Stats stats = 16;
 }
 
@@ -52,18 +53,18 @@ message LinePb {
 
 message InfinitePlanePb {
   int32 id = 1;
-  Vector3Pb offset = 2;
-  Vector3Pb normal = 3;
-  ColorPb color = 4;
-  string message = 16;
+  optional Vector3Pb offset = 2;
+  optional Vector3Pb normal = 3;
+  optional ColorPb color = 4;
+  optional string message = 16;
 }
 
 message TrackedObjPb {
   int32 id = 1;
-  Vector3Pb translation = 2;
-  Vector4Pb rotation = 3;
-  ColorPb trackColor = 4;
-  string message = 5;
+  optional Vector3Pb position = 2;
+  optional Vector4Pb orientation = 3;
+  optional ColorPb color = 4;
+  optional string message = 5;
 }
 
 message PacketPb {

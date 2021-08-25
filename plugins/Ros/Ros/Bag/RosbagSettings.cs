@@ -9,8 +9,6 @@ namespace Elektronik.RosPlugin.Ros.Bag
     {
         [CheckForEquals, Path(PathAttribute.PathTypes.File, new []{".bag"}), Tooltip("Path to file")]
         public string FilePath = "";
-
-        public float Scale = 1f;
         
         public override bool Validate()
         {

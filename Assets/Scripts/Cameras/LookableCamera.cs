@@ -8,11 +8,12 @@ namespace Elektronik.Cameras
     {
         public float MovingTme = 1f;
         private bool _isMoving;
+        public float Scale = 1;
         
         public void Look((Vector3 pos, Quaternion rotation) pose)
         {
             if (_isMoving || pose.pos == transform.position && pose.rotation == transform.rotation) return;
-            StartCoroutine(MoveTo(pose.pos, pose.rotation));
+            StartCoroutine(MoveTo(pose.pos * Scale, pose.rotation));
         }
 
         private IEnumerator MoveTo(Vector3 pos, Quaternion rotation)

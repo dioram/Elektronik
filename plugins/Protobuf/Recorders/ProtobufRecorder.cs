@@ -54,35 +54,40 @@ namespace Elektronik.Protobuf.Recorders
             _file.Dispose();
         }
 
-        public void OnAdded<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : ICloudItem
+        public void OnAdded<TCloudItem>(string topicName, IList<TCloudItem> args) 
+            where TCloudItem : struct, ICloudItem
         {
             if (!_isRecording) return;
             _amountOfFrames++;
             CreateAddedPacket(args, GetTimestamp(), Converter).WriteDelimitedTo(_file);
         }
 
-        public void OnUpdated<TCloudItem>(string topicName, IList<TCloudItem> args) where TCloudItem : ICloudItem
+        public void OnUpdated<TCloudItem>(string topicName, IList<TCloudItem> args) 
+            where TCloudItem : struct, ICloudItem
         {
             if (!_isRecording) return;
             _amountOfFrames++;
             CreateUpdatedPacket(args, GetTimestamp(), Converter).WriteDelimitedTo(_file);
         }
         
-        public void OnRemoved<TCloudItem>(string topicName, IList<int> args) where TCloudItem : ICloudItem
+        public void OnRemoved<TCloudItem>(string topicName, IList<int> args) 
+            where TCloudItem : struct, ICloudItem
         {
             if (!_isRecording) return;
             _amountOfFrames++;
             CreateRemovedPacket<TCloudItem>(args, GetTimestamp()).WriteDelimitedTo(_file);
         }
 
-        public void OnConnectionsUpdated<TCloudItem>(string topicName, IList<(int id1, int id2)> items) where TCloudItem : ICloudItem
+        public void OnConnectionsUpdated<TCloudItem>(string topicName, IList<(int id1, int id2)> items) 
+            where TCloudItem : struct, ICloudItem
         {
             if (!_isRecording) return;
             _amountOfFrames++;
             CreateConnectionsUpdatedPacket<TCloudItem>(items, GetTimestamp()).WriteDelimitedTo(_file);
         }
 
-        public void OnConnectionsRemoved<TCloudItem>(string topicName, IList<(int id1, int id2)> items) where TCloudItem : ICloudItem
+        public void OnConnectionsRemoved<TCloudItem>(string topicName, IList<(int id1, int id2)> items) 
+            where TCloudItem : struct, ICloudItem
         {
             if (!_isRecording) return;
             _amountOfFrames++;

@@ -1,7 +1,9 @@
 #include "../include/Ransac.h"
 
 // Find a plane with RANSAC algorithm.
-SharedPlane Ransac::ransac(std::vector<SharedPoint>& points, double epsilon, int numStartPoints, int numPoints, int steps, std::default_random_engine& generator, UnionFindPlanes& colors)
+SharedPlane
+Ransac::ransac(std::vector<SharedPoint>& points, double epsilon, int numStartPoints, int numPoints, int steps,
+               std::default_random_engine& generator, UnionFindPlanes& colors)
 {
     SharedPlane result;
     if (points.size() < numStartPoints || numStartPoints < 3)
@@ -9,12 +11,11 @@ SharedPlane Ransac::ransac(std::vector<SharedPoint>& points, double epsilon, int
 
     // Compute caracteristics of the point set in order to fit the parameters.
     // Center of the point set.
-    Vec3d center;
+    Vector3d center;
     // Variance in each direction.
-    Vec3d meansq;
+    Vector3d meansq;
 
-    for (auto&& point : points)
-    {
+    for (auto&& point : points) {
         center += *point;
         meansq += point->cmul(*point);
     }
@@ -22,7 +23,7 @@ SharedPlane Ransac::ransac(std::vector<SharedPoint>& points, double epsilon, int
     center /= points.size();
     meansq /= points.size();
 
-    Vec3d stddev = meansq - center.cmul(center);
+    Vector3d stddev = meansq - center.cmul(center);
 
     // Approximate radius of the set.
     double radius = std::sqrt(stddev.x + stddev.y + stddev.z);
@@ -37,10 +38,10 @@ SharedPlane Ransac::ransac(std::vector<SharedPoint>& points, double epsilon, int
     double score = -1;
 
     // Try steps times.
-    for (int t = 0 ; t < steps ; ++t) {
+    for (int t = 0; t < steps; ++t) {
         // Select the first points.
         std::vector<SharedPoint> pts;
-        for (int i = 0 ; i < numStartPoints ; ++i) {
+        for (int i = 0; i < numStartPoints; ++i) {
             // Random distribution
             std::uniform_int_distribution<int> distribution(i, points.size() - 1);
             int k = distribution(generator);
@@ -58,8 +59,7 @@ SharedPlane Ransac::ransac(std::vector<SharedPoint>& points, double epsilon, int
         matchPoints(points, plane, epsilon, pts, pts_out);
 
         // If enough points.
-        if (pts.size() > numPoints)
-        {
+        if (pts.size() > numPoints) {
             // Recompute the plane with these points.
             plane.setPoints(pts);
 
@@ -69,8 +69,7 @@ SharedPlane Ransac::ransac(std::vector<SharedPoint>& points, double epsilon, int
                 error += plane.squareDistance(p);
 
             // We improved the error.
-            if (score < 0 || error < score)
-            {
+            if (score < 0 || error < score) {
                 result = shared_plane;
                 result_pts = pts;
                 remaining_pts = pts_out;
@@ -80,8 +79,7 @@ SharedPlane Ransac::ransac(std::vector<SharedPoint>& points, double epsilon, int
     }
 
     // Merge all the points together.
-    for (auto&& p : result_pts)
-    {
+    for (auto&& p : result_pts) {
         colors.merge(p, result_pts[0]);
         //p->inPlane = true;
     }
@@ -91,12 +89,12 @@ SharedPlane Ransac::ransac(std::vector<SharedPoint>& points, double epsilon, int
 }
 
 // Match points close to the plane.
-void Ransac::matchPoints(const std::vector<SharedPoint>& points, Plane& plane, double epsilon, std::vector<SharedPoint>& pts_in, std::vector<SharedPoint>& pts_out)
+void Ransac::matchPoints(const std::vector<SharedPoint>& points, Plane& plane, double epsilon,
+                         std::vector<SharedPoint>& pts_in, std::vector<SharedPoint>& pts_out)
 {
     pts_in.clear();
     pts_out.clear();
-    for (auto&& p : points)
-    {
+    for (auto&& p : points) {
         if (plane.squareDistance(p) <= epsilon)
             pts_in.push_back(p);
         else

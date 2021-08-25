@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 using Elektronik.RosPlugin.Common.RosMessages;
@@ -11,10 +12,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
     public class TrackedDBContainer : TrackedObjectsContainer, IDBContainer
     {
-        public TrackedDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps) :
+        public TrackedDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
+                                  List<long> actualTimestamps) :
                 base(displayName)
         {
-            DBModel = dbModel;
+            DBModels = dbModels;
             Topic = topic;
             ActualTimestamps = actualTimestamps;
         }
@@ -23,16 +25,16 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         public long Timestamp { get; private set; }
 
-        public SQLiteConnection DBModel { get; set; }
+        public List<SQLiteConnection> DBModels { get; set; }
 
         public Topic Topic { get; set; }
-        public long[] ActualTimestamps { get; set; }
+        public List<long> ActualTimestamps { get; set; }
 
         public void ShowAt(long newTimestamp, bool rewind = false)
         {
             lock (this)
             {
-                if (ActualTimestamps.Length == 0) return;
+                if (ActualTimestamps.Count == 0) return;
                 var (time, pos) = GetValidTimestamp(newTimestamp);
                 if (Timestamp == time) return;
                 Timestamp = time;
@@ -58,11 +60,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private void AddWithHistory()
         {
-            var messages = DBModel
-                    .Table<Message>()
-                    .Where(m => m.Timestamp < Timestamp && m.TopicID == Topic.Id)
-                    .OrderBy(m => m.Timestamp)
-                    .ToList()
+            var messages = this.FindAllPreviousMessages()
                     .Select(m => MessageParser.Parse(m.Data, Topic.Type, true)!.GetPose()!.ToUnity())
                     .ToList();
 
@@ -82,11 +80,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private void SetNewPos()
         {
-            var message = DBModel
-                    .Table<Message>()
-                    .Where(m => m.Timestamp < Timestamp && m.TopicID == Topic.Id)
-                    .OrderByDescending(m => m.Timestamp)
-                    .FirstOrDefault();
+            var message = this.FindMessage();
             if (message == null)
             {
                 Clear();
@@ -104,14 +98,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             }
         }
 
-
         private (long time, int pos) GetValidTimestamp(long newTimestamp)
         {
             long time = Timestamp;
             int pos = _pos;
             if (newTimestamp > Timestamp)
             {
-                for (int i = _pos; i < ActualTimestamps.Length; i++)
+                for (int i = _pos; i < ActualTimestamps.Count; i++)
                 {
                     if (ActualTimestamps[i] > newTimestamp) break;
                     pos = i;

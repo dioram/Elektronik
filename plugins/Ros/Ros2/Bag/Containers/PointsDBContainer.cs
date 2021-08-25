@@ -16,8 +16,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
     public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable, ISnapshotable
     {
-        public PointsDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps)
-                : base(displayName, dbModel, topic, actualTimestamps)
+        public PointsDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
+                                 List<long> actualTimestamps)
+                : base(displayName, dbModels, topic, actualTimestamps)
         {
         }
 
@@ -32,7 +33,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             OnClear?.Invoke(this);
         }
 
-        public override void SetRenderer(object renderer)
+        public override void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
             OnShow += pointRenderer.ShowItems;

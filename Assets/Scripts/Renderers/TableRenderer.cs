@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Elektronik.Threading;
 using Elektronik.UI.ListBox;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ namespace Elektronik.Renderers
         
         public void SetHeader(string[] header)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            MainThreadInvoker.Enqueue(() =>
             {
                 Table.Clear();
                 var rect = (RectTransform) transform;
@@ -67,13 +68,17 @@ namespace Elektronik.Renderers
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
+                MainThreadInvoker.Enqueue(() => gameObject.SetActive(_isShowing));
             }
+        }
+
+        public void SetScale(float value)
+        {
         }
 
         public void Render(string[] data)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            MainThreadInvoker.Enqueue(() =>
             {
                 foreach (var pair in data.Zip(_columns, (s, column) => (s, column)))
                 {
@@ -84,7 +89,7 @@ namespace Elektronik.Renderers
 
         public void Clear()
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            MainThreadInvoker.Enqueue(() =>
             {
                 foreach (var column in _columns)
                 {

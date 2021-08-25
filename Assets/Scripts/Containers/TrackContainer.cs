@@ -55,6 +55,15 @@ namespace Elektronik.Containers
             OnRemoved?.Invoke(this, new RemovedEventArgs(lines));
         }
 
+        public bool Contains(int id)
+        {
+            lock (_lines)
+            {
+                return _lines.Any(l => l.Id == id);
+            }
+        }
+
+
         public bool Contains(SlamLine item)
         {
             lock (_lines)
@@ -176,7 +185,27 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id).ToList()));
+        }
+
+        public IEnumerable<SlamLine> Remove(IEnumerable<int> items)
+        {
+            if (items is null) return new List<SlamLine>();
+            var list = items.ToList();
+            var removed = new List<SlamLine>();
+            lock (_lines)
+            {
+                foreach (var id in list)
+                {
+                    var index = _lines.FindIndex(l => l.Id == id);
+                    if (index == -1) continue;
+                    removed.Add(_lines[index]);
+                    _lines.RemoveAt(index);
+                }
+            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list));
+            return removed;
         }
 
         public void Update(SlamLine item)
@@ -214,7 +243,7 @@ namespace Elektronik.Containers
 
         public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is ICloudRenderer<SlamLine> typedRenderer)
             {
@@ -293,7 +322,7 @@ namespace Elektronik.Containers
         {
             lock (_lines)
             {
-                recorder.OnAdded(DisplayName, _lines.OfType<ICloudItem>().ToList());
+                recorder.OnAdded(DisplayName, _lines);
             }
         }
 

@@ -367,6 +367,106 @@ MonoBehaviour:
     m_Localized: Follow
     m_Metadata:
       m_Items: []
+  - m_Id: 35524816610934784
+    m_Localized: Connections weight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35557840274735104
+    m_Localized: Observations graph
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35938884576493568
+    m_Localized: Mesh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35963052214861824
+    m_Localized: Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36000339791331328
+    m_Localized: Main
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36000456325873664
+    m_Localized: Alternative
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36004087943020544
+    m_Localized: 'LMB + RMB: moving forward.
+
+      Mouse wheel: moving forward and
+      backward.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36005840151265280
+    m_Localized: Help
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36291689841573888
+    m_Localized: 'How to filter edges of observations graph:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36291901028974592
+    m_Localized: Open Data tree -> Expand Observations graph -> Press button near
+      Connections -> Choose minimal weight for graph edges.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36292451585900544
+    m_Localized: 'How to record data:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36292733426352128
+    m_Localized: First of all activate protobuf recorder plugin in settings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36292930021769216
+    m_Localized: 'Then if you want to make snapshot:
+
+      Open Scene tools and
+      Data tree -> Press button Take snapshot -> Press save button near snapshot
+      in data tree -> Choose save path.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36293536933363712
+    m_Localized: 'If you want to record changes of the data then:
+
+      Open Scene
+      tools -> Press Record button -> Choose save path -> When recording is done
+      press Stop button.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36294039750721536
+    m_Localized: 'How to play recorded data:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36294217106866176
+    m_Localized: 'You can play recorded data in offline mode using protobuf plugin.
+
+      Also
+      you can load snapshots in any mode by pressing Load snapshot button in Scene
+      tools.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41412972170330112
+    m_Localized: Calculation...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45283616971366400
+    m_Localized: Set
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45611950332067840
+    m_Localized: 'Speed:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46797145714343936
+    m_Localized: Use vertex colors for mesh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46797231349448704
+    m_Localized: Override colors for mesh
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

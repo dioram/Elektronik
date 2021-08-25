@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Elektronik.Protobuf.Data;
-using Google.Protobuf;
 using NUnit.Framework;
 
 namespace Protobuf.Tests.Elektronik
@@ -45,39 +44,9 @@ namespace Protobuf.Tests.Elektronik
 
             var t = new Stopwatch();
             t.Start();
-            var response = MapClient.Handle(packet);
+            SendAndCheck(packet, Filename, true);
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
-
-            using var file = File.Open(Filename, FileMode.Create);
-            packet.WriteDelimitedTo(file);
-
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
-        }
-
-        [Test, Order(1), Explicit]
-        public void CreatePlanes()
-        {
-            var packet = new PacketPb
-            {
-                Special = true,
-                Action = PacketPb.Types.ActionType.Add,
-                Points = new PacketPb.Types.Points(),
-            };
-            packet.Points.Data.Add(GeneratePoints(3000, 0, false, 0));
-            packet.Points.Data.Add(GeneratePoints(3000, 3000, false, -4));
-            packet.Points.Data.Add(GeneratePoints(3000, 6000, false, 3));
-
-            var t = new Stopwatch();
-            t.Start();
-            var response = MapClient.Handle(packet);
-            t.Stop();
-            TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
-
-            using var file = File.Open(Filename, FileMode.Create);
-            packet.WriteDelimitedTo(file);
-
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
         [Test, Order(2), Repeat(5), Explicit]
@@ -94,14 +63,8 @@ namespace Protobuf.Tests.Elektronik
 
             var t = new Stopwatch();
             t.Start();
-            var response = MapClient.Handle(packet);
+            SendAndCheck(packet, Filename);
             t.Stop();
-            TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
         [Test, Order(3), Explicit]
@@ -121,14 +84,9 @@ namespace Protobuf.Tests.Elektronik
 
             var t = new Stopwatch();
             t.Start();
-            var response = MapClient.Handle(packet);
+            SendAndCheck(packet, Filename);
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
         [Test, Order(4), Explicit]
@@ -145,14 +103,9 @@ namespace Protobuf.Tests.Elektronik
 
             var t = new Stopwatch();
             t.Start();
-            var response = MapClient.Handle(packet);
+            SendAndCheck(packet, Filename);
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
         [Test, Order(5), Explicit]
@@ -167,14 +120,9 @@ namespace Protobuf.Tests.Elektronik
 
             var t = new Stopwatch();
             t.Start();
-            var response = MapClient.Handle(packet);
+            SendAndCheck(packet, Filename);
             t.Stop();
             TestContext.WriteLine($"Handle packet: {t.ElapsedMilliseconds} ms");
-
-            using var file = File.Open(Filename, FileMode.Append);
-            packet.WriteDelimitedTo(file);
-
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
 
         [Test, Order(5), Explicit]

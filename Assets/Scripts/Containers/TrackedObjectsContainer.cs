@@ -34,6 +34,7 @@ namespace Elektronik.Containers
         {
             lock (_objects)
             {
+                if (_objects.ContainsKey(item.Id)) return;
                 var container = CreateTrackContainer(item);
                 _objects[item.Id] = (item, container);
             }
@@ -66,11 +67,16 @@ namespace Elektronik.Containers
 
         public bool Contains(SlamTrackedObject item)
         {
+            return Contains(item.Id);
+        }
+
+        public bool Contains(int id)
+        {
             lock (_objects)
             {
                 return _objects.Values
                         .Select(p => p.Item1)
-                        .Any(o => o.Id == item.Id);
+                        .Any(o => o.Id == id);
             }
         }
 
@@ -173,17 +179,19 @@ namespace Elektronik.Containers
         public void AddRange(IEnumerable<SlamTrackedObject> items)
         {
             if (items is null) return;
-            var list = items.ToList();
+            var added = new List<SlamTrackedObject>();
             lock (_objects)
             {
-                foreach (var item in list)
+                foreach (var item in items)
                 {
+                    if (_objects.ContainsKey(item.Id)) continue;
                     var container = CreateTrackContainer(item);
                     _objects[item.Id] = (item, container);
+                    added.Add(item);
                 }
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(added));
         }
 
         public void Remove(IEnumerable<SlamTrackedObject> items)
@@ -205,7 +213,31 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id).ToList()));
+        }
+
+        public IEnumerable<SlamTrackedObject> Remove(IEnumerable<int> items)
+        {
+            if (items is null) return new List<SlamTrackedObject>();
+            var list = items.ToList();
+            var removed = new List<SlamTrackedObject>();
+            lock (_objects)
+            {
+                foreach (var id in list.Where(_objects.ContainsKey))
+                {
+                    removed.Add(_objects[id].Item1);
+                    _objects[id].Item2.Clear();
+                    lock (_lineContainers)
+                    {
+                        _lineContainers.Remove(_objects[id].Item2);
+                    }
+
+                    _objects.Remove(id);
+                }
+            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list));
+            return removed;
         }
 
         public void Update(SlamTrackedObject item)
@@ -250,7 +282,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             switch (renderer)
             {
@@ -292,7 +324,7 @@ namespace Elektronik.Containers
         {
             lock (_objects)
             {
-                return _objects[id].Item2.ToList();
+                return _objects.ContainsKey(id) ? _objects[id].Item2.ToList() : new List<SlamLine>();
             }
         }
 
@@ -440,6 +472,7 @@ namespace Elektronik.Containers
 
         private void PureUpdate(SlamTrackedObject item)
         {
+            if (!_objects.ContainsKey(item.Id)) return;
             var container = _objects[item.Id].Item2;
             if (container.Count == 0)
             {

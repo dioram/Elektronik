@@ -1,75 +1,211 @@
 name: Build project
 
 on:
+  push:
+    branches:
+      - CI*
   pull_request: { }
   workflow_dispatch:
 
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 jobs:
-  init: 
-    name: Init build
-    runs-on: self-hosted
+  build_windows:
+    name: Build for windows
+    runs-on: [self-hosted, windows]
     steps:
       - uses: actions/checkout@v2
         with:
           lfs: true
-  build_natives:
-    name: Build C++ libs
-    runs-on: self-hosted
-    needs: init
-    steps:
+          
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-      - run: .\.github\build_natives.bat
-  build_unity:
-    name: Build unity player for StandaloneWindows64
-    runs-on: self-hosted
-    needs: build_natives
-    steps:
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
+          
+      - name: Get version
+        run: |
+          $global:el=cat .\ProjectSettings\ProjectSettings.asset | Select-String -Pattern '(?:bundleVersion: )(\d*\.\d*\.\d*(?:-rc\d*)?)' | % {$_.Matches.Groups[1].Value}
+          echo $el
+        shell: pwsh
+
+      - name: Building native libs
+        run: .\.github\build_natives.bat
+
       - name: Build unity player
         run: .\.github\build_unity.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
-      - name: Cache Library
-        id: cache-library
-        uses: actions/cache@v2
-        with:
-          path: Library
-          key: library
-  build_plugins:
-    name: Build plugins
-    runs-on: self-hosted
-    needs: build_unity
-    steps:
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-      - run: .\.github\build_plugins.bat
-  runTest:
-    name: Run tests
-    runs-on: self-hosted
-    needs: 
-      - build_plugins
-      - build_unity
-    steps:
+        
+      - name: Build plugins
+        run: .\.github\build_plugins.bat
+        
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
+        if: ${{ always() }}
         with:
           project_path: plugins/Protobuf.Tests.Internal
           set_check_status_from_test_outcome: true
-          report_name: protobuf_unit_tests
-          report_title: Protobuf unit tests
+          report_name: Protobuf unit tests windows
+          report_title: Protobuf unit tests windows
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Run ROS plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
+        if: ${{ always() }}
         with:
-          project_path: plugins/ROS.Tests
+          project_path: plugins/Ros.Tests
           set_check_status_from_test_outcome: true
-          report_name: ros_unit_tests
-          report_title: ROS unit tests
+          report_name: ROS unit tests windows
+          report_title: ROS unit tests windows
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Run unity tests
+        if: ${{ always() }}
         run: .\.github\run_unity_tests.bat
+          
+          
+  build_linux:
+    name: Linux build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - name: Get version
+        run: |
+          export el=`cat ./ProjectSettings/ProjectSettings.asset | grep -oP '(?<=bundleVersion: )\d*.\d*.\d*(?:-rc\d*)?'`
+          echo $el
+
+      - uses: actions/cache@v2
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      - name: Install apt packages
+        run: sudo apt -y install make swig curl python libssl-dev
+
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - uses: lukka/get-cmake@latest
+
+      - name: Restore artifacts, or setup vcpkg (do not install any package)
+        uses: lukka/run-vcpkg@v7
+        with:
+          setupOnly: true
+          appendedCacheKey: 'openssl fastrtps opencv pcl'
+          vcpkgGitCommitId: 1257354a3ab0bebd8abe95281ca561537853578c
+          vcpkgTriplet: ${{ matrix.triplet }}
+          additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
+
+      - name: Install vcpkg packages
+        run: $VCPKG_ROOT/vcpkg install openssl fastrtps opencv pcl
+        
+      - name: Clear vcpkg temp files
+        run: |
+          rm -rf $VCPKG_ROOT/packages
+          rm -rf $VCPKG_ROOT/buildtrees
+          rm -rf $VCPKG_ROOT/downloads
+
+      - name: Upload vcpkg logs if failed
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: vcspkg_logs
+          path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
+
+      - run: sudo chmod +x ./.github/*.sh
+
+      - name: Build ROS2DDS
+        run: ../../.github/build_natives.sh
+        working-directory: ./plugins/ROS2DDS
+
+      - name: Build MeshReconstructor
+        run: ../../.github/build_natives.sh
+        working-directory: ./plugins/MeshBuilder
+
+      - name: Build PlanesDetector
+        run: ../../.github/build_natives.sh
+        working-directory: ./plugins/PlanesDetector
+
+      - name: Build Unity player addressables
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: Elektronik
+          allowDirtyBuild: true
+          buildMethod: Elektronik.Editor.PlayerBuildScript.BuildAddressables
+          targetPlatform: StandaloneLinux64
+
+      - name: Build Unity player itself
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: Elektronik
+          allowDirtyBuild: true
+          targetPlatform: StandaloneLinux64
+          versioning: None
+          
+      - name: Enable VR
+        run: git apply ./ProjectSettings/EnableVR.patch
+
+      - name: Build Unity player itself (VR version)
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: Elektronik
+          allowDirtyBuild: true
+          targetPlatform: StandaloneLinux64
+          versioning: None
+          buildsPath: build_vr
+
+      - name: Build plugins
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}
+          ./.github/build_plugins.sh
+
+      - name: Run protobuf plugin unit tests
+        uses: zyborg/dotnet-tests-report@v1
+        if: always()
+        with:
+          project_path: plugins/Protobuf.Tests.Internal
+          set_check_status_from_test_outcome: true
+          report_name: protobuf_unit_tests_linux
+          report_title: Protobuf unit tests linux
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run ROS plugin unit tests
+        uses: zyborg/dotnet-tests-report@v1
+        if: always()
+        with:
+          project_path: plugins/Ros.Tests
+          set_check_status_from_test_outcome: true
+          report_name: ros_unit_tests_linux
+          report_title: ROS unit tests linux
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Run Unity tests
+        uses: game-ci/unity-test-runner@v2
+        if: always()
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          testMode: EditMode
+          projectPath: ./
+          artifactsPath: ./test_artifacts
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Unity tests results for linux

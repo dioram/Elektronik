@@ -32,10 +32,10 @@ namespace Elektronik.Data
                 child.Clear();
             }
 
-            Children = new ISourceTree[0];
+            Children = Array.Empty<ISourceTree>();
         }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             foreach (var child in Children)
             {

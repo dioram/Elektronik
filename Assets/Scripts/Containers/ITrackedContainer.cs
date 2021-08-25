@@ -3,7 +3,7 @@ using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Containers
 {
-    public interface ITrackedContainer<TCloudItem> : IContainer<TCloudItem>
+    public interface ITrackedContainer<TCloudItem> : IContainer<TCloudItem> where TCloudItem : ICloudItem
     {
         IList<SlamLine> GetHistory(int id);
 

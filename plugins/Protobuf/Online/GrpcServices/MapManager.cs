@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Elektronik.Containers;
+using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
 using Grpc.Core.Logging;
@@ -15,12 +16,16 @@ namespace Elektronik.Protobuf.Online.GrpcServices
     /// <summary> 
     /// Base class for handle data in online mode. Used in pattern "Chain of responsibility".
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class MapManager<T> : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
+    /// <typeparam name="TCloudItem"></typeparam>
+    /// <typeparam name="TCloudItemDiff"></typeparam>
+    public abstract class MapManager<TCloudItem, TCloudItemDiff>
+            : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
+            where TCloudItem : struct, ICloudItem
+            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
     {
         public ILogger Logger = new UnityLogger();
 
-        public MapManager(IContainer<T> container)
+        public MapManager(IContainer<TCloudItem> container)
         {
             Container = container;
         }
@@ -52,12 +57,12 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             return status;
         }
 
-        protected IContainer<T> Container;
+        protected readonly IContainer<TCloudItem> Container;
         protected Stopwatch Timer;
 
-        protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, IList<T> data)
+        protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, IList<TCloudItemDiff> data)
         {
-            var readOnlyData = new ReadOnlyCollection<T>(data);
+            var readOnlyData = new ReadOnlyCollection<TCloudItemDiff>(data);
             ErrorStatusPb errorStatus = new ErrorStatusPb() {ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded};
             try
             {

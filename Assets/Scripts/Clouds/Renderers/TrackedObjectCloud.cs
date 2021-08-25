@@ -4,6 +4,7 @@ using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Threading;
 using TMPro;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace Elektronik.Clouds
                 foreach (var obj in e.AddedItems)
                 {
                     Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    MainThreadInvoker.Enqueue(() =>
                     {
                         var go = ObservationsPool.Spawn(pose.position, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
@@ -45,13 +46,16 @@ namespace Elektronik.Clouds
         public void FollowCamera(IFollowable<SlamTrackedObject> sender, IContainer<SlamTrackedObject> container,
                                  SlamTrackedObject obj)
         {
-            (Camera.main.transform.parent?
+            var cam = Camera.main;
+            if (cam == null) return;
+            var cameraTransform = cam.transform!;
+            (cameraTransform.parent
                             .GetComponent<DataComponent<SlamTrackedObject>>()?
                             .Container as ISourceTree)?.Children
                     .OfType<IFollowable<SlamTrackedObject>>()
                     .FirstOrDefault(f => f != sender && f.IsFollowed)?
                     .Unfollow();
-            Camera.main.transform.parent = GameObjects[(container.GetHashCode(), obj.Id)].transform;
+            cameraTransform.parent = GameObjects[(container.GetHashCode(), obj.Id)].transform;
         }
 
         public void StopFollowCamera(IContainer<SlamTrackedObject> container, SlamTrackedObject obj)

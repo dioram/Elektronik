@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -93,7 +94,7 @@ namespace Elektronik.Collision
             var rightTop = _center + Vector3.one * (_sideSize / 2.0f + Oversize);
             var distance = CollisionAlgorithms.RayAABB(ray, leftBottom, rightTop);
 
-            if (distance < 0) return new (CollisionBlock, float)[0];
+            if (distance < 0) return Array.Empty<(CollisionBlock, float)>();
             if (_children.Count == 0) return new[] {(this, distance)};
             return _children.Values.SelectMany(ch => ch.FindBlocks(ray));
         }

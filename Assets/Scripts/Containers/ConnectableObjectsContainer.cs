@@ -44,7 +44,10 @@ namespace Elektronik.Containers
 
         public bool IsReadOnly => false;
 
-        public bool Contains(TCloudItem obj) => _objects.Contains(obj);
+        
+        public bool Contains(int id) => _objects.Contains(id);
+        
+        public bool Contains(TCloudItem obj) => Contains(obj.Id);
 
         public IEnumerator<TCloudItem> GetEnumerator() => _objects.GetEnumerator();
 
@@ -185,7 +188,40 @@ namespace Elektronik.Containers
                 _objects.Remove(list);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id).ToList()));
+        }
+
+        public IEnumerable<TCloudItem> Remove(IEnumerable<int> items)
+        {
+            if (items is null) return new List<TCloudItem>();
+            var list = items.ToList();
+            _linesBuffer.Clear();
+            List<TCloudItem> removed;
+            lock (_table)
+            {
+                foreach (var id in list)
+                {
+                    if (id != -1)
+                    {
+                        foreach (var col in _table.GetColIndices(id))
+                        {
+                            _linesBuffer.Add(
+                                new SlamLine(
+                                    new SlamPoint(id, default, default),
+                                    new SlamPoint(col, default, default)));
+                            _table.Remove(col, id);
+                        }
+
+                        _table.RemoveRow(id);
+                    }
+                }
+
+                _connects.Remove(_linesBuffer);
+                removed = _objects.Remove(list).ToList();
+            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list));
+            return removed;
         }
 
         public void Clear()
@@ -198,7 +234,7 @@ namespace Elektronik.Containers
                 _objects.Clear();
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id)));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id).ToList()));
         }
 
         #endregion
@@ -264,7 +300,7 @@ namespace Elektronik.Containers
 
         public IEnumerable<ISourceTree> Children { get; }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             foreach (var child in Children)
             {

@@ -3,6 +3,7 @@ using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.UI.Windows;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -20,6 +21,11 @@ namespace Elektronik.UI
         [FormerlySerializedAs("CameraButton")] public Button LookAtButton;
         public ButtonChangingIcons FollowButton;
         public Button SaveButton;
+
+        public Button WeightButton;
+        public Slider WeightSlider;
+        public TMP_Text MinWeightLabel;
+        public TMP_Text MaxWeightLabel;
 
         private ISourceTree _node;
 
@@ -104,6 +110,24 @@ namespace Elektronik.UI
             else
             {
                 SaveButton.gameObject.SetActive(false);
+            }
+
+            if (_node is IWeightable w)
+            {
+                void SetMaxWeight(int value)
+                {
+                    MaxWeightLabel.text = $"{value}";
+                    WeightSlider.maxValue = value;
+                }
+                w.OnMaxWeightChanged += SetMaxWeight;
+                SetMaxWeight(w.MaxWeight);
+                WeightSlider.OnValueChangedAsObservable()
+                        .Do(value => MinWeightLabel.text = $"{(int) value}")
+                        .Subscribe(value => w.MinWeight = (int) value);
+            }
+            else
+            {
+                WeightButton.gameObject.SetActive(false);
             }
         }
 

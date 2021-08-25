@@ -20,7 +20,7 @@ namespace Elektronik.Containers
             ChildrenList.Add(child);
         }
 
-        #region IContainerTree implementation
+        #region ISourceTree
 
         public virtual void Clear()
         {
@@ -30,7 +30,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public virtual void SetRenderer(object renderer)
+        public virtual void SetRenderer(ISourceRenderer renderer)
         {
             foreach (var child in Children)
             {

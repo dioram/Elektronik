@@ -17,7 +17,7 @@ namespace Protobuf.Tests.Internal
     public class ContainerTreeTests
     {
         private ProtobufContainerTree _tree;
-        private const int ChildrenCount = 7;
+        private const int ChildrenCount = 8;
         private Mock<ISourceTree> _image;
 
         [SetUp]
@@ -26,9 +26,7 @@ namespace Protobuf.Tests.Internal
             _image = new Mock<ISourceTree>();
             _image.SetupGet(ld => ld.DisplayName).Returns("Camera");
 
-            _tree = new ProtobufContainerTree("Protobuf",
-                                              _image.Object,
-                                              new SlamDataInfoPresenter("Special info"));
+            _tree = new ProtobufContainerTree("Protobuf", _image.Object, new SlamDataInfoPresenter("Special info"));
 
             var p1 = new SlamPoint(1, Vector3.zero, Color.black);
             var p2 = new SlamPoint(2, Vector3.zero, Color.black);
@@ -67,7 +65,7 @@ namespace Protobuf.Tests.Internal
         {
             var snapshot = _tree.TakeSnapshot() as VirtualContainer;
             Assert.NotNull(snapshot);
-            Assert.AreEqual(ChildrenCount - 2, snapshot.Children.Count(ch => ch is not null));
+            Assert.AreEqual(ChildrenCount - 3, snapshot.Children.Count(ch => ch is not null));
             var points = snapshot.Children.OfType<IConnectableObjectsContainer<SlamPoint>>().First();
             Assert.AreEqual(2, points.Count);
             Assert.AreEqual(2, _tree.Points.Count);
@@ -94,9 +92,9 @@ namespace Protobuf.Tests.Internal
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamPoint>>()), Times.Once);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamObservation>>()), Times.Once);
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamTrackedObject>>()), Times.Once);
-            mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), It.IsAny<IList<SlamTrackedObject>>()), Times.Exactly(2));
+            mockedRecorder.Verify(r => r.OnUpdated(It.IsAny<string>(), It.IsAny<IList<SlamTrackedObject>>()),
+                                  Times.Exactly(2));
             mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamLine>>()), Times.Once);
-            mockedRecorder.Verify(r => r.OnAdded(It.IsAny<string>(), It.IsAny<IList<SlamInfinitePlane>>()), Times.Once);
             mockedRecorder.Verify(
                 r => r.OnConnectionsUpdated<SlamPoint>(It.IsAny<string>(), It.IsAny<IList<(int, int)>>()), Times.Once);
             mockedRecorder.Verify(

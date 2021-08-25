@@ -4,6 +4,7 @@ using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Containers;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag
@@ -27,17 +28,16 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public override void Start()
         {
-            _threadWorker = new ThreadWorker();
+            _threadWorker = new ThreadQueueWorker();
             _data.Init(TypedSettings);
 
-            _actualTimestamps = _data.RealChildren.Values
-                    .OfType<IDBContainer>()
-                    .SelectMany(c => c.ActualTimestamps)
+            _actualTimestamps = _data.Timestamps.Values
+                    .SelectMany(l => l)
                     .OrderBy(i => i)
                     .ToArray();
 
             Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = Converter;
         }
 
@@ -49,12 +49,12 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public override void Update(float delta)
         {
-            if (_threadWorker == null || _threadWorker.AmountOfActions > 0) return;
+            if (_threadWorker == null) return;
             if (_playing)
             {
                 if (CurrentPosition == AmountOfFrames - 1)
                 {
-                    MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
+                    MainThreadInvoker.Enqueue(() => Finished?.Invoke());
                     _playing = false;
                     return;
                 }
@@ -106,6 +106,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public void NextKeyFrame()
         {
+            if ((_threadWorker?.ActiveActions ?? 1) > 0) return;
             _threadWorker?.Enqueue(() =>
             {
                 if (CurrentPosition == AmountOfFrames - 1) return;
@@ -138,6 +139,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             }
         }
 
+        public int DelayBetweenFrames { get; set; }
+
         public event Action<bool>? Rewind;
 
         public event Action? Finished;
@@ -147,7 +150,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
         #region Private definitions
 
         private readonly Rosbag2ContainerTree _data;
-        private ThreadWorker? _threadWorker;
+        private ThreadQueueWorker? _threadWorker;
         private bool _playing;
         private int _currentPosition;
         private long[]? _actualTimestamps;

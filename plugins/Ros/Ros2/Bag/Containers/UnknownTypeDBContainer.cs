@@ -1,4 +1,5 @@
-﻿using Elektronik.Renderers;
+﻿using System.Collections.Generic;
+using Elektronik.Renderers;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using SQLite;
@@ -8,8 +9,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
     public class UnknownTypeDBContainer : DBContainerToWindow<Message, TableRenderer, string[]>
     {
-        public UnknownTypeDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps) 
-                : base(displayName, dbModel, topic, actualTimestamps)
+        public UnknownTypeDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
+                                      List<long> actualTimestamps)
+                : base(displayName, dbModels, topic, actualTimestamps)
         {
         }
 

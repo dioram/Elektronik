@@ -1,175 +1,70 @@
-﻿//===========================================================================//
-//                       FreeFlyCamera (Version 1.2)                         //
-//                        (c) 2019 Sergey Stafeyev                           //
-//===========================================================================//
-
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Elektronik.Cameras
 {
     [RequireComponent(typeof(Camera))]
     public class FreeFlyCamera : MonoBehaviour
     {
-        #region UI
-
-        [Space] [SerializeField] [Tooltip("The script is currently active")]
-        private bool Active = true;
-
-        [Space] [SerializeField] [Tooltip("Camera rotation by mouse movement is active")]
-        private bool EnableRotation = true;
-
-        [SerializeField] [Tooltip("Sensitivity of mouse rotation")]
-        private float MouseSense = 1.8f;
-
-        [SerializeField] [Tooltip("Sensitivity of keyboard rotation")] [Range(0, 10)]
-        private float KeyboardRotationSense = 1.8f;
-
-        [Space] [SerializeField] [Tooltip("Camera zooming in/out by 'Mouse Scroll Wheel' is active")]
-        private bool EnableTranslation = true;
-
-        [SerializeField] [Tooltip("Velocity of camera zooming in/out")]
-        private float TranslationSpeed = 55f;
-
-        [Space] [SerializeField] [Tooltip("Camera movement by 'W','A','S','D','Q','E' keys is active")]
-        private bool EnableMovement = true;
-
-        [SerializeField] [Tooltip("Camera movement speed")]
-        private float MovementSpeed = 10f;
-
-        [SerializeField] [Tooltip("Speed of the quick camera movement when holding the 'Left Shift' key")]
-        private float BoostedSpeed = 50f;
-
-        [SerializeField] [Tooltip("Boost speed")]
-        private KeyCode BoostSpeed = KeyCode.LeftShift;
-
-        [SerializeField] [Tooltip("Move up")] private KeyCode MoveUp = KeyCode.Q;
-
-        [SerializeField] [Tooltip("Move down")]
-        private KeyCode MoveDown = KeyCode.E;
-
-        [Space] [SerializeField] [Tooltip("Acceleration at camera movement is active")]
-        private bool EnableSpeedAcceleration = true;
-
-        [SerializeField] [Tooltip("Rate which is applied during camera movement")]
-        private float SpeedAccelerationFactor = 1.5f;
-
-        [Space] [SerializeField] [Tooltip("This keypress will move the camera to initialization position")]
-        private KeyCode InitPositionButton = KeyCode.R;
-
-        #endregion UI
-
-        private float _currentIncrease = 1;
-        private float _currentIncreaseMem = 0;
-
+        private Vector3 _movement = Vector3.zero;
+        private Vector2 _rotation = Vector2.zero;
+        private float _speed = 1;
         private Vector3 _initPosition;
-        private Vector3 _initRotation;
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (BoostedSpeed < MovementSpeed) BoostedSpeed = MovementSpeed;
-        }
-#endif
-
+        private Quaternion _initRotation;
 
         private void Start()
         {
             _initPosition = transform.position;
-            _initRotation = transform.eulerAngles;
+            _initRotation = transform.rotation;
         }
 
-        private void CalculateCurrentIncrease(bool moving)
+        #region Input events
+
+        public void OnMoveForward(InputValue input)
         {
-            _currentIncrease = Time.deltaTime;
-
-            if (!EnableSpeedAcceleration || EnableSpeedAcceleration && !moving)
-            {
-                _currentIncreaseMem = 0;
-                return;
-            }
-
-            _currentIncreaseMem += Time.deltaTime * (SpeedAccelerationFactor - 1);
-            _currentIncrease = Time.deltaTime + Mathf.Pow(_currentIncreaseMem, 3) * Time.deltaTime;
+            _movement.z = input.Get<float>();
         }
 
-        private void Update()
+        public void OnMoveSides(InputValue input)
         {
-            if (!Active) return;
+            var vec = input.Get<Vector2>();
+            _movement.x = vec.x;
+            _movement.y = vec.y;
+        }
 
-            // Translation
-            if (EnableTranslation)
-            {
-                transform.Translate(Vector3.forward * (Input.mouseScrollDelta.y * Time.deltaTime * TranslationSpeed));
-            }
+        public void OnRotate(InputValue input)
+        {
+            var vec = input.Get<Vector2>();
+            _rotation.x = vec.x;
+            _rotation.y = vec.y;
+        }
 
-            // Movement
-            if (EnableMovement)
-            {
-                Vector3 deltaPosition = Vector3.zero;
-                float currentSpeed = MovementSpeed;
+        public void OnBoost(InputValue input)
+        {
+            var value = input.Get<float>();
+            _speed = value > 0 ? value : 1;
+        }
 
-                if (Input.GetKey(BoostSpeed)) currentSpeed = BoostedSpeed;
+        public void OnReset()
+        {
+            transform.position = _initPosition;
+            transform.rotation = _initRotation;
+        }
 
-                if (Input.GetKey(KeyCode.W) || Input.GetMouseButton(0) && Input.GetMouseButton(1)) 
-                    deltaPosition += transform.forward;
+        #endregion
 
-                if (Input.GetKey(KeyCode.S)) deltaPosition -= transform.forward;
+        private void FixedUpdate()
+        {
+            var deltaPosition = (transform.forward * _movement.z 
+                + transform.right * _movement.x 
+                + transform.up * _movement.y) * (Time.fixedDeltaTime * _speed);
 
-                if (Input.GetKey(KeyCode.A)) deltaPosition -= transform.right;
-
-                if (Input.GetKey(KeyCode.D)) deltaPosition += transform.right;
-
-                if (Input.GetKey(MoveUp)) deltaPosition += transform.up;
-
-                if (Input.GetKey(MoveDown)) deltaPosition -= transform.up;
-
-                // Calc acceleration
-                CalculateCurrentIncrease(deltaPosition != Vector3.zero);
-
-                transform.position += deltaPosition * (currentSpeed * _currentIncrease);
-            }
-
-            // Rotation
-            if (EnableRotation)
-            {
-                if (Input.GetMouseButton(1))
-                {
-                    // Pitch
-                    transform.rotation *= Quaternion.AngleAxis(-Input.GetAxis("Mouse Y") * MouseSense,
-                                                               Vector3.right);
-
-                    // Yaw
-                    transform.rotation = Quaternion.Euler(transform.eulerAngles.x,
-                                                          transform.eulerAngles.y 
-                                                          + Input.GetAxis("Mouse X") * MouseSense,
-                                                          transform.eulerAngles.z);
-                }
-                else
-                {
-                    if (Input.GetKey(KeyCode.UpArrow))
-                        transform.rotation *= Quaternion.AngleAxis(KeyboardRotationSense, Vector3.right);
-
-                    if (Input.GetKey(KeyCode.DownArrow))
-                        transform.rotation *= Quaternion.AngleAxis(-KeyboardRotationSense, Vector3.right);
-
-                    if (Input.GetKey(KeyCode.LeftArrow))
-                        transform.rotation = Quaternion.Euler(transform.eulerAngles.x,
-                                                              transform.eulerAngles.y - KeyboardRotationSense,
-                                                              transform.eulerAngles.z);
-
-                    if (Input.GetKey(KeyCode.RightArrow))
-                        transform.rotation = Quaternion.Euler(transform.eulerAngles.x,
-                                                              transform.eulerAngles.y + KeyboardRotationSense,
-                                                              transform.eulerAngles.z);
-                }
-            }
-
-            // Return to init position
-            if (Input.GetKeyDown(InitPositionButton))
-            {
-                transform.position = _initPosition;
-                transform.eulerAngles = _initRotation;
-            }
+            transform.position += deltaPosition;
+            
+            transform.rotation *= Quaternion.AngleAxis(_rotation.y * Time.fixedDeltaTime, Vector3.right);
+            transform.rotation = Quaternion.Euler(transform.eulerAngles.x,
+                                                  transform.eulerAngles.y + _rotation.x * Time.fixedDeltaTime,
+                                                  transform.eulerAngles.z);
         }
     }
 }

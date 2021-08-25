@@ -1,4 +1,5 @@
-﻿using Elektronik.Renderers;
+﻿using System.Collections.Generic;
+using Elektronik.Renderers;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
@@ -10,8 +11,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             : DBContainerToWindow<Image, ImageRenderer, ImageData>
     {
 
-        public ImageDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps) 
-                : base(displayName, dbModel, topic, actualTimestamps)
+        public ImageDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
+                                List<long> actualTimestamps)
+                : base(displayName, dbModels, topic, actualTimestamps)
         {
         }
         

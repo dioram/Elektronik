@@ -3,6 +3,7 @@ Shader "Elektronik/PointCloudShader"
     Properties
     {
         _Size("Point Size", Float) = 0.05
+        _Scale("Scale", Float) = 1
     }
     SubShader
     {
@@ -11,6 +12,8 @@ Shader "Elektronik/PointCloudShader"
             "RenderType"="Opaque"
         }
         Cull Off
+        ZWrite On
+        ZTest Less
         Pass
         {
             Tags
@@ -25,7 +28,8 @@ Shader "Elektronik/PointCloudShader"
             
             #include "UnityCG.cginc"
             #define MAX_BRIGHTNESS 16
-
+            
+            half _Scale;
             half _Size;
             StructuredBuffer<float4> _ItemsBuffer;
             
@@ -59,7 +63,7 @@ Shader "Elektronik/PointCloudShader"
                 }
                 else
                 {
-                    o.position = UnityObjectToClipPos(float4(pt.xyz, 1));
+                    o.position = UnityObjectToClipPos(float4(pt.xyz * _Scale, 1));
                 }
                 o.color = DecodeColor(asuint(pt.w));
                 return o;
@@ -78,7 +82,7 @@ Shader "Elektronik/PointCloudShader"
                 o.position.xzw = origin.xzw;
                 outStream.Append(o);
 
-                UNITY_LOOP for (uint i = 1; i < slices; i++)
+                UNITY_LOOP for (int i = 1; i < slices; i++)
                 {
                     float sn, cs;
                     sincos(UNITY_PI / slices * i, sn, cs);

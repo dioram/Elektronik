@@ -2,7 +2,6 @@ using System.Linq;
 using Elektronik.Containers;
 using Elektronik.RosPlugin.Ros2.Bag;
 using Elektronik.RosPlugin.Ros2.Bag.Containers;
-using Elektronik.RosPlugin.Ros2.Bag.Data;
 using NUnit.Framework;
 
 namespace Elektronik.Ros.Tests.Rosbag2
@@ -11,19 +10,24 @@ namespace Elektronik.Ros.Tests.Rosbag2
     {
         private readonly Rosbag2ContainerTree _tree = new("");
 
-        [SetUp]
+        [SetUp, Platform("Win")]
         public void Setup()
         {
             _tree.Init(new Rosbag2Settings() {FilePath = @"test_db.db3"});
         }
 
-        [Test]
-        public void ReadMetadata()
+        [Test, Platform("Win")]
+        public void ActualTimestamps()
         {
-            Assert.AreEqual(402, _tree.DBModel?.Table<Message>().Count());
+            var sum = 0;
+            foreach (var timestamps in _tree.Timestamps.Values)
+            {
+                sum += timestamps.Count;
+            }
+            Assert.AreEqual(141, sum);
         }
 
-        [Test]
+        [Test, Platform("Win")]
         public void ContainersTree()
         {
             Assert.AreEqual(20, _tree.ActualTopics.Count);

@@ -56,11 +56,13 @@ namespace Elektronik.Containers
             }
         }
 
-        public bool Contains(TCloudItem item)
+        public bool Contains(TCloudItem item) => Contains(item.Id);
+
+        public bool Contains(int id)
         {
             lock (_items)
             {
-                return _items.ContainsKey(item.Id);
+                return _items.ContainsKey(id);
             }
         }
 
@@ -161,17 +163,37 @@ namespace Elektronik.Containers
         public void Remove(IEnumerable<TCloudItem> items)
         {
             if (items is null) return;
+            var list = items.ToList();
             lock (_items)
             {
-                var list = items.ToList();
                 RemoveTraces(list);
                 foreach (var ci in list)
                 {
                     _items.Remove(ci.Id);
                 }
-
-                OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(p => p.Id).ToList()));
             }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(p => p.Id).ToList()));
+        }
+
+        public IEnumerable<TCloudItem> Remove(IEnumerable<int> items)
+        {
+            if (items is null) return new List<TCloudItem>();
+            var list = items.ToList();
+            var removed = new List<TCloudItem>();
+            removed.Capacity = list.Count;
+            lock (_items)
+            {
+                RemoveTraces(list.Where(i => _items.ContainsKey(i)).Select(i => _items[i]));
+                foreach (var ci in list.Where(i => _items.ContainsKey(i)))
+                {
+                    removed.Add(_items[ci]);
+                    _items.Remove(ci);
+                }
+            }
+
+            OnRemoved?.Invoke(this, new RemovedEventArgs(list));
+            return removed;
         }
 
         public void Update(TCloudItem item)
@@ -179,6 +201,7 @@ namespace Elektronik.Containers
             lock (_items)
             {
                 CreateTraces(new[] {item});
+                if (!_items.ContainsKey(item.Id)) return;
                 _items[item.Id] = item;
                 OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new[] {item}));
             }
@@ -193,6 +216,7 @@ namespace Elektronik.Containers
                 CreateTraces(list);
                 foreach (var ci in list)
                 {
+                    if (!_items.ContainsKey(ci.Id)) continue;
                     _items[ci.Id] = ci;
                 }
 
@@ -208,24 +232,22 @@ namespace Elektronik.Containers
 
         public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             _traceContainer.SetRenderer(renderer);
-            if (renderer is ICloudRenderer<TCloudItem> typedRenderer)
+            if (!(renderer is ICloudRenderer<TCloudItem> typedRenderer)) return;
+            OnAdded += typedRenderer.OnItemsAdded;
+            OnUpdated += typedRenderer.OnItemsUpdated;
+            OnRemoved += typedRenderer.OnItemsRemoved;
+            OnVisibleChanged += visible =>
             {
-                OnAdded += typedRenderer.OnItemsAdded;
-                OnUpdated += typedRenderer.OnItemsUpdated;
-                OnRemoved += typedRenderer.OnItemsRemoved;
-                OnVisibleChanged += visible =>
-                {
-                    if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<TCloudItem>(this));
-                    else typedRenderer.OnClear(this);
-                };
+                if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<TCloudItem>(this));
+                else typedRenderer.OnClear(this);
+            };
                 
-                if (Count > 0)
-                {
-                    OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(this));
-                }
+            if (Count > 0)
+            {
+                typedRenderer.OnItemsAdded(this, new AddedEventArgs<TCloudItem>(this));
             }
         }
 
@@ -349,7 +371,15 @@ namespace Elektronik.Containers
                 }
             }
 
-            _traceContainer.AddRange(traces);
+            try
+            {
+                _traceContainer.AddRange(traces);
+            }
+            catch (ArgumentException)
+            {
+                // This exception means that we tried to add 2 lines with same ids.
+                // Since traces is not very important we can just ignore it.
+            }
             Task.Run(() =>
             {
                 _tasks++;
