@@ -71,6 +71,8 @@ jobs:
         run: |
           export el=`cat ./ProjectSettings/ProjectSettings.asset | grep -oP '(?<=bundleVersion: )\d*.\d*.\d*(?:-rc\d*)?'`
           echo $el
+          perl -pe 's/(?<=Version: )\d*.\d*.\d*(?:-rc\d*)?/'$el'/' < ./package/DEBIAN/control > control.txt
+          cp -f control.txt ./package/DEBIAN/control
 
       - uses: actions/cache@v2
         with:
