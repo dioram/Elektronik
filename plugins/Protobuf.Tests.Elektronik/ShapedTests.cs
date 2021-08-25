@@ -52,7 +52,7 @@ namespace Protobuf.Tests.Elektronik
             {
                 plane.Select(s => new PointPb
                 {
-                    Id = s.Id + plane.Length, Color = new ColorPb { R = 255 },
+                    Id = s.Id, Color = new ColorPb { R = 255 },
                     Position = new Vector3Pb { X = s.Position.X, Y = s.Position.Y, Z = -side / 2 + s.Position.Z }
                 }),
                 plane.Select(s => new PointPb
@@ -348,9 +348,11 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, "NoisedCube.dat", true);
             Thread.Sleep(200);
             SendAndCheck(obsPacket, "NoisedCube.dat");
-            SendAndCheck(GenerateEdgeObservations(amount, side), "NoisedCube.dat");
+            var p1 = GenerateEdgeObservations(amount, side);
+            SendAndCheck(p1, "NoisedCube.dat");
             Thread.Sleep(200);
-            SendAndCheck(GenerateCornerObservations(amount, side), "NoisedCube.dat");
+            var p2 = GenerateCornerObservations(amount, side);
+            SendAndCheck(p2, "NoisedCube.dat");
         }
     }
 }

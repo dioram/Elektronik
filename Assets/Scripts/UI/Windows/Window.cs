@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using Elektronik.Settings;
 using TMPro;
@@ -110,6 +111,12 @@ namespace Elektronik.UI.Windows
                 rect.scrollSensitivity = 300;
             }
 #endif
+        }
+
+        private void Update()
+        {
+            if (_edges.FirstOrDefault(e => e.IsHovered) is {} edge) edge.ShowEdgeCursor();
+            else ResizingEdge.ShowDefaultCursor();
         }
 
         #endregion

@@ -7,7 +7,7 @@ namespace Elektronik.UI
     {
         private void Start()
         {
-            gameObject.SetActive(XRGeneralSettings.Instance.Manager.activeLoaders.Count > 0);
+            gameObject.SetActive((XRGeneralSettings.Instance?.Manager?.activeLoaders?.Count ?? 0) > 0);
         }
     }
 }

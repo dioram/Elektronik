@@ -170,6 +170,7 @@ namespace Elektronik.Containers
                 {
                     var line = obj;
                     line.Id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _maxId++;
+                    if (_connectionsIndices.ContainsKey(line.GetIds())) continue;
                     _connections[line.Id] = line;
                     _connectionsIndices[line.GetIds()] = line.Id;
                     buffer.Add(line);

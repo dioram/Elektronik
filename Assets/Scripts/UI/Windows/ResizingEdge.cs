@@ -27,6 +27,67 @@ namespace Elektronik.UI.Windows
         public RectTransform ResizeTarget;
         public WindowsManager Manager;
         public Action<Rect> OnResized;
+        public bool IsHovered { get; private set; }
+        
+        public void ShowEdgeCursor()
+        {
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            
+            switch (Side)
+            {
+            case EdgeSide.Top:
+            case EdgeSide.Bottom:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNorthAndSouth));
+                break;
+            case EdgeSide.Right:
+            case EdgeSide.Left:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeWestAndEast));
+                break;
+            case EdgeSide.TopLeft:
+            case EdgeSide.BottomRight:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNorthwestAndSoutheast));
+                break;
+            case EdgeSide.TopRight:
+            case EdgeSide.BottomLeft:
+                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNortheastAndSouthwest));
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+            }
+#else
+            var center = new Vector2(16, 16);
+            switch (Side)
+            {
+                case EdgeSide.Top:
+                case EdgeSide.Bottom:
+                    Cursor.SetCursor(ImageStore.Instance.TopDownCursor, center, CursorMode.Auto);
+                    break;
+                case EdgeSide.Right:
+                case EdgeSide.Left:
+                    Cursor.SetCursor(ImageStore.Instance.LeftRightCursor, center, CursorMode.Auto);
+                    break;
+                case EdgeSide.TopLeft:
+                case EdgeSide.BottomRight:
+                    Cursor.SetCursor(ImageStore.Instance.NorthWestCursor, center, CursorMode.Auto);
+                    break;
+                case EdgeSide.TopRight:
+                case EdgeSide.BottomLeft:
+                    Cursor.SetCursor(ImageStore.Instance.NorthEastCursor, center, CursorMode.Auto);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+#endif
+        }
+        
+        public static void ShowDefaultCursor()
+        {
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.StandardArrow));
+#else
+            Cursor.SetCursor(ImageStore.Instance.DefaultCursor, Vector2.zero, CursorMode.Auto);
+#endif
+        }
 
         #region Unity event functions
 
@@ -137,52 +198,7 @@ namespace Elektronik.UI.Windows
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            switch (Side)
-            {
-            case EdgeSide.Top:
-            case EdgeSide.Bottom:
-                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNorthAndSouth));
-                break;
-            case EdgeSide.Right:
-            case EdgeSide.Left:
-                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeWestAndEast));
-                break;
-            case EdgeSide.TopLeft:
-            case EdgeSide.BottomRight:
-                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNorthwestAndSoutheast));
-                break;
-            case EdgeSide.TopRight:
-            case EdgeSide.BottomLeft:
-                SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.EdgeNortheastAndSouthwest));
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-            }
-#else
-            var center = new Vector2(16, 16);
-            switch (Side)
-            {
-                case EdgeSide.Top:
-                case EdgeSide.Bottom:
-                    Cursor.SetCursor(ImageStore.Instance.TopDownCursor, center, CursorMode.Auto);
-                    break;
-                case EdgeSide.Right:
-                case EdgeSide.Left:
-                    Cursor.SetCursor(ImageStore.Instance.LeftRightCursor, center, CursorMode.Auto);
-                    break;
-                case EdgeSide.TopLeft:
-                case EdgeSide.BottomRight:
-                    Cursor.SetCursor(ImageStore.Instance.NorthWestCursor, center, CursorMode.Auto);
-                    break;
-                case EdgeSide.TopRight:
-                case EdgeSide.BottomLeft:
-                    Cursor.SetCursor(ImageStore.Instance.NorthEastCursor, center, CursorMode.Auto);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-#endif
+            IsHovered = true;
         }
 
         #endregion
@@ -191,11 +207,7 @@ namespace Elektronik.UI.Windows
 
         public void OnPointerExit(PointerEventData eventData)
         {
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.StandardArrow));
-#else
-            Cursor.SetCursor(ImageStore.Instance.DefaultCursor, Vector2.zero, CursorMode.Auto);
-#endif
+            IsHovered = false;
         }
 
         #endregion
@@ -205,6 +217,7 @@ namespace Elektronik.UI.Windows
         private Canvas _canvas;
         private float _minHeight;
         private float _minWidth;
+        private bool _isHovered;
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]

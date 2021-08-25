@@ -371,7 +371,15 @@ namespace Elektronik.Containers
                 }
             }
 
-            _traceContainer.AddRange(traces);
+            try
+            {
+                _traceContainer.AddRange(traces);
+            }
+            catch (ArgumentException)
+            {
+                // This exception means that we tried to add 2 lines with same ids.
+                // Since traces is not very important we can just ignore it.
+            }
             Task.Run(() =>
             {
                 _tasks++;
