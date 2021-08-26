@@ -8,7 +8,7 @@ namespace Elektronik.Commands.TrackedObj
 {
     public class RemoveTrackedObjCommands : RemoveCommand<SlamTrackedObject>
     {
-        private readonly SortedDictionary<int, IList<SlamLine>> _tracks = new SortedDictionary<int, IList<SlamLine>>();
+        private readonly SortedDictionary<int, IList<SimpleLine>> _tracks = new SortedDictionary<int, IList<SimpleLine>>();
         private readonly ITrackedContainer<SlamTrackedObject> _container;
 
         public RemoveTrackedObjCommands(ITrackedContainer<SlamTrackedObject> container,
@@ -36,7 +36,7 @@ namespace Elektronik.Commands.TrackedObj
     
     public class RemoveTrackedObjDiffCommands : RemoveCommand<SlamTrackedObject, SlamTrackedObjectDiff>
     {
-        private readonly SortedDictionary<int, IList<SlamLine>> _tracks = new SortedDictionary<int, IList<SlamLine>>();
+        private readonly SortedDictionary<int, IList<SimpleLine>> _tracks = new SortedDictionary<int, IList<SimpleLine>>();
         private readonly ITrackedContainer<SlamTrackedObject> _container;
 
         public RemoveTrackedObjDiffCommands(ITrackedContainer<SlamTrackedObject> container,

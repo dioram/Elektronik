@@ -25,43 +25,41 @@ MonoBehaviour:
     id: 6
   m_Metadata:
     m_Items: []
+  m_ProjectLocaleIdentifier:
+    m_Code: en
+  m_InitializeSynchronously: 0
   references:
     version: 1
     00000000:
-      type: {class: PlayerPrefLocaleSelector, ns: UnityEngine.Localization.Settings,
-        asm: Unity.Localization}
+      type: {class: PlayerPrefLocaleSelector, ns: UnityEngine.Localization.Settings, asm: Unity.Localization}
       data:
         m_PlayerPreferenceKey: selected-locale
     00000001:
-      type: {class: CommandLineLocaleSelector, ns: UnityEngine.Localization.Settings,
-        asm: Unity.Localization}
+      type: {class: CommandLineLocaleSelector, ns: UnityEngine.Localization.Settings, asm: Unity.Localization}
       data:
         m_CommandLineArgument: -language=
     00000002:
       type: {class: SystemLocaleSelector, ns: UnityEngine.Localization.Settings, asm: Unity.Localization}
     00000003:
-      type: {class: SpecificLocaleSelector, ns: UnityEngine.Localization.Settings,
-        asm: Unity.Localization}
+      type: {class: SpecificLocaleSelector, ns: UnityEngine.Localization.Settings, asm: Unity.Localization}
       data:
         m_LocaleId:
           m_Code: en
     00000004:
       type: {class: LocalesProvider, ns: UnityEngine.Localization.Settings, asm: Unity.Localization}
     00000005:
-      type: {class: LocalizedAssetDatabase, ns: UnityEngine.Localization.Settings,
-        asm: Unity.Localization}
+      type: {class: LocalizedAssetDatabase, ns: UnityEngine.Localization.Settings, asm: Unity.Localization}
       data:
         m_DefaultTableReference:
           m_TableCollectionName: 
-        m_UseFallback: 0
+        m_UseFallback: 1
     00000006:
-      type: {class: LocalizedStringDatabase, ns: UnityEngine.Localization.Settings,
-        asm: Unity.Localization}
+      type: {class: LocalizedStringDatabase, ns: UnityEngine.Localization.Settings, asm: Unity.Localization}
       data:
         m_DefaultTableReference:
           m_TableCollectionName: UI Text
         m_UseFallback: 1
-        m_MissingTranslationState: 1
+        m_MissingTranslationState: 2
         m_NoTranslationFoundMessage: No translation found for '{key}' in {table.TableCollectionName}
         m_SmartFormat:
           id: 7
@@ -90,16 +88,14 @@ MonoBehaviour:
         - id: 22
         - id: 23
     00000008:
-      type: {class: SmartSettings, ns: UnityEngine.Localization.SmartFormat.Core.Settings,
-        asm: Unity.Localization}
+      type: {class: SmartSettings, ns: UnityEngine.Localization.SmartFormat.Core.Settings, asm: Unity.Localization}
       data:
         m_FormatErrorAction: 0
         m_ParseErrorAction: 0
         m_CaseSensitivity: 0
         m_ConvertCharacterStringLiterals: 1
     00000009:
-      type: {class: Parser, ns: UnityEngine.Localization.SmartFormat.Core.Parsing,
-        asm: Unity.Localization}
+      type: {class: Parser, ns: UnityEngine.Localization.SmartFormat.Core.Parsing, asm: Unity.Localization}
       data:
         m_OpeningBrace: 123
         m_ClosingBrace: 125
@@ -111,8 +107,7 @@ MonoBehaviour:
         m_AlternativeEscaping: 0
         m_AlternativeEscapeChar: 92
     0000000A:
-      type: {class: ListFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: ListFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
       data:
         m_Names:
         - list
@@ -121,23 +116,17 @@ MonoBehaviour:
         m_SmartSettings:
           id: 8
     0000000B:
-      type: {class: DictionarySource, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: DictionarySource, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
     0000000C:
-      type: {class: ValueTupleSource, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: ValueTupleSource, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
     0000000D:
-      type: {class: XmlSource, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: XmlSource, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
     0000000E:
-      type: {class: ReflectionSource, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: ReflectionSource, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
     0000000F:
-      type: {class: DefaultSource, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: DefaultSource, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
     00000010:
-      type: {class: PluralLocalizationFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: PluralLocalizationFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
       data:
         m_Names:
         - plural
@@ -145,16 +134,14 @@ MonoBehaviour:
         - 
         m_DefaultTwoLetterISOLanguageName: en
     00000011:
-      type: {class: ConditionalFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: ConditionalFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
       data:
         m_Names:
         - conditional
         - cond
         - 
     00000012:
-      type: {class: TimeFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: TimeFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
       data:
         m_Names:
         - timespan
@@ -163,8 +150,7 @@ MonoBehaviour:
         - 
         m_DefaultFormatOptions: 4646
     00000013:
-      type: {class: XElementFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: XElementFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
       data:
         m_Names:
         - xelement
@@ -172,30 +158,27 @@ MonoBehaviour:
         - x
         - 
     00000014:
-      type: {class: ChooseFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: ChooseFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
       data:
         m_Names:
         - choose
         - c
         m_SplitChar: 124
     00000015:
-      type: {class: SubStringFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: SubStringFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
       data:
         m_Names:
         - substr
         m_ParameterDelimiter: 44
         m_NullDisplayString: (null)
+        m_OutOfRangeBehavior: 0
     00000016:
-      type: {class: IsMatchFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: IsMatchFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
       data:
         m_Names:
         - ismatch
     00000017:
-      type: {class: DefaultFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions,
-        asm: Unity.Localization}
+      type: {class: DefaultFormatter, ns: UnityEngine.Localization.SmartFormat.Extensions, asm: Unity.Localization}
       data:
         m_Names:
         - default

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace Elektronik.Containers.EventArgs
 {
@@ -11,6 +12,37 @@ namespace Elektronik.Containers.EventArgs
         {
             Vertices = vertices;
             Triangles = triangles;
+        }
+
+        protected bool Equals(MeshUpdatedEventArgs other)
+        {
+            if (Vertices.Length != other.Vertices.Length) return false;
+            foreach (var (first, second) in Vertices.Zip(other.Vertices, (arg1, arg2) => (arg1, arg2)))
+            {
+                if (!Equals(first, second)) return false;
+            }
+            if (Triangles.Length != other.Triangles.Length) return false;
+            foreach (var (first, second) in Triangles.Zip(other.Triangles, (arg1, arg2) => (arg1, arg2)))
+            {
+                if (!Equals(first, second)) return false;
+            }
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((MeshUpdatedEventArgs)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Vertices != null ? Vertices.GetHashCode() : 0) * 397) ^ (Triangles != null ? Triangles.GetHashCode() : 0);
+            }
         }
     }
 }

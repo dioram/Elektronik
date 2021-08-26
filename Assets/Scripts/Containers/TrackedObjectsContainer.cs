@@ -39,7 +39,7 @@ namespace Elektronik.Containers
                 _objects[item.Id] = (item, container);
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(item));
         }
 
         public void Clear()
@@ -102,7 +102,7 @@ namespace Elektronik.Containers
                 _objects.Remove(item.Id);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(item.Id));
 
 
             return true;
@@ -139,7 +139,7 @@ namespace Elektronik.Containers
                 _objects.Remove(index);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(index));
         }
 
         public SlamTrackedObject this[int index]
@@ -247,7 +247,7 @@ namespace Elektronik.Containers
                 PureUpdate(item);
             }
 
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(new[] {item}));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(item));
         }
 
         public void Update(IEnumerable<SlamTrackedObject> items)
@@ -302,7 +302,7 @@ namespace Elektronik.Containers
 
                 _trackedObjsRenderer = trackedRenderer;
                 break;
-            case ICloudRenderer<SlamLine> lineRenderer:
+            case ICloudRenderer<SimpleLine> lineRenderer:
                 _lineRenderer = lineRenderer;
                 lock (_lineContainers)
                 {
@@ -320,15 +320,15 @@ namespace Elektronik.Containers
 
         #region ITrackedContainer implementation
 
-        public IList<SlamLine> GetHistory(int id)
+        public IList<SimpleLine> GetHistory(int id)
         {
             lock (_objects)
             {
-                return _objects.ContainsKey(id) ? _objects[id].Item2.ToList() : new List<SlamLine>();
+                return _objects.ContainsKey(id) ? _objects[id].Item2.ToList() : new List<SimpleLine>();
             }
         }
 
-        public void AddWithHistory(SlamTrackedObject item, IList<SlamLine> history)
+        public void AddWithHistory(SlamTrackedObject item, IList<SimpleLine> history)
         {
             lock (_objects)
             {
@@ -336,13 +336,12 @@ namespace Elektronik.Containers
 
                 var container = CreateTrackContainer(item, history);
                 _objects.Add(item.Id, (item, container));
-                _maxId = history.Count > 0 ? history.Max(l => l.Id) : 0;
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(new[] {item}));
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(item));
         }
 
-        public void AddRangeWithHistory(IEnumerable<SlamTrackedObject> items, IEnumerable<IList<SlamLine>> histories)
+        public void AddRangeWithHistory(IEnumerable<SlamTrackedObject> items, IEnumerable<IList<SimpleLine>> histories)
         {
             var list = items.ToList();
             var historiesList = histories.ToList();
@@ -354,11 +353,6 @@ namespace Elektronik.Containers
 
                     var container = CreateTrackContainer(i, h);
                     _objects.Add(i.Id, (i, container));
-                }
-
-                if (historiesList.Count != 0)
-                {
-                    _maxId = historiesList.SelectMany(l => l).Max(l => l.Id);
                 }
             }
 
@@ -422,11 +416,11 @@ namespace Elektronik.Containers
             foreach (var pair in _objects.Values)
             {
                 var obj = pair.Item1;
-                obj.Position = pair.Item2[0].Point1.Position;
+                obj.Position = pair.Item2[0].BeginPos;
                 recorder.OnAdded(DisplayName, new[] {obj});
                 foreach (var line in pair.Item2)
                 {
-                    obj.Position = line.Point2.Position;
+                    obj.Position = line.EndPos;
                     recorder.OnUpdated(DisplayName, new[] {obj});
                 }
             }
@@ -436,30 +430,27 @@ namespace Elektronik.Containers
 
         #region Private definitions
 
-        private ICloudRenderer<SlamLine> _lineRenderer;
+        private ICloudRenderer<SimpleLine> _lineRenderer;
         private ICloudRenderer<SlamTrackedObject> _trackedObjsRenderer;
         private readonly List<ISourceTree> _lineContainers = new List<ISourceTree>();
 
         private readonly Dictionary<int, (SlamTrackedObject, TrackContainer)> _objects =
                 new Dictionary<int, (SlamTrackedObject, TrackContainer)>();
 
-        private int _maxId = 0;
         private bool _isVisible = true;
 
-        private TrackContainer CreateTrackContainer(SlamTrackedObject obj, IList<SlamLine> history = null)
+        private TrackContainer CreateTrackContainer(SlamTrackedObject obj, IList<SimpleLine> history = null)
         {
             lock (_lineContainers)
             {
-                var res = new TrackContainer(this, obj);
-                res.IsVisible = IsVisible;
+                var res = new TrackContainer(this, obj) { IsVisible = IsVisible };
                 res.SetRenderer(_lineRenderer);
                 res.SetRenderer(_trackedObjsRenderer);
                 res.DisplayName = $"Track #{obj.Id}";
                 _lineContainers.Add(res);
                 if (history == null)
                 {
-                    res.Add(new SlamLine(new SlamPoint(-1, obj.Position, obj.Color),
-                                         new SlamPoint(-2, obj.Position, obj.Color)));
+                    res.Add(new SimpleLine(0, obj.Position, obj.Position, obj.Color));
                 }
                 else
                 {
@@ -474,17 +465,13 @@ namespace Elektronik.Containers
         {
             if (!_objects.ContainsKey(item.Id)) return;
             var container = _objects[item.Id].Item2;
-            if (container.Count == 0)
-            {
-                container.Add(new SlamLine(_objects[item.Id].Item1.AsPoint(), item.AsPoint(), ++_maxId));
-            }
-            else if (container.Last().Point1.Position == item.Position)
+            if (container.Last().BeginPos == item.Position)
             {
                 container.Remove(container.Last());
             }
             else
             {
-                container.Add(new SlamLine(container.Last().Point2, item.AsPoint(), ++_maxId));
+                container.AddPointToTrack(item.AsPoint());
             }
 
             _objects[item.Id] = (item, container);

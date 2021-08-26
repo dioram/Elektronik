@@ -1,7 +1,6 @@
 ﻿using Elektronik.Settings;
 using Elektronik.UI.Localization;
 using UnityEngine;
-using UnityEngine.XR.Management;
 
 namespace Elektronik.UI
 {

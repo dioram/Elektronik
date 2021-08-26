@@ -155,7 +155,7 @@ namespace Elektronik.Containers
                 _connections[obj.Id] = obj;
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {obj}));
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(obj));
         }
 
         public void Insert(int index, SlamLine item) => Add(item);
@@ -188,7 +188,7 @@ namespace Elektronik.Containers
                 _connections[item.Id] = item;
             }
 
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {item}));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(item));
         }
 
         public void Update(IEnumerable<SlamLine> items)
@@ -228,7 +228,7 @@ namespace Elektronik.Containers
                 _freeIds.Enqueue(index);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {obj.Id}));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(obj.Id));
 
             return true;
         }

@@ -70,7 +70,7 @@ namespace Elektronik.Containers
                 _objects.Add(obj);
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new[] {obj}));
+            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(obj));
         }
 
         public void Insert(int index, TCloudItem item)
@@ -80,7 +80,7 @@ namespace Elektronik.Containers
                 _objects.Insert(index, item);
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(new[] {item}));
+            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(item));
         }
 
         public void AddRange(IEnumerable<TCloudItem> items)
@@ -106,7 +106,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(new[] {item}));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(item));
         }
 
         public void Update(IEnumerable<TCloudItem> items)
@@ -139,7 +139,7 @@ namespace Elektronik.Containers
                 _objects.RemoveAt(id);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {id}));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(id));
         }
 
         public bool Remove(TCloudItem obj)
@@ -151,7 +151,7 @@ namespace Elektronik.Containers
                 {
                     RemoveConnections(index);
                     _objects.Remove(obj);
-                    OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {obj.Id}));
+                    OnRemoved?.Invoke(this, new RemovedEventArgs(obj.Id));
                     return true;
                 }
 

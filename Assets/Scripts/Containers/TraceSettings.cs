@@ -14,7 +14,7 @@ namespace Elektronik.Containers
             Duration = (int) duration;
             DataSourcesManager.MapSourceTree((tree, str) =>
             {
-                if (tree is ITraceable traceable) traceable.Duration = Duration;
+                if (tree is ITraceable traceable) traceable.TraceDuration = Duration;
             });
         }
     }

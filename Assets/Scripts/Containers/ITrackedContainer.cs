@@ -5,10 +5,10 @@ namespace Elektronik.Containers
 {
     public interface ITrackedContainer<TCloudItem> : IContainer<TCloudItem> where TCloudItem : ICloudItem
     {
-        IList<SlamLine> GetHistory(int id);
+        IList<SimpleLine> GetHistory(int id);
 
-        void AddWithHistory(TCloudItem item, IList<SlamLine> history);
+        void AddWithHistory(TCloudItem item, IList<SimpleLine> history);
         
-        void AddRangeWithHistory(IEnumerable<TCloudItem> items, IEnumerable<IList<SlamLine>> histories);
+        void AddRangeWithHistory(IEnumerable<TCloudItem> items, IEnumerable<IList<SimpleLine>> histories);
     }
 }

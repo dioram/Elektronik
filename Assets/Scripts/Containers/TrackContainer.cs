@@ -13,17 +13,39 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     /// <summary> Contains lines in strict order. </summary>
-    public class TrackContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible, ISnapshotable, IFollowable<SlamTrackedObject>
+    public class TrackContainer : IContainer<SimpleLine>, ISourceTree, ILookable, IVisible, ISnapshotable,
+                                  IFollowable<SlamTrackedObject>
     {
         public TrackContainer(TrackedObjectsContainer parent, SlamTrackedObject trackedObject)
         {
             _parent = parent;
             _trackedObject = trackedObject;
         }
-        
+
+        public void AddPointToTrack(SlamPoint point) => AddPointToTrack(point.Position, point.Color);
+
+        public void AddPointToTrack(Vector3 pos, Color color)
+        {
+            SimpleLine line;
+            lock (_lines)
+            {
+                if (_lines.Count == 0)
+                {
+                    line = new SimpleLine(0, pos, pos, color);
+                }
+                else
+                {
+                    var last = _lines[_lines.Count - 1];
+                    line = new SimpleLine(_lines.Count, last.EndPos, pos, last.EndColor, color); 
+                }
+                _lines.Add(line);
+            }
+            OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(line));
+        }
+
         #region IContainer implementaion
 
-        public IEnumerator<SlamLine> GetEnumerator()
+        public IEnumerator<SimpleLine> GetEnumerator()
         {
             lock (_lines)
             {
@@ -33,14 +55,14 @@ namespace Elektronik.Containers
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public void Add(SlamLine item)
+        public void Add(SimpleLine item)
         {
             lock (_lines)
             {
                 _lines.Add(item);
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {item}));
+            OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(item));
         }
 
         public void Clear()
@@ -64,7 +86,7 @@ namespace Elektronik.Containers
         }
 
 
-        public bool Contains(SlamLine item)
+        public bool Contains(SimpleLine item)
         {
             lock (_lines)
             {
@@ -72,7 +94,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public void CopyTo(SlamLine[] array, int arrayIndex)
+        public void CopyTo(SimpleLine[] array, int arrayIndex)
         {
             lock (_lines)
             {
@@ -80,7 +102,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public bool Remove(SlamLine item)
+        public bool Remove(SimpleLine item)
         {
             bool res;
             lock (_lines)
@@ -88,7 +110,7 @@ namespace Elektronik.Containers
                 res = _lines.Remove(item);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {item.Id}));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(item.Id));
 
 
             return res;
@@ -107,7 +129,7 @@ namespace Elektronik.Containers
 
         public bool IsReadOnly => false;
 
-        public int IndexOf(SlamLine item)
+        public int IndexOf(SimpleLine item)
         {
             lock (_lines)
             {
@@ -115,14 +137,14 @@ namespace Elektronik.Containers
             }
         }
 
-        public void Insert(int index, SlamLine item)
+        public void Insert(int index, SimpleLine item)
         {
             lock (_lines)
             {
                 _lines.Insert(index, item);
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(new[] {item}));
+            OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(item));
         }
 
         public void RemoveAt(int index)
@@ -132,10 +154,10 @@ namespace Elektronik.Containers
                 _lines.RemoveAt(index);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(new[] {index}));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(index));
         }
 
-        public SlamLine this[int index]
+        public SimpleLine this[int index]
         {
             get
             {
@@ -151,17 +173,17 @@ namespace Elektronik.Containers
                     _lines[index] = value;
                 }
 
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {value}));
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<SimpleLine>(value));
             }
         }
 
-        public event EventHandler<AddedEventArgs<SlamLine>> OnAdded;
+        public event EventHandler<AddedEventArgs<SimpleLine>> OnAdded;
 
-        public event EventHandler<UpdatedEventArgs<SlamLine>> OnUpdated;
+        public event EventHandler<UpdatedEventArgs<SimpleLine>> OnUpdated;
 
         public event EventHandler<RemovedEventArgs> OnRemoved;
 
-        public void AddRange(IEnumerable<SlamLine> items)
+        public void AddRange(IEnumerable<SimpleLine> items)
         {
             if (items is null) return;
             var list = items.ToList();
@@ -170,10 +192,10 @@ namespace Elektronik.Containers
                 _lines.AddRange(list);
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(list));
+            OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(list));
         }
 
-        public void Remove(IEnumerable<SlamLine> items)
+        public void Remove(IEnumerable<SimpleLine> items)
         {
             if (items is null) return;
             var list = items.ToList();
@@ -188,11 +210,11 @@ namespace Elektronik.Containers
             OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id).ToList()));
         }
 
-        public IEnumerable<SlamLine> Remove(IEnumerable<int> items)
+        public IEnumerable<SimpleLine> Remove(IEnumerable<int> items)
         {
-            if (items is null) return new List<SlamLine>();
+            if (items is null) return new List<SimpleLine>();
             var list = items.ToList();
-            var removed = new List<SlamLine>();
+            var removed = new List<SimpleLine>();
             lock (_lines)
             {
                 foreach (var id in list)
@@ -208,31 +230,35 @@ namespace Elektronik.Containers
             return removed;
         }
 
-        public void Update(SlamLine item)
+        public void Update(SimpleLine item)
         {
             lock (_lines)
             {
                 var index = _lines.FindIndex(l => l.Id == item.Id);
+                if (index < 0) return;
                 _lines[index] = item;
             }
 
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(new[] {item}));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SimpleLine>(item));
         }
 
-        public void Update(IEnumerable<SlamLine> items)
+        public void Update(IEnumerable<SimpleLine> items)
         {
             if (items is null) return;
             var list = items.ToList();
+            var updated = new List<SimpleLine> { Capacity = list.Count };
             lock (_lines)
             {
                 foreach (var item in list)
                 {
                     var index = _lines.FindIndex(l => l.Id == item.Id);
+                    if (index < 0) continue;
+                    updated.Add(item);
                     _lines[index] = item;
                 }
             }
 
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(list));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SimpleLine>(updated));
         }
 
         #endregion
@@ -245,19 +271,19 @@ namespace Elektronik.Containers
 
         public void SetRenderer(ISourceRenderer renderer)
         {
-            if (renderer is ICloudRenderer<SlamLine> typedRenderer)
+            if (renderer is ICloudRenderer<SimpleLine> typedRenderer)
             {
                 OnAdded += typedRenderer.OnItemsAdded;
                 OnUpdated += typedRenderer.OnItemsUpdated;
                 OnRemoved += typedRenderer.OnItemsRemoved;
                 OnVisibleChanged += visible =>
                 {
-                    if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<SlamLine>(this));
+                    if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<SimpleLine>(this));
                     else typedRenderer.OnClear(this);
                 };
                 if (Count > 0)
                 {
-                    OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
+                    OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(this));
                 }
             }
             else if (renderer is TrackedObjectCloud trackedRenderer)
@@ -278,7 +304,7 @@ namespace Elektronik.Containers
             {
                 if (_lines.Count == 0) return (transform.position, transform.rotation);
 
-                pos = _lines.Last().Point2.Position;
+                pos = _lines.Last().EndPos;
             }
 
             return (pos + (transform.position - pos).normalized, Quaternion.LookRotation(pos - transform.position));
@@ -342,15 +368,17 @@ namespace Elektronik.Containers
             OnUnfollowed?.Invoke(_parent, _trackedObject);
         }
 
-        public event Action<IFollowable<SlamTrackedObject>, IContainer<SlamTrackedObject>, SlamTrackedObject> OnFollowed;
+        public event Action<IFollowable<SlamTrackedObject>, IContainer<SlamTrackedObject>, SlamTrackedObject>
+                OnFollowed;
+
         public event Action<IContainer<SlamTrackedObject>, SlamTrackedObject> OnUnfollowed;
         public bool IsFollowed { get; private set; }
 
         #endregion
-        
+
         #region Private definition
 
-        private readonly List<SlamLine> _lines = new List<SlamLine>();
+        private readonly List<SimpleLine> _lines = new List<SimpleLine>();
         private bool _isVisible = true;
         private readonly TrackedObjectsContainer _parent;
         private readonly SlamTrackedObject _trackedObject;

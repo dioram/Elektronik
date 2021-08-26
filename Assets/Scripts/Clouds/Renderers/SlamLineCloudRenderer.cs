@@ -2,7 +2,7 @@
 
 namespace Elektronik.Clouds
 {
-    public class LineCloudRenderer : CloudRenderer<SlamLine, LineCloudBlock>
+    public class SlamLineCloudRenderer : CloudRenderer<SlamLine, LineCloudBlock>
     {
         public void SetAlpha(float alpha)
         {

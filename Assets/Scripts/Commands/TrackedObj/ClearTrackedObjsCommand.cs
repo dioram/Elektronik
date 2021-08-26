@@ -8,8 +8,8 @@ namespace Elektronik.Commands.TrackedObj
 {
     public class ClearTrackedObjsCommand : ClearCommand<SlamTrackedObject>
     {
-        private readonly SortedDictionary<int, (SlamTrackedObject, IList<SlamLine>)> _tracks
-                = new SortedDictionary<int, (SlamTrackedObject, IList<SlamLine>)>();
+        private readonly SortedDictionary<int, (SlamTrackedObject, IList<SimpleLine>)> _tracks
+                = new SortedDictionary<int, (SlamTrackedObject, IList<SimpleLine>)>();
 
         private readonly ITrackedContainer<SlamTrackedObject> _container;
 
