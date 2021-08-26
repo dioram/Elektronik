@@ -27,12 +27,12 @@ If you don't need these features you can skip this stage and move to building of
 For building of natives you will need [cmake](https://cmake.org/), [swig](https://swig.org/),
 [Visual Studio 2019](https://visualstudio.microsoft.com/) and some 3rd party libraries:
 - OpenCV (Mesh reconstruction and planes detection),
-- OpenMVS (Mesh reconstruction)
+- PCL (Mesh reconstruction)
 - FastRTPS (ROS2)
 
 We recommend to install them via packet manager [vcpkg](https://github.com/microsoft/vcpkg):
 ```
-./vcpkg.exe install opencv openmvs fastrtps
+./vcpkg.exe install openssl opencv pcl fastrtps
 ```
 For building of library that works with ROS2 move to directory `plugins/ROS2DDS` and generate cmake cache:
 ```
@@ -45,10 +45,6 @@ If you are using vcpkg add key `CMAKE_TOOLCHAIN_FILE` with path to file `vcpkg.c
 After that build library:
 ```
 cmake --build .
-```
-Regenerate cmake cache. It is necessary for installation script.
-```
-cmake -DCMAKE_CXX_FLAGS=-m64 -DCMAKE_BUILD_TYPE=Release .
 ```
 Install library to Elektronik:
 ```
@@ -136,6 +132,7 @@ If you don't need these features you can skip this stage and move to building of
 For building of natives you will need [cmake](https://cmake.org/), [swig](https://swig.org/),
 [Visual Studio 2019](https://visualstudio.microsoft.com/) and some 3rd party libraries:
 - OpenCV (Planes detection),
+- PCL (Mesh detection)
 - FastRTPS (ROS2)
 
 *Mesh reconstruction does not work in linux for now. See [issue](https://github.com/dioram/Elektronik-Tools-2.0/issues/51).*
@@ -147,7 +144,7 @@ sudo apt -y install make swig curl python
 ```
 Now run vcpkg:
 ```
-./vcpkg.exe install opencv fastrtps
+./vcpkg.exe install openssl opencv pcl fastrtps
 ```
 For building of library that works with ROS2 move to directory `plugins/ROS2DDS` and generate cmake cache:
 ```
@@ -160,10 +157,6 @@ If you are using vcpkg add key `CMAKE_TOOLCHAIN_FILE` with path to file `vcpkg.c
 After that build library:
 ```
 cmake --build .
-```
-Regenerate cmake cache. It is necessary for installation script.
-```
-cmake -DCMAKE_CXX_FLAGS=-m64 -DCMAKE_BUILD_TYPE=Release .
 ```
 Install library to Elektronik:
 ```

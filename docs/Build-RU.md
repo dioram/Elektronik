@@ -27,13 +27,13 @@ git lfs fetch --all
 Для сборки вам потребуются [cmake](https://cmake.org/), [swig](https://swig.org/), 
 [Visual Studio 2019](https://visualstudio.microsoft.com/), компилятор c++ (предпочтительно clang), и библиотеки: 
 - OpenCV (построение меша и выделение плоскостей),
-- OpenMVS (построение меша)
+- PCL (построение меша)
 - FastRTPS (ROS2)
 
 Мы настоятельно рекомендуем использовать для их установки пакетный менеджер [vcpkg](https://github.com/microsoft/vcpkg), 
 тогда вы сможете установить их одной командой:
 ```
-./vcpkg.exe install opencv openmvs fastrtps
+./vcpkg.exe install openssl opencv fastrtps pcl
 ```
 Для сборки бибилиотеки для получения информации из сети ROS2 перейдите в директорию `plugins/ROS2DDS` и сгенерируйте cmake кеш.
 ```
@@ -46,10 +46,6 @@ cmake -DCMAKE_CXX_FLAGS=-m64 -DCMAKE_BUILD_TYPE=Release .
 После чего соберите библиотеку:
 ```
 cmake --build .
-```
-Перегенерируйте кеш cmake. Это необходимо для того, чтобы скрипт установки увидел все необходимые dll файлы.
-```
-cmake -DCMAKE_CXX_FLAGS=-m64 -DCMAKE_BUILD_TYPE=Release .
 ```
 Установите библиотеку в электроник:
 ```
@@ -146,7 +142,7 @@ cmake --install .
 Для сборки вам потребуются [cmake](https://cmake.org/), [swig](https://swig.org/), 
 компилятор c++ (предпочтительно clang), и библиотеки:
 - OpenCV (построение меша и выделение плоскостей),
-- OpenMVS (построение меша)
+- PCL (построение меша)
 - FastRTPS (ROS2)
 
 Мы рекомендуем использовать для их установки пакетный менеджер [vcpkg](https://github.com/microsoft/vcpkg).
@@ -157,7 +153,7 @@ sudo apt -y install make swig curl python
 
 После чего можно будет запустить установку через vcpkg:
 ```
-./vcpkg.exe install opencv openmvs fastrtps
+./vcpkg.exe install openssl opencv pcl fastrtps
 ```
 Для сборки бибилиотеки для получения информации из сети ROS2 перейдите в директорию `plugins/ROS2DDS` и сгенерируйте cmake кеш.
 ```
@@ -170,10 +166,6 @@ cmake -DCMAKE_CXX_FLAGS=-m64 -DCMAKE_BUILD_TYPE=Release .
 После чего соберите библиотеку:
 ```
 cmake --build .
-```
-Перегенерируйте кеш cmake. Это необходимо для того, чтобы скрипт установки увидел все необходимые dll файлы.
-```
-cmake -DCMAKE_CXX_FLAGS=-m64 -DCMAKE_BUILD_TYPE=Release .
 ```
 Установите библиотеку в электроник:
 ```
