@@ -25,7 +25,46 @@ namespace Elektronik
         [SerializeField] private TMP_Text VersionLabel;
         [SerializeField] private Color NewReleaseColor;
         [SerializeField] private Color NewPrereleaseColor;
+        
+        public static bool IsNewer(string version1, string version2)
+        {
+            const string pattern = @"v?(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-rc(\d+))?(-WIP)?";
+            var match1 = Regex.Match(version1, pattern);
+            var match2 = Regex.Match(version2, pattern);
 
+            var major1 = Parse(match1.Groups[1].Value);
+            var minor1 = Parse(match1.Groups[2].Value);
+            var fix1 = Parse(match1.Groups[3].Value);
+            var rc1 = Parse(match1.Groups[4].Value);
+            var wip1 = !string.IsNullOrEmpty(match1.Groups[5].Value);
+
+            var major2 = Parse(match2.Groups[1].Value);
+            var minor2 = Parse(match2.Groups[2].Value);
+            var fix2 = Parse(match2.Groups[3].Value);
+            var rc2 = Parse(match2.Groups[4].Value);
+            var wip2 = !string.IsNullOrEmpty(match2.Groups[5].Value);
+
+            if (major1 > major2) return true;
+            if (major1 < major2) return false;
+            
+            if (minor1 > minor2) return true;
+            if (minor1 < minor2) return false;
+            
+            if (fix1 > fix2) return true;
+            if (fix1 < fix2) return false;
+
+            if (rc1 == 0 && rc2 > 0) return true;
+            if (rc2 == 0 && rc1 > 0) return false;
+            
+            if (rc1 > rc2) return true;
+            if (rc1 < rc2) return false;
+
+            if (wip1) return false;
+            if (wip2) return true;
+
+            return false;
+        }
+        
         #region Unity events
 
         private void Start()
@@ -69,56 +108,41 @@ namespace Elektronik
         }
 
         private readonly List<Release> _releases = new List<Release>();
-
-        private bool IsNewer(string version1, string version2, bool ignorePreRelease)
-        {
-            const string pattern = @"v?(\d*)(?:\.(\d*))?(?:\.(\d*))?(?:-rc(\d*))?";
-            var match1 = Regex.Match(version1, pattern);
-            var match2 = Regex.Match(version2, pattern);
-            for (int i = 1; i < match1.Groups.Count; i++)
-            {
-                int v1 = string.IsNullOrEmpty(match1.Groups[i].Value) ? 0 : int.Parse(match1.Groups[i].Value);
-                int v2 = string.IsNullOrEmpty(match2.Groups[i].Value) ? 0 : int.Parse(match2.Groups[i].Value);
-                if (i == 4 && ignorePreRelease) return false;
-                if (v1 > v2) return true;
-                if (v1 < v2) return false;
-            }
-
-            return false;
-        }
+        
+        private static int Parse(string str) => int.TryParse(str, out var res) ? res : 0;
 
         private void GetReleases()
         {
-            var request = WebRequest.CreateHttp(ApiPath);
-            request.UserAgent = "request";
-            var response = request.GetResponse();
-            var serializer = new JsonSerializer();
-
-            using var sr = new StreamReader(response.GetResponseStream());
-            using var jsonTextReader = new JsonTextReader(sr);
-            var data = serializer.Deserialize<JArray>(jsonTextReader);
-            foreach (var field in data)
+            try
             {
-                try
+                var request = WebRequest.CreateHttp(ApiPath);
+                request.UserAgent = "request";
+                var response = request.GetResponse();
+                var serializer = new JsonSerializer();
+
+                using var sr = new StreamReader(response.GetResponseStream());
+                using var jsonTextReader = new JsonTextReader(sr);
+                var data = serializer.Deserialize<JArray>(jsonTextReader);
+                foreach (var field in data)
                 {
                     _releases.Add(new Release
                     {
-                        Version = (string) field["tag_name"],
-                        ReleaseNotes = (string) field["body"],
-                        IsPreRelease = (bool) field["prerelease"],
+                        Version = (string)field["tag_name"],
+                        ReleaseNotes = (string)field["body"],
+                        IsPreRelease = (bool)field["prerelease"],
                     });
                 }
-                // ReSharper disable once EmptyGeneralCatchClause
-                catch
-                {
-                }
+            }
+            catch (Exception e)
+            {
+                // Catching any network or parsing exceptions
             }
         }
 
         private void ShowReleases(bool preReleases)
         {
             var releases = _releases
-                    .Where(r => IsNewer(r.Version, Application.version, !preReleases))
+                    .Where(r => IsNewer(r.Version, Application.version))
                     .Where(r => r.IsPreRelease == preReleases).ToList();
             foreach (var release in releases)
             {

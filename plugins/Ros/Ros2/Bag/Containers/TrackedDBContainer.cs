@@ -67,12 +67,10 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (messages.Count == 0) return;
 
             var obj = new SlamTrackedObject(0, messages.Last().Item1, messages.Last().Item2);
-            var history = new SlamLine[messages.Count - 1];
+            var history = new SimpleLine[messages.Count - 1];
             for (int i = 0; i < messages.Count - 1; i++)
             {
-                history[i] = new SlamLine(new SlamPoint(i, messages[i].Item1, Color.black),
-                                          new SlamPoint(i + 1, messages[i + 1].Item1, Color.black),
-                                          i);
+                history[i] = new SimpleLine(i, messages[i].pos, messages[i + 1].pos, Color.black);
             }
 
             AddWithHistory(obj, history);
