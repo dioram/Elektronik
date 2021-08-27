@@ -1,4 +1,5 @@
-﻿using Elektronik.Data;
+﻿using Elektronik.Clouds;
+using Elektronik.Data;
 using Elektronik.Input;
 using Elektronik.Offline;
 using Elektronik.Settings;
@@ -14,12 +15,12 @@ namespace Elektronik.UI
         [SerializeField] private DataSourcesManager DataSourcesManager;
         [SerializeField] private VrController VrController;
         [SerializeField] private PlayerEventsManager EventsManager;
+        [SerializeField] private GpuMeshRenderer MeshRenderer;
         [Header("Windows")] [SerializeField] private Window HelpWindow;
         [SerializeField] private Window SourceTreeWindow;
         [SerializeField] private Window SceneToolsWindow;
         [SerializeField] private Window AnalyticsToolsWindow;
         [Header("Buttons")] [SerializeField] private ChangingButton ToggleAxisButton;
-        [SerializeField] private ChangingButton MeshColorButton;
         [SerializeField] private ChangingButton RecordingButton;
         [Space] [SerializeField] private TMP_Dropdown GridSelector;
 
@@ -85,7 +86,7 @@ namespace Elektronik.UI
                     .Subscribe(_ => ToggleAxisButton.Toggle())
                     .AddTo(this);
             hotkeys.ToggleMeshColor.PerformedAsObservable()
-                    .Subscribe(_ => MeshColorButton.Toggle())
+                    .Subscribe(_ => MeshRenderer.OverrideColors = !MeshRenderer.OverrideColors)
                     .AddTo(this);
             hotkeys.StartRecording.PerformedAsObservable()
                     .Subscribe(_ => RecordingButton.Toggle())

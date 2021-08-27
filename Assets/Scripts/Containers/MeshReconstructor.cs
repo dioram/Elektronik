@@ -24,6 +24,11 @@ namespace Elektronik.Containers
 
         public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
 
+        public void OverrideColors()
+        {
+            _renderer.OverrideColors = !_renderer.OverrideColors;
+        }
+
         #region ISourceTree
 
         public string DisplayName { get; set; }
@@ -40,6 +45,7 @@ namespace Elektronik.Containers
         {
             if (renderer is IMeshRenderer meshRenderer)
             {
+                _renderer = meshRenderer;
                 OnMeshUpdated += meshRenderer.OnMeshUpdated;
             }
         }
@@ -74,6 +80,7 @@ namespace Elektronik.Containers
         private bool _isVisible = false;
         private readonly IContainer<SlamPoint> _points;
         private readonly ThreadWorkerSingleAwaiter _threadWorker = new ThreadWorkerSingleAwaiter();
+        private IMeshRenderer _renderer;
 
         private void RequestCalculation()
         {

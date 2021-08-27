@@ -8,5 +8,7 @@ namespace Elektronik.Containers
     public interface IMeshContainer : ISourceTree, IVisible
     {
         public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
+
+        public void OverrideColors();
     }
 }

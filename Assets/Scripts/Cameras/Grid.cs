@@ -125,7 +125,7 @@ namespace Elektronik.Cameras
             {
                 for (float j = -DetailsVisibilityDistance; j < DetailsVisibilityDistance; j += Spacing)
                 {
-                    var visible = GridPointInCamera(new Vector2(i, j) + offset, DetailsVisibilityDistance);
+                    var visible = IsGridPointVisible(new Vector2(i, j) + offset, DetailsVisibilityDistance);
                     if (!visible) continue;
                     var go = _labelsPool.Spawn();
                     if (Mode == GridModes.EnabledOrientedGrid)
@@ -148,7 +148,7 @@ namespace Elektronik.Cameras
             }
         }
 
-        private bool GridPointInCamera(Vector2 gridPoint, float maxDistance)
+        private bool IsGridPointVisible(Vector2 gridPoint, float maxDistance)
         {
             var worldPoint = new Vector3(gridPoint.x, 0, gridPoint.y);
             if (Mode == GridModes.EnabledOrientedGrid)

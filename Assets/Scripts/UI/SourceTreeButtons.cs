@@ -1,4 +1,5 @@
 ﻿using Elektronik.Cameras;
+using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
@@ -21,6 +22,7 @@ namespace Elektronik.UI
         [FormerlySerializedAs("CameraButton")] public Button LookAtButton;
         public ButtonChangingIcons FollowButton;
         public Button SaveButton;
+        public Button MeshColorButton;
 
         public Button WeightButton;
         public Slider WeightSlider;
@@ -71,6 +73,15 @@ namespace Elektronik.UI
             else
             {
                 RemoveButton.gameObject.SetActive(false);
+            }
+
+            if (_node is IMeshContainer mesh)
+            {
+                MeshColorButton.OnClickAsObservable().Subscribe(_ => mesh.OverrideColors()).AddTo(this);
+            }
+            else
+            {
+                MeshColorButton.gameObject.SetActive(false);
             }
 
             if (Camera.main.GetComponent<LookableCamera>() is { } cam)
