@@ -465,7 +465,7 @@ namespace Elektronik.Containers
         {
             if (!_objects.ContainsKey(item.Id)) return;
             var container = _objects[item.Id].Item2;
-            if (container.Last().BeginPos == item.Position)
+            if (container.Count > 0 && container.Last().BeginPos == item.Position)
             {
                 container.Remove(container.Last());
             }

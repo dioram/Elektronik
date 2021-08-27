@@ -90,7 +90,7 @@
                 float minBary = min(barys.x, min(barys.y, barys.z));
                 float delta = abs(ddx(minBary)) + abs(ddy(minBary));
 	            minBary = smoothstep(0, delta, minBary);
-                return input.color * minBary;
+                return input.color * minBary + (1 - input.color) * (1 - minBary);
             }
             ENDCG
         }

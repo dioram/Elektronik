@@ -72,7 +72,7 @@ namespace Elektronik.Clouds
                     {
                         var go = ObservationsPool.Spawn(pose.position * _scale, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
-                        go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
+                        go.GetComponent<MeshRenderer>().material.SetColor(ColorProperty, obj.AsPoint().Color);
 
                         var dc = go.GetComponent(DataComponent<TCloudItem>.GetInstantiable());
                         if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
@@ -111,7 +111,7 @@ namespace Elektronik.Clouds
                     {
                         var go = ObservationsPool.Spawn(pose.position * _scale, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
-                        go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
+                        go.GetComponent<MeshRenderer>().material.SetColor(ColorProperty, obj.AsPoint().Color);
 
                         var dc = go.GetComponent(DataComponent<TCloudItem>.GetInstantiable());
                         if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
@@ -136,7 +136,7 @@ namespace Elektronik.Clouds
                         var go = GameObjects[(sender.GetHashCode(), obj.Id)];
                         go.transform.SetPositionAndRotation(pose.position * _scale, pose.rotation);
                         go.GetComponent<DataComponent<TCloudItem>>().Data = obj;
-                        go.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, obj.AsPoint().Color);
+                        go.GetComponent<MeshRenderer>().material.SetColor(ColorProperty, obj.AsPoint().Color);
                     });
                 }
             }
@@ -203,7 +203,7 @@ namespace Elektronik.Clouds
 
         protected ObjectPool ObservationsPool;
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+        private static readonly int ColorProperty = Shader.PropertyToID("_Color");
 
         protected abstract Pose GetObjectPose(TCloudItem obj);
 
