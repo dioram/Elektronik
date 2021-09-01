@@ -1,9 +1,10 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
 {
-    public struct SlamInfinitePlaneDiff : ICloudItemDiff<SlamInfinitePlane>
+    public struct SlamInfinitePlaneDiff : ICloudItemDiff<SlamInfinitePlaneDiff, SlamInfinitePlane>
     {
         public int Id { get; set; }
         public Vector3? Offset;
@@ -27,6 +28,19 @@ namespace Elektronik.Data.PackageObjects
             item.Color = Color ?? item.Color;
             item.Message = string.IsNullOrEmpty(Message) ? item.Message : Message;
             return item;
+        }
+
+        public SlamInfinitePlaneDiff Apply(SlamInfinitePlaneDiff right)
+        {
+            if (Id != right.Id) throw new Exception("Ids must be identical!");
+            return new SlamInfinitePlaneDiff
+            {
+                Id = Id,
+                Offset = right.Offset ?? Offset,
+                Normal = right.Normal ?? Normal,
+                Color = right.Color ?? Color,
+                Message = string.IsNullOrEmpty(right.Message) ? Message : right.Message,
+            };
         }
     }
 }

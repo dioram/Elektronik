@@ -27,7 +27,7 @@ namespace Elektronik.Commands.Generic
     
     public class UpdateCommand<TCloudItem, TCloudItemDiff> : ICommand
             where TCloudItem : struct, ICloudItem
-            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
+            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         protected readonly ReadOnlyCollection<TCloudItem> Objs2Restore;
         protected readonly ReadOnlyCollection<TCloudItemDiff> Objs2Update;

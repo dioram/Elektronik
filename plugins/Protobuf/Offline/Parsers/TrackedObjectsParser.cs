@@ -19,7 +19,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
             _container = container;
         }
 
-        protected virtual ICommand GetCommand(IList<SlamTrackedObjectDiff> objs, PacketPb.Types.ActionType action)
+        protected virtual ICommand? GetCommand(IList<SlamTrackedObjectDiff>? objs, PacketPb.Types.ActionType action)
         {
             if (objs is null || objs.Count == 0) return null;
             switch (action)
@@ -36,7 +36,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
             }
         }
 
-        public override ICommand GetCommand(PacketPb pkg)
+        public override ICommand? GetCommand(PacketPb pkg)
         {
             if (pkg.DataCase == PacketPb.DataOneofCase.TrackedObjs)
             {

@@ -6,15 +6,17 @@ using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class PointsMapManager : ConnectableObjectsMapManager<SlamPoint, SlamPointDiff>
     {
-        private readonly ICSConverter _converter;
+        private readonly ICSConverter? _converter;
 
-        public PointsMapManager(IConnectableObjectsContainer<SlamPoint> container, ICSConverter converter)
-                : base(container)
+        public PointsMapManager(IConnectableObjectsContainer<SlamPoint> container, ICSConverter? converter,
+                                ILogger logger)
+                : base(container, logger)
         {
             _converter = converter;
         }

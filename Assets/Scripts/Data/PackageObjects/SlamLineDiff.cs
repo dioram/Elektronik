@@ -1,6 +1,6 @@
 ﻿namespace Elektronik.Data.PackageObjects
 {
-    public struct SlamLineDiff : ICloudItemDiff<SlamLine>
+    public struct SlamLineDiff : ICloudItemDiff<SlamLineDiff, SlamLine>
     {
         public int Id { get; }
         public SlamPointDiff Point1;
@@ -16,6 +16,15 @@
             item.Point1 = Point1.Apply(item.Point1);
             item.Point2 = Point2.Apply(item.Point2);
             return item;
+        }
+
+        public SlamLineDiff Apply(SlamLineDiff right)
+        {
+            return new SlamLineDiff
+            {
+                Point1 = Point1.Apply(right.Point1),
+                Point2 = Point2.Apply(right.Point2),
+            };
         }
     }
 }

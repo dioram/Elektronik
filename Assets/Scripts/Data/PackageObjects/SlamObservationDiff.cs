@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
 {
-    public struct SlamObservationDiff : ICloudItemDiff<SlamObservation>
+    public struct SlamObservationDiff : ICloudItemDiff<SlamObservationDiff, SlamObservation>
     {
         public int Id => Point.Id;
         public SlamPointDiff Point;
@@ -13,7 +13,7 @@ namespace Elektronik.Data.PackageObjects
         [CanBeNull] public int[] ObservedPoints;
         [CanBeNull] public string Message;
         [CanBeNull] public string FileName;
-        
+
         public SlamObservation Apply()
         {
             return new SlamObservation(Point.Apply(),
@@ -33,7 +33,23 @@ namespace Elektronik.Data.PackageObjects
             {
                 item.ObservedPoints = new HashSet<int>(ObservedPoints);
             }
+
             return item;
+        }
+
+        public SlamObservationDiff Apply(SlamObservationDiff right)
+        {
+            if (Id != right.Id) throw new Exception("Ids must be identical!");
+            return new SlamObservationDiff
+            {
+                Point = Point.Apply(right.Point),
+                Rotation = right.Rotation ?? Rotation,
+                Message = string.IsNullOrEmpty(right.Message) ? Message : right.Message,
+                FileName = string.IsNullOrEmpty(right.FileName) ? FileName : right.FileName,
+                ObservedPoints = (right.ObservedPoints is null || right.ObservedPoints.Length == 0)
+                        ? ObservedPoints
+                        : right.ObservedPoints,
+            };
         }
     }
 }

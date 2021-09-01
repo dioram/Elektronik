@@ -15,7 +15,7 @@ namespace Elektronik.UI.ListBox
         [Range(30, 100)] public int Height = 50;
         [Range(30, 1000)] public int HeightWithDescription = 300;
 
-        public IElektronikPlugin Plugin;
+        public IElektronikPluginsFactory Plugin;
         public bool State => _toggle.isOn;
 
         private RectTransform _description;
@@ -44,7 +44,7 @@ namespace Elektronik.UI.ListBox
         protected override void Start()
         {
             base.Start();
-            _label.text = $"{Plugin.DisplayName} (v{Plugin.GetVersion()})";
+            _label.text = $"{Plugin.DisplayName} (v{Plugin.Version})";
             _descriptionLabel.SetLocalizedText(Plugin.Description);
 
             _toggle.OnValueChangedAsObservable()

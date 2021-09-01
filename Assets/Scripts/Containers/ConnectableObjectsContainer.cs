@@ -113,6 +113,7 @@ namespace Elektronik.Containers
         {
             if (items is null) return;
             var list = items.ToList();
+            if (list.Count == 0) return;
             lock (_table)
             {
                 _objects.Update(list);
@@ -124,8 +125,8 @@ namespace Elektronik.Containers
                         _linesBuffer.Add(new SlamLine(pt1.AsPoint(), _objects[pt2Id].AsPoint()));
                     }
                 }
-
-                _connects.Update(_linesBuffer);
+                
+                if (_linesBuffer.Count > 0) _connects.Update(_linesBuffer);
             }
 
             OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));

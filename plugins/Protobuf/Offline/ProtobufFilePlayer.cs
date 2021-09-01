@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Timers;
+using Elektronik.Data;
+using Elektronik.Data.Converters;
 using Elektronik.Extensions;
 using Elektronik.Offline;
 using Elektronik.PluginsSystem;
@@ -9,17 +11,16 @@ using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
 using Elektronik.Threading;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline
 {
-    public class ProtobufFilePlayer : DataSourcePluginBase<OfflineSettingsBag>, IDataSourcePluginOffline
+    public class ProtobufFilePlayer : IDataSourcePluginOffline
     {
-        public ProtobufFilePlayer()
+        public ProtobufFilePlayer(OfflineSettingsBag settings, ICSConverter converter)
         {
             _containerTree = new ProtobufContainerTree("Protobuf",
-                                                       new FileImagePresenter("Camera", TypedSettings.ImagePath),
+                                                       new FileImagePresenter("Camera", settings.ImagePath),
                                                        new SlamDataInfoPresenter("Special info"));
             Data = _containerTree;
             _parsersChain = new DataParser<PacketPb>[]
@@ -27,28 +28,15 @@ namespace Elektronik.Protobuf.Offline
                 new ObjectsParser(_containerTree.InfinitePlanes,
                                   _containerTree.Points,
                                   _containerTree.Observations,
-                                  TypedSettings.ImagePath),
+                                  settings.ImagePath),
                 new TrackedObjectsParser(_containerTree.TrackedObjs),
                 new InfoParser(_containerTree.SpecialInfo),
             }.BuildChain();
-        }
-
-        #region IDataSourceOffline
-
-        public override string DisplayName => "Protobuf";
-
-        public override string Description => "This plugin reads " +
-                "<#7f7fe5><u><link=\"https://developers.google.com/protocol-buffers/\">protobuf</link></u></color>" +
-                " packages from file. You can find documentation for data package format " +
-                "<#7f7fe5><u><link=\"https://github.com/dioram/Elektronik-Tools-2.0/blob/master/docs/Protobuf-EN.md\">" +
-                "here</link></u></color>. Also you can see *.proto files in <ElektronikDir>/Plugins/Protobuf/data.";
-
-        public override void Start()
-        {
-            _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(TypedSettings.FilePath)}";
-            _input = File.OpenRead(TypedSettings.FilePath!);
-            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity);
-            _parsersChain.SetConverter(Converter);
+            
+            _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.FilePath)}";
+            _input = File.OpenRead(settings.FilePath);
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
+            _parsersChain.SetConverter(converter);
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
             _threadWorker = new ThreadQueueWorker();
@@ -58,37 +46,35 @@ namespace Elektronik.Protobuf.Offline
                 _threadWorker.Enqueue(() =>
                 {
                     if (GoToNextFrame()) return;
-                    _timer?.Stop();
+                    _timer.Stop();
                     MainThreadInvoker.Enqueue(() => Finished?.Invoke());
                 });
             };
         }
 
-        public override void Stop()
+        #region IDataSourceOffline
+
+        public ISourceTree Data { get; }
+
+        public void Dispose()
         {
             Data.Clear();
             _input.Dispose();
             _threadWorker.Dispose();
         }
 
-        public override void Update(float delta)
+        public void Update(float delta)
         {
             // Do nothing
         }
 
-        public void SetFileName(string filename)
-        {
-            TypedSettings.FilePath = filename;
-        }
+        public int AmountOfFrames => _frames.CurrentSize;
 
-        public int AmountOfFrames => _frames?.CurrentSize ?? 0;
-
-        public string CurrentTimestamp => $"{_frames?.Current?.Timestamp ?? 0} ({CurrentPosition})";
-        public string[] SupportedExtensions { get; } = {".dat"};
+        public string CurrentTimestamp => $"{_frames.Current?.Timestamp ?? 0} ({CurrentPosition})";
 
         public int CurrentPosition
         {
-            get => _frames?.CurrentIndex ?? 0;
+            get => _frames.CurrentIndex;
             set => RewindAt(value);
         }
 
@@ -100,25 +86,26 @@ namespace Elektronik.Protobuf.Offline
                 if (_delayBetweenFrames == value) return;
 
                 _delayBetweenFrames = value;
-                if (_timer != null) _timer.Interval = _delayBetweenFrames;
+                _timer.Interval = _delayBetweenFrames;
             }
         }
 
-        public event Action<bool> Rewind;
+        public event Action<bool>? Rewind;
+        public event Action? Finished;
 
         public void Play()
         {
-            _timer?.Start();
+            _timer.Start();
         }
 
         public void Pause()
         {
-            _timer?.Stop();
+            _timer.Stop();
         }
 
         public void StopPlaying()
         {
-            _timer?.Stop();
+            _timer.Stop();
             _threadWorker.Enqueue(() =>
             {
                 Data.Clear();
@@ -130,16 +117,16 @@ namespace Elektronik.Protobuf.Offline
         {
             _threadWorker.Enqueue(() =>
             {
-                if (_frames?.CurrentIndex == 0)
+                if (_frames.CurrentIndex == 0)
                 {
-                    _frames?.Current?.Rewind();
-                    _frames?.SoftReset();
+                    _frames.Current?.Rewind();
+                    _frames.SoftReset();
                     return;
                 }
                 do
                 {
                     if (!GoToPreviousFrame()) break;
-                } while (!(_frames?.Current?.IsSpecial) ?? false);
+                } while (!(_frames.Current?.IsSpecial) ?? false);
 
             });
         }
@@ -151,7 +138,7 @@ namespace Elektronik.Protobuf.Offline
                 do
                 {
                     if (!GoToNextFrame()) break;
-                } while (!(_frames?.Current?.IsSpecial) ?? false);
+                } while (!(_frames.Current?.IsSpecial) ?? false);
             });
         }
 
@@ -159,10 +146,10 @@ namespace Elektronik.Protobuf.Offline
         {
             _threadWorker.Enqueue(() =>
             {
-                if (_frames?.CurrentIndex == 0)
+                if (_frames.CurrentIndex == 0)
                 {
-                    _frames?.Current?.Rewind();
-                    _frames?.SoftReset();
+                    _frames.Current?.Rewind();
+                    _frames.SoftReset();
                     return;
                 }
 
@@ -178,25 +165,23 @@ namespace Elektronik.Protobuf.Offline
             });
         }
 
-        public event Action Finished;
-
         #endregion
 
         #region Private definitions
 
         private readonly ProtobufContainerTree _containerTree;
-        private FileStream _input;
-        private FramesCollection<Frame> _frames;
+        private readonly FileStream _input;
+        private readonly FramesCollection<Frame> _frames;
         private readonly DataParser<PacketPb> _parsersChain;
-        private ThreadQueueWorker _threadWorker;
-        [CanBeNull] private Timer _timer;
+        private readonly ThreadQueueWorker _threadWorker;
+        private readonly Timer _timer;
         private int _delayBetweenFrames = 2;
 
         private IEnumerator<Frame> ReadCommands(int size)
         {
             if (size > 0)
             {
-                for (int i = 0; i < size; i++)
+                for (var i = 0; i < size; i++)
                 {
                     var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
                     yield return Frame.ParsePacket(packet, _parsersChain);
@@ -233,10 +218,10 @@ namespace Elektronik.Protobuf.Offline
 
         private bool GoToPreviousFrame()
         {
-            _frames?.Current?.Rewind();
-            if (_frames?.MovePrevious() ?? false)
+            _frames.Current?.Rewind();
+            if (_frames.MovePrevious())
             {
-                (_containerTree.Image as FileImagePresenter)?.Present(_frames?.Current);
+                (_containerTree.Image as FileImagePresenter)?.Present(_frames.Current);
                 return true;
             }
 
@@ -247,8 +232,8 @@ namespace Elektronik.Protobuf.Offline
         {
             if (_frames.MoveNext())
             {
-                _frames?.Current?.Show();
-                (_containerTree.Image as FileImagePresenter)?.Present(_frames?.Current);
+                _frames.Current?.Show();
+                (_containerTree.Image as FileImagePresenter)?.Present(_frames.Current);
                 return true;
             }
 

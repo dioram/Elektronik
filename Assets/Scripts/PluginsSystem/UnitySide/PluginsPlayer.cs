@@ -15,7 +15,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 {
     public class PluginsPlayer : MonoBehaviour
     {
-        public static ReadOnlyCollection<IElektronikPlugin> Plugins = PluginsLoader.ActivePlugins.AsReadOnly();
+        public static ReadOnlyCollection<IElektronikPlugin> Plugins;
         public CSConverter Converter;
         public PlayerEventsManager PlayerEvents;
         public GameObject ScreenLocker;
@@ -49,22 +49,14 @@ namespace Elektronik.PluginsSystem.UnitySide
             }
 #endif
 
+            var factories = PluginsLoader.ActivePlugins.AsReadOnly();
+            var plugins = new List<IElektronikPlugin>();
+            
             ScreenLocker.SetActive(true);
 
-            foreach (var dataSource in Plugins.OfType<IDataSourcePlugin>())
+            foreach (var factory in factories)
             {
-                dataSource.Converter = Converter;
-                DataSourcesManager.AddDataSource(dataSource.Data);
-            }
-
-            foreach (var dataSource in Plugins.OfType<IDataSourcePluginOffline>())
-            {
-                PlayerEvents.SetDataSource(dataSource);
-            }
-
-            foreach (var plugin in Plugins)
-            {
-                var thread = new Thread(() => plugin.Start());
+                var thread = new Thread(() => plugins.Add(factory.Start(Converter)));
                 thread.Start();
                 _startupThreads.Add(thread);
             }
@@ -78,7 +70,20 @@ namespace Elektronik.PluginsSystem.UnitySide
                     thread.Join();
                 }
 
-                MainThreadInvoker.Enqueue(() => PluginsStarted?.Invoke());
+                Plugins = plugins.AsReadOnly();
+                MainThreadInvoker.Enqueue(() =>
+                {
+                    foreach (var dataSource in Plugins.OfType<IDataSourcePlugin>())
+                    {
+                        DataSourcesManager.AddDataSource(dataSource.Data);
+                    }
+
+                    foreach (var dataSource in Plugins.OfType<IDataSourcePluginOffline>())
+                    {
+                        PlayerEvents.SetDataSource(dataSource);
+                    }
+                    PluginsStarted?.Invoke();
+                });
             });
         }
 
@@ -94,7 +99,7 @@ namespace Elektronik.PluginsSystem.UnitySide
         {
             foreach (var plugin in Plugins)
             {
-                plugin.Stop();
+                plugin.Dispose();
             }
         }
 

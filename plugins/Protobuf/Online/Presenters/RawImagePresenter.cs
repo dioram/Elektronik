@@ -10,7 +10,7 @@ namespace Elektronik.Protobuf.Online.Presenters
 
         public override void Present(byte[] data)
         {
-            Renderer?.Render(data);
+            Renderer.Render(data);
         }
     }
 }

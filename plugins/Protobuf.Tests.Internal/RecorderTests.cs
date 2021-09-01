@@ -199,7 +199,7 @@ namespace Protobuf.Tests.Internal
         {
             (int id1, int id2)[] connections = {(0, 1), (0, 3), (3, 2), (-10, 9)};
             (int id1, int id2)[] removed = {connections[1], connections[3]};
-            IDataRecorderPlugin recorder = new ProtobufRecorder();
+            IDataRecorderPlugin recorder = new ProtobufRecorder(new FakeConverter());
             recorder.FileName = Filename;
             recorder.StartRecording();
             recorder.OnConnectionsUpdated<SlamPoint>("Connections", connections);
@@ -225,7 +225,7 @@ namespace Protobuf.Tests.Internal
         {
             (int id1, int id2)[] connections = {(0, 1), (0, 3), (3, 2), (-10, 9)};
             (int id1, int id2)[] removed = {connections[1], connections[3]};
-            IDataRecorderPlugin recorder = new ProtobufRecorder();
+            IDataRecorderPlugin recorder = new ProtobufRecorder(new FakeConverter());
             recorder.FileName = Filename;
             recorder.StartRecording();
             recorder.OnConnectionsUpdated<SlamObservation>("Connections", connections);
@@ -258,7 +258,7 @@ namespace Protobuf.Tests.Internal
             (int id1, int id2)[] connections = {(0, 1), (0, 3), (3, 2), (-10, 9)};
             
             File.Delete(Filename);
-            IDataRecorderPlugin recorder = new ProtobufRecorder();
+            IDataRecorderPlugin recorder = new ProtobufRecorder(new FakeConverter());
             recorder.FileName = Filename;
             recorder.OnAdded("", points);
             recorder.OnUpdated("", points);
@@ -394,7 +394,7 @@ namespace Protobuf.Tests.Internal
 
         private void Record<TCloudItem>(TCloudItem[] first, TCloudItem[] second) where TCloudItem : struct, ICloudItem
         {
-            IDataRecorderPlugin recorder = new ProtobufRecorder();
+            IDataRecorderPlugin recorder = new ProtobufRecorder(new FakeConverter());
             recorder.FileName = Filename;
             recorder.StartRecording();
             recorder.OnAdded(typeof(TCloudItem).Name, first);

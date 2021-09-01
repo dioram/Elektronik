@@ -17,12 +17,12 @@ namespace Elektronik.Protobuf.Data
         public readonly IConnectableObjectsContainer<SlamPoint> Points;
         public readonly IContainer<SlamLine> Lines;
         public readonly IContainer<SlamInfinitePlane> InfinitePlanes;
-        public readonly ISourceTree Image;
+        public readonly ISourceTree? Image;
         public readonly IMeshContainer MeshContainer;
         public readonly Connector Connector;
-        public readonly SlamDataInfoPresenter SpecialInfo;
+        public readonly SlamDataInfoPresenter? SpecialInfo;
 
-        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo = null)
+        public ProtobufContainerTree(string displayName, ISourceTree? image, SlamDataInfoPresenter? specialInfo = null)
         {
             DisplayName = displayName;
             Image = image;
@@ -54,8 +54,8 @@ namespace Elektronik.Protobuf.Data
                 observationsGraph,
                 (ISourceTree) Lines,
                 MeshContainer,
-                Image,
             };
+            if (Image != null) ch.Add(Image);
             if (SpecialInfo != null) ch.Add(SpecialInfo);
             Children = ch.ToArray();
         }
@@ -90,11 +90,11 @@ namespace Elektronik.Protobuf.Data
         {
             var children = new List<ISourceTree>()
             {
-                (TrackedObjs as ISnapshotable)!.TakeSnapshot() as ISourceTree,
-                (Observations as ISnapshotable)!.TakeSnapshot() as ISourceTree,
-                (Points as ISnapshotable)!.TakeSnapshot() as ISourceTree,
-                (Lines as ISnapshotable)!.TakeSnapshot() as ISourceTree,
-                (InfinitePlanes as ISnapshotable)!.TakeSnapshot() as ISourceTree,
+                ((TrackedObjs as ISnapshotable)!.TakeSnapshot() as ISourceTree)!,
+                ((Observations as ISnapshotable)!.TakeSnapshot() as ISourceTree)!,
+                ((Points as ISnapshotable)!.TakeSnapshot() as ISourceTree)!,
+                ((Lines as ISnapshotable)!.TakeSnapshot() as ISourceTree)!,
+                ((InfinitePlanes as ISnapshotable)!.TakeSnapshot() as ISourceTree)!,
             };
             
             return new VirtualContainer(DisplayName, children);
@@ -129,7 +129,7 @@ namespace Elektronik.Protobuf.Data
 
         public bool ShowButton { get; } = true;
         
-        public event Action<bool> OnVisibleChanged;
+        public event Action<bool>? OnVisibleChanged;
 
         #endregion
 

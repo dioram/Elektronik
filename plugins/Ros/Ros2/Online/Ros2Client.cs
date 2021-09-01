@@ -1,4 +1,5 @@
 ﻿#if !NO_ROS2DDS
+using Elektronik.Data;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
@@ -6,34 +7,27 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Online
 {
-    public class Ros2Client : DataSourcePluginBase<Ros2Settings>, IDataSourcePluginOnline
+    public class Ros2Client : IDataSourcePluginOnline
     {
-        public Ros2Client()
+        public Ros2Client(Ros2Settings settings)
         {
-            _container = new Ros2OnlineContainerTree("TMP");
+            _container = new Ros2OnlineContainerTree(settings, "TMP");
             Data = _container;
+            var converter = new RosConverter();
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
+            RosMessageConvertExtender.Converter = converter;
         }
         
         #region IDataSourceOnline
 
-        public override string DisplayName => "ROS2 listener";
-        public override string Description => "Client for " +
-                "<#7f7fe5><u><link=\"https://docs.ros.org/en/foxy/index.html\">ROS2</link></u></color> network.";
-        
-        public override void Start()
+        public ISourceTree Data { get; }
+
+        public void Dispose()
         {
-            _container.Init(TypedSettings);
-            Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
-            RosMessageConvertExtender.Converter = Converter;
+            _container.Dispose();
         }
 
-        public override void Stop()
-        {
-            _container.Reset();
-        }
-
-        public override void Update(float delta)
+        public void Update(float delta)
         {
             // Do nothing
         }
@@ -47,6 +41,4 @@ namespace Elektronik.RosPlugin.Ros2.Online
         #endregion
     }
 }
-#else
-
 #endif

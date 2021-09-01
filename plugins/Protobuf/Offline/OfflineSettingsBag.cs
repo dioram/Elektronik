@@ -10,10 +10,10 @@ namespace Elektronik.Protobuf.Offline
     public class OfflineSettingsBag : SettingsBag
     {
         [CheckForEquals, Path(PathAttribute.PathTypes.File, new[] {".dat"}), Tooltip("Path to file")]
-        public string FilePath;
+        public string FilePath = "";
 
         [CheckForEquals, Path(PathAttribute.PathTypes.Directory, new[] {""}), Tooltip("Path to images")]
-        public string ImagePath;
+        public string ImagePath = "";
 
         public override bool Validate()
         {

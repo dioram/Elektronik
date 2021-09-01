@@ -1,4 +1,5 @@
-﻿using Elektronik.PluginsSystem;
+﻿using Elektronik.Data;
+using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.Settings.Bags;
@@ -7,38 +8,27 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Online
 {
-    public class Ros1Client : DataSourcePluginBase<AddressPortScaleSettingsBag>, IDataSourcePluginOnline
+    public class Ros1Client : IDataSourcePluginOnline
     {
-        public Ros1Client()
+        public Ros1Client(AddressPortScaleSettingsBag settings)
         {
-            _container = new RosOnlineContainerTree("TMP");
+            _container = new RosOnlineContainerTree(settings, "TMP");
             Data = _container;
+            var converter = new RosConverter();
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
+            RosMessageConvertExtender.Converter = converter;
         }
 
         #region IDataSourceOnline
 
-        public override string DisplayName => "ROS listener";
+        public ISourceTree Data { get; }
 
-        public override string Description => "Client for " +
-                "<#7f7fe5><u><link=\"http://wiki.ros.org/noetic/Installation\">ROS1</link></u></color>" +
-                " network. Needs to be used with " +
-                "<#7f7fe5><u><link=\"http://wiki.ros.org/rosbridge_suite/Tutorials/RunningRosbridge\">" +
-                "Rosbridge</link></u></color>.";
-
-        public override void Start()
+        public void Dispose()
         {
-            _container.Init(TypedSettings);
-            Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
-            RosMessageConvertExtender.Converter = Converter;
+            _container.Dispose();
         }
 
-        public override void Stop()
-        {
-            _container.Reset();
-        }
-
-        public override void Update(float delta)
+        public void Update(float delta)
         {
             if (_topicsUpdateTimeout < 0)
             {

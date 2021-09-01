@@ -108,9 +108,7 @@ namespace Elektronik.Settings
         {
             foreach (var lbi in PluginsListBox.OfType<PluginListBoxItem>())
             {
-                lbi.Plugin.Settings.ModificationTime = DateTime.Now.ToString(CultureInfo.CurrentCulture);
-                lbi.Plugin.SettingsHistory.Add(lbi.Plugin.Settings.Clone());
-                lbi.Plugin.SettingsHistory.Save();
+                lbi.Plugin.SaveSettings();
             }
         }
 
@@ -157,18 +155,18 @@ namespace Elektronik.Settings
 
         private void AttachBehavior2Plugins()
         {
-            var availablePlugins = new List<IElektronikPlugin>();
+            var availablePlugins = new List<IElektronikPluginsFactory>();
             switch (ModeSelector.Mode)
             {
             case Mode.Online:
-                availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataSourcePluginOnline>());
+                availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataSourcePluginsOnlineFactory>());
                 break;
             case Mode.Offline:
-                availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataSourcePluginOffline>());
+                availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataSourcePluginsOfflineFactory>());
                 break;
             }
 
-            availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataRecorderPlugin>());
+            availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataRecorderFactory>());
 
             foreach (var plugin in availablePlugins)
             {
@@ -191,10 +189,10 @@ namespace Elektronik.Settings
             }
         }
 
-        private void DisableOfflinePlugins(IElektronikPlugin except)
+        private void DisableOfflinePlugins(IElektronikPluginsFactory except)
         {
             var plugins = PluginsListBox.OfType<PluginListBoxItem>()
-                    .Where(lbi => lbi.Plugin is IDataSourcePluginOffline && lbi.Plugin != except);
+                    .Where(lbi => lbi.Plugin is IDataSourcePluginsOfflineFactory && lbi.Plugin != except);
 
             foreach (var plugin in plugins)
             {

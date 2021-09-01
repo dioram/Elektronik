@@ -6,14 +6,17 @@ using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class TrackedObjsMapManager : MapManager<SlamTrackedObject, SlamTrackedObjectDiff>
     {
-        private readonly ICSConverter _converter;
+        private readonly ICSConverter? _converter;
 
-        public TrackedObjsMapManager(IContainer<SlamTrackedObject> container, ICSConverter converter) : base(container)
+        public TrackedObjsMapManager(IContainer<SlamTrackedObject> container, ICSConverter? converter,
+                                     ILogger logger) 
+                : base(container, logger)
         {
             _converter = converter;
         }

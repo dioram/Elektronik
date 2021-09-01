@@ -124,10 +124,10 @@ namespace Ros.Exporter
         }
 
         
-        static async Task<bool> ExportData(Message data, Topic topic, string path)
+        static async Task ExportData(Message data, Topic topic, string path)
         {
             var mess = MessageParser.Parse(data.Data, topic.Type, true);
-            if (mess is null) return true;
+            if (mess is null) return;
             if (!Files.ContainsKey(topic.Name)) CreateHeader(mess, topic.Name, path);
             
             switch (mess)
@@ -146,13 +146,13 @@ namespace Ros.Exporter
                 }
                 
                 im.Save($"{topic.Name.Replace("/", "_")}//{data.Timestamp}.png", ImageFormat.Png);
-                return true;
+                return;
             }
             case VideoFrame:
-                return true;
+                return;
             default:
                 await Files[topic.Name]?.WriteLineAsync(string.Join(',', mess.GetData()))!;
-                return true;
+                return;
             }
         }
 

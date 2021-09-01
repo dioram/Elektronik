@@ -115,9 +115,10 @@ namespace Elektronik.Data
 
         public void LoadSnapshot()
         {
-            FileBrowser.SetFilters(false, PluginsLoader.Plugins.Value
-                                           .OfType<IDataSourcePluginOffline>()
-                                           .SelectMany(r => r.SupportedExtensions));
+            // TODO: Turn on
+            // FileBrowser.SetFilters(false, PluginsLoader.Plugins.Value
+            //                                .OfType<IDataSourcePluginOffline>()
+            //                                .SelectMany(r => r.SupportedExtensions));
             FileBrowser.ShowLoadDialog(LoadSnapshot,
                                        () => { },
                                        false,
@@ -145,15 +146,16 @@ namespace Elektronik.Data
             foreach (var path in files)
             {
                 var playerPrefab = PluginsLoader.Plugins.Value
-                        .OfType<IDataSourcePluginOffline>()
-                        .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
+                        .OfType<IDataSourcePluginsOfflineFactory>()
+                        .FirstOrDefault();
+                        // TODO: Turn on
+                        // .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
                 if (playerPrefab is null) return;
-                var player = (IDataSourcePluginOffline) Activator.CreateInstance(playerPrefab.GetType());
-                player.Converter = Converter;
-                player.SetFileName(path);
-                player.Start();
-                player.CurrentPosition = player.AmountOfFrames - 1;
-                AddDataSource(new SnapshotContainer(Path.GetFileName(path), player.Data.Children, Converter));
+                var factory = (IDataSourcePluginsOfflineFactory) Activator.CreateInstance(playerPrefab.GetType());
+                factory.SetFileName(path);
+                var plugin = (IDataSourcePluginOffline) factory.Start(Converter);
+                plugin.CurrentPosition = plugin.AmountOfFrames - 1;
+                AddDataSource(new SnapshotContainer(Path.GetFileName(path), plugin.Data.Children, Converter));
             }
         }
 

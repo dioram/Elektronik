@@ -2,13 +2,13 @@
 
 namespace Elektronik.Clouds
 {
-    public abstract class CloudBlock : MonoBehaviour
+    public abstract class CloudBlock : MonoBehaviour, ICloudBlock
     {
         public const int Capacity = 256 * 256;
         public Shader CloudShader;
-        public bool Updated;
-        public float ItemSize = 1f;
-        public int ItemsCount = 0;
+        public bool Updated { get; set; }
+        public float ItemSize { get; set; } = 1f;
+        public int ItemsCount { get; set; }  = 0;
 
         public abstract GPUItem[] GetItems();
 

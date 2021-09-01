@@ -131,6 +131,7 @@ namespace Elektronik.Containers
                 }
             }
 
+            if (points.Count == 0) return;
             _connections.AddRange(points.Select(p => new SlamLine(p.Item1, p.Item2)).ToArray());
         }
 
@@ -140,12 +141,14 @@ namespace Elektronik.Containers
                     .Where(o => o.ObservedPoints.Count == 0)
                     .Select(o => o.Point)
                     .ToArray();
-            _connections.UpdatePositions(obsWithoutChangedConnections);
-            var obsWithChangedConnections = e.UpdatedItems
+            if (obsWithoutChangedConnections.Length > 0) _connections.UpdatePositions(obsWithoutChangedConnections);
+            var toAdd = e.UpdatedItems
                     .Where(o => o.ObservedPoints.Count != 0)
                     .ToArray();
-            OnObservationsRemoved(sender, new RemovedEventArgs(obsWithChangedConnections.Select(o => o.Id).ToList()));
-            OnObservationsAdded(sender, new AddedEventArgs<SlamObservation>(obsWithChangedConnections));
+            var toRemove = toAdd.Select(o => o.Id).ToList();
+            
+            if (toRemove.Count > 0) OnObservationsRemoved(sender, new RemovedEventArgs(toRemove));
+            if (toAdd.Length > 0) OnObservationsAdded(sender, new AddedEventArgs<SlamObservation>(toAdd));
         }
 
         private void OnObservationsRemoved(object sender, RemovedEventArgs e)
@@ -167,7 +170,8 @@ namespace Elektronik.Containers
                 }
             }
 
-            _connections.Remove(keys.Select(ids => new SlamLine(ids.Item1, ids.Item2)).ToArray());
+            var toRemove = keys.Select(ids => new SlamLine(ids.Item1, ids.Item2)).ToArray();
+            if (toRemove.Length > 0) _connections.Remove(toRemove);
         }
 
         private void OnPointsRemoved(object sender, RemovedEventArgs e)
@@ -187,7 +191,7 @@ namespace Elektronik.Containers
                 if (updated) updatedObservations.Add(observation);
             }
 
-            _observations.Update(updatedObservations);
+            if (updatedObservations.Count > 0) _observations.Update(updatedObservations);
         }
 
         private void OnMinWeightIncreased(float value)

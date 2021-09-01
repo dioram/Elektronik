@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Elektronik.Data;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
@@ -11,36 +12,34 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Bag
 {
-    public class RosbagReader : DataSourcePluginBase<RosbagSettings>, IDataSourcePluginOffline
+    public class RosbagReader : IDataSourcePluginOffline
     {
-        #region IDataSourceOffline
-
-        public RosbagReader()
+        public RosbagReader(RosbagSettings settings)
         {
-            _container = new RosbagContainerTree("TMP");
+            _container = new RosbagContainerTree(settings, "TMP");
             Data = _container;
             Finished += () => _playing = false;
+            _startTimestamp = _container.Parser.ReadMessagesAsync().FirstOrDefaultAsync().Result?.Timestamp ?? 0;
+            var actualConnections = _container.Parser.GetTopics()
+                    .Where(t => _container.ActualTopics.Select(a => a.Name).Contains(t.Topic));
+            _frames = new FramesAsyncCollection<Frame>(() => ReadNext(actualConnections));
+            var converter = new RosConverter();
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
+            RosMessageConvertExtender.Converter = converter;
+            _threadWorker = new ThreadQueueWorker();
         }
+        
+        #region IDataSourceOffline
 
-        public override string DisplayName => "ROS bag";
+        public ISourceTree Data { get; }
 
-        public override string Description => "This plugins allows Elektronik to read data saved from " +
-                "<#7f7fe5><u><link=\"https://www.ros.org\">ROS</link></u></color>" +
-                " using <#7f7fe5><u><link=\"http://wiki.ros.org/rosbag\">rosbag</link></u></color>.";
-
-        public void SetFileName(string filename)
-        {
-            TypedSettings.FilePath = filename;
-        }
-
-        public int AmountOfFrames => _frames?.CurrentSize ?? 0;
+        public int AmountOfFrames => _frames.CurrentSize;
 
         public string CurrentTimestamp
         {
             get
             {
-                // ReSharper disable once ConstantConditionalAccessQualifier
-                var t = _frames?.Current?.Timestamp ?? 0; // I want to kill man who designed this time storage format.
+                var t = _frames.Current?.Timestamp ?? 0;  // One who designed this time storage format is really weird.
                 var s = _startTimestamp;                  // Instead of saving time as 1 long or ulong value
                 var ts = (int) t; // secs                      // or saving 2 separate int values
                 var tn = (int) (t >> 32); // nanosecs          // He took 2 ints and store them inside 1 long value.
@@ -52,11 +51,9 @@ namespace Elektronik.RosPlugin.Ros.Bag
             }
         }
 
-        public string[] SupportedExtensions { get; } = {".bag"};
-
         public int CurrentPosition
         {
-            get => _frames?.CurrentIndex ?? 0;
+            get => _frames.CurrentIndex;
             set
             {
                 if (value < 0 || value >= AmountOfFrames || CurrentPosition == value) return;
@@ -69,29 +66,15 @@ namespace Elektronik.RosPlugin.Ros.Bag
         public event Action<bool>? Rewind;
         public event Action? Finished;
 
-        public override void Start()
+        public void Dispose()
         {
-            _container.Init(TypedSettings);
-            _startTimestamp = _container.Parser?.ReadMessagesAsync().FirstOrDefaultAsync().Result?.Timestamp ?? 0;
-            var actualConnections = _container.Parser?
-                    .GetTopics()
-                    .Where(t => _container.ActualTopics.Select(a => a.Name).Contains(t.Topic));
-            _frames = new FramesAsyncCollection<Frame>(() => ReadNext(actualConnections));
-            Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
-            RosMessageConvertExtender.Converter = Converter;
-            _threadWorker = new ThreadQueueWorker();
+            _container.Dispose();
+            _threadWorker.Dispose();
         }
 
-        public override void Stop()
+        public void Update(float delta)
         {
-            _container.Reset();
-            _threadWorker?.Dispose();
-        }
-
-        public override void Update(float delta)
-        {
-            if (_threadWorker == null/* || _threadWorker.AmountOfActions > 0*/) return;
+            // if (_threadWorker == null/* || _threadWorker.AmountOfActions > 0*/) return;
             if (_playing)
             {
                 NextKeyFrame();
@@ -129,10 +112,10 @@ namespace Elektronik.RosPlugin.Ros.Bag
         public void StopPlaying()
         {
             _playing = false;
-            _threadWorker?.Enqueue(() =>
+            _threadWorker.Enqueue(() =>
             {
                 Data.Clear();
-                _frames?.SoftReset();
+                _frames.SoftReset();
             });
         }
 
@@ -142,19 +125,19 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         public void PreviousFrame()
         {
-            _threadWorker?.Enqueue(() =>
+            _threadWorker.Enqueue(() =>
             {
                 // ReSharper disable once ConstantConditionalAccessQualifier
-                _frames?.Current?.Rewind();
-                if (!_frames?.MovePrevious() ?? false) _frames?.SoftReset();
+                _frames.Current?.Rewind();
+                if (!_frames.MovePrevious()) _frames.SoftReset();
             });
         }
 
         public void NextFrame()
         {
-            _threadWorker?.Enqueue(() =>
+            _threadWorker.Enqueue(() =>
             {
-                if (_frames?.MoveNext() ?? false)
+                if (_frames.MoveNext())
                 {
                     // ReSharper disable once ConstantConditionalAccessQualifier
                     _frames.Current?.Show();
@@ -171,15 +154,15 @@ namespace Elektronik.RosPlugin.Ros.Bag
         #region Private
 
         private readonly RosbagContainerTree _container;
-        private FramesAsyncCollection<Frame>? _frames;
-        private ThreadQueueWorker? _threadWorker;
+        private readonly FramesAsyncCollection<Frame> _frames;
+        private readonly ThreadQueueWorker _threadWorker;
         private bool _playing;
-        private long _startTimestamp = 0;
+        private readonly long _startTimestamp;
         private int _rewindAt = -1;
 
         private IAsyncEnumerator<Frame> ReadNext(IEnumerable<Connection>? topics)
         {
-            return _container.Parser!
+            return _container.Parser
                     .ReadMessagesAsync(topics)
                     .Where(m => m.TopicName is not null && m.TopicType is not null)
                     .Where(m => _container.RealChildren.Keys.Contains(m.TopicName))

@@ -16,8 +16,12 @@ namespace Elektronik.RosPlugin.Ros.Online
     {
         public RosSocket? Socket;
 
-        public RosOnlineContainerTree(string displayName) : base(displayName)
+        public RosOnlineContainerTree(AddressPortScaleSettingsBag settings, string displayName) : base(displayName)
         {
+            var uri = $"ws://{settings.IPAddress}:{settings.Port}";
+            DisplayName = $"ROS: {uri}";
+            Socket = new RosSocket(new RosSharp.RosBridgeClient.Protocols.WebSocketNetProtocol(uri));
+            UpdateTopics(null);
         }
 
         public void UpdateTopics(TopicsResponse? message)
@@ -46,17 +50,9 @@ namespace Elektronik.RosPlugin.Ros.Online
             RebuildTree();
         }
 
-        public void Init(AddressPortScaleSettingsBag settings)
+        public override void Dispose()
         {
-            var uri = $"ws://{settings.IPAddress}:{settings.Port}";
-            DisplayName = $"ROS: {uri}";
-            Socket = new RosSocket(new RosSharp.RosBridgeClient.Protocols.WebSocketNetProtocol(uri));
-            UpdateTopics(null);
-        }
-
-        public override void Reset()
-        {
-            base.Reset();
+            base.Dispose();
             foreach (var handler in _handlers)
             {
                 handler.Dispose();

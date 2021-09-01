@@ -10,13 +10,13 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class ImageManager : ImageManagerPb.ImageManagerPbBase
     {
-        public ILogger Logger = new UnityLogger();
+        private readonly ILogger _logger;
+        private readonly RawImagePresenter? _presenter;
 
-        private readonly RawImagePresenter _presenter;
-
-        public ImageManager(RawImagePresenter presenter)
+        public ImageManager(RawImagePresenter? presenter, ILogger logger)
         {
             _presenter = presenter;
+            _logger = logger;
         }
 
         public override Task<ErrorStatusPb> Handle(ImagePacketPb request, ServerCallContext context)
@@ -28,7 +28,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             };
             try
             {
-                _presenter.Present(request.ImageData.ToByteArray());
+                _presenter?.Present(request.ImageData.ToByteArray());
             }
             catch (Exception e)
             {
@@ -37,7 +37,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             }
 
             timer.Stop();
-            Logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err}");
+            _logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err}");
 
             return Task.FromResult(err);
         }

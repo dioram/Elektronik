@@ -21,16 +21,17 @@ namespace Elektronik.Protobuf.Online.GrpcServices
     public abstract class MapManager<TCloudItem, TCloudItemDiff>
             : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
             where TCloudItem : struct, ICloudItem
-            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
+            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
-        public ILogger Logger = new UnityLogger();
+        protected readonly ILogger Logger;
 
-        public MapManager(IContainer<TCloudItem> container)
+        protected MapManager(IContainer<TCloudItem> container, ILogger logger)
         {
             Container = container;
+            Logger = logger;
         }
 
-        MapsManagerPb.MapsManagerPbBase _link;
+        MapsManagerPb.MapsManagerPbBase? _link;
 
         public IChainable<MapsManagerPb.MapsManagerPbBase> SetSuccessor(
             IChainable<MapsManagerPb.MapsManagerPbBase> link)
@@ -58,12 +59,12 @@ namespace Elektronik.Protobuf.Online.GrpcServices
         }
 
         protected readonly IContainer<TCloudItem> Container;
-        protected Stopwatch Timer;
+        protected Stopwatch? Timer;
 
         protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, IList<TCloudItemDiff> data)
         {
             var readOnlyData = new ReadOnlyCollection<TCloudItemDiff>(data);
-            ErrorStatusPb errorStatus = new ErrorStatusPb() {ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded};
+            ErrorStatusPb errorStatus = new() {ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded};
             try
             {
                 lock (Container)
@@ -91,9 +92,9 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 errorStatus.Message = err.Message;
             }
 
-            Timer.Stop();
+            Timer?.Stop();
             Logger.Info($"[{GetType().Name}.Handle] {DateTime.Now} " +
-                        $"Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
+                        $"Elapsed time: {Timer?.ElapsedMilliseconds} ms. " +
                         $"Error status: {errorStatus}");
 
             return Task.FromResult(errorStatus);

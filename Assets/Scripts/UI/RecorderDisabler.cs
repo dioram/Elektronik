@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Elektronik.Data;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using UnityEngine;
@@ -7,9 +8,14 @@ namespace Elektronik.UI
 {
     public class RecorderDisabler : MonoBehaviour
     {
+        [SerializeField] private PluginsPlayer Player;
+        
         private void Start()
         {
-            if (!PluginsPlayer.Plugins.OfType<IDataRecorderPlugin>().Any()) gameObject.SetActive(false);
+            Player.PluginsStarted += () =>
+            {
+                if (!PluginsPlayer.Plugins.OfType<IDataRecorderPlugin>().Any()) gameObject.SetActive(false);
+            };
         }
     }
 }

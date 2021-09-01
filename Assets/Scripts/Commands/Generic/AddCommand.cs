@@ -23,7 +23,7 @@ namespace Elektronik.Commands.Generic
     
     public class AddCommand<TCloudItem, TCloudItemDiff> : ICommand 
             where TCloudItem : ICloudItem 
-            where TCloudItemDiff : ICloudItemDiff<TCloudItem>
+            where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         protected readonly ReadOnlyCollection<TCloudItemDiff> AddedObjects;
         protected readonly IContainer<TCloudItem> Container;

@@ -8,31 +8,21 @@ namespace Elektronik.Ros.Tests.Rosbag2
 {
     public class ReadingTestsYaml
     {
-        private readonly Rosbag2ContainerTree _tree = new("");
-
-        [SetUp, Platform("Win")]
-        public void Setup()
-        {
-            _tree.Init(new Rosbag2Settings() {FilePath = @"metadata.yaml"});
-        }
-
         [Test, Platform("Win")]
         public void ActualTimestamps()
         {
-            var sum = 0;
-            foreach (var timestamps in _tree.Timestamps.Values)
-            {
-                sum += timestamps.Count;
-            }
+            var tree = new Rosbag2ContainerTree(new Rosbag2Settings() {FilePath = @"metadata.yaml"});
+            var sum = tree.Timestamps.Values.Sum(timestamps => timestamps.Count);
             Assert.AreEqual(282, sum);
         }
 
         [Test, Platform("Win")]
         public void ContainersTree()
         {
-            Assert.AreEqual(20, _tree.ActualTopics.Count);
-            Assert.AreEqual(16, _tree.Children.Count());
-            var children = _tree.Children.ToList();
+            var tree = new Rosbag2ContainerTree(new Rosbag2Settings() {FilePath = @"metadata.yaml"});
+            Assert.AreEqual(20, tree.ActualTopics.Count);
+            Assert.AreEqual(16, tree.Children.Count());
+            var children = tree.Children.ToList();
             Assert.IsInstanceOf<VirtualContainer>(children[1]);
             Assert.AreEqual("control", children[1].DisplayName);
             Assert.AreEqual(2, children[1].Children.Count());

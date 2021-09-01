@@ -11,12 +11,13 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {
-        public ILogger Logger = new UnityLogger();
+        private readonly ILogger _logger;
         private readonly ISourceTree _container;
 
-        public SceneManager(ISourceTree container)
+        public SceneManager(ISourceTree container, ILogger logger)
         {
             _container = container;
+            _logger = logger;
         }
 
         public override Task<ErrorStatusPb> Clear(Empty request, ServerCallContext context)
@@ -40,7 +41,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             }
 
             timer.Stop();
-            Logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err.Message}");
+            _logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err.Message}");
 
             return Task.FromResult(err);
         }

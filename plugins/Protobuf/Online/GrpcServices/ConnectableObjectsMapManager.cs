@@ -5,17 +5,19 @@ using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public abstract class ConnectableObjectsMapManager<TCloudItem, TCloudItemDiff>
             : MapManager<TCloudItem, TCloudItemDiff>
             where TCloudItem : struct, ICloudItem
-            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
+            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         private readonly IConnectableObjectsContainer<TCloudItem> _connectableContainer;
 
-        protected ConnectableObjectsMapManager(IConnectableObjectsContainer<TCloudItem> container) : base(container)
+        protected ConnectableObjectsMapManager(IConnectableObjectsContainer<TCloudItem> container, ILogger logger) 
+                : base(container, logger)
         {
             _connectableContainer = container;
         }

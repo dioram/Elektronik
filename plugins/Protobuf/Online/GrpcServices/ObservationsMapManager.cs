@@ -7,15 +7,17 @@ using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class ObservationsMapManager : ConnectableObjectsMapManager<SlamObservation, SlamObservationDiff>
     {
-        private readonly ICSConverter _converter;
+        private readonly ICSConverter? _converter;
 
-        public ObservationsMapManager(IConnectableObjectsContainer<SlamObservation> container, ICSConverter converter) :
-                base(container)
+        public ObservationsMapManager(IConnectableObjectsContainer<SlamObservation> container, ICSConverter? converter,
+                                      ILogger logger) 
+                : base(container, logger)
         {
             _converter = converter;
         }

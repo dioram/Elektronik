@@ -59,6 +59,7 @@ namespace Elektronik.Containers
                 }
             }
 
+            if (lines.Count == 0) return;
             OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(lines.Select(l => l.Item2)));
         }
 
@@ -200,14 +201,20 @@ namespace Elektronik.Containers
             {
                 foreach (var obj in items)
                 {
-                    if (!_connectionsIndices.ContainsKey(obj.GetIds()))
+                    var key = obj.GetIds();
+                    if (!_connectionsIndices.ContainsKey(key))
+                    {
+                        key = (key.Id2, key.Id1);
+                    }
+
+                    if (!_connectionsIndices.ContainsKey(key))
                     {
                         addedItems.Add(obj);
                         continue;
                     }
 
                     var line = obj;
-                    line.Id = _connectionsIndices[line.GetIds()];
+                    line.Id = _connectionsIndices[key];
                     _connections[line.Id] = line;
                     updatedItems.Add(line);
                 }

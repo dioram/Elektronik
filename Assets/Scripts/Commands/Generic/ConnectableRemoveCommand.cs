@@ -29,7 +29,7 @@ namespace Elektronik.Commands.Generic
 
     public class ConnectableRemoveCommand<TCloudItem, TCloudItemDiff> : RemoveCommand<TCloudItem, TCloudItemDiff>
             where TCloudItem : struct, ICloudItem
-            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
+            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         private readonly IList<(int, int)> _connections;
         private readonly IConnectableObjectsContainer<TCloudItem> _container;

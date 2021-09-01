@@ -18,7 +18,7 @@ namespace Elektronik
             var extension = Path.GetExtension(args[1]);
             var plugin = PluginsLoader.Plugins
                     .Value
-                    .OfType<IDataSourcePluginOffline>()
+                    .OfType<IDataSourcePluginsOfflineFactory>()
                     .First(p => p.SupportedExtensions.Contains(extension));
             ModeSelector.Mode = Mode.Offline;
             PluginsLoader.ActivePlugins.Add(plugin);

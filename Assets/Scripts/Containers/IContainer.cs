@@ -36,7 +36,7 @@ namespace Elektronik.Containers
     {
         public static void Add<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container, TCloudItemDiff diff)
                 where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItem>
+                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.Add(diff.Apply());
         }
@@ -44,7 +44,7 @@ namespace Elektronik.Containers
         public static void AddRange<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
                                                                 IEnumerable<TCloudItemDiff> diffs)
                 where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItem>
+                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.AddRange(diffs.Select(d => d.Apply()));
         }
@@ -52,7 +52,7 @@ namespace Elektronik.Containers
         public static void Remove<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
                                                               TCloudItemDiff diff)
                 where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItem>
+                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.Remove(diff.Apply());
         }
@@ -60,7 +60,7 @@ namespace Elektronik.Containers
         public static void Remove<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
                                                               IEnumerable<TCloudItemDiff> diffs)
                 where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItem>
+                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.Remove(diffs.Select(d => d.Apply()));
         }
@@ -68,7 +68,7 @@ namespace Elektronik.Containers
         public static void Update<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
                                                               TCloudItemDiff diff)
                 where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItem>
+                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.Update(diff.Apply(container[diff.Id]));
         }
@@ -76,7 +76,7 @@ namespace Elektronik.Containers
         public static void Update<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
                                                               IEnumerable<TCloudItemDiff> diff)
                 where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItem>
+                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.Update(diff.Select(d => d.Apply(container[d.Id])).ToArray());
         }

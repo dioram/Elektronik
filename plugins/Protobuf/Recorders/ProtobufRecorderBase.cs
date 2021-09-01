@@ -144,7 +144,7 @@ namespace Elektronik.Protobuf.Recorders
             else if (typeof(TCloudItem).IsAssignableFrom(typeof(SlamLine)))
             {
                 packet.Lines = new PacketPb.Types.Lines();
-                packet.Lines.Data.AddRange(args.Select(i => new LinePb
+                packet.Lines.Data.AddRange(args.Select(_ => new LinePb
                 {
                     Pt1 = new PointPb {Id = 1},
                     Pt2 = new PointPb {Id = 2},

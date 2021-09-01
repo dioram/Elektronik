@@ -1,9 +1,10 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
 {
-    public struct SlamPointDiff : ICloudItemDiff<SlamPoint>
+    public struct SlamPointDiff : ICloudItemDiff<SlamPointDiff, SlamPoint>
     {
         public int Id { get; set; }
         public Vector3? Position;
@@ -24,6 +25,18 @@ namespace Elektronik.Data.PackageObjects
             item.Color = Color ?? item.Color;
             item.Message = string.IsNullOrEmpty(Message) ? item.Message : Message;
             return item;
+        }
+
+        public SlamPointDiff Apply(SlamPointDiff right)
+        {
+            if (Id != right.Id) throw new Exception("Ids must be identical!");
+            return new SlamPointDiff
+            {
+                Id = Id,
+                Position = right.Position ?? Position,
+                Color = right.Color ?? Color,
+                Message = string.IsNullOrEmpty(right.Message) ? Message : right.Message,
+            };
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data;
@@ -6,7 +7,7 @@ using Elektronik.UI.Windows;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
-    public abstract class RosContainerTree : VirtualContainer
+    public abstract class RosContainerTree : VirtualContainer, IDisposable
     {
         public List<(string Name, string Type)> ActualTopics = new ();
         public readonly Dictionary<string, ISourceTree> RealChildren = new();
@@ -15,7 +16,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         {
         }
 
-        public virtual void Reset()
+        public virtual void Dispose()
         {
             Clear();
             ActualTopics.Clear();
@@ -33,7 +34,7 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         protected abstract ISourceTree CreateContainer(string topicName, string topicType);
 
-        protected virtual void RebuildTree()
+        protected void RebuildTree()
         {
             BuildTree();
             Squeeze();

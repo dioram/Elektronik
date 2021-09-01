@@ -8,10 +8,7 @@ namespace Elektronik.Data.PackageObjects
         public int Id { get; set; }
         public string Message { get; set; }
         
-        public SlamPoint AsPoint()
-        {
-            throw new InvalidCastException("Cannot get line as point");
-        }
+        public SlamPoint AsPoint() => throw new InvalidCastException("Cannot get line as point");
 
         public SlamPoint Point1;
         public SlamPoint Point2;
@@ -40,6 +37,19 @@ namespace Elektronik.Data.PackageObjects
         public int CompareTo(SlamLine other) => GetInternalID().CompareTo(other.GetInternalID());
 
         public bool Equals(SlamLine other) => GetInternalID() == other.GetInternalID();
+
+        public override bool Equals(object obj)
+        {
+            return obj is SlamLine other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Point1.GetHashCode() * 397) ^ Point2.GetHashCode();
+            }
+        }
 
         private ulong GetInternalID()
         {

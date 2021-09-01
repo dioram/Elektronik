@@ -9,7 +9,7 @@ namespace Elektronik.Protobuf.Data
 {
     public static class PacketPbExtensions
     {
-        public static IEnumerable<SlamPointDiff> ExtractPoints(this PacketPb packet, ICSConverter converter = null)
+        public static IEnumerable<SlamPointDiff> ExtractPoints(this PacketPb packet, ICSConverter? converter = null)
         {
             foreach (var p in packet.Points.Data)
             {
@@ -20,7 +20,7 @@ namespace Elektronik.Protobuf.Data
         }
 
         public static IEnumerable<SlamObservationDiff> ExtractObservations(this PacketPb packet,
-                                                                           ICSConverter converter,
+                                                                           ICSConverter? converter,
                                                                            string imageDir)
         {
             foreach (var o in packet.Observations.Data)
@@ -47,7 +47,7 @@ namespace Elektronik.Protobuf.Data
         }
 
         public static IEnumerable<SlamTrackedObjectDiff> ExtractTrackedObjects(this PacketPb packet,
-                                                                               ICSConverter converter = null)
+                                                                               ICSConverter? converter = null)
         {
             foreach (var o in packet.TrackedObjs.Data)
             {
@@ -66,7 +66,7 @@ namespace Elektronik.Protobuf.Data
             }
         }
 
-        public static IEnumerable<SlamLineDiff> ExtractLines(this PacketPb packet, ICSConverter converter = null)
+        public static IEnumerable<SlamLineDiff> ExtractLines(this PacketPb packet, ICSConverter? converter = null)
         {
             foreach (var l in packet.Lines.Data)
             {
@@ -86,7 +86,7 @@ namespace Elektronik.Protobuf.Data
         }
 
         public static IEnumerable<SlamInfinitePlaneDiff> ExtractInfinitePlanes(this PacketPb packet,
-                                                                               ICSConverter converter = null)
+                                                                               ICSConverter? converter = null)
         {
             foreach (var p in packet.InfinitePlanes.Data)
             {
@@ -100,7 +100,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class Vector3Pb
     {
-        public static implicit operator Vector3?(Vector3Pb v)
+        public static implicit operator Vector3?(Vector3Pb? v)
         {
             if (v == null) return null;
             return new Vector3((float) v.X, (float) v.Y, (float) v.Z);
@@ -109,7 +109,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class Vector4Pb
     {
-        public static implicit operator Quaternion?(Vector4Pb v)
+        public static implicit operator Quaternion?(Vector4Pb? v)
         {
             if (v == null) return null;
             return new Quaternion((float) v.X, (float) v.Y, (float) v.Z, (float) v.W);
@@ -118,7 +118,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class ColorPb
     {
-        public static implicit operator Color32?(ColorPb c)
+        public static implicit operator Color32?(ColorPb? c)
         {
             if (c == null) return null;
             return new Color32((byte) c.R, (byte) c.G, (byte) c.B, 255);
@@ -133,7 +133,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class PointPb
     {
-        public static implicit operator SlamPointDiff(PointPb p)
+        public static implicit operator SlamPointDiff(PointPb? p)
             => p != null
                     ? new SlamPointDiff {Id = p.id_, Position = p.position_, Color = p.color_, Message = p.message_}
                     : default;
@@ -141,7 +141,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class LinePb
     {
-        public static implicit operator SlamLineDiff(LinePb c)
+        public static implicit operator SlamLineDiff(LinePb? c)
             => c != null ? new SlamLineDiff {Point1 = c.pt1_, Point2 = c.pt2_} : default;
     }
 
@@ -159,7 +159,7 @@ namespace Elektronik.Protobuf.Data
             }
         }
 
-        public static implicit operator SlamObservationDiff(ObservationPb o)
+        public static implicit operator SlamObservationDiff(ObservationPb? o)
             => o != null
                     ? new SlamObservationDiff
                     {
@@ -174,7 +174,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class TrackedObjPb
     {
-        public static implicit operator SlamTrackedObjectDiff(TrackedObjPb o)
+        public static implicit operator SlamTrackedObjectDiff(TrackedObjPb? o)
             => o != null
                     ? new SlamTrackedObjectDiff
                     {
@@ -189,7 +189,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class InfinitePlanePb
     {
-        public static implicit operator SlamInfinitePlaneDiff(InfinitePlanePb p)
+        public static implicit operator SlamInfinitePlaneDiff(InfinitePlanePb? p)
             => p != null
                     ? new SlamInfinitePlaneDiff
                     {
@@ -204,13 +204,13 @@ namespace Elektronik.Protobuf.Data
 
     public static class Conversions
     {
-        public static Vector3Pb ToProtobuf(this Vector3 v, ICSConverter converter)
+        public static Vector3Pb ToProtobuf(this Vector3 v, ICSConverter? converter)
         {
             converter?.ConvertBack(ref v);
             return new Vector3Pb {X = v.x, Y = v.y, Z = v.z};
         }
 
-        public static Vector4Pb ToProtobuf(this Quaternion q, ICSConverter converter)
+        public static Vector4Pb ToProtobuf(this Quaternion q, ICSConverter? converter)
         {
             if (converter != null)
             {
@@ -221,16 +221,16 @@ namespace Elektronik.Protobuf.Data
             return new Vector4Pb {X = q.x, Y = q.y, Z = q.z, W = q.w};
         }
 
-        public static PointPb ToProtobuf(this SlamPoint p, ICSConverter converter)
-            => new PointPb
+        public static PointPb ToProtobuf(this SlamPoint p, ICSConverter? converter)
+            => new()
             {
                 Id = p.Id, Position = p.Position.ToProtobuf(converter), Color = p.Color, Message = p.Message ?? ""
             };
 
-        public static LinePb ToProtobuf(this SlamLine l, ICSConverter converter)
-            => new LinePb {Pt1 = l.Point1.ToProtobuf(converter), Pt2 = l.Point2.ToProtobuf(converter)};
+        public static LinePb ToProtobuf(this SlamLine l, ICSConverter? converter)
+            => new() {Pt1 = l.Point1.ToProtobuf(converter), Pt2 = l.Point2.ToProtobuf(converter)};
 
-        public static ObservationPb ToProtobuf(this SlamObservation o, ICSConverter converter)
+        public static ObservationPb ToProtobuf(this SlamObservation o, ICSConverter? converter)
         {
             var pb = new ObservationPb
             {
@@ -244,8 +244,8 @@ namespace Elektronik.Protobuf.Data
             return pb;
         }
 
-        public static TrackedObjPb ToProtobuf(this SlamTrackedObject o, ICSConverter converter)
-            => new TrackedObjPb
+        public static TrackedObjPb ToProtobuf(this SlamTrackedObject o, ICSConverter? converter)
+            => new()
             {
                 Id = o.Id,
                 Position = o.Position.ToProtobuf(converter),
@@ -254,8 +254,8 @@ namespace Elektronik.Protobuf.Data
                 Message = o.Message
             };
 
-        public static InfinitePlanePb ToProtobuf(this SlamInfinitePlane p, ICSConverter converter)
-            => new InfinitePlanePb
+        public static InfinitePlanePb ToProtobuf(this SlamInfinitePlane p, ICSConverter? converter)
+            => new()
             {
                 Color = p.Color,
                 Id = p.Id,

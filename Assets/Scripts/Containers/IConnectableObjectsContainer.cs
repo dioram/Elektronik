@@ -24,7 +24,7 @@ namespace Elektronik.Containers
         public static IEnumerable<(int id1, int id2)> GetAllConnections<TCloudItem, TCloudItemDiff>(
             this IConnectableObjectsContainer<TCloudItem> container, TCloudItemDiff diff)
                 where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItem>
+                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             return container.GetAllConnections(diff.Apply());
         }

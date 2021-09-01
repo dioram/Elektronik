@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Elektronik.Data;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
@@ -9,47 +10,36 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag
 {
-    public class Rosbag2Reader : DataSourcePluginBase<Rosbag2Settings>, IDataSourcePluginOffline
+    public class Rosbag2Reader : IDataSourcePluginOffline
     {
-        public Rosbag2Reader()
+        public Rosbag2Reader(Rosbag2Settings settings)
         {
-            _data = new Rosbag2ContainerTree("TMP");
+            _data = new Rosbag2ContainerTree(settings);
             Data = _data;
-        }
-
-        #region IDataSourceOffline implementation
-
-        public override string DisplayName => "ROS2 bag";
-
-        public override string Description => "This plugins allows Elektronik to read data saved from " +
-                "<#7f7fe5><u><link=\"https://docs.ros.org/en/foxy/index.html\">ROS2</link></u></color> using " +
-                "<#7f7fe5><u><link=\"https://docs.ros.org/en/foxy/Tutorials/Ros2bag/Recording-And-Playing-Back-Data.html\">" +
-                "rosbag2</link></u></color>.";
-
-        public override void Start()
-        {
             _threadWorker = new ThreadQueueWorker();
-            _data.Init(TypedSettings);
 
             _actualTimestamps = _data.Timestamps.Values
                     .SelectMany(l => l)
                     .OrderBy(i => i)
                     .ToArray();
 
-            Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
-            RosMessageConvertExtender.Converter = Converter;
+            var converter = new RosConverter();
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
+            RosMessageConvertExtender.Converter = converter;
         }
 
-        public override void Stop()
+        #region IDataSourceOffline
+
+        public ISourceTree Data { get; }
+
+        public void Dispose()
         {
-            _data.Reset();
-            _threadWorker?.Dispose();
+            _data.Dispose();
+            _threadWorker.Dispose();
         }
 
-        public override void Update(float delta)
+        public void Update(float delta)
         {
-            if (_threadWorker == null) return;
             if (_playing)
             {
                 if (CurrentPosition == AmountOfFrames - 1)
@@ -66,9 +56,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag
                 Rewind?.Invoke(true);
                 _currentPosition = _rewindPlannedPos;
                 _rewindPlannedPos = -1;
-                _threadWorker?.Enqueue(() =>
+                _threadWorker.Enqueue(() =>
                 {
-                    _data.ShowAt(_actualTimestamps![_currentPosition], true);
+                    _data.ShowAt(_actualTimestamps[_currentPosition], true);
                     Rewind?.Invoke(false);
                 });
             }
@@ -87,7 +77,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
         public void StopPlaying()
         {
             _playing = false;
-            _threadWorker?.Enqueue(() =>
+            _threadWorker.Enqueue(() =>
             {
                 _currentPosition = 0;
                 Data.Clear();
@@ -100,37 +90,30 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public void PreviousFrame()
         {
-            _threadWorker?.Enqueue(() =>
+            _threadWorker.Enqueue(() =>
             {
                 if (CurrentPosition == 0) return;
                 _currentPosition--;
-                _data.ShowAt(_actualTimestamps![CurrentPosition]);
+                _data.ShowAt(_actualTimestamps[CurrentPosition]);
             });
         }
 
         public void NextFrame()
         {
-            if ((_threadWorker?.ActiveActions ?? 1) > 0) return;
-            _threadWorker?.Enqueue(() =>
+            if (_threadWorker.ActiveActions > 0) return;
+            _threadWorker.Enqueue(() =>
             {
                 if (CurrentPosition == AmountOfFrames - 1) return;
 
                 _currentPosition++;
-                _data.ShowAt(_actualTimestamps![CurrentPosition]);
+                _data.ShowAt(_actualTimestamps[CurrentPosition]);
             });
         }
 
-        public void SetFileName(string filename)
-        {
-            TypedSettings.FilePath = filename;
-        }
-
-        public int AmountOfFrames => _actualTimestamps?.Length ?? 0;
+        public int AmountOfFrames => _actualTimestamps.Length;
 
         public string CurrentTimestamp =>
-                $"{(_actualTimestamps?[CurrentPosition] - _actualTimestamps?[0] ?? 0) / 1000000000f:F3}";
-
-        public string[] SupportedExtensions { get; } = {".db3"};
+                $"{(_actualTimestamps[CurrentPosition] - _actualTimestamps[0]) / 1000000000f:F3}";
 
         public int CurrentPosition
         {
@@ -154,10 +137,10 @@ namespace Elektronik.RosPlugin.Ros2.Bag
         #region Private definitions
 
         private readonly Rosbag2ContainerTree _data;
-        private ThreadQueueWorker? _threadWorker;
+        private readonly ThreadQueueWorker _threadWorker;
         private bool _playing;
         private int _currentPosition;
-        private long[]? _actualTimestamps;
+        private readonly long[] _actualTimestamps;
         private int _rewindPlannedPos;
 
         #endregion

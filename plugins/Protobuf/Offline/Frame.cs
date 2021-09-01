@@ -1,7 +1,6 @@
 ﻿using Elektronik.Commands;
 using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
-using JetBrains.Annotations;
 
 namespace Elektronik.Protobuf.Offline
 {
@@ -9,8 +8,7 @@ namespace Elektronik.Protobuf.Offline
     {
         public int Timestamp;
         public bool IsSpecial;
-        [CanBeNull] public ICommand Command;
-        public PacketPb Packet;
+        public ICommand? Command;
 
         public void Show()
         {
@@ -26,7 +24,6 @@ namespace Elektronik.Protobuf.Offline
         {
             return new Frame
             {
-                Packet = packetPb,
                 Timestamp = packetPb.Timestamp,
                 IsSpecial = packetPb.Special,
                 Command = parsersChain.GetCommand(packetPb),

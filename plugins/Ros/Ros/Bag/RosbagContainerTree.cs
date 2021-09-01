@@ -21,13 +21,9 @@ namespace Elektronik.RosPlugin.Ros.Bag
             {"*", typeof(UnknownTypePresenter)},
         };
 
-        public BagParser? Parser { get; private set; }
+        public BagParser Parser { get; }
 
-        public RosbagContainerTree(string displayName) : base(displayName)
-        {
-        }
-
-        public void Init(RosbagSettings settings)
+        public RosbagContainerTree(RosbagSettings settings, string displayName) : base(displayName)
         {
             DisplayName = settings.FilePath.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
             Parser = new BagParser(settings.FilePath);
@@ -38,10 +34,10 @@ namespace Elektronik.RosPlugin.Ros.Bag
             RebuildTree();
         }
 
-        public override void Reset()
+        public override void Dispose()
         {
-            Parser?.Dispose();
-            base.Reset();
+            Parser.Dispose();
+            base.Dispose();
         }
 
         #region Protected

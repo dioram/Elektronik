@@ -16,25 +16,9 @@ namespace Elektronik.Data
 
         private List<IDataRecorderPlugin> _recorders;
 
-        private void Awake()
+        private void Start()
         {
-            _recorders = PluginsPlayer.Plugins.OfType<IDataRecorderPlugin>().ToList();
-            foreach (var recorder in _recorders.Where(r => r.StartsFromSceneLoading))
-            {
-                recorder.Converter = DataSourcesManager.Converter;
-            }
-            DataSourcesManager.OnSourceAdded += _ =>
-            {
-                DataSourcesManager.MapSourceTree((elem, topic) =>
-                {
-                    var subscribed = false;
-                    foreach (var recorder in _recorders.Where(r => r.StartsFromSceneLoading))
-                    {
-                        subscribed = subscribed || recorder.SubscribeOn(elem, topic);
-                    }
-                    return !subscribed;
-                });
-            };
+            PluginsPlayer.PluginsStarted += Setup;
         }
 
         private void OnDestroy()
@@ -60,6 +44,8 @@ namespace Elektronik.Data
             _currentRecorder = null;
         }
 
+        #region Private
+
         [CanBeNull] private IDataRecorderPlugin _currentRecorder;
 
         private void Record(string filename)
@@ -75,5 +61,28 @@ namespace Elektronik.Data
             _currentRecorder.StartRecording();
             DataSourcesManager.MapSourceTree((elem, topic) => !_currentRecorder.SubscribeOn(elem, topic));
         }
+
+        private void Setup()
+        {
+            _recorders = PluginsPlayer.Plugins.OfType<IDataRecorderPlugin>().ToList();
+            foreach (var recorder in _recorders.Where(r => r.StartsFromSceneLoading))
+            {
+                recorder.Converter = DataSourcesManager.Converter;
+            }
+            DataSourcesManager.OnSourceAdded += _ =>
+            {
+                DataSourcesManager.MapSourceTree((elem, topic) =>
+                {
+                    var subscribed = false;
+                    foreach (var recorder in _recorders.Where(r => r.StartsFromSceneLoading))
+                    {
+                        subscribed = subscribed || recorder.SubscribeOn(elem, topic);
+                    }
+                    return !subscribed;
+                });
+            };
+        }
+
+        #endregion
     }
 }

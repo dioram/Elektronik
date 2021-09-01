@@ -15,14 +15,13 @@ namespace Elektronik.Ros.Tests.Rosbag
         [SetUp]
         public void Setup()
         {
-            _tree = new RosbagContainerTree("TMP");
-            _tree.Init(new RosbagSettings {FilePath = @"bag_filtered.bag"});
+            _tree = new RosbagContainerTree(new RosbagSettings {FilePath = @"bag_filtered.bag"}, "TMP");
         }
 
         [TearDown]
         public void TearDown()
         {
-            _tree.Reset();
+            _tree.Dispose();
         }
 
         [Test]

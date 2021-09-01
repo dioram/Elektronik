@@ -11,22 +11,26 @@ namespace Elektronik.PluginsSystem.UnitySide
 {
     public static class PluginsLoader
     {
-        public static readonly Lazy<List<IElektronikPlugin>> Plugins = new Lazy<List<IElektronikPlugin>>(LoadPlugins);
-        public static readonly List<IElektronikPlugin> ActivePlugins = new List<IElektronikPlugin>();
+        public static readonly Lazy<List<IElektronikPluginsFactory>> Plugins =
+                new Lazy<List<IElektronikPluginsFactory>>(LoadPlugins);
 
-        public static void EnablePlugin(IElektronikPlugin plugin)
+        public static readonly List<IElektronikPluginsFactory> ActivePlugins = new List<IElektronikPluginsFactory>();
+
+        public static void EnablePlugin(IElektronikPluginsFactory plugin)
         {
             if (!ActivePlugins.Contains(plugin)) ActivePlugins.Add(plugin);
         }
 
-        public static void DisablePlugin(IElektronikPlugin plugin)
+        public static void DisablePlugin(IElektronikPluginsFactory plugin)
         {
             if (ActivePlugins.Contains(plugin)) ActivePlugins.Remove(plugin);
         }
 
-        private static List<IElektronikPlugin> LoadPlugins()
+        #region Private
+
+        private static List<IElektronikPluginsFactory> LoadPlugins()
         {
-            var res = new List<IElektronikPlugin>();
+            var res = new List<IElektronikPluginsFactory>();
             try
             {
                 var currentDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) ?? "";
@@ -41,9 +45,9 @@ namespace Elektronik.PluginsSystem.UnitySide
                     {
                         res.AddRange(Assembly.LoadFrom(file)
                                              .GetTypes()
-                                             .Where(p => typeof(IElektronikPlugin).IsAssignableFrom(p) && p.IsClass &&
-                                                            !p.IsAbstract)
-                                             .Select(InstantiatePlugin<IElektronikPlugin>)
+                                             .Where(p => typeof(IElektronikPluginsFactory).IsAssignableFrom(p) &&
+                                                            p.IsClass && !p.IsAbstract)
+                                             .Select(InstantiatePlugin<IElektronikPluginsFactory>)
                                              .Where(p => p != null));
                         TextLocalizationExtender.ImportTranslations(Path.Combine(Path.GetDirectoryName(file)!,
                                                                         @"../data/translations.csv"));
@@ -58,40 +62,14 @@ namespace Elektronik.PluginsSystem.UnitySide
             {
                 Debug.LogError($"PluginsLoader initialized with error: {e.Message}");
             }
-
-            SetupContextMenu(Environment.GetCommandLineArgs()[0],
-                             res.OfType<IDataSourcePluginOffline>().SelectMany(p => p.SupportedExtensions));
             return res;
-        }
-
-        private static void SetupContextMenu(string elektronikExe, IEnumerable<string> extensions)
-        {
-#if UNITY_STANDALONE_WIN
-            try
-            {
-                var setter = new Process
-                {
-                    StartInfo =
-                    {
-                        FileName = Path.Combine(Path.GetDirectoryName(elektronikExe)!,
-                                                @"Plugins\ContextMenuSetter\ContextMenuSetter.exe"),
-                        Arguments = $"\"{elektronikExe}\" {string.Join(" ", extensions)}"
-                    }
-                };
-                setter.Start();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Context menu setter error: {e.Message}");
-            }
-#endif
         }
 
         private static T InstantiatePlugin<T>(Type t) where T : class
         {
             try
             {
-                return (T) Activator.CreateInstance(t);
+                return (T)Activator.CreateInstance(t);
             }
             catch (Exception e)
             {
@@ -100,5 +78,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
             return null;
         }
+
+        #endregion
     }
 }

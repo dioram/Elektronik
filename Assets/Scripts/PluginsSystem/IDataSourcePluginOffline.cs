@@ -10,9 +10,6 @@ namespace Elektronik.PluginsSystem
 
         /// <summary> Displaying timestamp of current frame. </summary>
         string CurrentTimestamp { get; }
-        
-        /// <summary> Array of supported file extensions for this plugin. </summary>
-        string[] SupportedExtensions { get; }
 
         /// <summary> Number of current frame. </summary>
         int CurrentPosition { get; set; }
@@ -51,7 +48,5 @@ namespace Elektronik.PluginsSystem
 
         /// <summary> Reached end of the file. </summary>
         [CanBeNull] event Action Finished;
-
-        void SetFileName(string filename);
     }
 }

@@ -38,6 +38,11 @@ namespace Elektronik.Protobuf.Data
                     Window = window;
                 });
             }
+
+            if (dataRenderer is IDataRenderer<byte[]> renderer)
+            {
+                Renderer = renderer;
+            }
         }
 
         #region IRendersToWindow

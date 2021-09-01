@@ -4,38 +4,26 @@ using System.IO;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
-using Elektronik.Settings;
-using Elektronik.Settings.Bags;
 using Google.Protobuf;
 
 namespace Elektronik.Protobuf.Recorders
 {
     public class ProtobufRecorder : ProtobufRecorderBase, IDataRecorderPlugin
     {
-        public void Start()
+        public ProtobufRecorder(ICSConverter converter)
         {
-            // Do nothing
+            Converter = converter;
         }
-
-        public void Stop()
-        {
-            // Do nothing
-        }
-
+        
         public void Update(float delta)
         {
             // Do nothing
         }
 
-        public string DisplayName { get; } = "Recorder to Protobuf";
-        public string Description { get; } = "Records data to Protobuf file";
         public string Extension { get; } = ".dat";
-        public string FileName { get; set; }
+        public string FileName { get; set; } = "";
         public ICSConverter Converter { get; set; }
         public const uint Marker = 0xDEADBEEF;
-
-        public SettingsBag Settings { get; set; } = new SettingsBag();
-        public ISettingsHistory SettingsHistory { get; } = new FakeSettingsHistory();
 
         public void StartRecording()
         {
@@ -95,6 +83,11 @@ namespace Elektronik.Protobuf.Recorders
         }
 
         public bool StartsFromSceneLoading { get; } = false;
+
+        public void Dispose()
+        {
+            _file.Dispose();
+        }
 
         #region Private
 

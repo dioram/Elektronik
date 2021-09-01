@@ -5,33 +5,28 @@ using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
-using Elektronik.Settings;
-using Elektronik.Settings.Bags;
 using Grpc.Core;
 
 namespace Elektronik.Protobuf.Recorders
 {
     public class ProtobufRetranslator : ProtobufRecorderBase, IDataRecorderPlugin
     {
-        public ProtobufRetranslator()
+        public ProtobufRetranslator(AddressesSettingsBag settings, ICSConverter converter)
         {
+            Converter = converter;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
-        }
-        
-        #region IDataRecorderPlugin
-
-        public void Start()
-        {
-            _clients = _settings.Addresses
+            _clients = settings.Addresses
                     .Split(';')
                     .Where(s => !string.IsNullOrEmpty(s))
                     .Select(address => new Channel(address, ChannelCredentials.Insecure))
                     .Select(channel => new MapsManagerPb.MapsManagerPbClient(channel))
                     .ToList();
         }
+        
+        #region IDataRecorderPlugin
 
-        public void Stop()
+        public void Dispose()
         {
             // Do nothing
         }
@@ -40,17 +35,6 @@ namespace Elektronik.Protobuf.Recorders
         {
             // Do nothing
         }
-
-        public string DisplayName { get; } = "Protobuf retranslator";
-        public string Description { get; } = "Allows Elektronik to transmit data from one instance to another";
-        public SettingsBag Settings
-        {
-            get => _settings;
-            set => _settings = (AddressesSettingsBag) value;
-        }
-
-        public ISettingsHistory SettingsHistory { get; } =
-            new SettingsHistory<AddressesSettingsBag>($"{nameof(ProtobufRetranslator)}.json");
 
         public void StartRecording()
         {
@@ -115,7 +99,7 @@ namespace Elektronik.Protobuf.Recorders
         public bool StartsFromSceneLoading { get; } = true;
 
         public string Extension { get; } = "";
-        public string FileName { get; set; }
+        public string FileName { get; set; } = "";
         public ICSConverter Converter { get; set; }
 
         #endregion
@@ -127,8 +111,8 @@ namespace Elektronik.Protobuf.Recorders
             return (int)(DateTime.Now - _initTime).TotalMilliseconds;
         }
 
-        private AddressesSettingsBag _settings = new AddressesSettingsBag();
-        private List<MapsManagerPb.MapsManagerPbClient> _clients = new List<MapsManagerPb.MapsManagerPbClient>();
+        
+        private readonly List<MapsManagerPb.MapsManagerPbClient> _clients;
         private readonly DateTime _initTime = DateTime.Now;
 
         #endregion

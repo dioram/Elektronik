@@ -27,11 +27,11 @@ namespace Elektronik.Protobuf.Offline.Parsers
             _imagePath = imagePath;
         }
 
-        private ICommand GetCommandForConnectableObjects<TCloudItem, TCloudItemDiff>(
+        private ICommand? GetCommandForConnectableObjects<TCloudItem, TCloudItemDiff>(
             IConnectableObjectsContainer<TCloudItem> map,
-            IList<TCloudItemDiff> objects, PacketPb packet)
+            IList<TCloudItemDiff>? objects, PacketPb packet)
                 where TCloudItem : struct, ICloudItem
-                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             if (objects is null || objects.Count == 0) return null;
             switch (packet.Action)
@@ -65,11 +65,11 @@ namespace Elektronik.Protobuf.Offline.Parsers
             }
         }
 
-        private ICommand GetCommand<TCloudItem, TCloudItemDiff>(IContainer<TCloudItem> map, 
-                                                                IList<TCloudItemDiff> objects,
-                                                                PacketPb packet)
+        private ICommand? GetCommand<TCloudItem, TCloudItemDiff>(IContainer<TCloudItem> map, 
+                                                                 IList<TCloudItemDiff>? objects,
+                                                                 PacketPb packet)
                 where TCloudItem : struct, ICloudItem
-                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             if (objects is null || objects.Count == 0) return null;
             switch (packet.Action)
@@ -87,14 +87,14 @@ namespace Elektronik.Protobuf.Offline.Parsers
             }
         }
 
-        public override ICommand GetCommand(PacketPb packet)
+        public override ICommand? GetCommand(PacketPb packet)
         {
             var command = ParsePacket(packet);
             if (command == null) return base.GetCommand(packet);
             return command;
         }
 
-        private ICommand ParsePacket(PacketPb packet)
+        private ICommand? ParsePacket(PacketPb packet)
         {
             switch (packet.DataCase)
             {

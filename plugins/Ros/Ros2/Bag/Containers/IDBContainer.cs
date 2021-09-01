@@ -18,7 +18,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         public void ShowAt(long newTimestamp, bool rewind = false);
     }
 
-    public static class IDBContainerExtentions
+    // ReSharper disable once InconsistentNaming
+    public static class IDBContainerExtensions
     {
         public static Message? FindMessage(this IDBContainer container)
         {

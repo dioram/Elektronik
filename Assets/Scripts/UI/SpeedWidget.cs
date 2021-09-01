@@ -11,14 +11,19 @@ namespace Elektronik.UI
     public class SpeedWidget : MonoBehaviour
     {
         [SerializeField] private Slider SpeedSlider;
+        [SerializeField] private PluginsPlayer Player;
 
         private void Start()
         {
             if (ModeSelector.Mode != Mode.Offline) gameObject.SetActive(false);
-            SpeedSlider.OnValueChangedAsObservable()
-                       .Select(v => 1 + (int)SpeedSlider.maxValue - (int)v)
-                       .Do(SetDelay)
-                       .Subscribe();
+
+            Player.PluginsStarted += () =>
+            {
+                SpeedSlider.OnValueChangedAsObservable()
+                        .Select(v => 1 + (int)SpeedSlider.maxValue - (int)v)
+                        .Do(SetDelay)
+                        .Subscribe();
+            };
         }
 
         private void SetDelay(int value)
