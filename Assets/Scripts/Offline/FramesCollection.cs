@@ -26,6 +26,7 @@ namespace Elektronik.Offline
         {
             _framesAmount = framesAmount;
             _buffer = new List<T>();
+            if (framesAmount > 0) _buffer.Capacity = framesAmount;
             _index = -1;
         }
 
