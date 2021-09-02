@@ -9,6 +9,6 @@ namespace Elektronik.Containers
 
         void AddWithHistory(TCloudItem item, IList<SimpleLine> history);
         
-        void AddRangeWithHistory(IEnumerable<TCloudItem> items, IEnumerable<IList<SimpleLine>> histories);
+        void AddRangeWithHistory(IList<TCloudItem> items, IList<IList<SimpleLine>> histories);
     }
 }

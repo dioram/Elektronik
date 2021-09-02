@@ -31,8 +31,8 @@ namespace Elektronik.Commands.TrackedObj
 
         public override void UnExecute()
         {
-            _container.AddRangeWithHistory(_tracks.Values.Select(p => p.Item1),
-                                           _tracks.Values.Select(p => p.Item2));
+            _container.AddRangeWithHistory(_tracks.Values.Select(p => p.Item1).ToList(),
+                                           _tracks.Values.Select(p => p.Item2).ToList());
         }
     }
 }

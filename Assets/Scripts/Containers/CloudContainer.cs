@@ -8,7 +8,6 @@ using Elektronik.Clouds;
 using Elektronik.Clusterization.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
-using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
 using UnityEngine;
@@ -16,7 +15,7 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     public class CloudContainer<TCloudItem>
-            : CloudContainerBase<TCloudItem>, ISourceTree, ILookable, IVisible, ITraceable, IClusterable, ISnapshotable
+            : CloudContainerBase<TCloudItem>, ILookable, IVisible, ITraceable, IClusterable, ISnapshotable
             where TCloudItem : struct, ICloudItem
     {
         public CloudContainer(string displayName = "")
@@ -33,7 +32,7 @@ namespace Elektronik.Containers
         }
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public override void Update(IEnumerable<TCloudItem> items)
+        public override void Update(IList<TCloudItem> items)
         {
             CreateTraces(items);
             base.Update(items);
@@ -42,10 +41,6 @@ namespace Elektronik.Containers
         #endregion
 
         #region ISourceTree implementations
-
-        public string DisplayName { get; set; }
-
-        public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
 
         public override void SetRenderer(ISourceRenderer renderer)
         {

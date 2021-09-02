@@ -26,11 +26,12 @@ namespace Elektronik.PluginsSystem.UnitySide
         public void ClearMap()
         {
             Camera.main.transform.parent = null;
-            
+
             foreach (var dataSourceOffline in Plugins.OfType<IDataSourcePluginOffline>())
             {
                 dataSourceOffline.StopPlaying();
             }
+
             DataSourcesManager.ClearMap();
         }
 
@@ -38,20 +39,25 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         private void Start()
         {
+            List<IElektronikPluginsFactory> factories;
 #if UNITY_EDITOR
             if (ModeSelector.Mode == Mode.Online)
             {
-                Plugins = PluginsLoader.Plugins.Value
-                        .OfType<IDataSourcePluginOnline>()
-                        .Select(p => (IElektronikPlugin) p)
-                        .ToList()
-                        .AsReadOnly();
+                factories = PluginsLoader.Plugins.Value
+                        .OfType<IDataSourcePluginsOnlineFactory>()
+                        .Select(f => (IElektronikPluginsFactory)f)
+                        .ToList();
             }
+            else
+            {
+                factories = new List<IElektronikPluginsFactory>();
+            }
+#else
+            factories = PluginsLoader.ActivePlugins;
 #endif
 
-            var factories = PluginsLoader.ActivePlugins.AsReadOnly();
             var plugins = new List<IElektronikPlugin>();
-            
+
             ScreenLocker.SetActive(true);
 
             foreach (var factory in factories)
@@ -82,6 +88,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                     {
                         PlayerEvents.SetDataSource(dataSource);
                     }
+
                     PluginsStarted?.Invoke();
                 });
             });

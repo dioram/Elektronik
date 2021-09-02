@@ -13,7 +13,7 @@ namespace Elektronik.Clouds
 
         void OnItemsRemoved(object sender, RemovedEventArgs e);
 
-        void ShowItems(object sender, IEnumerable<TCloudItem> items);
+        void ShowItems(object sender, IList<TCloudItem> items);
 
         void OnClear(object sender);
     }

@@ -25,7 +25,7 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
         {
             if (request.DataCase != PacketPb.DataOneofCase.Observations) return base.Handle(request, context);
             Timer = Stopwatch.StartNew();
-            var obs = request.ExtractObservations(Converter, Directory.GetCurrentDirectory()).ToList();
+            var obs = request.ExtractObservations(Converter, Directory.GetCurrentDirectory());
             return HandleConnections(request, Handle(request.Action, obs));
         }
     }

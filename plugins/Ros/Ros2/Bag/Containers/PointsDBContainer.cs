@@ -98,7 +98,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region Private definitinons
 
-        private event Action<object, IEnumerable<SlamPoint>>? OnShow;
+        private event Action<object, IList<SlamPoint>>? OnShow;
         private event Action<object>? OnClear;
         private Vector3 _center = new(float.NaN, float.NaN, float.NaN);
         private Vector3 _bounds = new(float.NaN, float.NaN, float.NaN);

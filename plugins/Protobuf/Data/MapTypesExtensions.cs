@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
@@ -9,92 +8,99 @@ namespace Elektronik.Protobuf.Data
 {
     public static class PacketPbExtensions
     {
-        public static IEnumerable<SlamPointDiff> ExtractPoints(this PacketPb packet, ICSConverter? converter = null)
+        public static SlamPointDiff[] ExtractPoints(this PacketPb packet, ICSConverter? converter = null)
         {
-            foreach (var p in packet.Points.Data)
+            var result = new SlamPointDiff[packet.Points.Data.Count];
+            for (var i = 0; i < result.Length; i++)
             {
-                SlamPointDiff point = p;
-                if (point.Position.HasValue) point.Position = converter?.Convert(point.Position.Value);
-                yield return point;
+                result[i] = packet.Points.Data[i];
+                if (result[i].Position.HasValue) result[i].Position = converter?.Convert(result[i].Position.Value);
             }
+
+            return result;
         }
 
-        public static IEnumerable<SlamObservationDiff> ExtractObservations(this PacketPb packet,
-                                                                           ICSConverter? converter,
-                                                                           string imageDir)
+        public static SlamObservationDiff[] ExtractObservations(this PacketPb packet,
+                                                              ICSConverter? converter,
+                                                              string imageDir)
         {
-            foreach (var o in packet.Observations.Data)
+            var result = new SlamObservationDiff[packet.Observations.Data.Count];
+            for (var i = 0; i < result.Length; i++)
             {
-                SlamObservationDiff observation = o;
-                if (observation.Point.Position.HasValue)
+                result[i] = packet.Observations.Data[i];
+                if (result[i].Point.Position.HasValue)
                 {
-                    observation.Point.Position = converter?.Convert(observation.Point.Position.Value);
+                    result[i].Point.Position = converter?.Convert(result[i].Point.Position.Value);
                 }
 
-                if (observation.Rotation.HasValue)
+                if (result[i].Rotation.HasValue)
                 {
-                    observation.Rotation = converter?.Convert(observation.Rotation.Value);
+                    result[i].Rotation = converter?.Convert(result[i].Rotation.Value);
                 }
 
-                if (!string.IsNullOrEmpty(observation.FileName) 
-                    && !Path.IsPathRooted(observation.FileName))
+                if (!string.IsNullOrEmpty(result[i].FileName) 
+                    && !Path.IsPathRooted(result[i].FileName))
                 {
-                    observation.FileName = Path.Combine(imageDir, observation.FileName);
+                    result[i].FileName = Path.Combine(imageDir, result[i].FileName);
                 }
-
-                yield return observation;
             }
+
+            return result;
         }
 
-        public static IEnumerable<SlamTrackedObjectDiff> ExtractTrackedObjects(this PacketPb packet,
-                                                                               ICSConverter? converter = null)
+        public static SlamTrackedObjectDiff[] ExtractTrackedObjects(this PacketPb packet,
+                                                                  ICSConverter? converter = null)
         {
-            foreach (var o in packet.TrackedObjs.Data)
+            var result = new SlamTrackedObjectDiff[packet.TrackedObjs.Data.Count];
+            for (var i = 0; i < result.Length; i++)
             {
-                SlamTrackedObjectDiff trackedObject = o;
-                if (trackedObject.Position.HasValue)
+                result[i] = packet.TrackedObjs.Data[i];
+                if (result[i].Position.HasValue)
                 {
-                    trackedObject.Position = converter?.Convert(trackedObject.Position.Value);
+                    result[i].Position = converter?.Convert(result[i].Position.Value);
                 }
 
-                if (trackedObject.Rotation.HasValue)
+                if (result[i].Rotation.HasValue)
                 {
-                    trackedObject.Rotation = converter?.Convert(trackedObject.Rotation.Value);
+                    result[i].Rotation = converter?.Convert(result[i].Rotation.Value);
                 }
-
-                yield return trackedObject;
             }
+
+            return result;
         }
 
-        public static IEnumerable<SlamLineDiff> ExtractLines(this PacketPb packet, ICSConverter? converter = null)
+        public static SlamLineDiff[] ExtractLines(this PacketPb packet, ICSConverter? converter = null)
         {
-            foreach (var l in packet.Lines.Data)
+            var result = new SlamLineDiff[packet.Lines.Data.Count];
+            for (var i = 0; i < result.Length; i++)
             {
-                SlamLineDiff line = l;
-                if (line.Point1.Position.HasValue)
+                result[i] = packet.Lines.Data[i];
+                if (result[i].Point1.Position.HasValue)
                 {
-                    line.Point1.Position = converter?.Convert(line.Point1.Position.Value);
+                    result[i].Point1.Position = converter?.Convert(result[i].Point1.Position.Value);
                 }
 
-                if (line.Point2.Position.HasValue)
+                if (result[i].Point2.Position.HasValue)
                 {
-                    line.Point2.Position = converter?.Convert(line.Point2.Position.Value);
+                    result[i].Point2.Position = converter?.Convert(result[i].Point2.Position.Value);
                 }
-
-                yield return line;
             }
+
+            return result;
         }
 
-        public static IEnumerable<SlamInfinitePlaneDiff> ExtractInfinitePlanes(this PacketPb packet,
-                                                                               ICSConverter? converter = null)
+        public static SlamInfinitePlaneDiff[] ExtractInfinitePlanes(this PacketPb packet,
+                                                                  ICSConverter? converter = null)
         {
-            foreach (var p in packet.InfinitePlanes.Data)
+            var result = new SlamInfinitePlaneDiff[packet.InfinitePlanes.Data.Count];
+            for (var i = 0; i < result.Length; i++)
             {
-                SlamInfinitePlaneDiff plane = p;
-                if (plane.Offset.HasValue) plane.Offset = converter?.Convert(plane.Offset.Value);
-                if (plane.Normal.HasValue) plane.Normal = converter?.Convert(plane.Normal.Value);
-                yield return plane;
+                result[i] = packet.InfinitePlanes.Data[i];
+                if (result[i].Offset.HasValue) result[i].Offset = converter?.Convert(result[i].Offset.Value);
+                if (result[i].Normal.HasValue) result[i].Normal = converter?.Convert(result[i].Normal.Value);
             }
+
+            return result;
         }
     }
 

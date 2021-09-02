@@ -59,7 +59,7 @@ namespace Elektronik.Clouds
 
         #region ICloudRenderer implementaion
 
-        public override void ShowItems(object sender, IEnumerable<TCloudItem> items)
+        public override void ShowItems(object sender, IList<TCloudItem> items)
         {
             if (!IsSenderVisible(sender)) return;
             OnClear(sender);

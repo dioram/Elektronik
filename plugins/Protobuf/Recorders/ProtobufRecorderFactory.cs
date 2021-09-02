@@ -10,5 +10,7 @@ namespace Elektronik.Protobuf.Recorders
         public override string DisplayName => "Recorder to Protobuf";
         public override string Description => "Records data to Protobuf file";
         public override string Version => "1.3";
+        public string Extension => ".dat";
+        public bool StartsFromSceneLoading => false;
     }
 }

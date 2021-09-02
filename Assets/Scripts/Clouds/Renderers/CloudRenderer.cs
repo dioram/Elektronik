@@ -71,9 +71,8 @@ namespace Elektronik.Clouds
         public override void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
-            var list = e.AddedItems.ToList();
-            if (CheckAndCreateReserves(sender, list)) return;
-            AddItems(sender, list);
+            if (CheckAndCreateReserves(sender, e.AddedItems)) return;
+            AddItems(sender, e.AddedItems);
         }
 
         public override void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
@@ -123,13 +122,12 @@ namespace Elektronik.Clouds
             }
         }
 
-        public override void ShowItems(object sender, IEnumerable<TCloudItem> items)
+        public override void ShowItems(object sender, IList<TCloudItem> items)
         {
             if (!IsSenderVisible(sender)) return;
             OnClear(sender);
-            var list = items.ToList();
-            if (CheckAndCreateReserves(sender, list)) return;
-            AddItems(sender, list);
+            if (CheckAndCreateReserves(sender, items)) return;
+            AddItems(sender, items);
         }
 
         public override void OnClear(object sender)
@@ -144,8 +142,8 @@ namespace Elektronik.Clouds
                     if (index == _maxPlace - 1) _maxPlace--;
                     else _freePlaces.Enqueue(index);
 
-                    int layer = index / CloudBlock.Capacity;
-                    int inLayerId = index % CloudBlock.Capacity;
+                    var layer = index / CloudBlock.Capacity;
+                    var inLayerId = index % CloudBlock.Capacity;
                     lock (Blocks[layer])
                     {
                         RemoveItem(Blocks[layer], inLayerId);

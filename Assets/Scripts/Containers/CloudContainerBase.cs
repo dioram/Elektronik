@@ -14,7 +14,7 @@ namespace Elektronik.Containers
     {
         #region ISourceTree
 
-        public string DisplayName { get; set; }
+        public string DisplayName { get; set; } = "";
 
         public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
 
@@ -135,37 +135,35 @@ namespace Elektronik.Containers
         public event EventHandler<RemovedEventArgs> OnRemoved;
         public event Action<object> OnClear;
 
-        public virtual void AddRange(IEnumerable<TCloudItem> items)
+        public virtual void AddRange(IList<TCloudItem> items)
         {
             if (items is null) return;
             lock (Items)
             {
-                var list = items.ToList();
-                foreach (var ci in list)
+                foreach (var ci in items)
                 {
                     Items.Add(ci.Id, ci);
                 }
 
-                OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(list));
+                OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(items));
             }
         }
 
-        public virtual void Remove(IEnumerable<TCloudItem> items)
+        public virtual void Remove(IList<TCloudItem> items)
         {
             if (items is null) return;
-            var list = items.ToList();
             lock (Items)
             {
-                foreach (var ci in list)
+                foreach (var ci in items)
                 {
                     Items.Remove(ci.Id);
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(p => p.Id).ToList()));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(p => p.Id).ToList()));
         }
 
-        public IEnumerable<TCloudItem> Remove(IEnumerable<int> itemIds)
+        public IList<TCloudItem> Remove(IList<int> itemIds)
         {
             if (itemIds is null) return new List<TCloudItem>();
             var list = itemIds.ToList();
@@ -203,18 +201,17 @@ namespace Elektronik.Containers
             }
         }
 
-        public virtual void Update(IEnumerable<TCloudItem> items)
+        public virtual void Update(IList<TCloudItem> items)
         {
             if (items is null) return;
             lock (Items)
             {
-                var list = items.ToList();
-                foreach (var ci in list.Where(ci => Items.ContainsKey(ci.Id)))
+                foreach (var ci in items.Where(ci => Items.ContainsKey(ci.Id)))
                 {
                     Items[ci.Id] = ci;
                 }
 
-                OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
+                OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(items));
             }
         }
         

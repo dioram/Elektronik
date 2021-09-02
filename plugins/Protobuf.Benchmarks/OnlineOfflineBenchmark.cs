@@ -55,7 +55,7 @@ namespace Protobuf.Benchmarks
         }
 
         [Benchmark]
-        public void Offline()
+        public void OfflineAdd()
         {
             var points = new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
                                                                     new SlamLinesContainer());
@@ -78,7 +78,7 @@ namespace Protobuf.Benchmarks
         }
 
         [Benchmark]
-        public void Online()
+        public void OnlineAdd()
         {
             var points = new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
                                                                     new SlamLinesContainer());
@@ -102,7 +102,7 @@ namespace Protobuf.Benchmarks
         }
 
         [Benchmark]
-        public void OnlineBuffered()
+        public void OnlineBufferedAdd()
         {
             var points = new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
                                                                     new SlamLinesContainer());
@@ -133,12 +133,40 @@ namespace Protobuf.Benchmarks
             }
         }
 
-        // Before
+        // IEnumerable+ToList
         // |         Method |     Mean |    Error |   StdDev |     Gen 0 |     Gen 1 |    Gen 2 | Allocated |
         // |--------------- |---------:|---------:|---------:|----------:|----------:|---------:|----------:|
         // |        Offline | 75.31 ms | 1.348 ms | 2.431 ms | 6750.0000 | 2125.0000 | 500.0000 |     38 MB |
         // |         Online | 68.17 ms | 1.284 ms | 1.138 ms | 6000.0000 | 1500.0000 | 375.0000 |     33 MB |
         // | OnlineBuffered | 75.27 ms | 0.862 ms | 0.764 ms | 7000.0000 | 2125.0000 | 500.0000 |     39 MB |
+        
+        // IEnumerable
+        // |            Method |     Mean |    Error |   StdDev |     Gen 0 |     Gen 1 |    Gen 2 | Allocated |
+        // |------------------ |---------:|---------:|---------:|----------:|----------:|---------:|----------:|
+        // |        OfflineAdd | 71.29 ms | 1.128 ms | 1.055 ms | 5375.0000 | 2250.0000 | 625.0000 |     29 MB |
+        // |         OnlineAdd | 64.95 ms | 1.116 ms | 1.044 ms | 4333.3333 | 1333.3333 | 333.3333 |     24 MB |
+        // | OnlineBufferedAdd | 73.93 ms | 0.484 ms | 0.453 ms | 5500.0000 | 1875.0000 | 500.0000 |     30 MB |
+
+        // IEnumerable-yield return
+        // |            Method |     Mean |    Error |   StdDev |     Gen 0 |     Gen 1 |    Gen 2 | Allocated |
+        // |------------------ |---------:|---------:|---------:|----------:|----------:|---------:|----------:|
+        // |        OfflineAdd | 63.78 ms | 1.144 ms | 1.014 ms | 3777.7778 | 1555.5556 | 444.4444 |     20 MB |
+        // |         OnlineAdd | 51.86 ms | 0.696 ms | 0.651 ms | 2800.0000 | 1100.0000 | 200.0000 |     16 MB |
+        // | OnlineBufferedAdd | 62.37 ms | 1.232 ms | 1.265 ms | 4000.0000 | 1714.2857 | 428.5714 |     21 MB |
+
+        //IList
+        // |            Method |     Mean |    Error |   StdDev |     Gen 0 |     Gen 1 |    Gen 2 | Allocated |
+        // |------------------ |---------:|---------:|---------:|----------:|----------:|---------:|----------:|
+        // |        OfflineAdd | 60.16 ms | 0.628 ms | 0.588 ms | 3666.6667 | 1555.5556 | 444.4444 |     19 MB |
+        // |         OnlineAdd | 54.77 ms | 1.013 ms | 1.244 ms | 3600.0000 | 1200.0000 | 200.0000 |     20 MB |
+        // | OnlineBufferedAdd | 60.87 ms | 1.050 ms | 0.982 ms | 3888.8889 | 1666.6667 | 444.4444 |     20 MB |
+
+        // Array
+        // |            Method |     Mean |    Error |   StdDev |     Gen 0 |     Gen 1 |    Gen 2 | Allocated |
+        // |------------------ |---------:|---------:|---------:|----------:|----------:|---------:|----------:|
+        // |        OfflineAdd | 58.99 ms | 0.981 ms | 0.918 ms | 3666.6667 | 1555.5556 | 444.4444 |     19 MB |
+        // |         OnlineAdd | 51.65 ms | 0.742 ms | 0.694 ms | 3545.4545 | 1090.9091 | 181.8182 |     20 MB |
+        // | OnlineBufferedAdd | 61.03 ms | 0.994 ms | 0.930 ms | 3777.7778 | 1666.6667 | 444.4444 |     20 MB |
 
 
         // * Legends *

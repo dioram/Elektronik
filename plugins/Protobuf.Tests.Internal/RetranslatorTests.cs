@@ -89,9 +89,9 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnUpdated("", morePoints);
             _retranslator.OnRemoved<SlamPoint>("", new List<int> {1});
             Thread.Sleep(200);
-            _mockedPointsContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamPoint>>()), Times.Once);
-            _mockedPointsContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamPoint>>()), Times.Once);
-            _mockedPointsContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamPoint>>()), Times.Once);
+            _mockedPointsContainer.Verify(c => c.AddRange(It.IsAny<IList<SlamPoint>>()), Times.Once);
+            _mockedPointsContainer.Verify(c => c.Update(It.IsAny<IList<SlamPoint>>()), Times.Once);
+            _mockedPointsContainer.Verify(c => c.Remove(It.IsAny<IList<SlamPoint>>()), Times.Once);
         }
 
         [Test]
@@ -116,9 +116,9 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnUpdated("", moreObservations);
             _retranslator.OnRemoved<SlamObservation>("", new List<int> {1});
             Thread.Sleep(200);
-            _mockedObservationsContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamObservation>>()), Times.Once);
-            _mockedObservationsContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamObservation>>()), Times.Once);
-            _mockedObservationsContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamObservation>>()), Times.Once);
+            _mockedObservationsContainer.Verify(c => c.AddRange(It.IsAny<IList<SlamObservation>>()), Times.Once);
+            _mockedObservationsContainer.Verify(c => c.Update(It.IsAny<IList<SlamObservation>>()), Times.Once);
+            _mockedObservationsContainer.Verify(c => c.Remove(It.IsAny<IList<SlamObservation>>()), Times.Once);
         }
 
         [Test]
@@ -140,11 +140,11 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnUpdated("", moreTrackedObjects);
             _retranslator.OnRemoved<SlamTrackedObject>("", new List<int> {1});
             Thread.Sleep(200);
-            _mockedTrackedObjectsContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamTrackedObject>>()),
+            _mockedTrackedObjectsContainer.Verify(c => c.AddRange(It.IsAny<IList<SlamTrackedObject>>()),
                                                   Times.Once);
-            _mockedTrackedObjectsContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamTrackedObject>>()),
+            _mockedTrackedObjectsContainer.Verify(c => c.Update(It.IsAny<IList<SlamTrackedObject>>()),
                                                   Times.Once);
-            _mockedTrackedObjectsContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamTrackedObject>>()),
+            _mockedTrackedObjectsContainer.Verify(c => c.Remove(It.IsAny<IList<SlamTrackedObject>>()),
                                                   Times.Once);
         }
 
@@ -167,9 +167,9 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnUpdated("", moreLines);
             _retranslator.OnRemoved<SlamLine>("", new List<int> {1});
             Thread.Sleep(200);
-            _mockedLinesContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamLine>>()), Times.Once);
-            _mockedLinesContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamLine>>()), Times.Once);
-            _mockedLinesContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamLine>>()), Times.Once);
+            _mockedLinesContainer.Verify(c => c.AddRange(It.IsAny<IList<SlamLine>>()), Times.Once);
+            _mockedLinesContainer.Verify(c => c.Update(It.IsAny<IList<SlamLine>>()), Times.Once);
+            _mockedLinesContainer.Verify(c => c.Remove(It.IsAny<IList<SlamLine>>()), Times.Once);
         }
 
         [Test]
@@ -191,11 +191,11 @@ namespace Protobuf.Tests.Internal
             _retranslator.OnUpdated("", morePlanes);
             _retranslator.OnRemoved<SlamInfinitePlane>("", new List<int> {1});
             Thread.Sleep(200);
-            _mockedInfinitePlanesContainer.Verify(c => c.AddRange(It.IsAny<IEnumerable<SlamInfinitePlane>>()),
+            _mockedInfinitePlanesContainer.Verify(c => c.AddRange(It.IsAny<IList<SlamInfinitePlane>>()),
                                                   Times.Once);
-            _mockedInfinitePlanesContainer.Verify(c => c.Update(It.IsAny<IEnumerable<SlamInfinitePlane>>()),
+            _mockedInfinitePlanesContainer.Verify(c => c.Update(It.IsAny<IList<SlamInfinitePlane>>()),
                                                   Times.Once);
-            _mockedInfinitePlanesContainer.Verify(c => c.Remove(It.IsAny<IEnumerable<SlamInfinitePlane>>()),
+            _mockedInfinitePlanesContainer.Verify(c => c.Remove(It.IsAny<IList<SlamInfinitePlane>>()),
                                                   Times.Once);
         }
     }

@@ -21,12 +21,20 @@ namespace Elektronik.Containers
             ObjectLabel = DisplayName;
         }
 
-        public string ObjectLabel;
+        public readonly string ObjectLabel;
 
         #region IContainer implementation
 
-        public IEnumerator<SlamTrackedObject> GetEnumerator() =>
-                _objects.Values.Select(p => p.Item1).ToList().GetEnumerator();
+        public IEnumerator<SlamTrackedObject> GetEnumerator()
+        {
+            List<SlamTrackedObject> objects;
+            lock (_objects)
+            {
+                objects = _objects.Values.Select(p => p.Item1).ToList();
+            }
+
+            return objects.GetEnumerator();
+        }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -176,7 +184,7 @@ namespace Elektronik.Containers
 
         public event EventHandler<RemovedEventArgs> OnRemoved;
 
-        public void AddRange(IEnumerable<SlamTrackedObject> items)
+        public void AddRange(IList<SlamTrackedObject> items)
         {
             if (items is null) return;
             var added = new List<SlamTrackedObject>();
@@ -194,13 +202,12 @@ namespace Elektronik.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(added));
         }
 
-        public void Remove(IEnumerable<SlamTrackedObject> items)
+        public void Remove(IList<SlamTrackedObject> items)
         {
             if (items is null) return;
-            var list = items.ToList();
             lock (_objects)
             {
-                foreach (var item in list)
+                foreach (var item in items)
                 {
                     if (!_objects.ContainsKey(item.Id)) continue;
                     _objects[item.Id].Item2.Clear();
@@ -213,17 +220,16 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id).ToList()));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id).ToList()));
         }
 
-        public IEnumerable<SlamTrackedObject> Remove(IEnumerable<int> items)
+        public IList<SlamTrackedObject> Remove(IList<int> items)
         {
             if (items is null) return new List<SlamTrackedObject>();
-            var list = items.ToList();
             var removed = new List<SlamTrackedObject>();
             lock (_objects)
             {
-                foreach (var id in list.Where(_objects.ContainsKey))
+                foreach (var id in items.Where(_objects.ContainsKey))
                 {
                     removed.Add(_objects[id].Item1);
                     _objects[id].Item2.Clear();
@@ -236,7 +242,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(items));
             return removed;
         }
 
@@ -250,19 +256,18 @@ namespace Elektronik.Containers
             OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(item));
         }
 
-        public void Update(IEnumerable<SlamTrackedObject> items)
+        public void Update(IList<SlamTrackedObject> items)
         {
             if (items is null) return;
-            var list = items.ToList();
             lock (_objects)
             {
-                foreach (var item in list)
+                foreach (var item in items)
                 {
                     PureUpdate(item);
                 }
             }
 
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(list));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(items));
         }
 
         #endregion
@@ -341,13 +346,11 @@ namespace Elektronik.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(item));
         }
 
-        public void AddRangeWithHistory(IEnumerable<SlamTrackedObject> items, IEnumerable<IList<SimpleLine>> histories)
+        public void AddRangeWithHistory(IList<SlamTrackedObject> items, IList<IList<SimpleLine>> histories)
         {
-            var list = items.ToList();
-            var historiesList = histories.ToList();
             lock (_objects)
             {
-                foreach (var (i, h) in list.Zip(historiesList, (i, h) => (i, h)))
+                foreach (var (i, h) in items.Zip(histories, (i, h) => (i, h)))
                 {
                     if (_objects.ContainsKey(i.Id)) return;
 
@@ -356,7 +359,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(list));
+            OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(items));
         }
 
         #endregion
@@ -365,12 +368,13 @@ namespace Elektronik.Containers
 
         public (Vector3 pos, Quaternion rot) Look(Transform transform)
         {
+            Vector3 pos;
             lock (_objects)
             {
                 if (_objects.Count == 0) return (transform.position, transform.rotation);
+                pos = _objects.First().Value.Item1.Position;
             }
 
-            var pos = _objects.First().Value.Item1.Position;
             return (pos + (transform.position - pos).normalized, Quaternion.LookRotation(pos - transform.position));
         }
 
@@ -406,14 +410,22 @@ namespace Elektronik.Containers
         public ISnapshotable TakeSnapshot()
         {
             var res = new TrackedObjectsContainer(DisplayName);
-            res.AddRangeWithHistory(_objects.Values.Select(p => p.Item1).ToList(),
-                                    _objects.Values.Select(p => p.Item2.ToList()).ToList());
+            lock (_objects)
+            {
+                res.AddRangeWithHistory(_objects.Values.Select(p => p.Item1).ToList(),
+                                        _objects.Values.Select(p => (IList<SimpleLine>)p.Item2.ToList()).ToList());
+            }
             return res;
         }
 
         public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
-            foreach (var pair in _objects.Values)
+            (SlamTrackedObject, TrackContainer)[] objects;
+            lock (_trackedObjsRenderer)
+            {
+                objects = _objects.Values.ToArray();
+            }
+            foreach (var pair in objects)
             {
                 var obj = pair.Item1;
                 obj.Position = pair.Item2[0].BeginPos;

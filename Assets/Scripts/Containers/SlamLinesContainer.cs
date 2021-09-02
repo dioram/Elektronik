@@ -53,14 +53,14 @@ namespace Elektronik.Containers
             // Work around for Collection was modified exception
             lock (_connections)
             {
-                foreach (var pair in lines)
+                foreach (var (id, slamLine) in lines)
                 {
-                    _connections[pair.Item1] = pair.Item2;
+                    _connections[id] = slamLine;
                 }
             }
 
             if (lines.Count == 0) return;
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(lines.Select(l => l.Item2)));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(lines.Select(l => l.Item2).ToArray()));
         }
 
         #region IContaitner implementation
@@ -161,7 +161,7 @@ namespace Elektronik.Containers
 
         public void Insert(int index, SlamLine item) => Add(item);
 
-        public void AddRange(IEnumerable<SlamLine> items)
+        public void AddRange(IList<SlamLine> items)
         {
             if (items is null) return;
             var buffer = new List<SlamLine>();
@@ -192,7 +192,7 @@ namespace Elektronik.Containers
             OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(item));
         }
 
-        public void Update(IEnumerable<SlamLine> items)
+        public void Update(IList<SlamLine> items)
         {
             if (items is null) return;
             var updatedItems = new List<SlamLine>();
@@ -240,7 +240,7 @@ namespace Elektronik.Containers
             return true;
         }
 
-        public void Remove(IEnumerable<SlamLine> items)
+        public void Remove(IList<SlamLine> items)
         {
             if (items is null) return;
             var ids = new List<int>();
@@ -272,11 +272,11 @@ namespace Elektronik.Containers
             OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
         }
         
-        public IEnumerable<SlamLine> Remove(IEnumerable<int> items)
+        public IList<SlamLine> Remove(IList<int> items)
         {
             if (items is null) return new List<SlamLine>();
             var ids = new List<int>();
-            List<SlamLine> removed = new List<SlamLine>();
+            var removed = new List<SlamLine>();
             lock (_connections)
             {
                 foreach (var line in items.Where(i => _connections.ContainsKey(i)))

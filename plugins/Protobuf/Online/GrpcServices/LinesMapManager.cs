@@ -24,7 +24,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
         {
             if (request.DataCase != PacketPb.DataOneofCase.Lines) return base.Handle(request, context);
             Timer = Stopwatch.StartNew();
-            return Handle(request.Action, request.ExtractLines(_converter).ToList());
+            return Handle(request.Action, request.ExtractLines(_converter));
         }
     }
 }

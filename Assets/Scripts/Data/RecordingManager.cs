@@ -64,11 +64,11 @@ namespace Elektronik.Data
 
         private void Setup()
         {
-            _recorders = PluginsPlayer.Plugins.OfType<IDataRecorderPlugin>().ToList();
-            foreach (var recorder in _recorders.Where(r => r.StartsFromSceneLoading))
-            {
-                recorder.Converter = DataSourcesManager.Converter;
-            }
+            _recorders = PluginsLoader.Plugins.Value
+                    .OfType<IDataRecorderFactory>()
+                    .Where(f => f.StartsFromSceneLoading)
+                    .Select(f => (IDataRecorderPlugin)f.Start(DataSourcesManager.Converter))
+                    .ToList();
             DataSourcesManager.OnSourceAdded += _ =>
             {
                 DataSourcesManager.MapSourceTree((elem, topic) =>

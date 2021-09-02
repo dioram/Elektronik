@@ -24,8 +24,7 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
         {
             if (request.DataCase != PacketPb.DataOneofCase.Points) return base.Handle(request, context);
             Timer = Stopwatch.StartNew();
-            var pts = request.ExtractPoints(Converter).ToList();
-            return HandleConnections(request, Handle(request.Action, pts));
+            return HandleConnections(request, Handle(request.Action, request.ExtractPoints(Converter)));
         }
     }
 }

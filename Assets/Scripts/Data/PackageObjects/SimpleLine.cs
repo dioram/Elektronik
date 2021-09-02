@@ -45,19 +45,8 @@ namespace Elektronik.Data.PackageObjects
         {
             return obj is SimpleLine other && Equals(other);
         }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = BeginPos.GetHashCode();
-                hashCode = (hashCode * 397) ^ EndPos.GetHashCode();
-                hashCode = (hashCode * 397) ^ BeginColor.GetHashCode();
-                hashCode = (hashCode * 397) ^ EndColor.GetHashCode();
-                hashCode = (hashCode * 397) ^ Id;
-                hashCode = (hashCode * 397) ^ (Message != null ? Message.GetHashCode() : 0);
-                return hashCode;
-            }
-        }
+        
+        // ReSharper disable once NonReadonlyMemberInGetHashCode
+        public override int GetHashCode() => Id;
     }
 }

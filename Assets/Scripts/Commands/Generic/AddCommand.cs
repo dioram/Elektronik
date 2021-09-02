@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 
@@ -8,13 +6,13 @@ namespace Elektronik.Commands.Generic
 {
     public class AddCommand<T> : ICommand where T : ICloudItem
     {
-        protected readonly ReadOnlyCollection<T> AddedObjects;
+        protected readonly IList<T> AddedObjects;
         protected readonly IContainer<T> Container;
         
-        public AddCommand(IContainer<T> container, IEnumerable<T> objects)
+        public AddCommand(IContainer<T> container, IList<T> objects)
         {
             Container = container;
-            AddedObjects = new ReadOnlyCollection<T>(objects.Where(p => !container.Contains(p.Id)).ToList());
+            AddedObjects = objects;
         }        
 
         public virtual void Execute() => Container.AddRange(AddedObjects);
@@ -25,13 +23,13 @@ namespace Elektronik.Commands.Generic
             where TCloudItem : ICloudItem 
             where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
-        protected readonly ReadOnlyCollection<TCloudItemDiff> AddedObjects;
+        protected readonly IList<TCloudItemDiff> AddedObjects;
         protected readonly IContainer<TCloudItem> Container;
         
-        public AddCommand(IContainer<TCloudItem> container, IEnumerable<TCloudItemDiff> objects)
+        public AddCommand(IContainer<TCloudItem> container, IList<TCloudItemDiff> objects)
         {
             Container = container;
-            AddedObjects = new ReadOnlyCollection<TCloudItemDiff>(objects.ToList());
+            AddedObjects = objects;
         }        
 
         public virtual void Execute() => Container.AddRange(AddedObjects);

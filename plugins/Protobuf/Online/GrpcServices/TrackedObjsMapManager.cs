@@ -25,8 +25,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
         {
             if (request.DataCase != PacketPb.DataOneofCase.TrackedObjs) return base.Handle(request, context);
             Timer = Stopwatch.StartNew();
-            var objs = request.ExtractTrackedObjects(_converter).ToList();
-            return base.Handle(request.Action, objs);
+            return base.Handle(request.Action, request.ExtractTrackedObjects(_converter));
         }
     }
 }

@@ -20,15 +20,15 @@ namespace Elektronik.Containers
 
         [CanBeNull] event EventHandler<RemovedEventArgs> OnRemoved;
 
-        void AddRange(IEnumerable<T> items);
-        void Remove(IEnumerable<T> items);
+        void AddRange(IList<T> items);
+        void Remove(IList<T> items);
         
         /// <summary> Removes items by their ids. </summary>
         /// <param name="itemIds"></param>
         /// <returns> List of removed items. </returns>
-        IEnumerable<T> Remove(IEnumerable<int> itemIds);
+        IList<T> Remove(IList<int> itemIds);
         void Update(T item);
-        void Update(IEnumerable<T> items);
+        void Update(IList<T> items);
         bool Contains(int id);
     }
 
@@ -46,7 +46,7 @@ namespace Elektronik.Containers
                 where TCloudItem : ICloudItem
                 where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
-            container.AddRange(diffs.Select(d => d.Apply()));
+            container.AddRange(diffs.Select(d => d.Apply()).ToArray());
         }
 
         public static void Remove<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
@@ -62,7 +62,7 @@ namespace Elektronik.Containers
                 where TCloudItem : ICloudItem
                 where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
-            container.Remove(diffs.Select(d => d.Apply()));
+            container.Remove(diffs.Select(d => d.Apply()).ToArray());
         }
 
         public static void Update<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,

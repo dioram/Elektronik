@@ -40,7 +40,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
         {
             if (pkg.DataCase == PacketPb.DataOneofCase.TrackedObjs)
             {
-                var command = GetCommand(pkg.ExtractTrackedObjects(Converter).ToList(), pkg.Action);
+                var command = GetCommand(pkg.ExtractTrackedObjects(Converter), pkg.Action);
                 return command;
             }
 

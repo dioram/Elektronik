@@ -9,10 +9,6 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0" />
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="3.11.0">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 

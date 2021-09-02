@@ -21,6 +21,12 @@ namespace Elektronik.PluginsSystem
         public abstract string Version { get; }
         public ISettingsHistory SettingsHistory => _settingsHistory;
 
+        public IElektronikPlugin Start(SettingsBag settings, ICSConverter converter)
+        {
+            Settings = settings;
+            return Start(converter);
+        }
+
         public void SaveSettings()
         {
             TypedSettings.ModificationTime = DateTime.Now.ToString(CultureInfo.InvariantCulture);

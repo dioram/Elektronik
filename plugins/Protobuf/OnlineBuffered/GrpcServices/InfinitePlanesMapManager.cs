@@ -24,7 +24,7 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
         {
             if (request.DataCase != PacketPb.DataOneofCase.InfinitePlanes) return base.Handle(request, context);
             Timer = Stopwatch.StartNew();
-            return Handle(request.Action, request.ExtractInfinitePlanes(Converter).ToList());
+            return Handle(request.Action, request.ExtractInfinitePlanes(Converter));
         }
     }
 }

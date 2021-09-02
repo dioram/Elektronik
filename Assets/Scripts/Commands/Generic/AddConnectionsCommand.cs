@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 
@@ -10,9 +9,9 @@ namespace Elektronik.Commands.Generic
         protected readonly IList<(int, int)> Connections;
         protected readonly IConnectableObjectsContainer<T> Container;
 
-        public AddConnectionsCommand(IConnectableObjectsContainer<T> container, IEnumerable<(int, int)> newConnections)
+        public AddConnectionsCommand(IConnectableObjectsContainer<T> container, IList<(int, int)> newConnections)
         {
-            Connections = newConnections.ToList();
+            Connections = newConnections;
             Container = container;
         }
 

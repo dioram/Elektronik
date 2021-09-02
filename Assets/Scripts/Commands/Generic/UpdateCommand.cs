@@ -9,16 +9,16 @@ namespace Elektronik.Commands.Generic
     public class UpdateCommand<T> : ICommand
             where T : struct, ICloudItem
     {
-        protected readonly ReadOnlyCollection<T> Objs2Restore;
-        protected readonly ReadOnlyCollection<T> Objs2Update;
+        protected readonly T[] Objs2Restore;
+        protected readonly T[] Objs2Update;
 
         protected readonly IContainer<T> Container;
 
         public UpdateCommand(IContainer<T> container, IList<T> objects)
         {
             Container = container;
-            Objs2Restore = new ReadOnlyCollection<T>(objects.Select(p => container[p.Id]).ToList());
-            Objs2Update = new ReadOnlyCollection<T>(objects.ToList());
+            Objs2Restore = objects.Select(p => container[p.Id]).ToArray();
+            Objs2Update = objects.ToArray();
         }
 
         public virtual void Execute() => Container.Update(Objs2Update);

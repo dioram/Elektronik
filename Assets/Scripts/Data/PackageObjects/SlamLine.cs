@@ -43,13 +43,7 @@ namespace Elektronik.Data.PackageObjects
             return obj is SlamLine other && Equals(other);
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (Point1.GetHashCode() * 397) ^ Point2.GetHashCode();
-            }
-        }
+        public override int GetHashCode() => GetInternalID().GetHashCode();
 
         private ulong GetInternalID()
         {

@@ -25,8 +25,8 @@ namespace Elektronik.Containers
             _table = table ?? new SparseSquareMatrix<bool>();
             Children = new[]
             {
-                (ISourceTree) _connects,
-                (ISourceTree) _objects,
+                (ISourceTree)_connects,
+                (ISourceTree)_objects,
             };
 
             DisplayName = string.IsNullOrEmpty(displayName) ? GetType().Name : displayName;
@@ -44,9 +44,9 @@ namespace Elektronik.Containers
 
         public bool IsReadOnly => false;
 
-        
+
         public bool Contains(int id) => _objects.Contains(id);
-        
+
         public bool Contains(TCloudItem obj) => Contains(obj.Id);
 
         public IEnumerator<TCloudItem> GetEnumerator() => _objects.GetEnumerator();
@@ -83,16 +83,15 @@ namespace Elektronik.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(item));
         }
 
-        public void AddRange(IEnumerable<TCloudItem> items)
+        public void AddRange(IList<TCloudItem> items)
         {
             if (items is null) return;
-            var list = items.ToList();
             lock (_table)
             {
-                _objects.AddRange(list);
+                _objects.AddRange(items);
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(list));
+            OnAdded?.Invoke(this, new AddedEventArgs<TCloudItem>(items));
         }
 
         public void Update(TCloudItem item)
@@ -109,27 +108,26 @@ namespace Elektronik.Containers
             OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(item));
         }
 
-        public void Update(IEnumerable<TCloudItem> items)
+        public void Update(IList<TCloudItem> items)
         {
             if (items is null) return;
-            var list = items.ToList();
-            if (list.Count == 0) return;
+            if (items.Count == 0) return;
             lock (_table)
             {
-                _objects.Update(list);
+                _objects.Update(items);
                 _linesBuffer.Clear();
-                foreach (var pt1 in list)
+                foreach (var pt1 in items)
                 {
                     foreach (var pt2Id in _table.GetColIndices(pt1.Id))
                     {
                         _linesBuffer.Add(new SlamLine(pt1.AsPoint(), _objects[pt2Id].AsPoint()));
                     }
                 }
-                
+
                 if (_linesBuffer.Count > 0) _connects.Update(_linesBuffer);
             }
 
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(list));
+            OnUpdated?.Invoke(this, new UpdatedEventArgs<TCloudItem>(items));
         }
 
         public void RemoveAt(int id)
@@ -160,14 +158,13 @@ namespace Elektronik.Containers
             }
         }
 
-        public void Remove(IEnumerable<TCloudItem> items)
+        public void Remove(IList<TCloudItem> items)
         {
             if (items is null) return;
-            var list = items.ToList();
             _linesBuffer.Clear();
             lock (_table)
             {
-                foreach (var obj in list)
+                foreach (var obj in items)
                 {
                     int id = _objects.IndexOf(obj);
                     if (id != -1)
@@ -186,42 +183,38 @@ namespace Elektronik.Containers
                 }
 
                 _connects.Remove(_linesBuffer);
-                _objects.Remove(list);
+                _objects.Remove(items);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id).ToList()));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id).ToList()));
         }
 
-        public IEnumerable<TCloudItem> Remove(IEnumerable<int> items)
+        public IList<TCloudItem> Remove(IList<int> items)
         {
             if (items is null) return new List<TCloudItem>();
-            var list = items.ToList();
             _linesBuffer.Clear();
-            List<TCloudItem> removed;
+            IList<TCloudItem> removed;
             lock (_table)
             {
-                foreach (var id in list)
+                foreach (var id in items)
                 {
-                    if (id != -1)
-                    {
-                        foreach (var col in _table.GetColIndices(id))
-                        {
-                            _linesBuffer.Add(
-                                new SlamLine(
-                                    new SlamPoint(id, default, default),
-                                    new SlamPoint(col, default, default)));
-                            _table.Remove(col, id);
-                        }
+                    if (id == -1) continue;
 
-                        _table.RemoveRow(id);
+                    foreach (var col in _table.GetColIndices(id))
+                    {
+                        _linesBuffer.Add(new SlamLine(new SlamPoint(id, default, default),
+                                                      new SlamPoint(col, default, default)));
+                        _table.Remove(col, id);
                     }
+
+                    _table.RemoveRow(id);
                 }
 
                 _connects.Remove(_linesBuffer);
-                removed = _objects.Remove(list).ToList();
+                removed = _objects.Remove(items);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(items));
             return removed;
         }
 
@@ -355,7 +348,8 @@ namespace Elektronik.Containers
         public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
             recorder.OnAdded(DisplayName, _objects.ToList());
-            recorder.OnConnectionsUpdated<TCloudItem>(DisplayName, _connects.Select(l => (l.Point1.Id, l.Point2.Id)).ToList());
+            recorder.OnConnectionsUpdated<TCloudItem>(DisplayName,
+                                                      _connects.Select(l => (l.Point1.Id, l.Point2.Id)).ToList());
         }
 
         #endregion
@@ -381,7 +375,7 @@ namespace Elektronik.Containers
         private bool AddConnection(int id1, int id2, Action<SlamLine> adding)
         {
             var res = AddConnection(id1, id2);
-            if (res && _objects.Contains(new TCloudItem {Id = id1}) && _objects.Contains(new TCloudItem {Id = id2}))
+            if (res && _objects.Contains(new TCloudItem { Id = id1 }) && _objects.Contains(new TCloudItem { Id = id2 }))
             {
                 adding(new SlamLine(_objects[id1].AsPoint(), _objects[id2].AsPoint()));
             }

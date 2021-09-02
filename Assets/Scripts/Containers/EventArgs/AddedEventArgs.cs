@@ -5,9 +5,9 @@ namespace Elektronik.Containers.EventArgs
 {
     public class AddedEventArgs<T> : System.EventArgs
     {
-        public readonly IEnumerable<T> AddedItems;
+        public readonly IList<T> AddedItems;
 
-        public AddedEventArgs(IEnumerable<T> addedItems)
+        public AddedEventArgs(IList<T> addedItems)
         {
             AddedItems = addedItems;
         }

@@ -183,41 +183,38 @@ namespace Elektronik.Containers
 
         public event EventHandler<RemovedEventArgs> OnRemoved;
 
-        public void AddRange(IEnumerable<SimpleLine> items)
+        public void AddRange(IList<SimpleLine> items)
         {
             if (items is null) return;
-            var list = items.ToList();
             lock (_lines)
             {
-                _lines.AddRange(list);
+                _lines.AddRange(items);
             }
 
-            OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(list));
+            OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(items));
         }
 
-        public void Remove(IEnumerable<SimpleLine> items)
+        public void Remove(IList<SimpleLine> items)
         {
             if (items is null) return;
-            var list = items.ToList();
             lock (_lines)
             {
-                foreach (var item in list)
+                foreach (var item in items)
                 {
                     _lines.Remove(item);
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id).ToList()));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id).ToList()));
         }
 
-        public IEnumerable<SimpleLine> Remove(IEnumerable<int> items)
+        public IList<SimpleLine> Remove(IList<int> items)
         {
             if (items is null) return new List<SimpleLine>();
-            var list = items.ToList();
             var removed = new List<SimpleLine>();
             lock (_lines)
             {
-                foreach (var id in list)
+                foreach (var id in items)
                 {
                     var index = _lines.FindIndex(l => l.Id == id);
                     if (index == -1) continue;
@@ -226,7 +223,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list));
+            OnRemoved?.Invoke(this, new RemovedEventArgs(items));
             return removed;
         }
 
@@ -242,14 +239,13 @@ namespace Elektronik.Containers
             OnUpdated?.Invoke(this, new UpdatedEventArgs<SimpleLine>(item));
         }
 
-        public void Update(IEnumerable<SimpleLine> items)
+        public void Update(IList<SimpleLine> items)
         {
             if (items is null) return;
-            var list = items.ToList();
-            var updated = new List<SimpleLine> { Capacity = list.Count };
+            var updated = new List<SimpleLine> { Capacity = items.Count };
             lock (_lines)
             {
-                foreach (var item in list)
+                foreach (var item in items)
                 {
                     var index = _lines.FindIndex(l => l.Id == item.Id);
                     if (index < 0) continue;

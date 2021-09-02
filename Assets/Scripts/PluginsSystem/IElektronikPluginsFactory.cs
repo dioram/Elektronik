@@ -22,6 +22,8 @@ namespace Elektronik.PluginsSystem
 
         IElektronikPlugin Start(ICSConverter converter);
 
+        IElektronikPlugin Start(SettingsBag settings, ICSConverter converter);
+
         void SaveSettings();
     }
 
@@ -39,6 +41,7 @@ namespace Elektronik.PluginsSystem
 
     public interface IDataRecorderFactory: IElektronikPluginsFactory
     {
-        
+        string Extension { get; }
+        bool StartsFromSceneLoading { get; }
     }
 }

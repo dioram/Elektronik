@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
@@ -9,13 +8,13 @@ namespace Elektronik.Commands.Generic
     public class RemoveCommand<T> : ICommand
             where T : struct, ICloudItem
     {
-        protected readonly ReadOnlyCollection<T> Objs2Remove;
+        protected readonly IList<T> Objs2Remove;
         private readonly IContainer<T> _container;
 
-        public RemoveCommand(IContainer<T> container, IEnumerable<T> objects)
+        public RemoveCommand(IContainer<T> container, IList<T> objects)
         {
             _container = container;
-            Objs2Remove = new ReadOnlyCollection<T>(objects.Select(p => _container[p.Id]).ToList());
+            Objs2Remove = objects;
         }
 
         public virtual void Execute() => _container.Remove(Objs2Remove);
@@ -26,19 +25,19 @@ namespace Elektronik.Commands.Generic
             where TCloudItem : struct, ICloudItem
             where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
-        protected readonly ReadOnlyCollection<TCloudItemDiff> Objs2Remove;
-        protected List<TCloudItem> Objs2Add;
+        protected readonly IList<TCloudItemDiff> Objs2Remove;
+        protected TCloudItem[] Objs2Add;
         private readonly IContainer<TCloudItem> _container;
 
-        public RemoveCommand(IContainer<TCloudItem> container, IEnumerable<TCloudItemDiff> objects)
+        public RemoveCommand(IContainer<TCloudItem> container, IList<TCloudItemDiff> objects)
         {
             _container = container;
-            Objs2Remove = new ReadOnlyCollection<TCloudItemDiff>(objects.ToList());
+            Objs2Remove = objects;
         }
 
         public virtual void Execute()
         {
-            Objs2Add = _container.Remove(Objs2Remove.Select(o => o.Id)).ToList();
+            Objs2Add = _container.Remove(Objs2Remove.Select(o => o.Id).ToArray()).ToArray();
         }
 
         public virtual void UnExecute() => _container.AddRange(Objs2Add);

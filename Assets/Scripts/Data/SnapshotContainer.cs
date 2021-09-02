@@ -106,7 +106,7 @@ namespace Elektronik.Data
 
         public void Save()
         {
-            var recorders = PluginsLoader.Plugins.Value.OfType<IDataRecorderPlugin>().ToList();
+            var recorders = PluginsLoader.Plugins.Value.OfType<IDataRecorderFactory>().ToList();
             FileBrowser.SetFilters(false, recorders.Select(r => r.Extension));
             FileBrowser.ShowSaveDialog(path => Save(path[0]),
                                        () => { },
@@ -126,11 +126,12 @@ namespace Elektronik.Data
 
         private void Save(string filename)
         {
-            var recorder = PluginsPlayer.Plugins
-                    .OfType<IDataRecorderPlugin>()
-                    .First(r => filename.EndsWith(r.Extension));
+            var recorder = PluginsLoader.Plugins.Value
+                    .OfType<IDataRecorderFactory>()
+                    .First(r => filename.EndsWith(r.Extension))
+                    .Start(_converter) as IDataRecorderPlugin;
+            if (recorder == null) return;
             recorder.FileName = filename;
-            recorder.Converter = _converter;
             recorder.StartRecording();
             WriteSnapshot(recorder);
             recorder.StopRecording();

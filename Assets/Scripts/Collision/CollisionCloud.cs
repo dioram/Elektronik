@@ -108,7 +108,7 @@ namespace Elektronik.Collision
             });
         }
 
-        public void ShowItems(object sender, IEnumerable<TCloudItem> items)
+        public void ShowItems(object sender, IList<TCloudItem> items)
         {
             OnClear(sender);
             OnItemsAdded(sender, new AddedEventArgs<TCloudItem>(items));

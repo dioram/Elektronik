@@ -42,7 +42,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
                 var commands = new List<ICommand>();
                 if (packet.Connections != null)
                 {
-                    var connections = packet.Connections.Data.Select(c => (c.Id1, c.Id2)).ToArray();
+                    var connections = packet.Connections.Data.Select(c => (c.Id1, c.Id2)).ToList();
                     switch (packet.Connections.Action)
                     {
                     case PacketPb.Types.Connections.Types.Action.Add:
@@ -99,16 +99,13 @@ namespace Elektronik.Protobuf.Offline.Parsers
             switch (packet.DataCase)
             {
             case PacketPb.DataOneofCase.Points:
-                return GetCommandForConnectableObjects(_points,
-                                                       packet.ExtractPoints(Converter).ToList(),
-                                                       packet);
+                return GetCommandForConnectableObjects(_points, packet.ExtractPoints(Converter), packet);
             case PacketPb.DataOneofCase.Observations:
-                return GetCommandForConnectableObjects(_observations,
-                                                       packet.ExtractObservations(Converter, _imagePath).ToList(),
+                return GetCommandForConnectableObjects(_observations, packet.ExtractObservations(Converter, _imagePath),
                                                        packet);
             case PacketPb.DataOneofCase.InfinitePlanes:
                 return GetCommand(_infinitePlanes,
-                                  packet.ExtractInfinitePlanes(Converter).ToList(), packet);
+                                  packet.ExtractInfinitePlanes(Converter), packet);
             default:
                 return base.GetCommand(packet);
             }

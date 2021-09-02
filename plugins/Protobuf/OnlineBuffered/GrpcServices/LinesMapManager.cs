@@ -23,7 +23,7 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
         {
             if (request.DataCase != PacketPb.DataOneofCase.Lines) return base.Handle(request, context);
             Timer = Stopwatch.StartNew();
-            return Handle(request.Action, request.ExtractLines(Converter).ToList());
+            return Handle(request.Action, request.ExtractLines(Converter));
         }
     }
 }

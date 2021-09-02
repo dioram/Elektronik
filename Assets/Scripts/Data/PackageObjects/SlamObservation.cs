@@ -55,16 +55,6 @@ namespace Elektronik.Data.PackageObjects
             return obj is SlamObservation other && Equals(other);
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Point.GetHashCode();
-                hashCode = (hashCode * 397) ^ Rotation.GetHashCode();
-                hashCode = (hashCode * 397) ^ (FileName != null ? FileName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Message != null ? Message.GetHashCode() : 0);
-                return hashCode;
-            }
-        }
+        public override int GetHashCode() => Id;
     }
 }

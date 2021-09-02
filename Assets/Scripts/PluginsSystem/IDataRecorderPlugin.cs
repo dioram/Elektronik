@@ -7,7 +7,6 @@ namespace Elektronik.PluginsSystem
     public interface IDataRecorderPlugin : IElektronikPlugin
     {
         bool StartsFromSceneLoading { get; }
-        
         string Extension { get; }
         string FileName { get; set; }
         ICSConverter Converter { get; set; }
