@@ -1,4 +1,5 @@
 ﻿using Elektronik.UI.Localization;
+using Elektronik.UI.Windows;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,7 +8,6 @@ namespace Elektronik.UI
 {
     public class Tooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        public GameObject TooltipPrefab;
         public string TooltipText;
         public Vector2 Offset = new Vector2(0, 40);
 
@@ -19,7 +19,7 @@ namespace Elektronik.UI
 
         private void Start()
         {
-            _tooltip = Instantiate(TooltipPrefab, transform);
+            _tooltip = Instantiate(PrefabsStore.Instance.TooltipPrefab, transform);
             _label = _tooltip.GetComponentInChildren<TMP_Text>();
             _tooltip.SetActive(false);
             _tooltip.GetComponent<RectTransform>().anchoredPosition = Offset;
@@ -31,6 +31,7 @@ namespace Elektronik.UI
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (string.IsNullOrWhiteSpace(TooltipText)) return;
             _isActive = true;
             _tooltip.SetActive(_isActive);
             _label.SetLocalizedText(TooltipText);

@@ -13,17 +13,18 @@ namespace Elektronik
     {
         private void Awake()
         {
-            string[] args = Environment.GetCommandLineArgs();
-            if (args.Length < 2 || !File.Exists(args[1])) return;
-            var extension = Path.GetExtension(args[1]);
-            var plugin = PluginsLoader.Plugins
-                    .Value
-                    .OfType<IDataSourcePluginsOfflineFactory>()
-                    .First(p => p.SupportedExtensions.Contains(extension));
-            ModeSelector.Mode = Mode.Offline;
-            PluginsLoader.ActivePlugins.Add(plugin);
-            plugin.SetFileName(args[1]);
-            SceneManager.LoadScene("Scenes/Empty", LoadSceneMode.Single);
+            // TODO: Turn on
+            // var args = Environment.GetCommandLineArgs();
+            // if (args.Length < 2 || !File.Exists(args[1])) return;
+            // var extension = Path.GetExtension(args[1]);
+            // var plugin = PluginsLoader.PluginFactories
+            //         .Value
+            //         .OfType<IDataSourcePluginsOfflineFactory>()
+            //         .First(p => p.SupportedExtensions.Contains(extension));
+            // ModeSelector.Mode = Mode.Offline;
+            // PluginsLoader.ActivePlugins.Add(plugin);
+            // plugin.SetFileName(args[1]);
+            // SceneManager.LoadScene("Scenes/Empty", LoadSceneMode.Single);
         }
     }
 }

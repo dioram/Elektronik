@@ -535,6 +535,22 @@ MonoBehaviour:
     m_Localized: Toggle mesh color
     m_Metadata:
       m_Items: []
+  - m_Id: 51874347606753280
+    m_Localized: Open/Connect...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51883897906937856
+    m_Localized: Recent settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51891097131958272
+    m_Localized: Connect to... / Open file...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51891238681329664
+    m_Localized: Connect / Open
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

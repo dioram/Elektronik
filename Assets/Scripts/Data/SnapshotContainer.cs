@@ -7,6 +7,7 @@ using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Localization;
 using SimpleFileBrowser;
+using UnityEngine;
 
 namespace Elektronik.Data
 {
@@ -106,7 +107,7 @@ namespace Elektronik.Data
 
         public void Save()
         {
-            var recorders = PluginsLoader.Plugins.Value.OfType<IDataRecorderFactory>().ToList();
+            var recorders = PluginsLoader.Instance.PluginFactories.OfType<IDataRecorderFactory>().ToList();
             FileBrowser.SetFilters(false, recorders.Select(r => r.Extension));
             FileBrowser.ShowSaveDialog(path => Save(path[0]),
                                        () => { },
@@ -126,7 +127,7 @@ namespace Elektronik.Data
 
         private void Save(string filename)
         {
-            var recorder = PluginsLoader.Plugins.Value
+            var recorder = PluginsLoader.Instance.PluginFactories
                     .OfType<IDataRecorderFactory>()
                     .First(r => filename.EndsWith(r.Extension))
                     .Start(_converter) as IDataRecorderPlugin;

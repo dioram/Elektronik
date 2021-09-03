@@ -41,7 +41,7 @@ namespace Elektronik.UI.Windows
         public void Minimize()
         {
             _isMinimized = true;
-            var rect = ((RectTransform)transform);
+            var rect = (RectTransform)transform;
             _maximizedHeight = rect.sizeDelta.y;
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, 42);
             _content.SetActive(false);

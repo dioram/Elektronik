@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using SimpleFileBrowser;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,8 +9,8 @@ namespace Elektronik.UI
 {
     public class InputWithBrowse : MonoBehaviour
     {
-        private Button _browseButton;
-        private InputField _ifFilePath;
+        [SerializeField] private Button BrowseButton;
+        [SerializeField] private TMP_InputField PathField;
 
         public bool FolderMode = false;
         public string InitialPath = null;
@@ -17,17 +18,15 @@ namespace Elektronik.UI
         public string ButtonText = "Select";
         public string[] Filters;
 
-        void Start()
+        private void Start()
         {
-            _browseButton = GetComponentInChildren<Button>();
-            _browseButton.OnClickAsObservable().Subscribe(_ => Browse());
-            _ifFilePath = GetComponentInChildren<InputField>();
+            BrowseButton.OnClickAsObservable().Subscribe(_ => Browse());
         }
 
-        void Browse()
+        private void Browse()
         {
             FileBrowser.SetFilters(true, Filters);
-            FileBrowser.ShowLoadDialog(path => _ifFilePath.text = path[0],
+            FileBrowser.ShowLoadDialog(path => PathField.text = path[0],
                                        () => { },
                                        FolderMode,
                                        false,
@@ -38,7 +37,7 @@ namespace Elektronik.UI
 
         private string GetInitialPath()
         {
-            if (!string.IsNullOrWhiteSpace(_ifFilePath.text)) return Path.GetDirectoryName(_ifFilePath.text);
+            if (!string.IsNullOrWhiteSpace(PathField.text)) return Path.GetDirectoryName(PathField.text);
             if (!string.IsNullOrWhiteSpace(InitialPath)) return InitialPath;
             return null;
         }

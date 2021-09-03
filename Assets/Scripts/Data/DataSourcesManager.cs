@@ -145,7 +145,7 @@ namespace Elektronik.Data
         {
             foreach (var path in files)
             {
-                var playerPrefab = PluginsLoader.Plugins.Value
+                var playerPrefab = PluginsLoader.Instance.PluginFactories
                         .OfType<IDataSourcePluginsOfflineFactory>()
                         .FirstOrDefault();
                         // TODO: Turn on

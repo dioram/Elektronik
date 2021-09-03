@@ -4,30 +4,26 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Elektronik.UI.Localization;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Elektronik.PluginsSystem.UnitySide
 {
-    public static class PluginsLoader
+    public class PluginsLoader: MonoBehaviour
     {
-        public static readonly Lazy<List<IElektronikPluginsFactory>> Plugins =
-                new Lazy<List<IElektronikPluginsFactory>>(LoadPlugins);
+        public List<IElektronikPluginsFactory> PluginFactories;
+        public static PluginsLoader Instance;
 
-        public static readonly List<IElektronikPluginsFactory> ActivePlugins = new List<IElektronikPluginsFactory>();
-
-        public static void EnablePlugin(IElektronikPluginsFactory plugin)
+        private void Awake()
         {
-            if (!ActivePlugins.Contains(plugin)) ActivePlugins.Add(plugin);
-        }
-
-        public static void DisablePlugin(IElektronikPluginsFactory plugin)
-        {
-            if (ActivePlugins.Contains(plugin)) ActivePlugins.Remove(plugin);
+            if (Instance is null) Instance = this;
+            else throw new Exception("There can't be more than one instances of PluginsLoader.");
+            PluginFactories = LoadPluginFactories();
         }
 
         #region Private
 
-        private static List<IElektronikPluginsFactory> LoadPlugins()
+        private static List<IElektronikPluginsFactory> LoadPluginFactories()
         {
             var res = new List<IElektronikPluginsFactory>();
             try
@@ -46,7 +42,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                                              .GetTypes()
                                              .Where(p => typeof(IElektronikPluginsFactory).IsAssignableFrom(p) &&
                                                             p.IsClass && !p.IsAbstract)
-                                             .Select(InstantiatePlugin<IElektronikPluginsFactory>)
+                                             .Select(InstantiatePluginFactory<IElektronikPluginsFactory>)
                                              .Where(p => p != null));
                         TextLocalizationExtender.ImportTranslations(Path.Combine(Path.GetDirectoryName(file)!,
                                                                         @"../data/translations.csv"));
@@ -64,7 +60,7 @@ namespace Elektronik.PluginsSystem.UnitySide
             return res;
         }
 
-        private static T InstantiatePlugin<T>(Type t) where T : class
+        private static T InstantiatePluginFactory<T>(Type t) where T : class
         {
             try
             {

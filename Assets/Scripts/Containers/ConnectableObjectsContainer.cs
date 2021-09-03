@@ -265,21 +265,13 @@ namespace Elektronik.Containers
 
         public IEnumerable<(int, int)> GetAllConnections(int id)
         {
-            foreach (var col in _table.GetColIndices(id))
-            {
-                yield return (id, col);
-            }
+            return _table.GetColIndices(id).Select(col => (id, col));
         }
 
         public IEnumerable<(int, int)> GetAllConnections(TCloudItem obj)
         {
-            int idx = _objects.IndexOf(obj);
-            if (idx != -1)
-            {
-                return GetAllConnections(idx);
-            }
-
-            return Enumerable.Empty<(int, int)>();
+            var idx = _objects.IndexOf(obj);
+            return idx != -1 ? GetAllConnections(idx) : Enumerable.Empty<(int, int)>();
         }
 
         public event EventHandler<ConnectionsEventArgs> OnConnectionsUpdated;

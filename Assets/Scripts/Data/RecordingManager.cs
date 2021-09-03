@@ -11,8 +11,8 @@ namespace Elektronik.Data
 {
     public class RecordingManager : MonoBehaviour
     {
-        public PluginsPlayer PluginsPlayer;
-        public DataSourcesManager DataSourcesManager;
+        [SerializeField] private PluginsPlayer PluginsPlayer;
+        [SerializeField] private DataSourcesManager DataSourcesManager;
 
         private List<IDataRecorderPlugin> _recorders;
 
@@ -64,7 +64,7 @@ namespace Elektronik.Data
 
         private void Setup()
         {
-            _recorders = PluginsLoader.Plugins.Value
+            _recorders = PluginsLoader.Instance.PluginFactories
                     .OfType<IDataRecorderFactory>()
                     .Where(f => f.StartsFromSceneLoading)
                     .Select(f => (IDataRecorderPlugin)f.Start(DataSourcesManager.Converter))

@@ -39,7 +39,7 @@ namespace Elektronik.UI.ListBox
 
         public ListBoxItem Add()
         {
-            ListBoxItem listViewItem = _poolOfItems.Spawn().GetComponent<ListBoxItem>();
+            var listViewItem = _poolOfItems.Spawn().GetComponent<ListBoxItem>();
             listViewItem.OnClick += SelectionChanged;
             listViewItem.transform.SetParent(Target);
             listViewItem.transform.localScale = Vector3.one;
@@ -51,15 +51,15 @@ namespace Elektronik.UI.ListBox
         {
             Debug.Assert(sender is ListBoxItem,
                          $"Sender must be {typeof(ListBoxItem)}, but found {sender.GetType()}");
-            int index = _listOfItems.FindIndex(current => current == (ListBoxItem) sender);
+            var index = _listOfItems.FindIndex(current => current == (ListBoxItem) sender);
             Debug.Assert(index != -1, "UIListView wasn't found");
-            SelectionChangedEventArgs selectionChangedEventArgs = new SelectionChangedEventArgs(index);
+            var selectionChangedEventArgs = new SelectionChangedEventArgs(index);
             OnSelectionChanged?.Invoke(this, selectionChangedEventArgs);
         }
 
         public void Remove(int idx)
         {
-            ListBoxItem listViewItem = _listOfItems[idx];
+            var listViewItem = _listOfItems[idx];
             _listOfItems.RemoveAt(idx);
             listViewItem.transform.SetParent(null);
             _poolOfItems.Despawn(listViewItem.gameObject);

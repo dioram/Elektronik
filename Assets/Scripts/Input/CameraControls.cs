@@ -251,7 +251,7 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""Mouse Drag"",
-                    ""id"": ""1e48f88a-cc4c-4deb-b202-8e44ef84a4e7"",
+                    ""id"": ""bfec3a7b-0d2b-4bd6-92a2-61c44c3d8c51"",
                     ""path"": ""MouseDrag"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -262,7 +262,7 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""Button"",
-                    ""id"": ""177df200-e88d-4360-bb85-912de5b11265"",
+                    ""id"": ""9280b4ed-8e34-42e7-86df-85d5b03c9ca4"",
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -273,7 +273,7 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""Axis1"",
-                    ""id"": ""263baa66-2769-4ee9-ab61-963948cc978f"",
+                    ""id"": ""f5491cf3-74e7-4fa2-ae06-b4c1afd3ffee"",
                     ""path"": ""<Mouse>/delta/x"",
                     ""interactions"": """",
                     ""processors"": ""Scale(factor=5)"",
@@ -284,7 +284,7 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""Axis2"",
-                    ""id"": ""79dc4f4d-c856-4eaa-a155-ceaf410559fa"",
+                    ""id"": ""f1685354-8f7e-45a3-bc18-44808782c381"",
                     ""path"": ""<Mouse>/delta/y"",
                     ""interactions"": """",
                     ""processors"": ""Scale(factor=5),Invert"",
@@ -526,6 +526,14 @@ namespace Elektronik.Input
                     ""name"": ""Stop"",
                     ""type"": ""Button"",
                     ""id"": ""bcd2f14d-8de7-4af6-82d3-c0ce081053fc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Open"",
+                    ""type"": ""Button"",
+                    ""id"": ""f6743d62-6134-4ab6-9689-4bd412ca8420"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -982,6 +990,39 @@ namespace Elektronik.Input
                     ""action"": ""ShowAnalyticsTools"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Button With One Modifier"",
+                    ""id"": ""f29bc03b-118d-416d-9268-2686851772b6"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Open"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""0400d51d-d6f4-48f6-84fe-d8aa3e8dd408"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Open"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""68b050fb-03d5-4f52-bf61-a95ac6ccab00"",
+                    ""path"": ""<Keyboard>/n"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Open"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -1020,6 +1061,7 @@ namespace Elektronik.Input
             m_Hotkeys_VRHelp = m_Hotkeys.FindAction("VR Help", throwIfNotFound: true);
             m_Hotkeys_ClearMap = m_Hotkeys.FindAction("ClearMap", throwIfNotFound: true);
             m_Hotkeys_Stop = m_Hotkeys.FindAction("Stop", throwIfNotFound: true);
+            m_Hotkeys_Open = m_Hotkeys.FindAction("Open", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -1194,6 +1236,7 @@ namespace Elektronik.Input
         private readonly InputAction m_Hotkeys_VRHelp;
         private readonly InputAction m_Hotkeys_ClearMap;
         private readonly InputAction m_Hotkeys_Stop;
+        private readonly InputAction m_Hotkeys_Open;
         public struct HotkeysActions
         {
             private @CameraControls m_Wrapper;
@@ -1217,6 +1260,7 @@ namespace Elektronik.Input
             public InputAction @VRHelp => m_Wrapper.m_Hotkeys_VRHelp;
             public InputAction @ClearMap => m_Wrapper.m_Hotkeys_ClearMap;
             public InputAction @Stop => m_Wrapper.m_Hotkeys_Stop;
+            public InputAction @Open => m_Wrapper.m_Hotkeys_Open;
             public InputActionMap Get() { return m_Wrapper.m_Hotkeys; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1283,6 +1327,9 @@ namespace Elektronik.Input
                     @Stop.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnStop;
                     @Stop.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnStop;
                     @Stop.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnStop;
+                    @Open.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnOpen;
+                    @Open.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnOpen;
+                    @Open.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnOpen;
                 }
                 m_Wrapper.m_HotkeysActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1344,6 +1391,9 @@ namespace Elektronik.Input
                     @Stop.started += instance.OnStop;
                     @Stop.performed += instance.OnStop;
                     @Stop.canceled += instance.OnStop;
+                    @Open.started += instance.OnOpen;
+                    @Open.performed += instance.OnOpen;
+                    @Open.canceled += instance.OnOpen;
                 }
             }
         }
@@ -1382,6 +1432,7 @@ namespace Elektronik.Input
             void OnVRHelp(InputAction.CallbackContext context);
             void OnClearMap(InputAction.CallbackContext context);
             void OnStop(InputAction.CallbackContext context);
+            void OnOpen(InputAction.CallbackContext context);
         }
     }
 }

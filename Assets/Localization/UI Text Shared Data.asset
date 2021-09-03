@@ -500,6 +500,22 @@ MonoBehaviour:
     m_Key: Toggle mesh color
     m_Metadata:
       m_Items: []
+  - m_Id: 51874347606753280
+    m_Key: Open/Connect...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51883897906937856
+    m_Key: Recent settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51891097131958272
+    m_Key: Connect to... / Open file...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51891238681329664
+    m_Key: Connect / Open
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

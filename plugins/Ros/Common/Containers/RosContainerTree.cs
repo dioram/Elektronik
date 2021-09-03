@@ -71,8 +71,16 @@ namespace Elektronik.RosPlugin.Common.Containers
                 if (!RealChildren.ContainsKey(topic.Name))
                 {
                     var child = CreateContainer(topic.Name, topic.Type);
-                    if (child is IRendersToWindow w) w.Title = topic.Name;
-                    if (child is TrackedObjectsContainer t) t.ObjectLabel = topic.Name;
+                    switch (child)
+                    {
+                    case IRendersToWindow w:
+                        w.Title = topic.Name;
+                        break;
+                    case TrackedObjectsContainer t:
+                        t.ObjectLabel = topic.Name;
+                        break;
+                    }
+
                     RealChildren[topic.Name] = child;
                     
                     foreach (var renderer in _renderers)

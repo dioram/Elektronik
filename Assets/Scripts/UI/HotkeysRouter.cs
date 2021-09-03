@@ -20,6 +20,7 @@ namespace Elektronik.UI
         [SerializeField] private Window SourceTreeWindow;
         [SerializeField] private Window SceneToolsWindow;
         [SerializeField] private Window AnalyticsToolsWindow;
+        [SerializeField] private Window ConnectionsWindow;
         [Header("Buttons")] [SerializeField] private ChangingButton ToggleAxisButton;
         [SerializeField] private ChangingButton RecordingButton;
         [Space] [SerializeField] private TMP_Dropdown GridSelector;
@@ -61,6 +62,9 @@ namespace Elektronik.UI
                     .AddTo(this);
             hotkeys.ShowAnalyticsTools.PerformedAsObservable()
                     .Subscribe(_ => AnalyticsToolsWindow.Show())
+                    .AddTo(this);
+            hotkeys.Open.PerformedAsObservable()
+                    .Subscribe(_ => ConnectionsWindow.Show())
                     .AddTo(this);
 
             hotkeys.GoToVR.PerformedAsObservable()

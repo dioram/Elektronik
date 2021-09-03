@@ -27,14 +27,19 @@ namespace Elektronik.PluginsSystem
         void SaveSettings();
     }
 
-    public interface IDataSourcePluginsOfflineFactory: IElektronikPluginsFactory
+    public interface IDataSourcePluginsFactory : IElektronikPluginsFactory
+    {
+        
+    }
+
+    public interface IDataSourcePluginsOfflineFactory: IDataSourcePluginsFactory
     {
         public void SetFileName(string path);
         
         public string[] SupportedExtensions { get; }
     }
 
-    public interface IDataSourcePluginsOnlineFactory: IElektronikPluginsFactory
+    public interface IDataSourcePluginsOnlineFactory: IDataSourcePluginsFactory
     {
         
     }

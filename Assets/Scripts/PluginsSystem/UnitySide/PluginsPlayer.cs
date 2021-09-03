@@ -39,67 +39,67 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         private void Start()
         {
-            List<IElektronikPluginsFactory> factories;
-#if UNITY_EDITOR
-            if (ModeSelector.Mode == Mode.Online)
-            {
-                factories = PluginsLoader.Plugins.Value
-                        .OfType<IDataSourcePluginsOnlineFactory>()
-                        .Select(f => (IElektronikPluginsFactory)f)
-                        .ToList();
-            }
-            else
-            {
-                factories = new List<IElektronikPluginsFactory>();
-            }
-#else
-            factories = PluginsLoader.ActivePlugins;
-#endif
-
-            var plugins = new List<IElektronikPlugin>();
-
-            ScreenLocker.SetActive(true);
-
-            foreach (var factory in factories)
-            {
-                var thread = new Thread(() => plugins.Add(factory.Start(Converter)));
-                thread.Start();
-                _startupThreads.Add(thread);
-            }
-
-            PluginsStarted += () => ScreenLocker.SetActive(false);
-
-            Task.Run(() =>
-            {
-                foreach (var thread in _startupThreads)
-                {
-                    thread.Join();
-                }
-
-                Plugins = plugins.AsReadOnly();
-                MainThreadInvoker.Enqueue(() =>
-                {
-                    foreach (var dataSource in Plugins.OfType<IDataSourcePlugin>())
-                    {
-                        DataSourcesManager.AddDataSource(dataSource.Data);
-                    }
-
-                    foreach (var dataSource in Plugins.OfType<IDataSourcePluginOffline>())
-                    {
-                        PlayerEvents.SetDataSource(dataSource);
-                    }
-
-                    PluginsStarted?.Invoke();
-                });
-            });
+//             List<IElektronikPluginsFactory> factories;
+// #if UNITY_EDITOR
+//             if (ModeSelector.Mode == Mode.Online)
+//             {
+//                 factories = PluginsLoader.PluginFactories.
+//                         .OfType<IDataSourcePluginsOnlineFactory>()
+//                         .Select(f => (IElektronikPluginsFactory)f)
+//                         .ToList();
+//             }
+//             else
+//             {
+//                 factories = new List<IElektronikPluginsFactory>();
+//             }
+// #else
+//             factories = PluginsLoader.ActivePlugins;
+// #endif
+//
+//             var plugins = new List<IElektronikPlugin>();
+//
+//             ScreenLocker.SetActive(true);
+//
+//             foreach (var factory in factories)
+//             {
+//                 var thread = new Thread(() => plugins.Add(factory.Start(Converter)));
+//                 thread.Start();
+//                 _startupThreads.Add(thread);
+//             }
+//
+//             PluginsStarted += () => ScreenLocker.SetActive(false);
+//
+//             Task.Run(() =>
+//             {
+//                 foreach (var thread in _startupThreads)
+//                 {
+//                     thread.Join();
+//                 }
+//
+//                 Plugins = plugins.AsReadOnly();
+//                 MainThreadInvoker.Enqueue(() =>
+//                 {
+//                     foreach (var dataSource in Plugins.OfType<IDataSourcePlugin>())
+//                     {
+//                         DataSourcesManager.AddDataSource(dataSource.Data);
+//                     }
+//
+//                     foreach (var dataSource in Plugins.OfType<IDataSourcePluginOffline>())
+//                     {
+//                         PlayerEvents.SetDataSource(dataSource);
+//                     }
+//
+//                     PluginsStarted?.Invoke();
+//                 });
+//             });
         }
 
         private void Update()
         {
-            foreach (var plugin in Plugins)
-            {
-                plugin.Update(Time.deltaTime);
-            }
+            // foreach (var plugin in Plugins)
+            // {
+            //     plugin.Update(Time.deltaTime);
+            // }
         }
 
         private void OnDestroy()

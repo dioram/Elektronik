@@ -21,7 +21,7 @@ namespace Elektronik.Containers
             ObjectLabel = DisplayName;
         }
 
-        public readonly string ObjectLabel;
+        public string ObjectLabel;
 
         #region IContainer implementation
 

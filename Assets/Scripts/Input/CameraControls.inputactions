@@ -236,7 +236,7 @@
                 },
                 {
                     "name": "Mouse Drag",
-                    "id": "1e48f88a-cc4c-4deb-b202-8e44ef84a4e7",
+                    "id": "bfec3a7b-0d2b-4bd6-92a2-61c44c3d8c51",
                     "path": "MouseDrag",
                     "interactions": "",
                     "processors": "",
@@ -247,7 +247,7 @@
                 },
                 {
                     "name": "Button",
-                    "id": "177df200-e88d-4360-bb85-912de5b11265",
+                    "id": "9280b4ed-8e34-42e7-86df-85d5b03c9ca4",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
@@ -258,7 +258,7 @@
                 },
                 {
                     "name": "Axis1",
-                    "id": "263baa66-2769-4ee9-ab61-963948cc978f",
+                    "id": "f5491cf3-74e7-4fa2-ae06-b4c1afd3ffee",
                     "path": "<Mouse>/delta/x",
                     "interactions": "",
                     "processors": "Scale(factor=5)",
@@ -269,7 +269,7 @@
                 },
                 {
                     "name": "Axis2",
-                    "id": "79dc4f4d-c856-4eaa-a155-ceaf410559fa",
+                    "id": "f1685354-8f7e-45a3-bc18-44808782c381",
                     "path": "<Mouse>/delta/y",
                     "interactions": "",
                     "processors": "Scale(factor=5),Invert",
@@ -511,6 +511,14 @@
                     "name": "Stop",
                     "type": "Button",
                     "id": "bcd2f14d-8de7-4af6-82d3-c0ce081053fc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Open",
+                    "type": "Button",
+                    "id": "f6743d62-6134-4ab6-9689-4bd412ca8420",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -965,6 +973,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "ShowAnalyticsTools",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Button With One Modifier",
+                    "id": "f29bc03b-118d-416d-9268-2686851772b6",
+                    "path": "ButtonWithOneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Open",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "0400d51d-d6f4-48f6-84fe-d8aa3e8dd408",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Open",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "68b050fb-03d5-4f52-bf61-a95ac6ccab00",
+                    "path": "<Keyboard>/n",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Open",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

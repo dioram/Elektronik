@@ -20,7 +20,7 @@ namespace Elektronik.Input
             InputSystem.RegisterBindingComposite<MouseDragComposite>();
         }
  
-        [RuntimeInitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         [SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private static void Init()
         {
