@@ -8,6 +8,7 @@ using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.OnlineBuffered.GrpcServices;
 using Elektronik.Protobuf.OnlineBuffered.Presenters;
+using Elektronik.Settings.Bags;
 using Grpc.Core;
 using UnityEngine;
 using ILogger = Grpc.Core.Logging.ILogger;
@@ -18,10 +19,13 @@ namespace Elektronik.Protobuf.OnlineBuffered
 
     public class ProtobufOnlinePlayer : IDataSourcePlugin
     {
-        public ProtobufOnlinePlayer(OnlineSettingsBag settings, ICSConverter converter, ILogger? logger = null)
+        public ProtobufOnlinePlayer(string displayName, Texture2D? logo, OnlineSettingsBag settings,
+                                    ICSConverter converter, ILogger? logger = null)
         {
             var containerTree = new ProtobufContainerTree("Protobuf", new RawImagePresenter("Camera"));
             Data = containerTree;
+            DisplayName = displayName;
+            Logo = logo;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             logger ??= new UnityLogger();
@@ -38,7 +42,7 @@ namespace Elektronik.Protobuf.OnlineBuffered
             }.BuildChain();
 
             containerTree.DisplayName = $"From gRPC at port {settings.ListeningPort}";
-            
+
             _server = new GrpcServer
             {
                 Services =
@@ -98,7 +102,6 @@ namespace Elektronik.Protobuf.OnlineBuffered
         public int AmountOfFrames { get; }
         public string CurrentTimestamp { get; }
         public int CurrentPosition { get; set; }
-        public int DelayBetweenFrames { get; set; }
         public event Action<bool>? Rewind;
         public event Action? Finished;
 
@@ -115,6 +118,10 @@ namespace Elektronik.Protobuf.OnlineBuffered
             // Do nothing
         }
 
+        public string DisplayName { get; }
+        public SettingsBag? Settings => null;
+        public Texture2D? Logo { get; }
+
         #endregion
 
         #region Private definitions
@@ -122,7 +129,7 @@ namespace Elektronik.Protobuf.OnlineBuffered
         private bool _serverStarted = false;
 
         private readonly GrpcServer _server;
-        private readonly UpdatableFramesCollection<ICommand> _buffer = new ();
+        private readonly UpdatableFramesCollection<ICommand> _buffer = new();
 
         #endregion
     }

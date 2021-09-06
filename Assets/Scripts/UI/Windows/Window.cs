@@ -13,7 +13,7 @@ namespace Elektronik.UI.Windows
     {
         public float MinHeight = 40;
         public float MinWidth = 80;
-        public bool IsMinimized => _isMinimized;
+        public bool IsMinimized { get; private set; }
         public bool SavingSettings = false;
         public TMP_Text TitleLabel;
 
@@ -40,7 +40,7 @@ namespace Elektronik.UI.Windows
 
         public void Minimize()
         {
-            _isMinimized = true;
+            IsMinimized = true;
             var rect = (RectTransform)transform;
             _maximizedHeight = rect.sizeDelta.y;
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, 42);
@@ -55,7 +55,7 @@ namespace Elektronik.UI.Windows
 
         public void Maximize()
         {
-            _isMinimized = false;
+            IsMinimized = false;
             var rect = ((RectTransform)transform);
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, _maximizedHeight);
             _content.SetActive(true);
@@ -65,6 +65,15 @@ namespace Elektronik.UI.Windows
             }
 
             SaveSettings();
+        }
+        
+        public void SetManager(WindowsManager manager)
+        {
+            transform.Find("Header").GetComponent<HeaderDragHandler>().Manager = manager;
+            foreach (var edge in GetComponentsInChildren<ResizingEdge>())
+            {
+                edge.Manager = manager;
+            }
         }
 
         #region Unity events
@@ -132,7 +141,6 @@ namespace Elektronik.UI.Windows
         private Image _header;
         private GameObject _content;
         private float _maximizedHeight;
-        private bool _isMinimized;
         private bool _isInited = false;
         private SettingsHistory<WindowSettingsBag> _windowSettings;
 
@@ -145,8 +153,8 @@ namespace Elektronik.UI.Windows
                 X = rect.anchoredPosition.x,
                 Y = rect.anchoredPosition.y,
                 Width = rect.sizeDelta.x,
-                Height = _isMinimized ? _maximizedHeight : rect.sizeDelta.y,
-                IsMaximized = !_isMinimized,
+                Height = IsMinimized ? _maximizedHeight : rect.sizeDelta.y,
+                IsMaximized = !IsMinimized,
                 IsShowing = gameObject.activeSelf,
             };
             _windowSettings.Add(bag);

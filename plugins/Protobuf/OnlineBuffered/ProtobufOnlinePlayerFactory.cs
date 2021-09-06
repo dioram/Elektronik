@@ -5,11 +5,11 @@ using Grpc.Core.Logging;
 namespace Elektronik.Protobuf.OnlineBuffered
 {
     public class ProtobufOnlinePlayerFactory : ElektronikPluginsFactoryBase<OnlineSettingsBag>,
-                                             IDataSourcePluginsFactory
+                                               IDataSourcePluginsFactory
     {
         protected override IElektronikPlugin StartPlugin(OnlineSettingsBag settings, ICSConverter converter)
         {
-            return new ProtobufOnlinePlayer(settings, converter, Logger);
+            return new ProtobufOnlinePlayer(DisplayName, Logo, settings, converter, Logger);
         }
 
         public ILogger? Logger;

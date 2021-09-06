@@ -4,14 +4,17 @@ using Elektronik.Data;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
+using Elektronik.Settings.Bags;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Online
 {
     public class Ros2Client : IDataSourcePlugin
     {
-        public Ros2Client(Ros2Settings settings)
+        public Ros2Client(string displayName, Texture2D? logo, Ros2Settings settings)
         {
+            DisplayName = displayName;
+            Logo = logo;
             _container = new Ros2OnlineContainerTree(settings, "TMP");
             Data = _container;
             var converter = new RosConverter();
@@ -60,7 +63,6 @@ namespace Elektronik.RosPlugin.Ros2.Online
         public int AmountOfFrames { get; }
         public string CurrentTimestamp { get; }
         public int CurrentPosition { get; set; }
-        public int DelayBetweenFrames { get; set; }
         public event Action<bool>? Rewind;
         public event Action? Finished;
 
@@ -73,6 +75,10 @@ namespace Elektronik.RosPlugin.Ros2.Online
         {
             // Do nothing
         }
+
+        public string DisplayName { get; }
+        public SettingsBag? Settings => null;
+        public Texture2D? Logo { get; }
 
         #endregion
 

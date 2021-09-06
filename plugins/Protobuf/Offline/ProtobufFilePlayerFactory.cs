@@ -26,7 +26,7 @@ namespace Elektronik.Protobuf.Offline
             {
                 settings.PathToFile = _filepath;
             }
-            return new ProtobufFilePlayer(settings, converter);
+            return new ProtobufFilePlayer(DisplayName, Logo, settings, converter);
         }
 
         private string? _filepath;

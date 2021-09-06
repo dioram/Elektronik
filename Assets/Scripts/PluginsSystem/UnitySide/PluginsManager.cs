@@ -13,10 +13,11 @@ namespace Elektronik.PluginsSystem.UnitySide
     public class PluginsManager : MonoBehaviour
     {
         public static readonly List<IElektronikPlugin> Plugins = new List<IElektronikPlugin>();
-        public CSConverter Converter;
-        public PlayerEventsManager PlayerEvents;
-        public GameObject ScreenLocker;
-        public DataSourcesManager DataSourcesManager;
+        [SerializeField] private CSConverter Converter;
+        [SerializeField] private PlayerEventsManager PlayerEvents;
+        [SerializeField] private GameObject ScreenLocker;
+        [SerializeField] private DataSourcesManager DataSourcesManager;
+        [SerializeField] private PluginWindowsManager PluginWindowsManager;
 
         public IDataSourcePlugin CurrentSource { get; private set; }
 
@@ -24,6 +25,7 @@ namespace Elektronik.PluginsSystem.UnitySide
         {
             if (!(CurrentSource is null))
             {
+                PluginWindowsManager.UnregisterPlugin(CurrentSource);
                 DataSourcesManager.RemoveDataSource(CurrentSource.Data);
                 CurrentSource.Dispose();
             }
@@ -42,6 +44,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                 CurrentSource = plugin;
                 MainThreadInvoker.Enqueue(() =>
                 {
+                    PluginWindowsManager.RegisterPlugin(CurrentSource);
                     PlayerEvents.SetDataSource(CurrentSource);
                     DataSourcesManager.AddDataSource(CurrentSource.Data);
                     ScreenLocker.SetActive(false);
@@ -60,6 +63,10 @@ namespace Elektronik.PluginsSystem.UnitySide
             ScreenLocker.SetActive(true);
             Task.Run(() =>
             {
+                foreach (var plugin in Plugins)
+                {
+                    PluginWindowsManager.RegisterPlugin(plugin);
+                }
                 Task.WhenAll(startupTasks);
                 MainThreadInvoker.Enqueue(() => ScreenLocker.SetActive(false));
             });

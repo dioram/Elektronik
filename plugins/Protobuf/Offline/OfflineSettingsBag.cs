@@ -10,7 +10,7 @@ namespace Elektronik.Protobuf.Offline
     public class OfflineSettingsBag : SettingsBag
     {
         [CheckForEquals, Path(new[] { ".dat" })]
-        public string? PathToFile = "";
+        public string PathToFile = "";
 
         [CheckForEquals, Path(PathAttribute.PathTypes.Directory)]
         public string PathToImagesDirectory = "";

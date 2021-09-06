@@ -8,7 +8,7 @@ namespace Elektronik.RosPlugin.Ros.Online
     {
         protected override IElektronikPlugin StartPlugin(AddressPortSettingsBag settings, ICSConverter converter)
         {
-            return new Ros1Client(settings);
+            return new Ros1Client(DisplayName, Logo, settings);
         }
 
         public override string DisplayName => "ROS listener";

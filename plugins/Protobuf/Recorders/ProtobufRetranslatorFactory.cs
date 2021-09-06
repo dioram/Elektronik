@@ -7,7 +7,7 @@ namespace Elektronik.Protobuf.Recorders
     {
         protected override IElektronikPlugin StartPlugin(AddressesSettingsBag settings, ICSConverter converter)
         {
-            return new ProtobufRetranslator(settings, converter);
+            return new ProtobufRetranslator(DisplayName, Logo, settings, converter);
         }
 
         public override string DisplayName => "Protobuf retranslator";

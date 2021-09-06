@@ -7,6 +7,7 @@ using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros.Bag.Parsers;
 using Elektronik.RosPlugin.Ros.Bag.Parsers.Records;
+using Elektronik.Settings.Bags;
 using Elektronik.Threading;
 using UnityEngine;
 
@@ -14,8 +15,10 @@ namespace Elektronik.RosPlugin.Ros.Bag
 {
     public class RosbagReader : IDataSourcePlugin
     {
-        public RosbagReader(RosbagSettings settings)
+        public RosbagReader(string displayName, Texture2D? logo, RosbagSettings settings)
         {
+            Logo = logo;
+            DisplayName = displayName;
             _container = new RosbagContainerTree(settings, "TMP");
             Data = _container;
             Finished += () => _playing = false;
@@ -61,8 +64,6 @@ namespace Elektronik.RosPlugin.Ros.Bag
             }
         }
 
-        public int DelayBetweenFrames { get; set; }
-
         public event Action<bool>? Rewind;
         public event Action? Finished;
 
@@ -98,6 +99,10 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 }
             }
         }
+
+        public string DisplayName { get; }
+        public SettingsBag? Settings => null;
+        public Texture2D? Logo { get; }
 
         public void Play()
         {

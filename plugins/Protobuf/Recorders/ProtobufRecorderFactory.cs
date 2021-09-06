@@ -8,7 +8,7 @@ namespace Elektronik.Protobuf.Recorders
     {
         protected override IElektronikPlugin StartPlugin(SettingsBag settings, ICSConverter converter)
         {
-            return new ProtobufRecorder(converter);
+            return new ProtobufRecorder(DisplayName, Logo, converter);
         }
 
         public override string DisplayName => "Recorder to Protobuf";

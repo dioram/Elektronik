@@ -7,7 +7,7 @@ namespace Elektronik.RosPlugin.Ros2.Online
     {
         protected override IElektronikPlugin StartPlugin(Ros2Settings settings, ICSConverter converter)
         {
-            return new Ros2Client(settings);
+            return new Ros2Client(DisplayName, Logo, settings);
         }
 
         public override string DisplayName => "ROS2 listener";

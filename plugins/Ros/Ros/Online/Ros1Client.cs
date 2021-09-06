@@ -11,8 +11,10 @@ namespace Elektronik.RosPlugin.Ros.Online
 {
     public class Ros1Client : IDataSourcePlugin
     {
-        public Ros1Client(AddressPortSettingsBag settings)
+        public Ros1Client(string displayName, Texture2D? logo, AddressPortSettingsBag settings)
         {
+            DisplayName = displayName;
+            Logo = logo;
             _container = new RosOnlineContainerTree(settings, "TMP");
             Data = _container;
             var converter = new RosConverter();
@@ -61,7 +63,6 @@ namespace Elektronik.RosPlugin.Ros.Online
         public int AmountOfFrames { get; }
         public string CurrentTimestamp { get; }
         public int CurrentPosition { get; set; }
-        public int DelayBetweenFrames { get; set; }
         public event Action<bool>? Rewind;
         public event Action? Finished;
 
@@ -81,6 +82,10 @@ namespace Elektronik.RosPlugin.Ros.Online
 
             _topicsUpdateTimeout -= delta;
         }
+
+        public string DisplayName { get; }
+        public SettingsBag? Settings => null;
+        public Texture2D? Logo { get; }
 
         #endregion
 

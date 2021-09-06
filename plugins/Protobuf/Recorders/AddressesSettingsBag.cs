@@ -2,7 +2,6 @@
 using System.Linq;
 using Elektronik.Settings;
 using Elektronik.Settings.Bags;
-using UnityEngine;
 
 namespace Elektronik.Protobuf.Recorders
 {

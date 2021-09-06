@@ -7,7 +7,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
     {
         protected override IElektronikPlugin StartPlugin(RosbagSettings settings, ICSConverter converter)
         {
-            return new RosbagReader(settings);
+            return new RosbagReader(DisplayName, Logo, settings);
         }
 
         public override string DisplayName => "ROS bag";

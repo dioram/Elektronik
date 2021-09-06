@@ -34,7 +34,7 @@ namespace Elektronik.UI.Windows
                 var go = Instantiate(prefab, Canvas);
                 var window = go.GetComponent<Window>();
                 window.TitleLabel.SetLocalizedText(title, titleFormatArgs);
-                SetManager(window);
+                window.SetManager(this);
                 go.SetActive(false);
                 Windows.Add(window);
                 callback(go.GetComponent<TComponent>(), window);
@@ -142,22 +142,13 @@ namespace Elektronik.UI.Windows
         {
             foreach (var window in Windows)
             {
-                SetManager(window);
+                window.SetManager(this);
             }
         }
 
         #endregion
 
         #region Private
-
-        private void SetManager(Window window)
-        {
-            window.transform.Find("Header").GetComponent<HeaderDragHandler>().Manager = this;
-            foreach (var edge in window.GetComponentsInChildren<ResizingEdge>())
-            {
-                edge.Manager = this;
-            }
-        }
 
         private float[] VerticalAligns()
         {

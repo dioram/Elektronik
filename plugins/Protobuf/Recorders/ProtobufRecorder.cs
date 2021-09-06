@@ -4,15 +4,19 @@ using System.IO;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
+using Elektronik.Settings.Bags;
 using Google.Protobuf;
+using UnityEngine;
 
 namespace Elektronik.Protobuf.Recorders
 {
     public class ProtobufRecorder : ProtobufRecorderBase, IDataRecorderPlugin
     {
-        public ProtobufRecorder(ICSConverter converter)
+        public ProtobufRecorder(string displayName, Texture2D? logo, ICSConverter converter)
         {
             Converter = converter;
+            DisplayName = displayName;
+            Logo = logo;
         }
         
         public void Update(float delta)
@@ -20,7 +24,11 @@ namespace Elektronik.Protobuf.Recorders
             // Do nothing
         }
 
-        public string Extension { get; } = ".dat";
+        public string DisplayName { get; }
+        public SettingsBag? Settings => null;
+        public Texture2D? Logo { get; }
+
+        public string Extension => ".dat";
         public string FileName { get; set; } = "";
         public ICSConverter Converter { get; set; }
         public const uint Marker = 0xDEADBEEF;

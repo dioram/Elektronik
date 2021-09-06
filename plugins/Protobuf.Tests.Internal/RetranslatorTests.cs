@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using Elektronik;
+using Elektronik.Commands;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Extensions;
+using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
-using Elektronik.Protobuf.Online.GrpcServices;
+using Elektronik.Protobuf.OnlineBuffered.GrpcServices;
 using Elektronik.Protobuf.Recorders;
 using Grpc.Core;
 using Moq;
@@ -35,16 +37,20 @@ namespace Protobuf.Tests.Internal
             _mockedTrackedObjectsContainer = new Mock<IContainer<SlamTrackedObject>>();
             _mockedLinesContainer = new Mock<IContainer<SlamLine>>();
             _mockedInfinitePlanesContainer = new Mock<IContainer<SlamInfinitePlane>>();
-            _retranslator = new ProtobufRetranslator(new AddressesSettingsBag { Addresses = $"{Address}:{Port}" },
-                                                     new FakeConverter());
-
+            _retranslator = new ProtobufRetranslator(
+                "", null, new AddressesSettingsBag { Addresses = $"{Address}:{Port}" },
+                new FakeConverter());
+            var buffer = new UpdatableFramesCollection<ICommand>();
             var logger = new TestsLogger();
-            var pointsMapManager = new PointsMapManager(_mockedPointsContainer.Object, null, logger);
-            var observationsMapManager = new ObservationsMapManager(_mockedObservationsContainer.Object, null, logger);
-            var trackedObjsMapManager = new TrackedObjsMapManager(_mockedTrackedObjectsContainer.Object, null, logger);
-            var linesMapManager = new LinesMapManager(_mockedLinesContainer.Object, null, logger);
-            var infinitePlanesMapManager = new InfinitePlanesMapManager(_mockedInfinitePlanesContainer.Object, null, logger);
-            
+            var pointsMapManager = new PointsMapManager(buffer, _mockedPointsContainer.Object, null, logger);
+            var observationsMapManager =
+                    new ObservationsMapManager(buffer, _mockedObservationsContainer.Object, null, logger);
+            var trackedObjsMapManager =
+                    new TrackedObjsMapManager(buffer, _mockedTrackedObjectsContainer.Object, null, logger);
+            var linesMapManager = new LinesMapManager(buffer, _mockedLinesContainer.Object, null, logger);
+            var infinitePlanesMapManager =
+                    new InfinitePlanesMapManager(buffer, _mockedInfinitePlanesContainer.Object, null, logger);
+
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
                 pointsMapManager, observationsMapManager, trackedObjsMapManager, linesMapManager,
@@ -87,7 +93,7 @@ namespace Protobuf.Tests.Internal
             };
             _retranslator.OnAdded("", points);
             _retranslator.OnUpdated("", morePoints);
-            _retranslator.OnRemoved<SlamPoint>("", new List<int> {1});
+            _retranslator.OnRemoved<SlamPoint>("", new List<int> { 1 });
             Thread.Sleep(200);
             _mockedPointsContainer.Verify(c => c.AddRange(It.IsAny<IList<SlamPoint>>()), Times.Once);
             _mockedPointsContainer.Verify(c => c.Update(It.IsAny<IList<SlamPoint>>()), Times.Once);
@@ -114,7 +120,7 @@ namespace Protobuf.Tests.Internal
 
             _retranslator.OnAdded("", observations);
             _retranslator.OnUpdated("", moreObservations);
-            _retranslator.OnRemoved<SlamObservation>("", new List<int> {1});
+            _retranslator.OnRemoved<SlamObservation>("", new List<int> { 1 });
             Thread.Sleep(200);
             _mockedObservationsContainer.Verify(c => c.AddRange(It.IsAny<IList<SlamObservation>>()), Times.Once);
             _mockedObservationsContainer.Verify(c => c.Update(It.IsAny<IList<SlamObservation>>()), Times.Once);
@@ -138,7 +144,7 @@ namespace Protobuf.Tests.Internal
 
             _retranslator.OnAdded("", trackedObjects);
             _retranslator.OnUpdated("", moreTrackedObjects);
-            _retranslator.OnRemoved<SlamTrackedObject>("", new List<int> {1});
+            _retranslator.OnRemoved<SlamTrackedObject>("", new List<int> { 1 });
             Thread.Sleep(200);
             _mockedTrackedObjectsContainer.Verify(c => c.AddRange(It.IsAny<IList<SlamTrackedObject>>()),
                                                   Times.Once);
@@ -165,7 +171,7 @@ namespace Protobuf.Tests.Internal
 
             _retranslator.OnAdded("", lines);
             _retranslator.OnUpdated("", moreLines);
-            _retranslator.OnRemoved<SlamLine>("", new List<int> {1});
+            _retranslator.OnRemoved<SlamLine>("", new List<int> { 1 });
             Thread.Sleep(200);
             _mockedLinesContainer.Verify(c => c.AddRange(It.IsAny<IList<SlamLine>>()), Times.Once);
             _mockedLinesContainer.Verify(c => c.Update(It.IsAny<IList<SlamLine>>()), Times.Once);
@@ -189,7 +195,7 @@ namespace Protobuf.Tests.Internal
 
             _retranslator.OnAdded("", planes);
             _retranslator.OnUpdated("", morePlanes);
-            _retranslator.OnRemoved<SlamInfinitePlane>("", new List<int> {1});
+            _retranslator.OnRemoved<SlamInfinitePlane>("", new List<int> { 1 });
             Thread.Sleep(200);
             _mockedInfinitePlanesContainer.Verify(c => c.AddRange(It.IsAny<IList<SlamInfinitePlane>>()),
                                                   Times.Once);

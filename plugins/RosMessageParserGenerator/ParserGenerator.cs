@@ -17,7 +17,7 @@ namespace Elektronik.RosMessageParserGenerator
 
         private static readonly string[] ExcludedTypes =
         {
-            "Header", "String", "Double", "Bool", "SByte", "Byte", 
+            "Header", "String", "Double", "Bool", "SByte", "Byte",
             "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64",
         };
 

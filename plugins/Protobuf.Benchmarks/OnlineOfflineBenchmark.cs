@@ -9,7 +9,7 @@ using Elektronik.Extensions;
 using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
-using Elektronik.Protobuf.Online.GrpcServices;
+using Elektronik.Protobuf.OnlineBuffered.GrpcServices;
 using Protobuf.Tests.Internal;
 using ICommand = Elektronik.Commands.ICommand;
 
@@ -78,30 +78,6 @@ namespace Protobuf.Benchmarks
         }
 
         [Benchmark]
-        public void OnlineAdd()
-        {
-            var points = new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
-                                                                    new SlamLinesContainer());
-            var observations =
-                    new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
-                                                                     new SlamLinesContainer());
-            var infinitePlanes = new CloudContainer<SlamInfinitePlane>();
-            var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
-            {
-                new PointsMapManager(points, new FakeConverter(), new FakeLogger()),
-                new ObservationsMapManager(observations, new FakeConverter(), new FakeLogger()),
-                new InfinitePlanesMapManager(infinitePlanes, new FakeConverter(), new FakeLogger())
-            }.BuildChain();
-
-            int i = 0;
-            foreach (var packet in _packets)
-            {
-                var response = servicesChain.Handle(packet, null).Result;
-                if (response.ErrType != ErrorStatusPb.Types.ErrorStatusEnum.Succeeded) i++;
-            }
-        }
-
-        [Benchmark]
         public void OnlineBufferedAdd()
         {
             var points = new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
@@ -117,12 +93,9 @@ namespace Protobuf.Benchmarks
             };
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
-                new Elektronik.Protobuf.OnlineBuffered.GrpcServices.PointsMapManager(
-                    buffer, points, new FakeConverter(), new FakeLogger()),
-                new Elektronik.Protobuf.OnlineBuffered.GrpcServices.ObservationsMapManager(
-                    buffer, observations, new FakeConverter(), new FakeLogger()),
-                new Elektronik.Protobuf.OnlineBuffered.GrpcServices.InfinitePlanesMapManager(
-                    buffer, infinitePlanes, new FakeConverter(), new FakeLogger())
+                new PointsMapManager(buffer, points, new FakeConverter(), new FakeLogger()),
+                new ObservationsMapManager(buffer, observations, new FakeConverter(), new FakeLogger()),
+                new InfinitePlanesMapManager(buffer, infinitePlanes, new FakeConverter(), new FakeLogger())
             }.BuildChain();
 
             int i = 0;

@@ -5,15 +5,19 @@ using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
+using Elektronik.Settings.Bags;
 using Grpc.Core;
+using UnityEngine;
 
 namespace Elektronik.Protobuf.Recorders
 {
     public class ProtobufRetranslator : ProtobufRecorderBase, IDataRecorderPlugin
     {
-        public ProtobufRetranslator(AddressesSettingsBag settings, ICSConverter converter)
+        public ProtobufRetranslator(string displayName, Texture2D? logo, AddressesSettingsBag settings, ICSConverter converter)
         {
             Converter = converter;
+            DisplayName = displayName;
+            Logo = logo;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             _clients = settings.Addresses
@@ -35,6 +39,10 @@ namespace Elektronik.Protobuf.Recorders
         {
             // Do nothing
         }
+
+        public string DisplayName { get; }
+        public SettingsBag? Settings => null;
+        public Texture2D? Logo { get; }
 
         public void StartRecording()
         {

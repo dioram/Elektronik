@@ -10,6 +10,7 @@ using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
+using Elektronik.Settings.Bags;
 using Elektronik.Threading;
 using UnityEngine;
 
@@ -17,12 +18,14 @@ namespace Elektronik.Protobuf.Offline
 {
     public class ProtobufFilePlayer : IDataSourcePlugin
     {
-        public ProtobufFilePlayer(OfflineSettingsBag settings, ICSConverter converter)
+        public ProtobufFilePlayer(string displayName, Texture2D? logo, OfflineSettingsBag settings, ICSConverter converter)
         {
             _containerTree = new ProtobufContainerTree("Protobuf",
                                                        new FileImagePresenter("Camera", settings.PathToImagesDirectory),
                                                        new SlamDataInfoPresenter("Special info"));
             Data = _containerTree;
+            DisplayName = displayName;
+            Logo = logo;
             _parsersChain = new DataParser<PacketPb>[]
             {
                 new ObjectsParser(_containerTree.InfinitePlanes,
@@ -40,9 +43,10 @@ namespace Elektronik.Protobuf.Offline
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
             _threadWorker = new ThreadQueueWorker();
-            _timer = new Timer(DelayBetweenFrames);
+            _timer = new Timer(10 - _typedSettings.PlaybackSpeed);
             _timer.Elapsed += (_, __) =>
             {
+                _timer.Interval = 10 - _typedSettings.PlaybackSpeed;
                 _threadWorker.Enqueue(() =>
                 {
                     if (GoToNextFrame()) return;
@@ -68,6 +72,10 @@ namespace Elektronik.Protobuf.Offline
             // Do nothing
         }
 
+        public string DisplayName { get; }
+        public SettingsBag Settings => _typedSettings;
+        public Texture2D? Logo { get; }
+
         public int AmountOfFrames => _frames.CurrentSize;
 
         public string CurrentTimestamp => $"{_frames.Current?.Timestamp ?? 0} ({CurrentPosition})";
@@ -76,18 +84,6 @@ namespace Elektronik.Protobuf.Offline
         {
             get => _frames.CurrentIndex;
             set => RewindAt(value);
-        }
-
-        public int DelayBetweenFrames
-        {
-            get => _delayBetweenFrames;
-            set
-            {
-                if (_delayBetweenFrames == value) return;
-
-                _delayBetweenFrames = value;
-                _timer.Interval = _delayBetweenFrames;
-            }
         }
 
         public event Action<bool>? Rewind;
@@ -175,7 +171,7 @@ namespace Elektronik.Protobuf.Offline
         private readonly DataParser<PacketPb> _parsersChain;
         private readonly ThreadQueueWorker _threadWorker;
         private readonly Timer _timer;
-        private int _delayBetweenFrames = 2;
+        private readonly ProtobufFilePlayerSettingsBag _typedSettings = new (); 
 
         private IEnumerator<Frame> ReadCommands(int size)
         {
