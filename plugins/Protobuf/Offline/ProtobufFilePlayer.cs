@@ -15,12 +15,12 @@ using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline
 {
-    public class ProtobufFilePlayer : IDataSourcePluginOffline
+    public class ProtobufFilePlayer : IDataSourcePlugin
     {
         public ProtobufFilePlayer(OfflineSettingsBag settings, ICSConverter converter)
         {
             _containerTree = new ProtobufContainerTree("Protobuf",
-                                                       new FileImagePresenter("Camera", settings.ImagePath),
+                                                       new FileImagePresenter("Camera", settings.PathToImagesDirectory),
                                                        new SlamDataInfoPresenter("Special info"));
             Data = _containerTree;
             _parsersChain = new DataParser<PacketPb>[]
@@ -28,13 +28,13 @@ namespace Elektronik.Protobuf.Offline
                 new ObjectsParser(_containerTree.InfinitePlanes,
                                   _containerTree.Points,
                                   _containerTree.Observations,
-                                  settings.ImagePath),
+                                  settings.PathToImagesDirectory),
                 new TrackedObjectsParser(_containerTree.TrackedObjs),
                 new InfoParser(_containerTree.SpecialInfo),
             }.BuildChain();
             
-            _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.FilePath)}";
-            _input = File.OpenRead(settings.FilePath);
+            _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
+            _input = File.OpenRead(settings.PathToFile);
             converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             _parsersChain.SetConverter(converter);
 

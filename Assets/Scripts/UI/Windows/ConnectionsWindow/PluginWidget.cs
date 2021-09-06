@@ -16,6 +16,7 @@ namespace Elektronik.UI.Windows.ConnectionsWindow
         [SerializeField] private TMP_Text HeaderLabel;
         [SerializeField] private TMP_Text DescriptionLabel;
         [SerializeField] private RectTransform Description;
+        [SerializeField] private RawImage LogoLabel;
         [Range(30, 100), SerializeField] private int Height = 50;
         [Range(30, 1000), SerializeField] private int HeightWithDescription = 150;
 
@@ -58,6 +59,8 @@ namespace Elektronik.UI.Windows.ConnectionsWindow
             OnSelected().Subscribe(_ => Expand()).AddTo(this);
             HeaderLabel.SetLocalizedText(Plugin.DisplayName);
             DescriptionLabel.SetLocalizedText(Plugin.Description);
+            if (Plugin.Logo is null) LogoLabel.enabled = false;
+            else LogoLabel.texture = Plugin.Logo;
             Minimize();
         }
 

@@ -4,11 +4,11 @@ using Elektronik.Settings.Bags;
 
 namespace Elektronik.RosPlugin.Ros.Online
 {
-    public class Ros1ClientFactory: ElektronikPluginsFactoryBase<AddressPortScaleSettingsBag>, IDataSourcePluginsOnlineFactory
+    public class Ros1ClientFactory: ElektronikPluginsFactoryBase<AddressPortSettingsBag>, IDataSourcePluginsFactory
     {
-        public override IElektronikPlugin Start(ICSConverter converter)
+        protected override IElektronikPlugin StartPlugin(AddressPortSettingsBag settings, ICSConverter converter)
         {
-            return new Ros1Client(TypedSettings);
+            return new Ros1Client(settings);
         }
 
         public override string DisplayName => "ROS listener";
@@ -17,7 +17,5 @@ namespace Elektronik.RosPlugin.Ros.Online
                 " network. Needs to be used with " +
                 "<#7f7fe5><u><link=\"http://wiki.ros.org/rosbridge_suite/Tutorials/RunningRosbridge\">" +
                 "Rosbridge</link></u></color>.";
-
-        public override string Version => "1.3";
     }
 }

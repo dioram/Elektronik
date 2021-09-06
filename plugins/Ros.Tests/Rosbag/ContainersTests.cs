@@ -15,7 +15,7 @@ namespace Elektronik.Ros.Tests.Rosbag
         [SetUp]
         public void Setup()
         {
-            _tree = new RosbagContainerTree(new RosbagSettings {FilePath = @"bag_filtered.bag"}, "TMP");
+            _tree = new RosbagContainerTree(new RosbagSettings {PathToBag = @"bag_filtered.bag"}, "TMP");
         }
 
         [TearDown]

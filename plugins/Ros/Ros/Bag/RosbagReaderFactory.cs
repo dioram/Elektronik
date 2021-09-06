@@ -3,11 +3,11 @@ using Elektronik.PluginsSystem;
 
 namespace Elektronik.RosPlugin.Ros.Bag
 {
-    public class RosbagReaderFactory: ElektronikPluginsFactoryBase<RosbagSettings>, IDataSourcePluginsOfflineFactory
+    public class RosbagReaderFactory: ElektronikPluginsFactoryBase<RosbagSettings>, IFileSourcePluginsFactory
     {
-        public override IElektronikPlugin Start(ICSConverter converter)
+        protected override IElektronikPlugin StartPlugin(RosbagSettings settings, ICSConverter converter)
         {
-            return new RosbagReader(TypedSettings);
+            return new RosbagReader(settings);
         }
 
         public override string DisplayName => "ROS bag";
@@ -16,11 +16,6 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 "<#7f7fe5><u><link=\"https://www.ros.org\">ROS</link></u></color>" +
                 " using <#7f7fe5><u><link=\"http://wiki.ros.org/rosbag\">rosbag</link></u></color>.";
 
-        public override string Version => "1.3";
         public string[] SupportedExtensions { get; } = {".bag"};
-        public void SetFileName(string path)
-        {
-            TypedSettings.FilePath = path;
-        }
     }
 }

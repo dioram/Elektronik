@@ -6,7 +6,7 @@ namespace Elektronik.RosPlugin.Ros2.Online
 {
     public class Ros2Settings : SettingsBag
     {
-        [CheckForEquals, Tooltip("Domain id")]
+        [CheckForEquals, Tooltip("If you don't know what does it mean then it should be 0.")]
         public int DomainId = 0;
     }
 }

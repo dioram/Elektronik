@@ -14,7 +14,7 @@ namespace Elektronik.Protobuf.Online
 {
     using GrpcServer = Server;
 
-    public class ProtobufGrpcServer : IDataSourcePluginOnline
+    public class ProtobufGrpcServer : IDataSourcePlugin
     {
         public ProtobufGrpcServer(OnlineSettingsBag settings, ICSConverter converter, ILogger? logger = null)
         {
@@ -35,7 +35,7 @@ namespace Elektronik.Protobuf.Online
                 new InfinitePlanesMapManager(containerTree.InfinitePlanes, converter, logger)
             }.BuildChain();
 
-            containerTree.DisplayName = $"From gRPC at port {settings.Port}";
+            containerTree.DisplayName = $"From gRPC at port {settings.ListeningPort}";
             
             _server = new GrpcServer
             {
@@ -45,15 +45,56 @@ namespace Elektronik.Protobuf.Online
                     SceneManagerPb.BindService(new SceneManager(containerTree, logger)),
                     ImageManagerPb.BindService(new ImageManager(containerTree.Image as RawImagePresenter, logger))
                 },
-                Ports = { new ServerPort("0.0.0.0", settings.Port, ServerCredentials.Insecure) }
+                Ports = { new ServerPort("0.0.0.0", settings.ListeningPort, ServerCredentials.Insecure) }
             };
             _server.Start();
             _serverStarted = true;
         }
 
-        #region IDataSourceOnline implementation
+        #region IDataSourcePlugin
+
+        public void Play()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Pause()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopPlaying()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PreviousKeyFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NextKeyFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PreviousFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NextFrame()
+        {
+            throw new NotImplementedException();
+        }
 
         public ISourceTree Data { get; }
+        public int AmountOfFrames { get; }
+        public string CurrentTimestamp { get; }
+        public int CurrentPosition { get; set; }
+        public int DelayBetweenFrames { get; set; }
+        public event Action<bool>? Rewind;
+        public event Action? Finished;
 
         public void Dispose()
         {

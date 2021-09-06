@@ -25,8 +25,8 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         public RosbagContainerTree(RosbagSettings settings, string displayName) : base(displayName)
         {
-            DisplayName = settings.FilePath.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
-            Parser = new BagParser(settings.FilePath);
+            DisplayName = settings.PathToBag.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
+            Parser = new BagParser(settings.PathToBag);
             ActualTopics = Parser.GetTopics()
                     .Where(t => SupportedMessages.ContainsKey(t.Type) || UnknownTypePresenter.CanParseTopic(t.Type))
                     .Select(t => (t.Topic, t.Type))

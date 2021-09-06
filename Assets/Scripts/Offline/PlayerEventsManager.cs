@@ -30,7 +30,7 @@ namespace Elektronik.Offline
         private bool _isRewinding;
         private bool _isPlaying;
         private Image _playButtonImage;
-        private IDataSourcePluginOffline _dataSourcePluginOffline;
+        private IDataSourcePlugin _dataSourcePlugin;
 
         public readonly List<IObservable<Unit>> PlayPauseObservables = new List<IObservable<Unit>>();
         public readonly List<IObservable<Unit>> StopObservables = new List<IObservable<Unit>>();
@@ -39,28 +39,28 @@ namespace Elektronik.Offline
         public readonly List<IObservable<Unit>> NextFrameObservables = new List<IObservable<Unit>>();
         public readonly List<IObservable<Unit>> PreviousFrameObservables = new List<IObservable<Unit>>();
 
-        public void SetDataSource(IDataSourcePluginOffline dataSourcePluginOffline)
+        public void SetDataSource(IDataSourcePlugin dataSourcePlugin)
         {
-            _dataSourcePluginOffline = dataSourcePluginOffline;
-            Play += _dataSourcePluginOffline.Play;
-            Pause += _dataSourcePluginOffline.Pause;
+            _dataSourcePlugin = dataSourcePlugin;
+            Play += _dataSourcePlugin.Play;
+            Pause += _dataSourcePlugin.Pause;
             Stop += () =>
             {
                 Camera.main.transform.parent = null;
-                _dataSourcePluginOffline.StopPlaying();
+                _dataSourcePlugin.StopPlaying();
             };
-            NextKeyFrame += _dataSourcePluginOffline.NextKeyFrame;
-            PreviousKeyFrame += _dataSourcePluginOffline.PreviousKeyFrame;
-            NextFrame += _dataSourcePluginOffline.NextFrame;
-            PreviousFrame += _dataSourcePluginOffline.PreviousFrame;
-            _dataSourcePluginOffline.Finished += SetPausedState;
-            _dataSourcePluginOffline.Rewind += b => _isRewinding = b;
+            NextKeyFrame += _dataSourcePlugin.NextKeyFrame;
+            PreviousKeyFrame += _dataSourcePlugin.PreviousKeyFrame;
+            NextFrame += _dataSourcePlugin.NextFrame;
+            PreviousFrame += _dataSourcePlugin.PreviousFrame;
+            _dataSourcePlugin.Finished += SetPausedState;
+            _dataSourcePlugin.Rewind += b => _isRewinding = b;
             TimelineSlider.OnTimelineChanged += f =>
             {
                 if (_isRewinding) return;
                 SetPausedState();
-                _dataSourcePluginOffline.CurrentPosition =
-                        (int)Mathf.Round((_dataSourcePluginOffline.AmountOfFrames - 1) * f);
+                _dataSourcePlugin.CurrentPosition =
+                        (int)Mathf.Round((_dataSourcePlugin.AmountOfFrames - 1) * f);
             };
         }
 
@@ -115,6 +115,7 @@ namespace Elektronik.Offline
 
         private void Update()
         {
+            if (_dataSourcePlugin is null) return;
             UpdateControls(_isPlaying);
         }
 
@@ -126,12 +127,12 @@ namespace Elektronik.Offline
         {
             if (updateSlider)
             {
-                var pos = _dataSourcePluginOffline.CurrentPosition /
-                        (float)(_dataSourcePluginOffline.AmountOfFrames - 1);
+                var pos = _dataSourcePlugin.CurrentPosition /
+                        (float)(_dataSourcePlugin.AmountOfFrames - 1);
                 if (!float.IsNaN(pos)) TimelineSlider.Value = pos;
             }
 
-            Timestamp.text = $"{_dataSourcePluginOffline.CurrentTimestamp}";
+            Timestamp.text = $"{_dataSourcePlugin.CurrentTimestamp}";
         }
 
         private void PlayPause()

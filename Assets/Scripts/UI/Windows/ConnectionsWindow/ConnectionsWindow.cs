@@ -5,35 +5,51 @@ using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.Settings.Bags;
 using Elektronik.UI.SettingsFields;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Elektronik.UI.Windows.ConnectionsWindow
 {
+    [RequireComponent(typeof(Window))]
     public class ConnectionsWindow : MonoBehaviour
     {
+        [SerializeField] private PluginsManager PluginsManager;
         [Header("Targets")] [SerializeField] private RectTransform PluginsTarget;
         [SerializeField] private RectTransform RecentSettingsTarget;
         [Header("Prefabs")] [SerializeField] private GameObject PluginWidgetPrefab;
         [SerializeField] private GameObject RecentSettingsPrefab;
         [Space] [SerializeField] private SettingsGenerator Generator;
         [SerializeField] private Button ConnectButton;
+        [SerializeField] private TMP_Text ErrorLabel;
 
         private readonly List<PluginWidget> _widgets = new List<PluginWidget>();
         private IDataSourcePluginsFactory _selectedFactory;
 
         public void Start()
         {
-            ConnectButton.OnClickAsObservable().Subscribe(_ => _selectedFactory.SaveSettings());
+            ConnectButton.OnClickAsObservable()
+                    .Select(_ => _selectedFactory.Settings.Validate())
+                    .Where(v => v.Success)
+                    .Do(_ => GetComponent<Window>().Hide())
+                    .Subscribe(_ => PluginsManager.SetNewSource(_selectedFactory));
+            
+            ConnectButton.OnClickAsObservable()
+                    .Select(_ =>_selectedFactory.Settings.Validate())
+                    .Where(v => !v.Success)
+                    .Do(_ => ErrorLabel.enabled = true)
+                    .Subscribe(v => ErrorLabel.text = v.Message);
         }
 
         public void OnEnable()
         {
+            ErrorLabel.enabled = false;
             Generator.Clear();
             _widgets.Clear();
             DestroyChildren(PluginsTarget);
             DestroyChildren(RecentSettingsTarget);
+            
             foreach (var factory in PluginsLoader.Instance.PluginFactories.OfType<IDataSourcePluginsFactory>())
             {
                 var go = Instantiate(PluginWidgetPrefab, PluginsTarget);
@@ -43,7 +59,6 @@ namespace Elektronik.UI.Windows.ConnectionsWindow
                         .Do(p => Generator.Generate(p.Settings))
                         .Do(HideOther)
                         .Do(AddRecent)
-                        .Do(_ => SelectFirst())
                         .Do(p => _selectedFactory = p)
                         .Subscribe()
                         .AddTo(widget);

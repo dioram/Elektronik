@@ -9,16 +9,17 @@ using UnityEngine;
 
 namespace Elektronik.Data
 {
+    // TODO: rewrite
     public class RecordingManager : MonoBehaviour
     {
-        [SerializeField] private PluginsPlayer PluginsPlayer;
+        [SerializeField] private PluginsManager PluginsManager;
         [SerializeField] private DataSourcesManager DataSourcesManager;
 
         private List<IDataRecorderPlugin> _recorders;
 
         private void Start()
         {
-            PluginsPlayer.PluginsStarted += Setup;
+            // PluginsManager.PluginsStarted += Setup;
         }
 
         private void OnDestroy()
@@ -34,8 +35,8 @@ namespace Elektronik.Data
                                        false,
                                        false,
                                        "",
-                                       TextLocalizationExtender.GetLocalizedString("Save record"),
-                                       TextLocalizationExtender.GetLocalizedString("Save"));
+                                       "Save record".tr(),
+                                       "Save".tr());
         }
 
         public void StopRecording()
@@ -50,7 +51,7 @@ namespace Elektronik.Data
 
         private void Record(string filename)
         {
-            _currentRecorder = PluginsPlayer.Plugins
+            _currentRecorder = PluginsManager.Plugins
                     .OfType<IDataRecorderPlugin>()
                     .FirstOrDefault(r => filename.EndsWith(r.Extension));
 

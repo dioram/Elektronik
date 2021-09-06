@@ -99,10 +99,18 @@ namespace Elektronik.Data
             OnSourceAdded?.Invoke(source);
         }
 
+        public void RemoveDataSource(ISourceTree source)
+        {
+            _dataSources.Remove(source);
+            var treeElement = _roots.Find(r => r.Node == source);
+            _roots.Remove(treeElement);
+            Destroy(treeElement.gameObject);
+        }
+
         public void TakeSnapshot()
         {
             // ReSharper disable once LocalVariableHidesMember
-            var name = TextLocalizationExtender.GetLocalizedString("Snapshot", _snapshotsCount++);
+            var name = "Snapshot".tr(_snapshotsCount++);
             var snapshot = new SnapshotContainer(name,
                                                  _dataSources
                                                          .OfType<ISnapshotable>()
@@ -115,17 +123,16 @@ namespace Elektronik.Data
 
         public void LoadSnapshot()
         {
-            // TODO: Turn on
-            // FileBrowser.SetFilters(false, PluginsLoader.Plugins.Value
-            //                                .OfType<IDataSourcePluginOffline>()
-            //                                .SelectMany(r => r.SupportedExtensions));
+            FileBrowser.SetFilters(false, PluginsLoader.Instance.PluginFactories
+                                           .OfType<ISnapshotReaderPluginsFactory>()
+                                           .SelectMany(r => r.SupportedExtensions));
             FileBrowser.ShowLoadDialog(LoadSnapshot,
                                        () => { },
                                        false,
                                        true,
                                        "",
-                                       TextLocalizationExtender.GetLocalizedString("Load snapshot"),
-                                       TextLocalizationExtender.GetLocalizedString("Load"));
+                                       "Load snapshot".tr(),
+                                       "Load".tr());
         }
 
         #region Private
@@ -133,7 +140,7 @@ namespace Elektronik.Data
         private static void MapSourceTree(ISourceTree treeElement, string path, Func<ISourceTree, string, bool> action)
         {
             var fullName = $"{path}/{treeElement.DisplayName}";
-            bool deeper = action(treeElement, fullName);
+            var deeper = action(treeElement, fullName);
             if (!deeper) return;
             foreach (var child in treeElement.Children)
             {
@@ -146,14 +153,12 @@ namespace Elektronik.Data
             foreach (var path in files)
             {
                 var playerPrefab = PluginsLoader.Instance.PluginFactories
-                        .OfType<IDataSourcePluginsOfflineFactory>()
-                        .FirstOrDefault();
-                        // TODO: Turn on
-                        // .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
+                        .OfType<ISnapshotReaderPluginsFactory>()
+                        .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
                 if (playerPrefab is null) return;
-                var factory = (IDataSourcePluginsOfflineFactory) Activator.CreateInstance(playerPrefab.GetType());
+                var factory = (ISnapshotReaderPluginsFactory) Activator.CreateInstance(playerPrefab.GetType());
                 factory.SetFileName(path);
-                var plugin = (IDataSourcePluginOffline) factory.Start(Converter);
+                var plugin = (IDataSourcePlugin) factory.Start(Converter);
                 plugin.CurrentPosition = plugin.AmountOfFrames - 1;
                 AddDataSource(new SnapshotContainer(Path.GetFileName(path), plugin.Data.Children, Converter));
             }

@@ -5,14 +5,14 @@ using System.Reflection;
 namespace Elektronik.Settings.Bags
 {
     [Serializable]
-    public class SettingsBag
+    public partial class SettingsBag
     {
         [NotShow]
         public string ModificationTime;
 
-        public virtual bool Validate()
+        public virtual ValidationResult Validate()
         {
-            return true;
+            return ValidationResult.Succeeded;
         }
 
         public override string ToString()

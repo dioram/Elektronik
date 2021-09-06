@@ -11,7 +11,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
         [Test, Platform("Win")]
         public void ActualTimestamps()
         {
-            var tree = new Rosbag2ContainerTree(new Rosbag2Settings() {FilePath = @"metadata.yaml"});
+            var tree = new Rosbag2ContainerTree(new Rosbag2Settings() {PathToFile = @"metadata.yaml"});
             var sum = tree.Timestamps.Values.Sum(timestamps => timestamps.Count);
             Assert.AreEqual(282, sum);
         }
@@ -19,7 +19,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
         [Test, Platform("Win")]
         public void ContainersTree()
         {
-            var tree = new Rosbag2ContainerTree(new Rosbag2Settings() {FilePath = @"metadata.yaml"});
+            var tree = new Rosbag2ContainerTree(new Rosbag2Settings() {PathToFile = @"metadata.yaml"});
             Assert.AreEqual(20, tree.ActualTopics.Count);
             Assert.AreEqual(16, tree.Children.Count());
             var children = tree.Children.ToList();

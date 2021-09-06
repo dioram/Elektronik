@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Bag
 {
-    public class RosbagReader : IDataSourcePluginOffline
+    public class RosbagReader : IDataSourcePlugin
     {
         public RosbagReader(RosbagSettings settings)
         {

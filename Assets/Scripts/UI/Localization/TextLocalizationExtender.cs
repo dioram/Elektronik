@@ -42,15 +42,16 @@ namespace Elektronik.UI.Localization
 
         public static void SetLocalizedText(this Text label, string text, params object[] args)
         {
-            label.text = GetLocalizedString(text, args);
+            label.text = text.tr(args);
         }
 
         public static void SetLocalizedText(this TMP_Text label, string text, params object[] args)
         {
-            label.text = GetLocalizedString(text, args);
+            label.text = text.tr(args);
         }
 
-        public static string GetLocalizedString(string text, params object[] args)
+        // ReSharper disable once InconsistentNaming
+        public static string tr(this string text, params object[] args)
         {
             var defaultTable = LocalizationSettings.Instance.GetStringDatabase().GetDefaultTableAsync().Result;
             if (defaultTable != null)

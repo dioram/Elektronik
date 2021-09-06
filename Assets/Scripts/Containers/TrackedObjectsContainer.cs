@@ -421,7 +421,7 @@ namespace Elektronik.Containers
         public void WriteSnapshot(IDataRecorderPlugin recorder)
         {
             (SlamTrackedObject, TrackContainer)[] objects;
-            lock (_trackedObjsRenderer)
+            lock (_objects)
             {
                 objects = _objects.Values.ToArray();
             }

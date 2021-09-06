@@ -7,7 +7,6 @@ namespace Elektronik.Protobuf.Online
     [Serializable]
     public class OnlineSettingsBag : SettingsBag
     {
-        [CheckForEquals]
-        public int Port = 5050;
+        [CheckForEquals] public int ListeningPort = 5050;
     }
 }

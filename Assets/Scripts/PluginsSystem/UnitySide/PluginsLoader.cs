@@ -9,7 +9,7 @@ using Debug = UnityEngine.Debug;
 
 namespace Elektronik.PluginsSystem.UnitySide
 {
-    public class PluginsLoader: MonoBehaviour
+    public class PluginsLoader : MonoBehaviour
     {
         public List<IElektronikPluginsFactory> PluginFactories;
         public static PluginsLoader Instance;
@@ -38,14 +38,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                 {
                     try
                     {
-                        res.AddRange(Assembly.LoadFrom(file)
-                                             .GetTypes()
-                                             .Where(p => typeof(IElektronikPluginsFactory).IsAssignableFrom(p) &&
-                                                            p.IsClass && !p.IsAbstract)
-                                             .Select(InstantiatePluginFactory<IElektronikPluginsFactory>)
-                                             .Where(p => p != null));
-                        TextLocalizationExtender.ImportTranslations(Path.Combine(Path.GetDirectoryName(file)!,
-                                                                        @"../data/translations.csv"));
+                        res.AddRange(LoadFromFile(file));
                     }
                     catch (Exception e)
                     {
@@ -57,7 +50,28 @@ namespace Elektronik.PluginsSystem.UnitySide
             {
                 Debug.LogError($"PluginsLoader initialized with error: {e.Message}");
             }
+
             return res;
+        }
+
+        private static List<IElektronikPluginsFactory> LoadFromFile(string path)
+        {
+            var factories = Assembly.LoadFrom(path)
+                    .GetTypes()
+                    .Where(p => typeof(IElektronikPluginsFactory).IsAssignableFrom(p) &&
+                                   p.IsClass && !p.IsAbstract)
+                    .Select(InstantiatePluginFactory<IElektronikPluginsFactory>)
+                    .Where(p => p != null)
+                    .ToList();
+            foreach (var factory in factories)
+            {
+                factory.LoadLogo(Path.Combine(Path.GetDirectoryName(path)!,
+                                              $@"../data/{factory.DisplayName}_Logo.png"));
+            }
+
+            TextLocalizationExtender.ImportTranslations(Path.Combine(Path.GetDirectoryName(path)!,
+                                                                     @"../data/translations.csv"));
+            return factories;
         }
 
         private static T InstantiatePluginFactory<T>(Type t) where T : class

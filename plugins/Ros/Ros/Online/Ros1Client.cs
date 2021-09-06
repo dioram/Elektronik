@@ -1,4 +1,5 @@
-﻿using Elektronik.Data;
+﻿using System;
+using Elektronik.Data;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
@@ -8,9 +9,9 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Online
 {
-    public class Ros1Client : IDataSourcePluginOnline
+    public class Ros1Client : IDataSourcePlugin
     {
-        public Ros1Client(AddressPortScaleSettingsBag settings)
+        public Ros1Client(AddressPortSettingsBag settings)
         {
             _container = new RosOnlineContainerTree(settings, "TMP");
             Data = _container;
@@ -21,7 +22,48 @@ namespace Elektronik.RosPlugin.Ros.Online
 
         #region IDataSourceOnline
 
+        public void Play()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Pause()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopPlaying()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PreviousKeyFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NextKeyFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PreviousFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NextFrame()
+        {
+            throw new NotImplementedException();
+        }
+
         public ISourceTree Data { get; }
+        public int AmountOfFrames { get; }
+        public string CurrentTimestamp { get; }
+        public int CurrentPosition { get; set; }
+        public int DelayBetweenFrames { get; set; }
+        public event Action<bool>? Rewind;
+        public event Action? Finished;
 
         public void Dispose()
         {

@@ -1,18 +1,21 @@
 ﻿using System.IO;
 using Elektronik.Settings;
 using Elektronik.Settings.Bags;
+using Elektronik.UI.Localization;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag
 {
     public class Rosbag2Settings : SettingsBag
     {
-        [CheckForEquals, Path(PathAttribute.PathTypes.File, new []{".db3"}), Tooltip("Path to file")]
-        public string FilePath = "";
-        
-        public override bool Validate()
+        [CheckForEquals, Path(new[] { ".db3", ".yaml", ".yml" }), Tooltip("Path to metadata.yaml or *.db3 file.")]
+        public string PathToFile = "";
+
+        public override ValidationResult Validate()
         {
-            return File.Exists(FilePath);
+            return File.Exists(PathToFile)
+                    ? ValidationResult.Succeeded
+                    : ValidationResult.Failed("File not found".tr());
         }
     }
 }

@@ -3,13 +3,13 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
-using Elektronik.Protobuf.Online;
+using Elektronik.Protobuf.OnlineBuffered;
 using Elektronik.Renderers;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
 
-namespace Protobuf.Tests.Internal.Integration.Online
+namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
 {
     public class OnlineTestsBase
     {
@@ -17,7 +17,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
         protected readonly ImageManagerPb.ImageManagerPbClient ImageClient;
         protected readonly SceneManagerPb.SceneManagerPbClient SceneClient;
 
-        protected readonly ProtobufGrpcServer Sut;
+        protected readonly ProtobufOnlinePlayer Sut;
         protected readonly Mock<ICloudRenderer<SlamPoint>> MockedPointsRenderer;
         protected readonly Mock<ICloudRenderer<SlamLine>> MockedSlamLinesRenderer;
         protected readonly Mock<ICloudRenderer<SimpleLine>> MockedSimpleLinesRenderer;
@@ -28,9 +28,9 @@ namespace Protobuf.Tests.Internal.Integration.Online
 
         protected OnlineTestsBase(int port)
         {
-            var f = new ProtobufGrpcServerFactory
+            var f = new ProtobufOnlinePlayerFactory()
                     { Settings = new OnlineSettingsBag { ListeningPort = port }, Logger = new TestsLogger() };
-            Sut = (ProtobufGrpcServer)f.Start(new FakeConverter());
+            Sut = (ProtobufOnlinePlayer)f.Start(new FakeConverter());
 
             var channel = new Channel($"127.0.0.1:{port}", ChannelCredentials.Insecure);
             MapClient = new MapsManagerPb.MapsManagerPbClient(channel);

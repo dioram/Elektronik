@@ -5,16 +5,16 @@ using Grpc.Core.Logging;
 namespace Elektronik.Protobuf.Online
 {
     public class ProtobufGrpcServerFactory : ElektronikPluginsFactoryBase<OnlineSettingsBag>,
-                                             IDataSourcePluginsOnlineFactory
+                                             IDataSourcePluginsFactory
     {
-        public override IElektronikPlugin Start(ICSConverter converter)
+        protected override IElektronikPlugin StartPlugin(OnlineSettingsBag settings, ICSConverter converter)
         {
-            return new ProtobufGrpcServer(TypedSettings, converter, Logger);
+            return new ProtobufGrpcServer(settings, converter, Logger);
         }
 
         public ILogger? Logger;
 
-        public override string DisplayName => "Protobuf";
+        public override string DisplayName => "gRPC+Protobuf";
 
         public override string Description =>
                 "This plugin plays data coming through " +
@@ -24,7 +24,5 @@ namespace Elektronik.Protobuf.Online
                 "You can find documentation for data package format " +
                 "<#7f7fe5><u><link=\"https://github.com/dioram/Elektronik-Tools-2.0/blob/master/docs/Protobuf-EN.md\">" +
                 "here</link></u></color>. Also you can see *.proto files in <ElektronikDir>/Plugins/Protobuf/data.";
-
-        public override string Version => "1.3";
     }
 }

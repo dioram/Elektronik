@@ -3,11 +3,11 @@ using Elektronik.PluginsSystem;
 
 namespace Elektronik.RosPlugin.Ros2.Bag
 {
-    public class Ros2ReaderFactory: ElektronikPluginsFactoryBase<Rosbag2Settings>, IDataSourcePluginsOfflineFactory
+    public class Ros2ReaderFactory: ElektronikPluginsFactoryBase<Rosbag2Settings>, IFileSourcePluginsFactory
     {
-        public override IElektronikPlugin Start(ICSConverter converter)
+        protected override IElektronikPlugin StartPlugin(Rosbag2Settings settings, ICSConverter converter)
         {
-            return new Rosbag2Reader(TypedSettings);
+            return new Rosbag2Reader(settings);
         }
 
         public override string DisplayName => "ROS2 bag";
@@ -16,11 +16,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag
                 "<#7f7fe5><u><link=\"https://docs.ros.org/en/foxy/Tutorials/Ros2bag/Recording-And-Playing-Back-Data.html\">" +
                 "rosbag2</link></u></color>.";
 
-        public override string Version => "1.3";
         public string[] SupportedExtensions { get; } = {".db3", ".yml", ".yaml"};
-        public void SetFileName(string path)
-        {
-            TypedSettings.FilePath = path;
-        }
     }
 }

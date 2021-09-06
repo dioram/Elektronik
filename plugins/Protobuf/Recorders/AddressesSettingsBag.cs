@@ -8,15 +8,17 @@ namespace Elektronik.Protobuf.Recorders
 {
     public class AddressesSettingsBag : SettingsBag
     {
-        [CheckForEquals, Tooltip("Addresses")]
-        public string Addresses = "127.0.0.1:5000;";
+        [CheckForEquals] public string Addresses = "127.0.0.1:5000;";
 
-        public override bool Validate()
+        public override ValidationResult Validate()
         {
-            return Addresses
+            var isAllAddressesCorrect = Addresses
                     .Split(';')
                     .Where(s => !string.IsNullOrEmpty(s))
-                    .All(address => Uri.IsWellFormedUriString($"htpp://{address}", UriKind.Absolute));
+                    .All(address => Uri.IsWellFormedUriString($"http://{address}", UriKind.Absolute));
+            return isAllAddressesCorrect
+                    ? ValidationResult.Succeeded
+                    : ValidationResult.Failed("At least one of addresses is incorrect");
         }
     }
 }

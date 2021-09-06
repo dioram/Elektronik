@@ -2,7 +2,6 @@
 using Elektronik.Data;
 using Elektronik.Input;
 using Elektronik.Offline;
-using Elektronik.Settings;
 using Elektronik.UI.Windows;
 using TMPro;
 using UniRx;
@@ -33,22 +32,16 @@ namespace Elektronik.UI
 
 
             EventsManager.PlayPauseObservables.Add(hotkeys.PlayPause.PerformedAsObservable()
-                                                           .Where(_ => ModeSelector.Mode == Mode.Offline)
                                                            .Select(_ => Unit.Default));
             EventsManager.StopObservables.Add(hotkeys.Stop.PerformedAsObservable()
-                                                      .Where(_ => ModeSelector.Mode == Mode.Offline)
                                                       .Select(_ => Unit.Default));
             EventsManager.NextKeyFrameObservables.Add(hotkeys.RewindForward.PerformedAsObservable()
-                                                              .Where(_ => ModeSelector.Mode == Mode.Offline)
                                                               .Select(_ => Unit.Default));
             EventsManager.PreviousKeyFrameObservables.Add(hotkeys.RewindBackward.PerformedAsObservable()
-                                                                  .Where(_ => ModeSelector.Mode == Mode.Offline)
                                                                   .Select(_ => Unit.Default));
             EventsManager.NextFrameObservables.Add(hotkeys.OneFrameForward.PerformedAsObservable()
-                                                           .Where(_ => ModeSelector.Mode == Mode.Offline)
                                                            .Select(_ => Unit.Default));
             EventsManager.PreviousFrameObservables.Add(hotkeys.OneFrameBackward.PerformedAsObservable()
-                                                               .Where(_ => ModeSelector.Mode == Mode.Offline)
                                                                .Select(_ => Unit.Default));
 
             hotkeys.Help.PerformedAsObservable()
@@ -82,7 +75,6 @@ namespace Elektronik.UI
                     .Subscribe(_ => DataSourcesManager.LoadSnapshot())
                     .AddTo(this);
             hotkeys.ClearMap.PerformedAsObservable()
-                    .Where(_ => ModeSelector.Mode == Mode.Online)
                     .Subscribe(_ => DataSourcesManager.ClearMap())
                     .AddTo(this);
 

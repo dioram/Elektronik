@@ -12,7 +12,7 @@ namespace Elektronik.UI.SettingsFields
         protected void SetupText(string labelText, string tooltipText)
         {
             Label.SetLocalizedText(labelText);
-            GetComponent<Tooltip>().TooltipText = TextLocalizationExtender.GetLocalizedString(tooltipText);
+            GetComponent<Tooltip>().TooltipText = tooltipText.tr();
         }
     }
 }

@@ -9,12 +9,6 @@
         <AssemblyVersion>1.2.*</AssemblyVersion>
         <FileVersion>1.2.*</FileVersion>
     </PropertyGroup>
-    
-    <ItemGroup>
-        <!-- Note that this is not a "normal" ProjectReference.
-             It needs the additional 'OutputItemType' and 'ReferenceOutputAssmbly' attributes. -->
-        <ProjectReference Include="../RosMessageParserGenerator/RosMessageParserGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    </ItemGroup>
 
     <ItemGroup>
         <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -60,6 +54,10 @@
 
     <ItemGroup>
         <Folder Include="Ros2\Online\SWIG_generated" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\RosMessageParserGenerator\RosMessageParserGenerator.csproj" />
     </ItemGroup>
 
 </Project>

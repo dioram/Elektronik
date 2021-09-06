@@ -15,9 +15,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         
         public Rosbag2ContainerTree(Rosbag2Settings settings) : base("")
         {
-            DisplayName = settings.FilePath.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
+            DisplayName = settings.PathToFile.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
 
-            DBModels = GetDBFiles(settings.FilePath);
+            DBModels = GetDBFiles(settings.PathToFile);
             _actualTopicsSql = DBModels.SelectMany(model => model.Table<Topic>().ToList())
                     .Distinct()
                     .Where(t => SupportedMessages.ContainsKey(t.Type))

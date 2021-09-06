@@ -1,19 +1,21 @@
 ﻿using Elektronik.Data.Converters;
 using Elektronik.Settings;
 using Elektronik.Settings.Bags;
+using UnityEngine;
 
 namespace Elektronik.PluginsSystem
 {
     public interface IElektronikPluginsFactory
     {
-        /// <summary> Name to display in plugins settings. </summary>
+        /// <summary> Logo of the plugin. Will be displayed in connections window and toolbar. </summary>
+        Texture2D Logo { get; }
+        
+        /// <summary> Name to display in connections window. </summary>
         string DisplayName { get; }
 
-        /// <summary> Plugins description. Will be displayed in plugins settings </summary>
+        /// <summary> Plugins description. Will be displayed in connections window. </summary>
         /// <remarks> Supports unity rich text. See: http://digitalnativestudios.com/textmeshpro/docs/rich-text/ </remarks>
         string Description { get; }
-
-        string Version { get; }
         
         ISettingsHistory SettingsHistory { get; }
 
@@ -22,9 +24,7 @@ namespace Elektronik.PluginsSystem
 
         IElektronikPlugin Start(ICSConverter converter);
 
-        IElektronikPlugin Start(SettingsBag settings, ICSConverter converter);
-
-        void SaveSettings();
+        void LoadLogo(string path);
     }
 
     public interface IDataSourcePluginsFactory : IElektronikPluginsFactory
@@ -32,16 +32,14 @@ namespace Elektronik.PluginsSystem
         
     }
 
-    public interface IDataSourcePluginsOfflineFactory: IDataSourcePluginsFactory
+    public interface IFileSourcePluginsFactory : IDataSourcePluginsFactory
     {
-        public void SetFileName(string path);
-        
         public string[] SupportedExtensions { get; }
     }
 
-    public interface IDataSourcePluginsOnlineFactory: IDataSourcePluginsFactory
+    public interface ISnapshotReaderPluginsFactory : IFileSourcePluginsFactory
     {
-        
+        public void SetFileName(string path);
     }
 
     public interface IDataRecorderFactory: IElektronikPluginsFactory

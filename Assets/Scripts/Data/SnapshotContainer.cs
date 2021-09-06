@@ -7,7 +7,6 @@ using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Localization;
 using SimpleFileBrowser;
-using UnityEngine;
 
 namespace Elektronik.Data
 {
@@ -114,8 +113,8 @@ namespace Elektronik.Data
                                        false,
                                        false,
                                        "",
-                                       TextLocalizationExtender.GetLocalizedString("Save snapshot"),
-                                       TextLocalizationExtender.GetLocalizedString("Save"));
+                                       "Save snapshot".tr(),
+                                       "Save".tr());
         }
 
         #endregion

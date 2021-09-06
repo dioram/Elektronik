@@ -20,7 +20,7 @@ namespace Elektronik.UI.SettingsFields
             SetupText(labelText, tooltipText);
             InputField.text = defaultValue;
             var inputWithBrowse = GetComponent<InputWithBrowse>();
-            inputWithBrowse.Title = TextLocalizationExtender.GetLocalizedString(labelText);
+            inputWithBrowse.Title = labelText.tr();
             inputWithBrowse.FolderMode = folderMode;
             inputWithBrowse.Filters = extensions;
         }

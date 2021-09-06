@@ -1,4 +1,5 @@
 ﻿#if !NO_ROS2DDS
+using System;
 using Elektronik.Data;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Online
 {
-    public class Ros2Client : IDataSourcePluginOnline
+    public class Ros2Client : IDataSourcePlugin
     {
         public Ros2Client(Ros2Settings settings)
         {
@@ -20,7 +21,48 @@ namespace Elektronik.RosPlugin.Ros2.Online
         
         #region IDataSourceOnline
 
+        public void Play()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Pause()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopPlaying()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PreviousKeyFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NextKeyFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PreviousFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NextFrame()
+        {
+            throw new NotImplementedException();
+        }
+
         public ISourceTree Data { get; }
+        public int AmountOfFrames { get; }
+        public string CurrentTimestamp { get; }
+        public int CurrentPosition { get; set; }
+        public int DelayBetweenFrames { get; set; }
+        public event Action<bool>? Rewind;
+        public event Action? Finished;
 
         public void Dispose()
         {

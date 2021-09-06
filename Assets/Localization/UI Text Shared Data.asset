@@ -516,6 +516,22 @@ MonoBehaviour:
     m_Key: Connect / Open
     m_Metadata:
       m_Items: []
+  - m_Id: 53291475219587072
+    m_Key: Port is not valid. Should be between 0 and 65563.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53291679125676032
+    m_Key: IP address is not valid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53294368442097664
+    m_Key: File not found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53294573413539840
+    m_Key: At least one of addresses is incorrect
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

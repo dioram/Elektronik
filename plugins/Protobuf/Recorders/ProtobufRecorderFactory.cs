@@ -6,10 +6,13 @@ namespace Elektronik.Protobuf.Recorders
 {
     public class ProtobufRecorderFactory : ElektronikPluginsFactoryBase<SettingsBag>, IDataRecorderFactory
     {
-        public override IElektronikPlugin Start(ICSConverter converter) => new ProtobufRecorder(converter);
+        protected override IElektronikPlugin StartPlugin(SettingsBag settings, ICSConverter converter)
+        {
+            return new ProtobufRecorder(converter);
+        }
+
         public override string DisplayName => "Recorder to Protobuf";
         public override string Description => "Records data to Protobuf file";
-        public override string Version => "1.3";
         public string Extension => ".dat";
         public bool StartsFromSceneLoading => false;
     }

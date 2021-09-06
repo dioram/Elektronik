@@ -1,5 +1,4 @@
 ﻿using Elektronik.UI.Localization;
-using Elektronik.UI.Windows;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
