@@ -54,7 +54,7 @@ namespace Elektronik.Protobuf.Data
 
         #region Protected
 
-        protected IDataRenderer<byte[]> Renderer;
+        protected IDataRenderer<byte[]>? Renderer;
 
         #endregion
 

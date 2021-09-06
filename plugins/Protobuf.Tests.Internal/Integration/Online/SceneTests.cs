@@ -58,7 +58,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Message = $"{i}",
             }).ToArray();
 
-            Vector3Pb[] _offsets =
+            Vector3Pb[] offsets =
             {
                 new() { X = 0, Y = 0, Z = 0 },
                 new() { X = 0, Y = 0, Z = 0 },
@@ -66,7 +66,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 new() { X = 50, Y = 0, Z = 0 },
                 new() { X = 0, Y = 50, Z = 0 },
             };
-            Vector3Pb[] _normals =
+            Vector3Pb[] normals =
             {
                 new() { X = 0, Y = 1, Z = 0 },
                 new() { X = 1, Y = 0, Z = 0 },
@@ -80,8 +80,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Id = i,
                 Message = $"{i}",
                 Color = new ColorPb { R = i * 50 },
-                Normal = _normals[i],
-                Offset = _offsets[i],
+                Normal = normals[i],
+                Offset = offsets[i],
             }).ToArray();
         }
 

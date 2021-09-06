@@ -188,7 +188,6 @@ namespace Protobuf.Tests.Internal.Integration.Online
                         Color = new ColorPb { R = i * 50, G = i * 50, B = i * 50 },
                         Message = "Test message",
                     },
-                    ObservedPoints = {  },
                     Orientation = new Vector4Pb {X = -1, W = 1},
                     Message = "Test message",
                     Filename = "test.png",

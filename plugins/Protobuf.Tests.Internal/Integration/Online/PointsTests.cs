@@ -6,7 +6,6 @@ using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using NUnit.Framework;
 
