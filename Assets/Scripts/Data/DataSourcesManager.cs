@@ -103,6 +103,7 @@ namespace Elektronik.Data
         {
             _dataSources.Remove(source);
             var treeElement = _roots.Find(r => r.Node == source);
+            if (treeElement is null) return;
             _roots.Remove(treeElement);
             Destroy(treeElement.gameObject);
         }
@@ -159,7 +160,7 @@ namespace Elektronik.Data
                 var factory = (ISnapshotReaderPluginsFactory) Activator.CreateInstance(playerPrefab.GetType());
                 factory.SetFileName(path);
                 var plugin = (IDataSourcePlugin) factory.Start(Converter);
-                plugin.CurrentPosition = plugin.AmountOfFrames - 1;
+                plugin.Position = plugin.AmountOfFrames - 1;
                 AddDataSource(new SnapshotContainer(Path.GetFileName(path), plugin.Data.Children, Converter));
             }
         }

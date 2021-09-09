@@ -1,9 +1,10 @@
 ﻿using System;
-using Elektronik.Commands;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Extensions;
-using Elektronik.Offline;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.OnlineBuffered.GrpcServices;
@@ -26,84 +27,121 @@ namespace Elektronik.Protobuf.OnlineBuffered
             Data = containerTree;
             DisplayName = displayName;
             Logo = logo;
+            _logger = logger ?? new UnityLogger();
+            _port = settings.ListeningPort;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
-            logger ??= new UnityLogger();
-            GrpcEnvironment.SetLogger(logger);
+            GrpcEnvironment.SetLogger(_logger);
             converter.SetInitTRS(Vector3.zero, Quaternion.identity);
 
-            var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
+            _services = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
-                new PointsMapManager(_buffer, containerTree.Points, converter, logger),
-                new ObservationsMapManager(_buffer, containerTree.Observations, converter, logger),
-                new TrackedObjsMapManager(_buffer, containerTree.TrackedObjs, converter, logger),
-                new LinesMapManager(_buffer, containerTree.Lines, converter, logger),
-                new InfinitePlanesMapManager(_buffer, containerTree.InfinitePlanes, converter, logger)
+                new PointsMapManager(_buffer, containerTree.Points, converter, _logger),
+                new ObservationsMapManager(_buffer, containerTree.Observations, converter, _logger),
+                new TrackedObjsMapManager(_buffer, containerTree.TrackedObjs, converter, _logger),
+                new LinesMapManager(_buffer, containerTree.Lines, converter, _logger),
+                new InfinitePlanesMapManager(_buffer, containerTree.InfinitePlanes, converter, _logger)
             }.BuildChain();
 
-            containerTree.DisplayName = $"From gRPC at port {settings.ListeningPort}";
+            _buffer.FramesAmountChanged += i => OnAmountOfFramesChanged?.Invoke(i);
 
-            _server = new GrpcServer
-            {
-                Services =
-                {
-                    MapsManagerPb.BindService(servicesChain),
-                    SceneManagerPb.BindService(new SceneManager(containerTree, logger)),
-                    ImageManagerPb.BindService(new ImageManager(containerTree.Image as RawImagePresenter, logger))
-                },
-                Ports = { new ServerPort("0.0.0.0", settings.ListeningPort, ServerCredentials.Insecure) }
-            };
-            _buffer.FramesAmountChanged += _ =>
-            {
-                if (_buffer.MoveNext()) _buffer.Current!.Execute();
-            };
-            _server.Start();
-            _serverStarted = true;
+            containerTree.DisplayName = $"From gRPC at port {settings.ListeningPort}";
+            StartServer();
         }
 
         #region IDataSourcePlugin
 
         public void Play()
         {
-            throw new NotImplementedException();
+            _playingCancellation = new CancellationTokenSource();
+            _playTask = Task.Run(() => Play(_playingCancellation.Token));
         }
 
         public void Pause()
         {
-            throw new NotImplementedException();
+            _playingCancellation?.Cancel();
+            _playTask?.Wait();
+            OnPaused?.Invoke();
         }
 
         public void StopPlaying()
         {
-            throw new NotImplementedException();
+            _playingCancellation?.Cancel();
+            _playTask?.Wait();
+            OnPaused?.Invoke();
+
+            _server.ShutdownAsync().Wait();
+            _serverStarted = false;
+
+            _buffer.Reset();
+            Data.Clear();
+
+            StartServer();
         }
 
         public void PreviousKeyFrame()
         {
-            throw new NotImplementedException();
+            _playingCancellation?.Cancel();
+            _playTask?.Wait();
+            if (_buffer.CurrentSize == 0) return;
+            Task.Run(() =>
+            {
+                GoToPreviousFrame();
+                while (_buffer.Current!.IsKeyFrame && GoToPreviousFrame())
+                {
+                }
+            });
         }
 
         public void NextKeyFrame()
         {
-            throw new NotImplementedException();
+            _playingCancellation?.Cancel();
+            _playTask?.Wait();
+            if (_buffer.CurrentSize == 0) return;
+            Task.Run(() =>
+            {
+                GoToNextFrame();
+                while (_buffer.Current!.IsKeyFrame && GoToNextFrame())
+                {
+                }
+            });
         }
 
         public void PreviousFrame()
         {
-            throw new NotImplementedException();
+            _playingCancellation?.Cancel();
+            _playTask?.Wait();
+            GoToPreviousFrame();
         }
 
         public void NextFrame()
         {
-            throw new NotImplementedException();
+            _playingCancellation?.Cancel();
+            _playTask?.Wait();
+            GoToNextFrame();
         }
 
         public ISourceTree Data { get; }
-        public int AmountOfFrames { get; }
-        public string CurrentTimestamp { get; }
-        public int CurrentPosition { get; set; }
-        public event Action<bool>? Rewind;
-        public event Action? Finished;
+        public int AmountOfFrames => _buffer.CurrentSize;
+        public string Timestamp => $"{_buffer.CurrentTimeStamp:HH:mm:ss.ff}";
+
+        public int Position
+        {
+            get => _buffer.CurrentIndex;
+            set => Rewind(value);
+        }
+
+        public float Speed { get; set; }
+        public bool IsPlaying { get; private set; }
+        public event Action? OnPlayingStarted;
+        public event Action? OnPaused;
+        public event Action<int>? OnPositionChanged;
+        public event Action<int>? OnAmountOfFramesChanged;
+        public event Action<string>? OnTimestampChanged;
+
+        public event Action? OnRewindStarted;
+        public event Action? OnRewindFinished;
+        public event Action? OnFinished;
 
         public void Dispose()
         {
@@ -120,16 +158,126 @@ namespace Elektronik.Protobuf.OnlineBuffered
 
         public string DisplayName { get; }
         public SettingsBag? Settings => null;
+
         public Texture2D? Logo { get; }
 
         #endregion
 
         #region Private definitions
 
+        private GrpcServer _server;
+        private readonly OnlineFrameBuffer _buffer = new();
         private bool _serverStarted = false;
+        private readonly int _port;
+        private readonly ILogger _logger;
+        private readonly MapsManagerPb.MapsManagerPbBase? _services;
+        private CancellationTokenSource? _playingCancellation;
+        private Task? _playTask;
 
-        private readonly GrpcServer _server;
-        private readonly UpdatableFramesCollection<ICommand> _buffer = new();
+        private void Play(CancellationToken token)
+        {
+            IsPlaying = true;
+            OnPlayingStarted?.Invoke();
+            while (true)
+            {
+                if (token.IsCancellationRequested) break;
+                try
+                {
+                    var timer = Stopwatch.StartNew();
+                    if (GoToNextFrame())
+                    {
+                        timer.Stop();
+                        if (token.IsCancellationRequested) break;
+                        var delay = _buffer.Current!.ToNext.TotalMilliseconds * Speed - timer.Elapsed.TotalMilliseconds;
+                        if (delay > 0) Thread.Sleep((int)delay);
+                    }
+                    else
+                    {
+                        timer.Stop();
+                        Thread.Sleep(10);
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e, "");
+                }
+            }
+
+            IsPlaying = false;
+        }
+
+        private void StartServer()
+        {
+            _server = new GrpcServer
+            {
+                Services =
+                {
+                    MapsManagerPb.BindService(_services),
+                    SceneManagerPb.BindService(new SceneManager(Data, _logger)),
+                    ImageManagerPb.BindService(
+                        new ImageManager(((ProtobufContainerTree)Data).Image as RawImagePresenter, _logger))
+                },
+                Ports = { new ServerPort("0.0.0.0", _port, ServerCredentials.Insecure) },
+            };
+            _server.Start();
+            _serverStarted = true;
+        }
+
+        private void Rewind(int newPos)
+        {
+            if (newPos == Position) return;
+            OnRewindStarted?.Invoke();
+
+            if (_playingCancellation?.IsCancellationRequested ?? true)
+            {
+                Task.Run(() => DoRewind(newPos, false));
+            }
+            else
+            {
+                _playingCancellation?.Cancel();
+                _playTask?.Wait();
+                Task.Run(() => DoRewind(newPos, true));
+            }
+        }
+
+        private void DoRewind(int pos, bool continuePlaying)
+        {
+            try
+            {
+                while (Position != pos)
+                {
+                    if (Position < pos) GoToNextFrame();
+                    else GoToPreviousFrame();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "");
+            }
+
+            OnRewindFinished?.Invoke();
+            if (continuePlaying) Play();
+        }
+
+        private bool GoToNextFrame()
+        {
+            if (!_buffer.MoveNext()) return false;
+
+            _buffer.Current!.Command.Execute();
+            OnPositionChanged?.Invoke(Position);
+            OnTimestampChanged?.Invoke(Timestamp);
+            return true;
+        }
+
+        private bool GoToPreviousFrame()
+        {
+            _buffer.Current!.Command.UnExecute();
+            if (!_buffer.MovePrevious()) return false;
+
+            OnPositionChanged?.Invoke(Position);
+            OnTimestampChanged?.Invoke(Timestamp);
+            return true;
+        }
 
         #endregion
     }

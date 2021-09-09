@@ -3,6 +3,7 @@ using System.Threading;
 using Elektronik;
 using Elektronik.Commands;
 using Elektronik.Containers;
+using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Extensions;
 using Elektronik.Offline;
@@ -40,7 +41,7 @@ namespace Protobuf.Tests.Internal
             _retranslator = new ProtobufRetranslator(
                 "", null, new AddressesSettingsBag { Addresses = $"{Address}:{Port}" },
                 new FakeConverter());
-            var buffer = new UpdatableFramesCollection<ICommand>();
+            var buffer = new OnlineFrameBuffer();
             var logger = new TestsLogger();
             var pointsMapManager = new PointsMapManager(buffer, _mockedPointsContainer.Object, null, logger);
             var observationsMapManager =

@@ -1,7 +1,7 @@
-﻿using Elektronik.Clouds;
+﻿using System;
+using Elektronik.Clouds;
 using Elektronik.Data;
 using Elektronik.Input;
-using Elektronik.Offline;
 using Elektronik.UI.Windows;
 using TMPro;
 using UniRx;
@@ -13,7 +13,6 @@ namespace Elektronik.UI
     {
         [SerializeField] private DataSourcesManager DataSourcesManager;
         [SerializeField] private VrController VrController;
-        [SerializeField] private PlayerEventsManager EventsManager;
         [SerializeField] private GpuMeshRenderer MeshRenderer;
         [Header("Windows")] [SerializeField] private Window HelpWindow;
         [SerializeField] private Window SourceTreeWindow;
@@ -24,25 +23,24 @@ namespace Elektronik.UI
         [SerializeField] private ChangingButton RecordingButton;
         [Space] [SerializeField] private TMP_Dropdown GridSelector;
 
+        public IObservable<Unit> OnPlayPause { get; private set; }
+        public IObservable<Unit> OnStop { get; private set; }
+        public IObservable<Unit> OnNextKeyFrame { get; private set; }
+        public IObservable<Unit> OnPreviousKeyFrame { get; private set; }
+        public IObservable<Unit> OnNextFrame { get; private set; }
+        public IObservable<Unit> OnPreviousFrame { get; private set; }
 
         public void Awake()
         {
             var hotkeys = new CameraControls().Hotkeys;
             hotkeys.Enable();
 
-
-            EventsManager.PlayPauseObservables.Add(hotkeys.PlayPause.PerformedAsObservable()
-                                                           .Select(_ => Unit.Default));
-            EventsManager.StopObservables.Add(hotkeys.Stop.PerformedAsObservable()
-                                                      .Select(_ => Unit.Default));
-            EventsManager.NextKeyFrameObservables.Add(hotkeys.RewindForward.PerformedAsObservable()
-                                                              .Select(_ => Unit.Default));
-            EventsManager.PreviousKeyFrameObservables.Add(hotkeys.RewindBackward.PerformedAsObservable()
-                                                                  .Select(_ => Unit.Default));
-            EventsManager.NextFrameObservables.Add(hotkeys.OneFrameForward.PerformedAsObservable()
-                                                           .Select(_ => Unit.Default));
-            EventsManager.PreviousFrameObservables.Add(hotkeys.OneFrameBackward.PerformedAsObservable()
-                                                               .Select(_ => Unit.Default));
+            OnPlayPause = hotkeys.PlayPause.PerformedAsObservable().Select(_ => Unit.Default);
+            OnStop = hotkeys.Stop.PerformedAsObservable().Select(_ => Unit.Default);
+            OnNextKeyFrame = hotkeys.RewindForward.PerformedAsObservable().Select(_ => Unit.Default);
+            OnPreviousKeyFrame = hotkeys.RewindBackward.PerformedAsObservable().Select(_ => Unit.Default);
+            OnNextFrame = hotkeys.OneFrameForward.PerformedAsObservable().Select(_ => Unit.Default);
+            OnPreviousFrame = hotkeys.OneFrameBackward.PerformedAsObservable().Select(_ => Unit.Default);
 
             hotkeys.Help.PerformedAsObservable()
                     .Subscribe(_ => HelpWindow.Show())

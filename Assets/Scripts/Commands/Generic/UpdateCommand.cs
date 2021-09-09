@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
 
@@ -9,19 +7,22 @@ namespace Elektronik.Commands.Generic
     public class UpdateCommand<T> : ICommand
             where T : struct, ICloudItem
     {
-        protected readonly T[] Objs2Restore;
-        protected readonly T[] Objs2Update;
-
         protected readonly IContainer<T> Container;
+        protected readonly T[] Objs2Update;
+        protected T[] Objs2Restore;
 
-        public UpdateCommand(IContainer<T> container, IList<T> objects)
+        public UpdateCommand(IContainer<T> container, T[] objects)
         {
             Container = container;
-            Objs2Restore = objects.Select(p => container[p.Id]).ToArray();
-            Objs2Update = objects.ToArray();
+            Objs2Update = objects;
         }
 
-        public virtual void Execute() => Container.Update(Objs2Update);
+        public virtual void Execute()
+        {
+            Objs2Restore = Objs2Update.Select(p => Container[p.Id]).ToArray();
+            Container.Update(Objs2Update);
+        }
+
         public virtual void UnExecute() => Container.Update(Objs2Restore);
     }
     
@@ -29,19 +30,22 @@ namespace Elektronik.Commands.Generic
             where TCloudItem : struct, ICloudItem
             where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
-        protected readonly ReadOnlyCollection<TCloudItem> Objs2Restore;
-        protected readonly ReadOnlyCollection<TCloudItemDiff> Objs2Update;
-
         protected readonly IContainer<TCloudItem> Container;
+        protected readonly TCloudItemDiff[] Objs2Update;
+        protected TCloudItem[] Objs2Restore;
 
-        public UpdateCommand(IContainer<TCloudItem> container, IList<TCloudItemDiff> objects)
+        public UpdateCommand(IContainer<TCloudItem> container, TCloudItemDiff[] objects)
         {
             Container = container;
-            Objs2Restore = new ReadOnlyCollection<TCloudItem>(objects.Select(p => container[p.Id]).ToList());
-            Objs2Update = new ReadOnlyCollection<TCloudItemDiff>(objects.ToList());
+            Objs2Update = objects;
         }
 
-        public virtual void Execute() => Container.Update(Objs2Update);
+        public virtual void Execute()
+        {
+            Objs2Restore = Objs2Update.Select(p => Container[p.Id]).ToArray();
+            Container.Update(Objs2Update);
+        }
+
         public virtual void UnExecute() => Container.Update(Objs2Restore);
     }
 }

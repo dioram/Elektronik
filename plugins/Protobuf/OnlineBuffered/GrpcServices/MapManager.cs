@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Elektronik.Commands;
 using Elektronik.Commands.Generic;
 using Elektronik.Containers;
+using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
 using Grpc.Core.Logging;
@@ -25,10 +25,10 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
             where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         protected readonly ILogger Logger;
-        protected readonly UpdatableFramesCollection<ICommand> Buffer;
+        protected readonly OnlineFrameBuffer Buffer;
         protected readonly ICSConverter? Converter;
 
-        protected MapManager(UpdatableFramesCollection<ICommand> buffer, IContainer<TCloudItem> container,
+        protected MapManager(OnlineFrameBuffer buffer, IContainer<TCloudItem> container,
                              ICSConverter? converter, ILogger logger)
         {
             Container = container;
@@ -67,29 +67,28 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
         protected readonly IContainer<TCloudItem> Container;
         protected Stopwatch? Timer;
 
-        protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, IList<TCloudItemDiff> data)
+        protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, TCloudItemDiff[] data,
+                                             bool isKeyFrame, DateTime timestamp)
         {
             ErrorStatusPb errorStatus = new() { ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded };
             try
             {
+                ICommand command;
                 lock (Container)
                 {
-                    switch (action)
+                    command = action switch
                     {
-                    case PacketPb.Types.ActionType.Add:
-                        Buffer.Add(new AddCommand<TCloudItem, TCloudItemDiff>(Container, data));
-                        break;
-                    case PacketPb.Types.ActionType.Update:
-                        Buffer.Add(new UpdateCommand<TCloudItem, TCloudItemDiff>(Container, data));
-                        break;
-                    case PacketPb.Types.ActionType.Remove:
-                        Buffer.Add(new RemoveCommand<TCloudItem, TCloudItemDiff>(Container, data));
-                        break;
-                    case PacketPb.Types.ActionType.Clear:
-                        Buffer.Add(new ClearCommand<TCloudItem>(Container));
-                        break;
-                    }
+                        PacketPb.Types.ActionType.Add => new AddCommand<TCloudItem, TCloudItemDiff>(Container, data),
+                        PacketPb.Types.ActionType.Update => new UpdateCommand<TCloudItem, TCloudItemDiff>(
+                            Container, data),
+                        PacketPb.Types.ActionType.Remove => new RemoveCommand<TCloudItem, TCloudItemDiff>(
+                            Container, data),
+                        PacketPb.Types.ActionType.Clear => new ClearCommand<TCloudItem>(Container),
+                        _ => throw new ArgumentOutOfRangeException(nameof(action), "Unknown action type")
+                    };
                 }
+
+                Buffer.Add(command, timestamp, isKeyFrame);
             }
             catch (Exception err)
             {

@@ -27,72 +27,9 @@ namespace Elektronik.Protobuf.Offline.Parsers
             _imagePath = imagePath;
         }
 
-        private ICommand? GetCommandForConnectableObjects<TCloudItem, TCloudItemDiff>(
-            IConnectableObjectsContainer<TCloudItem> map,
-            IList<TCloudItemDiff>? objects, PacketPb packet)
-                where TCloudItem : struct, ICloudItem
-                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
-        {
-            if (objects is null || objects.Count == 0) return null;
-            switch (packet.Action)
-            {
-            case PacketPb.Types.ActionType.Add:
-                return new AddCommand<TCloudItem, TCloudItemDiff>(map, objects);
-            case PacketPb.Types.ActionType.Update:
-                var commands = new List<ICommand>();
-                if (packet.Connections != null)
-                {
-                    var connections = packet.Connections.Data.Select(c => (c.Id1, c.Id2)).ToList();
-                    switch (packet.Connections.Action)
-                    {
-                    case PacketPb.Types.Connections.Types.Action.Add:
-                        commands.Add(new AddConnectionsCommand<TCloudItem>(map, connections));
-                        break;
-                    case PacketPb.Types.Connections.Types.Action.Remove:
-                        commands.Add(new RemoveConnectionsCommand<TCloudItem>(map, connections));
-                        break;
-                    }
-                }
+        public override ICommand? GetCommand(PacketPb packet) => ParsePacket(packet) ?? base.GetCommand(packet);
 
-                commands.Add(new UpdateCommand<TCloudItem, TCloudItemDiff>(map, objects));
-                return new MacroCommand(commands);
-            case PacketPb.Types.ActionType.Remove:
-                return new ConnectableRemoveCommand<TCloudItem, TCloudItemDiff>(map, objects);
-            case PacketPb.Types.ActionType.Clear:
-                return new ConnectableClearCommand<TCloudItem>(map);
-            default:
-                return null;
-            }
-        }
-
-        private ICommand? GetCommand<TCloudItem, TCloudItemDiff>(IContainer<TCloudItem> map, 
-                                                                 IList<TCloudItemDiff>? objects,
-                                                                 PacketPb packet)
-                where TCloudItem : struct, ICloudItem
-                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
-        {
-            if (objects is null || objects.Count == 0) return null;
-            switch (packet.Action)
-            {
-            case PacketPb.Types.ActionType.Add:
-                return new AddCommand<TCloudItem, TCloudItemDiff>(map, objects);
-            case PacketPb.Types.ActionType.Update:
-                return new UpdateCommand<TCloudItem, TCloudItemDiff>(map, objects);
-            case PacketPb.Types.ActionType.Remove:
-                return new RemoveCommand<TCloudItem, TCloudItemDiff>(map, objects);
-            case PacketPb.Types.ActionType.Clear:
-                return new ClearCommand<TCloudItem>(map);
-            default:
-                return null;
-            }
-        }
-
-        public override ICommand? GetCommand(PacketPb packet)
-        {
-            var command = ParsePacket(packet);
-            if (command == null) return base.GetCommand(packet);
-            return command;
-        }
+        #region Private
 
         private ICommand? ParsePacket(PacketPb packet)
         {
@@ -104,11 +41,74 @@ namespace Elektronik.Protobuf.Offline.Parsers
                 return GetCommandForConnectableObjects(_observations, packet.ExtractObservations(Converter, _imagePath),
                                                        packet);
             case PacketPb.DataOneofCase.InfinitePlanes:
-                return GetCommand(_infinitePlanes,
-                                  packet.ExtractInfinitePlanes(Converter), packet);
+                return GetCommand(_infinitePlanes, packet.ExtractInfinitePlanes(Converter), packet);
             default:
                 return base.GetCommand(packet);
             }
         }
+
+        private ICommand? GetCommandForConnectableObjects<TCloudItem, TCloudItemDiff>(
+            IConnectableObjectsContainer<TCloudItem> map,
+            TCloudItemDiff[] objects, PacketPb packet)
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
+        {
+            if (objects.Length == 0) return null;
+            switch (packet.Action)
+            {
+            case PacketPb.Types.ActionType.Add:
+                return new AddCommand<TCloudItem, TCloudItemDiff>(map, objects);
+            case PacketPb.Types.ActionType.Update:
+                return GetUpdateCommand(map, objects, packet);
+            case PacketPb.Types.ActionType.Remove:
+                return new ConnectableRemoveCommand<TCloudItem, TCloudItemDiff>(map, objects);
+            case PacketPb.Types.ActionType.Clear:
+                return new ConnectableClearCommand<TCloudItem>(map);
+            default:
+                return null;
+            }
+        }
+
+        private ICommand? GetCommand<TCloudItem, TCloudItemDiff>(IContainer<TCloudItem> map, TCloudItemDiff[] objects,
+                                                                 PacketPb packet)
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
+        {
+            if (objects.Length == 0) return null;
+            return packet.Action switch
+            {
+                PacketPb.Types.ActionType.Add => new AddCommand<TCloudItem, TCloudItemDiff>(map, objects),
+                PacketPb.Types.ActionType.Update => new UpdateCommand<TCloudItem, TCloudItemDiff>(map, objects),
+                PacketPb.Types.ActionType.Remove => new RemoveCommand<TCloudItem, TCloudItemDiff>(map, objects),
+                PacketPb.Types.ActionType.Clear => new ClearCommand<TCloudItem>(map),
+                _ => null
+            };
+        }
+
+        private ICommand? GetUpdateCommand<TCloudItem, TCloudItemDiff>(IConnectableObjectsContainer<TCloudItem> map,
+                                                                       TCloudItemDiff[] objects, PacketPb packet)
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
+        {
+            var commands = new List<ICommand>();
+            if (packet.Connections != null)
+            {
+                var connections = packet.Connections.Data.Select(c => (c.Id1, c.Id2)).ToList();
+                switch (packet.Connections.Action)
+                {
+                case PacketPb.Types.Connections.Types.Action.Add:
+                    commands.Add(new AddConnectionsCommand<TCloudItem>(map, connections));
+                    break;
+                case PacketPb.Types.Connections.Types.Action.Remove:
+                    commands.Add(new RemoveConnectionsCommand<TCloudItem>(map, connections));
+                    break;
+                }
+            }
+
+            commands.Add(new UpdateCommand<TCloudItem, TCloudItemDiff>(map, objects));
+            return new MacroCommand(commands);
+        }
+
+        #endregion
     }
 }

@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
-using Elektronik.Commands;
 using Elektronik.Containers;
+using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
 using Grpc.Core.Logging;
@@ -13,7 +13,7 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
 {
     public class LinesMapManager : MapManager<SlamLine, SlamLineDiff>
     {
-        public LinesMapManager(UpdatableFramesCollection<ICommand> buffer, IContainer<SlamLine> container,
+        public LinesMapManager(OnlineFrameBuffer buffer, IContainer<SlamLine> container,
                                ICSConverter? converter, ILogger logger)
                 : base(buffer, container, converter, logger)
         { }
@@ -22,7 +22,8 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
         {
             if (request.DataCase != PacketPb.DataOneofCase.Lines) return base.Handle(request, context);
             Timer = Stopwatch.StartNew();
-            return Handle(request.Action, request.ExtractLines(Converter));
+            var timestamp = DateTime.Now;
+            return Handle(request.Action, request.ExtractLines(Converter), request.Special, timestamp);
         }
     }
 }

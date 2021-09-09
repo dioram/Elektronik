@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Elektronik.Commands;
+﻿using Elektronik.Commands;
 using Elektronik.Commands.Generic;
 using Elektronik.Commands.TrackedObj;
 using Elektronik.Containers;
@@ -17,11 +16,14 @@ namespace Elektronik.Protobuf.Offline.Parsers
         {
             _container = container;
         }
-
-        protected virtual ICommand? GetCommand(IList<SlamTrackedObjectDiff>? objs, PacketPb.Types.ActionType action)
+        
+        public override ICommand? GetCommand(PacketPb pkg)
         {
-            if (objs is null || objs.Count == 0) return null;
-            switch (action)
+            if (pkg.DataCase != PacketPb.DataOneofCase.TrackedObjs) return base.GetCommand(pkg);
+
+            var objs = pkg.ExtractTrackedObjects(Converter);
+            if (objs.Length == 0) return null;
+            switch (pkg.Action)
             {
             case PacketPb.Types.ActionType.Add:
                 return new AddCommand<SlamTrackedObject, SlamTrackedObjectDiff>(_container, objs);
@@ -31,19 +33,10 @@ namespace Elektronik.Protobuf.Offline.Parsers
                 return new RemoveTrackedObjDiffCommands(_container, objs);
             case PacketPb.Types.ActionType.Clear:
                 return new ClearTrackedObjsCommand(_container);
-            default: return null;
-            }
-        }
-
-        public override ICommand? GetCommand(PacketPb pkg)
-        {
-            if (pkg.DataCase == PacketPb.DataOneofCase.TrackedObjs)
-            {
-                var command = GetCommand(pkg.ExtractTrackedObjects(Converter), pkg.Action);
-                return command;
+            default: 
+                return null;
             }
 
-            return base.GetCommand(pkg);
         }
     }
 }

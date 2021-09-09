@@ -4,6 +4,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using Elektronik;
 using Elektronik.Containers;
+using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Extensions;
 using Elektronik.Offline;
@@ -86,10 +87,10 @@ namespace Protobuf.Benchmarks
                     new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
                                                                      new SlamLinesContainer());
             var infinitePlanes = new CloudContainer<SlamInfinitePlane>();
-            var buffer = new UpdatableFramesCollection<ICommand>();
+            var buffer = new OnlineFrameBuffer();
             buffer.FramesAmountChanged += _ =>
             {
-                if (buffer.MoveNext()) buffer.Current!.Execute();
+                if (buffer.MoveNext()) buffer.Current!.Command.Execute();
             };
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {

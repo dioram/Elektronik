@@ -18,7 +18,8 @@ namespace Elektronik.Protobuf.Offline
 {
     public class ProtobufFilePlayer : IDataSourcePlugin
     {
-        public ProtobufFilePlayer(string displayName, Texture2D? logo, OfflineSettingsBag settings, ICSConverter converter)
+        public ProtobufFilePlayer(string displayName, Texture2D? logo, OfflineSettingsBag settings,
+                                  ICSConverter converter)
         {
             _containerTree = new ProtobufContainerTree("Protobuf",
                                                        new FileImagePresenter("Camera", settings.PathToImagesDirectory),
@@ -28,30 +29,29 @@ namespace Elektronik.Protobuf.Offline
             Logo = logo;
             _parsersChain = new DataParser<PacketPb>[]
             {
-                new ObjectsParser(_containerTree.InfinitePlanes,
-                                  _containerTree.Points,
-                                  _containerTree.Observations,
+                new ObjectsParser(_containerTree.InfinitePlanes, _containerTree.Points, _containerTree.Observations,
                                   settings.PathToImagesDirectory),
                 new TrackedObjectsParser(_containerTree.TrackedObjs),
                 new InfoParser(_containerTree.SpecialInfo),
             }.BuildChain();
-            
+
             _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
             _input = File.OpenRead(settings.PathToFile);
             converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             _parsersChain.SetConverter(converter);
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
+            _frames.OnSizeChanged += i => OnAmountOfFramesChanged?.Invoke(i);
             _threadWorker = new ThreadQueueWorker();
-            _timer = new Timer(10 - _typedSettings.PlaybackSpeed);
+            _timer = new Timer(DefaultSpeed * Speed);
             _timer.Elapsed += (_, __) =>
             {
-                _timer.Interval = 10 - _typedSettings.PlaybackSpeed;
+                _timer.Interval = DefaultSpeed * Speed;
                 _threadWorker.Enqueue(() =>
                 {
                     if (GoToNextFrame()) return;
                     _timer.Stop();
-                    MainThreadInvoker.Enqueue(() => Finished?.Invoke());
+                    MainThreadInvoker.Enqueue(() => OnFinished?.Invoke());
                 });
             };
         }
@@ -73,35 +73,50 @@ namespace Elektronik.Protobuf.Offline
         }
 
         public string DisplayName { get; }
-        public SettingsBag Settings => _typedSettings;
+        public SettingsBag? Settings => null;
         public Texture2D? Logo { get; }
 
         public int AmountOfFrames => _frames.CurrentSize;
 
-        public string CurrentTimestamp => $"{_frames.Current?.Timestamp ?? 0} ({CurrentPosition})";
+        public string Timestamp => $"{_frames.Current?.Timestamp ?? 0} ({Position})";
 
-        public int CurrentPosition
+        public int Position
         {
             get => _frames.CurrentIndex;
             set => RewindAt(value);
         }
 
-        public event Action<bool>? Rewind;
-        public event Action? Finished;
+        public float Speed { get; set; } = 1;
+        public bool IsPlaying { get; private set; }
+        public event Action? OnPlayingStarted;
+        public event Action? OnPaused;
+        public event Action<int>? OnPositionChanged;
+        public event Action<int>? OnAmountOfFramesChanged;
+        public event Action<string>? OnTimestampChanged;
+
+        public event Action? OnRewindStarted;
+        public event Action? OnRewindFinished;
+        public event Action? OnFinished;
 
         public void Play()
         {
+            IsPlaying = true;
+            OnPlayingStarted?.Invoke();
             _timer.Start();
         }
 
         public void Pause()
         {
+            IsPlaying = false;
             _timer.Stop();
+            OnPaused?.Invoke();
         }
 
         public void StopPlaying()
         {
+            IsPlaying = false;
             _timer.Stop();
+            OnPaused?.Invoke();
             _threadWorker.Enqueue(() =>
             {
                 Data.Clear();
@@ -111,6 +126,7 @@ namespace Elektronik.Protobuf.Offline
 
         public void PreviousKeyFrame()
         {
+            OnRewindStarted?.Invoke();
             _threadWorker.Enqueue(() =>
             {
                 if (_frames.CurrentIndex == 0)
@@ -119,27 +135,33 @@ namespace Elektronik.Protobuf.Offline
                     _frames.SoftReset();
                     return;
                 }
+
                 do
                 {
                     if (!GoToPreviousFrame()) break;
                 } while (!(_frames.Current?.IsSpecial) ?? false);
 
+                OnRewindFinished?.Invoke();
             });
         }
 
         public void NextKeyFrame()
         {
+            OnRewindStarted?.Invoke();
             _threadWorker.Enqueue(() =>
             {
                 do
                 {
                     if (!GoToNextFrame()) break;
                 } while (!(_frames.Current?.IsSpecial) ?? false);
+
+                OnRewindFinished?.Invoke();
             });
         }
 
         public void PreviousFrame()
         {
+            OnRewindStarted?.Invoke();
             _threadWorker.Enqueue(() =>
             {
                 if (_frames.CurrentIndex == 0)
@@ -150,14 +172,17 @@ namespace Elektronik.Protobuf.Offline
                 }
 
                 GoToPreviousFrame();
+                OnRewindFinished?.Invoke();
             });
         }
-        
+
         public void NextFrame()
         {
+            OnRewindStarted?.Invoke();
             _threadWorker.Enqueue(() =>
             {
                 GoToNextFrame();
+                OnRewindFinished?.Invoke();
             });
         }
 
@@ -171,7 +196,7 @@ namespace Elektronik.Protobuf.Offline
         private readonly DataParser<PacketPb> _parsersChain;
         private readonly ThreadQueueWorker _threadWorker;
         private readonly Timer _timer;
-        private readonly ProtobufFilePlayerSettingsBag _typedSettings = new (); 
+        private const int DefaultSpeed = 2;
 
         private IEnumerator<Frame> ReadCommands(int size)
         {
@@ -215,30 +240,28 @@ namespace Elektronik.Protobuf.Offline
         private bool GoToPreviousFrame()
         {
             _frames.Current?.Rewind();
-            if (_frames.MovePrevious())
-            {
-                (_containerTree.Image as FileImagePresenter)?.Present(_frames.Current);
-                return true;
-            }
+            if (!_frames.MovePrevious()) return false;
 
-            return false;
+            (_containerTree.Image as FileImagePresenter)?.Present(_frames.Current);
+            OnPositionChanged?.Invoke(Position);
+            OnTimestampChanged?.Invoke(Timestamp);
+            return true;
         }
 
         private bool GoToNextFrame()
         {
-            if (_frames.MoveNext())
-            {
-                _frames.Current?.Show();
-                (_containerTree.Image as FileImagePresenter)?.Present(_frames.Current);
-                return true;
-            }
+            if (!_frames.MoveNext()) return false;
 
-            return false;
+            _frames.Current?.Show();
+            (_containerTree.Image as FileImagePresenter)?.Present(_frames.Current);
+            OnPositionChanged?.Invoke(Position);
+            OnTimestampChanged?.Invoke(Timestamp);
+            return true;
         }
 
         private void RewindAt(int pos)
         {
-            if (pos < 0 || pos >= AmountOfFrames || pos == CurrentPosition) return;
+            if (pos < 0 || pos >= AmountOfFrames || pos == Position) return;
 
             _threadWorker.Enqueue(() =>
             {

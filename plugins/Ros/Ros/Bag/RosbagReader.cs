@@ -64,7 +64,8 @@ namespace Elektronik.RosPlugin.Ros.Bag
             }
         }
 
-        public event Action<bool>? Rewind;
+        public event Action? RewindStarted;
+        public event Action? RewindFinished;
         public event Action? Finished;
 
         public void Dispose()
@@ -83,7 +84,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
             else if (_rewindAt > 0)
             {
                 _playing = false;
-                Rewind?.Invoke(true);
+                RewindStarted?.Invoke();
                 if (CurrentPosition > _rewindAt)
                 {
                     PreviousKeyFrame();
@@ -95,7 +96,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 else
                 {
                     _rewindAt = -1;
-                    Rewind?.Invoke(false);
+                    RewindFinished?.Invoke();
                 }
             }
         }

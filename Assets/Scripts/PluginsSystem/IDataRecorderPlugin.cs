@@ -4,6 +4,7 @@ using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.PluginsSystem
 {
+    // TODO: add xml docs
     public interface IDataRecorderPlugin : IElektronikPlugin
     {
         bool StartsFromSceneLoading { get; }

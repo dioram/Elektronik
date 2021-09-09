@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
-using Elektronik.Commands;
 using Elektronik.Containers;
+using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
 using Grpc.Core.Logging;
@@ -13,7 +13,7 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
 {
     public class InfinitePlanesMapManager : MapManager<SlamInfinitePlane, SlamInfinitePlaneDiff>
     {
-        public InfinitePlanesMapManager(UpdatableFramesCollection<ICommand> buffer,
+        public InfinitePlanesMapManager(OnlineFrameBuffer buffer,
                                         IContainer<SlamInfinitePlane> container, ICSConverter? converter,
                                         ILogger logger)
                 : base(buffer, container, converter, logger)
@@ -23,7 +23,8 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
         {
             if (request.DataCase != PacketPb.DataOneofCase.InfinitePlanes) return base.Handle(request, context);
             Timer = Stopwatch.StartNew();
-            return Handle(request.Action, request.ExtractInfinitePlanes(Converter));
+            var timestamp = DateTime.Now;
+            return Handle(request.Action, request.ExtractInfinitePlanes(Converter), request.Special, timestamp);
         }
     }
 }

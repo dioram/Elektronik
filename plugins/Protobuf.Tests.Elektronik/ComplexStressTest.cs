@@ -99,12 +99,13 @@ namespace Protobuf.Tests.Elektronik
             var points = GeneratePoints(pointsAmount, scale);
             var observations = GenerateObservations(obsAmount, scale);
 
-            for (int i = 0; i < iterations; i++)
+            for (var i = 0; i < iterations; i++)
             {
                 var pointsPacket = new PacketPb
                 {
                     Action = PacketPb.Types.ActionType.Add,
                     Points = new PacketPb.Types.Points(),
+                    Special = true,
                 };
                 pointsPacket.Points.Data.Add(points);
 

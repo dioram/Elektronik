@@ -56,13 +56,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             }
             else if (_rewindPlannedPos > 0)
             {
-                Rewind?.Invoke(true);
+                RewindStarted?.Invoke();
                 _currentPosition = _rewindPlannedPos;
                 _rewindPlannedPos = -1;
                 _threadWorker.Enqueue(() =>
                 {
                     _data.ShowAt(_actualTimestamps[_currentPosition], true);
-                    Rewind?.Invoke(false);
+                    RewindFinished?.Invoke();
                 });
             }
         }
@@ -133,7 +133,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             }
         }
 
-        public event Action<bool>? Rewind;
+        public event Action? RewindStarted;
+        public event Action? RewindFinished;
         public event Action? Finished;
 
         #endregion

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Elektronik.Data;
 using Elektronik.Data.Converters;
-using Elektronik.Offline;
 using Elektronik.Threading;
 using UnityEngine;
 
@@ -14,7 +13,7 @@ namespace Elektronik.PluginsSystem.UnitySide
     {
         public static readonly List<IElektronikPlugin> Plugins = new List<IElektronikPlugin>();
         [SerializeField] private CSConverter Converter;
-        [SerializeField] private PlayerEventsManager PlayerEvents;
+        [SerializeField] private PlayerEventsController PlayerEvents;
         [SerializeField] private GameObject ScreenLocker;
         [SerializeField] private DataSourcesManager DataSourcesManager;
         [SerializeField] private PluginWindowsManager PluginWindowsManager;
@@ -45,9 +44,10 @@ namespace Elektronik.PluginsSystem.UnitySide
                 MainThreadInvoker.Enqueue(() =>
                 {
                     PluginWindowsManager.RegisterPlugin(CurrentSource);
-                    PlayerEvents.SetDataSource(CurrentSource);
+                    PlayerEvents.DataSourcePlugin = CurrentSource;
                     DataSourcesManager.AddDataSource(CurrentSource.Data);
                     ScreenLocker.SetActive(false);
+                    CurrentSource.Play();
                 });
             });
         }

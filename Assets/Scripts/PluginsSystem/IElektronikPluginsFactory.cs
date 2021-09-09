@@ -5,6 +5,11 @@ using UnityEngine;
 
 namespace Elektronik.PluginsSystem
 {
+    /// <summary>
+    /// This interface is base for all plugins factories.
+    /// It's main goal to produce plugin.
+    /// All classes with this interface will be loaded from Plugins/[PluginName]/libraries directory and instantiated.
+    /// </summary>
     public interface IElektronikPluginsFactory
     {
         /// <summary> Logo of the plugin. Will be displayed in connections window and toolbar. </summary>
@@ -16,32 +21,42 @@ namespace Elektronik.PluginsSystem
         /// <summary> Plugins description. Will be displayed in connections window. </summary>
         /// <remarks> Supports unity rich text. See: http://digitalnativestudios.com/textmeshpro/docs/rich-text/ </remarks>
         string Description { get; }
+
+        /// <summary> Settings of plugin that should be set before its start. </summary>
+        SettingsBag Settings { get; set; }
         
+        /// <summary> Container for settings. </summary>
         ISettingsHistory SettingsHistory { get; }
 
-        /// <summary> Plugins settings. </summary>
-        SettingsBag Settings { get; set; }
-
+        /// <summary> This function creates and starts plugin. </summary>
+        /// <param name="converter"> Converter to unity coordinate system. </param>
+        /// <returns> Instantiated plugin. </returns>
         IElektronikPlugin Start(ICSConverter converter);
 
+        /// <summary> Loads plugin's logo from file. </summary>
+        /// <param name="path"> Path to logo file. </param>
         void LoadLogo(string path);
     }
 
+    /// <summary> Interface for factories for data source plugins. </summary>
     public interface IDataSourcePluginsFactory : IElektronikPluginsFactory
     {
         
     }
 
+    /// <summary> Interface for factories for data source plugins that are reading data from files. </summary>
     public interface IFileSourcePluginsFactory : IDataSourcePluginsFactory
     {
         public string[] SupportedExtensions { get; }
     }
 
+    /// <summary> Interface for factories for plugins that can read snapshots. </summary>
     public interface ISnapshotReaderPluginsFactory : IFileSourcePluginsFactory
     {
         public void SetFileName(string path);
     }
 
+    /// <summary> Interface for factories for plugins that can record data. </summary>
     public interface IDataRecorderFactory: IElektronikPluginsFactory
     {
         string Extension { get; }

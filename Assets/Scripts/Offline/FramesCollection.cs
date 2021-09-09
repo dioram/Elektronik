@@ -50,6 +50,8 @@ namespace Elektronik.Offline
         
         public int CurrentIndex => _index;
 
+        public event Action<int> OnSizeChanged;
+
         public bool MoveNext()
         {
             if (_index < _buffer.Count - 1)
@@ -62,6 +64,7 @@ namespace Elektronik.Offline
             {
                 _buffer.Add(_enumerator.Current);
                 ++_index;
+                if (_framesAmount == 0) OnSizeChanged?.Invoke(_buffer.Count);
                 return true;
             }
 

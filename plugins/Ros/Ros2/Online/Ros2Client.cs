@@ -63,7 +63,8 @@ namespace Elektronik.RosPlugin.Ros2.Online
         public int AmountOfFrames { get; }
         public string CurrentTimestamp { get; }
         public int CurrentPosition { get; set; }
-        public event Action<bool>? Rewind;
+        public event Action? RewindStarted;
+        public event Action? RewindFinished;
         public event Action? Finished;
 
         public void Dispose()

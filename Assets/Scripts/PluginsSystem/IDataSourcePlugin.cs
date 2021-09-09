@@ -6,24 +6,32 @@ namespace Elektronik.PluginsSystem
 {
     public interface IDataSourcePlugin : IElektronikPlugin
     {
+        /// <summary> Root element of containers with data. </summary>
         ISourceTree Data { get; }
         
         /// <summary> Amount of frames (commands) in file. </summary>
         int AmountOfFrames { get; }
 
         /// <summary> Displaying timestamp of current frame. </summary>
-        string CurrentTimestamp { get; }
+        string Timestamp { get; }
 
         /// <summary> Number of current frame. </summary>
-        int CurrentPosition { get; set; }
+        int Position { get; set; }
+        
+        float Speed { get; set; }
+        
+        bool IsPlaying { get; }
 
         /// <summary> Starts playing. </summary>
+        /// <remarks> Should emit <c>OnPlayingStarted</c>. </remarks>
         void Play();
 
         /// <summary> Pauses playing. </summary>
+        /// <remarks> Should emit <c>OnPaused</c>. </remarks>
         void Pause();
 
         /// <summary> Stops playing. </summary>
+        /// <remarks> Should emit <c>OnPaused</c>. </remarks>
         void StopPlaying();
 
         /// <summary> Rewind to previous key frame. </summary>
@@ -44,9 +52,15 @@ namespace Elektronik.PluginsSystem
         /// <summary> Go to previous frame. </summary>
         void NextFrame();
 
-        [CanBeNull] event Action<bool> Rewind;
+        [CanBeNull] event Action OnPlayingStarted;
+        [CanBeNull] event Action OnPaused;
+        [CanBeNull] event Action<int> OnPositionChanged;
+        [CanBeNull] event Action<int> OnAmountOfFramesChanged;
+        [CanBeNull] event Action<string> OnTimestampChanged; 
+        [CanBeNull] event Action OnRewindStarted;
+        [CanBeNull] event Action OnRewindFinished;
 
         /// <summary> Reached end of the file. </summary>
-        [CanBeNull] event Action Finished;
+        [CanBeNull] event Action OnFinished;
     }
 }

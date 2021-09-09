@@ -8,6 +8,10 @@ using UnityEngine;
 
 namespace Elektronik.PluginsSystem
 {
+    /// <summary>
+    /// Base class for all plugins factories. It implements some basic functions, such as settings and logo loading. 
+    /// </summary>
+    /// <typeparam name="TSettings"> Custom type of settings. </typeparam>
     public abstract class ElektronikPluginsFactoryBase<TSettings> : IElektronikPluginsFactory
             where TSettings : SettingsBag, new()
     {
@@ -18,17 +22,26 @@ namespace Elektronik.PluginsSystem
             else _typedSettings = new TSettings();
         }
 
+        /// <inheritdoc />
         public Texture2D Logo { get; private set; }
+
+        /// <inheritdoc />
         public abstract string DisplayName { get; }
+
+        /// <inheritdoc />
         public abstract string Description { get; }
+
+        /// <inheritdoc />
         public ISettingsHistory SettingsHistory => _settingsHistory;
 
+        /// <inheritdoc />
         public IElektronikPlugin Start(ICSConverter converter)
         {
             SaveSettings();
             return StartPlugin(_typedSettings, converter);
         }
 
+        /// <inheritdoc />
         public void LoadLogo(string path)
         {
             if (!File.Exists(path)) return;
@@ -36,6 +49,7 @@ namespace Elektronik.PluginsSystem
             Logo.LoadImage(File.ReadAllBytes(path));
         }
 
+        /// <inheritdoc />
         public SettingsBag Settings
         {
             get => _typedSettings;
@@ -56,6 +70,10 @@ namespace Elektronik.PluginsSystem
 
         #region Protected
 
+        /// <summary> This function actually instantiates plugin. </summary>
+        /// <param name="settings"> Plugin's settings that are necessary for start. </param>
+        /// <param name="converter"> Converter to unity's coordinates system. </param>
+        /// <returns> Plugin. </returns>
         protected abstract IElektronikPlugin StartPlugin(TSettings settings, ICSConverter converter);
 
         #endregion
