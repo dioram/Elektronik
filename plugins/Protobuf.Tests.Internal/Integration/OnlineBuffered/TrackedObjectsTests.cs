@@ -41,9 +41,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => ((SlamTrackedObjectDiff)p).Apply()).ToArray());
             var els = _objects.Select(o => new AddedEventArgs<SimpleLine>(FromPb(0, o))).ToArray();
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(_objects.Length);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
@@ -72,9 +71,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply()).ToArray());
             var els = _objects.Select((o, i) => new AddedEventArgs<SimpleLine>(FromPb(1, oldObjects[i], o))).ToArray();
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(_objects.Length);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
@@ -102,9 +100,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply()).ToArray());
             var els = _objects.Select(o => new AddedEventArgs<SimpleLine>(FromPb(2, o))).ToArray();
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(_objects.Length);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
@@ -133,9 +130,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply()).ToArray());
             var els = _objects.Select((o, i) => new AddedEventArgs<SimpleLine>(FromPb(3, oldObjects[i], o))).ToArray();
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(_objects.Length);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
@@ -163,9 +159,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply()).ToArray());
             var els = _objects.Select(o => new AddedEventArgs<SimpleLine>(FromPb(4, o))).ToArray();
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(_objects.Length);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
@@ -200,9 +195,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply()).ToArray());
             var els = _objects.Select((o, i) => new AddedEventArgs<SimpleLine>(FromPb(5, oldObjects[i], o))).ToArray();
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(_objects.Length);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
@@ -224,9 +218,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e = new RemovedEventArgs(new[] { 1 });
             var el = new RemovedEventArgs(Enumerable.Range(0, 6).ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(_objects.Length - 1);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
@@ -245,9 +238,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e = new RemovedEventArgs(new[] { 0, 2 });
             var el = new RemovedEventArgs(Enumerable.Range(0, 6).ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(0);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);

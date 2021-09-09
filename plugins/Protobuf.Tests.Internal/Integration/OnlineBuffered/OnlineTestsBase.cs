@@ -1,10 +1,12 @@
 ﻿using System.Linq;
+using System.Threading;
 using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.OnlineBuffered;
 using Elektronik.Renderers;
+using FluentAssertions;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
@@ -31,6 +33,7 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var f = new ProtobufOnlinePlayerFactory()
                     { Settings = new OnlineSettingsBag { ListeningPort = port }, Logger = new TestsLogger() };
             Sut = (ProtobufOnlinePlayer)f.Start(new FakeConverter());
+            Sut.Play();
 
             var channel = new Channel($"127.0.0.1:{port}", ChannelCredentials.Insecure);
             MapClient = new MapsManagerPb.MapsManagerPbClient(channel);
@@ -56,6 +59,13 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             Sut.Data.SetRenderer(MockedImageRenderer.Object);
         }
 
+        protected void SendPacket(PacketPb packet)
+        {
+            var response = MapClient.Handle(packet);
+            Thread.Sleep(40);
+            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
+        }
+    
         private void SetupPrintFromMocks()
         {
             MockedPointsRenderer

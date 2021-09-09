@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
@@ -55,9 +56,11 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
             packet.InfinitePlanes.Data.Add(_planes);
-            var e = new AddedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply()).ToArray());
+            var e = new AddedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply())
+                                                                  .ToArray());
 
             var response = MapClient.Handle(packet);
+            Thread.Sleep(20);
 
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length);
@@ -88,9 +91,11 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 return (newPb, diff);
             });
             packet.InfinitePlanes.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply())
+                                                                    .ToArray());
 
             var response = MapClient.Handle(packet);
+            Thread.Sleep(20);
 
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length);
@@ -121,11 +126,11 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 return (newPb, diff);
             });
             packet.InfinitePlanes.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply())
+                                                                    .ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length);
             MockedInfinitePlanesRenderer.Verify(
                 r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
@@ -146,11 +151,11 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 return (newPb, diff);
             });
             packet.InfinitePlanes.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply())
+                                                                    .ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length);
             MockedInfinitePlanesRenderer.Verify(
                 r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
@@ -175,12 +180,13 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                     Message = "Test message",
                 };
             }
+
             packet.InfinitePlanes.Data.Add(_planes);
-            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply())
+                                                                    .ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length);
             MockedInfinitePlanesRenderer.Verify(
                 r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
@@ -197,10 +203,9 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             packet.InfinitePlanes.Data.Add(new[] { _planes[1], _planes[3] });
             var e = new RemovedEventArgs(new[] { 1, 3 });
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
-            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length-2);
+            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length - 2);
             MockedInfinitePlanesRenderer.Verify(
                 r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
         }
@@ -215,9 +220,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             };
             var e = new RemovedEventArgs(new[] { 0, 2, 4 });
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(0);
             MockedInfinitePlanesRenderer.Verify(
                 r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
@@ -232,7 +236,7 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(0);
             ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(0);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(0);
-            
+
             MockedInfinitePlanesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
                                                                     It.IsAny<AddedEventArgs<SlamInfinitePlane>>()),
                                                 Times.Once);
@@ -320,25 +324,6 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
 
             MockedImageRenderer.Verify(r => r.Render(It.IsAny<byte[]>()), Times.Never);
             MockedImageRenderer.Verify(r => r.Clear(), Times.Never);
-        }
-
-        [Test, Order(9)]
-        public void FailedPacket()
-        {
-            var packet = new PacketPb
-            {
-                Action = PacketPb.Types.ActionType.Add,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
-            };
-            packet.InfinitePlanes.Data.Add(_planes); 
-
-            var response = MapClient.Handle(packet);
-
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
-
-            response = MapClient.Handle(packet);
-            
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Failed);
         }
 
         #region Not tests

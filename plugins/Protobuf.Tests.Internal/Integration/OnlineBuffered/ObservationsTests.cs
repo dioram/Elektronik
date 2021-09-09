@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
@@ -54,9 +55,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             packet.Observations.Data.Add(_map);
             var e = new AddedEventArgs<SlamObservation>(_map.Select(p => ((SlamObservationDiff)p).Apply()).ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(0);
             MockedObservationsRenderer.Verify(r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).Observations, e),
@@ -80,9 +80,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             packet.Observations.Data.Add(diff);
             var e = new UpdatedEventArgs<SlamObservation>(_map.Select(p => ((SlamObservationDiff)p).Apply()).ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(0);
             MockedObservationsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Observations, e),
@@ -106,9 +105,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             packet.Observations.Data.Add(diff);
             var e = new UpdatedEventArgs<SlamObservation>(_map.Select(p => ((SlamObservationDiff)p).Apply()).ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(0);
             MockedObservationsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Observations, e),
@@ -132,9 +130,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             packet.Observations.Data.Add(diff);
             var e = new UpdatedEventArgs<SlamObservation>(_map.Select(p => ((SlamObservationDiff)p).Apply()).ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(0);
             MockedObservationsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Observations, e),
@@ -160,9 +157,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                   .Select(p => ((SlamObservationDiff)p).Apply())
                                                                   .ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(0);
             MockedObservationsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Observations, e),
@@ -198,9 +194,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                   .Select(p => ((SlamObservationDiff)p).Apply())
                                                                   .ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(0);
             MockedObservationsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Observations, e),
@@ -227,9 +222,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                     .ToArray();
             var e = new AddedEventArgs<SlamLine>(lines);
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(_connections.Length);
             MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SlamLine>>(), e), Times.Once);
@@ -253,9 +247,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 new SlamLine(((SlamObservationDiff)_map[2]).Apply(), ((SlamObservationDiff)_map[4]).Apply(), 2)
             });
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(_connections.Length);
             MockedObservationsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Observations, e),
@@ -278,9 +271,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             packet.Connections.Data.Add(new[] { _connections[0], _connections[1] });
             var e = new RemovedEventArgs(new[] { 0, 1 });
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(_connections.Length-2);
             MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(), e), Times.Once);
@@ -298,9 +290,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e = new RemovedEventArgs(new[] { 1, 3 });
             var el = new RemovedEventArgs(new[] { 3, 4 });
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(_map.Length-2);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(1);
             MockedObservationsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, e),
@@ -319,9 +310,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e = new RemovedEventArgs(new[] { 0, 2, 4 });
             var el = new RemovedEventArgs(new[] { 2 });
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(0);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(0);
             MockedObservationsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, e),
@@ -425,25 +415,6 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
 
             MockedImageRenderer.Verify(r => r.Render(It.IsAny<byte[]>()), Times.Never);
             MockedImageRenderer.Verify(r => r.Clear(), Times.Never);
-        }
-
-        [Test, Order(13)]
-        public void FailedPacket()
-        {
-            var packet = new PacketPb
-            {
-                Action = PacketPb.Types.ActionType.Add,
-                Observations = new PacketPb.Types.Observations(),
-            };
-            packet.Observations.Data.Add(_map); 
-
-            var response = MapClient.Handle(packet);
-
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
-
-            response = MapClient.Handle(packet);
-            
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Failed);
         }
 
         #region Not tests

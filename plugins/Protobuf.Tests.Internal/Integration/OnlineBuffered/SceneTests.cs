@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
@@ -93,7 +94,9 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             {
                 ImageData = ByteString.CopyFrom(_imageData, 0, _imageData.Length),
             };
+            
             var response = ImageClient.Handle(packet);
+            
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedImageRenderer.Verify(r => r.Render(_imageData), Times.Once);
         }
@@ -109,9 +112,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             pointsPacket.Points.Data.Add(_pointsMap);
             var e = new AddedEventArgs<SlamPoint>(_pointsMap.Select(p => ((SlamPointDiff)p).Apply()).ToArray());
 
-            var response1 = MapClient.Handle(pointsPacket);
+            SendPacket(pointsPacket);
 
-            response1.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedPointsRenderer.Verify(r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).Points, e), Times.Once);
 
             var connectionsPacket = new PacketPb
@@ -130,9 +132,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                     .ToArray();
             var e1 = new AddedEventArgs<SlamLine>(lines);
 
-            var response2 = MapClient.Handle(connectionsPacket);
+            SendPacket(connectionsPacket);
 
-            response2.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SlamLine>>(), e1), Times.Once);
         }
 
@@ -147,9 +148,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             packet.Observations.Data.Add(_observationsMap);
             var e = new AddedEventArgs<SlamObservation>(_observationsMap.Select(p => ((SlamObservationDiff)p).Apply()).ToArray());
 
-            var response1 = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response1.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedObservationsRenderer.Verify(r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).Observations, e),
                                               Times.Once);
 
@@ -170,9 +170,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                     .ToArray();
             var el = new AddedEventArgs<SlamLine>(lines);
 
-            var response2 = MapClient.Handle(connectionsPacket);
+            SendPacket(connectionsPacket);
 
-            response2.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SlamLine>>(), el), Times.Exactly(2));
         }
 
@@ -191,9 +190,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                                (Vector3)o.Position!, (Color)o.Color!)))
                     .ToArray();
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
             foreach (var el in els)
@@ -213,9 +211,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             packet.InfinitePlanes.Data.Add(_planes);
             var e = new AddedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply()).ToArray());
 
-            var response = MapClient.Handle(packet);
+            SendPacket(packet);
 
-            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedInfinitePlanesRenderer.Verify(
                 r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
         }
@@ -228,6 +225,7 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             var e5 = new RemovedEventArgs(Enumerable.Range(0, 5).ToArray());
 
             var response = SceneClient.Clear(new Empty());
+            Thread.Sleep(20);
 
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedImageRenderer.Verify(r => r.Clear(), Times.Once);

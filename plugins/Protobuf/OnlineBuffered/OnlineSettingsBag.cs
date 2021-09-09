@@ -8,6 +8,5 @@ namespace Elektronik.Protobuf.OnlineBuffered
     public class OnlineSettingsBag : SettingsBag
     {
         [CheckForEquals] public int ListeningPort = 5050;
-        [CheckForEquals] public int FramesBufferLength = 1000;
     }
 }
