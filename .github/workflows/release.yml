@@ -58,21 +58,6 @@ jobs:
         if: ${{ !cancelled() }}
         run: .\.github\run_unity_tests.bat
 
-      - name: Run Unity tests
-        uses: game-ci/unity-test-runner@v2
-        id: tests
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        with:
-          testMode: EditMode
-          projectPath: ./
-          artifactsPath: ./test_artifacts
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          checkName: Unity tests results for linux
-
-
   build_linux:
     name: Linux build
     runs-on: ubuntu-latest
