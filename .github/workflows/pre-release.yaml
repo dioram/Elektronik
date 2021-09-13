@@ -8,7 +8,7 @@ on:
 jobs:
   build_windows:
     name: Build for windows
-    runs-on: [self-hosted, windows]
+    runs-on: [ self-hosted, windows ]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -17,12 +17,6 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-
-      - name: Get version
-        run: |
-          $global:el=cat .\ProjectSettings\ProjectSettings.asset | Select-String -Pattern '(?:bundleVersion: )(\d*\.\d*\.\d*(?:-rc\d*)?)' | % {$_.Matches.Groups[1].Value}
-          echo $el
-        shell: pwsh
 
       - name: Building native libs
         run: .\.github\build_natives.bat
@@ -35,7 +29,7 @@ jobs:
 
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         with:
           project_path: plugins/Protobuf.Tests.Internal
           set_check_status_from_test_outcome: true
@@ -45,7 +39,7 @@ jobs:
 
       - name: Run ROS plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         with:
           project_path: plugins/Ros.Tests
           set_check_status_from_test_outcome: true
@@ -54,7 +48,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run unity tests
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: .\.github\run_unity_tests.bat
 
 
@@ -67,10 +61,11 @@ jobs:
         with:
           lfs: true
 
-      - name: Get version
+      - name: Update debian package version
         run: |
           export el=`cat ./ProjectSettings/ProjectSettings.asset | grep -oP '(?<=bundleVersion: )\d*.\d*.\d*(?:-rc\d*)?'`
-          echo $el
+          perl -pe 's/(?<=Version: )\d*.\d*.\d*(?:-rc\d*)?/'$el'/' < ./package/DEBIAN/control > control.txt
+          cp -f control.txt ./package/DEBIAN/control
 
       - uses: actions/cache@v2
         with:
@@ -151,6 +146,22 @@ jobs:
           targetPlatform: StandaloneLinux64
           versioning: None
 
+      - name: Enable VR
+        run: git apply ./ProjectSettings/EnableVR.patch
+
+      - name: Build Unity player itself (VR version)
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          buildName: Elektronik
+          allowDirtyBuild: true
+          targetPlatform: StandaloneLinux64
+          versioning: None
+          buildsPath: build_vr
+
       - name: Build plugins
         run: |
           sudo chown -R $USER:$USER ${{ github.workspace }}
@@ -158,7 +169,7 @@ jobs:
 
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
-        if: always()
+        if: ${{ !cancelled() }}
         with:
           project_path: plugins/Protobuf.Tests.Internal
           set_check_status_from_test_outcome: true
@@ -168,7 +179,7 @@ jobs:
 
       - name: Run ROS plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
-        if: always()
+        if: ${{ !cancelled() }}
         with:
           project_path: plugins/Ros.Tests
           set_check_status_from_test_outcome: true
@@ -178,7 +189,7 @@ jobs:
 
       - name: Run Unity tests
         uses: game-ci/unity-test-runner@v2
-        if: always()
+        if: ${{ !cancelled() }}
         env:
           UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -189,59 +200,7 @@ jobs:
           artifactsPath: ./test_artifacts
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           checkName: Unity tests results for linux
-        
-        
-  release:
-    name: Create pre-release
-    runs-on: self-hosted
-    needs: [build_windows, build_linux]
-    steps:
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.el }}
-          release_name: Pre-release ${{ env.el }}
-          body_path: ReleaseNotes.md
-          draft: false
-          prerelease: true
 
-
-  upload_windows:
-    name: Upload windows build
-    runs-on: [self-hosted, windows]
-    needs: release
-    steps: 
-      - name: Upload Windows release asset
-        id: upload-release-asset-win
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build
-          asset_name: Release.zip
-          asset_content_type: application/zip
-          
-      - name: Upload Windows VR release asset
-        id: upload-release-asset-win-vr
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build_vr
-          asset_name: Release_vr.zip
-          asset_content_type: application/zip
-
-
-  upload_linux:
-    name: Upload windows build
-    runs-on: ubuntu-latest
-    needs: release
-    steps:
       - name: Build deb package
         run: |
           mkdir -p ./package/opt/elektronik
@@ -249,16 +208,11 @@ jobs:
           sudo dpkg-deb --build package
           mv package.deb elektronik.deb
           
-      - name: Upload Linux release asset
-        id: upload-release-asset-linux
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: elektronik.deb
-          asset_name: elektronik.deb
-          asset_content_type: application/x-deb
+          name: elektronik.deb
+          path: elektronik.deb
           
       - name: Build deb package for VR
         run: |
@@ -268,13 +222,107 @@ jobs:
           sudo dpkg-deb --build package
           mv package.deb elektronik_vr.deb
 
+      - name: Upload artifact for vr
+        uses: actions/upload-artifact@v2
+        with:
+          name: elektronik_vr.deb
+          path: elektronik_vr.deb
+
+
+  release:
+    name: Create pre-release
+    runs-on: [ self-hosted, windows ]
+    needs: build_windows
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Get version
+        id: get_version
+        run: |
+          $el=cat .\ProjectSettings\ProjectSettings.asset | Select-String -Pattern '(?:bundleVersion: )(\d*\.\d*\.\d*(?:-rc\d*)?)' | % {$_.Matches.Groups[1].Value}
+          echo "::set-output name=ver::$el"
+        shell: pwsh
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get_version.outputs.ver }}
+          release_name: Pre-release v${{ steps.get_version.outputs.ver }}
+          body_path: ReleaseNotes.md
+          draft: false
+          prerelease: true
+
+
+  upload_windows:
+    name: Upload windows build
+    runs-on: [ self-hosted, windows ]
+    needs: [ build_windows, release ]
+    steps:
+      - name: Zip builds
+        run: | 
+          & { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\build', 'build.zip'); }
+          & { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\build_vr', 'build_vr.zip'); }
+        shell: pwsh
+      
+      - name: Upload Windows release asset
+        id: upload-release-asset-win
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: build.zip
+          asset_name: Release.zip
+          asset_content_type: application/zip
+
+      - name: Upload Windows VR release asset
+        id: upload-release-asset-win-vr
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: build_vr.zip
+          asset_name: Release_vr.zip
+          asset_content_type: application/zip
+
+
+  upload_linux:
+    name: Upload linux build
+    runs-on: ubuntu-latest
+    needs: [ build_linux, release ]
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with: 
+          name: elektronik.deb
+          
+      - name: Download artifact for VR
+        uses: actions/download-artifact@v2
+        with:
+          name: elektronik_vr.deb
+
+      - name: Upload Linux release asset
+        id: upload-release-asset-linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: elektronik.deb
+          asset_name: elektronik.deb
+          asset_content_type: application/x-deb
+
       - name: Upload Linux VR release asset
         id: upload-release-asset-linux-vr
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: elektronik_vr.deb
           asset_name: elektronik_vr.deb
           asset_content_type: application/x-deb

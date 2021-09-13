@@ -348,9 +348,11 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, "NoisedCube.dat", true);
             Thread.Sleep(200);
             SendAndCheck(obsPacket, "NoisedCube.dat");
-            SendAndCheck(GenerateEdgeObservations(amount, side), "NoisedCube.dat");
+            var p1 = GenerateEdgeObservations(amount, side);
+            SendAndCheck(p1, "NoisedCube.dat");
             Thread.Sleep(200);
-            SendAndCheck(GenerateCornerObservations(amount, side), "NoisedCube.dat");
+            var p2 = GenerateCornerObservations(amount, side);
+            SendAndCheck(p2, "NoisedCube.dat");
         }
     }
 }

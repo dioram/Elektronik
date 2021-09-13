@@ -12,56 +12,50 @@ env:
 jobs:
   build_windows:
     name: Build for windows
-    runs-on: [self-hosted, windows]
+    runs-on: [ self-hosted, windows ]
     steps:
       - uses: actions/checkout@v2
         with:
           lfs: true
-          
+
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-          
-      - name: Get version
-        run: |
-          $global:el=cat .\ProjectSettings\ProjectSettings.asset | Select-String -Pattern '(?:bundleVersion: )(\d*\.\d*\.\d*(?:-rc\d*)?)' | % {$_.Matches.Groups[1].Value}
-          echo $el
-        shell: pwsh
 
       - name: Building native libs
         run: .\.github\build_natives.bat
 
       - name: Build unity player
         run: .\.github\build_unity.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
-        
+
       - name: Build plugins
         run: .\.github\build_plugins.bat
-        
+
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         with:
           project_path: plugins/Protobuf.Tests.Internal
           set_check_status_from_test_outcome: true
           report_name: Protobuf unit tests windows
           report_title: Protobuf unit tests windows
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Run ROS plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         with:
           project_path: plugins/Ros.Tests
           set_check_status_from_test_outcome: true
           report_name: ROS unit tests windows
           report_title: ROS unit tests windows
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Run unity tests
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: .\.github\run_unity_tests.bat
-          
-          
+
+
   build_linux:
     name: Linux build
     runs-on: ubuntu-latest
@@ -70,11 +64,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
-          
-      - name: Get version
-        run: |
-          export el=`cat ./ProjectSettings/ProjectSettings.asset | grep -oP '(?<=bundleVersion: )\d*.\d*.\d*(?:-rc\d*)?'`
-          echo $el
 
       - uses: actions/cache@v2
         with:
@@ -103,7 +92,7 @@ jobs:
 
       - name: Install vcpkg packages
         run: $VCPKG_ROOT/vcpkg install openssl fastrtps opencv pcl
-        
+
       - name: Clear vcpkg temp files
         run: |
           rm -rf $VCPKG_ROOT/packages
@@ -154,7 +143,7 @@ jobs:
           allowDirtyBuild: true
           targetPlatform: StandaloneLinux64
           versioning: None
-          
+
       - name: Enable VR
         run: git apply ./ProjectSettings/EnableVR.patch
 
@@ -178,7 +167,7 @@ jobs:
 
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
-        if: always()
+        if: ${{ !cancelled() }}
         with:
           project_path: plugins/Protobuf.Tests.Internal
           set_check_status_from_test_outcome: true
@@ -188,17 +177,17 @@ jobs:
 
       - name: Run ROS plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
-        if: always()
+        if: ${{ !cancelled() }}
         with:
           project_path: plugins/Ros.Tests
           set_check_status_from_test_outcome: true
           report_name: ros_unit_tests_linux
           report_title: ROS unit tests linux
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Run Unity tests
         uses: game-ci/unity-test-runner@v2
-        if: always()
+        if: ${{ !cancelled() }}
         env:
           UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
