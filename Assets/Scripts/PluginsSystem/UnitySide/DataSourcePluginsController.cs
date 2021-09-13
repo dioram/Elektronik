@@ -54,24 +54,6 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         #region Unity events
 
-        private void Start()
-        {
-            var startupTasks = PluginsLoader.Instance.PluginFactories
-                    .Where(f => !(f is IDataSourcePluginsFactory))
-                    .Select(f => Task.Run(() => Plugins.Add(f.Start(Converter))))
-                    .ToList();
-            ScreenLocker.SetActive(true);
-            Task.Run(() =>
-            {
-                foreach (var plugin in Plugins)
-                {
-                    PluginWindowsManager.RegisterPlugin(plugin);
-                }
-                Task.WhenAll(startupTasks);
-                MainThreadInvoker.Enqueue(() => ScreenLocker.SetActive(false));
-            });
-        }
-
         private void Update()
         {
             foreach (var plugin in Plugins)

@@ -8,9 +8,8 @@ namespace Elektronik.Data
 {
     public class SnapshotContainer : ISourceTreeNode, IRemovable, IVisible, ISnapshotable, ISave
     {
-        public SnapshotContainer(string displayName, IEnumerable<ISourceTreeNode> children, ICSConverter converter)
+        public SnapshotContainer(string displayName, IEnumerable<ISourceTreeNode> children)
         {
-            _converter = converter;
             DisplayName = displayName;
             Children = children;
         }
@@ -92,19 +91,7 @@ namespace Elektronik.Data
                                                  .OfType<ISnapshotable>()
                                                  .Select(ch => ch.TakeSnapshot())
                                                  .Select(ch => ch as ISourceTreeNode)
-                                                 .ToList(),
-                                         _converter);
-        }
-
-        #endregion
-
-        #region ISave
-
-        public event Action<ISourceTreeNode> SaveMe;
-
-        public void RequestSaving()
-        {
-            SaveMe?.Invoke(this);
+                                                 .ToList());
         }
 
         #endregion
@@ -112,7 +99,6 @@ namespace Elektronik.Data
         #region Private
 
         private bool _isVisible = true;
-        private readonly ICSConverter _converter;
 
         #endregion
     }

@@ -132,21 +132,19 @@ namespace Elektronik.Data
         {
             // ReSharper disable once LocalVariableHidesMember
             var name = "Snapshot".tr(_snapshotsCount++);
-            var snapshot = new SnapshotContainer(name,
-                                                 _dataSources
-                                                         .OfType<ISnapshotable>()
-                                                         .Select(s => s.TakeSnapshot())
-                                                         .Select(s => s as ISourceTreeNode)
-                                                         .ToList(),
-                                                 Converter);
+            var snapshot = new SnapshotContainer(name, _dataSources
+                                                       .OfType<ISnapshotable>()
+                                                       .Select(s => s.TakeSnapshot())
+                                                       .Select(s => s as ISourceTreeNode)
+                                                       .ToList());
             AddDataSource(snapshot);
         }
 
         public void LoadSnapshot()
         {
             FileBrowser.SetFilters(false, PluginsLoader.Instance.PluginFactories
-                                           .OfType<ISnapshotReaderPluginsFactory>()
-                                           .SelectMany(r => r.SupportedExtensions));
+                                                       .OfType<ISnapshotReaderPluginsFactory>()
+                                                       .SelectMany(r => r.SupportedExtensions));
             FileBrowser.ShowLoadDialog(LoadSnapshot,
                                        () => { },
                                        false,
@@ -158,7 +156,8 @@ namespace Elektronik.Data
 
         #region Private
 
-        private static void MapSourceTree(ISourceTreeNode treeNodeElement, string path, Func<ISourceTreeNode, string, bool> action)
+        private static void MapSourceTree(ISourceTreeNode treeNodeElement, string path,
+                                          Func<ISourceTreeNode, string, bool> action)
         {
             var fullName = $"{path}/{treeNodeElement.DisplayName}";
             var deeper = action(treeNodeElement, fullName);
@@ -173,15 +172,14 @@ namespace Elektronik.Data
         {
             foreach (var path in files)
             {
-                var playerPrefab = PluginsLoader.Instance.PluginFactories
-                        .OfType<ISnapshotReaderPluginsFactory>()
-                        .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
-                if (playerPrefab is null) return;
-                var factory = (ISnapshotReaderPluginsFactory) Activator.CreateInstance(playerPrefab.GetType());
+                var factory = PluginsLoader.Instance.PluginFactories
+                                                .OfType<ISnapshotReaderPluginsFactory>()
+                                                .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
+                if (factory is null) return;
                 factory.SetFileName(path);
-                var plugin = (IDataSourcePlugin) factory.Start(Converter);
+                var plugin = (IDataSourcePlugin)factory.Start(Converter);
                 plugin.Position = plugin.AmountOfFrames - 1;
-                AddDataSource(new SnapshotContainer(Path.GetFileName(path), plugin.Data.Children, Converter));
+                AddDataSource(new SnapshotContainer(Path.GetFileName(path), plugin.Data.Children));
             }
         }
 

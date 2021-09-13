@@ -142,20 +142,9 @@ namespace Elektronik.Containers
 
         private void OnObservationsUpdated(object sender, UpdatedEventArgs<SlamObservation> e)
         {
-            var obsWithoutChangedConnections = e.UpdatedItems
-                    .Where(o => o.ObservedPoints.Count == 0)
-                    .Select(o => o.Point)
-                    .ToArray();
-            if (obsWithoutChangedConnections.Length > 0) _connections.UpdatePositions(obsWithoutChangedConnections);
-            var changed = e.UpdatedItems
-                    .Where(o => o.ObservedPoints.Count != 0)
-                    .ToArray();
-            
-            if (changed.Length > 0)
-            {
-                OnObservationsRemoved(sender, new RemovedEventArgs<SlamObservation>(changed));
-                OnObservationsAdded(sender, new AddedEventArgs<SlamObservation>(changed));
-            }
+            if (e.UpdatedItems.Count <= 0) return;
+            OnObservationsRemoved(sender, new RemovedEventArgs<SlamObservation>(e.UpdatedItems));
+            OnObservationsAdded(sender, new AddedEventArgs<SlamObservation>(e.UpdatedItems));
         }
 
         private void OnObservationsRemoved(object sender, RemovedEventArgs<SlamObservation> e)

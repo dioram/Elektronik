@@ -242,6 +242,7 @@ namespace Elektronik.Containers
         public void Remove(IList<SlamLine> items)
         {
             if (items is null) return;
+            var removed = new List<SlamLine> { Capacity = items.Count };
             lock (_connections)
             {
                 foreach (var line in items)
@@ -263,10 +264,11 @@ namespace Elektronik.Containers
                     if (!_connections.ContainsKey(index)) continue;
                     _connections.Remove(index);
                     _freeIds.Enqueue(index);
+                    removed.Add(new SlamLine(line.Point1, line.Point1, index));
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamLine>(items));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamLine>(removed));
         }
         
         public IList<SlamLine> Remove(IList<int> items)

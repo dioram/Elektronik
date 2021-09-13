@@ -3,6 +3,7 @@ using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Windows;
 using TMPro;
 using UniRx;
@@ -116,7 +117,7 @@ namespace Elektronik.UI
 
             if (_node is ISave s)
             {
-                SaveButton.OnClickAsObservable().Subscribe(_ => s.RequestSaving());
+                SaveButton.OnClickAsObservable().Subscribe(_ => RecorderPluginsController.Save(_node));
             }
             else
             {
