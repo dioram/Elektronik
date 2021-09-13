@@ -34,7 +34,11 @@ namespace Elektronik.Offline
             _dataSourcePluginOffline = dataSourcePluginOffline;
             Play += _dataSourcePluginOffline.Play;
             Pause += _dataSourcePluginOffline.Pause;
-            Stop += _dataSourcePluginOffline.StopPlaying;
+            Stop += () =>
+            {
+                Camera.main.transform.parent = null;
+                _dataSourcePluginOffline.StopPlaying();
+            };
             NextKeyFrame += _dataSourcePluginOffline.NextKeyFrame;
             PreviousKeyFrame += _dataSourcePluginOffline.PreviousKeyFrame;
             _dataSourcePluginOffline.Finished += SetPausedState;

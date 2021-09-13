@@ -1,16 +1,15 @@
 ﻿using UnityEngine;
-using HSVPicker;
+using UnityEngine.UI.Extensions.ColorPicker;
 
 namespace Elektronik.UI
 {
     public class SceneColorChanger : MonoBehaviour
     {
-        public ColorPicker Picker;
+        public ColorPickerControl Picker;
         public Camera[] Cameras;
 
-        private void Start()
+        private void Awake()
         {
-            Picker.CurrentColor = Camera.main.backgroundColor;
             Picker.onValueChanged.AddListener(color =>
             {
                 foreach (var cam in Cameras)

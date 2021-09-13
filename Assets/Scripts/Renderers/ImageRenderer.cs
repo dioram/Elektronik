@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Elektronik.Threading;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Elektronik.Renderers
@@ -37,16 +38,21 @@ namespace Elektronik.Renderers
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
+                MainThreadInvoker.Enqueue(() => gameObject.SetActive(_isShowing));
             }
+        }
+
+        public void SetScale(float value)
+        {
         }
 
         public void Render(byte[] array)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            MainThreadInvoker.Enqueue(() =>
             {
                 Texture2D texture2D = Texture2D.blackTexture;
                 texture2D.LoadImage(array);
+                texture2D.filterMode = FilterMode.Trilinear;
                 Fitter.aspectRatio = texture2D.width / (float) texture2D.height;
                 Target.texture = texture2D;
             });
@@ -54,7 +60,7 @@ namespace Elektronik.Renderers
 
         public void Render(ImageData data)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            MainThreadInvoker.Enqueue(() =>
             {
                 if (!data.IsSupported)
                 {
@@ -81,7 +87,7 @@ namespace Elektronik.Renderers
 
         public void Clear()
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            MainThreadInvoker.Enqueue(() =>
             {
                 if (Target != null) Target.texture = Texture2D.whiteTexture;
             });

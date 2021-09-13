@@ -36,6 +36,15 @@ namespace Elektronik.UI
             State = state;
             _wasInited = true;
         }
+        
+        public void SilentSetState(int state)
+        {
+            if (_state >= 0 && _state < Events.Count) Events[_state]?.Invoke();
+            if (_state == state % MaxState) return;
+            _state = state % MaxState;
+            SetValue();
+        }
+
 
         #region Unity events
 

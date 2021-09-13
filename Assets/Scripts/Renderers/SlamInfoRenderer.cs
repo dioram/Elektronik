@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Threading;
 using Elektronik.UI.ListBox;
 using TMPro;
 using UnityEngine;
@@ -31,8 +32,12 @@ namespace Elektronik.Renderers
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
+                MainThreadInvoker.Enqueue(() => gameObject.SetActive(_isShowing));
             }
+        }
+
+        public void SetScale(float value)
+        {
         }
 
         public void Render((string message, IEnumerable<ICloudItem> points) data)

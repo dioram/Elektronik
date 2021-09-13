@@ -13,5 +13,10 @@ namespace Elektronik.Settings.Bags
         public int Port = 5050;
 
         public float Scale = 10f;
+
+        public override bool Validate()
+        {
+            return Uri.IsWellFormedUriString($"http://{IPAddress}:{Port}", UriKind.Absolute);
+        }
     }
 }

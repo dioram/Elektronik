@@ -1,4 +1,5 @@
-﻿using Elektronik.Renderers;
+﻿using System.Collections.Generic;
+using Elektronik.Renderers;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using Elektronik.UI.Windows;
 using SQLite;
@@ -11,8 +12,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             where TMessage : Message
             where TRender : IDataRenderer<TRenderType>
     {
-        public DBContainerToWindow(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps)
-                : base(displayName, dbModel, topic, actualTimestamps)
+        public DBContainerToWindow(string displayName, List<SQLiteConnection> dbModels, Topic topic,
+                                   List<long> actualTimestamps)
+                : base(displayName, dbModels, topic, actualTimestamps)
         {
         }
 
@@ -23,7 +25,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (Renderer is not null) Renderer.Clear();
         }
 
-        public override void SetRenderer(object renderer)
+        public override void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is WindowsManager factory)
             {

@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Linq;
+using Elektronik.Settings;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,6 +15,7 @@ namespace Elektronik.UI.Windows
         public float MinHeight = 40;
         public float MinWidth = 80;
         public bool IsMinimized => _isMinimized;
+        public bool SavingSettings = false;
         public TMP_Text TitleLabel;
 
         public void Show()
@@ -26,12 +30,19 @@ namespace Elektronik.UI.Windows
             }
 
             transform.SetAsLastSibling();
+            SaveSettings();
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+            SaveSettings();
         }
 
         public void Minimize()
         {
             _isMinimized = true;
-            var rect = ((RectTransform) transform);
+            var rect = ((RectTransform)transform);
             _maximizedHeight = rect.sizeDelta.y;
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, 42);
             _content.SetActive(false);
@@ -39,18 +50,22 @@ namespace Elektronik.UI.Windows
             {
                 edge.enabled = false;
             }
+
+            SaveSettings();
         }
 
         public void Maximize()
         {
             _isMinimized = false;
-            var rect = ((RectTransform) transform);
+            var rect = ((RectTransform)transform);
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, _maximizedHeight);
             _content.SetActive(true);
             foreach (var edge in _edges)
             {
                 edge.enabled = true;
             }
+
+            SaveSettings();
         }
 
         #region Unity events
@@ -61,6 +76,47 @@ namespace Elektronik.UI.Windows
             _edges = GetComponentsInChildren<ResizingEdge>();
             _header = transform.Find("Header").GetComponent<Image>();
             _content = transform.Find("Content").gameObject;
+            if (!SavingSettings) return;
+            _header.GetComponent<HeaderDragHandler>().OnDragged += _ => SaveSettings();
+            foreach (var edge in _edges)
+            {
+                edge.OnResized += _ => SaveSettings();
+            }
+        }
+
+        private void Start()
+        {
+            if (!SavingSettings) return;
+            _windowSettings = new SettingsHistory<WindowSettingsBag>($"{name}.json", 1);
+            if (_windowSettings.Recent.FirstOrDefault() is WindowSettingsBag bag)
+            {
+                GetComponent<RectTransform>().anchoredPosition = new Vector2(bag.X, bag.Y);
+                GetComponent<RectTransform>().sizeDelta = new Vector2(bag.Width, bag.Height);
+                if (bag.IsShowing) Show();
+                else gameObject.SetActive(false);
+                if (bag.IsMaximized)
+                {
+                    _maximizedHeight = bag.Height;
+                    MinimizeButton.InitState(0);
+                }
+                else MinimizeButton.InitState(1);
+            }
+
+            _isInited = true;
+
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+            var rects = _content.GetComponentsInChildren<ScrollRect>();
+            foreach (var rect in rects)
+            {
+                rect.scrollSensitivity = 300;
+            }
+#endif
+        }
+
+        private void Update()
+        {
+            if (_edges.FirstOrDefault(e => e.IsHovered) is {} edge) edge.ShowEdgeCursor();
+            else ResizingEdge.ShowDefaultCursor();
         }
 
         #endregion
@@ -78,11 +134,31 @@ namespace Elektronik.UI.Windows
 
         [SerializeField] private Color BaseHeaderColor = new Color(1, 1, 1, 0.5f);
         [SerializeField] private Color HighlightHeaderColor = Color.blue;
+        [SerializeField] private ChangingButton MinimizeButton;
         private ResizingEdge[] _edges;
         private Image _header;
         private GameObject _content;
         private float _maximizedHeight;
         private bool _isMinimized;
+        private bool _isInited = false;
+        private SettingsHistory<WindowSettingsBag> _windowSettings;
+
+        private void SaveSettings()
+        {
+            if (!SavingSettings || !_isInited) return;
+            var rect = GetComponent<RectTransform>();
+            var bag = new WindowSettingsBag
+            {
+                X = rect.anchoredPosition.x,
+                Y = rect.anchoredPosition.y,
+                Width = rect.sizeDelta.x,
+                Height = _isMinimized ? _maximizedHeight : rect.sizeDelta.y,
+                IsMaximized = !_isMinimized,
+                IsShowing = gameObject.activeSelf,
+            };
+            _windowSettings.Add(bag);
+            _windowSettings.Save();
+        }
 
         private IEnumerator HighlightHeader()
         {

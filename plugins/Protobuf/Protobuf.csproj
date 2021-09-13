@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Protobuf Include="Data\MapTypes.proto">
+      <Protobuf Include="MapTypes.proto">
         <GrpcServices>Both</GrpcServices>
         <Access>Public</Access>
         <ProtoCompile>True</ProtoCompile>
@@ -23,7 +23,7 @@
         <OutputDir>obj\Release\</OutputDir>
         <Generator>MSBuild:Compile</Generator>
       </Protobuf>
-      <Protobuf Include="Data\UpdateMapService.proto">
+      <Protobuf Include="UpdateMapService.proto">
         <GrpcServices>Both</GrpcServices>
         <Access>Public</Access>
         <ProtoCompile>True</ProtoCompile>
@@ -34,11 +34,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Google.Protobuf" Version="3.15.3" />
-      <PackageReference Include="Grpc" Version="2.36.0" />
-      <PackageReference Include="Grpc.Core" Version="2.36.0" />
-      <PackageReference Include="Grpc.Core.Api" Version="2.36.0" />
-      <PackageReference Include="Grpc.Tools" Version="2.36.0">
+      <PackageReference Include="Google.Protobuf" Version="3.17.0" />
+      <PackageReference Include="Grpc" Version="2.37.1" />
+      <PackageReference Include="Grpc.Core" Version="2.37.1" />
+      <PackageReference Include="Grpc.Core.Api" Version="2.37.1" />
+      <PackageReference Include="Grpc.Tools" Version="2.37.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="3.9.0">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
@@ -136,14 +140,17 @@
       <None Update="translations.csv">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="libgrpc_csharp_ext.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\build\Elektronik_Data\Managed\Assembly-CSharp.dll</HintPath>
-      </Reference>
       <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\build\Elektronik_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      </Reference>
+      <Reference Include="Elektronik.Scripts, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\build\Elektronik_Data\Managed\Elektronik.Scripts.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\build\Elektronik_Data\Managed\UnityEngine.dll</HintPath>
@@ -151,10 +158,6 @@
       <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\build\Elektronik_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="libraries" />
     </ItemGroup>
 
 </Project>

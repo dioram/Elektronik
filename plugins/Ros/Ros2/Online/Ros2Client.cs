@@ -1,4 +1,5 @@
-﻿using Elektronik.PluginsSystem;
+﻿#if !NO_ROS2DDS
+using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using UnityEngine;
@@ -23,7 +24,7 @@ namespace Elektronik.RosPlugin.Ros2.Online
         {
             _container.Init(TypedSettings);
             Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = Converter;
         }
 
@@ -46,3 +47,6 @@ namespace Elektronik.RosPlugin.Ros2.Online
         #endregion
     }
 }
+#else
+
+#endif

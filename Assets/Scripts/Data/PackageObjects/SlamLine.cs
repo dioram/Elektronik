@@ -2,6 +2,7 @@
 
 namespace Elektronik.Data.PackageObjects
 {
+    [Serializable]
     public struct SlamLine : IComparable<SlamLine>, ICloudItem
     {
         public int Id { get; set; }
@@ -29,6 +30,11 @@ namespace Elektronik.Data.PackageObjects
             Point2 = point2;
             Id = id;
             Message = "";
+        }
+
+        public (int Id1, int Id2) GetIds()
+        {
+            return (Point1.Id, Point2.Id);
         }
 
         public int CompareTo(SlamLine other) => GetInternalID().CompareTo(other.GetInternalID());

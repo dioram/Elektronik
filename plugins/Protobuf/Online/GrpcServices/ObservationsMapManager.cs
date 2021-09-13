@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Elektronik.Containers;
@@ -6,11 +7,10 @@ using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
-using UnityEngine;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    public class ObservationsMapManager : ConnectableObjectsMapManager<SlamObservation>
+    public class ObservationsMapManager : ConnectableObjectsMapManager<SlamObservation, SlamObservationDiff>
     {
         private readonly ICSConverter _converter;
 
@@ -22,14 +22,10 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
-            Debug.Log("[ObservationsMapManager.Handle]");
-            if (request.DataCase == PacketPb.DataOneofCase.Observations)
-            {
-                var obs = request.ExtractObservations(_converter, Directory.GetCurrentDirectory()).ToList();
-                return HandleConnections(request, Handle(request.Action, obs));
-            }
-
-            return base.Handle(request, context);
+            if (request.DataCase != PacketPb.DataOneofCase.Observations) return base.Handle(request, context);
+            Timer = Stopwatch.StartNew();
+            var obs = request.ExtractObservations(_converter, Directory.GetCurrentDirectory()).ToList();
+            return HandleConnections(request, Handle(request.Action, obs));
         }
     }
 }

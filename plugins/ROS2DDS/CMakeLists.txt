@@ -4,7 +4,7 @@ include(CopyDlls.cmake)
 include(GNUInstallDirs)
 
 find_package(asio REQUIRED)
-find_package(openssl REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(tinyxml2 REQUIRED)
 find_package(foonathan_memory REQUIRED)
 find_package(fastcdr REQUIRED)
@@ -30,14 +30,9 @@ swig_add_library(ROS2DDS
 target_link_libraries(ROS2DDS PRIVATE fastrtps fastcdr)
 set_target_properties(ROS2DDS PROPERTIES CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/../../build/Plugins/Ros/libraries CACHE PATH "installation prefix")
-set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../build/Plugins/Ros/libraries)
+set(INSTALL_VR ${PROJECT_SOURCE_DIR}/../../build_vr/Plugins/Ros/libraries)
+set(INSTALL_NON_VR ${PROJECT_SOURCE_DIR}/../../build/Plugins/Ros/libraries)
 
-set(DEPLOY_DLLS)
-file(GLOB DEPLOY_DLLS ${CMAKE_BINARY_DIR}/*.dll)
-set(DEPLOY_LIBS)
 target_copy_libs(ROS2DDS foonathan_memory)
-file(GLOB DEPLOY_LIBS ${CMAKE_BINARY_DIR}/*.lib)
-
-install(FILES ${DEPLOY_DLLS} DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES ${DEPLOY_LIBS} DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY ${CMAKE_BINARY_DIR}/ DESTINATION ${INSTALL_VR} FILES_MATCHING REGEX ".*\\.((lib)|(so)|(dll))")
+install(DIRECTORY ${CMAKE_BINARY_DIR}/ DESTINATION ${INSTALL_NON_VR} FILES_MATCHING REGEX ".*\\.((lib)|(so)|(dll))")

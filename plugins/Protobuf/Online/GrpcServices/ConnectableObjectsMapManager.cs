@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Elektronik.Containers;
@@ -7,22 +8,27 @@ using Elektronik.Protobuf.Data;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    public abstract class ConnectableObjectsMapManager<T> : MapManager<T> where T : ICloudItem
+    public abstract class ConnectableObjectsMapManager<TCloudItem, TCloudItemDiff>
+            : MapManager<TCloudItem, TCloudItemDiff>
+            where TCloudItem : struct, ICloudItem
+            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
     {
-        private readonly IConnectableObjectsContainer<T> _connectableContainer;
-        
-        protected ConnectableObjectsMapManager(IConnectableObjectsContainer<T> container) : base(container)
+        private readonly IConnectableObjectsContainer<TCloudItem> _connectableContainer;
+
+        protected ConnectableObjectsMapManager(IConnectableObjectsContainer<TCloudItem> container) : base(container)
         {
             _connectableContainer = container;
         }
 
         protected virtual Task<ErrorStatusPb> HandleConnections(PacketPb request, Task<ErrorStatusPb> baseStatus)
         {
+            var timer = Stopwatch.StartNew();
             var status = baseStatus.Result;
 
             if (status.ErrType != ErrorStatusPb.Types.ErrorStatusEnum.Succeeded ||
                 request.Action != PacketPb.Types.ActionType.Update)
             {
+                timer.Stop();
                 return Task.FromResult(status);
             }
 
@@ -46,8 +52,14 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                     status.ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Failed;
                     status.Message = e.Message;
                 }
+
+                timer.Stop();
+                Logger.Info($"[HandleConnections] {DateTime.Now} " +
+                            $"Elapsed time: {timer.ElapsedMilliseconds} ms. " +
+                            $"ErrorStatus: {status}");
             }
 
+            timer.Stop();
             return Task.FromResult(status);
         }
     }

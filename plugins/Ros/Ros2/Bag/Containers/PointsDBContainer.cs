@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Clouds;
 using Elektronik.Containers;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.PackageObjects;
+using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
@@ -12,17 +14,16 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable
+    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable, ISnapshotable
     {
-        private bool _isVisible = true;
-
-        public PointsDBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps)
-                : base(displayName, dbModel, topic, actualTimestamps)
+        public PointsDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
+                                 List<long> actualTimestamps)
+                : base(displayName, dbModels, topic, actualTimestamps)
         {
         }
 
         #region DBContainer
-        
+
         public override bool ShowButton { get; } = true;
 
         public override void Clear()
@@ -32,7 +33,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             OnClear?.Invoke(this);
         }
 
-        public override void SetRenderer(object renderer)
+        public override void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
             OnShow += pointRenderer.ShowItems;
@@ -41,14 +42,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         public override bool IsVisible
         {
-            get => _isVisible;
+            get => base.IsVisible;
             set
             {
                 lock (this)
                 {
-                    if (_isVisible == value) return;
-                    _isVisible = value;
-                    if (!_isVisible) Clear();
+                    base.IsVisible = value;
+                    if (!base.IsVisible) Clear();
                     else SetData();
                 }
             }
@@ -76,6 +76,22 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (float.IsNaN(_bounds.x)) return (transform.position, transform.rotation);
 
             return (_center + _bounds / 2 + _bounds.normalized, Quaternion.LookRotation(-_bounds));
+        }
+
+        #endregion
+
+        #region ISnapshotable
+
+        public ISnapshotable TakeSnapshot()
+        {
+            var res = new CloudContainer<SlamPoint>(DisplayName);
+            res.AddRange(Current);
+            return res;
+        }
+
+        public void WriteSnapshot(IDataRecorderPlugin recorder)
+        {
+            recorder.OnAdded(DisplayName, Current);
         }
 
         #endregion

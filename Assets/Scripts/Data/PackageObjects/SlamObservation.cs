@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
 {
+    [Serializable]
     public struct SlamObservation : ICloudItem
     {
         public struct Stats
@@ -19,15 +22,17 @@ namespace Elektronik.Data.PackageObjects
         public SlamPoint AsPoint() => Point;
 
         public string FileName;
+        public HashSet<int> ObservedPoints;
 
         public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName,
-                               Stats stats = new Stats())
+                               int[] observedPoints = null, Stats stats = new Stats())
         {
             Point = pt;
             Rotation = orientation;
             Statistics = stats;
             Message = message;
             FileName = fileName;
+            ObservedPoints = new HashSet<int>(observedPoints ?? Array.Empty<int>());
         }
 
         public static implicit operator SlamPoint(SlamObservation obs) => obs.Point;

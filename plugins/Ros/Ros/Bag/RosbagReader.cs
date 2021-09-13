@@ -6,6 +6,7 @@ using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros.Bag.Parsers;
 using Elektronik.RosPlugin.Ros.Bag.Parsers.Records;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Bag
@@ -26,6 +27,11 @@ namespace Elektronik.RosPlugin.Ros.Bag
         public override string Description => "This plugins allows Elektronik to read data saved from " +
                 "<#7f7fe5><u><link=\"https://www.ros.org\">ROS</link></u></color>" +
                 " using <#7f7fe5><u><link=\"http://wiki.ros.org/rosbag\">rosbag</link></u></color>.";
+
+        public void SetFileName(string filename)
+        {
+            TypedSettings.FilePath = filename;
+        }
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
 
@@ -58,6 +64,8 @@ namespace Elektronik.RosPlugin.Ros.Bag
             }
         }
 
+        public int DelayBetweenFrames { get; set; }
+
         public event Action<bool>? Rewind;
         public event Action? Finished;
 
@@ -70,9 +78,9 @@ namespace Elektronik.RosPlugin.Ros.Bag
                     .Where(t => _container.ActualTopics.Select(a => a.Name).Contains(t.Topic));
             _frames = new FramesAsyncCollection<Frame>(() => ReadNext(actualConnections));
             Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = Converter;
-            _threadWorker = new ThreadWorker();
+            _threadWorker = new ThreadQueueWorker();
         }
 
         public override void Stop()
@@ -83,7 +91,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         public override void Update(float delta)
         {
-            if (_threadWorker == null || _threadWorker.AmountOfActions > 0) return;
+            if (_threadWorker == null/* || _threadWorker.AmountOfActions > 0*/) return;
             if (_playing)
             {
                 NextKeyFrame();
@@ -149,7 +157,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 }
                 else
                 {
-                    MainThreadInvoker.Instance.Enqueue(Finished!);
+                    MainThreadInvoker.Enqueue(Finished!);
                 }
             });
         }
@@ -160,7 +168,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         private readonly RosbagContainerTree _container;
         private FramesAsyncCollection<Frame>? _frames;
-        private ThreadWorker? _threadWorker;
+        private ThreadQueueWorker? _threadWorker;
         private bool _playing;
         private long _startTimestamp = 0;
         private int _rewindAt = -1;

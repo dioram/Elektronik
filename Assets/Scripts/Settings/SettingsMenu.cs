@@ -77,6 +77,14 @@ namespace Elektronik.Settings
             }
 
             PluginSelected(this, new ListBox.SelectionChangedEventArgs(selectedIndex));
+            
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+            var rects = GetComponentsInChildren<ScrollRect>();
+            foreach (var rect in rects)
+            {
+                rect.scrollSensitivity = 300;
+            }
+#endif
         }
 
         private void SetupSettings()
@@ -113,11 +121,11 @@ namespace Elektronik.Settings
 
         private void PluginSelected(PluginListBoxItem pluginListBoxItem)
         {
-            foreach (var plugin in PluginsListBox.Select(lbi=> (PluginListBoxItem)lbi))
+            foreach (var plugin in PluginsListBox.Select(lbi => (PluginListBoxItem) lbi))
             {
                 plugin.HideDescription();
             }
-            
+
             _selectedPlugin = pluginListBoxItem;
             _selectedPlugin.ShowDescription();
             SettingsGenerator.Generate(_selectedPlugin.Plugin.Settings);
@@ -135,10 +143,10 @@ namespace Elektronik.Settings
             ErrorLabel.enabled = true;
             var plugins = PluginsListBox.AsEnumerable()
                     .OfType<PluginListBoxItem>()
+                    .Where(lbi => lbi.State)
                     .Where(lbi => !lbi.Plugin.Settings.Validate())
                     .Select(lbi => lbi.Plugin.DisplayName);
-            ErrorLabel.SetLocalizedText("Wrong settings for plugins",
-                                        new List<object> {string.Join(", ", plugins)});
+            ErrorLabel.SetLocalizedText("Wrong settings for plugins", string.Join(", ", plugins));
         }
 
         private void RecentSelected(object sender, ListBox.SelectionChangedEventArgs e)
@@ -153,12 +161,14 @@ namespace Elektronik.Settings
             switch (ModeSelector.Mode)
             {
             case Mode.Online:
-                availablePlugins.AddRange(PluginsLoader.Plugins.OfType<IDataSourcePluginOnline>());
+                availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataSourcePluginOnline>());
                 break;
             case Mode.Offline:
-                availablePlugins.AddRange(PluginsLoader.Plugins.OfType<IDataSourcePluginOffline>());
+                availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataSourcePluginOffline>());
                 break;
             }
+
+            availablePlugins.AddRange(PluginsLoader.Plugins.Value.OfType<IDataRecorderPlugin>());
 
             foreach (var plugin in availablePlugins)
             {
@@ -184,7 +194,7 @@ namespace Elektronik.Settings
         private void DisableOfflinePlugins(IElektronikPlugin except)
         {
             var plugins = PluginsListBox.OfType<PluginListBoxItem>()
-                    .Where(lbi => lbi.Plugin != except);
+                    .Where(lbi => lbi.Plugin is IDataSourcePluginOffline && lbi.Plugin != except);
 
             foreach (var plugin in plugins)
             {

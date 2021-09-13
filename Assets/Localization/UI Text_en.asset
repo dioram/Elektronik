@@ -206,9 +206,270 @@ MonoBehaviour:
     m_Localized: Hide axis
     m_Metadata:
       m_Items: []
+  - m_Id: 1179022329516032
+    m_Localized: Show data tree
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1180012348837888
+    m_Localized: Tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1180093168881664
+    m_Localized: Data tree
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1192124664123392
+    m_Localized: Scene view
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1488487188664320
+    m_Localized: Update
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499525887954944
+    m_Localized: 'New releases:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499634700783616
+    m_Localized: 'New pre-releases:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2901965152849920
+    m_Localized: Cloud clusterization
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2941787762462720
+    m_Localized: Remove
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2946729273331712
+    m_Localized: Clustered {0}
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 2948087888089088
+    m_Localized: Cluster #{0}
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 2948700474576896
+    m_Localized: Compute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2949819334529024
+    m_Localized: Simple 3 plane clusterization
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3665984348360704
+    m_Localized: Previous observation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3666025003749376
+    m_Localized: Next observation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3982083857727488
+    m_Localized: K-means clusterisation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5097350304071680
+    m_Localized: Convex hull
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5168756677115904
+    m_Localized: Ruler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5189368552325120
+    m_Localized: 'Points: {0}
+
+      Lines: {1}
+
+      Planes: {2}
+
+      Observations:
+      {3}
+
+      Tracked objects: {4}'
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 5581543878393856
+    m_Localized: Take snapshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5808047010840576
+    m_Localized: Snapshot #{0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5836048343728128
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5837748177698816
+    m_Localized: Load snapshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5845141053734912
+    m_Localized: Load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5845323099111424
+    m_Localized: Save snapshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11689901776138240
+    m_Localized: Record
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12730009622822912
+    m_Localized: Detect planes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13065350977122304
+    m_Localized: Scene tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13065452374421504
+    m_Localized: Analytical tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13067747757617152
+    m_Localized: Metaparameters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13134836195356672
+    m_Localized: 'Gravity delta angle:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13135194086928384
+    m_Localized: Show only vertical and horizontal planes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13135498807308288
+    m_Localized: 'Gravity vector:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13135642911010816
+    m_Localized: Planes detection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13163167775158272
+    m_Localized: Turn on logging (Warning! During continious run it can generate
+      gigabytes of log!!)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20769850134511616
+    m_Localized: 'Lines transparency:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21477263954251776
+    m_Localized: Follow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35524816610934784
+    m_Localized: Connections weight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35557840274735104
+    m_Localized: Observations graph
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35938884576493568
+    m_Localized: Mesh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35963052214861824
+    m_Localized: Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36000339791331328
+    m_Localized: Main
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36000456325873664
+    m_Localized: Alternative
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36004087943020544
+    m_Localized: 'LMB + RMB: moving forward.
+
+      Mouse wheel: moving forward and
+      backward.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36005840151265280
+    m_Localized: Help
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36291689841573888
+    m_Localized: 'How to filter edges of observations graph:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36291901028974592
+    m_Localized: Open Data tree -> Expand Observations graph -> Press button near
+      Connections -> Choose minimal weight for graph edges.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36292451585900544
+    m_Localized: 'How to record data:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36292733426352128
+    m_Localized: First of all activate protobuf recorder plugin in settings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36292930021769216
+    m_Localized: 'Then if you want to make snapshot:
+
+      Open Scene tools and
+      Data tree -> Press button Take snapshot -> Press save button near snapshot
+      in data tree -> Choose save path.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36293536933363712
+    m_Localized: 'If you want to record changes of the data then:
+
+      Open Scene
+      tools -> Press Record button -> Choose save path -> When recording is done
+      press Stop button.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36294039750721536
+    m_Localized: 'How to play recorded data:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36294217106866176
+    m_Localized: 'You can play recorded data in offline mode using protobuf plugin.
+
+      Also
+      you can load snapshots in any mode by pressing Load snapshot button in Scene
+      tools.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41412972170330112
+    m_Localized: Calculation...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45283616971366400
+    m_Localized: Set
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45611950332067840
+    m_Localized: 'Speed:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46797145714343936
+    m_Localized: Use vertex colors for mesh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46797231349448704
+    m_Localized: Override colors for mesh
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010625840000000001062f6fb2e00000010a2d4f6480000001062dd11490000
+        m_Entries: 0010625840000000001062f6fb2e00000010a2d4f6480000001062dd11490000001096df08780a000010563345790a0000802b05b46f1200

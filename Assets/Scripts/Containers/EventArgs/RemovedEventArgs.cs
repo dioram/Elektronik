@@ -4,9 +4,9 @@ namespace Elektronik.Containers.EventArgs
 {
     public class RemovedEventArgs : System.EventArgs
     {
-        public readonly IEnumerable<int> RemovedIds;
+        public readonly IList<int> RemovedIds;
 
-        public RemovedEventArgs(IEnumerable<int> removedIds)
+        public RemovedEventArgs(IList<int> removedIds)
         {
             RemovedIds = removedIds;
         }

@@ -4,7 +4,6 @@ using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.GrpcServices;
 using Elektronik.Protobuf.Online.Presenters;
-using Elektronik.Settings.Bags;
 using Grpc.Core;
 using UnityEngine;
 
@@ -12,11 +11,11 @@ namespace Elektronik.Protobuf.Online
 {
     using GrpcServer = Server;
 
-    public class ProtobufGrpcServer : DataSourcePluginBase<AddressPortScaleSettingsBag>, IDataSourcePluginOnline
+    public class ProtobufGrpcServer : DataSourcePluginBase<OnlineSettingsBag>, IDataSourcePluginOnline
     {
         public ProtobufGrpcServer()
         {
-            _containerTree = new ProtobufContainerTree("Protobuf", new RawImagePresenter("Camera"), null);
+            _containerTree = new ProtobufContainerTree("Protobuf", new RawImagePresenter("Camera"));
             Data = _containerTree;
         }
 
@@ -34,17 +33,11 @@ namespace Elektronik.Protobuf.Online
 
         public override void Start()
         {
-            if (Converter == null)
-            {
-                throw new NullReferenceException(
-                    $"Converter is not set for {DisplayName}-{nameof(ProtobufGrpcServer)}");
-            }
-
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             GrpcEnvironment.SetLogger(new UnityLogger());
 
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity);
 
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
@@ -55,8 +48,10 @@ namespace Elektronik.Protobuf.Online
                 new InfinitePlanesMapManager(_containerTree.InfinitePlanes, Converter)
             }.BuildChain();
 
-            _containerTree.DisplayName = $"From gRPC {TypedSettings.IPAddress}:{TypedSettings.Port}";
+            _containerTree.DisplayName = $"From gRPC at port {TypedSettings.Port}";
+#if UNITY_EDITOR || UNITY_STANDALONE
             Debug.Log($"{TypedSettings.IPAddress}:{TypedSettings.Port}");
+#endif
 
             _server = new GrpcServer()
             {
@@ -68,7 +63,7 @@ namespace Elektronik.Protobuf.Online
                 },
                 Ports =
                 {
-                    new ServerPort(TypedSettings.IPAddress, TypedSettings.Port, ServerCredentials.Insecure),
+                    new ServerPort("0.0.0.0", TypedSettings.Port, ServerCredentials.Insecure),
                 },
             };
             StartServer();

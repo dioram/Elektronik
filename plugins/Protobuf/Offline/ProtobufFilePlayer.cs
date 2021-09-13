@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
+using System.Timers;
 using Elektronik.Extensions;
 using Elektronik.Offline;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
+using Elektronik.Threading;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline
@@ -45,11 +47,21 @@ namespace Elektronik.Protobuf.Offline
         {
             _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(TypedSettings.FilePath)}";
             _input = File.OpenRead(TypedSettings.FilePath!);
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity, Vector3.one * TypedSettings.Scale);
+            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity);
             _parsersChain.SetConverter(Converter);
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
-            _threadWorker = new ThreadWorker();
+            _threadWorker = new ThreadQueueWorker();
+            _timer = new Timer(DelayBetweenFrames);
+            _timer.Elapsed += (_, __) =>
+            {
+                _threadWorker.Enqueue(() =>
+                {
+                    if (NextFrame()) return;
+                    _timer?.Stop();
+                    MainThreadInvoker.Enqueue(() => Finished?.Invoke());
+                });
+            };
         }
 
         public override void Stop()
@@ -61,19 +73,17 @@ namespace Elektronik.Protobuf.Offline
 
         public override void Update(float delta)
         {
-            if (!_playing) return;
+            // Do nothing
+        }
 
-            Task.Run(() => _threadWorker.Enqueue(() =>
-            {
-                if (NextFrame()) return;
-                MainThreadInvoker.Instance.Enqueue(() => Finished?.Invoke());
-                _playing = false;
-            }));
+        public void SetFileName(string filename)
+        {
+            TypedSettings.FilePath = filename;
         }
 
         public int AmountOfFrames => _frames?.CurrentSize ?? 0;
 
-        public string CurrentTimestamp => $"{_frames?.Current?.Timestamp ?? 0}";
+        public string CurrentTimestamp => $"{_frames?.Current?.Timestamp ?? 0} ({CurrentPosition})";
         public string[] SupportedExtensions { get; } = {".dat"};
 
         public int CurrentPosition
@@ -82,21 +92,33 @@ namespace Elektronik.Protobuf.Offline
             set => RewindAt(value);
         }
 
+        public int DelayBetweenFrames
+        {
+            get => _delayBetweenFrames;
+            set
+            {
+                if (_delayBetweenFrames == value) return;
+
+                _delayBetweenFrames = value;
+                if (_timer != null) _timer.Interval = _delayBetweenFrames;
+            }
+        }
+
         public event Action<bool> Rewind;
 
         public void Play()
         {
-            _playing = true;
+            _timer?.Start();
         }
 
         public void Pause()
         {
-            _playing = false;
+            _timer?.Stop();
         }
 
         public void StopPlaying()
         {
-            _playing = false;
+            _timer?.Stop();
             _threadWorker.Enqueue(() =>
             {
                 Data.Clear();
@@ -117,7 +139,7 @@ namespace Elektronik.Protobuf.Offline
                 do
                 {
                     if (!PreviousFrame()) break;
-                } while (!_frames?.Current?.IsSpecial ?? false);
+                } while (!(_frames?.Current?.IsSpecial) ?? false);
 
             });
         }
@@ -129,7 +151,7 @@ namespace Elektronik.Protobuf.Offline
                 do
                 {
                     if (!NextFrame()) break;
-                } while (!_frames?.Current?.IsSpecial ?? false);
+                } while (!(_frames?.Current?.IsSpecial) ?? false);
             });
         }
 
@@ -143,18 +165,27 @@ namespace Elektronik.Protobuf.Offline
         private FileStream _input;
         private FramesCollection<Frame> _frames;
         private readonly DataParser<PacketPb> _parsersChain;
-        private bool _playing = false;
-        private ThreadWorker _threadWorker;
+        private ThreadQueueWorker _threadWorker;
+        [CanBeNull] private Timer _timer;
+        private int _delayBetweenFrames = 2;
 
-        private const int MetadataOffset = 8;
-
-        private IEnumerator<Frame> ReadCommands(bool isSizeKnown)
+        private IEnumerator<Frame> ReadCommands(int size)
         {
-            var length = _input.Length - (isSizeKnown ? MetadataOffset : 0);
-            while (_input.Position < length)
+            if (size > 0)
             {
-                var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
-                yield return Frame.ParsePacket(packet, _parsersChain);
+                for (int i = 0; i < size; i++)
+                {
+                    var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
+                    yield return Frame.ParsePacket(packet, _parsersChain);
+                }
+            }
+            else
+            {
+                while (_input.Position < _input.Length)
+                {
+                    var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
+                    yield return Frame.ParsePacket(packet, _parsersChain);
+                }
             }
 
             _input.Dispose();

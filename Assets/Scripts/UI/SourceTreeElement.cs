@@ -2,12 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Cameras;
-using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.UI.Localization;
-using Elektronik.UI.Windows;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,11 +13,6 @@ namespace Elektronik.UI
     public class SourceTreeElement : MonoBehaviour
     {
         public ISourceTree Node;
-        public ButtonChangingIcons TreeButton;
-        public Button WindowButton;
-        public ButtonChangingIcons VisibleButton;
-        public ButtonChangingIcons TraceButton;
-        public Button CameraButton;
         public Text NameLabel;
         public RectTransform Content;
         public GameObject Spacer;
@@ -34,7 +25,7 @@ namespace Elektronik.UI
         private RectTransform _rectTransform;
         private LayoutElement _layoutElement;
         private readonly List<SourceTreeElement> _children = new List<SourceTreeElement>();
-
+        public ButtonChangingIcons TreeButton;
 
         public void ChangeState()
         {
@@ -72,56 +63,10 @@ namespace Elektronik.UI
 
         public void Start()
         {
-            // ReSharper disable once SuspiciousTypeConversion.Global
-            if (Node is IRendersToWindow node)
-            {
-                WindowButton.OnClickAsObservable().Subscribe(_ => node.Window.Show());
-            }
-            else
-            {
-                WindowButton.gameObject.SetActive(false);
-            }
-
-            if (Node is IVisible v)
-            {
-                VisibleButton.OnStateChanged += _ => v.IsVisible = VisibleButton.State == 0;
-            }
-            else
-            {
-                VisibleButton.gameObject.SetActive(false);
-            }
-
-            if (Node is ITraceable t)
-            {
-                TraceButton.OnStateChanged += _ => t.TraceEnabled = TraceButton.State == 1;
-            }
-            else
-            {
-                TraceButton.gameObject.SetActive(false);
-            }
-
             TreeButton.OnStateChanged += _ => ChangeState();
             NameLabel.SetLocalizedText(Node.DisplayName);
 
-            if (Node is ILookable lookable && Camera.main.GetComponent<LookableCamera>() is { } cam)
-            {
-                CameraButton.OnClickAsObservable().Subscribe(_ => cam.Look(lookable.Look(cam.transform)));
-            }
-            else
-            {
-                CameraButton.gameObject.SetActive(false);
-            }
-
             StartCoroutine(CheckChildrenChanges());
-        }
-
-        public void Update()
-        {
-            if (Node is IVisible v)
-            {
-                VisibleButton.State = v.IsVisible ? 0 : 1;
-                VisibleButton.gameObject.SetActive(v.ShowButton);
-            }
         }
 
         #endregion

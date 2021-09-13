@@ -66,7 +66,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
                                                        .Where(c => c.GetIds().Intersect(actualIds).Any())
                                                        .Select(c => c.ChunkPos)
                                                        .OrderBy(c => c));
-            
+
             var activeTasks = new ConcurrentQueue<Task<IEnumerable<MessageData>>>();
 
             var _ = Task.Run(() =>
@@ -109,7 +109,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
                 record = RecordsFactory.Read<Chunk>(_file, Chunk.OpCode)!;
             }
 
-            return record!.Unchunk(allowedTopicIds);
+            return record.Unchunk(allowedTopicIds);
         }
 
         private (int, int) ReadVersion()

@@ -299,7 +299,7 @@ public class ObjectPool
 
         if (Parent != null)
         {
-            go.transform.parent = Parent;
+            go.transform.SetParent(Parent, false);
         }
         if (go.GetComponent<ISpawnEvent>() != null)
         {

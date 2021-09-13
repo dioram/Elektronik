@@ -1,15 +1,15 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Elektronik.Containers;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
-using UnityEngine;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    class LinesMapManager : MapManager<SlamLine>
+    public class LinesMapManager : MapManager<SlamLine, SlamLineDiff>
     {
         private readonly ICSConverter _converter;
 
@@ -20,13 +20,9 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
-            Debug.Log("[ConnectionsMapManager.Handle]");
-            if (request.DataCase == PacketPb.DataOneofCase.Lines)
-            {
-                return Handle(request.Action, request.ExtractLines(_converter).ToList());
-            }
-
-            return base.Handle(request, context);
+            if (request.DataCase != PacketPb.DataOneofCase.Lines) return base.Handle(request, context);
+            Timer = Stopwatch.StartNew();
+            return Handle(request.Action, request.ExtractLines(_converter).ToList());
         }
     }
 }

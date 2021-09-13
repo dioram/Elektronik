@@ -12,12 +12,12 @@ namespace Elektronik.Events
         {
         }
 
-        public KeyCode key;
+        public KeyCode Key;
         public KeyPressedEvent myEvent;
 
         public void Update()
         {
-            if (Input.GetKeyDown(key))
+            if (Input.GetKeyDown(Key))
             {
                 myEvent.Invoke();
             }

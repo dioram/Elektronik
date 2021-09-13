@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Elektronik.Data;
 using Elektronik.Renderers;
@@ -31,14 +32,14 @@ namespace Elektronik.RosPlugin.Common.Containers
         #region ISourceTree
 
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
+        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
 
         public void Clear()
         {
             if (Renderer is not null) Renderer.Clear();
         }
 
-        public void SetRenderer(object renderer)
+        public void SetRenderer(ISourceRenderer renderer)
         {
             if (renderer is WindowsManager factory)
             {

@@ -487,7 +487,7 @@ namespace Valve.VR
             if (File.Exists(fullPath))
             {
                 string jsonText = File.ReadAllText(fullPath);
-                SteamVR_Input_ManifestFile existingFile = Valve.Newtonsoft.Json.JsonConvert.DeserializeObject<SteamVR_Input_ManifestFile>(jsonText);
+                SteamVR_Input_ManifestFile existingFile = Newtonsoft.Json.JsonConvert.DeserializeObject<SteamVR_Input_ManifestFile>(jsonText);
 
                 if (existingFile != null && existingFile.applications != null && existingFile.applications.Count > 0 &&
                     existingFile.applications[0].app_key != SteamVR_Settings.instance.editorAppKey)
@@ -558,8 +558,8 @@ namespace Valve.VR
                 manifestFile.applications = new System.Collections.Generic.List<SteamVR_Input_ManifestFile_Application>();
                 manifestFile.applications.Add(manifestApplication);
 
-                string json = Valve.Newtonsoft.Json.JsonConvert.SerializeObject(manifestFile, Valve.Newtonsoft.Json.Formatting.Indented,
-                    new Valve.Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Valve.Newtonsoft.Json.NullValueHandling.Ignore });
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(manifestFile, Newtonsoft.Json.Formatting.Indented,
+                    new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
 
                 File.WriteAllText(fullPath, json);
             }

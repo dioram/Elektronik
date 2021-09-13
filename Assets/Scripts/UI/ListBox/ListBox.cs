@@ -42,6 +42,7 @@ namespace Elektronik.UI.ListBox
             ListBoxItem listViewItem = _poolOfItems.Spawn().GetComponent<ListBoxItem>();
             listViewItem.OnClick += SelectionChanged;
             listViewItem.transform.SetParent(Target);
+            listViewItem.transform.localScale = Vector3.one;
             _listOfItems.Add(listViewItem);
             return listViewItem;
         }

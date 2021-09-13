@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Elektronik.Containers;
+﻿using System;
+using System.Collections.Generic;
+using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
@@ -11,10 +11,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
     public abstract class DBContainer<TMessage, TRenderType> : IDBContainer, ISourceTree, IVisible
             where TMessage : RosSharp.RosBridgeClient.Message
     {
-        public DBContainer(string displayName, SQLiteConnection dbModel, Topic topic, long[] actualTimestamps)
+        public DBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
+                           List<long> actualTimestamps)
         {
             DisplayName = displayName;
-            DBModel = dbModel;
+            DBModels = dbModels;
             Topic = topic;
             ActualTimestamps = actualTimestamps;
         }
@@ -22,24 +23,24 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         #region ISourceTree
 
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTree> Children { get; } = new ISourceTree[0];
+        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
 
         public abstract void Clear();
 
-        public abstract void SetRenderer(object renderer);
+        public abstract void SetRenderer(ISourceRenderer renderer);
 
         #endregion
 
         #region IDBContainer
 
         public long Timestamp { get; private set; } = -1;
-        public SQLiteConnection DBModel { get; set; }
+        public List<SQLiteConnection> DBModels { get; set; }
         public Topic Topic { get; set; }
-        public long[] ActualTimestamps { get; set; }
+        public List<long> ActualTimestamps { get; set; }
 
         public void ShowAt(long newTimestamp, bool rewind = false)
         {
-            if (ActualTimestamps.Length == 0) return;
+            if (ActualTimestamps.Count == 0) return;
             var (time, pos) = GetValidTimestamp(newTimestamp);
             if (Timestamp == time) return;
             Timestamp = time;
@@ -51,8 +52,19 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region IVisible
 
-        public virtual bool IsVisible { get; set; } = true;
+        public virtual bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible == value) return;
+                _isVisible = value;
+                OnVisibleChanged?.Invoke(_isVisible);
+            }
+        }
+
         public virtual bool ShowButton { get; } = false;
+        public event Action<bool>? OnVisibleChanged;
 
         #endregion
 
@@ -60,6 +72,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         protected TRenderType? Current;
         private int _pos;
+        private bool _isVisible = true;
 
         protected (long time, int pos) GetValidTimestamp(long newTimestamp)
         {
@@ -67,7 +80,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             int pos = _pos;
             if (newTimestamp > Timestamp)
             {
-                for (int i = _pos; i < ActualTimestamps.Length; i++)
+                for (int i = _pos; i < ActualTimestamps.Count; i++)
                 {
                     if (ActualTimestamps[i] > newTimestamp) break;
                     pos = i;
@@ -89,9 +102,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         protected virtual void SetData()
         {
-            var command = DBModel.CreateCommand("SELECT * FROM messages WHERE topic_id = $id AND timestamp = $time",
-                                                Topic.Id, Timestamp);
-            var message = command.ExecuteQuery<Message>().First();
+            var message = this.FindMessage();
             if (message == null)
             {
                 Clear();
