@@ -544,6 +544,14 @@ MonoBehaviour:
     m_Key: 'Start recording '
     m_Metadata:
       m_Items: []
+  - m_Id: 55920037377679360
+    m_Key: New updates available!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55922574944182272
+    m_Key: Updates
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

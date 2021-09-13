@@ -11,20 +11,23 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 namespace Elektronik
 {
     public class Updater : MonoBehaviour
     {
+        #region Editor fields
+
         [SerializeField] private GameObject ReleasePrefab;
-        [SerializeField] private Transform ReleaseRenderTarget;
-        [SerializeField] private Transform PreReleaseRenderTarget;
-        [SerializeField] private GameObject ReleasesPanel;
-        [SerializeField] private GameObject PrereleasesPanel;
+        [SerializeField] private Transform ReleaseTarget;
         [SerializeField] private string ApiPath = "https://api.github.com/repos/dioram/Elektronik-Tools-2.0/releases";
-        [SerializeField] private TMP_Text VersionLabel;
-        [SerializeField] private Color NewReleaseColor;
-        [SerializeField] private Color NewPrereleaseColor;
+        [SerializeField] private Button UpdateButton;
+        [SerializeField] private Image UpdateButtonImage;
+        [SerializeField] private Sprite NewReleaseSprite;
+        [SerializeField] private Sprite NewPrereleaseSprite;
+
+        #endregion
         
         public static bool IsNewer(string version1, string version2)
         {
@@ -70,8 +73,7 @@ namespace Elektronik
         private void Start()
         {
             GetReleases();
-            ShowReleases(true);
-            ShowReleases(false);
+            ShowReleases();
         }
 
         #endregion
@@ -87,6 +89,8 @@ namespace Elektronik
             public void Update()
             {
                 var currentDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+                if (currentDir == null) throw new ArgumentNullException(nameof(currentDir));
+                
                 var updaterOldDir = Path.Combine(currentDir, "Plugins/Updater");
                 var updaterNewDir = Path.Combine(currentDir, "../ElektronikUpdater");
                 
@@ -135,34 +139,36 @@ namespace Elektronik
             }
             catch (Exception e)
             {
-                // Catching any network or parsing exceptions
+                Debug.LogError(e);
             }
         }
 
-        private void ShowReleases(bool preReleases)
+        private void ShowReleases()
         {
-            var releases = _releases
-                    .Where(r => IsNewer(r.Version, Application.version))
-                    .Where(r => r.IsPreRelease == preReleases).ToList();
+            var releases = _releases.Where(r => IsNewer(r.Version, Application.version)).ToList();
+            var hasReleases = releases.Any(r => !r.IsPreRelease);
+            
             foreach (var release in releases)
             {
-                var go = Instantiate(ReleasePrefab, preReleases ? PreReleaseRenderTarget : ReleaseRenderTarget);
+                var go = Instantiate(ReleasePrefab, ReleaseTarget);
                 go.transform.Find("Header/Version").GetComponent<TMP_Text>().text = release.Version;
                 go.transform.Find("Notes").GetComponent<TMP_Text>().text = release.ReleaseNotes;
-                var updateButton =  go.transform.Find("Header/UpdateButton").GetComponent<Button>();
-                updateButton.OnClickAsObservable().Subscribe(_ => release.Update());
+                var button = go.transform.Find("Header/UpdateButton").GetComponent<Button>();
+                button.OnClickAsObservable().Subscribe(_ => release.Update());
 #if UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX
-                updateButton.gameObject.SetActive(false);
+                button.gameObject.SetActive(false);
 #endif
             }
 
             if (releases.Count > 0)
             {
-                VersionLabel.color = preReleases ? NewPrereleaseColor : NewReleaseColor;
-                return;
+                UpdateButton.gameObject.SetActive(true);
+                UpdateButtonImage.sprite = hasReleases ? NewReleaseSprite : NewPrereleaseSprite;
             }
-            if (preReleases) PrereleasesPanel.SetActive(false);
-            else ReleasesPanel.SetActive(false);
+            else
+            {
+                UpdateButton.gameObject.SetActive(false);
+            }
         }
 
         #endregion
