@@ -95,16 +95,16 @@ namespace Elektronik.Clouds
             }
         }
 
-        public override void OnItemsRemoved(object sender, RemovedEventArgs e)
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<TCloudItem> e)
         {
             lock (_pointPlaces)
             {
-                foreach (var itemId in e.RemovedIds)
+                foreach (var item in e.RemovedItems)
                 {
-                    if (!_pointPlaces.ContainsKey((sender.GetHashCode(), itemId))) continue;
+                    if (!_pointPlaces.ContainsKey((sender.GetHashCode(), item.Id))) continue;
 
-                    var index = _pointPlaces[(sender.GetHashCode(), itemId)];
-                    _pointPlaces.Remove((sender.GetHashCode(), itemId));
+                    var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
+                    _pointPlaces.Remove((sender.GetHashCode(), item.Id));
                     if (index == _maxPlace - 1) _maxPlace--;
                     else _freePlaces.Enqueue(index);
 
@@ -118,41 +118,7 @@ namespace Elektronik.Clouds
                     }
                 }
 
-                _amountOfItems -= e.RemovedIds.Count();
-            }
-        }
-
-        public override void ShowItems(object sender, IList<TCloudItem> items)
-        {
-            if (!IsSenderVisible(sender)) return;
-            OnClear(sender);
-            if (CheckAndCreateReserves(sender, items)) return;
-            AddItems(sender, items);
-        }
-
-        public override void OnClear(object sender)
-        {
-            lock (_pointPlaces)
-            {
-                var keys = _pointPlaces.Keys.Where(k => k.Item1 == sender.GetHashCode()).ToList();
-                foreach (var key in keys)
-                {
-                    var index = _pointPlaces[key];
-                    _pointPlaces.Remove(key);
-                    if (index == _maxPlace - 1) _maxPlace--;
-                    else _freePlaces.Enqueue(index);
-
-                    var layer = index / CloudBlock.Capacity;
-                    var inLayerId = index % CloudBlock.Capacity;
-                    lock (Blocks[layer])
-                    {
-                        RemoveItem(Blocks[layer], inLayerId);
-                        Blocks[layer].Updated = true;
-                        Blocks[layer].ItemsCount--;
-                    }
-                }
-
-                _amountOfItems -= keys.Count;
+                _amountOfItems -= e.RemovedItems.Count();
             }
         }
 

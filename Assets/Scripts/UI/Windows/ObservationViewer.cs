@@ -51,9 +51,7 @@ namespace Elektronik.UI.Windows
 
         #region IDataRenderer
 
-        public void SetScale(float value)
-        {
-        }
+        public float Scale { get; set; }
         
         public bool IsShowing
         {

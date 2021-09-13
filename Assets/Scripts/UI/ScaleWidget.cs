@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Elektronik.UI
 {
-    public class Scale : MonoBehaviour
+    public class ScaleWidget : MonoBehaviour
     {
         [SerializeField] private Slider Slider;
         [SerializeField] private TMP_InputField InputField;
@@ -20,9 +20,10 @@ namespace Elektronik.UI
         
         private void Start()
         {
+            // ReSharper disable once LocalVariableHidesMember
             foreach (var renderer in Renderers.GetComponentsInChildren<ISourceRenderer>())
             {
-                OnScaleChanged += renderer.SetScale;
+                OnScaleChanged += f =>  renderer.Scale = f;
             }
             Slider.OnValueChangedAsObservable()
                   .Subscribe(v => InputField.text = v.ToString(CultureInfo.InvariantCulture));

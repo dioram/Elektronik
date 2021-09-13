@@ -59,13 +59,20 @@ namespace Elektronik.RosPlugin.Ros.Online
             throw new NotImplementedException();
         }
 
-        public ISourceTree Data { get; }
+        public ISourceTreeNode Data { get; }
         public int AmountOfFrames { get; }
-        public string CurrentTimestamp { get; }
-        public int CurrentPosition { get; set; }
-        public event Action? RewindStarted;
-        public event Action? RewindFinished;
-        public event Action? Finished;
+        public string Timestamp { get; }
+        public int Position { get; set; }
+        public float Speed { get; set; }
+        public bool IsPlaying { get; }
+        public event Action? OnPlayingStarted;
+        public event Action? OnPaused;
+        public event Action<int>? OnPositionChanged;
+        public event Action<int>? OnAmountOfFramesChanged;
+        public event Action<string>? OnTimestampChanged;
+        public event Action? OnRewindStarted;
+        public event Action? OnRewindFinished;
+        public event Action? OnFinished;
 
         public void Dispose()
         {

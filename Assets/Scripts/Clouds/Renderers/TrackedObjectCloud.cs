@@ -51,7 +51,7 @@ namespace Elektronik.Clouds
             var cameraTransform = cam.transform!;
             (cameraTransform.parent
                             .GetComponent<DataComponent<SlamTrackedObject>>()?
-                            .Container as ISourceTree)?.Children
+                            .Container as ISourceTreeNode)?.Children
                     .OfType<IFollowable<SlamTrackedObject>>()
                     .FirstOrDefault(f => f != sender && f.IsFollowed)?
                     .Unfollow();

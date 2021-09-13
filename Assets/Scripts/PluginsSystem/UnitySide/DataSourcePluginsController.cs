@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
 {
-    public class PluginsManager : MonoBehaviour
+    public class DataSourcePluginsController : MonoBehaviour
     {
         public static readonly List<IElektronikPlugin> Plugins = new List<IElektronikPlugin>();
         [SerializeField] private CSConverter Converter;

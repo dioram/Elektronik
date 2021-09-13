@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.Converters;
-using Elektronik.PluginsSystem;
-using Elektronik.PluginsSystem.UnitySide;
-using Elektronik.UI.Localization;
-using SimpleFileBrowser;
 
 namespace Elektronik.Data
 {
-    public class SnapshotContainer : ISourceTree, IRemovable, IVisible, ISnapshotable, ISave
+    public class SnapshotContainer : ISourceTreeNode, IRemovable, IVisible, ISnapshotable, ISave
     {
-        public SnapshotContainer(string displayName, IEnumerable<ISourceTree> children, ICSConverter converter)
+        public SnapshotContainer(string displayName, IEnumerable<ISourceTreeNode> children, ICSConverter converter)
         {
             _converter = converter;
             DisplayName = displayName;
@@ -23,7 +19,7 @@ namespace Elektronik.Data
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children { get; private set; }
+        public IEnumerable<ISourceTreeNode> Children { get; private set; }
 
         public void Clear()
         {
@@ -32,14 +28,22 @@ namespace Elektronik.Data
                 child.Clear();
             }
 
-            Children = Array.Empty<ISourceTree>();
+            Children = Array.Empty<ISourceTreeNode>();
         }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
             foreach (var child in Children)
             {
-                child.SetRenderer(renderer);
+                child.AddRenderer(renderer);
+            }
+        }
+
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            foreach (var child in Children)
+            {
+                child.RemoveRenderer(renderer);
             }
         }
 
@@ -87,34 +91,20 @@ namespace Elektronik.Data
             return new SnapshotContainer(DisplayName, Children
                                                  .OfType<ISnapshotable>()
                                                  .Select(ch => ch.TakeSnapshot())
-                                                 .Select(ch => ch as ISourceTree)
+                                                 .Select(ch => ch as ISourceTreeNode)
                                                  .ToList(),
                                          _converter);
-        }
-
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            foreach (var snapshotable in Children.OfType<ISnapshotable>())
-            {
-                snapshotable.WriteSnapshot(recorder);
-            }
         }
 
         #endregion
 
         #region ISave
 
-        public void Save()
+        public event Action<ISourceTreeNode> SaveMe;
+
+        public void RequestSaving()
         {
-            var recorders = PluginsLoader.Instance.PluginFactories.OfType<IDataRecorderFactory>().ToList();
-            FileBrowser.SetFilters(false, recorders.Select(r => r.Extension));
-            FileBrowser.ShowSaveDialog(path => Save(path[0]),
-                                       () => { },
-                                       false,
-                                       false,
-                                       "",
-                                       "Save snapshot".tr(),
-                                       "Save".tr());
+            SaveMe?.Invoke(this);
         }
 
         #endregion
@@ -123,19 +113,6 @@ namespace Elektronik.Data
 
         private bool _isVisible = true;
         private readonly ICSConverter _converter;
-
-        private void Save(string filename)
-        {
-            var recorder = PluginsLoader.Instance.PluginFactories
-                    .OfType<IDataRecorderFactory>()
-                    .First(r => filename.EndsWith(r.Extension))
-                    .Start(_converter) as IDataRecorderPlugin;
-            if (recorder == null) return;
-            recorder.FileName = filename;
-            recorder.StartRecording();
-            WriteSnapshot(recorder);
-            recorder.StopRecording();
-        }
 
         #endregion
     }

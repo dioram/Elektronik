@@ -121,7 +121,7 @@ namespace Elektronik.Protobuf.OnlineBuffered
             GoToNextFrame();
         }
 
-        public ISourceTree Data { get; }
+        public ISourceTreeNode Data { get; }
         public int AmountOfFrames => _buffer.CurrentSize;
         public string Timestamp => $"{_buffer.CurrentTimeStamp:HH:mm:ss.ff}";
 

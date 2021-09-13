@@ -3,7 +3,7 @@ using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Containers.SpecialInterfaces
 {
-    public interface IFollowable<TCloudItem> where TCloudItem : ICloudItem
+    public interface IFollowable<TCloudItem> where TCloudItem : struct, ICloudItem
     {
         public void Follow();
         public void Unfollow();

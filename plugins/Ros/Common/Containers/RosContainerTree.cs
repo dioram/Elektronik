@@ -10,7 +10,7 @@ namespace Elektronik.RosPlugin.Common.Containers
     public abstract class RosContainerTree : VirtualContainer, IDisposable
     {
         public List<(string Name, string Type)> ActualTopics = new ();
-        public readonly Dictionary<string, ISourceTree> RealChildren = new();
+        public readonly Dictionary<string, ISourceTreeNode> RealChildren = new();
 
         public RosContainerTree(string displayName) : base(displayName)
         {
@@ -24,15 +24,21 @@ namespace Elektronik.RosPlugin.Common.Containers
             ChildrenList.Clear();
         }
 
-        public override void SetRenderer(ISourceRenderer renderer)
+        public override void AddRenderer(ISourceRenderer renderer)
         {
             _renderers.Add(renderer);
-            base.SetRenderer(renderer);
+            base.AddRenderer(renderer);
+        }
+
+        public override void RemoveRenderer(ISourceRenderer renderer)
+        {
+            _renderers.Remove(renderer);
+            base.RemoveRenderer(renderer);
         }
 
         #region Protected
 
-        protected abstract ISourceTree CreateContainer(string topicName, string topicType);
+        protected abstract ISourceTreeNode CreateContainer(string topicName, string topicType);
 
         protected void RebuildTree()
         {
@@ -85,7 +91,7 @@ namespace Elektronik.RosPlugin.Common.Containers
                     
                     foreach (var renderer in _renderers)
                     {
-                        RealChildren[topic.Name].SetRenderer(renderer);
+                        RealChildren[topic.Name].AddRenderer(renderer);
                     }
                 }
                 else

@@ -1,27 +1,34 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Containers.EventArgs
 {
-    public class RemovedEventArgs : System.EventArgs
+    public class RemovedEventArgs<T> : System.EventArgs
+            where T : struct, ICloudItem
     {
-        public readonly IList<int> RemovedIds;
+        public readonly IList<T> RemovedItems;
+
+        public RemovedEventArgs(IList<T> removedItems)
+        {
+            RemovedItems = removedItems;
+        }
+
+        public RemovedEventArgs(T removedItem)
+        {
+            RemovedItems = new List<T> { removedItem };
+        }
 
         public RemovedEventArgs(IList<int> removedIds)
         {
-            RemovedIds = removedIds;
+            RemovedItems = removedIds.Select(i => new T { Id = i, Message = "" }).ToArray();
         }
 
-        public RemovedEventArgs(int removedId)
+        protected bool Equals(RemovedEventArgs<T> other)
         {
-            RemovedIds = new List<int> { removedId };
-        }
-
-        protected bool Equals(RemovedEventArgs other)
-        {
-            if (ReferenceEquals(RemovedIds, other.RemovedIds)) return true;
-            if (RemovedIds.Count != other.RemovedIds.Count) return false;
-            foreach (var (first, second) in RemovedIds.Zip(other.RemovedIds, (arg1, arg2) => (arg1, arg2)))
+            if (ReferenceEquals(RemovedItems, other.RemovedItems)) return true;
+            if (RemovedItems.Count != other.RemovedItems.Count) return false;
+            foreach (var (first, second) in RemovedItems.Zip(other.RemovedItems, (arg1, arg2) => (arg1.Id, arg2.Id)))
             {
                 if (!Equals(first, second)) return false;
             }
@@ -34,12 +41,12 @@ namespace Elektronik.Containers.EventArgs
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((RemovedEventArgs)obj);
+            return Equals((RemovedEventArgs<T>)obj);
         }
 
         public override int GetHashCode()
         {
-            return (RemovedIds != null ? RemovedIds.GetHashCode() : 0);
+            return (RemovedItems != null ? RemovedItems.GetHashCode() : 0);
         }
     }
 }

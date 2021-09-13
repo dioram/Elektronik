@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
-using Elektronik.PluginsSystem;
 
 namespace Elektronik.Containers
 {
-    public class VirtualContainer : ISourceTree, IVisible, ISnapshotable
+    public class VirtualContainer : ISourceTreeNode, IVisible, ISnapshotable
     {
-        public VirtualContainer(string displayName, List<ISourceTree> children = null)
+        public VirtualContainer(string displayName, List<ISourceTreeNode> children = null)
         {
             DisplayName = displayName;
-            ChildrenList = children ?? new List<ISourceTree>();
+            ChildrenList = children ?? new List<ISourceTreeNode>();
         }
 
-        public void AddChild(ISourceTree child)
+        public void AddChild(ISourceTreeNode child)
         {
             ChildrenList.Add(child);
         }
@@ -30,17 +29,25 @@ namespace Elektronik.Containers
             }
         }
 
-        public virtual void SetRenderer(ISourceRenderer renderer)
+        public virtual void AddRenderer(ISourceRenderer renderer)
         {
             foreach (var child in Children)
             {
-                child.SetRenderer(renderer);
+                child.AddRenderer(renderer);
+            }
+        }
+
+        public virtual void RemoveRenderer(ISourceRenderer renderer)
+        {
+            foreach (var child in Children)
+            {
+                child.RemoveRenderer(renderer);
             }
         }
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children => ChildrenList;
+        public IEnumerable<ISourceTreeNode> Children => ChildrenList;
 
         #endregion
 
@@ -92,16 +99,8 @@ namespace Elektronik.Containers
         {
             return new VirtualContainer(DisplayName, ChildrenList.OfType<ISnapshotable>()
                                                 .Select(ch => ch.TakeSnapshot())
-                                                .Select(ch => ch as ISourceTree)
+                                                .Select(ch => ch as ISourceTreeNode)
                                                 .ToList());
-        }
-
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            foreach (var snapshotable in Children.OfType<ISnapshotable>())
-            {
-                snapshotable.WriteSnapshot(recorder);
-            }
         }
 
         #endregion
@@ -109,7 +108,7 @@ namespace Elektronik.Containers
         #region Private
 
         private bool _isVisible = true;
-        protected readonly List<ISourceTree> ChildrenList;
+        protected readonly List<ISourceTreeNode> ChildrenList;
 
         private bool CheckShowButton()
         {

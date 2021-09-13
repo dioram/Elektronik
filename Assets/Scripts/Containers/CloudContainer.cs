@@ -42,16 +42,20 @@ namespace Elektronik.Containers
 
         #region ISourceTree implementations
 
-        public override void SetRenderer(ISourceRenderer renderer)
+        public override void AddRenderer(ISourceRenderer renderer)
         {
-            _traceContainer.SetRenderer(renderer);
+            _traceContainer.AddRenderer(renderer);
             if (!(renderer is ICloudRenderer<TCloudItem> typedRenderer)) return;
-            OnVisibleChanged += visible =>
-            {
-                if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<TCloudItem>(this));
-                else typedRenderer.OnClear(this);
-            };
-            base.SetRenderer(renderer);
+            _renderers.Add(typedRenderer);
+            base.AddRenderer(renderer);
+        }
+
+        public override void RemoveRenderer(ISourceRenderer renderer)
+        {
+            _traceContainer.RemoveRenderer(renderer);
+            if (!(renderer is ICloudRenderer<TCloudItem> typedRenderer)) return;
+            _renderers.Remove(typedRenderer);
+            base.RemoveRenderer(renderer);
         }
 
         #endregion
@@ -110,6 +114,26 @@ namespace Elektronik.Containers
                 if (_isVisible == value) return;
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
+                
+                if (_isVisible)
+                {
+                    foreach (var renderer in _renderers)
+                    {
+                        renderer.OnItemsAdded(this, new AddedEventArgs<TCloudItem>(this));
+                    }
+                }
+                else
+                {
+                    TCloudItem[] removed;
+                    lock (Items)
+                    {
+                        removed = Items.Values.ToArray();
+                    }
+                    foreach (var renderer in _renderers)
+                    {
+                        renderer.OnItemsRemoved(this, new RemovedEventArgs<TCloudItem>(removed));
+                    }
+                }
             }
         }
 
@@ -134,11 +158,6 @@ namespace Elektronik.Containers
             return res;
         }
 
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            recorder.OnAdded(DisplayName, this.ToList());
-        }
-
         #endregion
 
         #region Private definitions
@@ -146,6 +165,7 @@ namespace Elektronik.Containers
         private bool _isVisible = true;
         private readonly CloudContainerBase<SimpleLine> _traceContainer = new CloudContainerBase<SimpleLine>();
         private int _maxTraceId = 0;
+        private List<ICloudRenderer<TCloudItem>> _renderers = new List<ICloudRenderer<TCloudItem>>(); 
 
         private void CreateTraces(IEnumerable<TCloudItem> items)
         {

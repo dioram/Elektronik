@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
@@ -38,7 +37,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
             packet.TrackedObjs.Data.Add(_objects);
-            var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => ((SlamTrackedObjectDiff)p).Apply()).ToArray());
+            var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => ((SlamTrackedObjectDiff)p).Apply())
+                                                                  .ToArray());
             var els = _objects.Select(o => new AddedEventArgs<SimpleLine>(FromPb(0, o))).ToArray();
 
             SendPacket(packet);
@@ -68,7 +68,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 return (newPb, diff);
             });
             packet.TrackedObjs.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply())
+                                                                    .ToArray());
             var els = _objects.Select((o, i) => new AddedEventArgs<SimpleLine>(FromPb(1, oldObjects[i], o))).ToArray();
 
             SendPacket(packet);
@@ -97,7 +98,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 return (newPb, diff);
             });
             packet.TrackedObjs.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply())
+                                                                    .ToArray());
             var els = _objects.Select(o => new AddedEventArgs<SimpleLine>(FromPb(2, o))).ToArray();
 
             SendPacket(packet);
@@ -127,7 +129,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 return (newPb, diff);
             });
             packet.TrackedObjs.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply())
+                                                                    .ToArray());
             var els = _objects.Select((o, i) => new AddedEventArgs<SimpleLine>(FromPb(3, oldObjects[i], o))).ToArray();
 
             SendPacket(packet);
@@ -156,7 +159,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 return (newPb, diff);
             });
             packet.TrackedObjs.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply())
+                                                                    .ToArray());
             var els = _objects.Select(o => new AddedEventArgs<SimpleLine>(FromPb(4, o))).ToArray();
 
             SendPacket(packet);
@@ -192,7 +196,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             }
 
             packet.TrackedObjs.Data.Add(_objects);
-            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply())
+                                                                    .ToArray());
             var els = _objects.Select((o, i) => new AddedEventArgs<SimpleLine>(FromPb(5, oldObjects[i], o))).ToArray();
 
             SendPacket(packet);
@@ -215,8 +220,12 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
             packet.TrackedObjs.Data.Add(new[] { _objects[1] });
-            var e = new RemovedEventArgs(new[] { 1 });
-            var el = new RemovedEventArgs(Enumerable.Range(0, 6).ToArray());
+            var e = new RemovedEventArgs<SlamTrackedObject>(((SlamTrackedObjectDiff)_objects[1]).Apply());
+            var el = new RemovedEventArgs<SimpleLine>(Enumerable
+                                                              .Range(0, 6)
+                                                              .Select(
+                                                                  i => new SimpleLine(i, Vector3.zero, Vector3.zero))
+                                                              .ToArray());
 
             SendPacket(packet);
 
@@ -235,8 +244,15 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 Action = PacketPb.Types.ActionType.Clear,
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
-            var e = new RemovedEventArgs(new[] { 0, 2 });
-            var el = new RemovedEventArgs(Enumerable.Range(0, 6).ToArray());
+            var e = new RemovedEventArgs<SlamTrackedObject>(new[]
+            {
+                ((SlamTrackedObjectDiff)_objects[0]).Apply(), ((SlamTrackedObjectDiff)_objects[2]).Apply()
+            });
+            var el = new RemovedEventArgs<SimpleLine>(Enumerable
+                                                              .Range(0, 6)
+                                                              .Select(
+                                                                  i => new SimpleLine(i, Vector3.zero, Vector3.zero))
+                                                              .ToArray());
 
             SendPacket(packet);
 
@@ -264,12 +280,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                    It.IsAny<UpdatedEventArgs<SlamTrackedObject>>()),
                                              Times.Exactly(5));
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
-                                                                   It.IsAny<RemovedEventArgs>()),
+                                                                   It.IsAny<RemovedEventArgs<SlamTrackedObject>>()),
                                              Times.Exactly(2));
-            MockedTrackedObjsRenderer.Verify(r => r.ShowItems(It.IsAny<object>(),
-                                                              It.IsAny<IList<SlamTrackedObject>>()),
-                                             Times.Never);
-            MockedTrackedObjsRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
@@ -279,11 +291,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                    It.IsAny<UpdatedEventArgs<SimpleLine>>()),
                                              Times.Never);
             MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
-                                                                   It.IsAny<RemovedEventArgs>()),
+                                                                   It.IsAny<RemovedEventArgs<SimpleLine>>()),
                                              Times.Exactly(3));
-            MockedSimpleLinesRenderer.Verify(r => r.ShowItems(It.IsAny<object>(), It.IsAny<IList<SimpleLine>>()),
-                                             Times.Never);
-            MockedSimpleLinesRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedPointsRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(), It.IsAny<AddedEventArgs<SlamPoint>>()),
@@ -291,11 +300,9 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             MockedPointsRenderer.Verify(r => r.OnItemsUpdated(It.IsAny<object>(),
                                                               It.IsAny<UpdatedEventArgs<SlamPoint>>()),
                                         Times.Never);
-            MockedPointsRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs>()),
+            MockedPointsRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
+                                                              It.IsAny<RemovedEventArgs<SlamPoint>>()),
                                         Times.Never);
-            MockedPointsRenderer.Verify(r => r.ShowItems(It.IsAny<object>(), It.IsAny<IList<SlamPoint>>()),
-                                        Times.Never);
-            MockedPointsRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SlamLine>>(),
@@ -305,11 +312,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                  It.IsAny<UpdatedEventArgs<SlamLine>>()),
                                            Times.Never);
             MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(),
-                                                                 It.IsAny<RemovedEventArgs>()),
+                                                                 It.IsAny<RemovedEventArgs<SlamLine>>()),
                                            Times.Never);
-            MockedSlamLinesRenderer.Verify(r => r.ShowItems(It.IsAny<object>(), It.IsAny<IList<SlamLine>>()),
-                                           Times.Never);
-            MockedSlamLinesRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedObservationsRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
@@ -319,12 +323,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                     It.IsAny<UpdatedEventArgs<SlamObservation>>()),
                                               Times.Never);
             MockedObservationsRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
-                                                                    It.IsAny<RemovedEventArgs>()),
+                                                                    It.IsAny<RemovedEventArgs<SlamObservation>>()),
                                               Times.Never);
-            MockedObservationsRenderer.Verify(r => r.ShowItems(It.IsAny<object>(),
-                                                               It.IsAny<IList<SlamObservation>>()),
-                                              Times.Never);
-            MockedObservationsRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedInfinitePlanesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
@@ -334,12 +334,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                       It.IsAny<UpdatedEventArgs<SlamInfinitePlane>>()),
                                                 Times.Never);
             MockedInfinitePlanesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
-                                                                      It.IsAny<RemovedEventArgs>()),
+                                                                      It.IsAny<RemovedEventArgs<SlamInfinitePlane>>()),
                                                 Times.Never);
-            MockedInfinitePlanesRenderer.Verify(r => r.ShowItems(It.IsAny<object>(),
-                                                                 It.IsAny<IList<SlamInfinitePlane>>()),
-                                                Times.Never);
-            MockedInfinitePlanesRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedImageRenderer.Verify(r => r.Render(It.IsAny<byte[]>()), Times.Never);

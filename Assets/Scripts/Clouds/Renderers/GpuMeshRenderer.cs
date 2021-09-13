@@ -26,11 +26,17 @@ namespace Elektronik.Clouds
             }
         }
 
-        public void SetScale(float value)
+        public float Scale
         {
-            foreach (var block in _blocks)
+            get => _scale;
+            set
             {
-                block.SetScale(value);
+                if (Math.Abs(_scale - value) < float.Epsilon) return;
+                
+                foreach (var block in _blocks)
+                {
+                    block.SetScale(value);
+                } 
             }
         }
 
@@ -43,8 +49,8 @@ namespace Elektronik.Clouds
         #region Private
 
         private readonly List<MeshRendererBlock> _blocks = new List<MeshRendererBlock>();
-
         private bool _overrideColors = false;
+        private float _scale;
 
         private void UpdateMesh((Vector3 pos, Color color)[] vertices, int[] indexes, bool takeLock = true)
         {

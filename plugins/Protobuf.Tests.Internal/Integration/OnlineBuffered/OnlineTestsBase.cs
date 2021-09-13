@@ -50,13 +50,13 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
 
             SetupPrintFromMocks();
 
-            Sut.Data.SetRenderer(MockedPointsRenderer.Object);
-            Sut.Data.SetRenderer(MockedSlamLinesRenderer.Object);
-            Sut.Data.SetRenderer(MockedSimpleLinesRenderer.Object);
-            Sut.Data.SetRenderer(MockedObservationsRenderer.Object);
-            Sut.Data.SetRenderer(MockedTrackedObjsRenderer.Object);
-            Sut.Data.SetRenderer(MockedInfinitePlanesRenderer.Object);
-            Sut.Data.SetRenderer(MockedImageRenderer.Object);
+            Sut.Data.AddRenderer(MockedPointsRenderer.Object);
+            Sut.Data.AddRenderer(MockedSlamLinesRenderer.Object);
+            Sut.Data.AddRenderer(MockedSimpleLinesRenderer.Object);
+            Sut.Data.AddRenderer(MockedObservationsRenderer.Object);
+            Sut.Data.AddRenderer(MockedTrackedObjsRenderer.Object);
+            Sut.Data.AddRenderer(MockedInfinitePlanesRenderer.Object);
+            Sut.Data.AddRenderer(MockedImageRenderer.Object);
         }
 
         protected void SendPacket(PacketPb packet)
@@ -65,7 +65,7 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             Thread.Sleep(40);
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
         }
-    
+
         private void SetupPrintFromMocks()
         {
             MockedPointsRenderer
@@ -83,10 +83,11 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                         TestContext.WriteLine($"Points updated: {sender}\n{string.Join("\n", ss)}");
                     });
             MockedPointsRenderer
-                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs>()))
-                    .Callback((object sender, RemovedEventArgs e) =>
+                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs<SlamPoint>>()))
+                    .Callback((object sender, RemovedEventArgs<SlamPoint> e) =>
                     {
-                        TestContext.WriteLine($"Points removed: {sender}\n{string.Join(", ", e.RemovedIds)}");
+                        TestContext.WriteLine(
+                            $"Points removed: {sender}\n{string.Join(", ", e.RemovedItems.Select(i => i.Id))}");
                     });
 
 
@@ -111,10 +112,11 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                         TestContext.WriteLine($"Lines updated: {sender}\n{string.Join(", ", ss)}");
                     });
             MockedSlamLinesRenderer
-                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs>()))
-                    .Callback((object sender, RemovedEventArgs e) =>
+                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs<SlamLine>>()))
+                    .Callback((object sender, RemovedEventArgs<SlamLine> e) =>
                     {
-                        TestContext.WriteLine($"Lines removed: {sender}\n{string.Join(", ", e.RemovedIds)}");
+                        TestContext.WriteLine(
+                            $"Slam lines removed: {sender}\n{string.Join(", ", e.RemovedItems.Select(l => $"({l.Point1.Id}, {l.Point2.Id})"))}");
                     });
 
 
@@ -137,11 +139,11 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                         TestContext.WriteLine($"Observations updated: {sender}\n{string.Join("\n", ss)}");
                     });
             MockedObservationsRenderer
-                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs>()))
-                    .Callback((object sender, RemovedEventArgs e) =>
+                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs<SlamObservation>>()))
+                    .Callback((object sender, RemovedEventArgs<SlamObservation> e) =>
                     {
                         TestContext.WriteLine(
-                            $"Observations removed: {sender}\n{string.Join(", ", e.RemovedIds)}");
+                            $"Observations removed: {sender}\n{string.Join(", ", e.RemovedItems.Select(i => i.Id))}");
                     });
 
 
@@ -160,10 +162,11 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                         TestContext.WriteLine($"Tracked objects updated: {sender}\n{string.Join("\n", ss)}");
                     });
             MockedTrackedObjsRenderer
-                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs>()))
-                    .Callback((object sender, RemovedEventArgs e) =>
+                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs<SlamTrackedObject>>()))
+                    .Callback((object sender, RemovedEventArgs<SlamTrackedObject> e) =>
                     {
-                        TestContext.WriteLine($"Tracked objects removed: {sender}\n{string.Join(", ", e.RemovedIds)}");
+                        TestContext.WriteLine(
+                            $"Tracked objects removed: {sender}\n{string.Join(", ", e.RemovedItems.Select(i => i.Id))}");
                     });
 
 
@@ -182,15 +185,19 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                         TestContext.WriteLine($"Simple lines updated: {sender}\n{string.Join("\n", ss)}");
                     });
             MockedSimpleLinesRenderer
-                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs>()))
-                    .Callback((object sender, RemovedEventArgs e) =>
+                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs<SimpleLine>>()))
+                    .Callback((object sender, RemovedEventArgs<SimpleLine> e) =>
                     {
-                        TestContext.WriteLine($"Simple lines removed: {sender}\n{string.Join(", ", e.RemovedIds)}");
+                        TestContext.WriteLine(
+                            $"Simple lines removed: {sender}\n{string.Join(", ", e.RemovedItems.Select(i => i.Id))}");
                     });
         }
 
         private string ToString(SlamPoint p) => $"{p.Id}, {p.Position}, {p.Color}, \"{p.Message}\"";
-        private string ToString(SlamTrackedObject p) => $"{p.Id}, {p.Position}, {p.Rotation}, {p.Color}, \"{p.Message}\"";
+
+        private string ToString(SlamTrackedObject p) =>
+                $"{p.Id}, {p.Position}, {p.Rotation}, {p.Color}, \"{p.Message}\"";
+
         private string ToString(SimpleLine p) => $"{p.Id}, {p.BeginPos}, {p.EndPos}, {p.BeginColor}, {p.EndColor}";
     }
 }

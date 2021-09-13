@@ -10,7 +10,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
     public abstract class DBContainerToWindow<TMessage, TRender, TRenderType>
             : DBContainer<TMessage, TRenderType>, IRendersToWindow
             where TMessage : Message
-            where TRender : IDataRenderer<TRenderType>
+            where TRender : class, IDataRenderer<TRenderType>
     {
         public DBContainerToWindow(string displayName, List<SQLiteConnection> dbModels, Topic topic,
                                    List<long> actualTimestamps)
@@ -25,7 +25,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (Renderer is not null) Renderer.Clear();
         }
 
-        public override void SetRenderer(ISourceRenderer renderer)
+        public override void AddRenderer(ISourceRenderer renderer)
         {
             if (renderer is WindowsManager factory)
             {
@@ -36,6 +36,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
                     SetRendererCallback();
                 });
             }
+        }
+
+        public override void RemoveRenderer(ISourceRenderer renderer)
+        {
+            if (Renderer != renderer) return;
+            Renderer = null;
+            Window = null;
         }
 
         protected override void SetData()
@@ -51,7 +58,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region IRendersToWindow
 
-        public Window Window { get; private set; }
+        public Window? Window { get; private set; }
         public string Title { get; set; }
 
         #endregion

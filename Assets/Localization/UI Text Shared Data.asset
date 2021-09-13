@@ -532,6 +532,18 @@ MonoBehaviour:
     m_Key: At least one of addresses is incorrect
     m_Metadata:
       m_Items: []
+  - m_Id: 54750546028208128
+    m_Key: Record...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54755928226209792
+    m_Key: 'Save to:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54756304220397568
+    m_Key: 'Start recording '
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Elektronik.Containers.EventArgs;
+﻿using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Clouds
@@ -11,10 +10,6 @@ namespace Elektronik.Clouds
 
         void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e);
 
-        void OnItemsRemoved(object sender, RemovedEventArgs e);
-
-        void ShowItems(object sender, IList<TCloudItem> items);
-
-        void OnClear(object sender);
+        void OnItemsRemoved(object sender, RemovedEventArgs<TCloudItem> e);
     }
 }

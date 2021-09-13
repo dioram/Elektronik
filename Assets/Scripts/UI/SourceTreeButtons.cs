@@ -29,7 +29,7 @@ namespace Elektronik.UI
         public TMP_Text MinWeightLabel;
         public TMP_Text MaxWeightLabel;
 
-        private ISourceTree _node;
+        private ISourceTreeNode _node;
 
         public void Start()
         {
@@ -116,7 +116,7 @@ namespace Elektronik.UI
 
             if (_node is ISave s)
             {
-                SaveButton.OnClickAsObservable().Subscribe(_ => s.Save());
+                SaveButton.OnClickAsObservable().Subscribe(_ => s.RequestSaving());
             }
             else
             {

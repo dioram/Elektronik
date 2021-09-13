@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Containers.EventArgs
 {
     public class AddedEventArgs<T> : System.EventArgs
+            where T : struct, ICloudItem
     {
         public readonly IList<T> AddedItems;
 

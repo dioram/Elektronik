@@ -8,8 +8,8 @@ using Elektronik.UI.Windows;
 namespace Elektronik.RosPlugin.Common.Containers
 {
     public abstract class PresenterBase<TMessage, TRenderer, TRendererType> 
-            : IPresenter<TMessage>, ISourceTree, IRendersToWindow
-            where TRenderer : IDataRenderer<TRendererType>
+            : IPresenter<TMessage>, ISourceTreeNode, IRendersToWindow
+            where TRenderer : class, IDataRenderer<TRendererType>
     {
         protected PresenterBase(string displayName)
         {
@@ -29,17 +29,17 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #endregion
 
-        #region ISourceTree
+        #region ISourceTreeNode
 
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
+        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
 
         public void Clear()
         {
             if (Renderer is not null) Renderer.Clear();
         }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
             if (renderer is WindowsManager factory)
             {
@@ -52,11 +52,18 @@ namespace Elektronik.RosPlugin.Common.Containers
             }
         }
 
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            if (Renderer != renderer) return;
+            Renderer = null;
+            Window = null;
+        }
+
         #endregion
 
         #region IRendersToWindow
 
-        public Window Window { get; private set; }
+        public Window? Window { get; private set; }
         public string Title { get; set; }
 
         #endregion

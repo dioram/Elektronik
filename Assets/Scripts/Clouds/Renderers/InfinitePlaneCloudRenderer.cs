@@ -1,4 +1,5 @@
-﻿using Elektronik.Data.PackageObjects;
+﻿using System;
+using Elektronik.Data.PackageObjects;
 using UnityEngine;
 
 namespace Elektronik.Clouds
@@ -40,12 +41,20 @@ namespace Elektronik.Clouds
             }
         }
 
-        public override void SetScale(float value)
+        public override float Scale
         {
-            foreach (var block in Blocks)
+            get => _scale;
+            set
             {
-                block.SetScale(value);
+                if (Math.Abs(_scale - value) < float.Epsilon) return;
+                
+                foreach (var block in Blocks)
+                {
+                    block.SetScale(value);
+                } 
             }
         }
+
+        private float _scale;
     }
 }

@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
-using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Recorders;
+using FluentAssertions;
+using Google.Protobuf;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -13,32 +15,36 @@ namespace Protobuf.Tests.Internal
 {
     public class RecorderTests
     {
-        private const string Filename = @"./test.dat";
+        private string _filename;
 
         [TearDown]
         public void TearDown()
         {
-            File.Delete(Filename);
+            File.Delete(_filename);
         }
 
         [Test]
         public void PointsTest()
         {
-            var points = new []
+            var sut = CreateRecorder(0);
+            var points = new[]
             {
                 new SlamPoint(0, Vector3.one, Color.blue),
                 new SlamPoint(1, Vector3.down, Color.red),
                 new SlamPoint(-10, Vector3.forward, Color.gray, "test message")
             };
-            var morePoints = new []
+            var morePoints = new[]
             {
                 new SlamPoint(0, Vector3.zero, Color.red, "Another message"),
                 new SlamPoint(-10, Vector3.up, Color.white, "test message")
             };
 
-            Record(points, morePoints);
+            sut.OnItemsAdded(null, new AddedEventArgs<SlamPoint>(points));
+            sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamPoint>(morePoints));
+            sut.OnItemsRemoved(null, new RemovedEventArgs<SlamPoint>(new List<int> { 0 }));
+            sut.Dispose();
 
-            using var input = File.OpenRead(Filename);
+            using var input = File.OpenRead(_filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
             Assert.AreEqual(PacketPb.Types.ActionType.Add, packet.Action);
             CheckPoints(points, packet);
@@ -58,14 +64,15 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void ObservationsTest()
         {
-            var observations = new []
+            var sut = CreateRecorder(1);
+            var observations = new[]
             {
                 new SlamObservation(new SlamPoint(0, Vector3.one, Color.blue), Quaternion.identity, "123", "f.jpg"),
                 new SlamObservation(new SlamPoint(1, Vector3.down, Color.red), new Quaternion(0, 5, 15, 3), "321", ""),
                 new SlamObservation(new SlamPoint(-10, Vector3.forward, Color.gray, "test message"),
                                     new Quaternion(59, 46, 3, 24), "adsf", "f.jpg"),
             };
-            var moreObservations = new []
+            var moreObservations = new[]
             {
                 new SlamObservation(new SlamPoint(0, Vector3.zero, Color.red, "Another message"),
                                     new Quaternion(6, 2, 1, 0), "123", "f.jpg"),
@@ -73,9 +80,12 @@ namespace Protobuf.Tests.Internal
                                     "123", "f.jpg"),
             };
 
-            Record(observations, moreObservations);
+            sut.OnItemsAdded(null, new AddedEventArgs<SlamObservation>(observations));
+            sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamObservation>(moreObservations));
+            sut.OnItemsRemoved(null, new RemovedEventArgs<SlamObservation>(new List<int> { 0 }));
+            sut.Dispose();
 
-            using var input = File.OpenRead(Filename);
+            using var input = File.OpenRead(_filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
             Assert.AreEqual(PacketPb.Types.ActionType.Add, packet.Action);
             CheckObservations(observations, packet);
@@ -95,21 +105,25 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void TrackedObjectsTest()
         {
-            var trackedObjects = new []
+            var sut = CreateRecorder(2);
+            var trackedObjects = new[]
             {
                 new SlamTrackedObject(0, Vector3.one, Quaternion.identity, Color.blue),
                 new SlamTrackedObject(1, Vector3.down, new Quaternion(1, 2, 3, 1), Color.red),
                 new SlamTrackedObject(-10, Vector3.forward, new Quaternion(3, 2, 1, 2), Color.gray, "test message")
             };
-            var moreTrackedObjects = new []
+            var moreTrackedObjects = new[]
             {
                 new SlamTrackedObject(0, Vector3.zero, new Quaternion(5, 6, 7, 0), Color.red, "Another message"),
                 new SlamTrackedObject(-10, Vector3.up, Quaternion.identity, Color.white, "test message")
             };
+            
+            sut.OnItemsAdded(null, new AddedEventArgs<SlamTrackedObject>(trackedObjects));
+            sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamTrackedObject>(moreTrackedObjects));
+            sut.OnItemsRemoved(null, new RemovedEventArgs<SlamTrackedObject>(new List<int> { 0 }));
+            sut.Dispose();
 
-            Record(trackedObjects, moreTrackedObjects);
-
-            using var input = File.OpenRead(Filename);
+            using var input = File.OpenRead(_filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
             Assert.AreEqual(PacketPb.Types.ActionType.Add, packet.Action);
             CheckTrackedObjects(trackedObjects, packet);
@@ -129,21 +143,25 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void InfinitePlanesTest()
         {
-            var planes = new []
+            var sut = CreateRecorder(3);
+            var planes = new[]
             {
                 new SlamInfinitePlane(0, Vector3.one, Vector3.zero, Color.blue),
                 new SlamInfinitePlane(1, Vector3.down, Vector3.up, Color.red),
                 new SlamInfinitePlane(-10, Vector3.forward, Vector3.back, Color.gray, "test message")
             };
-            var morePlanes = new []
+            var morePlanes = new[]
             {
                 new SlamInfinitePlane(0, Vector3.zero, Vector3.left, Color.red, "Another message"),
                 new SlamInfinitePlane(-10, Vector3.up, Vector3.right, Color.white, "test message")
             };
 
-            Record(planes, morePlanes);
+            sut.OnItemsAdded(null, new AddedEventArgs<SlamInfinitePlane>(planes));
+            sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamInfinitePlane>(morePlanes));
+            sut.OnItemsRemoved(null, new RemovedEventArgs<SlamInfinitePlane>(new List<int> { 0 }));
+            sut.Dispose();
 
-            using var input = File.OpenRead(Filename);
+            using var input = File.OpenRead(_filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
             Assert.AreEqual(PacketPb.Types.ActionType.Add, packet.Action);
             CheckPlanes(planes, packet);
@@ -163,21 +181,26 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void LinesTest()
         {
-            var lines = new []
+            var sut = CreateRecorder(4);
+            var lines = new[]
             {
                 new SlamLine(0, 1),
                 new SlamLine(1, 2),
                 new SlamLine(-10, -6)
             };
-            var moreLines = new []
+            var moreLines = new[]
             {
                 new SlamLine(0, 3),
                 new SlamLine(-10, 4)
             };
 
-            Record(lines, moreLines);
 
-            using var input = File.OpenRead(Filename);
+            sut.OnItemsAdded(null, new AddedEventArgs<SlamLine>(lines));
+            sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamLine>(moreLines));
+            sut.OnItemsRemoved(null, new RemovedEventArgs<SlamLine>(new List<int> { 0 }));
+            sut.Dispose();
+
+            using var input = File.OpenRead(_filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
             Assert.AreEqual(PacketPb.Types.ActionType.Add, packet.Action);
             CheckLines(lines, packet);
@@ -195,87 +218,39 @@ namespace Protobuf.Tests.Internal
         }
 
         [Test]
-        public void PointConnectionsTest()
-        {
-            (int id1, int id2)[] connections = {(0, 1), (0, 3), (3, 2), (-10, 9)};
-            (int id1, int id2)[] removed = {connections[1], connections[3]};
-            IDataRecorderPlugin recorder = new ProtobufRecorder("", null, new FakeConverter());
-            recorder.FileName = Filename;
-            recorder.StartRecording();
-            recorder.OnConnectionsUpdated<SlamPoint>("Connections", connections);
-            recorder.OnConnectionsRemoved<SlamPoint>("Connections", removed);
-            recorder.StopRecording();
-            Assert.IsTrue(File.Exists(Filename));
-
-            using var input = File.OpenRead(Filename);
-            var packet = PacketPb.Parser.ParseDelimitedFrom(input);
-            Assert.AreEqual(PacketPb.Types.ActionType.Update, packet.Action);
-            Assert.AreEqual(PacketPb.Types.Connections.Types.Action.Add, packet.Connections.Action);
-            CheckConnections(connections, packet);
-            
-            var anotherPacket = PacketPb.Parser.ParseDelimitedFrom(input);
-            Assert.AreEqual(PacketPb.Types.ActionType.Update, anotherPacket.Action);
-            Assert.AreEqual(PacketPb.Types.Connections.Types.Action.Remove, anotherPacket.Connections.Action);
-            CheckConnections(removed, anotherPacket);
-            CheckMetadata(input, 2);
-        }
-
-        [Test]
-        public void ObservationsConnectionsTest()
-        {
-            (int id1, int id2)[] connections = {(0, 1), (0, 3), (3, 2), (-10, 9)};
-            (int id1, int id2)[] removed = {connections[1], connections[3]};
-            IDataRecorderPlugin recorder = new ProtobufRecorder("", null, new FakeConverter());
-            recorder.FileName = Filename;
-            recorder.StartRecording();
-            recorder.OnConnectionsUpdated<SlamObservation>("Connections", connections);
-            recorder.OnConnectionsRemoved<SlamObservation>("Connections", removed);
-            recorder.StopRecording();
-            Assert.IsTrue(File.Exists(Filename));
-
-            using var input = File.OpenRead(Filename);
-            var packet = PacketPb.Parser.ParseDelimitedFrom(input);
-            Assert.AreEqual(PacketPb.Types.ActionType.Update, packet.Action);
-            Assert.AreEqual(PacketPb.Types.Connections.Types.Action.Add, packet.Connections.Action);
-            CheckConnections(connections, packet);
-            
-            var anotherPacket = PacketPb.Parser.ParseDelimitedFrom(input);
-            Assert.AreEqual(PacketPb.Types.ActionType.Update, anotherPacket.Action);
-            Assert.AreEqual(PacketPb.Types.Connections.Types.Action.Remove, anotherPacket.Connections.Action);
-            CheckConnections(removed, anotherPacket);
-            CheckMetadata(input, 2);
-        }
-
-        [Test]
         public void StartStopTest()
         {
-            SlamPoint[] points =
+            var sut = CreateRecorder(5);
+            var points = new[]
             {
                 new SlamPoint(0, Vector3.one, Color.blue),
                 new SlamPoint(1, Vector3.down, Color.red),
                 new SlamPoint(-10, Vector3.forward, Color.gray, "test message")
             };
-            (int id1, int id2)[] connections = {(0, 1), (0, 3), (3, 2), (-10, 9)};
+            var morePoints = new[]
+            {
+                new SlamPoint(0, Vector3.zero, Color.red, "Another message"),
+                new SlamPoint(-10, Vector3.up, Color.white, "test message")
+            };
+
+            sut.OnItemsAdded(null, new AddedEventArgs<SlamPoint>(points));
+            sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamPoint>(morePoints));
+            sut.Dispose();
             
-            File.Delete(Filename);
-            IDataRecorderPlugin recorder = new ProtobufRecorder("", null, new FakeConverter());
-            recorder.FileName = Filename;
-            recorder.OnAdded("", points);
-            recorder.OnUpdated("", points);
-            recorder.OnRemoved<SlamPoint>("", points.Select(p => p.Id).ToList());
-            recorder.OnConnectionsUpdated<SlamPoint>("", connections);
-            recorder.OnConnectionsRemoved<SlamPoint>("", connections);
-            Assert.IsFalse(File.Exists(Filename));
-            recorder.StartRecording();
-            recorder.OnAdded("", points);
-            recorder.OnUpdated("", points);
-            recorder.OnRemoved<SlamPoint>("", points.Select(p => p.Id).ToList());
-            recorder.OnConnectionsUpdated<SlamPoint>("", connections);
-            recorder.OnConnectionsRemoved<SlamPoint>("", connections);
-            Assert.IsTrue(File.Exists(Filename));
-            recorder.StopRecording();
-            using var input = File.OpenRead(Filename);
-            CheckMetadata(input, 5);
+            sut.OnItemsRemoved(null, new RemovedEventArgs<SlamPoint>(new List<int> { 0 }));
+
+            using var input = File.OpenRead(_filename);
+            var packet = PacketPb.Parser.ParseDelimitedFrom(input);
+            Assert.AreEqual(PacketPb.Types.ActionType.Add, packet.Action);
+            CheckPoints(points, packet);
+
+            var anotherPacket = PacketPb.Parser.ParseDelimitedFrom(input);
+            Assert.AreEqual(PacketPb.Types.ActionType.Update, anotherPacket.Action);
+            CheckPoints(morePoints, anotherPacket);
+
+            Action act = () => PacketPb.Parser.ParseDelimitedFrom(input);
+            act.Should().Throw<InvalidProtocolBufferException>();
+            CheckMetadata(input, 2);
         }
 
         #region Not tests
@@ -297,7 +272,7 @@ namespace Protobuf.Tests.Internal
             bool message = string.IsNullOrEmpty(diff.Message) || diff.Message == point.Message;
             return id && offset && color && message;
         }
-        
+
         private void CheckPoints(IEnumerable<SlamPoint> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Points, packet.DataCase);
@@ -305,7 +280,7 @@ namespace Protobuf.Tests.Internal
                                   .Zip(points, (point, item) => (point, item))
                                   .All(d => CheckDiffAndPoint(d.point, d.item)));
         }
-        
+
         private bool CheckDiffAndObservation(SlamObservationDiff diff, SlamObservation observation)
         {
             bool id = diff.Id == observation.Id;
@@ -315,7 +290,7 @@ namespace Protobuf.Tests.Internal
             bool filename = string.IsNullOrEmpty(diff.FileName) || diff.FileName == observation.FileName;
             return id && offset && point && message && filename;
         }
-        
+
         private void CheckObservations(IEnumerable<SlamObservation> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Observations, packet.DataCase);
@@ -333,7 +308,7 @@ namespace Protobuf.Tests.Internal
             bool message = string.IsNullOrEmpty(diff.Message) || diff.Message == obj.Message;
             return id && offset && normal && color && message;
         }
-        
+
         private void CheckTrackedObjects(IEnumerable<SlamTrackedObject> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.TrackedObjs, packet.DataCase);
@@ -341,7 +316,7 @@ namespace Protobuf.Tests.Internal
                                   .Zip(points, (point, item) => (point, item))
                                   .All(d => CheckDiffAndTrackedObj(d.point, d.item)));
         }
-        
+
         private bool CheckDiffAndPlane(SlamInfinitePlaneDiff diff, SlamInfinitePlane plane)
         {
             bool id = diff.Id == plane.Id;
@@ -351,7 +326,7 @@ namespace Protobuf.Tests.Internal
             bool message = string.IsNullOrEmpty(diff.Message) || diff.Message == plane.Message;
             return id && offset && normal && color && message;
         }
-        
+
         private void CheckPlanes(IEnumerable<SlamInfinitePlane> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.InfinitePlanes, packet.DataCase);
@@ -366,20 +341,13 @@ namespace Protobuf.Tests.Internal
             bool point2 = CheckDiffAndPoint(diff.Point2, line.Point2);
             return point1 && point2;
         }
-        
+
         private void CheckLines(IEnumerable<SlamLine> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Lines, packet.DataCase);
             Assert.IsTrue(packet.ExtractLines()
                                   .Zip(points, (point, item) => (point, item))
                                   .All(d => CheckDiffAndLine(d.point, d.item)));
-        }
-        
-        private void CheckConnections(IEnumerable<(int id1, int id2)> connections, PacketPb packet)
-        {
-            Assert.IsTrue(packet.Connections.Data
-                                  .Zip(connections, (pb, item) => ((pb.Id1, pb.Id2), item))
-                                  .All(d => d.Item1.Equals(d.Item2)));
         }
 
         private void CheckMetadata(FileStream input, int expectedFrames)
@@ -392,16 +360,11 @@ namespace Protobuf.Tests.Internal
             Assert.AreEqual(BitConverter.GetBytes(expectedFrames), buffer);
         }
 
-        private void Record<TCloudItem>(TCloudItem[] first, TCloudItem[] second) where TCloudItem : struct, ICloudItem
+        private ProtobufRecorder CreateRecorder(int id)
         {
-            IDataRecorderPlugin recorder = new ProtobufRecorder("", null, new FakeConverter());
-            recorder.FileName = Filename;
-            recorder.StartRecording();
-            recorder.OnAdded(typeof(TCloudItem).Name, first);
-            recorder.OnUpdated(typeof(TCloudItem).Name, second);
-            recorder.OnRemoved<TCloudItem>(typeof(TCloudItem).Name, new List<int> {0});
-            recorder.StopRecording();
-            Assert.IsTrue(File.Exists(Filename));
+            _filename = $"test_{id}.dat";
+            var factory = new ProtobufRecorderFactory() { Filename = _filename };
+            return (ProtobufRecorder)factory.Start(new FakeConverter());
         }
 
         #endregion

@@ -7,7 +7,7 @@ namespace Elektronik.PluginsSystem
     public interface IDataSourcePlugin : IElektronikPlugin
     {
         /// <summary> Root element of containers with data. </summary>
-        ISourceTree Data { get; }
+        ISourceTreeNode Data { get; }
         
         /// <summary> Amount of frames (commands) in file. </summary>
         int AmountOfFrames { get; }

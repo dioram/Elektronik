@@ -16,7 +16,7 @@ namespace Elektronik.EditorTests.ContainersTests
         {
             var container = new TrackContainer(null, new SlamTrackedObject());
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
-            container.SetRenderer(mockedRenderer.Object);
+            container.AddRenderer(mockedRenderer.Object);
             
             container.AddPointToTrack(Vector3.zero, Color.black);
             var e1 = new AddedEventArgs<SimpleLine>(new SimpleLine(0, Vector3.zero, Vector3.zero, Color.black));
@@ -32,7 +32,7 @@ namespace Elektronik.EditorTests.ContainersTests
         {
             var container = new TrackContainer(null, new SlamTrackedObject());
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
-            container.SetRenderer(mockedRenderer.Object);
+            container.AddRenderer(mockedRenderer.Object);
             
             container.AddPointToTrack(new SlamPoint(0, Vector3.zero, Color.black));
             var e1 = new AddedEventArgs<SimpleLine>(new SimpleLine(0, Vector3.zero, Vector3.zero, Color.black));
@@ -48,7 +48,7 @@ namespace Elektronik.EditorTests.ContainersTests
         {
             var container = new TrackedObjectsContainer();
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
-            container.SetRenderer(mockedRenderer.Object);
+            container.AddRenderer(mockedRenderer.Object);
             Assert.AreEqual(0, container.Count);
             
             container.Add(new SlamTrackedObject(0, Vector3.zero, Quaternion.identity, Color.black));
@@ -63,7 +63,11 @@ namespace Elektronik.EditorTests.ContainersTests
 
             container.Remove(new[] { 0 });
             Assert.AreEqual(0, container.Count);
-            var e3 = new RemovedEventArgs(new List<int> { 0, 1 });
+            var e3 = new RemovedEventArgs<SimpleLine>(new List<SimpleLine>
+            {
+                new SimpleLine {Id = 0},
+                new SimpleLine {Id = 1},
+            });
             mockedRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SimpleLine>>(), e3), Times.Once());
         }
 
@@ -72,7 +76,7 @@ namespace Elektronik.EditorTests.ContainersTests
         {
             var container = new TrackedObjectsContainer();
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
-            container.SetRenderer(mockedRenderer.Object);
+            container.AddRenderer(mockedRenderer.Object);
             Assert.AreEqual(0, container.Count);
             
             container.AddRange(new []
@@ -102,7 +106,11 @@ namespace Elektronik.EditorTests.ContainersTests
 
             container.Remove(new[] { 0, 1 });
             Assert.AreEqual(1, container.Count);
-            var e6 = new RemovedEventArgs(new List<int> { 0, 1 });
+            var e6 = new RemovedEventArgs<SimpleLine>(new List<SimpleLine>
+            {
+                new SimpleLine {Id = 0},
+                new SimpleLine {Id = 1},
+            });
             mockedRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SimpleLine>>(), e6), Times.Exactly(2));
         }
     }

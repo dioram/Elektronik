@@ -13,7 +13,7 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     /// <summary> Contains lines in strict order. </summary>
-    public class TrackContainer : IContainer<SimpleLine>, ISourceTree, ILookable, IVisible, ISnapshotable,
+    public class TrackContainer : IContainer<SimpleLine>, ISourceTreeNode, ILookable, IVisible, ISnapshotable,
                                   IFollowable<SlamTrackedObject>
     {
         public TrackContainer(TrackedObjectsContainer parent, SlamTrackedObject trackedObject)
@@ -67,14 +67,14 @@ namespace Elektronik.Containers
 
         public void Clear()
         {
-            List<int> lines;
+            SimpleLine[] lines;
             lock (_lines)
             {
-                lines = _lines.Select(l => l.Id).ToList();
+                lines = _lines.ToArray();
                 _lines.Clear();
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(lines));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SimpleLine>(lines));
         }
 
         public bool Contains(int id)
@@ -110,7 +110,7 @@ namespace Elektronik.Containers
                 res = _lines.Remove(item);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(item.Id));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SimpleLine>(item));
 
 
             return res;
@@ -149,12 +149,14 @@ namespace Elektronik.Containers
 
         public void RemoveAt(int index)
         {
+            SimpleLine line;
             lock (_lines)
             {
+                line = _lines[index];
                 _lines.RemoveAt(index);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(index));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SimpleLine>(line));
         }
 
         public SimpleLine this[int index]
@@ -181,7 +183,7 @@ namespace Elektronik.Containers
 
         public event EventHandler<UpdatedEventArgs<SimpleLine>> OnUpdated;
 
-        public event EventHandler<RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs<SimpleLine>> OnRemoved;
 
         public void AddRange(IList<SimpleLine> items)
         {
@@ -205,7 +207,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id).ToList()));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SimpleLine>(items));
         }
 
         public IList<SimpleLine> Remove(IList<int> items)
@@ -223,7 +225,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(items));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SimpleLine>(removed));
             return removed;
         }
 
@@ -263,20 +265,16 @@ namespace Elektronik.Containers
 
         public string DisplayName { get; set; } = "Track";
 
-        public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
+        public IEnumerable<ISourceTreeNode> Children => Enumerable.Empty<ISourceTreeNode>();
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
             if (renderer is ICloudRenderer<SimpleLine> typedRenderer)
             {
                 OnAdded += typedRenderer.OnItemsAdded;
                 OnUpdated += typedRenderer.OnItemsUpdated;
                 OnRemoved += typedRenderer.OnItemsRemoved;
-                OnVisibleChanged += visible =>
-                {
-                    if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<SimpleLine>(this));
-                    else typedRenderer.OnClear(this);
-                };
+                _renderers.Add(typedRenderer);
                 if (Count > 0)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(this));
@@ -287,6 +285,15 @@ namespace Elektronik.Containers
                 OnFollowed += trackedRenderer.FollowCamera;
                 OnUnfollowed += trackedRenderer.StopFollowCamera;
             }
+        }
+
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            if (!(renderer is ICloudRenderer<SimpleLine> typedRenderer)) return;
+            OnAdded -= typedRenderer.OnItemsAdded;
+            OnUpdated -= typedRenderer.OnItemsUpdated;
+            OnRemoved -= typedRenderer.OnItemsRemoved;
+            _renderers.Remove(typedRenderer);
         }
 
         #endregion
@@ -318,6 +325,23 @@ namespace Elektronik.Containers
                 if (_isVisible == value) return;
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
+                
+                if (_isVisible)
+                {
+                    foreach (var renderer in _renderers)
+                    {
+                        renderer.OnItemsAdded(this, new AddedEventArgs<SimpleLine>(this));
+                    }
+                    return;
+                }
+
+                foreach (var renderer in _renderers)
+                {
+                    lock (_lines)
+                    {
+                        renderer.OnItemsRemoved(this, new RemovedEventArgs<SimpleLine>(_lines));
+                    }
+                }
             }
         }
 
@@ -338,14 +362,6 @@ namespace Elektronik.Containers
             }
 
             return res;
-        }
-
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            lock (_lines)
-            {
-                recorder.OnAdded(DisplayName, _lines);
-            }
         }
 
         #endregion
@@ -372,12 +388,13 @@ namespace Elektronik.Containers
 
         #endregion
 
-        #region Private definition
+        #region Private
 
         private readonly List<SimpleLine> _lines = new List<SimpleLine>();
         private bool _isVisible = true;
         private readonly TrackedObjectsContainer _parent;
         private readonly SlamTrackedObject _trackedObject;
+        private readonly List<ICloudRenderer<SimpleLine>> _renderers = new List<ICloudRenderer<SimpleLine>>();
 
         #endregion
     }

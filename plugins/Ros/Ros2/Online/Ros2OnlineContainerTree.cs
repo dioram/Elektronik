@@ -45,11 +45,11 @@ namespace Elektronik.RosPlugin.Ros2.Online
 
         #region Protected
 
-        protected override ISourceTree CreateContainer(string topicName, string topicType)
+        protected override ISourceTreeNode CreateContainer(string topicName, string topicType)
         {
             lock (this)
             {
-                var container = (ISourceTree) Activator.CreateInstance(SupportedMessages[topicType].container,
+                var container = (ISourceTreeNode) Activator.CreateInstance(SupportedMessages[topicType].container,
                                                                        topicName.Split('/').Last());
                 var handler = (MessageHandler) Activator.CreateInstance(SupportedMessages[topicType].handler, container);
                 _connector.SubscribeOnMessages(MessageExt.GetDdsTopic(topicName), 

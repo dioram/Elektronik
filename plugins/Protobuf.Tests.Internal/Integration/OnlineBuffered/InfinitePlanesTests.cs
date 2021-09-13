@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Elektronik.Containers;
@@ -201,7 +200,11 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
             packet.InfinitePlanes.Data.Add(new[] { _planes[1], _planes[3] });
-            var e = new RemovedEventArgs(new[] { 1, 3 });
+            var e = new RemovedEventArgs<SlamInfinitePlane>(new[]
+            {
+                ((SlamInfinitePlaneDiff) _planes[1]).Apply(),
+                ((SlamInfinitePlaneDiff)_planes[3]).Apply(),
+            });
 
             SendPacket(packet);
 
@@ -218,7 +221,12 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                 Action = PacketPb.Types.ActionType.Clear,
                 InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
             };
-            var e = new RemovedEventArgs(new[] { 0, 2, 4 });
+            var e = new RemovedEventArgs<SlamInfinitePlane>(new[]
+            {
+                ((SlamInfinitePlaneDiff) _planes[0]).Apply(),
+                ((SlamInfinitePlaneDiff)_planes[2]).Apply(),
+                ((SlamInfinitePlaneDiff)_planes[4]).Apply(),
+            });
 
             SendPacket(packet);
 
@@ -244,12 +252,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                       It.IsAny<UpdatedEventArgs<SlamInfinitePlane>>()),
                                                 Times.Exactly(4));
             MockedInfinitePlanesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
-                                                                      It.IsAny<RemovedEventArgs>()),
+                                                                      It.IsAny<RemovedEventArgs<SlamInfinitePlane>>()),
                                                 Times.Exactly(2));
-            MockedInfinitePlanesRenderer.Verify(r => r.ShowItems(It.IsAny<object>(),
-                                                                 It.IsAny<IList<SlamInfinitePlane>>()),
-                                                Times.Never);
-            MockedInfinitePlanesRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedPointsRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(), It.IsAny<AddedEventArgs<SlamPoint>>()),
@@ -257,11 +261,9 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
             MockedPointsRenderer.Verify(r => r.OnItemsUpdated(It.IsAny<object>(),
                                                               It.IsAny<UpdatedEventArgs<SlamPoint>>()),
                                         Times.Never);
-            MockedPointsRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs>()),
+            MockedPointsRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(), 
+                                                              It.IsAny<RemovedEventArgs<SlamPoint>>()),
                                         Times.Never);
-            MockedPointsRenderer.Verify(r => r.ShowItems(It.IsAny<object>(), It.IsAny<IList<SlamPoint>>()),
-                                        Times.Never);
-            MockedPointsRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SlamLine>>(),
@@ -271,11 +273,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                  It.IsAny<UpdatedEventArgs<SlamLine>>()),
                                            Times.Never);
             MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(),
-                                                                 It.IsAny<RemovedEventArgs>()),
+                                                                 It.IsAny<RemovedEventArgs<SlamLine>>()),
                                            Times.Never);
-            MockedSlamLinesRenderer.Verify(r => r.ShowItems(It.IsAny<object>(), It.IsAny<IList<SlamLine>>()),
-                                           Times.Never);
-            MockedSlamLinesRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
@@ -285,11 +284,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                    It.IsAny<UpdatedEventArgs<SimpleLine>>()),
                                              Times.Never);
             MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
-                                                                   It.IsAny<RemovedEventArgs>()),
+                                                                   It.IsAny<RemovedEventArgs<SimpleLine>>()),
                                              Times.Never);
-            MockedSimpleLinesRenderer.Verify(r => r.ShowItems(It.IsAny<object>(), It.IsAny<IList<SimpleLine>>()),
-                                             Times.Never);
-            MockedSimpleLinesRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedObservationsRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
@@ -299,12 +295,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                     It.IsAny<UpdatedEventArgs<SlamObservation>>()),
                                               Times.Never);
             MockedObservationsRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
-                                                                    It.IsAny<RemovedEventArgs>()),
+                                                                    It.IsAny<RemovedEventArgs<SlamObservation>>()),
                                               Times.Never);
-            MockedObservationsRenderer.Verify(r => r.ShowItems(It.IsAny<object>(),
-                                                               It.IsAny<IList<SlamObservation>>()),
-                                              Times.Never);
-            MockedObservationsRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
@@ -314,12 +306,8 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
                                                                    It.IsAny<UpdatedEventArgs<SlamTrackedObject>>()),
                                              Times.Never);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
-                                                                   It.IsAny<RemovedEventArgs>()),
+                                                                   It.IsAny<RemovedEventArgs<SlamTrackedObject>>()),
                                              Times.Never);
-            MockedTrackedObjsRenderer.Verify(r => r.ShowItems(It.IsAny<object>(),
-                                                              It.IsAny<IList<SlamTrackedObject>>()),
-                                             Times.Never);
-            MockedTrackedObjsRenderer.Verify(r => r.OnClear(It.IsAny<object>()), Times.Never);
 
 
             MockedImageRenderer.Verify(r => r.Render(It.IsAny<byte[]>()), Times.Never);

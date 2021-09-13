@@ -5,24 +5,23 @@ using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Offline.Presenters;
 
 namespace Elektronik.Protobuf.Data
 {
-    public class ProtobufContainerTree : ISourceTree, ISnapshotable, IVisible
+    public class ProtobufContainerTree : ISourceTreeNode, ISnapshotable, IVisible
     {
         public readonly ITrackedContainer<SlamTrackedObject> TrackedObjs;
         public readonly IConnectableObjectsContainer<SlamObservation> Observations;
         public readonly IConnectableObjectsContainer<SlamPoint> Points;
         public readonly IContainer<SlamLine> Lines;
         public readonly IContainer<SlamInfinitePlane> InfinitePlanes;
-        public readonly ISourceTree? Image;
+        public readonly ISourceTreeNode? Image;
         public readonly IMeshContainer MeshContainer;
         public readonly Connector Connector;
         public readonly SlamDataInfoPresenter? SpecialInfo;
 
-        public ProtobufContainerTree(string displayName, ISourceTree? image, SlamDataInfoPresenter? specialInfo = null)
+        public ProtobufContainerTree(string displayName, ISourceTreeNode? image, SlamDataInfoPresenter? specialInfo = null)
         {
             DisplayName = displayName;
             Image = image;
@@ -41,18 +40,18 @@ namespace Elektronik.Protobuf.Data
             Lines = new SlamLinesContainer("Lines");
             MeshContainer = new MeshReconstructor(Points, "Mesh");
             InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
-            var observationsGraph = new VirtualContainer("Observations graph", new List<ISourceTree>
+            var observationsGraph = new VirtualContainer("Observations graph", new List<ISourceTreeNode>
             {
-                (ISourceTree) Observations,
+                (ISourceTreeNode) Observations,
                 Connector
             });
-            var ch =  new List<ISourceTree>
+            var ch =  new List<ISourceTreeNode>
             {
-                (ISourceTree) Points,
-                (ISourceTree) TrackedObjs,
-                (ISourceTree) InfinitePlanes,
+                (ISourceTreeNode) Points,
+                (ISourceTreeNode) TrackedObjs,
+                (ISourceTreeNode) InfinitePlanes,
                 observationsGraph,
-                (ISourceTree) Lines,
+                (ISourceTreeNode) Lines,
                 MeshContainer,
             };
             if (Image != null) ch.Add(Image);
@@ -60,11 +59,11 @@ namespace Elektronik.Protobuf.Data
             Children = ch.ToArray();
         }
 
-        #region ISourceTree implementation
+        #region ISourceTreeNode implementation
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children { get; }
+        public IEnumerable<ISourceTreeNode> Children { get; }
 
         public void Clear()
         {
@@ -74,11 +73,19 @@ namespace Elektronik.Protobuf.Data
             }
         }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
             foreach (var child in Children)
             {
-                child.SetRenderer(renderer);
+                child.AddRenderer(renderer);
+            }
+        }
+
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            foreach (var child in Children)
+            {
+                child.RemoveRenderer(renderer);
             }
         }
 
@@ -88,24 +95,16 @@ namespace Elektronik.Protobuf.Data
 
         public ISnapshotable TakeSnapshot()
         {
-            var children = new List<ISourceTree>()
+            var children = new List<ISourceTreeNode>()
             {
-                ((TrackedObjs as ISnapshotable)!.TakeSnapshot() as ISourceTree)!,
-                ((Observations as ISnapshotable)!.TakeSnapshot() as ISourceTree)!,
-                ((Points as ISnapshotable)!.TakeSnapshot() as ISourceTree)!,
-                ((Lines as ISnapshotable)!.TakeSnapshot() as ISourceTree)!,
-                ((InfinitePlanes as ISnapshotable)!.TakeSnapshot() as ISourceTree)!,
+                ((TrackedObjs as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
+                ((Observations as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
+                ((Points as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
+                ((Lines as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
+                ((InfinitePlanes as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
             };
             
             return new VirtualContainer(DisplayName, children);
-        }
-
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            foreach (var snapshotable in Children.OfType<ISnapshotable>())
-            {
-                snapshotable.WriteSnapshot(recorder);
-            }
         }
 
         #endregion

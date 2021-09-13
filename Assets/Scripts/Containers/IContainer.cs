@@ -12,13 +12,13 @@ namespace Elektronik.Containers
     /// Also rises events on adding, updating, and removing.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IContainer<T> : IList<T> where T : ICloudItem
+    public interface IContainer<T> : IList<T> where T : struct, ICloudItem
     {
         [CanBeNull] event EventHandler<AddedEventArgs<T>> OnAdded;
 
         [CanBeNull] event EventHandler<UpdatedEventArgs<T>> OnUpdated;
 
-        [CanBeNull] event EventHandler<RemovedEventArgs> OnRemoved;
+        [CanBeNull] event EventHandler<RemovedEventArgs<T>> OnRemoved;
 
         void AddRange(IList<T> items);
         void Remove(IList<T> items);
@@ -35,48 +35,48 @@ namespace Elektronik.Containers
     public static class ContainerDiffExt
     {
         public static void Add<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container, TCloudItemDiff diff)
-                where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.Add(diff.Apply());
         }
 
         public static void AddRange<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
                                                                 IEnumerable<TCloudItemDiff> diffs)
-                where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.AddRange(diffs.Select(d => d.Apply()).ToArray());
         }
 
         public static void Remove<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
                                                               TCloudItemDiff diff)
-                where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.Remove(diff.Apply());
         }
 
         public static void Remove<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
                                                               IEnumerable<TCloudItemDiff> diffs)
-                where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.Remove(diffs.Select(d => d.Apply()).ToArray());
         }
 
         public static void Update<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
                                                               TCloudItemDiff diff)
-                where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.Update(diff.Apply(container[diff.Id]));
         }
 
         public static void Update<TCloudItem, TCloudItemDiff>(this IContainer<TCloudItem> container,
                                                               IEnumerable<TCloudItemDiff> diff)
-                where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             container.Update(diff.Select(d => d.Apply(container[d.Id])).ToArray());
         }

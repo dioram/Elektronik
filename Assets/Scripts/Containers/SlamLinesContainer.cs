@@ -7,12 +7,11 @@ using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.PluginsSystem;
 using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class SlamLinesContainer : IContainer<SlamLine>, ISourceTree, ILookable, IVisible, ISnapshotable
+    public class SlamLinesContainer : IContainer<SlamLine>, ISourceTreeNode, ILookable, IVisible, ISnapshotable
     {
         public SlamLinesContainer(string displayName = "")
         {
@@ -63,13 +62,13 @@ namespace Elektronik.Containers
             OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(lines.Select(l => l.Item2).ToArray()));
         }
 
-        #region IContaitner implementation
+        #region IContaitner
 
         public event EventHandler<AddedEventArgs<SlamLine>> OnAdded;
 
         public event EventHandler<UpdatedEventArgs<SlamLine>> OnUpdated;
 
-        public event EventHandler<RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs<SlamLine>> OnRemoved;
 
         public int Count
         {
@@ -235,7 +234,7 @@ namespace Elektronik.Containers
                 _freeIds.Enqueue(index);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(obj.Id));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamLine>(obj));
 
             return true;
         }
@@ -243,7 +242,6 @@ namespace Elektronik.Containers
         public void Remove(IList<SlamLine> items)
         {
             if (items is null) return;
-            var ids = new List<int>();
             lock (_connections)
             {
                 foreach (var line in items)
@@ -263,19 +261,17 @@ namespace Elektronik.Containers
                     else continue;
 
                     if (!_connections.ContainsKey(index)) continue;
-                    ids.Add(index);
                     _connections.Remove(index);
                     _freeIds.Enqueue(index);
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamLine>(items));
         }
         
         public IList<SlamLine> Remove(IList<int> items)
         {
             if (items is null) return new List<SlamLine>();
-            var ids = new List<int>();
             var removed = new List<SlamLine>();
             lock (_connections)
             {
@@ -297,13 +293,12 @@ namespace Elektronik.Containers
                     else continue;
 
                     if (!_connections.ContainsKey(index)) continue;
-                    ids.Add(index);
                     _connections.Remove(index);
                     _freeIds.Enqueue(index);
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamLine>(removed));
             return removed;
         }
 
@@ -320,44 +315,47 @@ namespace Elektronik.Containers
 
         public void Clear()
         {
-            int[] ids;
+            SlamLine[] lines;
             lock (_connections)
             {
-                ids = _connections.Keys.ToArray();
+                lines = _connections.Values.ToArray();
                 _connections.Clear();
                 _connectionsIndices.Clear();
                 _freeIds.Clear();
                 _maxId = 0;
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamLine>(lines));
         }
 
         #endregion
 
-        #region ISourceTree implementation
+        #region ISourceTree
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
+        public IEnumerable<ISourceTreeNode> Children => Enumerable.Empty<ISourceTreeNode>();
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
-            if (renderer is ICloudRenderer<SlamLine> typedRenderer)
+            if (!(renderer is ICloudRenderer<SlamLine> typedRenderer)) return;
+            OnAdded += typedRenderer.OnItemsAdded;
+            OnUpdated += typedRenderer.OnItemsUpdated;
+            OnRemoved += typedRenderer.OnItemsRemoved;
+            _renderers.Add(typedRenderer);
+            if (Count > 0)
             {
-                OnAdded += typedRenderer.OnItemsAdded;
-                OnUpdated += typedRenderer.OnItemsUpdated;
-                OnRemoved += typedRenderer.OnItemsRemoved;
-                OnVisibleChanged += visible =>
-                {
-                    if (visible) typedRenderer.OnItemsAdded(this, new AddedEventArgs<SlamLine>(this));
-                    else typedRenderer.OnClear(this);
-                };
-                if (Count > 0)
-                {
-                    OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
-                }
+                OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
             }
+        }
+
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            if (!(renderer is ICloudRenderer<SlamLine> typedRenderer)) return;
+            OnAdded -= typedRenderer.OnItemsAdded;
+            OnUpdated -= typedRenderer.OnItemsUpdated;
+            OnRemoved -= typedRenderer.OnItemsRemoved;
+            _renderers.Remove(typedRenderer);
         }
 
         #endregion
@@ -370,8 +368,8 @@ namespace Elektronik.Containers
             {
                 if (_connectionsIndices.Count == 0) return (transform.position, transform.rotation);
 
-                Vector3 min = Vector3.positiveInfinity;
-                Vector3 max = Vector3.negativeInfinity;
+                var min = Vector3.positiveInfinity;
+                var max = Vector3.negativeInfinity;
                 foreach (var point in _connections
                         .Values
                         .SelectMany(l => new[] {l.Point1.Position, l.Point2.Position}))
@@ -399,6 +397,26 @@ namespace Elektronik.Containers
                 if (_isVisible == value) return;
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
+                
+                if (_isVisible)
+                {
+                    foreach (var renderer in _renderers)
+                    {
+                        renderer.OnItemsAdded(this, new AddedEventArgs<SlamLine>(this));
+                    }
+                }
+                else
+                {
+                    SlamLine[] lines;
+                    lock (_connections)
+                    {
+                        lines = _connections.Values.ToArray();
+                    }
+                    foreach (var renderer in _renderers)
+                    {
+                        renderer.OnItemsRemoved(this, new RemovedEventArgs<SlamLine>(lines));
+                    }
+                }
             }
         }
 
@@ -423,11 +441,6 @@ namespace Elektronik.Containers
             return res;
         }
 
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            recorder.OnAdded(DisplayName, this.ToList());
-        }
-
         #endregion
 
         #region Private definitions
@@ -436,6 +449,7 @@ namespace Elektronik.Containers
 
         private readonly IDictionary<int, SlamLine> _connections = new SortedDictionary<int, SlamLine>();
         private readonly IDictionary<(int, int), int> _connectionsIndices = new SortedDictionary<(int, int), int>();
+        private List<ICloudRenderer<SlamLine>> _renderers = new List<ICloudRenderer<SlamLine>>();
 
         private int _maxId = 0;
         private readonly Queue<int> _freeIds = new Queue<int>();

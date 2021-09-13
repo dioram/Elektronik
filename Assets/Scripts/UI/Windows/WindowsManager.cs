@@ -19,6 +19,8 @@ namespace Elektronik.UI.Windows
 
         public List<Window> Windows = new List<Window>();
 
+        public float Scale { get; set; }
+
         public enum Direction
         {
             Vertical,
@@ -171,9 +173,5 @@ namespace Elektronik.UI.Windows
         }
 
         #endregion
-
-        public void SetScale(float value)
-        {
-        }
     }
 }

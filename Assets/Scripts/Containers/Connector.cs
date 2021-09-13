@@ -9,7 +9,7 @@ using Elektronik.Threading;
 
 namespace Elektronik.Containers
 {
-    public class Connector : ISourceTree, IVisible, IWeightable
+    public class Connector : ISourceTreeNode, IVisible, IWeightable
     {
         public Connector(IContainer<SlamPoint> points, IContainer<SlamObservation> observations, string displayName)
         {
@@ -63,7 +63,7 @@ namespace Elektronik.Containers
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
+        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
 
         public void Clear()
         {
@@ -74,9 +74,14 @@ namespace Elektronik.Containers
             }
         }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
-            _connections.SetRenderer(renderer);
+            _connections.AddRenderer(renderer);
+        }
+
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            _connections.RemoveRenderer(renderer);
         }
 
         #endregion
@@ -142,25 +147,27 @@ namespace Elektronik.Containers
                     .Select(o => o.Point)
                     .ToArray();
             if (obsWithoutChangedConnections.Length > 0) _connections.UpdatePositions(obsWithoutChangedConnections);
-            var toAdd = e.UpdatedItems
+            var changed = e.UpdatedItems
                     .Where(o => o.ObservedPoints.Count != 0)
                     .ToArray();
-            var toRemove = toAdd.Select(o => o.Id).ToList();
             
-            if (toRemove.Count > 0) OnObservationsRemoved(sender, new RemovedEventArgs(toRemove));
-            if (toAdd.Length > 0) OnObservationsAdded(sender, new AddedEventArgs<SlamObservation>(toAdd));
+            if (changed.Length > 0)
+            {
+                OnObservationsRemoved(sender, new RemovedEventArgs<SlamObservation>(changed));
+                OnObservationsAdded(sender, new AddedEventArgs<SlamObservation>(changed));
+            }
         }
 
-        private void OnObservationsRemoved(object sender, RemovedEventArgs e)
+        private void OnObservationsRemoved(object sender, RemovedEventArgs<SlamObservation> e)
         {
             var keys = new List<(SlamPoint, SlamPoint)>();
             lock (_weights)
             {
-                foreach (var id in e.RemovedIds)
+                foreach (var obs in e.RemovedItems)
                 {
                     foreach (var (point1, point2) in _weights.Keys)
                     {
-                        if (point1.Id == id || point2.Id == id) keys.Add(GetKey(point1, point2));
+                        if (point1.Id == obs.Id || point2.Id == obs.Id) keys.Add(GetKey(point1, point2));
                     }
                 }
 
@@ -174,18 +181,18 @@ namespace Elektronik.Containers
             if (toRemove.Length > 0) _connections.Remove(toRemove);
         }
 
-        private void OnPointsRemoved(object sender, RemovedEventArgs e)
+        private void OnPointsRemoved(object sender, RemovedEventArgs<SlamPoint> e)
         {
             var obs = _observations.ToArray();
             var updatedObservations = new List<SlamObservation>();
             foreach (var observation in obs)
             {
                 var updated = false;
-                foreach (var id in e.RemovedIds)
+                foreach (var point in e.RemovedItems)
                 {
-                    if (!observation.ObservedPoints.Contains(id)) continue;
+                    if (!observation.ObservedPoints.Contains(point.Id)) continue;
                     updated = true;
-                    observation.ObservedPoints.Remove(id);
+                    observation.ObservedPoints.Remove(point.Id);
                 }
 
                 if (updated) updatedObservations.Add(observation);

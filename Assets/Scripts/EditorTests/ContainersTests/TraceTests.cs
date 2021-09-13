@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using Elektronik.Clouds;
 using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
@@ -25,7 +26,7 @@ namespace Elektronik.EditorTests.ContainersTests
                 new SlamPoint(2, Vector3.right, Color.gray),
             });
             _mockedLineRenderer = new Mock<ICloudRenderer<SimpleLine>>();
-            _container.SetRenderer(_mockedLineRenderer.Object);
+            _container.AddRenderer(_mockedLineRenderer.Object);
             _container.TraceEnabled = true;
             _container.TraceDuration = 1000;
         }
@@ -37,10 +38,9 @@ namespace Elektronik.EditorTests.ContainersTests
             Assert.AreEqual(1000, _container.TraceDuration);
 
             _container.Update(new SlamPoint(0, Vector3.one, Color.blue));
-            var addedEventArgs =
-                    new AddedEventArgs<SimpleLine>(
-                        new SimpleLine(0, Vector3.zero, Vector3.one, Color.black, Color.blue));
-            var removedEventArgs = new RemovedEventArgs(0);
+            var addedEventArgs = new AddedEventArgs<SimpleLine>(new SimpleLine(0, Vector3.zero, Vector3.one,
+                                                                               Color.black, Color.blue));
+            var removedEventArgs = new RemovedEventArgs<SimpleLine>(new List<SimpleLine> { new SimpleLine {Id = 0}, });
             _mockedLineRenderer.Verify(lr => lr.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), addedEventArgs),
                                        Times.Once());
             Thread.Sleep((int)(_container.TraceDuration * 1.1));
@@ -64,7 +64,11 @@ namespace Elektronik.EditorTests.ContainersTests
                 new SimpleLine(0, Vector3.zero, Vector3.one, Color.black, Color.blue),
                 new SimpleLine(1, Vector3.one, Vector3.forward, Color.blue, Color.red),
             });
-            var removedEventArgs = new RemovedEventArgs(new[] { 0, 1 });
+            var removedEventArgs = new RemovedEventArgs<SimpleLine>(new List<SimpleLine>
+            {
+                new SimpleLine {Id = 0},
+                new SimpleLine {Id = 1},
+            });
             _mockedLineRenderer.Verify(lr => lr.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), addedEventArgs),
                                        Times.Once());
             _mockedLineRenderer.Verify(lr => lr.OnItemsRemoved(It.IsAny<IContainer<SimpleLine>>(), removedEventArgs),
@@ -82,11 +86,17 @@ namespace Elektronik.EditorTests.ContainersTests
 
             _container.Update(new SlamPoint(0, Vector3.one, Color.blue));
             var addedEventArgs1 = new AddedEventArgs<SimpleLine>(
-                        new SimpleLine(0, Vector3.zero, Vector3.one, Color.black, Color.blue));
+                new SimpleLine(0, Vector3.zero, Vector3.one, Color.black, Color.blue));
             var addedEventArgs2 = new AddedEventArgs<SimpleLine>(
-                        new SimpleLine(1, Vector3.one, Vector3.forward, Color.blue, Color.red));
-            var removedEventArgs1 = new RemovedEventArgs(0);
-            var removedEventArgs2 = new RemovedEventArgs(1);
+                new SimpleLine(1, Vector3.one, Vector3.forward, Color.blue, Color.red));
+            var removedEventArgs1 = new RemovedEventArgs<SimpleLine>(new List<SimpleLine>
+            {
+                new SimpleLine {Id = 0},
+            });
+            var removedEventArgs2 = new RemovedEventArgs<SimpleLine>(new List<SimpleLine>
+            {
+                new SimpleLine {Id = 1},
+            });
 
             _mockedLineRenderer.Verify(lr => lr.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), addedEventArgs1),
                                        Times.Once());
@@ -121,8 +131,11 @@ namespace Elektronik.EditorTests.ContainersTests
             Assert.AreEqual(2, _container.Count);
 
             var addedEventArgs1 = new AddedEventArgs<SimpleLine>(
-                        new SimpleLine(0, Vector3.zero, Vector3.one, Color.black, Color.blue));
-            var removedEventArgs1 = new RemovedEventArgs(0);
+                new SimpleLine(0, Vector3.zero, Vector3.one, Color.black, Color.blue));
+            var removedEventArgs1 = new RemovedEventArgs<SimpleLine>(new List<SimpleLine>
+            {
+                new SimpleLine {Id = 0},
+            });
 
             _mockedLineRenderer.Verify(lr => lr.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), addedEventArgs1),
                                        Times.Once());

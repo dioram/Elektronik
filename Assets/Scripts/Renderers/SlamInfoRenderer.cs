@@ -36,9 +36,7 @@ namespace Elektronik.Renderers
             }
         }
 
-        public void SetScale(float value)
-        {
-        }
+        public float Scale { get; set; }
 
         public void Render((string message, IEnumerable<ICloudItem> points) data)
         {

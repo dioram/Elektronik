@@ -85,7 +85,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
             };
         }
 
-        private ICommand? GetUpdateCommand<TCloudItem, TCloudItemDiff>(IConnectableObjectsContainer<TCloudItem> map,
+        private ICommand GetUpdateCommand<TCloudItem, TCloudItemDiff>(IConnectableObjectsContainer<TCloudItem> map,
                                                                        TCloudItemDiff[] objects, PacketPb packet)
                 where TCloudItem : struct, ICloudItem
                 where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>

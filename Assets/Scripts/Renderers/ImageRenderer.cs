@@ -4,8 +4,7 @@ using UnityEngine.UI;
 
 namespace Elektronik.Renderers
 {
-    public class ImageRenderer : MonoBehaviour, IDataRenderer<byte[]>,
-                                 IDataRenderer<ImageData>
+    public class ImageRenderer : MonoBehaviour, IDataRenderer<byte[]>, IDataRenderer<ImageData>
     {
         public bool FlipVertically = false;
         public Texture2D NotSupportedPlaceholder;
@@ -42,10 +41,8 @@ namespace Elektronik.Renderers
             }
         }
 
-        public void SetScale(float value)
-        {
-        }
-
+        public float Scale { get; set; }
+        
         public void Render(byte[] array)
         {
             MainThreadInvoker.Enqueue(() =>

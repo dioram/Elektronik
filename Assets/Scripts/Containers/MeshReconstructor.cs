@@ -26,14 +26,17 @@ namespace Elektronik.Containers
 
         public void OverrideColors()
         {
-            _renderer.OverrideColors = !_renderer.OverrideColors;
+            foreach (var renderer in _renderer)
+            {
+                renderer.OverrideColors = !renderer.OverrideColors;
+            }
         }
 
         #region ISourceTree
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
+        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
 
         public void Clear()
         {
@@ -41,13 +44,18 @@ namespace Elektronik.Containers
                                                                  Array.Empty<int>()));
         }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
-            if (renderer is IMeshRenderer meshRenderer)
-            {
-                _renderer = meshRenderer;
-                OnMeshUpdated += meshRenderer.OnMeshUpdated;
-            }
+            if (!(renderer is IMeshRenderer meshRenderer)) return;
+            _renderer.Add(meshRenderer);
+            OnMeshUpdated += meshRenderer.OnMeshUpdated;
+        }
+
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            if (!(renderer is IMeshRenderer meshRenderer)) return;
+            _renderer.Remove(meshRenderer);
+            OnMeshUpdated -= meshRenderer.OnMeshUpdated;
         }
 
         #endregion
@@ -80,7 +88,7 @@ namespace Elektronik.Containers
         private bool _isVisible = false;
         private readonly IContainer<SlamPoint> _points;
         private readonly ThreadWorkerSingleAwaiter _threadWorker = new ThreadWorkerSingleAwaiter();
-        private IMeshRenderer _renderer;
+        private List<IMeshRenderer> _renderer = new List<IMeshRenderer>();
 
         private void RequestCalculation()
         {

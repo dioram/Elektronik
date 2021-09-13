@@ -11,7 +11,7 @@ using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Offline.Presenters
 {
-    public class SlamDataInfoPresenter : ISourceTree, IRendersToWindow
+    public class SlamDataInfoPresenter : ISourceTreeNode, IRendersToWindow
     {
         public SlamDataInfoPresenter(string displayName)
         {
@@ -25,11 +25,12 @@ namespace Elektronik.Protobuf.Offline.Presenters
             MainThreadInvoker.Enqueue(() => _info?.Render((data.Message, objects)));
         }
 
-        #region ISourceTree
+        #region ISourceTreeNode
 
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
-        public void SetRenderer(ISourceRenderer dataRenderer)
+        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
+        
+        public void AddRenderer(ISourceRenderer dataRenderer)
         {
             if (dataRenderer is WindowsManager factory)
             {
@@ -41,6 +42,13 @@ namespace Elektronik.Protobuf.Offline.Presenters
             }
         }
 
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            if (_info != renderer) return;
+            _info = null;
+            Window = null;
+        }
+
         public void Clear()
         {
             MainThreadInvoker.Enqueue(() => _info?.Clear());
@@ -50,7 +58,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         #region IRendersToWindow
 
-        public Window Window { get; private set; }
+        public Window? Window { get; private set; }
         public string Title { get; set; }
 
         #endregion

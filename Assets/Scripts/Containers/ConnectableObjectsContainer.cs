@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Elektronik.Containers
 {
-    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTree,
+    public class ConnectableObjectsContainer<TCloudItem> : IConnectableObjectsContainer<TCloudItem>, ISourceTreeNode,
                                                            ILookable, IVisible, ISnapshotable
             where TCloudItem : struct, ICloudItem
     {
@@ -25,20 +25,20 @@ namespace Elektronik.Containers
             _table = table ?? new SparseSquareMatrix<bool>();
             Children = new[]
             {
-                (ISourceTree)_connects,
-                (ISourceTree)_objects,
+                (ISourceTreeNode)_connects,
+                (ISourceTreeNode)_objects,
             };
 
             DisplayName = string.IsNullOrEmpty(displayName) ? GetType().Name : displayName;
         }
 
-        #region IContainer implementation
+        #region IContainer
 
         public event EventHandler<AddedEventArgs<TCloudItem>> OnAdded;
 
         public event EventHandler<UpdatedEventArgs<TCloudItem>> OnUpdated;
 
-        public event EventHandler<RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs<TCloudItem>> OnRemoved;
 
         public int Count => _objects.Count;
 
@@ -132,30 +132,29 @@ namespace Elektronik.Containers
 
         public void RemoveAt(int id)
         {
+            TCloudItem item;
             lock (_table)
             {
                 RemoveConnections(id);
+                item = _objects[id];
                 _objects.RemoveAt(id);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(id));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(item));
         }
 
         public bool Remove(TCloudItem obj)
         {
             lock (_table)
             {
-                int index = _objects.IndexOf(obj);
-                if (index != -1)
-                {
-                    RemoveConnections(index);
-                    _objects.Remove(obj);
-                    OnRemoved?.Invoke(this, new RemovedEventArgs(obj.Id));
-                    return true;
-                }
-
-                return false;
+                var index = _objects.IndexOf(obj);
+                if (index == -1) return false;
+                
+                RemoveConnections(index);
+                _objects.Remove(obj);
             }
+            OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(obj));
+            return true;
         }
 
         public void Remove(IList<TCloudItem> items)
@@ -186,7 +185,7 @@ namespace Elektronik.Containers
                 _objects.Remove(items);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id).ToList()));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(items));
         }
 
         public IList<TCloudItem> Remove(IList<int> items)
@@ -214,13 +213,13 @@ namespace Elektronik.Containers
                 removed = _objects.Remove(items);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(items));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(removed));
             return removed;
         }
 
         public void Clear()
         {
-            var list = _objects.ToList();
+            var list = _objects.ToArray();
             lock (_table)
             {
                 _table.Clear();
@@ -228,7 +227,7 @@ namespace Elektronik.Containers
                 _objects.Clear();
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list.Select(i => i.Id).ToList()));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(list));
         }
 
         #endregion
@@ -280,17 +279,25 @@ namespace Elektronik.Containers
 
         #endregion
 
-        #region ISourceTree imlementation
+        #region ISourceTree
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children { get; }
+        public IEnumerable<ISourceTreeNode> Children { get; }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
             foreach (var child in Children)
             {
-                child.SetRenderer(renderer);
+                child.AddRenderer(renderer);
+            }
+        }
+
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            foreach (var child in Children)
+            {
+                child.RemoveRenderer(renderer);
             }
         }
 
@@ -335,13 +342,6 @@ namespace Elektronik.Containers
             var objects = (_objects as ISnapshotable)!.TakeSnapshot() as IContainer<TCloudItem>;
             var connects = (_connects as ISnapshotable)!.TakeSnapshot() as IContainer<SlamLine>;
             return new ConnectableObjectsContainer<TCloudItem>(objects, connects, DisplayName, _table.DeepCopy());
-        }
-
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            recorder.OnAdded(DisplayName, _objects.ToList());
-            recorder.OnConnectionsUpdated<TCloudItem>(DisplayName,
-                                                      _connects.Select(l => (l.Point1.Id, l.Point2.Id)).ToList());
         }
 
         #endregion

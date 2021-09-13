@@ -15,7 +15,7 @@ namespace Elektronik.UI.Windows.ConnectionsWindow
     [RequireComponent(typeof(Window))]
     public class ConnectionsWindow : MonoBehaviour
     {
-        [SerializeField] private PluginsManager PluginsManager;
+        [SerializeField] private DataSourcePluginsController DataSourcePluginsController;
         [Header("Targets")] [SerializeField] private RectTransform PluginsTarget;
         [SerializeField] private RectTransform RecentSettingsTarget;
         [Header("Prefabs")] [SerializeField] private GameObject PluginWidgetPrefab;
@@ -33,7 +33,7 @@ namespace Elektronik.UI.Windows.ConnectionsWindow
                     .Select(_ => _selectedFactory.Settings.Validate())
                     .Where(v => v.Success)
                     .Do(_ => GetComponent<Window>().Hide())
-                    .Subscribe(_ => PluginsManager.SetNewSource(_selectedFactory));
+                    .Subscribe(_ => DataSourcePluginsController.SetNewSource(_selectedFactory));
             
             ConnectButton.OnClickAsObservable()
                     .Select(_ =>_selectedFactory.Settings.Validate())

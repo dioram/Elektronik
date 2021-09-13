@@ -2,6 +2,6 @@
 {
     public interface ISourceRenderer
     {
-        void SetScale(float value);
+        float Scale { get; set; }
     }
 }

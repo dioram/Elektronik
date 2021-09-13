@@ -21,7 +21,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
             DisplayName = displayName;
             _container = new RosbagContainerTree(settings, "TMP");
             Data = _container;
-            Finished += () => _playing = false;
+            OnFinished += () => _playing = false;
             _startTimestamp = _container.Parser.ReadMessagesAsync().FirstOrDefaultAsync().Result?.Timestamp ?? 0;
             var actualConnections = _container.Parser.GetTopics()
                     .Where(t => _container.ActualTopics.Select(a => a.Name).Contains(t.Topic));
@@ -34,19 +34,29 @@ namespace Elektronik.RosPlugin.Ros.Bag
         
         #region IDataSourceOffline
 
-        public ISourceTree Data { get; }
+        public ISourceTreeNode Data { get; }
 
         public int AmountOfFrames => _frames.CurrentSize;
+        public float Speed { get; set; }
+        public bool IsPlaying { get; }
+        public event Action? OnPlayingStarted;
+        public event Action? OnPaused;
+        public event Action<int>? OnPositionChanged;
+        public event Action<int>? OnAmountOfFramesChanged;
+        public event Action<string>? OnTimestampChanged;
+        public event Action? OnRewindStarted;
+        public event Action? OnRewindFinished;
+        public event Action? OnFinished;
 
-        public string CurrentTimestamp
+        public string Timestamp
         {
             get
             {
                 var t = _frames.Current?.Timestamp ?? 0;  // One who designed this time storage format is really weird.
                 var s = _startTimestamp;                  // Instead of saving time as 1 long or ulong value
-                var ts = (int) t; // secs                      // or saving 2 separate int values
-                var tn = (int) (t >> 32); // nanosecs          // He took 2 ints and store them inside 1 long value.
-                var ss = (int) s; // secs                      // WTF???
+                var ts = (int) t; // secs                 // or saving 2 separate int values
+                var tn = (int) (t >> 32); // nanosecs     // He took 2 ints and store them inside 1 long value.
+                var ss = (int) s; // secs                 // WTF???
                 var sn = (int) (s >> 32); // nanosecs
                 t = ts * 1000 + tn / 1000000;
                 s = ss * 1000 + sn / 1000000;
@@ -54,19 +64,15 @@ namespace Elektronik.RosPlugin.Ros.Bag
             }
         }
 
-        public int CurrentPosition
+        public int Position
         {
             get => _frames.CurrentIndex;
             set
             {
-                if (value < 0 || value >= AmountOfFrames || CurrentPosition == value) return;
+                if (value < 0 || value >= AmountOfFrames || Position == value) return;
                 _rewindAt = value;
             }
         }
-
-        public event Action? RewindStarted;
-        public event Action? RewindFinished;
-        public event Action? Finished;
 
         public void Dispose()
         {
@@ -84,19 +90,19 @@ namespace Elektronik.RosPlugin.Ros.Bag
             else if (_rewindAt > 0)
             {
                 _playing = false;
-                RewindStarted?.Invoke();
-                if (CurrentPosition > _rewindAt)
+                OnRewindStarted?.Invoke();
+                if (Position > _rewindAt)
                 {
                     PreviousKeyFrame();
                 }
-                else if (CurrentPosition < _rewindAt)
+                else if (Position < _rewindAt)
                 {
                     NextKeyFrame();
                 }
                 else
                 {
                     _rewindAt = -1;
-                    RewindFinished?.Invoke();
+                    OnRewindFinished?.Invoke();
                 }
             }
         }
@@ -150,7 +156,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 }
                 else
                 {
-                    MainThreadInvoker.Enqueue(Finished!);
+                    MainThreadInvoker.Enqueue(() => OnFinished?.Invoke());
                 }
             });
         }

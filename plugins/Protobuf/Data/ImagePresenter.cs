@@ -6,18 +6,18 @@ using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Data
 {
-    public abstract class ImagePresenter<T> : ISourceTree, IRendersToWindow
+    public abstract class ImagePresenter<T> : ISourceTreeNode, IRendersToWindow
     {
         protected ImagePresenter(string displayName)
         {
             DisplayName = displayName;
         }
         
-        #region ISourceTree
+        #region ISourceTreeNode
 
         public string DisplayName { get; set; }
         
-        public IEnumerable<ISourceTree> Children => Array.Empty<ISourceTree>();
+        public IEnumerable<ISourceTreeNode> Children => Array.Empty<ISourceTreeNode>();
 
         #endregion
 
@@ -28,7 +28,7 @@ namespace Elektronik.Protobuf.Data
 
         public abstract void Present(T data);
 
-        public void SetRenderer(ISourceRenderer dataRenderer)
+        public void AddRenderer(ISourceRenderer dataRenderer)
         {
             if (dataRenderer is WindowsManager factory)
             {
@@ -45,9 +45,16 @@ namespace Elektronik.Protobuf.Data
             }
         }
 
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            if (Renderer != renderer) return;
+            Renderer = null;
+            Window = null;
+        }
+
         #region IRendersToWindow
 
-        public Window Window { get; private set; }
+        public Window? Window { get; private set; }
         public string Title { get; set; }
 
         #endregion

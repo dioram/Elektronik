@@ -9,16 +9,16 @@ using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Containers
 {
-    public class CloudContainerBase<TCloudItem> : IContainer<TCloudItem>, ISourceTree
+    public class CloudContainerBase<TCloudItem> : IContainer<TCloudItem>, ISourceTreeNode
             where TCloudItem : struct, ICloudItem
     {
         #region ISourceTree
 
         public string DisplayName { get; set; } = "";
 
-        public IEnumerable<ISourceTree> Children => Enumerable.Empty<ISourceTree>();
+        public IEnumerable<ISourceTreeNode> Children => Enumerable.Empty<ISourceTreeNode>();
 
-        public virtual void SetRenderer(ISourceRenderer renderer)
+        public virtual void AddRenderer(ISourceRenderer renderer)
         {
             if (!(renderer is ICloudRenderer<TCloudItem> typedRenderer)) return;
             OnAdded += typedRenderer.OnItemsAdded;
@@ -28,6 +28,14 @@ namespace Elektronik.Containers
             {
                 typedRenderer.OnItemsAdded(this, new AddedEventArgs<TCloudItem>(this));
             }
+        }
+
+        public virtual void RemoveRenderer(ISourceRenderer renderer)
+        {
+            if (!(renderer is ICloudRenderer<TCloudItem> typedRenderer)) return;
+            OnAdded -= typedRenderer.OnItemsAdded;
+            OnUpdated -= typedRenderer.OnItemsUpdated;
+            OnRemoved -= typedRenderer.OnItemsRemoved;
         }
 
         #endregion
@@ -73,13 +81,14 @@ namespace Elektronik.Containers
 
         public virtual bool Remove(TCloudItem item)
         {
+            bool res;
             lock (Items)
             {
-                var res = Items.Remove(item.Id);
-                OnRemoved?.Invoke(this, new RemovedEventArgs(item.Id));
-
-                return res;
+                res = Items.Remove(item.Id);
             }
+            if (res) OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(item));
+
+            return res;
         }
 
         public int Count
@@ -101,11 +110,14 @@ namespace Elektronik.Containers
 
         public virtual void RemoveAt(int index)
         {
+            TCloudItem item;
             lock (Items)
             {
+                if (!Items.ContainsKey(index)) return;
+                item = Items[index];
                 Items.Remove(index);
-                OnRemoved?.Invoke(this, new RemovedEventArgs(index));
             }
+            OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(item));
         }
 
         public TCloudItem this[int index]
@@ -132,7 +144,7 @@ namespace Elektronik.Containers
 
         public event EventHandler<AddedEventArgs<TCloudItem>> OnAdded;
         public event EventHandler<UpdatedEventArgs<TCloudItem>> OnUpdated;
-        public event EventHandler<RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs<TCloudItem>> OnRemoved;
 
         public virtual void AddRange(IList<TCloudItem> items)
         {
@@ -159,24 +171,23 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(p => p.Id).ToList()));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(items));
         }
 
         public IList<TCloudItem> Remove(IList<int> itemIds)
         {
             if (itemIds is null) return new List<TCloudItem>();
-            var list = itemIds.ToList();
-            var removed = new List<TCloudItem> { Capacity = list.Count };
+            var removed = new List<TCloudItem> { Capacity = itemIds.Count };
             lock (Items)
             {
-                foreach (var ci in list.Where(i => Items.ContainsKey(i)))
+                foreach (var ci in itemIds.Where(i => Items.ContainsKey(i)))
                 {
                     removed.Add(Items[ci]);
                     Items.Remove(ci);
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(list));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(removed));
             return removed;
         }
         
@@ -184,9 +195,9 @@ namespace Elektronik.Containers
         {
             lock (Items)
             {
-                var ids = Items.Keys.ToList();
+                var list = Items.Values.ToArray();
                 Items.Clear();
-                OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+                OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(list));
             }
         }
 

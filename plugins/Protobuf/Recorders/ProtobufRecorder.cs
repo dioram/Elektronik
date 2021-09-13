@@ -1,113 +1,202 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using Elektronik.Containers.EventArgs;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
-using Elektronik.Settings.Bags;
 using Google.Protobuf;
-using UnityEngine;
 
 namespace Elektronik.Protobuf.Recorders
 {
-    public class ProtobufRecorder : ProtobufRecorderBase, IDataRecorderPlugin
+    public class ProtobufRecorder : FileRecorderBase
     {
-        public ProtobufRecorder(string displayName, Texture2D? logo, ICSConverter converter)
-        {
-            Converter = converter;
-            DisplayName = displayName;
-            Logo = logo;
-        }
-        
-        public void Update(float delta)
-        {
-            // Do nothing
-        }
-
-        public string DisplayName { get; }
-        public SettingsBag? Settings => null;
-        public Texture2D? Logo { get; }
-
-        public string Extension => ".dat";
-        public string FileName { get; set; } = "";
-        public ICSConverter Converter { get; set; }
         public const uint Marker = 0xDEADBEEF;
-
-        public void StartRecording()
-        {
-            _isRecording = true;
-            _amountOfFrames = 0;
-            _recordingStart = DateTime.Now;
-            _file = File.OpenWrite(FileName);
-        }
-
-        public void StopRecording()
-        {
-            if (!_isRecording) return;
-            _isRecording = false;
-            _file.Write(BitConverter.GetBytes(Marker), 0, 4);
-            _file.Write(BitConverter.GetBytes(_amountOfFrames), 0, 4);
-            _file.Dispose();
-        }
-
-        public void OnAdded<TCloudItem>(string topicName, IList<TCloudItem> args) 
-            where TCloudItem : struct, ICloudItem
-        {
-            if (!_isRecording) return;
-            _amountOfFrames++;
-            CreateAddedPacket(args, GetTimestamp(), Converter).WriteDelimitedTo(_file);
-        }
-
-        public void OnUpdated<TCloudItem>(string topicName, IList<TCloudItem> args) 
-            where TCloudItem : struct, ICloudItem
-        {
-            if (!_isRecording) return;
-            _amountOfFrames++;
-            CreateUpdatedPacket(args, GetTimestamp(), Converter).WriteDelimitedTo(_file);
-        }
         
-        public void OnRemoved<TCloudItem>(string topicName, IList<int> args) 
-            where TCloudItem : struct, ICloudItem
+        public ProtobufRecorder(string filename, ICSConverter converter) : base(filename, converter)
         {
-            if (!_isRecording) return;
-            _amountOfFrames++;
-            CreateRemovedPacket<TCloudItem>(args, GetTimestamp()).WriteDelimitedTo(_file);
+            _file = File.OpenWrite(filename);
         }
 
-        public void OnConnectionsUpdated<TCloudItem>(string topicName, IList<(int id1, int id2)> items) 
-            where TCloudItem : struct, ICloudItem
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamPoint> e)
         {
-            if (!_isRecording) return;
-            _amountOfFrames++;
-            CreateConnectionsUpdatedPacket<TCloudItem>(items, GetTimestamp()).WriteDelimitedTo(_file);
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
         }
 
-        public void OnConnectionsRemoved<TCloudItem>(string topicName, IList<(int id1, int id2)> items) 
-            where TCloudItem : struct, ICloudItem
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamPoint> e)
         {
-            if (!_isRecording) return;
-            _amountOfFrames++;
-            CreateConnectionsRemovedPacket<TCloudItem>(items, GetTimestamp()).WriteDelimitedTo(_file);
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
         }
 
-        public bool StartsFromSceneLoading { get; } = false;
-
-        public void Dispose()
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamPoint> e)
         {
-            _file.Dispose();
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf().WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamLine> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamLine> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamLine> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf().WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsAdded(object sender, AddedEventArgs<SimpleLine> e)
+        {
+            // Can't record this type. Do nothing.
+        }
+
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SimpleLine> e)
+        {
+            // Can't record this type. Do nothing.
+        }
+
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SimpleLine> e)
+        {
+            // Can't record this type. Do nothing.
+        }
+
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamObservation> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamObservation> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamObservation> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf().WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamTrackedObject> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamTrackedObject> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamTrackedObject> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf().WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamInfinitePlane> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamInfinitePlane> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamInfinitePlane> e)
+        {
+            if (IsDisposed) return;
+            lock (_file)
+            {
+                e.ToProtobuf().WriteDelimitedTo(_file);
+                _amountOfPackets++;
+            }
+        }
+
+        public override void Dispose()
+        {
+            lock (_file)
+            {
+                _file.Write(BitConverter.GetBytes(Marker), 0, 4);
+                _file.Write(BitConverter.GetBytes(_amountOfPackets), 0, 4);
+                _file.Close();
+            }
+            base.Dispose();
         }
 
         #region Private
 
-        private bool _isRecording = false;
-        private DateTime _recordingStart;
-        private FileStream _file;
-        private int _amountOfFrames = 0;
-
-        private int GetTimestamp()
-        {
-            return (int)(DateTime.Now - _recordingStart).TotalMilliseconds;
-        }
+        private readonly FileStream _file;
+        private int _amountOfPackets = 0;
 
         #endregion
     }

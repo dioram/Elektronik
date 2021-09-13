@@ -21,11 +21,31 @@ namespace Elektronik.Data
         [SerializeField] private GameObject TreeElementPrefab;
         [SerializeField] private GameObject RenderersRoot;
 
-        private readonly List<ISourceTree> _dataSources = new List<ISourceTree>();
+        private readonly List<ISourceTreeNode> _dataSources = new List<ISourceTreeNode>();
         private readonly List<SourceTreeElement> _roots = new List<SourceTreeElement>();
-        private ISourceRenderer[] _renderers;
+        private List<ISourceRenderer> _renderers;
 
-        public event Action<ISourceTree> OnSourceAdded;
+        public event Action<ISourceTreeNode> OnSourceAdded;
+
+        // ReSharper disable once ParameterHidesMember
+        public void AddRenderer(ISourceRenderer renderer)
+        {
+            _renderers.Add(renderer);
+            foreach (var source in _dataSources)
+            {
+                source.AddRenderer(renderer);
+            }
+        }
+
+        // ReSharper disable once ParameterHidesMember
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            _renderers.Remove(renderer);
+            foreach (var source in _dataSources)
+            {
+                source.RemoveRenderer(renderer);
+            }
+        }
 
         public void ClearMap()
         {
@@ -41,7 +61,7 @@ namespace Elektronik.Data
             }
         }
 
-        public void MapSourceTree(Action<ISourceTree, string> action)
+        public void MapSourceTree(Action<ISourceTreeNode, string> action)
         {
             foreach (var treeElement in _dataSources)
             {
@@ -57,7 +77,7 @@ namespace Elektronik.Data
         /// <param name="action">
         /// Action for each node. Return true if you want to go deeper and false otherwise.
         /// </param>
-        public void MapSourceTree(Func<ISourceTree, string, bool> action)
+        public void MapSourceTree(Func<ISourceTreeNode, string, bool> action)
         {
             foreach (var treeElement in _dataSources)
             {
@@ -67,10 +87,10 @@ namespace Elektronik.Data
 
         private void Awake()
         {
-            _renderers = RenderersRoot.GetComponentsInChildren<ISourceRenderer>();
+            _renderers = RenderersRoot.GetComponentsInChildren<ISourceRenderer>().ToList();
         }
 
-        public void AddDataSource(ISourceTree source)
+        public void AddDataSource(ISourceTreeNode source)
         {
             _dataSources.Add(source);
             var treeElement = Instantiate(TreeElementPrefab, SourceTreeView).GetComponent<SourceTreeElement>();
@@ -93,13 +113,13 @@ namespace Elektronik.Data
             // ReSharper disable once LocalVariableHidesMember
             foreach (var renderer in _renderers)
             {
-                source.SetRenderer(renderer);
+                source.AddRenderer(renderer);
             }
 
             OnSourceAdded?.Invoke(source);
         }
 
-        public void RemoveDataSource(ISourceTree source)
+        public void RemoveDataSource(ISourceTreeNode source)
         {
             _dataSources.Remove(source);
             var treeElement = _roots.Find(r => r.Node == source);
@@ -116,7 +136,7 @@ namespace Elektronik.Data
                                                  _dataSources
                                                          .OfType<ISnapshotable>()
                                                          .Select(s => s.TakeSnapshot())
-                                                         .Select(s => s as ISourceTree)
+                                                         .Select(s => s as ISourceTreeNode)
                                                          .ToList(),
                                                  Converter);
             AddDataSource(snapshot);
@@ -138,12 +158,12 @@ namespace Elektronik.Data
 
         #region Private
 
-        private static void MapSourceTree(ISourceTree treeElement, string path, Func<ISourceTree, string, bool> action)
+        private static void MapSourceTree(ISourceTreeNode treeNodeElement, string path, Func<ISourceTreeNode, string, bool> action)
         {
-            var fullName = $"{path}/{treeElement.DisplayName}";
-            var deeper = action(treeElement, fullName);
+            var fullName = $"{path}/{treeNodeElement.DisplayName}";
+            var deeper = action(treeNodeElement, fullName);
             if (!deeper) return;
-            foreach (var child in treeElement.Children)
+            foreach (var child in treeNodeElement.Children)
             {
                 MapSourceTree(child, fullName, action);
             }

@@ -37,29 +37,4 @@ namespace Elektronik.PluginsSystem
         /// <param name="path"> Path to logo file. </param>
         void LoadLogo(string path);
     }
-
-    /// <summary> Interface for factories for data source plugins. </summary>
-    public interface IDataSourcePluginsFactory : IElektronikPluginsFactory
-    {
-        
-    }
-
-    /// <summary> Interface for factories for data source plugins that are reading data from files. </summary>
-    public interface IFileSourcePluginsFactory : IDataSourcePluginsFactory
-    {
-        public string[] SupportedExtensions { get; }
-    }
-
-    /// <summary> Interface for factories for plugins that can read snapshots. </summary>
-    public interface ISnapshotReaderPluginsFactory : IFileSourcePluginsFactory
-    {
-        public void SetFileName(string path);
-    }
-
-    /// <summary> Interface for factories for plugins that can record data. </summary>
-    public interface IDataRecorderFactory: IElektronikPluginsFactory
-    {
-        string Extension { get; }
-        bool StartsFromSceneLoading { get; }
-    }
 }

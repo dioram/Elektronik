@@ -72,7 +72,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region Protected
 
-        protected override ISourceTree CreateContainer(string topicName, string topicType)
+        protected override ISourceTreeNode CreateContainer(string topicName, string topicType)
         {
             var topic = _actualTopicsSql!.First(t => t.Name == topicName);
 
@@ -84,14 +84,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             
             if (SupportedMessages.ContainsKey(topicType))
             {
-                return (ISourceTree)Activator.CreateInstance(SupportedMessages[topic.Type],
+                return (ISourceTreeNode)Activator.CreateInstance(SupportedMessages[topic.Type],
                                                              topicName.Split('/').Last(),
                                                              DBModels,
                                                              topic,
                                                              timestamps);
             }
             
-            return (ISourceTree)Activator.CreateInstance(SupportedMessages["*"],
+            return (ISourceTreeNode)Activator.CreateInstance(SupportedMessages["*"],
                                                          topicName.Split('/').Last(),
                                                          DBModels,
                                                          topic,

@@ -12,7 +12,7 @@ namespace Elektronik.UI
     [RequireComponent(typeof(LayoutElement))]
     public class SourceTreeElement : MonoBehaviour
     {
-        public ISourceTree Node;
+        public ISourceTreeNode Node;
         public Text NameLabel;
         public RectTransform Content;
         public GameObject Spacer;

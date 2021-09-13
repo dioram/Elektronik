@@ -61,13 +61,13 @@ namespace Elektronik.Clusterization.UI
 
         #region Private
 
-        private void FindClusterableContainers(ISourceTree element, string fullName)
+        private void FindClusterableContainers(ISourceTreeNode element, string fullName)
         {
             if (element is IClusterable) _clusterableContainers.Add((element, fullName));
         }
 
-        private readonly List<(ISourceTree container, string name)> _clusterableContainers
-                = new List<(ISourceTree container, string name)>();
+        private readonly List<(ISourceTreeNode container, string name)> _clusterableContainers
+                = new List<(ISourceTreeNode container, string name)>();
 
         private readonly List<ClustersContainer> _containers = new List<ClustersContainer>();
 

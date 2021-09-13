@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Containers.EventArgs;
@@ -23,16 +24,23 @@ namespace Elektronik.Clouds
                 }
             }
         }
+        
 
-        public override void SetScale(float value)
+        public override float Scale
         {
-            lock (GameObjects)
+            get => _scale;
+            set
             {
-                var factor = value / _scale;
-                _scale = value;
-                foreach (var go in GameObjects.Values)
+                if (Math.Abs(_scale - value) < float.Epsilon) return;
+                
+                lock (GameObjects)
                 {
-                    go.transform.position *= factor;
+                    var factor = value / _scale;
+                    _scale = value;
+                    foreach (var go in GameObjects.Values)
+                    {
+                        go.transform.position *= factor;
+                    }
                 }
             }
         }
@@ -58,46 +66,6 @@ namespace Elektronik.Clouds
         }
 
         #region ICloudRenderer implementaion
-
-        public override void ShowItems(object sender, IList<TCloudItem> items)
-        {
-            if (!IsSenderVisible(sender)) return;
-            OnClear(sender);
-            lock (GameObjects)
-            {
-                foreach (var obj in items)
-                {
-                    Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Enqueue(() =>
-                    {
-                        var go = ObservationsPool.Spawn(pose.position * _scale, pose.rotation);
-                        GameObjects[(sender.GetHashCode(), obj.Id)] = go;
-                        go.GetComponent<MeshRenderer>().material.SetColor(ColorProperty, obj.AsPoint().Color);
-
-                        var dc = go.GetComponent(DataComponent<TCloudItem>.GetInstantiable());
-                        if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
-                        var dataComponent = (DataComponent<TCloudItem>) dc;
-                        dataComponent.Data = obj;
-                    });
-                }
-            }
-        }
-
-        public override void OnClear(object sender)
-        {
-            lock (GameObjects)
-            {
-                var keys = GameObjects.Keys.Where(k => k.Item1 == sender.GetHashCode()).ToList();
-                foreach (var key in keys)
-                {
-                    if (!GameObjects.ContainsKey(key)) continue;
-
-                    var go = GameObjects[key];
-                    MainThreadInvoker.Enqueue(() => ObservationsPool.Despawn(go));
-                    GameObjects.Remove(key);
-                }
-            }
-        }
 
         public override void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
@@ -142,13 +110,13 @@ namespace Elektronik.Clouds
             }
         }
 
-        public override void OnItemsRemoved(object sender, RemovedEventArgs e)
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<TCloudItem> e)
         {
             lock (GameObjects)
             {
-                foreach (var id in e.RemovedIds)
+                foreach (var item in e.RemovedItems)
                 {
-                    var key = (sender.GetHashCode(), id);
+                    var key = (sender.GetHashCode(), item.Id);
                     if (!GameObjects.ContainsKey(key)) continue;
 
                     var go = GameObjects[key];

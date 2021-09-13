@@ -7,7 +7,6 @@ using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Extensions;
-using Elektronik.Offline;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.OnlineBuffered.GrpcServices;

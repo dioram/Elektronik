@@ -13,7 +13,7 @@ using UnityEngine;
 namespace Elektronik.Containers
 {
     public class TrackedObjectsContainer
-            : ITrackedContainer<SlamTrackedObject>, ISourceTree, ILookable, IVisible, ISnapshotable
+            : ITrackedContainer<SlamTrackedObject>, ISourceTreeNode, ILookable, IVisible, ISnapshotable
     {
         public TrackedObjectsContainer(string displayName = "")
         {
@@ -23,7 +23,7 @@ namespace Elektronik.Containers
 
         public string ObjectLabel;
 
-        #region IContainer implementation
+        #region IContainer
 
         public IEnumerator<SlamTrackedObject> GetEnumerator()
         {
@@ -52,7 +52,7 @@ namespace Elektronik.Containers
 
         public void Clear()
         {
-            int[] ids;
+            SlamTrackedObject[] items;
             lock (_objects)
             {
                 foreach (var tuple in _objects)
@@ -60,7 +60,7 @@ namespace Elektronik.Containers
                     tuple.Value.Item2.Clear();
                 }
 
-                ids = _objects.Keys.ToArray();
+                items = _objects.Values.Select(pair => pair.Item1).ToArray();
 
                 lock (_lineContainers)
                 {
@@ -70,7 +70,7 @@ namespace Elektronik.Containers
                 _objects.Clear();
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(ids));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamTrackedObject>(items));
         }
 
         public bool Contains(SlamTrackedObject item)
@@ -110,7 +110,7 @@ namespace Elektronik.Containers
                 _objects.Remove(item.Id);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(item.Id));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamTrackedObject>(item));
 
 
             return true;
@@ -135,9 +135,11 @@ namespace Elektronik.Containers
 
         public void RemoveAt(int index)
         {
+            SlamTrackedObject item;
             lock (_objects)
             {
                 if (!_objects.ContainsKey(index)) return;
+                item = _objects[index].Item1;
                 _objects[index].Item2.Clear();
                 lock (_lineContainers)
                 {
@@ -147,7 +149,7 @@ namespace Elektronik.Containers
                 _objects.Remove(index);
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(index));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamTrackedObject>(item));
         }
 
         public SlamTrackedObject this[int index]
@@ -182,7 +184,7 @@ namespace Elektronik.Containers
 
         public event EventHandler<UpdatedEventArgs<SlamTrackedObject>> OnUpdated;
 
-        public event EventHandler<RemovedEventArgs> OnRemoved;
+        public event EventHandler<RemovedEventArgs<SlamTrackedObject>> OnRemoved;
 
         public void AddRange(IList<SlamTrackedObject> items)
         {
@@ -220,7 +222,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(items.Select(i => i.Id).ToList()));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamTrackedObject>(items));
         }
 
         public IList<SlamTrackedObject> Remove(IList<int> items)
@@ -242,7 +244,7 @@ namespace Elektronik.Containers
                 }
             }
 
-            OnRemoved?.Invoke(this, new RemovedEventArgs(items));
+            OnRemoved?.Invoke(this, new RemovedEventArgs<SlamTrackedObject>(removed));
             return removed;
         }
 
@@ -276,7 +278,7 @@ namespace Elektronik.Containers
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children
+        public IEnumerable<ISourceTreeNode> Children
         {
             get
             {
@@ -287,7 +289,7 @@ namespace Elektronik.Containers
             }
         }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
             switch (renderer)
             {
@@ -295,28 +297,44 @@ namespace Elektronik.Containers
                 OnAdded += trackedRenderer.OnItemsAdded;
                 OnUpdated += trackedRenderer.OnItemsUpdated;
                 OnRemoved += trackedRenderer.OnItemsRemoved;
-                OnVisibleChanged += visible =>
-                {
-                    if (visible) trackedRenderer.OnItemsAdded(this, new AddedEventArgs<SlamTrackedObject>(this));
-                    else trackedRenderer.OnClear(this);
-                };
+                _trackedObjsRenderers.Add(trackedRenderer);
                 if (Count > 0)
                 {
                     OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(this));
                 }
-
-                _trackedObjsRenderer = trackedRenderer;
                 break;
             case ICloudRenderer<SimpleLine> lineRenderer:
-                _lineRenderer = lineRenderer;
+                _lineRenderers.Add(lineRenderer);
                 lock (_lineContainers)
                 {
                     foreach (var container in _lineContainers)
                     {
-                        container.SetRenderer(_lineRenderer);
+                        container.AddRenderer(lineRenderer);
                     }
                 }
+                break;
+            }
+        }
 
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            switch (renderer)
+            {
+            case ICloudRenderer<SlamTrackedObject> trackedRenderer:
+                OnAdded -= trackedRenderer.OnItemsAdded;
+                OnUpdated -= trackedRenderer.OnItemsUpdated;
+                OnRemoved -= trackedRenderer.OnItemsRemoved;
+                _trackedObjsRenderers.Remove(trackedRenderer);
+                break;
+            case ICloudRenderer<SimpleLine> lineRenderer:
+                _lineRenderers.Remove(lineRenderer);
+                lock (_lineContainers)
+                {
+                    foreach (var container in _lineContainers)
+                    {
+                        container.RemoveRenderer(lineRenderer);
+                    }
+                }
                 break;
             }
         }
@@ -396,6 +414,26 @@ namespace Elektronik.Containers
 
                 _isVisible = value;
                 OnVisibleChanged?.Invoke(_isVisible);
+
+                if (_isVisible)
+                {
+                    foreach (var renderer in _trackedObjsRenderers)
+                    {
+                        renderer.OnItemsAdded(this, new AddedEventArgs<SlamTrackedObject>(this));
+                    }
+                }
+                else
+                {
+                    SlamTrackedObject[] items;
+                    lock (_objects)
+                    {
+                        items = _objects.Values.Select(pair => pair.Item1).ToArray();
+                    }
+                    foreach (var renderer in _trackedObjsRenderers)
+                    {
+                        renderer.OnItemsRemoved(this, new RemovedEventArgs<SlamTrackedObject>(items));
+                    }
+                }
             }
         }
 
@@ -415,36 +453,19 @@ namespace Elektronik.Containers
                 res.AddRangeWithHistory(_objects.Values.Select(p => p.Item1).ToList(),
                                         _objects.Values.Select(p => (IList<SimpleLine>)p.Item2.ToList()).ToList());
             }
+
             return res;
         }
 
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            (SlamTrackedObject, TrackContainer)[] objects;
-            lock (_objects)
-            {
-                objects = _objects.Values.ToArray();
-            }
-            foreach (var pair in objects)
-            {
-                var obj = pair.Item1;
-                obj.Position = pair.Item2[0].BeginPos;
-                recorder.OnAdded(DisplayName, new[] {obj});
-                foreach (var line in pair.Item2)
-                {
-                    obj.Position = line.EndPos;
-                    recorder.OnUpdated(DisplayName, new[] {obj});
-                }
-            }
-        }
-        
         #endregion
 
         #region Private definitions
 
-        private ICloudRenderer<SimpleLine> _lineRenderer;
-        private ICloudRenderer<SlamTrackedObject> _trackedObjsRenderer;
-        private readonly List<ISourceTree> _lineContainers = new List<ISourceTree>();
+        private readonly List<ICloudRenderer<SimpleLine>> _lineRenderers = new List<ICloudRenderer<SimpleLine>>();
+        private readonly List<ICloudRenderer<SlamTrackedObject>> _trackedObjsRenderers =
+                new List<ICloudRenderer<SlamTrackedObject>>();
+
+        private readonly List<ISourceTreeNode> _lineContainers = new List<ISourceTreeNode>();
 
         private readonly Dictionary<int, (SlamTrackedObject, TrackContainer)> _objects =
                 new Dictionary<int, (SlamTrackedObject, TrackContainer)>();
@@ -456,8 +477,14 @@ namespace Elektronik.Containers
             lock (_lineContainers)
             {
                 var res = new TrackContainer(this, obj) { IsVisible = IsVisible };
-                res.SetRenderer(_lineRenderer);
-                res.SetRenderer(_trackedObjsRenderer);
+                foreach (var lineRenderer in _lineRenderers)
+                {
+                    res.AddRenderer(lineRenderer);
+                }
+                foreach (var renderer in _trackedObjsRenderers)
+                {
+                    res.AddRenderer(renderer);
+                }
                 res.DisplayName = $"Track #{obj.Id}";
                 _lineContainers.Add(res);
                 if (history == null)
@@ -477,7 +504,7 @@ namespace Elektronik.Containers
         {
             if (!_objects.ContainsKey(item.Id)) return;
             var container = _objects[item.Id].Item2;
-            if (container.Count > 0 
+            if (container.Count > 0
                 && container.Last().BeginPos == item.Position
                 && container.Last().EndPos != item.Position)
             {

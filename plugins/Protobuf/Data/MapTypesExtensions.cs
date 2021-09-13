@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
@@ -210,13 +211,13 @@ namespace Elektronik.Protobuf.Data
 
     public static class Conversions
     {
-        public static Vector3Pb ToProtobuf(this Vector3 v, ICSConverter? converter)
+        public static Vector3Pb ToProtobuf(this Vector3 v, ICSConverter? converter = null)
         {
             converter?.ConvertBack(ref v);
             return new Vector3Pb {X = v.x, Y = v.y, Z = v.z};
         }
 
-        public static Vector4Pb ToProtobuf(this Quaternion q, ICSConverter? converter)
+        public static Vector4Pb ToProtobuf(this Quaternion q, ICSConverter? converter = null)
         {
             if (converter != null)
             {
@@ -227,30 +228,30 @@ namespace Elektronik.Protobuf.Data
             return new Vector4Pb {X = q.x, Y = q.y, Z = q.z, W = q.w};
         }
 
-        public static PointPb ToProtobuf(this SlamPoint p, ICSConverter? converter)
+        public static PointPb ToProtobuf(this SlamPoint p, ICSConverter? converter = null)
             => new()
             {
                 Id = p.Id, Position = p.Position.ToProtobuf(converter), Color = p.Color, Message = p.Message ?? ""
             };
 
-        public static LinePb ToProtobuf(this SlamLine l, ICSConverter? converter)
+        public static LinePb ToProtobuf(this SlamLine l, ICSConverter? converter = null)
             => new() {Pt1 = l.Point1.ToProtobuf(converter), Pt2 = l.Point2.ToProtobuf(converter)};
 
-        public static ObservationPb ToProtobuf(this SlamObservation o, ICSConverter? converter)
+        public static ObservationPb ToProtobuf(this SlamObservation o, ICSConverter? converter = null)
         {
             var pb = new ObservationPb
             {
                 Point = o.Point.ToProtobuf(converter),
                 Orientation = o.Rotation.ToProtobuf(converter),
-                Message = o.Message,
-                Filename = o.FileName,
+                Message = o.Message ?? "",
+                Filename = o.FileName ?? "",
                 Stats = o.Statistics
             };
-            pb.ObservedPoints.AddRange(o.ObservedPoints);
+            pb.ObservedPoints.AddRange(o.ObservedPoints ?? new HashSet<int>());
             return pb;
         }
 
-        public static TrackedObjPb ToProtobuf(this SlamTrackedObject o, ICSConverter? converter)
+        public static TrackedObjPb ToProtobuf(this SlamTrackedObject o, ICSConverter? converter = null)
             => new()
             {
                 Id = o.Id,
@@ -260,7 +261,7 @@ namespace Elektronik.Protobuf.Data
                 Message = o.Message
             };
 
-        public static InfinitePlanePb ToProtobuf(this SlamInfinitePlane p, ICSConverter? converter)
+        public static InfinitePlanePb ToProtobuf(this SlamInfinitePlane p, ICSConverter? converter = null)
             => new()
             {
                 Color = p.Color,

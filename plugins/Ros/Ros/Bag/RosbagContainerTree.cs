@@ -42,16 +42,16 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         #region Protected
 
-        protected override ISourceTree CreateContainer(string topicName, string topicType)
+        protected override ISourceTreeNode CreateContainer(string topicName, string topicType)
         {
             if (SupportedMessages.ContainsKey(topicType))
             {
-                return (ISourceTree) Activator.CreateInstance(SupportedMessages[topicType],
-                                                              topicName.Split('/').Last());
+                return (ISourceTreeNode) Activator.CreateInstance(SupportedMessages[topicType],
+                                                                  topicName.Split('/').Last());
             }
             
-            return (ISourceTree) Activator.CreateInstance(SupportedMessages["*"],
-                                                          topicName.Split('/').Last());
+            return (ISourceTreeNode) Activator.CreateInstance(SupportedMessages["*"],
+                                                              topicName.Split('/').Last());
         }
 
         #endregion

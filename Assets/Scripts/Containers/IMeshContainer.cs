@@ -5,7 +5,7 @@ using Elektronik.Data;
 
 namespace Elektronik.Containers
 {
-    public interface IMeshContainer : ISourceTree, IVisible
+    public interface IMeshContainer : ISourceTreeNode, IVisible
     {
         public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
 

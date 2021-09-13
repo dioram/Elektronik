@@ -15,7 +15,7 @@ namespace Elektronik.Renderers
         {
             Clear();
             SetHeader(header);
-            for (int i = 0; i < data.Length; i++)
+            for (var i = 0; i < data.Length; i++)
             {
                 _columns[i].LoadData(data[i]);
             }
@@ -72,9 +72,7 @@ namespace Elektronik.Renderers
             }
         }
 
-        public void SetScale(float value)
-        {
-        }
+        public float Scale { get; set; }
 
         public void Render(string[] data)
         {

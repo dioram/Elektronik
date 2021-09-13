@@ -4,7 +4,7 @@ using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Commands.Generic
 {
-    public class AddCommand<T> : ICommand where T : ICloudItem
+    public class AddCommand<T> : ICommand where T : struct, ICloudItem
     {
         protected readonly IList<T> AddedObjects;
         protected readonly IContainer<T> Container;
@@ -20,8 +20,8 @@ namespace Elektronik.Commands.Generic
     }
     
     public class AddCommand<TCloudItem, TCloudItemDiff> : ICommand 
-            where TCloudItem : ICloudItem 
-            where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
+            where TCloudItem : struct, ICloudItem 
+            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         protected readonly IList<TCloudItemDiff> AddedObjects;
         protected readonly IContainer<TCloudItem> Container;

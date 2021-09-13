@@ -220,23 +220,26 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
         [Test, Order(6)]
         public void ClearAll()
         {
-            var e1 = new RemovedEventArgs(0);
-            var e3 = new RemovedEventArgs(Enumerable.Range(0, 3).ToArray());
-            var e5 = new RemovedEventArgs(Enumerable.Range(0, 5).ToArray());
+            var e1 = new RemovedEventArgs<SimpleLine>(new [] {0});
+            var e3 = new RemovedEventArgs<SlamTrackedObject>(Enumerable.Range(0, 3).ToArray());
+            var ep5 = new RemovedEventArgs<SlamPoint>(Enumerable.Range(0, 5).ToArray());
+            var eo5 = new RemovedEventArgs<SlamObservation>(Enumerable.Range(0, 5).ToArray());
+            var el5 = new RemovedEventArgs<SlamLine>(Enumerable.Range(0, 5).ToArray());
+            var eip5 = new RemovedEventArgs<SlamInfinitePlane>(Enumerable.Range(0, 5).ToArray());
 
             var response = SceneClient.Clear(new Empty());
             Thread.Sleep(20);
 
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedImageRenderer.Verify(r => r.Clear(), Times.Once);
-            MockedPointsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Points, e5),
+            MockedPointsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Points, ep5),
                                         Times.Once);
-            MockedObservationsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, e5),
+            MockedObservationsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, eo5),
                                               Times.Once);
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(), e5),
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(), el5),
                                            Times.Exactly(2));
             MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e5),
+                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).InfinitePlanes, eip5),
                 Times.Once);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e3),
                                              Times.Once);
@@ -246,19 +249,22 @@ namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
         [Test, Order(7)]
         public void DisposeTest()
         {
-            var e = new RemovedEventArgs(new List<int>());
+            var ep = new RemovedEventArgs<SlamPoint>(new List<int>());
+            var eo = new RemovedEventArgs<SlamObservation>(new List<int>());
+            var eip = new RemovedEventArgs<SlamInfinitePlane>(new List<int>());
+            var etr = new RemovedEventArgs<SlamTrackedObject>(new List<int>());
 
             Sut.Dispose();
 
             MockedImageRenderer.Verify(r => r.Clear(), Times.Exactly(2));
-            MockedPointsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Points, e),
+            MockedPointsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Points, ep),
                                         Times.Once);
-            MockedObservationsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, e),
+            MockedObservationsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, eo),
                                               Times.Once);
             MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e),
+                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).InfinitePlanes, eip),
                 Times.Once);
-            MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
+            MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, etr),
                                              Times.Once);
         }
     }

@@ -23,7 +23,7 @@ namespace Elektronik.Collision
 
         public (IContainer<TCloudItem> container, TCloudItem item)? FindCollided(Ray ray)
         {
-            ray.origin /= _scale;
+            ray.origin /= Scale;
             var id = _topBlock.FindItem(ray, Radius);
             if (!id.HasValue) return null;
             
@@ -43,11 +43,8 @@ namespace Elektronik.Collision
         #endregion
         
         #region ICloudRenderer
-
-        public void SetScale(float value)
-        {
-            _scale = value;
-        }
+        
+        public float Scale { get; set; }
 
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
@@ -89,15 +86,15 @@ namespace Elektronik.Collision
             });
         }
 
-        public void OnItemsRemoved(object sender, RemovedEventArgs e)
+        public void OnItemsRemoved(object sender, RemovedEventArgs<TCloudItem> e)
         {
             _threadQueueWorker.Enqueue(() =>
             {
                 lock (_data)
                 {
-                    foreach (var senderId in e.RemovedIds)
+                    foreach (var item in e.RemovedItems)
                     {
-                        var key = (sender, senderId);
+                        var key = (sender, item.Id);
                         if (!_data.ContainsKey(key)) continue;
                         var (id, pos) = _data[key];
                         _data.Remove(key);
@@ -106,22 +103,6 @@ namespace Elektronik.Collision
                     }
                 }
             });
-        }
-
-        public void ShowItems(object sender, IList<TCloudItem> items)
-        {
-            OnClear(sender);
-            OnItemsAdded(sender, new AddedEventArgs<TCloudItem>(items));
-        }
-
-        public void OnClear(object sender)
-        {
-            List<int> keys;
-            lock (_data)
-            {
-                keys = _data.Keys.Where(k => k.sender == sender).Select(k => k.id).ToList();
-            }
-            OnItemsRemoved(sender, new RemovedEventArgs(keys));
         }
 
         #endregion
@@ -136,7 +117,6 @@ namespace Elektronik.Collision
         private readonly Dictionary<int, (object sender, int id)> _dataReverse =
                 new Dictionary<int, (object sender, int id)>();
 
-        private float _scale = 1;
         private int _maxId = 0;
         private readonly ThreadQueueWorker _threadQueueWorker = new ThreadQueueWorker();
         

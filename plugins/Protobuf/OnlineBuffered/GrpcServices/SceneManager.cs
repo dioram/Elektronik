@@ -12,9 +12,9 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
     public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {
         private readonly ILogger _logger;
-        private readonly ISourceTree _container;
+        private readonly ISourceTreeNode _container;
 
-        public SceneManager(ISourceTree container, ILogger logger)
+        public SceneManager(ISourceTreeNode container, ILogger logger)
         {
             _container = container;
             _logger = logger;

@@ -11,7 +11,7 @@ namespace Elektronik.RosPlugin.Ros.Online.Handlers
         private RosSocket? _socket;
         private readonly string _subscriptionId;
 
-        protected MessageHandler(ISourceTree container, RosSocket socket, string topic)
+        protected MessageHandler(ISourceTreeNode container, RosSocket socket, string topic)
         {
             _socket = socket;
             Container = (TContainer) container;

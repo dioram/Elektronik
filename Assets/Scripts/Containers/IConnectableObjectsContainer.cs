@@ -7,7 +7,7 @@ namespace Elektronik.Containers
 {
     /// <summary> Interface of container for connectable objects. </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IConnectableObjectsContainer<T> : IContainer<T> where T : ICloudItem
+    public interface IConnectableObjectsContainer<T> : IContainer<T> where T : struct, ICloudItem
     {
         IEnumerable<SlamLine> Connections { get; }
         void AddConnections(IEnumerable<(int id1, int id2)> connections);
@@ -23,8 +23,8 @@ namespace Elektronik.Containers
     {
         public static IEnumerable<(int id1, int id2)> GetAllConnections<TCloudItem, TCloudItemDiff>(
             this IConnectableObjectsContainer<TCloudItem> container, TCloudItemDiff diff)
-                where TCloudItem : ICloudItem
-                where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
+                where TCloudItem : struct, ICloudItem
+                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {
             return container.GetAllConnections(diff.Apply());
         }

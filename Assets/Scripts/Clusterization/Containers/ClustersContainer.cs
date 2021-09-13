@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Elektronik.Clusterization.Containers
 {
-    public class ClustersContainer : ISourceTree, IVisible, IRemovable
+    public class ClustersContainer : ISourceTreeNode, IVisible, IRemovable
     {
         public ClustersContainer(string displayName, List<List<SlamPoint>> data, IVisible sourceContainer)
         {
@@ -29,7 +29,7 @@ namespace Elektronik.Clusterization.Containers
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children => _childrenList;
+        public IEnumerable<ISourceTreeNode> Children => _childrenList;
 
         public void Clear()
         {
@@ -39,12 +39,21 @@ namespace Elektronik.Clusterization.Containers
             }
         }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
             _renderers.Add(renderer);
             foreach (var child in Children)
             {
-                child.SetRenderer(renderer);
+                child.AddRenderer(renderer);
+            }
+        }
+
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            _renderers.Remove(renderer);
+            foreach (var child in Children)
+            {
+                child.RemoveRenderer(renderer);
             }
         }
 
@@ -95,7 +104,7 @@ namespace Elektronik.Clusterization.Containers
 
         private readonly List<ISourceRenderer> _renderers = new List<ISourceRenderer>();
         private bool _isVisible = true;
-        private readonly List<ISourceTree> _childrenList = new List<ISourceTree>();
+        private readonly List<ISourceTreeNode> _childrenList = new List<ISourceTreeNode>();
 
         private void CreateClusters(List<List<SlamPoint>> data)
         {
@@ -103,9 +112,9 @@ namespace Elektronik.Clusterization.Containers
             {
                 var cluster = data[i];
                 var container = new CloudContainer<SlamPoint>($"Cluster {i}");
-                foreach (ISourceRenderer renderer in _renderers)
+                foreach (var renderer in _renderers)
                 {
-                    container.SetRenderer(renderer);
+                    container.AddRenderer(renderer);
                 }
 
                 container.AddRange(cluster);

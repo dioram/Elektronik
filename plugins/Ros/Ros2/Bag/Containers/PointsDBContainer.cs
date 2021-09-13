@@ -5,7 +5,6 @@ using Elektronik.Clouds;
 using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.PackageObjects;
-using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
@@ -33,9 +32,18 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             OnClear?.Invoke(this);
         }
 
-        public override void SetRenderer(ISourceRenderer renderer)
+        public override void AddRenderer(ISourceRenderer renderer)
         {
             if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
+            _pointsRenderers.Add(pointRenderer);
+            OnShow += pointRenderer.ShowItems;
+            OnClear += pointRenderer.OnClear;
+        }
+
+        public override void RemoveRenderer(ISourceRenderer renderer)
+        {
+            if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
+            _pointsRenderers.Remove(pointRenderer);
             OnShow += pointRenderer.ShowItems;
             OnClear += pointRenderer.OnClear;
         }
@@ -89,11 +97,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             return res;
         }
 
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            recorder.OnAdded(DisplayName, Current);
-        }
-
         #endregion
 
         #region Private definitinons
@@ -102,6 +105,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         private event Action<object>? OnClear;
         private Vector3 _center = new(float.NaN, float.NaN, float.NaN);
         private Vector3 _bounds = new(float.NaN, float.NaN, float.NaN);
+        private readonly List<ICloudRenderer<SlamPoint>> _pointsRenderers = new();
 
         private void CalculateBounds(SlamPoint[] points)
         {

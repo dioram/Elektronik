@@ -12,7 +12,7 @@ using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class VisualisationMarkersDBContainer : ISourceTree, IDBContainer, IVisible
+    public class VisualisationMarkersDBContainer : ISourceTreeNode, IDBContainer, IVisible
     {
         public VisualisationMarkersDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
                                                List<long> actualTimestamps)
@@ -23,7 +23,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             ActualTimestamps = actualTimestamps;
         }
 
-        #region ISourceTree implementation
+        #region ISourceTreeNode implementation
 
         public void Clear()
         {
@@ -38,13 +38,18 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             }
         }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddRenderer(ISourceRenderer renderer)
         {
             _renderers.Add(renderer);
         }
 
+        public void RemoveRenderer(ISourceRenderer renderer)
+        {
+            _renderers.Remove(renderer);
+        }
+
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTree> Children => _children.Values.ToList();
+        public IEnumerable<ISourceTreeNode> Children => _children.Values.ToList();
 
         #endregion
 
@@ -104,7 +109,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private bool _isVisible = true;
         private int _pos;
-        private readonly SortedDictionary<string, ISourceTree> _children = new();
+        private readonly SortedDictionary<string, ISourceTreeNode> _children = new();
         private readonly List<ISourceRenderer> _renderers = new ();
         private readonly Dictionary<long, List<Marker>> _delayedRemoving = new();
 
@@ -216,10 +221,10 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private void CreateContainer(Type containerType, string key)
         {
-            _children[key] = (ISourceTree) Activator.CreateInstance(containerType, key);
+            _children[key] = (ISourceTreeNode) Activator.CreateInstance(containerType, key);
             foreach (var renderer in _renderers)
             {
-                _children[key].SetRenderer(renderer);
+                _children[key].AddRenderer(renderer);
             }
         }
 

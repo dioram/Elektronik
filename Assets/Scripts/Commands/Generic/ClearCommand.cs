@@ -4,7 +4,7 @@ using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Commands.Generic
 {
-    public class ClearCommand<T> : ICommand where T : ICloudItem
+    public class ClearCommand<T> : ICommand where T : struct, ICloudItem
     {
         protected readonly T[] UndoObjects;
         private readonly IContainer<T> _container;

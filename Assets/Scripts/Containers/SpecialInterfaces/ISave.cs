@@ -1,7 +1,11 @@
-﻿namespace Elektronik.Containers.SpecialInterfaces
+﻿using System;
+using Elektronik.Data;
+
+namespace Elektronik.Containers.SpecialInterfaces
 {
     public interface ISave
     {
-        void Save();
+        public void RequestSaving();
+        event Action<ISourceTreeNode> SaveMe;
     }
 }

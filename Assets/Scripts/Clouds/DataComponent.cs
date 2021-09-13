@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Elektronik.Clouds
 {
-    public abstract class DataComponent<TCloudItem> : MonoBehaviour where TCloudItem : ICloudItem
+    public abstract class DataComponent<TCloudItem> : MonoBehaviour where TCloudItem : struct, ICloudItem
     {
         public TCloudItem Data;
         public IContainer<TCloudItem> Container;
@@ -19,9 +19,8 @@ namespace Elektronik.Clouds
                 _instantiable = Assembly
                         .GetExecutingAssembly()
                         .GetTypes()
-                        .FirstOrDefault(t => t.BaseType != null
-                                                && t.BaseType.IsGenericType
-                                                && t.BaseType.GetGenericTypeDefinition() == typeof(DataComponent<>)
+                        .FirstOrDefault(t => t.BaseType is { IsGenericType: true } 
+                                                && t.BaseType.GetGenericTypeDefinition() == typeof(DataComponent<>) 
                                                 && t.BaseType.GetGenericArguments().Contains(typeof(TCloudItem)));
             }
 

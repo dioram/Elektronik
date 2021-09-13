@@ -4,7 +4,7 @@ using Elektronik.Data.PackageObjects;
 
 namespace Elektronik.Commands.Generic
 {
-    public class RemoveConnectionsCommand<T> : ICommand where T: ICloudItem
+    public class RemoveConnectionsCommand<T> : ICommand where T: struct, ICloudItem
     {
         private readonly IList<(int, int)> _connections;
         private readonly IConnectableObjectsContainer<T> _сontainer;

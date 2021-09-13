@@ -33,7 +33,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         #region IDataSourceOffline
 
-        public ISourceTree Data { get; }
+        public ISourceTreeNode Data { get; }
 
         public void Dispose()
         {
@@ -45,9 +45,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag
         {
             if (_playing)
             {
-                if (CurrentPosition == AmountOfFrames - 1)
+                if (Position == AmountOfFrames - 1)
                 {
-                    MainThreadInvoker.Enqueue(() => Finished?.Invoke());
+                    MainThreadInvoker.Enqueue(() => OnFinished?.Invoke());
                     _playing = false;
                     return;
                 }
@@ -56,13 +56,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             }
             else if (_rewindPlannedPos > 0)
             {
-                RewindStarted?.Invoke();
+                OnRewindStarted?.Invoke();
                 _currentPosition = _rewindPlannedPos;
                 _rewindPlannedPos = -1;
                 _threadWorker.Enqueue(() =>
                 {
                     _data.ShowAt(_actualTimestamps[_currentPosition], true);
-                    RewindFinished?.Invoke();
+                    OnRewindFinished?.Invoke();
                 });
             }
         }
@@ -99,9 +99,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag
         {
             _threadWorker.Enqueue(() =>
             {
-                if (CurrentPosition == 0) return;
+                if (Position == 0) return;
                 _currentPosition--;
-                _data.ShowAt(_actualTimestamps[CurrentPosition]);
+                _data.ShowAt(_actualTimestamps[Position]);
             });
         }
 
@@ -110,19 +110,19 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             if (_threadWorker.ActiveActions > 0) return;
             _threadWorker.Enqueue(() =>
             {
-                if (CurrentPosition == AmountOfFrames - 1) return;
+                if (Position == AmountOfFrames - 1) return;
 
                 _currentPosition++;
-                _data.ShowAt(_actualTimestamps[CurrentPosition]);
+                _data.ShowAt(_actualTimestamps[Position]);
             });
         }
 
         public int AmountOfFrames => _actualTimestamps.Length;
 
-        public string CurrentTimestamp =>
-                $"{(_actualTimestamps[CurrentPosition] - _actualTimestamps[0]) / 1000000000f:F3}";
+        public string Timestamp =>
+                $"{(_actualTimestamps[Position] - _actualTimestamps[0]) / 1000000000f:F3}";
 
-        public int CurrentPosition
+        public int Position
         {
             get => _currentPosition;
             set
@@ -133,9 +133,17 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             }
         }
 
-        public event Action? RewindStarted;
-        public event Action? RewindFinished;
-        public event Action? Finished;
+        public float Speed { get; set; }
+        public bool IsPlaying { get; }
+        public event Action? OnPlayingStarted;
+        public event Action? OnPaused;
+        public event Action<int>? OnPositionChanged;
+        public event Action<int>? OnAmountOfFramesChanged;
+        public event Action<string>? OnTimestampChanged;
+
+        public event Action? OnRewindStarted;
+        public event Action? OnRewindFinished;
+        public event Action? OnFinished;
 
         #endregion
 

@@ -1,19 +1,29 @@
 ﻿using Elektronik.Data.Converters;
 using Elektronik.PluginsSystem;
+using Elektronik.Settings;
 using Elektronik.Settings.Bags;
+using UnityEngine;
 
 namespace Elektronik.Protobuf.Recorders
 {
-    public class ProtobufRecorderFactory : ElektronikPluginsFactoryBase<SettingsBag>, IDataRecorderFactory
+    public class ProtobufRecorderFactory : IFileRecorderPluginsFactory
     {
-        protected override IElektronikPlugin StartPlugin(SettingsBag settings, ICSConverter converter)
+        public IElektronikPlugin Start(ICSConverter converter)
         {
-            return new ProtobufRecorder(DisplayName, Logo, converter);
+            return new ProtobufRecorder(Filename, converter);
         }
 
-        public override string DisplayName => "Recorder to Protobuf";
-        public override string Description => "Records data to Protobuf file";
+        public void LoadLogo(string path)
+        {
+            // Do nothing.
+        }
+
+        public Texture2D? Logo => null;
+        public string DisplayName => "Recorder to Protobuf";
+        public string Description => "Records data to Protobuf file";
+        public SettingsBag? Settings { get; set; } = null;
+        public ISettingsHistory? SettingsHistory => null;
         public string Extension => ".dat";
-        public bool StartsFromSceneLoading => false;
+        public string Filename { get; set; } = "./proto.dat";
     }
 }

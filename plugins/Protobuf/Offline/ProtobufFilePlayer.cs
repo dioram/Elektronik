@@ -58,7 +58,7 @@ namespace Elektronik.Protobuf.Offline
 
         #region IDataSourceOffline
 
-        public ISourceTree Data { get; }
+        public ISourceTreeNode Data { get; }
 
         public void Dispose()
         {

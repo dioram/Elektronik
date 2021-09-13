@@ -567,6 +567,18 @@ MonoBehaviour:
     m_Localized: At least one of addresses is incorrect
     m_Metadata:
       m_Items: []
+  - m_Id: 54750546028208128
+    m_Localized: Record...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54755928226209792
+    m_Localized: 'Save to:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54756304220397568
+    m_Localized: Start recording
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:
