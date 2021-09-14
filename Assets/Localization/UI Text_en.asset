@@ -355,8 +355,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 13163167775158272
-    m_Localized: Turn on logging (Warning! During continious run it can generate
-      gigabytes of log!!)
+    m_Localized: Turn on logging
     m_Metadata:
       m_Items: []
   - m_Id: 20769850134511616
@@ -585,6 +584,18 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 55922574944182272
     m_Localized: Updates
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55930117183578112
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56159015255220224
+    m_Localized: Some text elements will be translated only after restart.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56163336374001664
+    m_Localized: Warning! During continious run it can generate gigabytes of log!
     m_Metadata:
       m_Items: []
   references:

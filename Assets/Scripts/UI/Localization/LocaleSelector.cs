@@ -1,26 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
-using UnityEngine.UI;
 
 namespace Elektronik.UI.Localization
 {
-    [RequireComponent(typeof(Dropdown))]
     public class LocaleSelector : MonoBehaviour
     {
-        private Dropdown _selector;
+        [SerializeField] private TMP_Dropdown Selector;
         [SerializeField] private List<Locale> Locales = new List<Locale>();
         
         public void Start()
         {
-            _selector = GetComponent<Dropdown>();
-            _selector.options = Locales.Select(l => new Dropdown.OptionData(l.LocaleName)).ToList();
+            Selector.options = Locales.Select(l => new TMP_Dropdown.OptionData(l.LocaleName)).ToList();
             var lastLocale = Locales.FirstOrDefault(l => l.LocaleName == PlayerPrefs.GetString("selected-locale"));
-            if (lastLocale == null) return;
+            if (lastLocale == null)
+            {
+                Debug.LogError("Last locale not found. Using default.");
+                return;
+            }
             LocalizationSettings.Instance.SetSelectedLocale(lastLocale);
-            _selector.value = Locales.IndexOf(lastLocale);
+            Selector.value = Locales.IndexOf(lastLocale);
         }
         
         public void OnLocaleSelected(int index)
