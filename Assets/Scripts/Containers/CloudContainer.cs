@@ -94,11 +94,11 @@ namespace Elektronik.Containers
 
         #region IClusterable
 
-        public IEnumerable<SlamPoint> GetAllPoints()
+        public SlamPoint[] GetAllPoints()
         {
             lock (Items)
             {
-                return Items.Values.Select(i => i.AsPoint());
+                return Items.Values.Select(i => i.AsPoint()).ToArray();
             }
         }
 

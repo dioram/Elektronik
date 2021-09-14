@@ -5,6 +5,7 @@ using System.Reflection;
 using Elektronik.Settings;
 using Elektronik.Settings.Bags;
 using Humanizer;
+using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ namespace Elektronik.UI.SettingsFields
 {
     public class SettingsGenerator : MonoBehaviour
     {
+        #region Editor fields
+
         [SerializeField] private GameObject StringFieldPrefab;
         [SerializeField] private GameObject PathFieldPrefab;
         [SerializeField] private GameObject BoolFieldPrefab;
@@ -21,10 +24,14 @@ namespace Elektronik.UI.SettingsFields
         [SerializeField] private GameObject RangedFloatFieldPrefab;
         [SerializeField] private GameObject SettingsButtonPrefab;
         [SerializeField] private Transform Target;
-        private readonly List<SettingsFieldBase> _fields = new List<SettingsFieldBase>();
+
+        #endregion
+        
+        [CanBeNull] public SettingsBag Settings { get; private set; }
 
         public void Generate(SettingsBag settings)
         {
+            Settings = settings;
             Clear();
             var fields = settings.GetType()
                     .GetFields(BindingFlags.Public | BindingFlags.Instance)
@@ -50,6 +57,10 @@ namespace Elektronik.UI.SettingsFields
                 Destroy(field.gameObject);
             }
         }
+
+        #region Private
+        
+        private readonly List<SettingsFieldBase> _fields = new List<SettingsFieldBase>();
 
         private void AddField(FieldInfo fieldInfo, SettingsBag obj)
         {
@@ -111,7 +122,7 @@ namespace Elektronik.UI.SettingsFields
 
             _fields.Add(uiField);
         }
-
+        
         private TFieldComponentType AddField<TFieldComponentType, TFieldType>(
             FieldInfo fieldInfo, SettingsBag obj)
                 where TFieldComponentType : SettingsField<TFieldType>
@@ -212,5 +223,7 @@ namespace Elektronik.UI.SettingsFields
             var f = go.GetComponent<TFieldComponentType>();
             return f;
         }
+
+        #endregion
     }
 }

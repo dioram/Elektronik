@@ -11,7 +11,7 @@ namespace Elektronik.Clusterization.Containers
 {
     public class ClustersContainer : ISourceTreeNode, IVisible, IRemovable
     {
-        public ClustersContainer(string displayName, List<List<SlamPoint>> data, IVisible sourceContainer)
+        public ClustersContainer(string displayName, IList<IList<SlamPoint>> data, IVisible sourceContainer)
         {
             DisplayName = displayName;
             SourceContainer = sourceContainer;
@@ -106,7 +106,7 @@ namespace Elektronik.Clusterization.Containers
         private bool _isVisible = true;
         private readonly List<ISourceTreeNode> _childrenList = new List<ISourceTreeNode>();
 
-        private void CreateClusters(List<List<SlamPoint>> data)
+        private void CreateClusters(IList<IList<SlamPoint>> data)
         {
             for (var i = 0; i < data.Count; i++)
             {
@@ -122,7 +122,7 @@ namespace Elektronik.Clusterization.Containers
             }
         }
 
-        private void ColorizeData(List<List<SlamPoint>> data)
+        private void ColorizeData(IList<IList<SlamPoint>> data)
         {
             var colors = GenerateColors(data.Count);
             for (int i = 0; i < data.Count; i++)

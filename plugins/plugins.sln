@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ros.Exporter", "Ros.Exporte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protobuf.Benchmarks", "Protobuf.Benchmarks\Protobuf.Benchmarks.csproj", "{EF4BC2CD-30B5-4E40-9921-EF44825E37DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clusterization.KMeans", "Clusterization.KMeans\Clusterization.KMeans.csproj", "{4C4BB0E5-928A-4B96-843D-931F23B030FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +155,18 @@ Global
 		{EF4BC2CD-30B5-4E40-9921-EF44825E37DD}.Release|x64.Build.0 = Release|Any CPU
 		{EF4BC2CD-30B5-4E40-9921-EF44825E37DD}.Release|x86.ActiveCfg = Release|Any CPU
 		{EF4BC2CD-30B5-4E40-9921-EF44825E37DD}.Release|x86.Build.0 = Release|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Debug|x64.Build.0 = Debug|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Debug|x86.Build.0 = Debug|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Release|x64.ActiveCfg = Release|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Release|x64.Build.0 = Release|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Release|x86.ActiveCfg = Release|Any CPU
+		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

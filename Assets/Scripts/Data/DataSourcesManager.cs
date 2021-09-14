@@ -26,6 +26,7 @@ namespace Elektronik.Data
         private List<ISourceRenderer> _renderers;
 
         public event Action<ISourceTreeNode> OnSourceAdded;
+        public event Action<ISourceTreeNode> OnSourceRemoved;
 
         // ReSharper disable once ParameterHidesMember
         public void AddRenderer(ISourceRenderer renderer)
@@ -126,6 +127,7 @@ namespace Elektronik.Data
             if (treeElement is null) return;
             _roots.Remove(treeElement);
             Destroy(treeElement.gameObject);
+            OnSourceRemoved?.Invoke(source);
         }
 
         public void TakeSnapshot()
