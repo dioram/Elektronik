@@ -28,44 +28,78 @@ namespace Elektronik
         [SerializeField] private Sprite NewPrereleaseSprite;
 
         #endregion
-        
-        public static bool IsNewer(string version1, string version2)
+
+        public struct Version : IComparable<Version>
         {
-            const string pattern = @"v?(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-rc(\d+))?(-WIP)?";
-            var match1 = Regex.Match(version1, pattern);
-            var match2 = Regex.Match(version2, pattern);
+            public readonly int Major;
+            public readonly int Minor;
+            public readonly int Fix;
+            public readonly int Rc;
+            public readonly bool Wip;
 
-            var major1 = Parse(match1.Groups[1].Value);
-            var minor1 = Parse(match1.Groups[2].Value);
-            var fix1 = Parse(match1.Groups[3].Value);
-            var rc1 = Parse(match1.Groups[4].Value);
-            var wip1 = !string.IsNullOrEmpty(match1.Groups[5].Value);
+            public Version(string version)
+            {
+                const string pattern = @"v?(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-rc(\d+))?(-WIP)?";
+                var match = Regex.Match(version, pattern);
 
-            var major2 = Parse(match2.Groups[1].Value);
-            var minor2 = Parse(match2.Groups[2].Value);
-            var fix2 = Parse(match2.Groups[3].Value);
-            var rc2 = Parse(match2.Groups[4].Value);
-            var wip2 = !string.IsNullOrEmpty(match2.Groups[5].Value);
+                Major = Parse(match.Groups[1].Value);
+                Minor = Parse(match.Groups[2].Value);
+                Fix = Parse(match.Groups[3].Value);
+                Rc = Parse(match.Groups[4].Value);
+                Wip = !string.IsNullOrEmpty(match.Groups[5].Value);
+            }
 
-            if (major1 > major2) return true;
-            if (major1 < major2) return false;
+            public int CompareTo(Version other)
+            {
+                if (Major > other.Major) return 1;
+                if (Major < other.Major) return -1;
             
-            if (minor1 > minor2) return true;
-            if (minor1 < minor2) return false;
+                if (Minor > other.Minor) return 1;
+                if (Minor < other.Minor) return -1;
             
-            if (fix1 > fix2) return true;
-            if (fix1 < fix2) return false;
+                if (Fix > other.Fix) return 1;
+                if (Fix < other.Fix) return -1;
 
-            if (rc1 == 0 && rc2 > 0) return true;
-            if (rc2 == 0 && rc1 > 0) return false;
+                if (Rc == 0 && other.Rc > 0) return 1;
+                if (other.Rc == 0 && Rc > 0) return -1;
             
-            if (rc1 > rc2) return true;
-            if (rc1 < rc2) return false;
+                if (Rc > other.Rc) return 1;
+                if (Rc < other.Rc) return -1;
 
-            if (wip1) return false;
-            if (wip2) return true;
+                if (Wip) return -1;
+                if (other.Wip) return 1;
 
-            return false;
+                return 0;
+            }
+
+            public static bool operator >(Version first, Version second)
+            {
+                return first.CompareTo(second) > 0;
+            }
+
+            public static bool operator <(Version first, Version second)
+            {
+                return first.CompareTo(second) < 0;
+            }
+
+            public static bool operator ==(Version first, Version second)
+            {
+                return first.CompareTo(second) == 0;
+            }
+
+            public static bool operator !=(Version first, Version second)
+            {
+                return !(first == second);
+            }
+
+            public override string ToString()
+            {
+                var rc = Rc > 0 ? $"-rc{Rc}" : "";
+                var wip = Wip ? "-WIP" : "";
+                return $"v{Major}.{Minor}.{Fix}{rc}{wip}";
+            }
+            
+            private static int Parse(string str) => int.TryParse(str, out var res) ? res : 0;
         }
         
         #region Unity events
@@ -82,7 +116,7 @@ namespace Elektronik
 
         private struct Release
         {
-            public string Version;
+            public Version Version;
             public string ReleaseNotes;
             public bool IsPreRelease;
 
@@ -114,7 +148,7 @@ namespace Elektronik
         private readonly List<Release> _releases = new List<Release>();
         
         private static int Parse(string str) => int.TryParse(str, out var res) ? res : 0;
-
+        
         private void GetReleases()
         {
             try
@@ -131,9 +165,9 @@ namespace Elektronik
                 {
                     _releases.Add(new Release
                     {
-                        Version = (string)field["tag_name"],
-                        ReleaseNotes = (string)field["body"],
-                        IsPreRelease = (bool)field["prerelease"],
+                        Version = new Version((string) field["tag_name"]),
+                        ReleaseNotes = (string) field["body"],
+                        IsPreRelease = (bool) field["prerelease"],
                     });
                 }
             }
@@ -145,13 +179,13 @@ namespace Elektronik
 
         private void ShowReleases()
         {
-            var releases = _releases.Where(r => IsNewer(r.Version, Application.version)).ToList();
+            var releases = _releases.Where(r => r.Version > new Version(Application.version)).ToList();
             var hasReleases = releases.Any(r => !r.IsPreRelease);
             
             foreach (var release in releases)
             {
                 var go = Instantiate(ReleasePrefab, ReleaseTarget);
-                go.transform.Find("Header/Version").GetComponent<TMP_Text>().text = release.Version;
+                go.transform.Find("Header/Version").GetComponent<TMP_Text>().text = release.Version.ToString();
                 go.transform.Find("Notes").GetComponent<TMP_Text>().text = release.ReleaseNotes;
                 var button = go.transform.Find("Header/UpdateButton").GetComponent<Button>();
                 button.OnClickAsObservable().Subscribe(_ => release.Update());
