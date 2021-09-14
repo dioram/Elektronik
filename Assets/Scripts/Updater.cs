@@ -26,6 +26,79 @@ namespace Elektronik
         [SerializeField] private Color NewReleaseColor;
         [SerializeField] private Color NewPrereleaseColor;
 
+        public struct Version : IComparable<Version>
+        {
+            public readonly int Major;
+            public readonly int Minor;
+            public readonly int Fix;
+            public readonly int Rc;
+            public readonly bool Wip;
+
+            public Version(string version)
+            {
+                const string pattern = @"v?(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-rc(\d+))?(-WIP)?";
+                var match = Regex.Match(version, pattern);
+
+                Major = Parse(match.Groups[1].Value);
+                Minor = Parse(match.Groups[2].Value);
+                Fix = Parse(match.Groups[3].Value);
+                Rc = Parse(match.Groups[4].Value);
+                Wip = !string.IsNullOrEmpty(match.Groups[5].Value);
+            }
+
+            public int CompareTo(Version other)
+            {
+                if (Major > other.Major) return 1;
+                if (Major < other.Major) return -1;
+            
+                if (Minor > other.Minor) return 1;
+                if (Minor < other.Minor) return -1;
+            
+                if (Fix > other.Fix) return 1;
+                if (Fix < other.Fix) return -1;
+
+                if (Rc == 0 && other.Rc > 0) return 1;
+                if (other.Rc == 0 && Rc > 0) return -1;
+            
+                if (Rc > other.Rc) return 1;
+                if (Rc < other.Rc) return -1;
+
+                if (Wip) return -1;
+                if (other.Wip) return 1;
+
+                return 0;
+            }
+
+            public static bool operator >(Version first, Version second)
+            {
+                return first.CompareTo(second) > 0;
+            }
+
+            public static bool operator <(Version first, Version second)
+            {
+                return first.CompareTo(second) < 0;
+            }
+
+            public static bool operator ==(Version first, Version second)
+            {
+                return first.CompareTo(second) == 0;
+            }
+
+            public static bool operator !=(Version first, Version second)
+            {
+                return !(first == second);
+            }
+
+            public override string ToString()
+            {
+                var rc = Rc > 0 ? $"-rc{Rc}" : "";
+                var wip = Wip ? "-WIP" : "";
+                return $"v{Major}.{Minor}.{Fix}{rc}{wip}";
+            }
+            
+            private static int Parse(string str) => int.TryParse(str, out var res) ? res : 0;
+        }
+        
         #region Unity events
 
         private void Start()
@@ -41,7 +114,7 @@ namespace Elektronik
 
         private struct Release
         {
-            public string Version;
+            public Version Version;
             public string ReleaseNotes;
             public bool IsPreRelease;
 
@@ -70,23 +143,6 @@ namespace Elektronik
 
         private readonly List<Release> _releases = new List<Release>();
 
-        private bool IsNewer(string version1, string version2, bool ignorePreRelease)
-        {
-            const string pattern = @"v?(\d*)(?:\.(\d*))?(?:\.(\d*))?(?:-rc(\d*))?";
-            var match1 = Regex.Match(version1, pattern);
-            var match2 = Regex.Match(version2, pattern);
-            for (int i = 1; i < match1.Groups.Count; i++)
-            {
-                int v1 = string.IsNullOrEmpty(match1.Groups[i].Value) ? 0 : int.Parse(match1.Groups[i].Value);
-                int v2 = string.IsNullOrEmpty(match2.Groups[i].Value) ? 0 : int.Parse(match2.Groups[i].Value);
-                if (i == 4 && ignorePreRelease) return false;
-                if (v1 > v2) return true;
-                if (v1 < v2) return false;
-            }
-
-            return false;
-        }
-
         private void GetReleases()
         {
             var request = WebRequest.CreateHttp(ApiPath);
@@ -103,7 +159,7 @@ namespace Elektronik
                 {
                     _releases.Add(new Release
                     {
-                        Version = (string) field["tag_name"],
+                        Version = new Version((string) field["tag_name"]),
                         ReleaseNotes = (string) field["body"],
                         IsPreRelease = (bool) field["prerelease"],
                     });
@@ -118,12 +174,12 @@ namespace Elektronik
         private void ShowReleases(bool preReleases)
         {
             var releases = _releases
-                    .Where(r => IsNewer(r.Version, Application.version, !preReleases))
+                    .Where(r => r.Version > new Version(Application.version))
                     .Where(r => r.IsPreRelease == preReleases).ToList();
             foreach (var release in releases)
             {
                 var go = Instantiate(ReleasePrefab, preReleases ? PreReleaseRenderTarget : ReleaseRenderTarget);
-                go.transform.Find("Header/Version").GetComponent<TMP_Text>().text = release.Version;
+                go.transform.Find("Header/Version").GetComponent<TMP_Text>().text = release.Version.ToString();
                 go.transform.Find("Notes").GetComponent<TMP_Text>().text = release.ReleaseNotes;
                 var updateButton =  go.transform.Find("Header/UpdateButton").GetComponent<Button>();
                 updateButton.OnClickAsObservable().Subscribe(_ => release.Update());
