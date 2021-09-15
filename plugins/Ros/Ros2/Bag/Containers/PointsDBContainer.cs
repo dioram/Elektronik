@@ -23,7 +23,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region DBContainer
 
-        public override bool ShowButton { get; } = true;
+        public override bool ShowButton => true;
 
         public override void Clear()
         {
@@ -36,16 +36,16 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         {
             if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
             _pointsRenderers.Add(pointRenderer);
-            OnShow += pointRenderer.ShowItems;
-            OnClear += pointRenderer.OnClear;
+            // OnShow += pointRenderer.ShowItems;
+            // OnClear += pointRenderer.OnClear;
         }
 
         public override void RemoveRenderer(ISourceRenderer renderer)
         {
             if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
             _pointsRenderers.Remove(pointRenderer);
-            OnShow += pointRenderer.ShowItems;
-            OnClear += pointRenderer.OnClear;
+            // OnShow += pointRenderer.ShowItems;
+            // OnClear += pointRenderer.OnClear;
         }
 
         public override bool IsVisible

@@ -88,7 +88,7 @@ namespace Elektronik.Containers
         private bool _isVisible = false;
         private readonly IContainer<SlamPoint> _points;
         private readonly ThreadWorkerSingleAwaiter _threadWorker = new ThreadWorkerSingleAwaiter();
-        private List<IMeshRenderer> _renderer = new List<IMeshRenderer>();
+        private readonly List<IMeshRenderer> _renderer = new List<IMeshRenderer>();
 
         private void RequestCalculation()
         {

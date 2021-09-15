@@ -34,7 +34,6 @@ namespace Elektronik.Clusterization.KMeans
 
         private List<int> ComputeClusters(IList<SlamPoint> points, int numberOfClusters)
         {
-            // TODO: rewrite without file
             File.WriteAllLines("tmp.csv", points
                                    .Select(p => $"{p.Position.x.ToString(CultureInfo.InvariantCulture)};" +
                                                 $"{p.Position.y.ToString(CultureInfo.InvariantCulture)};" +
