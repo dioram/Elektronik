@@ -5,9 +5,12 @@ using Elektronik.Settings.Bags;
 
 namespace Elektronik.Protobuf.Recorders
 {
-    public class AddressesSettingsBag : SettingsBag
+    public class RetranslatorSettingsBag : SettingsBag
     {
         [CheckForEquals] public string Addresses = "127.0.0.1:5000;";
+
+        public Action? StartRetranslation;
+        public Action? StopRetranslation;
 
         public override ValidationResult Validate()
         {

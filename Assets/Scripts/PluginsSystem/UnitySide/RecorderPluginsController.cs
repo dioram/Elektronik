@@ -24,12 +24,13 @@ namespace Elektronik.PluginsSystem.UnitySide
         [SerializeField] private Sprite RecordImage;
         [SerializeField] private Sprite StopImage;
         [SerializeField] private CSConverter Converter;
+        [SerializeField] private PluginWindowsManager WindowsManager;
 
         #endregion
 
         public static void Save(ISourceTreeNode node)
         {
-            FileBrowser.SetFilters(false, _recordersFactories.Select(f => f.Extension).ToArray());
+            FileBrowser.SetFilters(false, _fileRecordersFactories.Select(f => f.Extension).ToArray());
             FileBrowser.ShowSaveDialog(path => Save(node, path[0]),
                                        () => { }, false, false, null,
                                        "Save to:".tr(), "Save".tr());
@@ -45,11 +46,39 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         private void Start()
         {
-            _recordersFactories = PluginsLoader.Instance.PluginFactories
+            InitFileRecorders();
+            InitCustomRecorders();
+        }
+
+        #endregion
+
+        #region Private
+
+        private Image _toolbarButtonImage;
+        private static IFileRecorderPluginsFactory[] _fileRecordersFactories;
+        private static ICSConverter _converter;
+        private IDataRecorderPlugin _currentRecorder;
+        private bool IsRecording => _currentRecorder != null;
+
+        private void InitCustomRecorders()
+        {
+            var plugins = PluginsLoader.Instance.PluginFactories
+                .OfType<ICustomRecorderPluginsFactory>()
+                .Select(f => (IDataRecorderPlugin)f.Start(Converter));
+            foreach (var plugin in plugins)
+            {
+                WindowsManager.RegisterPlugin(plugin);
+                DataSourcesManager.AddRenderer(plugin);
+            }
+        }
+
+        private void InitFileRecorders()
+        {
+            _fileRecordersFactories = PluginsLoader.Instance.PluginFactories
                 .OfType<IFileRecorderPluginsFactory>()
                 .ToArray();
 
-            if (_recordersFactories.Length == 0)
+            if (_fileRecordersFactories.Length == 0)
             {
                 Destroy(ToolbarButton.gameObject);
                 Destroy(RecordersWindow.gameObject);
@@ -57,7 +86,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                 return;
             }
 
-            InputWithBrowse.Filters = _recordersFactories.Select(f => f.Extension).ToArray();
+            InputWithBrowse.Filters = _fileRecordersFactories.Select(f => f.Extension).ToArray();
 
             StartRecordingButton.OnClickAsObservable()
                 .Select(_ => InputWithBrowse.FilePath)
@@ -82,16 +111,6 @@ namespace Elektronik.PluginsSystem.UnitySide
                 .AddTo(this);
         }
 
-        #endregion
-
-        #region Private
-
-        private Image _toolbarButtonImage;
-        private static IFileRecorderPluginsFactory[] _recordersFactories;
-        private static ICSConverter _converter;
-        private IDataRecorderPlugin _currentRecorder;
-        private bool IsRecording => _currentRecorder != null;
-
         private void OnRecorderDisposed()
         {
             _currentRecorder.OnDisposed -= OnRecorderDisposed;
@@ -102,7 +121,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         private static IFileRecorderPluginsFactory GetRecorderByFileName(string path)
         {
-            var res = _recordersFactories.FirstOrDefault(f => f.Extension == Path.GetExtension(path));
+            var res = _fileRecordersFactories.FirstOrDefault(f => f.Extension == Path.GetExtension(path));
             if (res is null) return null;
             res.Filename = path;
             return res;
