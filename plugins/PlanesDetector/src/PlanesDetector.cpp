@@ -36,3 +36,11 @@ PlanesDetector::FindPlanes(const std::vector<Vector3d>& points, const Preference
 
     return res;
 }
+
+Preferences::Preferences(int depthThreshold, double epsilon, int numStartPoints, int numPoints, int steps,
+                         double countRatio, float dCos, const Vector3<double>& gravity, bool useGravity,
+                         float gravityDCos)
+        : DepthThreshold(depthThreshold), Epsilon(epsilon), NumStartPoints(numStartPoints), NumPoints(numPoints),
+          Steps(steps), CountRatio(countRatio), DCos(dCos), Gravity(gravity), UseGravity(useGravity),
+          GravityDCos(gravityDCos)
+{ }

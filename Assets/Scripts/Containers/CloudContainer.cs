@@ -5,11 +5,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elektronik.Clouds;
-using Elektronik.Clusterization.Containers;
+using Elektronik.Clusterization;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.PackageObjects;
-using Elektronik.PluginsSystem;
 using UnityEngine;
 
 namespace Elektronik.Containers
@@ -165,7 +164,7 @@ namespace Elektronik.Containers
         private bool _isVisible = true;
         private readonly CloudContainerBase<SimpleLine> _traceContainer = new CloudContainerBase<SimpleLine>();
         private int _maxTraceId = 0;
-        private List<ICloudRenderer<TCloudItem>> _renderers = new List<ICloudRenderer<TCloudItem>>(); 
+        private readonly List<ICloudRenderer<TCloudItem>> _renderers = new List<ICloudRenderer<TCloudItem>>(); 
 
         private void CreateTraces(IEnumerable<TCloudItem> items)
         {

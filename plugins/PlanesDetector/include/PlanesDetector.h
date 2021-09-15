@@ -7,6 +7,9 @@
 class Preferences
 {
 public:
+    Preferences(int depthThreshold, double epsilon, int numStartPoints, int numPoints, int steps, double countRatio,
+                float dCos, const Vector3<double>& gravity, bool useGravity, float gravityDCos);
+
     int DepthThreshold;
     double Epsilon;
     int NumStartPoints;

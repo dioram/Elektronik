@@ -859,7 +859,7 @@ GameObject:
   - component: {fileID: 5114720201857514939}
   - component: {fileID: 2617602309417154001}
   - component: {fileID: 4685979900616694496}
-  - component: {fileID: 489102282023419168}
+  - component: {fileID: 3666931697678840492}
   m_Layer: 0
   m_Name: Algorithm settings panel
   m_TagString: Untagged
@@ -985,11 +985,12 @@ MonoBehaviour:
   BoolFieldPrefab: {fileID: 8779474675268355695, guid: db22b08aca38c65419f346b75a00bffb, type: 3}
   IntegerFieldPrefab: {fileID: 8779474675268355695, guid: cc7b3e393a2b18040a57be0fd98afab2, type: 3}
   FloatFieldPrefab: {fileID: 8779474675268355695, guid: 25d9cf632ecb9ae408963d6303641c54, type: 3}
+  Vector3FieldPrefab: {fileID: 449866274948183701, guid: 30867260540a93c42aa41d89217b6039, type: 3}
   RangedIntegerFieldPrefab: {fileID: 8779474675268355695, guid: bb7346bfa6e00c6428bf92f266b7e506, type: 3}
   RangedFloatFieldPrefab: {fileID: 8779474675268355695, guid: 5c2cbbf4906391843b4502a04ee74442, type: 3}
   SettingsButtonPrefab: {fileID: 8779474675268355695, guid: e20c3905a3495364d97bd9a0f0384525, type: 3}
   Target: {fileID: 5103633821403118236}
---- !u!114 &489102282023419168
+--- !u!114 &3666931697678840492
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -998,7 +999,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7018559033462731093}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22abcf28798343f585079c2c43d0590f, type: 3}
+  m_Script: {fileID: 11500000, guid: b73d8ec052a8ae34a91400caac963744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ComputeButton: {fileID: 8933604154606765919}
@@ -1101,8 +1102,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4425565967547334878, guid: d135a7fa836761e4fbe831a6fcc95dfd, type: 3}
-      propertyPath: m_AnchoredPosition.x
+      propertyPath: m_SizeDelta.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425565967547334878, guid: d135a7fa836761e4fbe831a6fcc95dfd, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425565967547334878, guid: d135a7fa836761e4fbe831a6fcc95dfd, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 87.5
       objectReference: {fileID: 0}
     - target: {fileID: 4425565967547334878, guid: d135a7fa836761e4fbe831a6fcc95dfd, type: 3}
       propertyPath: m_AnchoredPosition.y

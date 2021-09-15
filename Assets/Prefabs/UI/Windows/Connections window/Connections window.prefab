@@ -790,6 +790,7 @@ MonoBehaviour:
   BoolFieldPrefab: {fileID: 8779474675268355695, guid: db22b08aca38c65419f346b75a00bffb, type: 3}
   IntegerFieldPrefab: {fileID: 8779474675268355695, guid: cc7b3e393a2b18040a57be0fd98afab2, type: 3}
   FloatFieldPrefab: {fileID: 8779474675268355695, guid: 25d9cf632ecb9ae408963d6303641c54, type: 3}
+  Vector3FieldPrefab: {fileID: 449866274948183701, guid: 30867260540a93c42aa41d89217b6039, type: 3}
   RangedIntegerFieldPrefab: {fileID: 8779474675268355695, guid: bb7346bfa6e00c6428bf92f266b7e506, type: 3}
   RangedFloatFieldPrefab: {fileID: 8779474675268355695, guid: 5c2cbbf4906391843b4502a04ee74442, type: 3}
   SettingsButtonPrefab: {fileID: 8779474675268355695, guid: e20c3905a3495364d97bd9a0f0384525, type: 3}

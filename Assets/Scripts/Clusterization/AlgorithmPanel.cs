@@ -7,7 +7,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Elektronik.Clusterization.UI
+namespace Elektronik.Clusterization
 {
     [RequireComponent(typeof(SettingsGenerator))]
     public class AlgorithmPanel : MonoBehaviour

@@ -7,7 +7,7 @@ using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
 
-namespace Elektronik.Clusterization.Containers
+namespace Elektronik.Clusterization
 {
     public class ClustersContainer : ISourceTreeNode, IVisible, IRemovable
     {

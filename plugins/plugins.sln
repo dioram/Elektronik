@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protobuf.Benchmarks", "Prot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clusterization.KMeans", "Clusterization.KMeans\Clusterization.KMeans.csproj", "{4C4BB0E5-928A-4B96-843D-931F23B030FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clusterization.PlanesDetection", "Clusterization.PlanesDetection\Clusterization.PlanesDetection.csproj", "{E015921B-A8D5-42D8-B88A-58280488460B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -167,6 +169,18 @@ Global
 		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Release|x64.Build.0 = Release|Any CPU
 		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Release|x86.ActiveCfg = Release|Any CPU
 		{4C4BB0E5-928A-4B96-843D-931F23B030FF}.Release|x86.Build.0 = Release|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Debug|x64.Build.0 = Debug|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Debug|x86.Build.0 = Debug|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Release|x64.ActiveCfg = Release|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Release|x64.Build.0 = Release|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Release|x86.ActiveCfg = Release|Any CPU
+		{E015921B-A8D5-42D8-B88A-58280488460B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

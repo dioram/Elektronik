@@ -20,6 +20,7 @@ namespace Elektronik.UI.SettingsFields
         [SerializeField] private GameObject BoolFieldPrefab;
         [SerializeField] private GameObject IntegerFieldPrefab;
         [SerializeField] private GameObject FloatFieldPrefab;
+        [SerializeField] private GameObject Vector3FieldPrefab;
         [SerializeField] private GameObject RangedIntegerFieldPrefab;
         [SerializeField] private GameObject RangedFloatFieldPrefab;
         [SerializeField] private GameObject SettingsButtonPrefab;
@@ -85,6 +86,10 @@ namespace Elektronik.UI.SettingsFields
             else if (fieldInfo.FieldType == typeof(float))
             {
                 uiField = AddField<FloatField, float>(fieldInfo, obj);
+            }
+            else if (fieldInfo.FieldType == typeof(Vector3))
+            {
+                uiField = AddField<Vector3Field, Vector3>(fieldInfo, obj);
             }
             else if (fieldInfo.FieldType == typeof(string) && HasAttribute<PathAttribute>(fieldInfo))
             {
@@ -189,6 +194,10 @@ namespace Elektronik.UI.SettingsFields
             else if (typeof(string) == typeof(TFieldType))
             {
                 prefab = StringFieldPrefab;
+            }
+            else if (typeof(Vector3) == typeof(TFieldType))
+            {
+                prefab = Vector3FieldPrefab;
             }
             else
             {

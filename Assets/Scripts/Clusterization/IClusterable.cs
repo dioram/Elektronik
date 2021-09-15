@@ -1,6 +1,6 @@
 ﻿using Elektronik.Data.PackageObjects;
 
-namespace Elektronik.Clusterization.Containers
+namespace Elektronik.Clusterization
 {
     public interface IClusterable
     {
