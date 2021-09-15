@@ -60,19 +60,19 @@ namespace Elektronik.UI.Windows
             {
                 case EdgeSide.Top:
                 case EdgeSide.Bottom:
-                    Cursor.SetCursor(ImageStore.Instance.TopDownCursor, center, CursorMode.Auto);
+                    Cursor.SetCursor(PrefabsStore.Instance.TopDownCursor, center, CursorMode.Auto);
                     break;
                 case EdgeSide.Right:
                 case EdgeSide.Left:
-                    Cursor.SetCursor(ImageStore.Instance.LeftRightCursor, center, CursorMode.Auto);
+                    Cursor.SetCursor(PrefabsStore.Instance.LeftRightCursor, center, CursorMode.Auto);
                     break;
                 case EdgeSide.TopLeft:
                 case EdgeSide.BottomRight:
-                    Cursor.SetCursor(ImageStore.Instance.NorthWestCursor, center, CursorMode.Auto);
+                    Cursor.SetCursor(PrefabsStore.Instance.NorthWestCursor, center, CursorMode.Auto);
                     break;
                 case EdgeSide.TopRight:
                 case EdgeSide.BottomLeft:
-                    Cursor.SetCursor(ImageStore.Instance.NorthEastCursor, center, CursorMode.Auto);
+                    Cursor.SetCursor(PrefabsStore.Instance.NorthEastCursor, center, CursorMode.Auto);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -85,7 +85,7 @@ namespace Elektronik.UI.Windows
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             SetCursor(LoadCursor(IntPtr.Zero, (int) WindowsCursors.StandardArrow));
 #else
-            Cursor.SetCursor(ImageStore.Instance.DefaultCursor, Vector2.zero, CursorMode.Auto);
+            Cursor.SetCursor(PrefabsStore.Instance.DefaultCursor, Vector2.zero, CursorMode.Auto);
 #endif
         }
 
