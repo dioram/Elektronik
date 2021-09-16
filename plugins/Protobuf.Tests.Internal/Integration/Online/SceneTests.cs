@@ -13,7 +13,7 @@ using Moq;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
+namespace Protobuf.Tests.Internal.Integration.Online
 {
     [TestFixture, FixtureLifeCycle(LifeCycle.SingleInstance)]
     public class SceneTests : OnlineTestsBase

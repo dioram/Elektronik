@@ -2,7 +2,7 @@
 using Elektronik.PluginsSystem;
 using Grpc.Core.Logging;
 
-namespace Elektronik.Protobuf.OnlineBuffered
+namespace Elektronik.Protobuf.Online
 {
     public class ProtobufOnlinePlayerFactory : ElektronikPluginsFactoryBase<OnlineSettingsBag>,
                                                IDataSourcePluginsFactory
@@ -14,7 +14,7 @@ namespace Elektronik.Protobuf.OnlineBuffered
 
         public ILogger? Logger;
 
-        public override string DisplayName => "gRPC+Protobuf (buffered)";
+        public override string DisplayName => "gRPC+Protobuf";
 
         public override string Description =>
                 "This plugin plays data coming through " +

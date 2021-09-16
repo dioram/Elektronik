@@ -7,14 +7,14 @@ using Elektronik.Data.Converters;
 using Elektronik.Extensions;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
-using Elektronik.Protobuf.OnlineBuffered.GrpcServices;
-using Elektronik.Protobuf.OnlineBuffered.Presenters;
+using Elektronik.Protobuf.Online.GrpcServices;
+using Elektronik.Protobuf.Online.Presenters;
 using Elektronik.Settings.Bags;
 using Grpc.Core;
 using UnityEngine;
 using ILogger = Grpc.Core.Logging.ILogger;
 
-namespace Elektronik.Protobuf.OnlineBuffered
+namespace Elektronik.Protobuf.Online
 {
     using GrpcServer = Server;
 

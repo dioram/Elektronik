@@ -1,7 +1,7 @@
 ﻿using System;
 using Grpc.Core.Logging;
 
-namespace Elektronik.Protobuf.OnlineBuffered
+namespace Elektronik.Protobuf.Online
 {
     internal class UnityLogger : ILogger
     {

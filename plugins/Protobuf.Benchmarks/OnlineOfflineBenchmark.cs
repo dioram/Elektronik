@@ -9,7 +9,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.Extensions;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
-using Elektronik.Protobuf.OnlineBuffered.GrpcServices;
+using Elektronik.Protobuf.Online.GrpcServices;
 using Protobuf.Tests.Internal;
 using ICommand = Elektronik.Commands.ICommand;
 

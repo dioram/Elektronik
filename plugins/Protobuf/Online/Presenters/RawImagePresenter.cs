@@ -1,6 +1,6 @@
 ﻿using Elektronik.Protobuf.Data;
 
-namespace Elektronik.Protobuf.OnlineBuffered.Presenters
+namespace Elektronik.Protobuf.Online.Presenters
 {
     public class RawImagePresenter : ImagePresenter<byte[]>
     {

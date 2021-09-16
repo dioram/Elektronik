@@ -2,7 +2,7 @@
 using Elektronik.Settings;
 using Elektronik.Settings.Bags;
 
-namespace Elektronik.Protobuf.OnlineBuffered
+namespace Elektronik.Protobuf.Online
 {
     [Serializable]
     public class OnlineSettingsBag : SettingsBag

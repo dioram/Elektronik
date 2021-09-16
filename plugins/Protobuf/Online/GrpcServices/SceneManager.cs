@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Elektronik.Data;
 using Elektronik.Protobuf.Data;
-using Elektronik.Protobuf.OnlineBuffered.Presenters;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Core.Logging;
 
-namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
+namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    public class ImageManager : ImageManagerPb.ImageManagerPbBase
+    public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {
         private readonly ILogger _logger;
-        private readonly RawImagePresenter? _presenter;
+        private readonly ISourceTreeNode _container;
 
-        public ImageManager(RawImagePresenter? presenter, ILogger logger)
+        public SceneManager(ISourceTreeNode container, ILogger logger)
         {
-            _presenter = presenter;
+            _container = container;
             _logger = logger;
         }
 
-        public override Task<ErrorStatusPb> Handle(ImagePacketPb request, ServerCallContext context)
+        public override Task<ErrorStatusPb> Clear(Empty request, ServerCallContext context)
         {
             var timer = Stopwatch.StartNew();
             var err = new ErrorStatusPb()
@@ -28,7 +29,10 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
             };
             try
             {
-                _presenter?.Present(request.ImageData.ToByteArray());
+                foreach (var child in _container.Children)
+                {
+                    child.Clear();
+                }
             }
             catch (Exception e)
             {
@@ -37,7 +41,7 @@ namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
             }
 
             timer.Stop();
-            _logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err}");
+            _logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err.Message}");
 
             return Task.FromResult(err);
         }

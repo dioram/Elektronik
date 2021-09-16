@@ -10,7 +10,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
-namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
+namespace Protobuf.Tests.Internal.Integration.Online
 {
     [TestFixture, FixtureLifeCycle(LifeCycle.SingleInstance)]
     public class ObservationsTests : OnlineTestsBase

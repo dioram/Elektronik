@@ -4,14 +4,14 @@ using Elektronik.Clouds;
 using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Data;
-using Elektronik.Protobuf.OnlineBuffered;
+using Elektronik.Protobuf.Online;
 using Elektronik.Renderers;
 using FluentAssertions;
 using Grpc.Core;
 using Moq;
 using NUnit.Framework;
 
-namespace Protobuf.Tests.Internal.Integration.OnlineBuffered
+namespace Protobuf.Tests.Internal.Integration.Online
 {
     public class OnlineTestsBase
     {

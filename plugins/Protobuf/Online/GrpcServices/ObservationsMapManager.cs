@@ -10,7 +10,7 @@ using Elektronik.Protobuf.Data;
 using Grpc.Core;
 using Grpc.Core.Logging;
 
-namespace Elektronik.Protobuf.OnlineBuffered.GrpcServices
+namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class ObservationsMapManager : ConnectableObjectsMapManager<SlamObservation, SlamObservationDiff>
     {
