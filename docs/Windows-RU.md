@@ -30,8 +30,4 @@
 
 ![SpecialInfoWindow.png](Images/SpecialInfoWindow.png)
 
-### Окно настроек
-
-![SettingsWindow.png](Images/SettingsWindow.png)
-
 [<- Написать свой плагин](Plugins-RU.md) | [Protobuf plugin ->](Protobuf-RU.md)

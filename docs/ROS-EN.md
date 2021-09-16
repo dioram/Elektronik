@@ -17,7 +17,7 @@ This plugin has 4 modes:
     - Select offline mode and **"ROS bag"** plugin, and choose path to "*.bag" file.
       For now plugin supports only uncompressed bags.
 2) Direct reading from rosbag2.
-    - Select offline mode and **"ROS bag"** plugin, and choose path to "*.db3" file.
+    - Select offline mode and **"ROS bag"** plugin, and choose path to "*.db3" or metadata.yaml file.
 3) Rendering data transmitted via ROS.
     - For that you have to use [Rosbridge](http://wiki.ros.org/rosbridge_suite/Tutorials/RunningRosbridge).
       In first terminal launch **roscore**, and in this second one - rosbridge. 
@@ -30,12 +30,5 @@ This plugin has 4 modes:
       then most likely it used default value - 0.
       Due to ROS2 protocol limitation Elektronik can't discover existed topics and will only subscribe on 
       topics launched after Elektronic started.
-
-## Plugin build
-
-This plugin (unlike others and Elektronik itself) using native C++ library, which should be compiled
-before compilation of plugin itself. You can see example of build commands in this [CI script](../.github/build.bat).
-Don't forget to init environment before cmake:
-```"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd" -arch=x64```
 
 [<- Protobuf](Protobuf-EN.md) | [Return to home page](Home-EN.md)

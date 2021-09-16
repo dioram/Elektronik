@@ -31,8 +31,4 @@ So, this type of windows shows only 10 last rows of table. Or you can preload al
 
 ![SpecialInfoWindow.png](Images/SpecialInfoWindow.png)
 
-### Settings window
-
-![SettingsWindow.png](Images/SettingsWindow.png)
-
 [<- Write your own plugin](Plugins-EN.md) | [Protobuf plugin ->](Protobuf-EN.md)
