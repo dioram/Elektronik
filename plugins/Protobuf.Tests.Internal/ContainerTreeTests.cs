@@ -41,7 +41,7 @@ namespace Protobuf.Tests.Internal
             Assert.AreEqual("Observations", ((ISourceTreeNode)_tree.Observations).DisplayName);
             Assert.AreEqual("Points", ((ISourceTreeNode)_tree.Points).DisplayName);
             Assert.AreEqual("Lines", ((ISourceTreeNode)_tree.Lines).DisplayName);
-            Assert.AreEqual("Infinite planes", ((ISourceTreeNode)_tree.InfinitePlanes).DisplayName);
+            Assert.AreEqual("Infinite planes", ((ISourceTreeNode)_tree.Planes).DisplayName);
             Assert.AreEqual("Camera", _tree.Image.DisplayName);
             Assert.AreEqual("Special info", _tree.SpecialInfo.DisplayName);
             Assert.AreEqual(true, _tree.IsVisible);

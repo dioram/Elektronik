@@ -1,4 +1,4 @@
-﻿namespace Elektronik
+﻿namespace Elektronik.Renderers
 {
     public interface ISourceRenderer
     {

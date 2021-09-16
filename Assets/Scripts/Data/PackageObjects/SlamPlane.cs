@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Elektronik.Data.PackageObjects
 {
     [Serializable]
-    public struct SlamInfinitePlane : ICloudItem
+    public struct SlamPlane : ICloudItem
     {
         public int Id { get; set; }
         public Vector3 Offset;
@@ -14,7 +14,7 @@ namespace Elektronik.Data.PackageObjects
         public string Message { get; set; }
         public SlamPoint AsPoint() => new SlamPoint(Id, Offset, Color);
 
-        public SlamInfinitePlane(int id, Vector3 offset, Vector3 normal, Color color, string message = "")
+        public SlamPlane(int id, Vector3 offset, Vector3 normal, Color color, string message = "")
         {
             Id = id;
             Offset = offset;
@@ -23,7 +23,7 @@ namespace Elektronik.Data.PackageObjects
             Message = message;
         }
 
-        public bool Equals(SlamInfinitePlane other)
+        public bool Equals(SlamPlane other)
         {
             return Offset.Equals(other.Offset) && Normal.Equals(other.Normal) &&
                     ((Color32) Color).Equals((Color32) other.Color) && Id == other.Id && Message == other.Message;
@@ -31,7 +31,7 @@ namespace Elektronik.Data.PackageObjects
 
         public override bool Equals(object obj)
         {
-            return obj is SlamInfinitePlane other && Equals(other);
+            return obj is SlamPlane other && Equals(other);
         }
 
         [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]

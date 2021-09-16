@@ -595,7 +595,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 56163336374001664
-    m_Localized: Warning! During continious run it can generate gigabytes of log!
+    m_Localized: Warning! During continuous run it can generate gigabytes of log!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56636672027729920
+    m_Localized: Data sources
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56918065295204352
+    m_Localized: Clusterization
     m_Metadata:
       m_Items: []
   references:

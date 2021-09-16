@@ -16,7 +16,7 @@ namespace Elektronik.PluginsSystem.UnitySide
     {
         #region Editor fields
 
-        [SerializeField] private DataSourcesManager DataSourcesManager;
+        [SerializeField] private DataSourcesController DataSourcesController;
         [SerializeField] private Button ToolbarButton;
         [SerializeField] private Window RecordersWindow;
         [SerializeField] private Button StartRecordingButton;
@@ -34,6 +34,18 @@ namespace Elektronik.PluginsSystem.UnitySide
             FileBrowser.ShowSaveDialog(path => Save(node, path[0]),
                                        () => { }, false, false, null,
                                        "Save to:".tr(), "Save".tr());
+        }
+
+        public void Toggle()
+        {
+            if (IsRecording)
+            {
+                _currentRecorder.Dispose();
+            }
+            else
+            {
+                RecordersWindow.Show();
+            }
         }
 
         #region Unity events
@@ -68,7 +80,7 @@ namespace Elektronik.PluginsSystem.UnitySide
             foreach (var plugin in plugins)
             {
                 WindowsManager.RegisterPlugin(plugin);
-                DataSourcesManager.AddRenderer(plugin);
+                DataSourcesController.AddRenderer(plugin);
             }
         }
 
@@ -94,7 +106,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                 .Where(f => f != null)
                 .Select(f => (IDataRecorderPlugin)f.Start(Converter))
                 .Do(r => _currentRecorder = r)
-                .Do(DataSourcesManager.AddRenderer)
+                .Do(DataSourcesController.AddRenderer)
                 .Do(_ => _currentRecorder.OnDisposed += OnRecorderDisposed)
                 .Do(_ => RecordersWindow.Hide())
                 .Subscribe(_ => _toolbarButtonImage.sprite = StopImage)
@@ -114,7 +126,7 @@ namespace Elektronik.PluginsSystem.UnitySide
         private void OnRecorderDisposed()
         {
             _currentRecorder.OnDisposed -= OnRecorderDisposed;
-            DataSourcesManager.RemoveRenderer(_currentRecorder);
+            DataSourcesController.RemoveRenderer(_currentRecorder);
             _toolbarButtonImage.sprite = RecordImage;
             _currentRecorder = null;
         }

@@ -10,7 +10,7 @@ namespace Elektronik.PluginsSystem
     public abstract class DataRecorderPluginBase : IDataRecorderPlugin, ICloudRenderer<SlamPoint>,
                                                    ICloudRenderer<SlamLine>, ICloudRenderer<SimpleLine>,
                                                    ICloudRenderer<SlamObservation>, ICloudRenderer<SlamTrackedObject>,
-                                                   ICloudRenderer<SlamInfinitePlane>
+                                                   ICloudRenderer<SlamPlane>
     {
         #region ICloudRenderer
 
@@ -29,9 +29,9 @@ namespace Elektronik.PluginsSystem
         public abstract void OnItemsAdded(object sender, AddedEventArgs<SlamTrackedObject> e);
         public abstract void OnItemsUpdated(object sender, UpdatedEventArgs<SlamTrackedObject> e);
         public abstract void OnItemsRemoved(object sender, RemovedEventArgs<SlamTrackedObject> e);
-        public abstract void OnItemsAdded(object sender, AddedEventArgs<SlamInfinitePlane> e);
-        public abstract void OnItemsUpdated(object sender, UpdatedEventArgs<SlamInfinitePlane> e);
-        public abstract void OnItemsRemoved(object sender, RemovedEventArgs<SlamInfinitePlane> e);
+        public abstract void OnItemsAdded(object sender, AddedEventArgs<SlamPlane> e);
+        public abstract void OnItemsUpdated(object sender, UpdatedEventArgs<SlamPlane> e);
+        public abstract void OnItemsRemoved(object sender, RemovedEventArgs<SlamPlane> e);
 
         #endregion
 

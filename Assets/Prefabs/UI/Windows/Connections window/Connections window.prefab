@@ -143,7 +143,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Plugins
+  m_text: Data sources
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1f50e686876162448a97c5de561725d5, type: 2}
   m_sharedMaterial: {fileID: -8607631598616168397, guid: 1f50e686876162448a97c5de561725d5, type: 2}
@@ -173,9 +173,9 @@ MonoBehaviour:
   m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 36
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -228,7 +228,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:4b44fd5b774b9f3428cbd7c8bd7d2e11
     m_TableEntryReference:
-      m_KeyId: 447345725440
+      m_KeyId: 56636672027729920
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 1

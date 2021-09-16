@@ -19,7 +19,7 @@ namespace Elektronik.Clusterization.UI
         #region Editor fields
 
         [SerializeField] private TMP_Dropdown ContainersSelector;
-        [SerializeField] private DataSourcesManager DataSourcesManager;
+        [SerializeField] private DataSourcesController DataSourcesController;
         [SerializeField] private RectTransform AlgorithmPanelsTarget;
         [SerializeField] private GameObject AlgorithmPanelPrefab;
         [SerializeField] private GameObject ToolbarButton;
@@ -39,8 +39,8 @@ namespace Elektronik.Clusterization.UI
             }
 
             UpdateClusterableContainers();
-            DataSourcesManager.OnSourceAdded += _ => UpdateClusterableContainers();
-            DataSourcesManager.OnSourceRemoved += _ => UpdateClusterableContainers();
+            DataSourcesController.OnSourceAdded += _ => UpdateClusterableContainers();
+            DataSourcesController.OnSourceRemoved += _ => UpdateClusterableContainers();
 
             foreach (var factory in factories)
             {
@@ -91,7 +91,7 @@ namespace Elektronik.Clusterization.UI
 
             MainThreadInvoker.Enqueue(() =>
             {
-                DataSourcesManager.AddDataSource(clustered);
+                DataSourcesController.AddDataSource(clustered);
                 panel.enabled = true;
             });
         }
@@ -99,7 +99,7 @@ namespace Elektronik.Clusterization.UI
         private void UpdateClusterableContainers()
         {
             _clusterableContainers.Clear();
-            DataSourcesManager.MapSourceTree(FindClusterableContainers);
+            DataSourcesController.MapSourceTree(FindClusterableContainers);
             ContainersSelector.options = _clusterableContainers
                 .Select(c => new TMP_Dropdown.OptionData(c.name))
                 .ToList();

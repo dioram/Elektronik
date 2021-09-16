@@ -143,13 +143,13 @@ namespace Protobuf.Tests.Internal
         }
 
         [Test]
-        public void ExtractInfinitePlanesTest()
+        public void ExtractPlanesTest()
         {
             var packet = new PacketPb
             {
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes()
+                Planes = new PacketPb.Types.Planes()
             };
-            packet.InfinitePlanes.Data.Add(new InfinitePlanePb
+            packet.Planes.Data.Add(new PlanePb
             {
                 Id = 1, 
                 Offset = new Vector3Pb{X = 2, Y = 3, Z = 4},
@@ -157,7 +157,7 @@ namespace Protobuf.Tests.Internal
                 Color = new ColorPb{B = 255, G = 255, R = 255},
                 Message = "message"
             });
-            var planes = packet.ExtractInfinitePlanes(_mockedConverter.Object).ToArray();
+            var planes = packet.ExtractPlanes(_mockedConverter.Object).ToArray();
             Assert.AreEqual(1, planes.Count());
             Assert.AreEqual(1, planes[0].Id);
             Assert.AreEqual(new Vector3(-2, 3, 4), planes[0].Offset);

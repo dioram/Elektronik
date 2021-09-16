@@ -15,7 +15,7 @@ namespace Elektronik.PluginsSystem.UnitySide
         [SerializeField] private CSConverter Converter;
         [SerializeField] private PlayerEventsController PlayerEvents;
         [SerializeField] private GameObject ScreenLocker;
-        [SerializeField] private DataSourcesManager DataSourcesManager;
+        [SerializeField] private DataSourcesController DataSourcesController;
         [SerializeField] private PluginWindowsManager PluginWindowsManager;
 
         public IDataSourcePlugin CurrentSource { get; private set; }
@@ -25,7 +25,7 @@ namespace Elektronik.PluginsSystem.UnitySide
             if (!(CurrentSource is null))
             {
                 PluginWindowsManager.UnregisterPlugin(CurrentSource);
-                DataSourcesManager.RemoveDataSource(CurrentSource.Data);
+                DataSourcesController.RemoveDataSource(CurrentSource.Data);
                 CurrentSource.Dispose();
             }
             IDataSourcePlugin plugin = null;
@@ -45,7 +45,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                 {
                     PluginWindowsManager.RegisterPlugin(CurrentSource);
                     PlayerEvents.DataSourcePlugin = CurrentSource;
-                    DataSourcesManager.AddDataSource(CurrentSource.Data);
+                    DataSourcesController.AddDataSource(CurrentSource.Data);
                     ScreenLocker.SetActive(false);
                     CurrentSource.Play();
                 });

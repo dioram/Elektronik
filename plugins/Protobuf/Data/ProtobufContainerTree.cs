@@ -6,6 +6,7 @@ using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.Protobuf.Offline.Presenters;
+using Elektronik.Renderers;
 
 namespace Elektronik.Protobuf.Data
 {
@@ -15,7 +16,7 @@ namespace Elektronik.Protobuf.Data
         public readonly IConnectableObjectsContainer<SlamObservation> Observations;
         public readonly IConnectableObjectsContainer<SlamPoint> Points;
         public readonly IContainer<SlamLine> Lines;
-        public readonly IContainer<SlamInfinitePlane> InfinitePlanes;
+        public readonly IContainer<SlamPlane> Planes;
         public readonly ISourceTreeNode? Image;
         public readonly IMeshContainer MeshContainer;
         public readonly Connector Connector;
@@ -39,7 +40,7 @@ namespace Elektronik.Protobuf.Data
             Connector = new Connector(Points, Observations, "Connections");
             Lines = new SlamLinesContainer("Lines");
             MeshContainer = new MeshReconstructor(Points, "Mesh");
-            InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
+            Planes = new CloudContainer<SlamPlane>("Planes");
             var observationsGraph = new VirtualContainer("Observations graph", new List<ISourceTreeNode>
             {
                 (ISourceTreeNode) Observations,
@@ -49,7 +50,7 @@ namespace Elektronik.Protobuf.Data
             {
                 (ISourceTreeNode) Points,
                 (ISourceTreeNode) TrackedObjs,
-                (ISourceTreeNode) InfinitePlanes,
+                (ISourceTreeNode) Planes,
                 observationsGraph,
                 (ISourceTreeNode) Lines,
                 MeshContainer,
@@ -101,7 +102,7 @@ namespace Elektronik.Protobuf.Data
                 ((Observations as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
                 ((Points as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
                 ((Lines as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
-                ((InfinitePlanes as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
+                ((Planes as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
             };
             
             return new VirtualContainer(DisplayName, children);

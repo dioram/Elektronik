@@ -11,17 +11,17 @@ namespace Elektronik.Protobuf.Offline.Parsers
 {
     public class ObjectsParser : DataParser<PacketPb>
     {
-        private readonly IContainer<SlamInfinitePlane> _infinitePlanes;
+        private readonly IContainer<SlamPlane> _planes;
         private readonly IConnectableObjectsContainer<SlamPoint> _points;
         private readonly IConnectableObjectsContainer<SlamObservation> _observations;
         private readonly string _imagePath;
 
-        public ObjectsParser(IContainer<SlamInfinitePlane> infinitePlanes,
+        public ObjectsParser(IContainer<SlamPlane> planes,
                              IConnectableObjectsContainer<SlamPoint> points,
                              IConnectableObjectsContainer<SlamObservation> observations,
                              string imagePath)
         {
-            _infinitePlanes = infinitePlanes;
+            _planes = planes;
             _points = points;
             _observations = observations;
             _imagePath = imagePath;
@@ -40,8 +40,8 @@ namespace Elektronik.Protobuf.Offline.Parsers
             case PacketPb.DataOneofCase.Observations:
                 return GetCommandForConnectableObjects(_observations, packet.ExtractObservations(Converter, _imagePath),
                                                        packet);
-            case PacketPb.DataOneofCase.InfinitePlanes:
-                return GetCommand(_infinitePlanes, packet.ExtractInfinitePlanes(Converter), packet);
+            case PacketPb.DataOneofCase.Planes:
+                return GetCommand(_planes, packet.ExtractPlanes(Converter), packet);
             default:
                 return base.GetCommand(packet);
             }

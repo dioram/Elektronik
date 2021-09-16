@@ -62,7 +62,7 @@ namespace Protobuf.Benchmarks
             var observations =
                     new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
                                                                      new SlamLinesContainer());
-            var infinitePlanes = new CloudContainer<SlamInfinitePlane>();
+            var infinitePlanes = new CloudContainer<SlamPlane>();
             var parser = new ObjectsParser(infinitePlanes, points, observations, "C:/");
             var commands = new List<ICommand?> { Capacity = _packets.Length };
             parser.SetConverter(new FakeConverter());
@@ -85,7 +85,7 @@ namespace Protobuf.Benchmarks
             var observations =
                     new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
                                                                      new SlamLinesContainer());
-            var infinitePlanes = new CloudContainer<SlamInfinitePlane>();
+            var infinitePlanes = new CloudContainer<SlamPlane>();
             var buffer = new OnlineFrameBuffer();
             buffer.FramesAmountChanged += _ =>
             {
@@ -95,7 +95,7 @@ namespace Protobuf.Benchmarks
             {
                 new PointsMapManager(buffer, points, new FakeConverter(), new FakeLogger()),
                 new ObservationsMapManager(buffer, observations, new FakeConverter(), new FakeLogger()),
-                new InfinitePlanesMapManager(buffer, infinitePlanes, new FakeConverter(), new FakeLogger())
+                new PlanesMapManager(buffer, infinitePlanes, new FakeConverter(), new FakeLogger())
             }.BuildChain();
 
             int i = 0;

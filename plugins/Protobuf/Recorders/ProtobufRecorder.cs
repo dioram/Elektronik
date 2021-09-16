@@ -152,7 +152,7 @@ namespace Elektronik.Protobuf.Recorders
             }
         }
 
-        public override void OnItemsAdded(object sender, AddedEventArgs<SlamInfinitePlane> e)
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamPlane> e)
         {
             if (IsDisposed) return;
             lock (_file)
@@ -162,7 +162,7 @@ namespace Elektronik.Protobuf.Recorders
             }
         }
 
-        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamInfinitePlane> e)
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamPlane> e)
         {
             if (IsDisposed) return;
             lock (_file)
@@ -172,7 +172,7 @@ namespace Elektronik.Protobuf.Recorders
             }
         }
 
-        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamInfinitePlane> e)
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamPlane> e)
         {
             if (IsDisposed) return;
             lock (_file)

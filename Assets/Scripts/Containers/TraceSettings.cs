@@ -7,12 +7,12 @@ namespace Elektronik.Containers
     public class TraceSettings : MonoBehaviour
     {
         public static int Duration = 2000;
-        public DataSourcesManager DataSourcesManager;
+        public DataSourcesController DataSourcesController;
         
         public void SetDuration(float duration)
         {
             Duration = (int) duration;
-            DataSourcesManager.MapSourceTree((tree, str) =>
+            DataSourcesController.MapSourceTree((tree, str) =>
             {
                 if (tree is ITraceable traceable) traceable.TraceDuration = Duration;
             });

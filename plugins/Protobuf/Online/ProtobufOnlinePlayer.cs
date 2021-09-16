@@ -40,7 +40,7 @@ namespace Elektronik.Protobuf.Online
                 new ObservationsMapManager(_buffer, containerTree.Observations, converter, _logger),
                 new TrackedObjsMapManager(_buffer, containerTree.TrackedObjs, converter, _logger),
                 new LinesMapManager(_buffer, containerTree.Lines, converter, _logger),
-                new InfinitePlanesMapManager(_buffer, containerTree.InfinitePlanes, converter, _logger)
+                new PlanesMapManager(_buffer, containerTree.Planes, converter, _logger)
             }.BuildChain();
 
             _buffer.FramesAmountChanged += i => OnAmountOfFramesChanged?.Invoke(i);

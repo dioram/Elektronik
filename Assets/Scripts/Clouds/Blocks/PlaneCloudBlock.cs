@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Elektronik.Clouds
 {
-    public class InfinitePlaneCloudBlock : CloudBlock
+    public class PlaneCloudBlock : CloudBlock
     {
         public GPUItem[] Planes;
 

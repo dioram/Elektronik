@@ -29,7 +29,7 @@ namespace Elektronik.Protobuf.Offline
             Logo = logo;
             _parsersChain = new DataParser<PacketPb>[]
             {
-                new ObjectsParser(_containerTree.InfinitePlanes, _containerTree.Points, _containerTree.Observations,
+                new ObjectsParser(_containerTree.Planes, _containerTree.Points, _containerTree.Observations,
                                   settings.PathToImagesDirectory),
                 new TrackedObjectsParser(_containerTree.TrackedObjs),
                 new InfoParser(_containerTree.SpecialInfo),

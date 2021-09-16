@@ -141,24 +141,24 @@ namespace Protobuf.Tests.Internal
         }
 
         [Test]
-        public void InfinitePlanesTest()
+        public void PlanesTest()
         {
             var sut = CreateRecorder(3);
             var planes = new[]
             {
-                new SlamInfinitePlane(0, Vector3.one, Vector3.zero, Color.blue),
-                new SlamInfinitePlane(1, Vector3.down, Vector3.up, Color.red),
-                new SlamInfinitePlane(-10, Vector3.forward, Vector3.back, Color.gray, "test message")
+                new SlamPlane(0, Vector3.one, Vector3.zero, Color.blue),
+                new SlamPlane(1, Vector3.down, Vector3.up, Color.red),
+                new SlamPlane(-10, Vector3.forward, Vector3.back, Color.gray, "test message")
             };
             var morePlanes = new[]
             {
-                new SlamInfinitePlane(0, Vector3.zero, Vector3.left, Color.red, "Another message"),
-                new SlamInfinitePlane(-10, Vector3.up, Vector3.right, Color.white, "test message")
+                new SlamPlane(0, Vector3.zero, Vector3.left, Color.red, "Another message"),
+                new SlamPlane(-10, Vector3.up, Vector3.right, Color.white, "test message")
             };
 
-            sut.OnItemsAdded(null, new AddedEventArgs<SlamInfinitePlane>(planes));
-            sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamInfinitePlane>(morePlanes));
-            sut.OnItemsRemoved(null, new RemovedEventArgs<SlamInfinitePlane>(new List<int> { 0 }));
+            sut.OnItemsAdded(null, new AddedEventArgs<SlamPlane>(planes));
+            sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamPlane>(morePlanes));
+            sut.OnItemsRemoved(null, new RemovedEventArgs<SlamPlane>(new List<int> { 0 }));
             sut.Dispose();
 
             using var input = File.OpenRead(_filename);
@@ -172,7 +172,7 @@ namespace Protobuf.Tests.Internal
 
             var yetAnotherPacket = PacketPb.Parser.ParseDelimitedFrom(input);
             Assert.AreEqual(PacketPb.Types.ActionType.Remove, yetAnotherPacket.Action);
-            var removingPoints = yetAnotherPacket.ExtractInfinitePlanes().ToList();
+            var removingPoints = yetAnotherPacket.ExtractPlanes().ToList();
             Assert.AreEqual(1, removingPoints.Count);
             Assert.AreEqual(0, removingPoints[0].Id);
             CheckMetadata(input, 3);
@@ -317,7 +317,7 @@ namespace Protobuf.Tests.Internal
                                   .All(d => CheckDiffAndTrackedObj(d.point, d.item)));
         }
 
-        private bool CheckDiffAndPlane(SlamInfinitePlaneDiff diff, SlamInfinitePlane plane)
+        private bool CheckDiffAndPlane(SlamPlaneDiff diff, SlamPlane plane)
         {
             bool id = diff.Id == plane.Id;
             bool offset = !diff.Offset.HasValue || diff.Offset.Value == plane.Offset;
@@ -327,10 +327,10 @@ namespace Protobuf.Tests.Internal
             return id && offset && normal && color && message;
         }
 
-        private void CheckPlanes(IEnumerable<SlamInfinitePlane> points, PacketPb packet)
+        private void CheckPlanes(IEnumerable<SlamPlane> points, PacketPb packet)
         {
-            Assert.AreEqual(PacketPb.DataOneofCase.InfinitePlanes, packet.DataCase);
-            Assert.IsTrue(packet.ExtractInfinitePlanes()
+            Assert.AreEqual(PacketPb.DataOneofCase.Planes, packet.DataCase);
+            Assert.IsTrue(packet.ExtractPlanes()
                                   .Zip(points, (point, item) => (point, item))
                                   .All(pair => CheckDiffAndPlane(pair.point, pair.item)));
         }

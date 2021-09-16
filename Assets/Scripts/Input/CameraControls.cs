@@ -515,14 +515,6 @@ namespace Elektronik.Input
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""ClearMap"",
-                    ""type"": ""Button"",
-                    ""id"": ""2a1283f7-f76c-4c56-ad69-8a455f1b5969"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
                     ""name"": ""Stop"",
                     ""type"": ""Button"",
                     ""id"": ""bcd2f14d-8de7-4af6-82d3-c0ce081053fc"",
@@ -872,39 +864,6 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""Button With One Modifier"",
-                    ""id"": ""f0822777-0384-4614-9982-fe4753b4ea4f"",
-                    ""path"": ""ButtonWithOneModifier"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ClearMap"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""modifier"",
-                    ""id"": ""676b3a37-9ee6-40d5-a9cb-97a65110b1e6"",
-                    ""path"": ""<Keyboard>/shift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ClearMap"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""button"",
-                    ""id"": ""c852da72-0b6e-4f25-947e-8e520f9659dc"",
-                    ""path"": ""<Keyboard>/delete"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ClearMap"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""Button With One Modifier"",
                     ""id"": ""721f1e38-6b86-4554-804d-ca1e630a3340"",
                     ""path"": ""ButtonWithOneModifier"",
                     ""interactions"": """",
@@ -1059,7 +1018,6 @@ namespace Elektronik.Input
             m_Hotkeys_ToggleMeshColor = m_Hotkeys.FindAction("ToggleMeshColor", throwIfNotFound: true);
             m_Hotkeys_GoToVR = m_Hotkeys.FindAction("GoToVR", throwIfNotFound: true);
             m_Hotkeys_VRHelp = m_Hotkeys.FindAction("VR Help", throwIfNotFound: true);
-            m_Hotkeys_ClearMap = m_Hotkeys.FindAction("ClearMap", throwIfNotFound: true);
             m_Hotkeys_Stop = m_Hotkeys.FindAction("Stop", throwIfNotFound: true);
             m_Hotkeys_Open = m_Hotkeys.FindAction("Open", throwIfNotFound: true);
         }
@@ -1234,7 +1192,6 @@ namespace Elektronik.Input
         private readonly InputAction m_Hotkeys_ToggleMeshColor;
         private readonly InputAction m_Hotkeys_GoToVR;
         private readonly InputAction m_Hotkeys_VRHelp;
-        private readonly InputAction m_Hotkeys_ClearMap;
         private readonly InputAction m_Hotkeys_Stop;
         private readonly InputAction m_Hotkeys_Open;
         public struct HotkeysActions
@@ -1258,7 +1215,6 @@ namespace Elektronik.Input
             public InputAction @ToggleMeshColor => m_Wrapper.m_Hotkeys_ToggleMeshColor;
             public InputAction @GoToVR => m_Wrapper.m_Hotkeys_GoToVR;
             public InputAction @VRHelp => m_Wrapper.m_Hotkeys_VRHelp;
-            public InputAction @ClearMap => m_Wrapper.m_Hotkeys_ClearMap;
             public InputAction @Stop => m_Wrapper.m_Hotkeys_Stop;
             public InputAction @Open => m_Wrapper.m_Hotkeys_Open;
             public InputActionMap Get() { return m_Wrapper.m_Hotkeys; }
@@ -1321,9 +1277,6 @@ namespace Elektronik.Input
                     @VRHelp.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnVRHelp;
                     @VRHelp.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnVRHelp;
                     @VRHelp.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnVRHelp;
-                    @ClearMap.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnClearMap;
-                    @ClearMap.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnClearMap;
-                    @ClearMap.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnClearMap;
                     @Stop.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnStop;
                     @Stop.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnStop;
                     @Stop.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnStop;
@@ -1385,9 +1338,6 @@ namespace Elektronik.Input
                     @VRHelp.started += instance.OnVRHelp;
                     @VRHelp.performed += instance.OnVRHelp;
                     @VRHelp.canceled += instance.OnVRHelp;
-                    @ClearMap.started += instance.OnClearMap;
-                    @ClearMap.performed += instance.OnClearMap;
-                    @ClearMap.canceled += instance.OnClearMap;
                     @Stop.started += instance.OnStop;
                     @Stop.performed += instance.OnStop;
                     @Stop.canceled += instance.OnStop;
@@ -1430,7 +1380,6 @@ namespace Elektronik.Input
             void OnToggleMeshColor(InputAction.CallbackContext context);
             void OnGoToVR(InputAction.CallbackContext context);
             void OnVRHelp(InputAction.CallbackContext context);
-            void OnClearMap(InputAction.CallbackContext context);
             void OnStop(InputAction.CallbackContext context);
             void OnOpen(InputAction.CallbackContext context);
         }

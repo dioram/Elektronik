@@ -51,7 +51,7 @@ message LinePb {
   PointPb pt2 = 2;
 }
 
-message InfinitePlanePb {
+message PlanePb {
   int32 id = 1;
   optional Vector3Pb offset = 2;
   optional Vector3Pb normal = 3;
@@ -87,8 +87,8 @@ message PacketPb {
   message TrackedObjs {
     repeated TrackedObjPb data = 1;
   }
-  message InfinitePlanes {
-    repeated InfinitePlanePb data = 1;
+  message Planes {
+    repeated PlanePb data = 1;
   }
   message Connections {
     enum Action {
@@ -111,7 +111,7 @@ message PacketPb {
     Points points = 13;
     Observations observations = 14;
     Lines lines = 15;
-    InfinitePlanes infinitePlanes = 16;
+    Planes planes = 16;
   }
 }
 

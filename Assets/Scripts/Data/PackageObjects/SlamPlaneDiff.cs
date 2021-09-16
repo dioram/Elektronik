@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
 {
-    public struct SlamInfinitePlaneDiff : ICloudItemDiff<SlamInfinitePlaneDiff, SlamInfinitePlane>
+    public struct SlamPlaneDiff : ICloudItemDiff<SlamPlaneDiff, SlamPlane>
     {
         public int Id { get; set; }
         public Vector3? Offset;
@@ -12,16 +12,16 @@ namespace Elektronik.Data.PackageObjects
         public Color? Color;
         [CanBeNull] public string Message;
 
-        public SlamInfinitePlane Apply()
+        public SlamPlane Apply()
         {
-            return new SlamInfinitePlane(Id,
+            return new SlamPlane(Id,
                                          Offset ?? Vector3.zero,
                                          Normal ?? Vector3.zero,
                                          Color ?? UnityEngine.Color.black,
                                          string.IsNullOrEmpty(Message) ? "" : Message);
         }
 
-        public SlamInfinitePlane Apply(SlamInfinitePlane item)
+        public SlamPlane Apply(SlamPlane item)
         {
             item.Offset = Offset ?? item.Offset;
             item.Normal = Normal ?? item.Normal;
@@ -30,10 +30,10 @@ namespace Elektronik.Data.PackageObjects
             return item;
         }
 
-        public SlamInfinitePlaneDiff Apply(SlamInfinitePlaneDiff right)
+        public SlamPlaneDiff Apply(SlamPlaneDiff right)
         {
             if (Id != right.Id) throw new Exception("Ids must be identical!");
-            return new SlamInfinitePlaneDiff
+            return new SlamPlaneDiff
             {
                 Id = Id,
                 Offset = right.Offset ?? Offset,

@@ -12,9 +12,9 @@ using NUnit.Framework;
 namespace Protobuf.Tests.Internal.Integration.Online
 {
     [TestFixture, FixtureLifeCycle(LifeCycle.SingleInstance)]
-    public class InfinitePlanesTests : OnlineTestsBase
+    public class PlanesTests : OnlineTestsBase
     {
-        private InfinitePlanePb[] _planes;
+        private PlanePb[] _planes;
 
         private readonly Vector3Pb[] _offsets =
         {
@@ -34,9 +34,9 @@ namespace Protobuf.Tests.Internal.Integration.Online
             new() { X = 0, Y = 1, Z = 0 },
         };
 
-        public InfinitePlanesTests() : base(40013)
+        public PlanesTests() : base(40013)
         {
-            _planes = Enumerable.Range(0, 5).Select(i => new InfinitePlanePb
+            _planes = Enumerable.Range(0, 5).Select(i => new PlanePb
             {
                 Id = i,
                 Message = $"{i}",
@@ -52,19 +52,19 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Add,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
-            packet.InfinitePlanes.Data.Add(_planes);
-            var e = new AddedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply())
+            packet.Planes.Data.Add(_planes);
+            var e = new AddedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
                                                                   .ToArray());
 
             var response = MapClient.Handle(packet);
             Thread.Sleep(20);
 
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
-            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length);
-            MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
+            ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length);
+            MockedPlanesRenderer.Verify(
+                r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(2)]
@@ -73,7 +73,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Update,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
             var newOffsets = new Vector3Pb[]
             {
@@ -85,21 +85,21 @@ namespace Protobuf.Tests.Internal.Integration.Online
             };
             var diff = CreateDiff((pb, i) =>
             {
-                var newPb = new InfinitePlanePb(pb) { Offset = newOffsets[i] };
-                var diff = new InfinitePlanePb { Id = i, Offset = newOffsets[i] };
+                var newPb = new PlanePb(pb) { Offset = newOffsets[i] };
+                var diff = new PlanePb { Id = i, Offset = newOffsets[i] };
                 return (newPb, diff);
             });
-            packet.InfinitePlanes.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply())
+            packet.Planes.Data.Add(diff);
+            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
                                                                     .ToArray());
 
             var response = MapClient.Handle(packet);
             Thread.Sleep(20);
 
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
-            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length);
-            MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
+            ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length);
+            MockedPlanesRenderer.Verify(
+                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(3)]
@@ -108,7 +108,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Update,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
             var newNormals = new Vector3Pb[]
             {
@@ -120,19 +120,19 @@ namespace Protobuf.Tests.Internal.Integration.Online
             };
             var diff = CreateDiff((pb, i) =>
             {
-                var newPb = new InfinitePlanePb(pb) { Normal = newNormals[i] };
-                var diff = new InfinitePlanePb { Id = i, Normal = newNormals[i] };
+                var newPb = new PlanePb(pb) { Normal = newNormals[i] };
+                var diff = new PlanePb { Id = i, Normal = newNormals[i] };
                 return (newPb, diff);
             });
-            packet.InfinitePlanes.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply())
+            packet.Planes.Data.Add(diff);
+            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
                                                                     .ToArray());
 
             SendPacket(packet);
 
-            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length);
-            MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
+            ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length);
+            MockedPlanesRenderer.Verify(
+                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(4)]
@@ -141,23 +141,23 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Update,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
             var diff = CreateDiff((pb, i) =>
             {
-                var newPb = new InfinitePlanePb(pb) { Color = { R = 255, G = 255, B = 255 } };
-                var diff = new InfinitePlanePb { Id = i, Color = new ColorPb { R = 255, B = 255, G = 255 } };
+                var newPb = new PlanePb(pb) { Color = { R = 255, G = 255, B = 255 } };
+                var diff = new PlanePb { Id = i, Color = new ColorPb { R = 255, B = 255, G = 255 } };
                 return (newPb, diff);
             });
-            packet.InfinitePlanes.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply())
+            packet.Planes.Data.Add(diff);
+            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
                                                                     .ToArray());
 
             SendPacket(packet);
 
-            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length);
-            MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
+            ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length);
+            MockedPlanesRenderer.Verify(
+                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(5)]
@@ -166,11 +166,11 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Update,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
             for (var i = 0; i < _planes.Length; i++)
             {
-                _planes[i] = new InfinitePlanePb
+                _planes[i] = new PlanePb
                 {
                     Id = i,
                     Offset = new Vector3Pb { X = i, Y = i, Z = i },
@@ -180,15 +180,15 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 };
             }
 
-            packet.InfinitePlanes.Data.Add(_planes);
-            var e = new UpdatedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply())
+            packet.Planes.Data.Add(_planes);
+            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
                                                                     .ToArray());
 
             SendPacket(packet);
 
-            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length);
-            MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
+            ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length);
+            MockedPlanesRenderer.Verify(
+                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(6)]
@@ -197,20 +197,20 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Remove,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
-            packet.InfinitePlanes.Data.Add(new[] { _planes[1], _planes[3] });
-            var e = new RemovedEventArgs<SlamInfinitePlane>(new[]
+            packet.Planes.Data.Add(new[] { _planes[1], _planes[3] });
+            var e = new RemovedEventArgs<SlamPlane>(new[]
             {
-                ((SlamInfinitePlaneDiff) _planes[1]).Apply(),
-                ((SlamInfinitePlaneDiff)_planes[3]).Apply(),
+                ((SlamPlaneDiff) _planes[1]).Apply(),
+                ((SlamPlaneDiff)_planes[3]).Apply(),
             });
 
             SendPacket(packet);
 
-            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(_planes.Length - 2);
-            MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
+            ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length - 2);
+            MockedPlanesRenderer.Verify(
+                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(7)]
@@ -219,20 +219,20 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Clear,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
-            var e = new RemovedEventArgs<SlamInfinitePlane>(new[]
+            var e = new RemovedEventArgs<SlamPlane>(new[]
             {
-                ((SlamInfinitePlaneDiff) _planes[0]).Apply(),
-                ((SlamInfinitePlaneDiff)_planes[2]).Apply(),
-                ((SlamInfinitePlaneDiff)_planes[4]).Apply(),
+                ((SlamPlaneDiff) _planes[0]).Apply(),
+                ((SlamPlaneDiff)_planes[2]).Apply(),
+                ((SlamPlaneDiff)_planes[4]).Apply(),
             });
 
             SendPacket(packet);
 
-            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(0);
-            MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
+            ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(0);
+            MockedPlanesRenderer.Verify(
+                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(8)]
@@ -242,17 +242,17 @@ namespace Protobuf.Tests.Internal.Integration.Online
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(0);
             ((ProtobufContainerTree)Sut.Data).Points.Connections.Count().Should().Be(0);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(0);
-            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(0);
+            ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(0);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(0);
 
-            MockedInfinitePlanesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
-                                                                    It.IsAny<AddedEventArgs<SlamInfinitePlane>>()),
+            MockedPlanesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
+                                                                    It.IsAny<AddedEventArgs<SlamPlane>>()),
                                                 Times.Once);
-            MockedInfinitePlanesRenderer.Verify(r => r.OnItemsUpdated(It.IsAny<object>(),
-                                                                      It.IsAny<UpdatedEventArgs<SlamInfinitePlane>>()),
+            MockedPlanesRenderer.Verify(r => r.OnItemsUpdated(It.IsAny<object>(),
+                                                                      It.IsAny<UpdatedEventArgs<SlamPlane>>()),
                                                 Times.Exactly(4));
-            MockedInfinitePlanesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
-                                                                      It.IsAny<RemovedEventArgs<SlamInfinitePlane>>()),
+            MockedPlanesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
+                                                                      It.IsAny<RemovedEventArgs<SlamPlane>>()),
                                                 Times.Exactly(2));
 
 
@@ -316,7 +316,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
 
         #region Not tests
 
-        private InfinitePlanePb[] CreateDiff(Func<InfinitePlanePb, int, (InfinitePlanePb, InfinitePlanePb)> func)
+        private PlanePb[] CreateDiff(Func<PlanePb, int, (PlanePb, PlanePb)> func)
         {
             var result = _planes.Select(func).ToArray();
             _planes = result.Select(o => o.Item1).ToArray();

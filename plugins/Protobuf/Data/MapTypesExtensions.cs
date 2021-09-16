@@ -90,13 +90,12 @@ namespace Elektronik.Protobuf.Data
             return result;
         }
 
-        public static SlamInfinitePlaneDiff[] ExtractInfinitePlanes(this PacketPb packet,
-                                                                  ICSConverter? converter = null)
+        public static SlamPlaneDiff[] ExtractPlanes(this PacketPb packet, ICSConverter? converter = null)
         {
-            var result = new SlamInfinitePlaneDiff[packet.InfinitePlanes.Data.Count];
+            var result = new SlamPlaneDiff[packet.Planes.Data.Count];
             for (var i = 0; i < result.Length; i++)
             {
-                result[i] = packet.InfinitePlanes.Data[i];
+                result[i] = packet.Planes.Data[i];
                 if (result[i].Offset.HasValue) result[i].Offset = converter?.Convert(result[i].Offset.Value);
                 if (result[i].Normal.HasValue) result[i].Normal = converter?.Convert(result[i].Normal.Value);
             }
@@ -194,11 +193,11 @@ namespace Elektronik.Protobuf.Data
                     : default;
     }
 
-    public partial class InfinitePlanePb
+    public partial class PlanePb
     {
-        public static implicit operator SlamInfinitePlaneDiff(InfinitePlanePb? p)
+        public static implicit operator SlamPlaneDiff(PlanePb? p)
             => p != null
-                    ? new SlamInfinitePlaneDiff
+                    ? new SlamPlaneDiff
                     {
                         Id = p.Id,
                         Color = p.Color,
@@ -261,7 +260,7 @@ namespace Elektronik.Protobuf.Data
                 Message = o.Message
             };
 
-        public static InfinitePlanePb ToProtobuf(this SlamInfinitePlane p, ICSConverter? converter = null)
+        public static PlanePb ToProtobuf(this SlamPlane p, ICSConverter? converter = null)
             => new()
             {
                 Color = p.Color,

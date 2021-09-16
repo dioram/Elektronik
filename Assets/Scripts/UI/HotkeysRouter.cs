@@ -2,6 +2,7 @@
 using Elektronik.Clouds;
 using Elektronik.Data;
 using Elektronik.Input;
+using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI.Windows;
 using TMPro;
 using UniRx;
@@ -11,16 +12,16 @@ namespace Elektronik.UI
 {
     public class HotkeysRouter : MonoBehaviour
     {
-        [SerializeField] private DataSourcesManager DataSourcesManager;
+        [SerializeField] private DataSourcesController DataSourcesController;
         [SerializeField] private VrController VrController;
         [SerializeField] private GpuMeshRenderer MeshRenderer;
+        [SerializeField] private RecorderPluginsController RecorderPluginsController;
         [Header("Windows")] [SerializeField] private Window HelpWindow;
         [SerializeField] private Window SourceTreeWindow;
         [SerializeField] private Window SceneToolsWindow;
         [SerializeField] private Window AnalyticsToolsWindow;
         [SerializeField] private Window ConnectionsWindow;
         [Header("Buttons")] [SerializeField] private ChangingButton ToggleAxisButton;
-        [SerializeField] private ChangingButton RecordingButton;
         [Space] [SerializeField] private TMP_Dropdown GridSelector;
 
         public IObservable<Unit> OnPlayPause { get; private set; }
@@ -67,13 +68,10 @@ namespace Elektronik.UI
                     .Subscribe(_ => VrController.ToggleVrHelpMenu())
                     .AddTo(this);
             hotkeys.TakeSnapshot.PerformedAsObservable()
-                    .Subscribe(_ => DataSourcesManager.TakeSnapshot())
+                    .Subscribe(_ => DataSourcesController.TakeSnapshot())
                     .AddTo(this);
             hotkeys.LoadSnapshot.PerformedAsObservable()
-                    .Subscribe(_ => DataSourcesManager.LoadSnapshot())
-                    .AddTo(this);
-            hotkeys.ClearMap.PerformedAsObservable()
-                    .Subscribe(_ => DataSourcesManager.ClearMap())
+                    .Subscribe(_ => DataSourcesController.LoadSnapshot())
                     .AddTo(this);
 
             hotkeys.ToggleAxis.PerformedAsObservable()
@@ -83,7 +81,7 @@ namespace Elektronik.UI
                     .Subscribe(_ => MeshRenderer.OverrideColors = !MeshRenderer.OverrideColors)
                     .AddTo(this);
             hotkeys.StartRecording.PerformedAsObservable()
-                    .Subscribe(_ => RecordingButton.Toggle())
+                    .Subscribe(_ => RecorderPluginsController.Toggle())
                     .AddTo(this);
 
             hotkeys.ToggleGrid.PerformedAsObservable()

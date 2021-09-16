@@ -2,6 +2,7 @@
 using Elektronik.UI.Localization;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Elektronik.UI
 {
@@ -11,7 +12,7 @@ namespace Elektronik.UI
         [SerializeField] private PointCloudRenderer PointCloudRenderer;
         [SerializeField] private SlamLineCloudRenderer SlamLineCloudRenderer;
         [SerializeField] private SimpleLineCloudRenderer SimpleLineCloudRenderer;
-        [SerializeField] private InfinitePlaneCloudRenderer InfinitePlaneCloudRenderer;
+        [SerializeField] private PlaneCloudRenderer PlaneCloudRenderer;
         [SerializeField] private ObservationCloudRenderer ObservationCloudRenderer;
         [SerializeField] private TrackedObjectCloud TrackedObjectCloud;
 
@@ -34,7 +35,7 @@ namespace Elektronik.UI
             bool isUpdated = UpdateValue(ref PointsCount, PointCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref SlamLinesCount, SlamLineCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref SimpleLinesCount, SimpleLineCloudRenderer.ItemsCount);
-            isUpdated = isUpdated || UpdateValue(ref InfinitePlanesCount, InfinitePlaneCloudRenderer.ItemsCount);
+            isUpdated = isUpdated || UpdateValue(ref InfinitePlanesCount, PlaneCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref ObservationsCount, ObservationCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref TrackedObjectsCount, TrackedObjectCloud.ItemsCount);
 

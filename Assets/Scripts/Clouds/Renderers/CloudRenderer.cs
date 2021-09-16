@@ -82,7 +82,7 @@ namespace Elektronik.Clouds
             {
                 foreach (var item in e.UpdatedItems)
                 {
-                    if (item.Message == GridMessage && item is SlamInfinitePlane) continue;
+                    if (item.Message == GridMessage && item is SlamPlane) continue;
                     var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
                     int layer = index / CloudBlock.Capacity;
                     int inLayerId = index % CloudBlock.Capacity;
@@ -165,7 +165,7 @@ namespace Elektronik.Clouds
             if (takeLock) Monitor.Enter(_pointPlaces);
             foreach (var item in items)
             {
-                if (item.Message == GridMessage && item is SlamInfinitePlane plane)
+                if (item.Message == GridMessage && item is SlamPlane plane)
                 {
                     MainThreadInvoker.Enqueue(() => Grid.SetPlane(plane));
                     continue;

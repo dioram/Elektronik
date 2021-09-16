@@ -25,7 +25,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
         protected readonly Mock<ICloudRenderer<SimpleLine>> MockedSimpleLinesRenderer;
         protected readonly Mock<ICloudRenderer<SlamObservation>> MockedObservationsRenderer;
         protected readonly Mock<ICloudRenderer<SlamTrackedObject>> MockedTrackedObjsRenderer;
-        protected readonly Mock<ICloudRenderer<SlamInfinitePlane>> MockedInfinitePlanesRenderer;
+        protected readonly Mock<ICloudRenderer<SlamPlane>> MockedPlanesRenderer;
         protected readonly Mock<IDataRenderer<byte[]>> MockedImageRenderer;
 
         protected OnlineTestsBase(int port)
@@ -45,7 +45,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             MockedSimpleLinesRenderer = new Mock<ICloudRenderer<SimpleLine>>();
             MockedObservationsRenderer = new Mock<ICloudRenderer<SlamObservation>>();
             MockedTrackedObjsRenderer = new Mock<ICloudRenderer<SlamTrackedObject>>();
-            MockedInfinitePlanesRenderer = new Mock<ICloudRenderer<SlamInfinitePlane>>();
+            MockedPlanesRenderer = new Mock<ICloudRenderer<SlamPlane>>();
             MockedImageRenderer = new Mock<IDataRenderer<byte[]>>();
 
             SetupPrintFromMocks();
@@ -55,7 +55,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             Sut.Data.AddRenderer(MockedSimpleLinesRenderer.Object);
             Sut.Data.AddRenderer(MockedObservationsRenderer.Object);
             Sut.Data.AddRenderer(MockedTrackedObjsRenderer.Object);
-            Sut.Data.AddRenderer(MockedInfinitePlanesRenderer.Object);
+            Sut.Data.AddRenderer(MockedPlanesRenderer.Object);
             Sut.Data.AddRenderer(MockedImageRenderer.Object);
         }
 

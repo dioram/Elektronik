@@ -270,7 +270,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             ((ProtobufContainerTree)Sut.Data).Observations.Count.Should().Be(0);
             ((ProtobufContainerTree)Sut.Data).Points.Connections.Count().Should().Be(0);
             ((ProtobufContainerTree)Sut.Data).Observations.Connections.Count().Should().Be(0);
-            ((ProtobufContainerTree)Sut.Data).InfinitePlanes.Count.Should().Be(0);
+            ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(0);
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(0);
 
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
@@ -327,14 +327,14 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                               Times.Never);
 
 
-            MockedInfinitePlanesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
-                                                                    It.IsAny<AddedEventArgs<SlamInfinitePlane>>()),
+            MockedPlanesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<object>(),
+                                                                    It.IsAny<AddedEventArgs<SlamPlane>>()),
                                                 Times.Never);
-            MockedInfinitePlanesRenderer.Verify(r => r.OnItemsUpdated(It.IsAny<object>(),
-                                                                      It.IsAny<UpdatedEventArgs<SlamInfinitePlane>>()),
+            MockedPlanesRenderer.Verify(r => r.OnItemsUpdated(It.IsAny<object>(),
+                                                                      It.IsAny<UpdatedEventArgs<SlamPlane>>()),
                                                 Times.Never);
-            MockedInfinitePlanesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
-                                                                      It.IsAny<RemovedEventArgs<SlamInfinitePlane>>()),
+            MockedPlanesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<object>(),
+                                                                      It.IsAny<RemovedEventArgs<SlamPlane>>()),
                                                 Times.Never);
 
 

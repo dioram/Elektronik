@@ -52,14 +52,14 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this AddedEventArgs<SlamInfinitePlane> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this AddedEventArgs<SlamPlane> data, ICSConverter converter)
         {
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Add,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
-            packet.InfinitePlanes.Data.AddRange(data.AddedItems.Select(s => s.ToProtobuf(converter)));
+            packet.Planes.Data.AddRange(data.AddedItems.Select(s => s.ToProtobuf(converter)));
             return packet;
         }
 
@@ -107,14 +107,14 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamInfinitePlane> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamPlane> data, ICSConverter converter)
         {
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Update,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
-            packet.InfinitePlanes.Data.AddRange(data.UpdatedItems.Select(s => s.ToProtobuf(converter)));
+            packet.Planes.Data.AddRange(data.UpdatedItems.Select(s => s.ToProtobuf(converter)));
             return packet;
         }
 
@@ -162,14 +162,14 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this RemovedEventArgs<SlamInfinitePlane> data)
+        public static PacketPb ToProtobuf(this RemovedEventArgs<SlamPlane> data)
         {
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Remove,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
-            packet.InfinitePlanes.Data.AddRange(data.RemovedItems.Select(s => s.ToProtobuf()));
+            packet.Planes.Data.AddRange(data.RemovedItems.Select(s => s.ToProtobuf()));
             return packet;
         }
     }

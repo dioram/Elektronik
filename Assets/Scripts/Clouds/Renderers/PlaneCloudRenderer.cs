@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Elektronik.Clouds
 {
-    public class InfinitePlaneCloudRenderer : CloudRenderer<SlamInfinitePlane, InfinitePlaneCloudBlock>
+    public class PlaneCloudRenderer : CloudRenderer<SlamPlane, PlaneCloudBlock>
     {
-        protected override void ProcessItem(InfinitePlaneCloudBlock block, SlamInfinitePlane item, int inBlockId)
+        protected override void ProcessItem(PlaneCloudBlock block, SlamPlane item, int inBlockId)
         {
             float halfSide = ItemSize / 2;
             var v1 = new Vector3(-halfSide, 0, -halfSide);
@@ -33,7 +33,7 @@ namespace Elektronik.Clouds
             }
         }
 
-        protected override void RemoveItem(InfinitePlaneCloudBlock block, int inBlockId)
+        protected override void RemoveItem(PlaneCloudBlock block, int inBlockId)
         {
             for (int i = 0; i < 8; i++)
             {

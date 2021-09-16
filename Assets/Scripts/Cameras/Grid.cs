@@ -32,7 +32,7 @@ namespace Elektronik.Cameras
             EnabledOrientedGrid,
         }
 
-        public void SetPlane(SlamInfinitePlane plane)
+        public void SetPlane(SlamPlane plane)
         {
             _position = plane.Offset;
             _up = plane.Normal;

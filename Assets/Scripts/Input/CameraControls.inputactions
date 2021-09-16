@@ -500,14 +500,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "ClearMap",
-                    "type": "Button",
-                    "id": "2a1283f7-f76c-4c56-ad69-8a455f1b5969",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "Stop",
                     "type": "Button",
                     "id": "bcd2f14d-8de7-4af6-82d3-c0ce081053fc",
@@ -854,39 +846,6 @@
                     "action": "VR Help",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "Button With One Modifier",
-                    "id": "f0822777-0384-4614-9982-fe4753b4ea4f",
-                    "path": "ButtonWithOneModifier",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ClearMap",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "modifier",
-                    "id": "676b3a37-9ee6-40d5-a9cb-97a65110b1e6",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ClearMap",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "button",
-                    "id": "c852da72-0b6e-4f25-947e-8e520f9659dc",
-                    "path": "<Keyboard>/delete",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ClearMap",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "Button With One Modifier",

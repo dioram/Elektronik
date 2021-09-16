@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Containers;
 using Elektronik.Data;
+using Elektronik.Renderers;
 using Elektronik.UI.Windows;
 
 namespace Elektronik.RosPlugin.Common.Containers

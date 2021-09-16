@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Elektronik.Containers;
 using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.Converters;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
+using Elektronik.Renderers;
 using Elektronik.UI;
 using Elektronik.UI.Localization;
 using SimpleFileBrowser;
@@ -13,7 +15,7 @@ using UnityEngine;
 
 namespace Elektronik.Data
 {
-    public class DataSourcesManager : MonoBehaviour
+    public class DataSourcesController : MonoBehaviour
     {
         public CSConverter Converter;
         private static int _snapshotsCount = 0;
@@ -45,20 +47,6 @@ namespace Elektronik.Data
             foreach (var source in _dataSources)
             {
                 source.RemoveRenderer(renderer);
-            }
-        }
-
-        public void ClearMap()
-        {
-            var removable = _dataSources.OfType<IRemovable>().ToList();
-            foreach (var r in removable)
-            {
-                r.RemoveSelf();
-            }
-
-            foreach (var source in _dataSources)
-            {
-                source.Clear();
             }
         }
 

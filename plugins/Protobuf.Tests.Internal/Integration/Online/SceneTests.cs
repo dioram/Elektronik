@@ -23,7 +23,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
         private readonly ObservationPb[] _observationsMap;
         private readonly ConnectionPb[] _connections;
         private readonly TrackedObjPb[] _objects;
-        private readonly InfinitePlanePb[] _planes;
+        private readonly PlanePb[] _planes;
 
 
         public SceneTests() : base(40016)
@@ -76,7 +76,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 new() { X = 0, Y = 1, Z = 0 },
             };
 
-            _planes = Enumerable.Range(0, 5).Select(i => new InfinitePlanePb
+            _planes = Enumerable.Range(0, 5).Select(i => new PlanePb
             {
                 Id = i,
                 Message = $"{i}",
@@ -201,20 +201,20 @@ namespace Protobuf.Tests.Internal.Integration.Online
         }
 
         [Test, Order(5)]
-        public void SendInfinitePlanes()
+        public void SendPlanes()
         {
             var packet = new PacketPb
             {
                 Action = PacketPb.Types.ActionType.Add,
-                InfinitePlanes = new PacketPb.Types.InfinitePlanes(),
+                Planes = new PacketPb.Types.Planes(),
             };
-            packet.InfinitePlanes.Data.Add(_planes);
-            var e = new AddedEventArgs<SlamInfinitePlane>(_planes.Select(p => ((SlamInfinitePlaneDiff)p).Apply()).ToArray());
+            packet.Planes.Data.Add(_planes);
+            var e = new AddedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply()).ToArray());
 
             SendPacket(packet);
 
-            MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).InfinitePlanes, e), Times.Once);
+            MockedPlanesRenderer.Verify(
+                r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(6)]
@@ -225,7 +225,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var ep5 = new RemovedEventArgs<SlamPoint>(Enumerable.Range(0, 5).ToArray());
             var eo5 = new RemovedEventArgs<SlamObservation>(Enumerable.Range(0, 5).ToArray());
             var el5 = new RemovedEventArgs<SlamLine>(Enumerable.Range(0, 5).ToArray());
-            var eip5 = new RemovedEventArgs<SlamInfinitePlane>(Enumerable.Range(0, 5).ToArray());
+            var eip5 = new RemovedEventArgs<SlamPlane>(Enumerable.Range(0, 5).ToArray());
 
             var response = SceneClient.Clear(new Empty());
             Thread.Sleep(20);
@@ -238,8 +238,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                               Times.Once);
             MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(), el5),
                                            Times.Exactly(2));
-            MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).InfinitePlanes, eip5),
+            MockedPlanesRenderer.Verify(
+                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Planes, eip5),
                 Times.Once);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e3),
                                              Times.Once);
@@ -251,7 +251,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
         {
             var ep = new RemovedEventArgs<SlamPoint>(new List<int>());
             var eo = new RemovedEventArgs<SlamObservation>(new List<int>());
-            var eip = new RemovedEventArgs<SlamInfinitePlane>(new List<int>());
+            var eip = new RemovedEventArgs<SlamPlane>(new List<int>());
             var etr = new RemovedEventArgs<SlamTrackedObject>(new List<int>());
 
             Sut.Dispose();
@@ -261,8 +261,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                         Times.Once);
             MockedObservationsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, eo),
                                               Times.Once);
-            MockedInfinitePlanesRenderer.Verify(
-                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).InfinitePlanes, eip),
+            MockedPlanesRenderer.Verify(
+                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Planes, eip),
                 Times.Once);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, etr),
                                              Times.Once);
