@@ -23,7 +23,7 @@ namespace Elektronik.Ros.Tests.Rosbag2
             Assert.AreEqual(20, tree.ActualTopics.Count);
             Assert.AreEqual(16, tree.Children.Count());
             var children = tree.Children.ToList();
-            Assert.IsInstanceOf<VirtualContainer>(children[1]);
+            Assert.IsInstanceOf<VirtualSource>(children[1]);
             Assert.AreEqual("control", children[1].DisplayName);
             Assert.AreEqual(2, children[1].Children.Count());
             Assert.IsInstanceOf<VisualisationMarkersDBContainer>(children[2]);

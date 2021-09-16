@@ -41,7 +41,7 @@ namespace Elektronik.Protobuf.Data
             Lines = new SlamLinesContainer("Lines");
             MeshContainer = new MeshReconstructor(Points, "Mesh");
             Planes = new CloudContainer<SlamPlane>("Planes");
-            var observationsGraph = new VirtualContainer("Observations graph", new List<ISourceTreeNode>
+            var observationsGraph = new VirtualSource("Observations graph", new List<ISourceTreeNode>
             {
                 (ISourceTreeNode) Observations,
                 Connector
@@ -105,7 +105,7 @@ namespace Elektronik.Protobuf.Data
                 ((Planes as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
             };
             
-            return new VirtualContainer(DisplayName, children);
+            return new VirtualSource(DisplayName, children);
         }
 
         #endregion

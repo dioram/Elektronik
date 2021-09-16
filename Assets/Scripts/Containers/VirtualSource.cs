@@ -7,9 +7,9 @@ using Elektronik.Renderers;
 
 namespace Elektronik.Containers
 {
-    public class VirtualContainer : ISourceTreeNode, IVisible, ISnapshotable
+    public class VirtualSource : ISourceTreeNode, IVisible, ISnapshotable
     {
-        public VirtualContainer(string displayName, List<ISourceTreeNode> children = null)
+        public VirtualSource(string displayName, List<ISourceTreeNode> children = null)
         {
             DisplayName = displayName;
             ChildrenList = children ?? new List<ISourceTreeNode>();
@@ -80,7 +80,7 @@ namespace Elektronik.Containers
         {
             for (int i = 0; i < ChildrenList.Count(); i++)
             {
-                if (!(ChildrenList[i] is VirtualContainer @virtual)) continue;
+                if (!(ChildrenList[i] is VirtualSource @virtual)) continue;
 
                 @virtual.Squeeze();
                 if (@virtual.ChildrenList.Count != 1) continue;
@@ -98,7 +98,7 @@ namespace Elektronik.Containers
 
         public ISnapshotable TakeSnapshot()
         {
-            return new VirtualContainer(DisplayName, ChildrenList.OfType<ISnapshotable>()
+            return new VirtualSource(DisplayName, ChildrenList.OfType<ISnapshotable>()
                                                 .Select(ch => ch.TakeSnapshot())
                                                 .Select(ch => ch as ISourceTreeNode)
                                                 .ToList());
@@ -120,7 +120,7 @@ namespace Elektronik.Containers
                 case IVisible {ShowButton: true}:
                     ShowButton = true;
                     return true;
-                case VirtualContainer v when v.CheckShowButton():
+                case VirtualSource v when v.CheckShowButton():
                     ShowButton = true;
                     return true;
                 }

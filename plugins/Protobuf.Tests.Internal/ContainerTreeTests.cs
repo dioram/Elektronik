@@ -41,7 +41,7 @@ namespace Protobuf.Tests.Internal
             Assert.AreEqual("Observations", ((ISourceTreeNode)_tree.Observations).DisplayName);
             Assert.AreEqual("Points", ((ISourceTreeNode)_tree.Points).DisplayName);
             Assert.AreEqual("Lines", ((ISourceTreeNode)_tree.Lines).DisplayName);
-            Assert.AreEqual("Infinite planes", ((ISourceTreeNode)_tree.Planes).DisplayName);
+            Assert.AreEqual("Planes", ((ISourceTreeNode)_tree.Planes).DisplayName);
             Assert.AreEqual("Camera", _tree.Image.DisplayName);
             Assert.AreEqual("Special info", _tree.SpecialInfo.DisplayName);
             Assert.AreEqual(true, _tree.IsVisible);
@@ -60,7 +60,7 @@ namespace Protobuf.Tests.Internal
         [Test]
         public void TakeSnapshot()
         {
-            var snapshot = _tree.TakeSnapshot() as VirtualContainer;
+            var snapshot = _tree.TakeSnapshot() as VirtualSource;
             
             Assert.NotNull(snapshot);
             Assert.AreEqual(ChildrenCount - 3, snapshot.Children.Count(ch => ch is not null));

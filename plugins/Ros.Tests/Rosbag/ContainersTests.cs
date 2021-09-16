@@ -37,7 +37,7 @@ namespace Elektronik.Ros.Tests.Rosbag
         {
             var children = _tree.Children.ToList();
             Assert.AreEqual(5, children.Count);
-            Assert.IsInstanceOf<VirtualContainer>(children[0]);
+            Assert.IsInstanceOf<VirtualSource>(children[0]);
             Assert.AreEqual("rr_robot", children[0].DisplayName);
             Assert.IsInstanceOf<UnknownTypePresenter>(children[1]);
             Assert.AreEqual("tf_static", children[1].DisplayName);

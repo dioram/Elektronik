@@ -8,7 +8,7 @@ using Elektronik.UI.Windows;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
-    public abstract class RosContainerTree : VirtualContainer, IDisposable
+    public abstract class RosContainerTree : VirtualSource, IDisposable
     {
         public List<(string Name, string Type)> ActualTopics = new ();
         public readonly Dictionary<string, ISourceTreeNode> RealChildren = new();
@@ -60,16 +60,16 @@ namespace Elektronik.RosPlugin.Common.Containers
             foreach (var topic in ActualTopics)
             {
                 var path = topic.Name.Split('/').Where(s => !string.IsNullOrEmpty(s)).ToArray();
-                VirtualContainer parent = this;
+                VirtualSource parent = this;
                 for (int i = 0; i < path.Length - 1; i++)
                 {
-                    if (parent.Children.FirstOrDefault(c => c.DisplayName == path[i]) is VirtualContainer container)
+                    if (parent.Children.FirstOrDefault(c => c.DisplayName == path[i]) is VirtualSource container)
                     {
                         parent = container;
                     }
                     else
                     {
-                        var newContainer = new VirtualContainer(path[i]);
+                        var newContainer = new VirtualSource(path[i]);
                         parent.AddChild(newContainer);
                         parent = newContainer;
                     }
