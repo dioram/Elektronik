@@ -1,8 +1,8 @@
 ### Архитектура Электроника построена на основе паттрена MVC.
 
-- В качестве модели выступают классы "источники данных" реализующие интерфейс [ISourceTreeNode](../Assets/Scripts/Data/ISourceTreeNode.cs).
-- Отображением занимаются "рендереры", класс реализующие интерфейс [ISourceRenderer](../Assets/Scripts/Renderers/ISourceRenderer.cs).
-- Класс [DataSourcesController](../Assets/Scripts/Data/DataSourcesController.cs) осуществляет подписку рендереров на изменения модели.
+- В качестве модели выступают классы "источники данных" реализующие интерфейс [ISourceTreeNode](../Assets/Scripts/DataSources/ISourceTreeNode.cs).
+- Отображением занимаются "потребители данных", классы реализующие интерфейс [IDataConsumer](../Assets/Scripts/DataConsumers/IDataConsumer.cs).
+- Класс [DataSourcesController](../Assets/Scripts/DataControllers/DataSourcesController.cs) осуществляет подписку потребителей на изменения модели.
 
 ![Диаграмма](Images/ElektronikDiagram.png)
 
@@ -10,40 +10,42 @@
 
 Источники данных можно разделить на три категории: 
 - Контейнеры облачных данных. Они содержат данные которые можно нарисовать на сцене (точки, линии, плоскости, меши, наблюдения и отслеживаемые объекты). 
-  Эти контейнеры также реализуют интерфейс [IContainer\<T\>](../Assets/Scripts/Containers/IContainer.cs). 
-  Референсная реализация приведена в классе [CloudContainerBase\<T\>](../Assets/Scripts/Containers/CloudContainerBase.cs).
-- Виртуальные. Они не содержат информации, а лишь позволяют организовать другие источники в дерево. Реализуются классом [VirtualSource](../Assets/Scripts/Containers/VirtualSource.cs) 
+  Эти контейнеры также реализуют интерфейс [IContainer\<T\>](../Assets/Scripts/DataSources/Containers/IContainer.cs). 
+  Референсная реализация приведена в классе [CloudContainerBase\<T\>](../Assets/Scripts/DataSources/Containers/CloudContainerBase.cs).
+- Виртуальные. Они не содержат информации, а лишь позволяют организовать другие источники в дерево. Реализуются классом [VirtualSource](../Assets/Scripts/DataSources/Containers/VirtualSource.cs) 
 - Все остальные. Они содержат данные, которые нельзя нарисовать на сцене, например текст, изображения с камеры и т.д. 
-  Эти источники также реализуют интерфейс [IRendersToWindow](../Assets/Scripts/UI/Windows/IRendersToWindow.cs)
+  Эти источники также реализуют интерфейс [IRendersToWindow](../Assets/Scripts/DataSources/SpecialInterfaces/IRendersToWindow.cs)
 
 Источники данных могут реализовывать дополнительные интерфейсы, которые позволяют пользователю взаимодействовать с ними через окно "Дерево данных":
-- ![button](Images/VisibilityButton.png) [IVisible](../Assets/Scripts/Containers/SpecialInterfaces/IVisible.cs) Позволяет включать или выключать отображение источника.
-  *Посылает в рендер сигнал о удалении всех объектов при выключении видимости и о добавлении - при включении.* Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/Containers/CloudContainer.cs).
-- ![button](Images/LookAtButton.png) [ILookable](../Assets/Scripts/Containers/SpecialInterfaces/ILookable.cs) Позволяет навести камеру на данные.
-  *Для переданных координат камеры возвращает ближайшие координаты с которых будет видно всё содержимое контейнера* Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/Containers/CloudContainer.cs).
-- ![button](Images/LookAtButton.png) [IFollowable](../Assets/Scripts/Containers/SpecialInterfaces/IFollowable.cs) Позволяет закрепить камеру за объектом.
-  Референсная реализация: [TrackContainer](../Assets/Scripts/Containers/TrackContainer.cs).
-- ![button](Images/DeleteButton.png) [IRemovable](../Assets/Scripts/Containers/SpecialInterfaces/IRemovable.cs) Позволяет удалить источник данных из дерева. 
-  Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/Clusterization/ClustersContainer.cs).
-- ![button](Images/SaveButton.png) [ISave](../Assets/Scripts/Containers/SpecialInterfaces/ISave.cs) Маркирует, что источник можно сохранять в файл.
-- ![button](Images/TraceButton.png) [ITraceable](../Assets/Scripts/Containers/SpecialInterfaces/ITraceable.cs) Маркирует, что для данных из этого источника можно рисовать след.
-  Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/Containers/CloudContainer.cs).
-- ![button](Images/Connections.png) [IWeightable](../Assets/Scripts/Containers/SpecialInterfaces/IWeightable.cs) Позволяет управлять отображением данных в зависимости от числового коэффициента.
-  *Посылает в рендер сигнал о удалении всех объектов не соответствующих коэффициенту.* Референсная реализация: [Connector](../Assets/Scripts/Containers/Connector.cs).
-- [ISnapshotable](../Assets/Scripts/Containers/SpecialInterfaces/ISnapshotable.cs) Позволяет скопировать содержимое контейнера и его дочерних элементов. 
-  Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/Containers/CloudContainer.cs).
+- ![button](Images/VisibilityButton.png) [IVisible](../Assets/Scripts/DataSources/SpecialInterfaces/IVisible.cs) Позволяет включать или выключать отображение источника.
+  *Посылает в рендер сигнал о удалении всех объектов при выключении видимости и о добавлении - при включении.* Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/DataSources/Containers/CloudContainer.cs).
+- ![button](Images/LookAtButton.png) [ILookable](../Assets/Scripts/DataSources/SpecialInterfaces/ILookable.cs) Позволяет навести камеру на данные.
+  *Для переданных координат камеры возвращает ближайшие координаты с которых будет видно всё содержимое контейнера* Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/DataSources/Containers/CloudContainer.cs).
+- ![button](Images/LookAtButton.png) [IFollowable](../Assets/Scripts/DataSources/SpecialInterfaces/IFollowable.cs) Позволяет закрепить камеру за объектом.
+  Референсная реализация: [TrackContainer](../Assets/Scripts/DataSources/Containers/TrackContainer.cs).
+- ![button](Images/DeleteButton.png) [IRemovable](../Assets/Scripts/DataSources/SpecialInterfaces/IRemovable.cs) Позволяет удалить источник данных из дерева. 
+  Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/DataSources/Containers/ClustersContainer.cs).
+- ![button](Images/SaveButton.png) [ISave](../Assets/Scripts/DataSources/SpecialInterfaces/ISave.cs) Маркирует, что источник можно сохранять в файл.
+- ![button](Images/TraceButton.png) [ITraceable](../Assets/Scripts/DataSources/SpecialInterfaces/ITraceable.cs) Маркирует, что для данных из этого источника можно рисовать след.
+  Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/DataSources/Containers/CloudContainer.cs).
+- ![button](Images/Connections.png) [IWeightable](../Assets/Scripts/DataSources/SpecialInterfaces/IWeightable.cs) Позволяет управлять отображением данных в зависимости от числового коэффициента.
+  *Посылает в рендер сигнал о удалении всех объектов не соответствующих коэффициенту.* Референсная реализация: [Connector](../Assets/Scripts/DataSources/Containers/Connector.cs).
+- ![button](Images/OpenWindowButton.png) [IRendersToWindow](../Assets/Scripts/DataSources/SpecialInterfaces/IRendersToWindow.cs) Маркирует, что содержимое данного источника должно отображаться
+  не на сцене, а в отдельном окне.
+- [IClusterable](../Assets/Scripts/DataSources/SpecialInterfaces/IClusterable.cs) Маркирует, что содержимое контейнер содержит облако точек, которое можно разбивать на кластеры.
 
 Структура модели, добавление и изменение данных в ней определяется в [плагинах](Plugins-RU.md).
 
 ## Отображение
 
-Рендереры можно разделить на две категории:
+Потребителей можно разделить на две категории:
 - Для отображения облачных данных (точки, линии, плоскости, меши, наблюдения и отслеживаемые объекты) на сцене. 
-  Они реализуют интерфейс [ICloudRenderer\<T\>](../Assets/Scripts/Clouds/Renderers/ICloudRenderer.cs) или [IMeshRenderer](../Assets/Scripts/Clouds/Renderers/IMeshRenderer.cs).
-  Референсная реализация: [CloudRenderer\<T\>](../Assets/Scripts/Clouds/Renderers/CloudRenderer.cs).
+  Они реализуют интерфейс [ICloudRenderer\<T\>](../Assets/Scripts/DataConsumers/CloudRenderers/Renderers/ICloudRenderer.cs)
+  или [IMeshRenderer](../Assets/Scripts/DataConsumers/CloudRenderers/Renderers/IMeshRenderer.cs).
+  Референсная реализация: [CloudRenderer\<T\>](../Assets/Scripts/DataConsumers/CloudRenderers/Renderers/CloudRenderer.cs).
 - Для отображения всех остальных типов данных в отдельных окнах.
-  Они реализуют интерфейс [IDataRenderer\<T\>](../Assets/Scripts/Renderers/IDataRenderer.cs).
-  Референсная реализация: [ImageRenderer](../Assets/Scripts/Renderers/ImageRenderer.cs).
+  Они реализуют интерфейс [IDataRenderer\<T\>](../Assets/Scripts/DataConsumers/Windows/IDataRenderer.cs).
+  Референсная реализация: [ImageRenderer](../Assets/Scripts/DataConsumers/Windows/ImageRenderer.cs).
 
 ## Контроллер
 
@@ -84,11 +86,11 @@ foreach (var child in Children)
 - [SlamPlane](../Assets/Scripts/Data/PackageObjects/SlamPlane.cs) Плоскости.
 
 Также для удобства разработки плагинов в Электронике уже реализованы некоторые контейнеры для хранения облачных типов данных:
-- [CloudContainerBase\<T\>](../Assets/Scripts/Containers/CloudContainerBase.cs) Простой контейнер данных.
-- [CloudContainer\<T\>](../Assets/Scripts/Containers/CloudContainer.cs) Наследник `CloudContainerBase`, который реализует ещё и
-  `ILookable`, `IVisible`, `ITraceable`, `IClusterable`, `ISnapshotable`.
-- [ConnectableObjectsContainer\<T\>](../Assets/Scripts/Containers/ConnectableObjectsContainer.cs) Контейнер для объектов, которые связаны между собой.
-- [TrackedObjectsContainer](../Assets/Scripts/Containers/TrackedObjectsContainer.cs) Контейнер, который хранит не только сами объекты, но ещё и историю их перемещения.
-- [MeshReconstructor](../Assets/Scripts/Containers/MeshReconstructor.cs) Контейнер, который по содержимому дркгих контейнеров строит меш.
+- [CloudContainerBase\<T\>](../Assets/Scripts/DataSources/Containers/CloudContainerBase.cs) Простой контейнер данных.
+- [CloudContainer\<T\>](../Assets/Scripts/DataSources/Containers/CloudContainer.cs) Наследник `CloudContainerBase`, который реализует ещё и
+  `ILookable`, `IVisible`, `ITraceable`, `IClusterable`.
+- [ConnectableObjectsContainer\<T\>](../Assets/Scripts/DataSources/Containers/ConnectableObjectsContainer.cs) Контейнер для объектов, которые связаны между собой.
+- [TrackedObjectsContainer](../Assets/Scripts/DataSources/Containers/TrackedObjectsContainer.cs) Контейнер, который хранит не только сами объекты, но ещё и историю их перемещения.
+- [MeshReconstructor](../Assets/Scripts/DataSources/Containers/MeshReconstructor.cs) Контейнер, который по содержимому дркгих контейнеров строит меш.
 
 [<- Использование](Usage-RU.md) | [Написать свой плагин ->](Plugins-RU.md)
