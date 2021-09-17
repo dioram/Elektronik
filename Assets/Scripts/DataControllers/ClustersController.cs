@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace Elektronik.DataControllers
 {
-    public class ClustersManager : MonoBehaviour
+    public class ClustersController : MonoBehaviour
     {
         #region Editor fields
 

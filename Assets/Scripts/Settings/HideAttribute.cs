@@ -2,7 +2,7 @@
 
 namespace Elektronik.Settings
 {
-    public class NotShowAttribute : Attribute
+    public class HideAttribute : Attribute
     {
         
     }

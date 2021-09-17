@@ -7,7 +7,7 @@ namespace Elektronik.Settings.Bags
     [Serializable]
     public partial class SettingsBag
     {
-        [NotShow]
+        [Hide]
         public string ModificationTime;
 
         public virtual ValidationResult Validate()

@@ -331,7 +331,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 13065452374421504
-    m_Localized: Analytical tools
+    m_Localized: Point cloud segmentation
     m_Metadata:
       m_Items: []
   - m_Id: 13067747757617152
@@ -399,51 +399,6 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 36005840151265280
     m_Localized: Help
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36291689841573888
-    m_Localized: 'How to filter edges of observations graph:'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36291901028974592
-    m_Localized: Open Data tree -> Expand Observations graph -> Press button near
-      Connections -> Choose minimal weight for graph edges.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36292451585900544
-    m_Localized: 'How to record data:'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36292733426352128
-    m_Localized: First of all activate protobuf recorder plugin in settings.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36292930021769216
-    m_Localized: 'Then if you want to make snapshot:
-
-      Open Scene tools and
-      Data tree -> Press button Take snapshot -> Press save button near snapshot
-      in data tree -> Choose save path.'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36293536933363712
-    m_Localized: 'If you want to record changes of the data then:
-
-      Open Scene
-      tools -> Press Record button -> Choose save path -> When recording is done
-      press Stop button.'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36294039750721536
-    m_Localized: 'How to play recorded data:'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36294217106866176
-    m_Localized: 'You can play recorded data in offline mode using protobuf plugin.
-
-      Also
-      you can load snapshots in any mode by pressing Load snapshot button in Scene
-      tools.'
     m_Metadata:
       m_Items: []
   - m_Id: 41412972170330112

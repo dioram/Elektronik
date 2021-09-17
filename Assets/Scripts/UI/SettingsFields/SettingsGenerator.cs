@@ -36,7 +36,7 @@ namespace Elektronik.UI.SettingsFields
             Clear();
             var fields = settings.GetType()
                     .GetFields(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(f => !HasAttribute<NotShowAttribute>(f));
+                    .Where(f => !HasAttribute<HideAttribute>(f));
             foreach (var field in fields)
             {
                 try

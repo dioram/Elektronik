@@ -379,38 +379,6 @@ MonoBehaviour:
     m_Key: Help
     m_Metadata:
       m_Items: []
-  - m_Id: 36291689841573888
-    m_Key: Help 1
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36291901028974592
-    m_Key: Help 2
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36292451585900544
-    m_Key: Help 3
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36292733426352128
-    m_Key: Help 4
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36292930021769216
-    m_Key: Help 5
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36293536933363712
-    m_Key: Help 6
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36294039750721536
-    m_Key: Help 7
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36294217106866176
-    m_Key: Help 8
-    m_Metadata:
-      m_Items: []
   - m_Id: 41412972170330112
     m_Key: Calculation...
     m_Metadata:
