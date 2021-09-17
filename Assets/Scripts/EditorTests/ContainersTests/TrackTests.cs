@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Elektronik.Clouds;
-using Elektronik.Containers;
-using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.EventArgs;
 using Moq;
 using NUnit.Framework;
 using UnityEngine;
@@ -16,7 +16,7 @@ namespace Elektronik.EditorTests.ContainersTests
         {
             var container = new TrackContainer(null, new SlamTrackedObject());
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
-            container.AddRenderer(mockedRenderer.Object);
+            container.AddConsumer(mockedRenderer.Object);
             
             container.AddPointToTrack(Vector3.zero, Color.black);
             var e1 = new AddedEventArgs<SimpleLine>(new SimpleLine(0, Vector3.zero, Vector3.zero, Color.black));
@@ -32,7 +32,7 @@ namespace Elektronik.EditorTests.ContainersTests
         {
             var container = new TrackContainer(null, new SlamTrackedObject());
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
-            container.AddRenderer(mockedRenderer.Object);
+            container.AddConsumer(mockedRenderer.Object);
             
             container.AddPointToTrack(new SlamPoint(0, Vector3.zero, Color.black));
             var e1 = new AddedEventArgs<SimpleLine>(new SimpleLine(0, Vector3.zero, Vector3.zero, Color.black));
@@ -48,7 +48,7 @@ namespace Elektronik.EditorTests.ContainersTests
         {
             var container = new TrackedObjectsContainer();
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
-            container.AddRenderer(mockedRenderer.Object);
+            container.AddConsumer(mockedRenderer.Object);
             Assert.AreEqual(0, container.Count);
             
             container.Add(new SlamTrackedObject(0, Vector3.zero, Quaternion.identity, Color.black));
@@ -76,7 +76,7 @@ namespace Elektronik.EditorTests.ContainersTests
         {
             var container = new TrackedObjectsContainer();
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
-            container.AddRenderer(mockedRenderer.Object);
+            container.AddConsumer(mockedRenderer.Object);
             Assert.AreEqual(0, container.Count);
             
             container.AddRange(new []

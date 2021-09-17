@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using Elektronik.Cameras;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -22,7 +22,7 @@ namespace Elektronik.UI
         private void Start()
         {
             // ReSharper disable once LocalVariableHidesMember
-            foreach (var renderer in Renderers.GetComponentsInChildren<ISourceRenderer>())
+            foreach (var renderer in Renderers.GetComponentsInChildren<IDataConsumer>())
             {
                 OnScaleChanged += f =>  renderer.Scale = f;
             }

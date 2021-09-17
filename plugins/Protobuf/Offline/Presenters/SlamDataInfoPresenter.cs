@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataConsumers;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources;
 using Elektronik.Protobuf.Data;
-using Elektronik.Renderers;
 using Elektronik.Threading;
 using Elektronik.UI.Windows;
 
@@ -30,9 +31,9 @@ namespace Elektronik.Protobuf.Offline.Presenters
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
         
-        public void AddRenderer(ISourceRenderer dataRenderer)
+        public void AddConsumer(IDataConsumer consumer)
         {
-            if (dataRenderer is WindowsManager factory)
+            if (consumer is WindowsManager factory)
             {
                 factory.CreateWindow<SlamInfoRenderer>(DisplayName, (renderer, window) =>
                 {
@@ -42,9 +43,9 @@ namespace Elektronik.Protobuf.Offline.Presenters
             }
         }
 
-        public void RemoveRenderer(ISourceRenderer renderer)
+        public void RemoveConsumer(IDataConsumer consumer)
         {
-            if (_info != renderer) return;
+            if (_info != consumer) return;
             _info = null;
             Window = null;
         }

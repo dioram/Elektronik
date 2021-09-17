@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
-using Elektronik.Containers;
-using Elektronik.Data.PackageObjects;
-using UnityEngine;
 
 namespace Protobuf.Benchmarks
 {

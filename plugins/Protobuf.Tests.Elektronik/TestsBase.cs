@@ -4,7 +4,6 @@ using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Google.Protobuf;
 using Grpc.Core;
-using NUnit.Framework;
 
 namespace Protobuf.Tests.Elektronik
 {

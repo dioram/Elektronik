@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
 using Elektronik.Threading;
 using Elektronik.UI.Localization;
 using UnityEngine;
@@ -10,7 +10,7 @@ using UnityEngine.UI.Extensions;
 
 namespace Elektronik.UI.Windows
 {
-    public class WindowsManager : MonoBehaviour, ISourceRenderer
+    public class WindowsManager : MonoBehaviour, IDataConsumer
     {
         [Range(0f, 10f)] public float AlignDistance;
         public RectTransform Canvas;

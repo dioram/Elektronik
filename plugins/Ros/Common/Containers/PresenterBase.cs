@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Elektronik.Data;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources;
 using Elektronik.UI.Windows;
 
 namespace Elektronik.RosPlugin.Common.Containers
@@ -39,9 +40,9 @@ namespace Elektronik.RosPlugin.Common.Containers
             if (Renderer is not null) Renderer.Clear();
         }
 
-        public void AddRenderer(ISourceRenderer renderer)
+        public void AddConsumer(IDataConsumer consumer)
         {
-            if (renderer is WindowsManager factory)
+            if (consumer is WindowsManager factory)
             {
                 factory.CreateWindow<TRenderer>(Title, (r, window) =>
                 {
@@ -52,9 +53,9 @@ namespace Elektronik.RosPlugin.Common.Containers
             }
         }
 
-        public void RemoveRenderer(ISourceRenderer renderer)
+        public void RemoveConsumer(IDataConsumer consumer)
         {
-            if (Renderer != renderer) return;
+            if (Renderer != consumer) return;
             Renderer = null;
             Window = null;
         }

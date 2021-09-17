@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Elektronik.Data;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources;
 using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Data
@@ -28,26 +29,26 @@ namespace Elektronik.Protobuf.Data
 
         public abstract void Present(T data);
 
-        public void AddRenderer(ISourceRenderer dataRenderer)
+        public void AddConsumer(IDataConsumer consumer)
         {
-            if (dataRenderer is WindowsManager factory)
+            switch (consumer)
             {
-                factory.CreateWindow<ImageRenderer>(DisplayName, (renderer, window) =>
-                {
+                case WindowsManager factory:
+                    factory.CreateWindow<ImageRenderer>(DisplayName, (renderer, window) =>
+                    {
+                        Renderer = renderer;
+                        Window = window;
+                    });
+                    break;
+                case IDataRenderer<byte[]> renderer:
                     Renderer = renderer;
-                    Window = window;
-                });
-            }
-
-            if (dataRenderer is IDataRenderer<byte[]> renderer)
-            {
-                Renderer = renderer;
+                    break;
             }
         }
 
-        public void RemoveRenderer(ISourceRenderer renderer)
+        public void RemoveConsumer(IDataConsumer consumer)
         {
-            if (Renderer != renderer) return;
+            if (Renderer != consumer) return;
             Renderer = null;
             Window = null;
         }

@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.IO;
 using Elektronik.Cameras;
-using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources.Containers;
 using Elektronik.Threading;
 using Elektronik.UI.Localization;
 using TMPro;

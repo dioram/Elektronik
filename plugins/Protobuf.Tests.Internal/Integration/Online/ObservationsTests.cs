@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Moq;

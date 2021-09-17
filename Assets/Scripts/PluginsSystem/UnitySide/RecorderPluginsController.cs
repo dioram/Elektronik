@@ -2,6 +2,7 @@
 using System.Linq;
 using Elektronik.Data;
 using Elektronik.Data.Converters;
+using Elektronik.DataSources;
 using Elektronik.UI;
 using Elektronik.UI.Localization;
 using Elektronik.UI.Windows;
@@ -144,9 +145,9 @@ namespace Elektronik.PluginsSystem.UnitySide
             var factory = GetRecorderByFileName(filename);
             if (factory == null) return;
             var recorder = (IDataRecorderPlugin)factory.Start(_converter);
-            node.AddRenderer(recorder);
+            node.AddConsumer(recorder);
             recorder.Dispose();
-            node.RemoveRenderer(recorder);
+            node.RemoveConsumer(recorder);
         }
 
         #endregion

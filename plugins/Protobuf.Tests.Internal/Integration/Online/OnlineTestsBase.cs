@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading;
-using Elektronik.Clouds;
-using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online;
-using Elektronik.Renderers;
 using FluentAssertions;
 using Grpc.Core;
 using Moq;
@@ -50,13 +50,13 @@ namespace Protobuf.Tests.Internal.Integration.Online
 
             SetupPrintFromMocks();
 
-            Sut.Data.AddRenderer(MockedPointsRenderer.Object);
-            Sut.Data.AddRenderer(MockedSlamLinesRenderer.Object);
-            Sut.Data.AddRenderer(MockedSimpleLinesRenderer.Object);
-            Sut.Data.AddRenderer(MockedObservationsRenderer.Object);
-            Sut.Data.AddRenderer(MockedTrackedObjsRenderer.Object);
-            Sut.Data.AddRenderer(MockedPlanesRenderer.Object);
-            Sut.Data.AddRenderer(MockedImageRenderer.Object);
+            Sut.Data.AddConsumer(MockedPointsRenderer.Object);
+            Sut.Data.AddConsumer(MockedSlamLinesRenderer.Object);
+            Sut.Data.AddConsumer(MockedSimpleLinesRenderer.Object);
+            Sut.Data.AddConsumer(MockedObservationsRenderer.Object);
+            Sut.Data.AddConsumer(MockedTrackedObjsRenderer.Object);
+            Sut.Data.AddConsumer(MockedPlanesRenderer.Object);
+            Sut.Data.AddConsumer(MockedImageRenderer.Object);
         }
 
         protected void SendPacket(PacketPb packet)

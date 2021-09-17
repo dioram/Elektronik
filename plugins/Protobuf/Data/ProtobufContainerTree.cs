@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Containers.SpecialInterfaces;
-using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataConsumers;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.SpecialInterfaces;
 using Elektronik.Protobuf.Offline.Presenters;
-using Elektronik.Renderers;
 
 namespace Elektronik.Protobuf.Data
 {
@@ -74,19 +74,19 @@ namespace Elektronik.Protobuf.Data
             }
         }
 
-        public void AddRenderer(ISourceRenderer renderer)
+        public void AddConsumer(IDataConsumer consumer)
         {
             foreach (var child in Children)
             {
-                child.AddRenderer(renderer);
+                child.AddConsumer(consumer);
             }
         }
 
-        public void RemoveRenderer(ISourceRenderer renderer)
+        public void RemoveConsumer(IDataConsumer consumer)
         {
             foreach (var child in Children)
             {
-                child.RemoveRenderer(renderer);
+                child.RemoveConsumer(consumer);
             }
         }
 

@@ -11,12 +11,12 @@ find_package(PCL REQUIRED)
 
 include(${SWIG_USE_FILE})
 set_source_files_properties(Builder.i PROPERTIES CPLUSPLUS ON)
-set_property(SOURCE Builder.i PROPERTY COMPILE_OPTIONS -namespace Elektronik.Mesh.Native)
+set_property(SOURCE Builder.i PROPERTY COMPILE_OPTIONS -namespace Elektronik.DataSources.Containers.NativeMesh)
 
 swig_add_library(MeshBuilder
         TYPE SHARED
         LANGUAGE csharp
-        OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/Containers/MeshBuildNative
+        OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Assets/Scripts/DataSources/Containers/NativeMesh
         OUTFILE_DIR ${PROJECT_SOURCE_DIR}
         SOURCES MeshBuilder.h MeshBuilder.cpp Builder.i)
 if (WIN32)

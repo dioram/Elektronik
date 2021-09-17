@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data;
+using Elektronik.DataSources;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
@@ -32,7 +32,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
             _threadWorker = new ThreadQueueWorker();
         }
         
-        #region IDataSourceOffline
+        #region IDataSourcePlugin
 
         public ISourceTreeNode Data { get; }
 

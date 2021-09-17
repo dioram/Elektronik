@@ -1,4 +1,4 @@
-﻿using Elektronik.Collision;
+﻿using Elektronik.DataConsumers.Collision;
 using NUnit.Framework;
 using UnityEngine;
 

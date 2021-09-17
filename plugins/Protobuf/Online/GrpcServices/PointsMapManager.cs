@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Elektronik.Containers;
 using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources.Containers;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
 using Grpc.Core.Logging;
@@ -13,9 +13,8 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class PointsMapManager : ConnectableObjectsMapManager<SlamPoint, SlamPointDiff>
     {
-        public PointsMapManager(OnlineFrameBuffer buffer,
-                                IConnectableObjectsContainer<SlamPoint> container, ICSConverter? converter,
-                                ILogger logger)
+        public PointsMapManager(OnlineFrameBuffer buffer, IConnectableObjectsContainer<SlamPoint> container, 
+                                ICSConverter? converter, ILogger logger)
                 : base(buffer, container, converter, logger)
         {
         }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Elektronik.Containers.SpecialInterfaces;
-using Elektronik.Data;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers.SpecialInterfaces;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using SQLite;
@@ -28,8 +28,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         public abstract void Clear();
 
-        public abstract void AddRenderer(ISourceRenderer renderer);
-        public abstract void RemoveRenderer(ISourceRenderer renderer);
+        public abstract void AddConsumer(IDataConsumer consumer);
+        public abstract void RemoveConsumer(IDataConsumer consumer);
 
         #endregion
 

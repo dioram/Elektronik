@@ -1,6 +1,6 @@
 ﻿#if !NO_ROS2DDS
 using System;
-using Elektronik.Data;
+using Elektronik.DataSources;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
@@ -22,7 +22,7 @@ namespace Elektronik.RosPlugin.Ros2.Online
             RosMessageConvertExtender.Converter = converter;
         }
         
-        #region IDataSourceOnline
+        #region IDataSourcePlugin
 
         public void Play()
         {

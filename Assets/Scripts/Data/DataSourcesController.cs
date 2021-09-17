@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.Converters;
+using Elektronik.DataConsumers;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.SpecialInterfaces;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
-using Elektronik.Renderers;
 using Elektronik.UI;
 using Elektronik.UI.Localization;
 using SimpleFileBrowser;
@@ -25,28 +26,28 @@ namespace Elektronik.Data
 
         private readonly List<ISourceTreeNode> _dataSources = new List<ISourceTreeNode>();
         private readonly List<SourceTreeElement> _roots = new List<SourceTreeElement>();
-        private List<ISourceRenderer> _renderers;
+        private List<IDataConsumer> _consumers;
 
         public event Action<ISourceTreeNode> OnSourceAdded;
         public event Action<ISourceTreeNode> OnSourceRemoved;
 
         // ReSharper disable once ParameterHidesMember
-        public void AddRenderer(ISourceRenderer renderer)
+        public void AddRenderer(IDataConsumer consumer)
         {
-            _renderers.Add(renderer);
+            _consumers.Add(consumer);
             foreach (var source in _dataSources)
             {
-                source.AddRenderer(renderer);
+                source.AddConsumer(consumer);
             }
         }
 
         // ReSharper disable once ParameterHidesMember
-        public void RemoveRenderer(ISourceRenderer renderer)
+        public void RemoveRenderer(IDataConsumer consumer)
         {
-            _renderers.Remove(renderer);
+            _consumers.Remove(consumer);
             foreach (var source in _dataSources)
             {
-                source.RemoveRenderer(renderer);
+                source.RemoveConsumer(consumer);
             }
         }
 
@@ -76,7 +77,7 @@ namespace Elektronik.Data
 
         private void Awake()
         {
-            _renderers = RenderersRoot.GetComponentsInChildren<ISourceRenderer>().ToList();
+            _consumers = RenderersRoot.GetComponentsInChildren<IDataConsumer>().ToList();
         }
 
         public void AddDataSource(ISourceTreeNode source)
@@ -100,9 +101,9 @@ namespace Elektronik.Data
             }
 
             // ReSharper disable once LocalVariableHidesMember
-            foreach (var renderer in _renderers)
+            foreach (var renderer in _consumers)
             {
-                source.AddRenderer(renderer);
+                source.AddConsumer(renderer);
             }
 
             OnSourceAdded?.Invoke(source);

@@ -57,9 +57,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RosMessageParserGenerator\RosMessageParserGenerator.csproj" 
-                        OutputItemType="Analyzer"
-                        ReferenceOutputAssembly="false" />
+      <ProjectReference Include="..\RosMessageParserGenerator\RosMessageParserGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>

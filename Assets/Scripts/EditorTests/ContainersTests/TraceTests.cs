@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using Elektronik.Clouds;
-using Elektronik.Containers;
-using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.EventArgs;
 using Moq;
 using NUnit.Framework;
 using UnityEngine;
@@ -26,7 +26,7 @@ namespace Elektronik.EditorTests.ContainersTests
                 new SlamPoint(2, Vector3.right, Color.gray),
             });
             _mockedLineRenderer = new Mock<ICloudRenderer<SimpleLine>>();
-            _container.AddRenderer(_mockedLineRenderer.Object);
+            _container.AddConsumer(_mockedLineRenderer.Object);
             _container.TraceEnabled = true;
             _container.TraceDuration = 1000;
         }

@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Elektronik.Containers;
-using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Google.Protobuf;
@@ -97,6 +97,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             
             var response = ImageClient.Handle(packet);
             
+            Thread.Sleep(200);
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedImageRenderer.Verify(r => r.Render(_imageData), Times.Once);
         }

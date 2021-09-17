@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Data;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
 using Elektronik.UI.Windows;
 
 namespace Elektronik.RosPlugin.Common.Containers
@@ -25,16 +25,16 @@ namespace Elektronik.RosPlugin.Common.Containers
             ChildrenList.Clear();
         }
 
-        public override void AddRenderer(ISourceRenderer renderer)
+        public override void AddConsumer(IDataConsumer consumer)
         {
-            _renderers.Add(renderer);
-            base.AddRenderer(renderer);
+            _consumers.Add(consumer);
+            base.AddConsumer(consumer);
         }
 
-        public override void RemoveRenderer(ISourceRenderer renderer)
+        public override void RemoveConsumer(IDataConsumer consumer)
         {
-            _renderers.Remove(renderer);
-            base.RemoveRenderer(renderer);
+            _consumers.Remove(consumer);
+            base.RemoveConsumer(consumer);
         }
 
         #region Protected
@@ -51,7 +51,7 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #region Private
 
-        private readonly List<ISourceRenderer> _renderers = new ();
+        private readonly List<IDataConsumer> _consumers = new ();
 
         private void BuildTree()
         {
@@ -90,9 +90,9 @@ namespace Elektronik.RosPlugin.Common.Containers
 
                     RealChildren[topic.Name] = child;
                     
-                    foreach (var renderer in _renderers)
+                    foreach (var renderer in _consumers)
                     {
-                        RealChildren[topic.Name].AddRenderer(renderer);
+                        RealChildren[topic.Name].AddConsumer(renderer);
                     }
                 }
                 else

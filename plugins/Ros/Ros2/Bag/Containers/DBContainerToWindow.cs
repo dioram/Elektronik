@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataConsumers.Windows;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using Elektronik.UI.Windows;
 using SQLite;
@@ -25,9 +26,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (Renderer is not null) Renderer.Clear();
         }
 
-        public override void AddRenderer(ISourceRenderer renderer)
+        public override void AddConsumer(IDataConsumer consumer)
         {
-            if (renderer is WindowsManager factory)
+            if (consumer is WindowsManager factory)
             {
                 factory.CreateWindow<TRender>(Title, (r, window) =>
                 {
@@ -38,9 +39,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             }
         }
 
-        public override void RemoveRenderer(ISourceRenderer renderer)
+        public override void RemoveConsumer(IDataConsumer consumer)
         {
-            if (Renderer != renderer) return;
+            if (Renderer != consumer) return;
             Renderer = null;
             Window = null;
         }

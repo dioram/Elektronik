@@ -29,8 +29,8 @@
 /plugins/*/cmake-build-*
 /plugins/ROS2DDS/CMakeSettings.json
 /plugins/Clusterization.PlanesDetection/Native
-/Assets/Scripts/Containers/MeshBuildNative
-/Assets/Scripts/Containers/MeshBuildNative.meta
+/Assets/Scripts/DataSources/Containers/NativeMesh
+/Assets/Scripts/DataSources/Containers/NativeMesh.meta
 /Assets/Plugins/Native
 /Assets/Plugins/Native.meta
 /Assets/generatedFiles/

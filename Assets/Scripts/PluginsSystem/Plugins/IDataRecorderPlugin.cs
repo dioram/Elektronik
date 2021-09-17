@@ -1,10 +1,10 @@
 ﻿using System;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
 
 namespace Elektronik.PluginsSystem
 {
     // TODO: add xml docs
-    public interface IDataRecorderPlugin : IElektronikPlugin, ISourceRenderer
+    public interface IDataRecorderPlugin : IElektronikPlugin, IDataConsumer
     {
         public event Action OnDisposed;
     }

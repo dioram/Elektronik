@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Elektronik.Collision;
-using Elektronik.Containers;
-using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataConsumers.Collision;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.Threading;
 using Elektronik.UI.Windows;
 using UnityEngine;

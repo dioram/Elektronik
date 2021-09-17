@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Clouds;
-using Elektronik.Containers;
-using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.SpecialInterfaces;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
@@ -33,17 +33,17 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             OnClear?.Invoke(this);
         }
 
-        public override void AddRenderer(ISourceRenderer renderer)
+        public override void AddConsumer(IDataConsumer consumer)
         {
-            if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
+            if (consumer is not ICloudRenderer<SlamPoint> pointRenderer) return;
             _pointsRenderers.Add(pointRenderer);
             // OnShow += pointRenderer.ShowItems;
             // OnClear += pointRenderer.OnClear;
         }
 
-        public override void RemoveRenderer(ISourceRenderer renderer)
+        public override void RemoveConsumer(IDataConsumer consumer)
         {
-            if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
+            if (consumer is not ICloudRenderer<SlamPoint> pointRenderer) return;
             _pointsRenderers.Remove(pointRenderer);
             // OnShow += pointRenderer.ShowItems;
             // OnClear += pointRenderer.OnClear;

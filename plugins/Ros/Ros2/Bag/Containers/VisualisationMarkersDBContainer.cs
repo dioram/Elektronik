@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Containers.SpecialInterfaces;
-using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.SpecialInterfaces;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using SQLite;
@@ -24,7 +24,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             ActualTimestamps = actualTimestamps;
         }
 
-        #region ISourceTreeNode implementation
+        #region ISourceTreeNode
 
         public void Clear()
         {
@@ -39,14 +39,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             }
         }
 
-        public void AddRenderer(ISourceRenderer renderer)
+        public void AddConsumer(IDataConsumer consumer)
         {
-            _renderers.Add(renderer);
+            _consumers.Add(consumer);
         }
 
-        public void RemoveRenderer(ISourceRenderer renderer)
+        public void RemoveConsumer(IDataConsumer consumer)
         {
-            _renderers.Remove(renderer);
+            _consumers.Remove(consumer);
         }
 
         public string DisplayName { get; set; }
@@ -54,7 +54,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #endregion
 
-        #region IDBContainer implementation
+        #region IDBContainer
 
         public long Timestamp { get; private set; } = -1;
         public List<SQLiteConnection> DBModels { get; set; }
@@ -106,12 +106,12 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #endregion
 
-        #region Private definitions
+        #region Private
 
         private bool _isVisible = true;
         private int _pos;
         private readonly SortedDictionary<string, ISourceTreeNode> _children = new();
-        private readonly List<ISourceRenderer> _renderers = new ();
+        private readonly List<IDataConsumer> _consumers = new ();
         private readonly Dictionary<long, List<Marker>> _delayedRemoving = new();
 
         private (long time, int pos) GetValidTimestamp(long newTimestamp)
@@ -223,9 +223,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         private void CreateContainer(Type containerType, string key)
         {
             _children[key] = (ISourceTreeNode) Activator.CreateInstance(containerType, key);
-            foreach (var renderer in _renderers)
+            foreach (var consumer in _consumers)
             {
-                _children[key].AddRenderer(renderer);
+                _children[key].AddConsumer(consumer);
             }
         }
 

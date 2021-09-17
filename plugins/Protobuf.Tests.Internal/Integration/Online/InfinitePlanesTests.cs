@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using Elektronik.Containers;
-using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Moq;
@@ -56,7 +56,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             };
             packet.Planes.Data.Add(_planes);
             var e = new AddedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
-                                                                  .ToArray());
+                                                      .ToArray());
 
             var response = MapClient.Handle(packet);
             Thread.Sleep(20);
