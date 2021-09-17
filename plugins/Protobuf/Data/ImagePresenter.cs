@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.Windows;
 using Elektronik.DataSources;
+using Elektronik.DataSources.Containers.SpecialInterfaces;
 using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Data
@@ -15,6 +16,8 @@ namespace Elektronik.Protobuf.Data
         }
         
         #region ISourceTreeNode
+
+        public ISourceTreeNode? TakeSnapshot() => null;
 
         public string DisplayName { get; set; }
         

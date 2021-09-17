@@ -6,6 +6,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.Windows;
 using Elektronik.DataSources;
+using Elektronik.DataSources.Containers.SpecialInterfaces;
 using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using Elektronik.Threading;
@@ -28,6 +29,8 @@ namespace Elektronik.Protobuf.Offline.Presenters
         }
 
         #region ISourceTreeNode
+
+        public ISourceTreeNode? TakeSnapshot() => null;
 
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();

@@ -49,6 +49,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             _consumers.Remove(consumer);
         }
 
+        public ISourceTreeNode TakeSnapshot()
+        {
+            return new VirtualSource(DisplayName, _children.Values
+                                         .Select(ch => ch.TakeSnapshot())
+                                         .Where(ch => ch is not null)
+                                         .ToList());
+        }
+
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTreeNode> Children => _children.Values.ToList();
 

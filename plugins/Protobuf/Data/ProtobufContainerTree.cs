@@ -10,7 +10,7 @@ using Elektronik.Protobuf.Offline.Presenters;
 
 namespace Elektronik.Protobuf.Data
 {
-    public class ProtobufContainerTree : ISourceTreeNode, ISnapshotable, IVisible
+    public class ProtobufContainerTree : ISourceTreeNode, IVisible
     {
         public readonly ITrackedContainer<SlamTrackedObject> TrackedObjs;
         public readonly IConnectableObjectsContainer<SlamObservation> Observations;
@@ -94,15 +94,15 @@ namespace Elektronik.Protobuf.Data
 
         #region ISnapshotable
 
-        public ISnapshotable TakeSnapshot()
+        public ISourceTreeNode TakeSnapshot()
         {
-            var children = new List<ISourceTreeNode>()
+            var children = new List<ISourceTreeNode>
             {
-                ((TrackedObjs as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
-                ((Observations as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
-                ((Points as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
-                ((Lines as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
-                ((Planes as ISnapshotable)!.TakeSnapshot() as ISourceTreeNode)!,
+                (TrackedObjs as ISourceTreeNode)!.TakeSnapshot(),
+                (Observations as ISourceTreeNode)!.TakeSnapshot(),
+                (Points as ISourceTreeNode)!.TakeSnapshot(),
+                (Lines as ISourceTreeNode)!.TakeSnapshot(),
+                (Planes as ISourceTreeNode)!.TakeSnapshot(),
             };
             
             return new VirtualSource(DisplayName, children);

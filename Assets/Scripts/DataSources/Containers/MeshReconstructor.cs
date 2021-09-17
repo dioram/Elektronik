@@ -58,6 +58,8 @@ namespace Elektronik.DataSources.Containers
             OnMeshUpdated -= meshRenderer.OnMeshUpdated;
         }
 
+        public ISourceTreeNode TakeSnapshot() => null;
+
         #endregion
 
         #region IVisible

@@ -84,6 +84,8 @@ namespace Elektronik.DataSources.Containers
             _connections.RemoveConsumer(consumer);
         }
 
+        public ISourceTreeNode TakeSnapshot() => null;
+
         #endregion
 
         #region IVisible

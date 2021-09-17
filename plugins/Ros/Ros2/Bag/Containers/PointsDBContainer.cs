@@ -4,6 +4,7 @@ using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.SpecialInterfaces;
 using Elektronik.RosPlugin.Common.RosMessages;
@@ -14,7 +15,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable, ISnapshotable
+    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable
     {
         public PointsDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
                                  List<long> actualTimestamps)
@@ -75,6 +76,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         {
             return message.ToSlamPoints();
         }
+        
+        public override ISourceTreeNode TakeSnapshot()
+        {
+            var res = new CloudContainer<SlamPoint>(DisplayName);
+            res.AddRange(Current);
+            return res;
+        }
 
         #endregion
 
@@ -85,17 +93,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (float.IsNaN(_bounds.x)) return (transform.position, transform.rotation);
 
             return (_center + _bounds / 2 + _bounds.normalized, Quaternion.LookRotation(-_bounds));
-        }
-
-        #endregion
-
-        #region ISnapshotable
-
-        public ISnapshotable TakeSnapshot()
-        {
-            var res = new CloudContainer<SlamPoint>(DisplayName);
-            res.AddRange(Current);
-            return res;
         }
 
         #endregion

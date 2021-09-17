@@ -46,5 +46,9 @@ namespace Elektronik.DataSources
         /// <remarks> In implementation of this method you should propagate this call to children. </remarks>
         /// <param name="consumer"> Content renderer. </param>
         void RemoveConsumer(IDataConsumer consumer);
+        
+        /// <summary> Takes deep copy of this node and all it's children. </summary>
+        /// <returns> Copy of this node. </returns>
+        [CanBeNull] ISourceTreeNode TakeSnapshot();
     }
 }

@@ -12,7 +12,7 @@ using UnityEngine;
 namespace Elektronik.DataSources.Containers
 {
     public class TrackedObjectsContainer
-            : ITrackedContainer<SlamTrackedObject>, ISourceTreeNode, ILookable, IVisible, ISnapshotable
+            : ITrackedContainer<SlamTrackedObject>, ISourceTreeNode, ILookable, IVisible
     {
         public TrackedObjectsContainer(string displayName = "")
         {
@@ -338,6 +338,18 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        public ISourceTreeNode TakeSnapshot()
+        {
+            var res = new TrackedObjectsContainer(DisplayName);
+            lock (_objects)
+            {
+                res.AddRangeWithHistory(_objects.Values.Select(p => p.Item1).ToList(),
+                                        _objects.Values.Select(p => (IList<SimpleLine>)p.Item2.ToList()).ToList());
+            }
+
+            return res;
+        }
+
         #endregion
 
         #region ITrackedContainer implementation
@@ -439,22 +451,6 @@ namespace Elektronik.DataSources.Containers
         public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
-
-        #endregion
-
-        #region ISnapshotable
-
-        public ISnapshotable TakeSnapshot()
-        {
-            var res = new TrackedObjectsContainer(DisplayName);
-            lock (_objects)
-            {
-                res.AddRangeWithHistory(_objects.Values.Select(p => p.Item1).ToList(),
-                                        _objects.Values.Select(p => (IList<SimpleLine>)p.Item2.ToList()).ToList());
-            }
-
-            return res;
-        }
 
         #endregion
 

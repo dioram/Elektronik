@@ -8,6 +8,7 @@ using Elektronik.Plugins.Common.Commands;
 using Elektronik.Plugins.Common.Commands.Generic;
 using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Plugins.Common.FrameBuffers;
+using Elektronik.Plugins.Common.Parsing;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
 using Grpc.Core.Logging;
@@ -37,10 +38,10 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             Buffer = buffer;
         }
 
-        MapsManagerPb.MapsManagerPbBase? _link;
+        private MapsManagerPb.MapsManagerPbBase? _link;
 
-        public IChainable<MapsManagerPb.MapsManagerPbBase> SetSuccessor(
-            IChainable<MapsManagerPb.MapsManagerPbBase> link)
+        public IChainable<MapsManagerPb.MapsManagerPbBase>? SetSuccessor(
+            IChainable<MapsManagerPb.MapsManagerPbBase>? link)
         {
             _link = link as MapsManagerPb.MapsManagerPbBase;
             return link;

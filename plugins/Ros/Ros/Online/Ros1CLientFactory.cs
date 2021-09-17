@@ -4,9 +4,9 @@ using Elektronik.Settings.Bags;
 
 namespace Elektronik.RosPlugin.Ros.Online
 {
-    public class Ros1ClientFactory: ElektronikPluginsFactoryBase<AddressPortSettingsBag>, IDataSourcePluginsFactory
+    public class Ros1ClientFactory: ElektronikPluginsFactoryBase<Ros1Settings>, IDataSourcePluginsFactory
     {
-        protected override IElektronikPlugin StartPlugin(AddressPortSettingsBag settings, ICSConverter converter)
+        protected override IElektronikPlugin StartPlugin(Ros1Settings settings, ICSConverter converter)
         {
             return new Ros1Client(DisplayName, Logo, settings);
         }

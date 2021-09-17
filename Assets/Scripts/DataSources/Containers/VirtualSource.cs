@@ -6,9 +6,9 @@ using Elektronik.DataSources.Containers.SpecialInterfaces;
 
 namespace Elektronik.DataSources.Containers
 {
-    public class VirtualSource : ISourceTreeNode, IVisible, ISnapshotable
+    public class VirtualSource : ISourceTreeNode, IVisible
     {
-        public VirtualSource(string displayName, List<ISourceTreeNode> children = null)
+        public VirtualSource(string displayName, IList<ISourceTreeNode> children = null)
         {
             DisplayName = displayName;
             ChildrenList = children ?? new List<ISourceTreeNode>();
@@ -43,6 +43,13 @@ namespace Elektronik.DataSources.Containers
             {
                 child.RemoveConsumer(consumer);
             }
+        }
+        public ISourceTreeNode TakeSnapshot()
+        {
+            return new VirtualSource(DisplayName, ChildrenList
+                                         .Select(ch => ch.TakeSnapshot())
+                                         .Where(ch => ch is {})
+                                         .ToList());
         }
 
         public string DisplayName { get; set; }
@@ -93,22 +100,10 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ISnapshotable
-
-        public ISnapshotable TakeSnapshot()
-        {
-            return new VirtualSource(DisplayName, ChildrenList.OfType<ISnapshotable>()
-                                                .Select(ch => ch.TakeSnapshot())
-                                                .Select(ch => ch as ISourceTreeNode)
-                                                .ToList());
-        }
-
-        #endregion
-
         #region Private
 
         private bool _isVisible = true;
-        protected readonly List<ISourceTreeNode> ChildrenList;
+        protected readonly IList<ISourceTreeNode> ChildrenList;
 
         private bool CheckShowButton()
         {

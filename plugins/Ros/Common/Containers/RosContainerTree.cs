@@ -4,7 +4,7 @@ using System.Linq;
 using Elektronik.DataConsumers;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
-using Elektronik.UI.Windows;
+using Elektronik.DataSources.Containers.SpecialInterfaces;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {

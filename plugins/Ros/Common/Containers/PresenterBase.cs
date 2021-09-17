@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.Windows;
 using Elektronik.DataSources;
+using Elektronik.DataSources.Containers.SpecialInterfaces;
 using Elektronik.UI.Windows;
 
 namespace Elektronik.RosPlugin.Common.Containers
@@ -31,6 +32,8 @@ namespace Elektronik.RosPlugin.Common.Containers
         #endregion
 
         #region ISourceTreeNode
+
+        public ISourceTreeNode? TakeSnapshot() => null;
 
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();

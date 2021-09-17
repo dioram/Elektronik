@@ -6,7 +6,6 @@ using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Ros.Online.Handlers;
-using Elektronik.Settings.Bags;
 using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.MessageTypes.Rosapi;
 
@@ -16,10 +15,10 @@ namespace Elektronik.RosPlugin.Ros.Online
     {
         public RosSocket? Socket;
 
-        public RosOnlineContainerTree(AddressPortSettingsBag settings, string displayName) : base(displayName)
+        public RosOnlineContainerTree(Ros1Settings settings, string displayName) : base(displayName)
         {
             // TODO: Check if this will work with 0.0.0.0 
-            var uri = $"ws://{settings.IPAddress}:{settings.Port}";
+            var uri = $"ws://{settings.IPAddress}:{settings.ListeningPort}";
             DisplayName = $"ROS: {uri}";
             Socket = new RosSocket(new RosSharp.RosBridgeClient.Protocols.WebSocketNetProtocol(uri));
             UpdateTopics(null);

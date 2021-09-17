@@ -11,7 +11,7 @@ namespace Elektronik.RosPlugin.Ros.Online
 {
     public class Ros1Client : IDataSourcePlugin
     {
-        public Ros1Client(string displayName, Texture2D? logo, AddressPortSettingsBag settings)
+        public Ros1Client(string displayName, Texture2D? logo, Ros1Settings settings)
         {
             DisplayName = displayName;
             Logo = logo;

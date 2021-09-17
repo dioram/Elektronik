@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Elektronik.DataSources.Containers
 {
-    public class SlamLinesContainer : IContainer<SlamLine>, ISourceTreeNode, ILookable, IVisible, ISnapshotable
+    public class SlamLinesContainer : IContainer<SlamLine>, ISourceTreeNode, ILookable, IVisible
     {
         public SlamLinesContainer(string displayName = "")
         {
@@ -361,6 +361,19 @@ namespace Elektronik.DataSources.Containers
             _renderers.Remove(typedRenderer);
         }
 
+        public ISourceTreeNode TakeSnapshot()
+        {
+            var res = new SlamLinesContainer(DisplayName);
+            List<SlamLine> list;
+            lock (_connections)
+            {
+                list = _connections.Values.ToList();
+            }
+
+            res.AddRange(list);
+            return res;
+        }
+
         #endregion
 
         #region ILookable implementation
@@ -426,23 +439,6 @@ namespace Elektronik.DataSources.Containers
         public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
-
-        #endregion
-
-        #region ISnapshotable
-
-        public ISnapshotable TakeSnapshot()
-        {
-            var res = new SlamLinesContainer(DisplayName);
-            List<SlamLine> list;
-            lock (_connections)
-            {
-                list = _connections.Values.ToList();
-            }
-
-            res.AddRange(list);
-            return res;
-        }
 
         #endregion
 

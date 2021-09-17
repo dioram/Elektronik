@@ -56,6 +56,14 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        public ISourceTreeNode TakeSnapshot()
+        {
+            return new VirtualSource(DisplayName, Children
+                                         .Select(ch => ch.TakeSnapshot())
+                                         .Where(ch => ch is {})
+                                         .ToList());
+        }
+
         #endregion
 
         #region IVisible

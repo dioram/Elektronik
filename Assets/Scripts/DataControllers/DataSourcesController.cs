@@ -18,15 +18,14 @@ namespace Elektronik.DataControllers
 {
     public class DataSourcesController : MonoBehaviour
     {
-        public CSConverter Converter;
-        private static int _snapshotsCount = 0;
+        #region Editor fields
+
         [SerializeField] private RectTransform SourceTreeView;
         [SerializeField] private GameObject TreeElementPrefab;
         [SerializeField] private GameObject RenderersRoot;
+        public CSConverter Converter;
 
-        private readonly List<ISourceTreeNode> _dataSources = new List<ISourceTreeNode>();
-        private readonly List<SourceTreeElement> _roots = new List<SourceTreeElement>();
-        private List<IDataConsumer> _consumers;
+        #endregion
 
         public event Action<ISourceTreeNode> OnSourceAdded;
         public event Action<ISourceTreeNode> OnSourceRemoved;
@@ -75,11 +74,6 @@ namespace Elektronik.DataControllers
             }
         }
 
-        private void Awake()
-        {
-            _consumers = RenderersRoot.GetComponentsInChildren<IDataConsumer>().ToList();
-        }
-
         public void AddDataSource(ISourceTreeNode source)
         {
             _dataSources.Add(source);
@@ -124,18 +118,17 @@ namespace Elektronik.DataControllers
             // ReSharper disable once LocalVariableHidesMember
             var name = "Snapshot".tr(_snapshotsCount++);
             var snapshot = new SnapshotContainer(name, _dataSources
-                                                       .OfType<ISnapshotable>()
-                                                       .Select(s => s.TakeSnapshot())
-                                                       .Select(s => s as ISourceTreeNode)
-                                                       .ToList());
+                                                     .Select(s => s.TakeSnapshot())
+                                                     .Where(ch => ch is {})
+                                                     .ToList());
             AddDataSource(snapshot);
         }
 
         public void LoadSnapshot()
         {
             FileBrowser.SetFilters(false, PluginsLoader.Instance.PluginFactories
-                                                       .OfType<ISnapshotReaderPluginsFactory>()
-                                                       .SelectMany(r => r.SupportedExtensions));
+                                       .OfType<ISnapshotReaderPluginsFactory>()
+                                       .SelectMany(r => r.SupportedExtensions));
             FileBrowser.ShowLoadDialog(LoadSnapshot,
                                        () => { },
                                        false,
@@ -145,7 +138,21 @@ namespace Elektronik.DataControllers
                                        "Load".tr());
         }
 
+        #region Unity events
+
+        private void Awake()
+        {
+            _consumers = RenderersRoot.GetComponentsInChildren<IDataConsumer>().ToList();
+        }
+
+        #endregion
+
         #region Private
+        
+        private static int _snapshotsCount = 0;
+        private readonly List<ISourceTreeNode> _dataSources = new List<ISourceTreeNode>();
+        private readonly List<SourceTreeElement> _roots = new List<SourceTreeElement>();
+        private List<IDataConsumer> _consumers;
 
         private static void MapSourceTree(ISourceTreeNode treeNodeElement, string path,
                                           Func<ISourceTreeNode, string, bool> action)
@@ -164,13 +171,13 @@ namespace Elektronik.DataControllers
             foreach (var path in files)
             {
                 var factory = PluginsLoader.Instance.PluginFactories
-                                                .OfType<ISnapshotReaderPluginsFactory>()
-                                                .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
+                    .OfType<ISnapshotReaderPluginsFactory>()
+                    .FirstOrDefault(p => p.SupportedExtensions.Any(e => path.EndsWith(e)));
                 if (factory is null) return;
                 factory.SetFileName(path);
                 var plugin = (IDataSourcePlugin)factory.Start(Converter);
                 plugin.Position = plugin.AmountOfFrames - 1;
-                AddDataSource(new SnapshotContainer(Path.GetFileName(path), plugin.Data.Children));
+                AddDataSource(new SnapshotContainer(Path.GetFileName(path), plugin.Data.Children.ToList()));
             }
         }
 

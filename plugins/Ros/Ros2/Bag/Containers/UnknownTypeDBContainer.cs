@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using SQLite;
@@ -14,6 +15,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
                 : base(displayName, dbModels, topic, actualTimestamps)
         {
         }
+
+        public override ISourceTreeNode? TakeSnapshot() => null;
 
         protected override string[] ToRenderType(Message message)
         {

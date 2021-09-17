@@ -37,6 +37,19 @@ namespace Elektronik.DataSources.Containers
             OnUpdated -= typedRenderer.OnItemsUpdated;
             OnRemoved -= typedRenderer.OnItemsRemoved;
         }
+        
+        public ISourceTreeNode TakeSnapshot()
+        {
+            var res = new CloudContainer<TCloudItem>(DisplayName);
+            List<TCloudItem> list;
+            lock (Items)
+            {
+                list = Items.Values.ToList();
+            }
+
+            res.AddRange(list);
+            return res;
+        }
 
         #endregion
         

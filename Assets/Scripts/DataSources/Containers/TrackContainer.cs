@@ -12,7 +12,7 @@ using UnityEngine;
 namespace Elektronik.DataSources.Containers
 {
     /// <summary> Contains lines in strict order. </summary>
-    public class TrackContainer : IContainer<SimpleLine>, ISourceTreeNode, ILookable, IVisible, ISnapshotable,
+    public class TrackContainer : IContainer<SimpleLine>, ISourceTreeNode, ILookable, IVisible,
                                   IFollowable<SlamTrackedObject>
     {
         public TrackContainer(TrackedObjectsContainer parent, SlamTrackedObject trackedObject)
@@ -294,6 +294,17 @@ namespace Elektronik.DataSources.Containers
             OnRemoved -= typedRenderer.OnItemsRemoved;
             _renderers.Remove(typedRenderer);
         }
+        
+        public ISourceTreeNode TakeSnapshot()
+        {
+            var res = new TrackContainer(_parent, _trackedObject);
+            lock (_lines)
+            {
+                res.AddRange(_lines);
+            }
+
+            return res;
+        }
 
         #endregion
 
@@ -347,21 +358,6 @@ namespace Elektronik.DataSources.Containers
         public event Action<bool> OnVisibleChanged;
 
         public bool ShowButton => true;
-
-        #endregion
-
-        #region ISnapshotable
-
-        public ISnapshotable TakeSnapshot()
-        {
-            var res = new TrackContainer(_parent, _trackedObject);
-            lock (_lines)
-            {
-                res.AddRange(_lines);
-            }
-
-            return res;
-        }
 
         #endregion
 

@@ -23,6 +23,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region ISourceTreeNode
 
+        public abstract ISourceTreeNode? TakeSnapshot();
+
         public string DisplayName { get; set; }
         public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
 
