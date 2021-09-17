@@ -19,7 +19,7 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #region IPresenter
 
-        public TMessage Current { get; private set; }
+        public TMessage? Current { get; private set; }
 
         public void Present(TMessage data)
         {
@@ -65,7 +65,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         #region IRendersToWindow
 
         public Window? Window { get; private set; }
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         #endregion
 

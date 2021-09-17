@@ -61,7 +61,7 @@ namespace Elektronik.RosPlugin.Ros2.Online
 
         public ISourceTreeNode Data { get; }
         public int AmountOfFrames { get; }
-        public string Timestamp { get; }
+        public string Timestamp { get; private set; } = "";
         public int Position { get; set; }
         public float Speed { get; set; }
         public bool IsPlaying { get; }

@@ -26,7 +26,7 @@ namespace Elektronik.UI
 
         #endregion
 
-        #region IPoint*Handler
+        #region IPointer*Handler
 
         public void OnPointerEnter(PointerEventData eventData)
         {

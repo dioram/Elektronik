@@ -4,6 +4,7 @@ using System.Threading;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
+using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Moq;

@@ -4,8 +4,8 @@ using System.IO;
 using System.Timers;
 using Elektronik.Data.Converters;
 using Elektronik.DataSources;
-using Elektronik.Extensions;
-using Elektronik.Offline;
+using Elektronik.Plugins.Common.FrameBuffers;
+using Elektronik.Plugins.Common.Parsing;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
@@ -38,12 +38,13 @@ namespace Elektronik.Protobuf.Offline
             _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
             _input = File.OpenRead(settings.PathToFile);
             converter.SetInitTRS(Vector3.zero, Quaternion.identity);
-            _parsersChain.SetConverter(converter);
+            _parsersChain?.SetConverter(converter);
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
             _frames.OnSizeChanged += i => OnAmountOfFramesChanged?.Invoke(i);
             _threadWorker = new ThreadQueueWorker();
             _timer = new Timer(DefaultSpeed * Speed);
+            // ReSharper disable once UnusedParameter.Local
             _timer.Elapsed += (_, __) =>
             {
                 _timer.Interval = DefaultSpeed * Speed;
@@ -193,7 +194,7 @@ namespace Elektronik.Protobuf.Offline
         private readonly ProtobufContainerTree _containerTree;
         private readonly FileStream _input;
         private readonly FramesCollection<Frame> _frames;
-        private readonly DataParser<PacketPb> _parsersChain;
+        private readonly DataParser<PacketPb>? _parsersChain;
         private readonly ThreadQueueWorker _threadWorker;
         private readonly Timer _timer;
         private const int DefaultSpeed = 2;

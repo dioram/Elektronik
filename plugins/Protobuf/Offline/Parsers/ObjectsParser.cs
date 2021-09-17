@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Commands;
-using Elektronik.Commands.Generic;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
-using Elektronik.Offline;
+using Elektronik.Plugins.Common.Commands;
+using Elektronik.Plugins.Common.Commands.Generic;
+using Elektronik.Plugins.Common.DataDiff;
+using Elektronik.Plugins.Common.Parsing;
 using Elektronik.Protobuf.Data;
 
 namespace Elektronik.Protobuf.Offline.Parsers

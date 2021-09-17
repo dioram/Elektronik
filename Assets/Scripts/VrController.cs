@@ -5,10 +5,14 @@ namespace Elektronik
 {
     public class VrController : MonoBehaviour
     {
+        #region Editor fields
+
         [SerializeField] private GameObject VrModeButton;
         [SerializeField] private GameObject VrModeGameObject;
         [SerializeField] private GameObject NonVrModeGameObject;
         [SerializeField] private GameObject VrHelpMenu;
+
+        #endregion
         
         public bool IsInVrMode { get; private set; } = false;
 

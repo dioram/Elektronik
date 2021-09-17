@@ -18,15 +18,4 @@ namespace Elektronik.DataSources.Containers
         event EventHandler<ConnectionsEventArgs> OnConnectionsUpdated;
         event EventHandler<ConnectionsEventArgs> OnConnectionsRemoved;
     }
-
-    public static class ConnectableContainerDiffExt
-    {
-        public static IEnumerable<(int id1, int id2)> GetAllConnections<TCloudItem, TCloudItemDiff>(
-            this IConnectableObjectsContainer<TCloudItem> container, TCloudItemDiff diff)
-                where TCloudItem : struct, ICloudItem
-                where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
-        {
-            return container.GetAllConnections(diff.Apply());
-        }
-    }
 }

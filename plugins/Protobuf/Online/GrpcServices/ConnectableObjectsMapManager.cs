@@ -2,12 +2,13 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Elektronik.Commands;
-using Elektronik.Commands.Generic;
-using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
+using Elektronik.Plugins.Common.Commands;
+using Elektronik.Plugins.Common.Commands.Generic;
+using Elektronik.Plugins.Common.DataDiff;
+using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Protobuf.Data;
 using Grpc.Core.Logging;
 

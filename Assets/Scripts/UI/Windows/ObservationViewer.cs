@@ -16,6 +16,19 @@ namespace Elektronik.UI.Windows
     [RequireComponent(typeof(Window))]
     public class ObservationViewer : MonoBehaviour, IDataRenderer<(IContainer<SlamObservation>, SlamObservation)>
     {
+        #region Editor fields
+
+        [SerializeField] private RawImage Image;
+        [SerializeField] private TMP_Text Message;
+        [SerializeField] private Window Window;
+        [SerializeField] private GameObject TextView;
+        [SerializeField] private AspectRatioFitter Fitter;
+        [SerializeField] private Button PreviousButton;
+        [SerializeField] private Button NextButton;
+        [SerializeField] private Button MoveToButton;
+        
+        #endregion
+        
         public int ObservationId => _observation.Id;
 
         public int ObservationContainer => _container.GetHashCode();
@@ -78,15 +91,6 @@ namespace Elektronik.UI.Windows
         #endregion
 
         #region Private
-
-        [SerializeField] private RawImage Image;
-        [SerializeField] private TMP_Text Message;
-        [SerializeField] private Window Window;
-        [SerializeField] private GameObject TextView;
-        [SerializeField] private AspectRatioFitter Fitter;
-        [SerializeField] private Button PreviousButton;
-        [SerializeField] private Button NextButton;
-        [SerializeField] private Button MoveToButton;
 
         private IContainer<SlamObservation> _container;
         private SlamObservation _observation;

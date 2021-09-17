@@ -10,7 +10,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Elektronik.UI.Windows.ConnectionsWindow
+namespace Elektronik.UI.Windows
 {
     [RequireComponent(typeof(Window))]
     public class ConnectionsWindow : MonoBehaviour

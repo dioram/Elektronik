@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.DataSources;
 using Elektronik.Extensions;
+using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.GrpcServices;
@@ -50,7 +50,7 @@ namespace Elektronik.Protobuf.Online
                 Play();
             };
 
-            _buffer.FramesAmountChanged += i => OnAmountOfFramesChanged?.Invoke(i);
+            _buffer.OnFramesAmountChanged += i => OnAmountOfFramesChanged?.Invoke(i);
 
             containerTree.DisplayName = $"From gRPC at port {settings.ListeningPort}";
             StartServer();

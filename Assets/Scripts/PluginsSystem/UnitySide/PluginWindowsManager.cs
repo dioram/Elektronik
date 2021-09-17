@@ -9,11 +9,15 @@ namespace Elektronik.PluginsSystem.UnitySide
 {
     public class PluginWindowsManager : MonoBehaviour
     {
+        #region Editor fields
+
         [SerializeField] private Transform Toolbar;
         [SerializeField] private GameObject ButtonPrefab;
         [SerializeField] private WindowsManager WindowsManager;
         [SerializeField] private GameObject WindowPrefab;
         [SerializeField] private Transform Canvas;
+
+        #endregion
 
         private readonly Dictionary<IElektronikPlugin, (ToolbarButton, Window)> _gameObjects =
                 new Dictionary<IElektronikPlugin, (ToolbarButton, Window)>();

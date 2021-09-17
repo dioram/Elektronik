@@ -11,11 +11,19 @@ namespace Elektronik.UI.Windows
     [RequireComponent(typeof(RectTransform))]
     public class Window : MonoBehaviour, IPointerDownHandler
     {
+        #region Editor fields
+
+        [SerializeField] private Color BaseHeaderColor = new Color(1, 1, 1, 0.5f);
+        [SerializeField] private Color HighlightHeaderColor = Color.blue;
+        [SerializeField] private ChangingButton MinimizeButton;
+        [SerializeField] private bool SavingSettings = false;
+        public TMP_Text TitleLabel;
         public float MinHeight = 40;
         public float MinWidth = 80;
+
+        #endregion
+        
         public bool IsMinimized { get; private set; }
-        public bool SavingSettings = false;
-        public TMP_Text TitleLabel;
 
         public void Show()
         {
@@ -140,9 +148,6 @@ namespace Elektronik.UI.Windows
 
         #region Private
 
-        [SerializeField] private Color BaseHeaderColor = new Color(1, 1, 1, 0.5f);
-        [SerializeField] private Color HighlightHeaderColor = Color.blue;
-        [SerializeField] private ChangingButton MinimizeButton;
         private ResizingEdge[] _edges;
         private Image _header;
         private GameObject _content;

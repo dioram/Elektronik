@@ -4,11 +4,9 @@ using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.SpecialInterfaces;
 using Elektronik.PluginsSystem.UnitySide;
-using Elektronik.UI.Windows;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Elektronik.UI
@@ -16,19 +14,22 @@ namespace Elektronik.UI
     [RequireComponent(typeof(SourceTreeElement))]
     public class SourceTreeButtons : MonoBehaviour
     {
-        public Button WindowButton;
-        public ButtonChangingIcons VisibleButton;
-        public ButtonChangingIcons TraceButton;
-        public Button RemoveButton;
-        [FormerlySerializedAs("CameraButton")] public Button LookAtButton;
-        public ButtonChangingIcons FollowButton;
-        public Button SaveButton;
-        public Button MeshColorButton;
+        #region Editor fields
 
-        public Button WeightButton;
-        public Slider WeightSlider;
-        public TMP_Text MinWeightLabel;
-        public TMP_Text MaxWeightLabel;
+        [SerializeField] private Button WindowButton;
+        [SerializeField] private ButtonChangingIcons VisibleButton;
+        [SerializeField] private ButtonChangingIcons TraceButton;
+        [SerializeField] private Button RemoveButton;
+        [SerializeField] private Button LookAtButton;
+        [SerializeField] private ButtonChangingIcons FollowButton;
+        [SerializeField] private Button SaveButton;
+        [SerializeField] private Button MeshColorButton;
+        [SerializeField] private Button WeightButton;
+        [SerializeField] private Slider WeightSlider;
+        [SerializeField] private TMP_Text MinWeightLabel;
+        [SerializeField] private TMP_Text MaxWeightLabel;
+
+        #endregion
 
         private ISourceTreeNode _node;
 

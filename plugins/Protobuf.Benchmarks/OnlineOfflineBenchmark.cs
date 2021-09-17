@@ -3,15 +3,15 @@ using System.Linq;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using Elektronik;
-using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.Extensions;
+using Elektronik.Plugins.Common.Commands;
+using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Online.GrpcServices;
 using Protobuf.Tests.Internal;
-using ICommand = Elektronik.Commands.ICommand;
 
 namespace Protobuf.Benchmarks
 {
@@ -87,7 +87,7 @@ namespace Protobuf.Benchmarks
                                                                      new SlamLinesContainer());
             var infinitePlanes = new CloudContainer<SlamPlane>();
             var buffer = new OnlineFrameBuffer();
-            buffer.FramesAmountChanged += _ =>
+            buffer.OnFramesAmountChanged += _ =>
             {
                 if (buffer.MoveNext()) buffer.Current!.Command.Execute();
             };

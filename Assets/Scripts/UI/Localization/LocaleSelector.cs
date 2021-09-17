@@ -15,6 +15,7 @@ namespace Elektronik.UI.Localization
         public void Start()
         {
             Selector.options = Locales.Select(l => new TMP_Dropdown.OptionData(l.LocaleName)).ToList();
+            // TODO: check not only player prefs
             var lastLocale = Locales.FirstOrDefault(l => l.LocaleName == PlayerPrefs.GetString("selected-locale"));
             if (lastLocale == null)
             {

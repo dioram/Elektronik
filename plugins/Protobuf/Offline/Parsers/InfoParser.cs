@@ -1,6 +1,6 @@
-﻿using Elektronik.Commands;
-using Elektronik.Data.Converters;
-using Elektronik.Offline;
+﻿using Elektronik.Data.Converters;
+using Elektronik.Plugins.Common.Commands;
+using Elektronik.Plugins.Common.Parsing;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Presenters;
 
@@ -19,9 +19,9 @@ namespace Elektronik.Protobuf.Offline.Parsers
         {
             private readonly SlamDataInfoPresenter? _presenter;
             private readonly PacketPb _packet;
-            private readonly ICSConverter _converter;
+            private readonly ICSConverter? _converter;
 
-            public InfoCommand(SlamDataInfoPresenter? presenter, PacketPb packet, ICSConverter converter)
+            public InfoCommand(SlamDataInfoPresenter? presenter, PacketPb packet, ICSConverter? converter)
             {
                 _presenter = presenter;
                 _packet = packet;
@@ -33,7 +33,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
             public void UnExecute() { }
         }
         
-        public override ICommand GetCommand(PacketPb packet)
+        public override ICommand? GetCommand(PacketPb packet)
         {
             if (packet.Action == PacketPb.Types.ActionType.Info) return new InfoCommand(_presenter, packet, Converter);
             return base.GetCommand(packet);

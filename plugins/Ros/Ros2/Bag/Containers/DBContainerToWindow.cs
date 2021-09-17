@@ -60,7 +60,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         #region IRendersToWindow
 
         public Window? Window { get; private set; }
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         #endregion
 

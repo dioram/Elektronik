@@ -1,4 +1,4 @@
-﻿using Elektronik.Commands;
+﻿using Elektronik.Plugins.Common.Commands;
 
 namespace Elektronik.Protobuf.Online.Presenters
 {

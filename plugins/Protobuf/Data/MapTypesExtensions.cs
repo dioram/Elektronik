@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Plugins.Common.DataDiff;
 using UnityEngine;
 
 namespace Elektronik.Protobuf.Data
@@ -42,7 +43,7 @@ namespace Elektronik.Protobuf.Data
                 if (!string.IsNullOrEmpty(result[i].FileName) 
                     && !Path.IsPathRooted(result[i].FileName))
                 {
-                    result[i].FileName = Path.Combine(imageDir, result[i].FileName);
+                    result[i].FileName = Path.Combine(imageDir, result[i].FileName!);
                 }
             }
 
@@ -160,7 +161,7 @@ namespace Elektronik.Protobuf.Data
                 public static implicit operator SlamObservation.Stats(Stats s)
                     => default; // TODO: make statistics
 
-                public static implicit operator Stats(SlamObservation.Stats s)
+                public static implicit operator Stats?(SlamObservation.Stats s)
                     => default; // TODO: make statistics
             }
         }
