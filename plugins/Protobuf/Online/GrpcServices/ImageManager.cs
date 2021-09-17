@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Elektronik.Data;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.Presenters;
 using Grpc.Core;
@@ -11,24 +12,29 @@ namespace Elektronik.Protobuf.Online.GrpcServices
     public class ImageManager : ImageManagerPb.ImageManagerPbBase
     {
         private readonly ILogger _logger;
-        private readonly RawImagePresenter? _presenter;
+        private readonly RawImagePresenter _presenter;
+        private readonly OnlineFrameBuffer _buffer;
+        private ImageCommand? _lastCommand;
 
-        public ImageManager(RawImagePresenter? presenter, ILogger logger)
+        public ImageManager(RawImagePresenter presenter, OnlineFrameBuffer buffer, ILogger logger)
         {
             _presenter = presenter;
             _logger = logger;
+            _buffer = buffer;
         }
 
         public override Task<ErrorStatusPb> Handle(ImagePacketPb request, ServerCallContext context)
         {
             var timer = Stopwatch.StartNew();
-            var err = new ErrorStatusPb()
+            var err = new ErrorStatusPb
             {
                 ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded,
             };
             try
             {
-                _presenter?.Present(request.ImageData.ToByteArray());
+                var command = new ImageCommand(_presenter, request.ImageData.ToByteArray(), _lastCommand);
+                _buffer.Add(command, DateTime.Now, false);
+                _lastCommand = command;
             }
             catch (Exception e)
             {

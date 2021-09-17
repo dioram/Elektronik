@@ -12,11 +12,11 @@ namespace Elektronik.Protobuf.Online.GrpcServices
     public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {
         private readonly ILogger _logger;
-        private readonly ISourceTreeNode _container;
 
-        public SceneManager(ISourceTreeNode container, ILogger logger)
+        public event Action? OnClear;
+
+        public SceneManager(ILogger logger)
         {
-            _container = container;
             _logger = logger;
         }
 
@@ -29,10 +29,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             };
             try
             {
-                foreach (var child in _container.Children)
-                {
-                    child.Clear();
-                }
+                Task.Run(() => OnClear?.Invoke());
             }
             catch (Exception e)
             {

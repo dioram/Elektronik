@@ -228,9 +228,10 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var eip5 = new RemovedEventArgs<SlamPlane>(Enumerable.Range(0, 5).ToArray());
 
             var response = SceneClient.Clear(new Empty());
-            Thread.Sleep(20);
+            Thread.Sleep(200);
 
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
+            Sut.AmountOfFrames.Should().Be(0);
             MockedImageRenderer.Verify(r => r.Clear(), Times.Once);
             MockedPointsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Points, ep5),
                                         Times.Once);

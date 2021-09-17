@@ -23,7 +23,7 @@ namespace Elektronik.Containers
             DisplayName = string.IsNullOrEmpty(displayName) ? typeof(TCloudItem).Name : displayName;
         }
 
-        #region IContainer implementation
+        #region IContainer
 
         public override void Update(TCloudItem item)
         {
@@ -31,7 +31,6 @@ namespace Elektronik.Containers
             base.Update(item);
         }
 
-        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public override void Update(IList<TCloudItem> items)
         {
             CreateTraces(items);
@@ -40,7 +39,7 @@ namespace Elektronik.Containers
 
         #endregion
 
-        #region ISourceTree implementations
+        #region ISourceTree
 
         public override void AddRenderer(ISourceRenderer renderer)
         {
@@ -60,7 +59,7 @@ namespace Elektronik.Containers
 
         #endregion
 
-        #region ILookable implementation
+        #region ILookable
 
         public (Vector3 pos, Quaternion rot) Look(Transform transform)
         {
