@@ -6,7 +6,7 @@ using Elektronik.Data.Converters;
 using Elektronik.DataConsumers;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI;

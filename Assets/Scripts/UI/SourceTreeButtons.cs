@@ -2,7 +2,7 @@
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.PluginsSystem.UnitySide;
 using TMPro;
 using UniRx;

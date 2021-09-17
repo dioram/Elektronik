@@ -1,6 +1,6 @@
 ﻿using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers

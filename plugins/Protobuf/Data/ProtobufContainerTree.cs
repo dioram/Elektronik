@@ -5,7 +5,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.Protobuf.Offline.Presenters;
 
 namespace Elektronik.Protobuf.Data

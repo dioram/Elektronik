@@ -6,7 +6,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using SQLite;

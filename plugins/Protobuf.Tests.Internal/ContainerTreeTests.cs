@@ -2,7 +2,7 @@ using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Presenters;
 using Moq;

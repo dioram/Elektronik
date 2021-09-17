@@ -1,6 +1,6 @@
 ﻿using Elektronik.Data.PackageObjects;
 
-namespace Elektronik.DataSources.Containers.SpecialInterfaces
+namespace Elektronik.DataSources.SpecialInterfaces
 {
     public interface IClusterable
     {

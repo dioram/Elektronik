@@ -1,6 +1,6 @@
 ﻿using System;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 
 namespace Elektronik.DataSources.Containers
 {

@@ -3,7 +3,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.Threading;
 using TMPro;
 using UnityEngine;

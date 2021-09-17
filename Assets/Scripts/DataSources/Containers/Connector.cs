@@ -4,7 +4,7 @@ using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.Threading;
 
 namespace Elektronik.DataSources.Containers

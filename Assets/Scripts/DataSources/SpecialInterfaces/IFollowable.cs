@@ -1,7 +1,8 @@
 ﻿using System;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources.Containers;
 
-namespace Elektronik.DataSources.Containers.SpecialInterfaces
+namespace Elektronik.DataSources.SpecialInterfaces
 {
     public interface IFollowable<TCloudItem> where TCloudItem : struct, ICloudItem
     {

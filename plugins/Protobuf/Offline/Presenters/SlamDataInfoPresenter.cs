@@ -6,7 +6,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.Windows;
 using Elektronik.DataSources;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using Elektronik.Threading;

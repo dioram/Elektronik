@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.Windows;
 using Elektronik.DataSources;
-using Elektronik.DataSources.Containers.SpecialInterfaces;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Data
