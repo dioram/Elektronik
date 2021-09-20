@@ -4,20 +4,20 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.SpecialInterfaces;
-using Elektronik.Settings.Bags;
 using UnityEngine;
+using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.PluginsSystem
 {
-    public interface IClusterizationAlgorithm: IElektronikPlugin
+    public interface IClusteringAlgorithm: IElektronikPlugin
     {
         Task<ClustersContainer> ComputeAsync(IClusterable container);
     }
 
-    public abstract class ClusterizationAlgorithmBase<TSettings> : IClusterizationAlgorithm
+    public abstract class ClusteringAlgorithmBase<TSettings> : IClusteringAlgorithm
         where TSettings : SettingsBag
     {
-        public ClusterizationAlgorithmBase(TSettings typedSettings)
+        public ClusteringAlgorithmBase(TSettings typedSettings)
         {
             TypedSettings = typedSettings;
         }

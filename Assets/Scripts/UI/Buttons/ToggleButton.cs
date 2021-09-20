@@ -4,7 +4,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Elektronik.UI
+namespace Elektronik.UI.Buttons
 {
     [RequireComponent(typeof(Button), typeof(Image))]
     public class ToggleButton : MonoBehaviour

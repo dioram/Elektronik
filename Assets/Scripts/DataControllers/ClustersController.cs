@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Elektronik.Data;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.SpecialInterfaces;
@@ -33,7 +32,7 @@ namespace Elektronik.DataControllers
 
         private void Start()
         {
-            var factories = PluginsLoader.Instance.PluginFactories.OfType<IClusterizationAlgorithmFactory>().ToArray();
+            var factories = PluginsLoader.Instance.PluginFactories.OfType<IClusteringAlgorithmFactory>().ToArray();
             if (factories.Length == 0)
             {
                 ToolbarButton.SetActive(false);
@@ -75,7 +74,7 @@ namespace Elektronik.DataControllers
             }
         }
 
-        private async void Compute(IClusterizationAlgorithm algorithm, [CanBeNull] IClusterable container, ClusterizationAlgorithmPanel panel)
+        private async void Compute(IClusteringAlgorithm algorithm, [CanBeNull] IClusterable container, ClusterizationAlgorithmPanel panel)
         {
             if (container is null) return;
             
@@ -118,7 +117,7 @@ namespace Elektronik.DataControllers
 
         private readonly List<ClustersContainer> _containers = new List<ClustersContainer>();
 
-        private ClustersContainer SaveClustersContainers(ClustersContainer clustered, IVisible source)
+        private void SaveClustersContainers(ClustersContainer clustered, IVisible source)
         {
             foreach (var container in _containers)
             {
@@ -131,7 +130,6 @@ namespace Elektronik.DataControllers
 
             clustered.IsVisible = true;
             source.IsVisible = false;
-            return clustered;
         }
 
         private void SetVisibility(ClustersContainer sender, IVisible source, bool isVisible)

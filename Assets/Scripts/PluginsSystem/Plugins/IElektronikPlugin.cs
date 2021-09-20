@@ -1,7 +1,7 @@
 ﻿using System;
-using Elektronik.Settings.Bags;
 using JetBrains.Annotations;
 using UnityEngine;
+using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.PluginsSystem
 {
@@ -12,6 +12,7 @@ namespace Elektronik.PluginsSystem
         string DisplayName { get; }
         
         /// <summary> Plugins settings. User can access them through toolbar. </summary>
+        /// <remarks> Set it null if plugin should not have settings. </remarks>
         SettingsBag Settings { get; }
         
         /// <summary> Logo of the plugin. </summary>

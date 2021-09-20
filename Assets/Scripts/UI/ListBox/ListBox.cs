@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Elektronik.UI.ListBox
@@ -22,7 +23,7 @@ namespace Elektronik.UI.ListBox
 
         public event SelectionChangedEventHandler OnSelectionChanged;
 
-        public ListBoxItem itemPrefab;
+        [FormerlySerializedAs("itemPrefab")] public ListBoxItem ItemPrefab;
         private ObjectPool _poolOfItems;
 
         [SerializeField] private RectTransform Target;
@@ -32,7 +33,7 @@ namespace Elektronik.UI.ListBox
         {
             _listOfItems = new List<ListBoxItem>();
             if (Target == null) Target = GetComponentInChildren<ScrollRect>().content;
-            _poolOfItems = new ObjectPool(itemPrefab.gameObject);
+            _poolOfItems = new ObjectPool(ItemPrefab.gameObject);
         }
 
         public ListBoxItem this[int idx] => _listOfItems[idx];

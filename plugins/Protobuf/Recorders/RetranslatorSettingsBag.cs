@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Elektronik.Settings;
-using Elektronik.Settings.Bags;
 
 namespace Elektronik.Protobuf.Recorders
 {

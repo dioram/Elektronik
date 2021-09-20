@@ -1,12 +1,12 @@
 ﻿using Elektronik.Data.Converters;
-using Elektronik.Settings.Bags;
 using UnityEngine;
+using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.PluginsSystem
 {
-    public abstract class FileRecorderBase : DataRecorderPluginBase
+    public abstract class FileRecorderPluginBase : DataRecorderPluginBase
     {
-        public FileRecorderBase(string filename, ICSConverter converter)
+        public FileRecorderPluginBase(string filename, ICSConverter converter)
         {
             Filename = filename;
             Converter = converter;

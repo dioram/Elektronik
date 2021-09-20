@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Elektronik.Settings;
-using Elektronik.Settings.Bags;
 using Humanizer;
 using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
+using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.UI.SettingsFields
 {

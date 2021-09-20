@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Clusterization.Algorithms.PlanesDetectionNative;
+using Elektronik.Clustering.PlanesDetection.Native;
 using Elektronik.Data.PackageObjects;
 using Elektronik.PluginsSystem;
 
-namespace Clusterization.PlanesDetection
+namespace Elektronik.Clustering.PlanesDetection
 {
-    public class PlanesDetectionAlgorithm : ClusterizationAlgorithmBase<PlanesDetectionSettings>
+    public class PlanesDetectionAlgorithm : ClusteringAlgorithmBase<PlanesDetectionSettings>
     {
         public PlanesDetectionAlgorithm(PlanesDetectionSettings typedSettings, string displayName) : base(typedSettings)
         {

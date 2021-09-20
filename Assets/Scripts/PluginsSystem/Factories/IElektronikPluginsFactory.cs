@@ -1,7 +1,7 @@
 ﻿using Elektronik.Data.Converters;
 using Elektronik.Settings;
-using Elektronik.Settings.Bags;
 using UnityEngine;
+using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.PluginsSystem
 {
@@ -10,10 +10,16 @@ namespace Elektronik.PluginsSystem
     /// It's main goal to produce plugin.
     /// All classes with this interface will be loaded from Plugins/[PluginName]/libraries directory and instantiated.
     /// </summary>
+    /// <remarks> It's better to inherit <c>ElektronikPluginsFactoryBase</c> than implement this interface. </remarks>
     public interface IElektronikPluginsFactory
     {
         /// <summary> Logo of the plugin. Will be displayed in connections window and toolbar. </summary>
+        /// <remarks> Should be set by <c>void LoadLogo(string path)</c> </remarks>
         Texture2D Logo { get; }
+
+        /// <summary> Loads plugin's logo from file. </summary>
+        /// <param name="path"> Path to logo file. </param>
+        void LoadLogo(string path);
         
         /// <summary> Name to display in connections window. </summary>
         string DisplayName { get; }
@@ -32,9 +38,5 @@ namespace Elektronik.PluginsSystem
         /// <param name="converter"> Converter to unity coordinate system. </param>
         /// <returns> Instantiated plugin. </returns>
         IElektronikPlugin Start(ICSConverter converter);
-
-        /// <summary> Loads plugin's logo from file. </summary>
-        /// <param name="path"> Path to logo file. </param>
-        void LoadLogo(string path);
     }
 }

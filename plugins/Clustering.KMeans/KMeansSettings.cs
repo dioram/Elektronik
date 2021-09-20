@@ -1,7 +1,7 @@
-﻿using Elektronik.Settings.Bags;
+﻿using Elektronik.Settings;
 using Elektronik.UI.Localization;
 
-namespace Elektronik.Clusterization.KMeans
+namespace Elektronik.Clustering.KMeans
 {
     public class KMeansSettings : SettingsBag
     {

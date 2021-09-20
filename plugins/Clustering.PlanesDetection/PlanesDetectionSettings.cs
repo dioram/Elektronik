@@ -1,9 +1,11 @@
-﻿using Elektronik.Clusterization.Algorithms.PlanesDetectionNative;
-using Elektronik.Settings.Bags;
+﻿using System;
+using Elektronik.Clustering.PlanesDetection.Native;
+using Elektronik.Settings;
 using UnityEngine;
 
-namespace Clusterization.PlanesDetection
+namespace Elektronik.Clustering.PlanesDetection
 {
+    [Serializable]
     public class PlanesDetectionSettings : SettingsBag
     {
         public int DepthThreshold = 100;

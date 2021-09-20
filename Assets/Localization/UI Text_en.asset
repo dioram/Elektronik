@@ -235,7 +235,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2901965152849920
-    m_Localized: Cloud clusterization
+    m_Localized: Cloud clustering
     m_Metadata:
       m_Items: []
   - m_Id: 2941787762462720
@@ -256,10 +256,6 @@ MonoBehaviour:
     m_Localized: Compute
     m_Metadata:
       m_Items: []
-  - m_Id: 2949819334529024
-    m_Localized: Simple 3 plane clusterization
-    m_Metadata:
-      m_Items: []
   - m_Id: 3665984348360704
     m_Localized: Previous observation
     m_Metadata:
@@ -269,7 +265,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3982083857727488
-    m_Localized: K-means clusterisation
+    m_Localized: K-means clustering
     m_Metadata:
       m_Items: []
   - m_Id: 5097350304071680
@@ -331,7 +327,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 13065452374421504
-    m_Localized: Point cloud segmentation
+    m_Localized: Point cloud clustering
     m_Metadata:
       m_Items: []
   - m_Id: 13067747757617152
@@ -558,7 +554,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 56918065295204352
-    m_Localized: Clusterization
+    m_Localized: Clustering
     m_Metadata:
       m_Items: []
   references:

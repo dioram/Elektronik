@@ -3,8 +3,8 @@ using System.Globalization;
 using System.IO;
 using Elektronik.Data.Converters;
 using Elektronik.Settings;
-using Elektronik.Settings.Bags;
 using UnityEngine;
+using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.PluginsSystem
 {

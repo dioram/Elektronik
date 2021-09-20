@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Elektronik.Settings.Bags
+namespace Elektronik.Settings
 {
     [Serializable]
     public class SceneSettingsBag : SettingsBag

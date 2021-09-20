@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using Elektronik.Settings.Bags;
 using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.UI.Windows
 {

@@ -2091,7 +2091,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1633165847827813531, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178, type: 3}
       propertyPath: m_text
-      value: Point clouds clusterization
+      value: Point clouds clustering
       objectReference: {fileID: 0}
     - target: {fileID: 1633165847827813531, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178, type: 3}
       propertyPath: m_fontSize
@@ -2283,7 +2283,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6368739675827877079, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 509.94928
+      value: 494.60355
       objectReference: {fileID: 0}
     - target: {fileID: 6368739675827877079, guid: 4aaa8c9507bf76e4b8a56af4a2aa0178, type: 3}
       propertyPath: m_AnchoredPosition.y

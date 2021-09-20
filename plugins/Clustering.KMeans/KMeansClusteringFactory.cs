@@ -1,10 +1,10 @@
 ﻿using Elektronik.Data.Converters;
 using Elektronik.PluginsSystem;
 
-namespace Elektronik.Clusterization.KMeans
+namespace Elektronik.Clustering.KMeans
 {
     public class KMeansClusterizationFactory : ElektronikPluginsFactoryBase<KMeansSettings>,
-                                               IClusterizationAlgorithmFactory
+                                               IClusteringAlgorithmFactory
     {
         protected override IElektronikPlugin StartPlugin(KMeansSettings settings, ICSConverter? converter)
         {

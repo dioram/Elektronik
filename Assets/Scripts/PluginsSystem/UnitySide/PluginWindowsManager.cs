@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Elektronik.UI;
+using Elektronik.UI.Buttons;
 using Elektronik.UI.SettingsFields;
 using Elektronik.UI.Windows;
 using UniRx;

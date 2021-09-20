@@ -1,6 +1,5 @@
 ﻿using Elektronik.Data.Converters;
 using Elektronik.PluginsSystem;
-using Elektronik.Settings.Bags;
 
 namespace Elektronik.RosPlugin.Ros.Online
 {

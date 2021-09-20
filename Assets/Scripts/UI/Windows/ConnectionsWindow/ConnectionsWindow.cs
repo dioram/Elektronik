@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
-using Elektronik.Settings.Bags;
+using Elektronik.Settings;
 using Elektronik.UI.SettingsFields;
 using TMPro;
 using UniRx;

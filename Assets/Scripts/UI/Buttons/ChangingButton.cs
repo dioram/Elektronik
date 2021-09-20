@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Elektronik.UI
+namespace Elektronik.UI.Buttons
 {
     [RequireComponent(typeof(Button))]
     public abstract class ChangingButton : MonoBehaviour

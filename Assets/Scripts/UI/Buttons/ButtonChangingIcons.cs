@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Elektronik.UI
+namespace Elektronik.UI.Buttons
 {
     public class ButtonChangingIcons : ChangingButton
     {

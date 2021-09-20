@@ -1,4 +1,4 @@
-﻿namespace Elektronik.Settings.Bags
+﻿namespace Elektronik.Settings
 {
     public partial class SettingsBag
     {

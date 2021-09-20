@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Elektronik.Settings;
-using Elektronik.Settings.Bags;
+using Elektronik.UI.Buttons;
 using TMPro;
 using UniRx;
 using UnityEngine;

@@ -16,7 +16,8 @@ namespace Elektronik.Protobuf.Data
             for (var i = 0; i < result.Length; i++)
             {
                 result[i] = packet.Points.Data[i];
-                if (result[i].Position.HasValue) result[i].Position = converter?.Convert(result[i].Position.Value);
+                var position = result[i].Position;
+                if (position.HasValue) result[i].Position = converter?.Convert(position.Value);
             }
 
             return result;
@@ -30,18 +31,14 @@ namespace Elektronik.Protobuf.Data
             for (var i = 0; i < result.Length; i++)
             {
                 result[i] = packet.Observations.Data[i];
-                if (result[i].Point.Position.HasValue)
-                {
-                    result[i].Point.Position = converter?.Convert(result[i].Point.Position.Value);
-                }
+                
+                var position = result[i].Point.Position;
+                if (position.HasValue) result[i].Point.Position = converter?.Convert(position.Value);
 
-                if (result[i].Rotation.HasValue)
-                {
-                    result[i].Rotation = converter?.Convert(result[i].Rotation.Value);
-                }
+                var rotation = result[i].Rotation;
+                if (rotation.HasValue) result[i].Rotation = converter?.Convert(rotation.Value);
 
-                if (!string.IsNullOrEmpty(result[i].FileName) 
-                    && !Path.IsPathRooted(result[i].FileName))
+                if (!string.IsNullOrEmpty(result[i].FileName) && !Path.IsPathRooted(result[i].FileName))
                 {
                     result[i].FileName = Path.Combine(imageDir, result[i].FileName!);
                 }
@@ -57,15 +54,12 @@ namespace Elektronik.Protobuf.Data
             for (var i = 0; i < result.Length; i++)
             {
                 result[i] = packet.TrackedObjs.Data[i];
-                if (result[i].Position.HasValue)
-                {
-                    result[i].Position = converter?.Convert(result[i].Position.Value);
-                }
+                
+                var position = result[i].Position;
+                if (position.HasValue) result[i].Position = converter?.Convert(position.Value);
 
-                if (result[i].Rotation.HasValue)
-                {
-                    result[i].Rotation = converter?.Convert(result[i].Rotation.Value);
-                }
+                var rotation = result[i].Rotation;
+                if (rotation.HasValue) result[i].Rotation = converter?.Convert(rotation.Value);
             }
 
             return result;
@@ -77,15 +71,12 @@ namespace Elektronik.Protobuf.Data
             for (var i = 0; i < result.Length; i++)
             {
                 result[i] = packet.Lines.Data[i];
-                if (result[i].Point1.Position.HasValue)
-                {
-                    result[i].Point1.Position = converter?.Convert(result[i].Point1.Position.Value);
-                }
+                
+                var position = result[i].Point1.Position;
+                if (position.HasValue) result[i].Point1.Position = converter?.Convert(position.Value);
 
-                if (result[i].Point2.Position.HasValue)
-                {
-                    result[i].Point2.Position = converter?.Convert(result[i].Point2.Position.Value);
-                }
+                position = result[i].Point2.Position;
+                if (position.HasValue) result[i].Point2.Position = converter?.Convert(position.Value);
             }
 
             return result;
@@ -97,8 +88,12 @@ namespace Elektronik.Protobuf.Data
             for (var i = 0; i < result.Length; i++)
             {
                 result[i] = packet.Planes.Data[i];
-                if (result[i].Offset.HasValue) result[i].Offset = converter?.Convert(result[i].Offset.Value);
-                if (result[i].Normal.HasValue) result[i].Normal = converter?.Convert(result[i].Normal.Value);
+                
+                var offset = result[i].Offset;
+                if (offset.HasValue) result[i].Offset = converter?.Convert(offset.Value);
+
+                var normal = result[i].Normal;
+                if (normal.HasValue) result[i].Normal = converter?.Convert(normal.Value);
             }
 
             return result;

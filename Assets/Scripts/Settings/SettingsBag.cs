@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Elektronik.Settings.Bags
+namespace Elektronik.Settings
 {
     [Serializable]
     public partial class SettingsBag
@@ -10,9 +10,9 @@ namespace Elektronik.Settings.Bags
         [Hide]
         public string ModificationTime;
 
-        public virtual ValidationResult Validate()
+        public virtual SettingsBag.ValidationResult Validate()
         {
-            return ValidationResult.Succeeded;
+            return SettingsBag.ValidationResult.Succeeded;
         }
 
         public override string ToString()

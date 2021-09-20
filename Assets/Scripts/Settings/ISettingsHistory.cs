@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using Elektronik.Settings.Bags;
 
 namespace Elektronik.Settings
 {

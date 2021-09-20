@@ -4,6 +4,7 @@ using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.PluginsSystem.UnitySide;
+using Elektronik.UI.Buttons;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -116,7 +117,7 @@ namespace Elektronik.UI
                 }
             }
 
-            if (_node is ISave s)
+            if (_node is ISave _)
             {
                 SaveButton.OnClickAsObservable().Subscribe(_ => RecorderPluginsController.Save(_node));
             }

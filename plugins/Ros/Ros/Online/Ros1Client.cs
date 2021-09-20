@@ -3,7 +3,7 @@ using Elektronik.DataSources;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
-using Elektronik.Settings.Bags;
+using Elektronik.Settings;
 using RosSharp.RosBridgeClient.MessageTypes.Rosapi;
 using UnityEngine;
 
@@ -22,7 +22,7 @@ namespace Elektronik.RosPlugin.Ros.Online
             RosMessageConvertExtender.Converter = converter;
         }
 
-        #region IDataSourceOnline
+        #region IDataSourcePlayer
 
         public void Play()
         {

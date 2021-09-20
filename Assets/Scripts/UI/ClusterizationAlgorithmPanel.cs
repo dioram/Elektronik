@@ -1,11 +1,11 @@
 ﻿using System;
 using Elektronik.PluginsSystem;
-using Elektronik.Settings.Bags;
 using Elektronik.UI.SettingsFields;
 using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.UI
 {
@@ -21,16 +21,16 @@ namespace Elektronik.UI
 
         #endregion
         
-        public void Setup(IClusterizationAlgorithmFactory factory)
+        public void Setup(IClusteringAlgorithmFactory factory)
         {
             _generator = GetComponent<SettingsGenerator>();
             _subject = new Subject<Unit>();
             _generator.Generate(factory.Settings);
             NameLabel.text = factory.DisplayName;
-            OnComputeRequested = _subject.Select(_ => (IClusterizationAlgorithm)factory.Start(null));
+            OnComputeRequested = _subject.Select(_ => (IClusteringAlgorithm)factory.Start(null));
         }
 
-        public IObservable<IClusterizationAlgorithm> OnComputeRequested;
+        public IObservable<IClusteringAlgorithm> OnComputeRequested;
 
         #region Unity events
 

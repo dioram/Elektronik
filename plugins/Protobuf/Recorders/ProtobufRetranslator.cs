@@ -6,7 +6,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
-using Elektronik.Settings.Bags;
+using Elektronik.Settings;
 using Grpc.Core;
 using UnityEngine;
 

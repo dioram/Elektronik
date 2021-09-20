@@ -1,10 +1,10 @@
 ﻿using Elektronik.Data.Converters;
 using Elektronik.PluginsSystem;
 
-namespace Clusterization.PlanesDetection
+namespace Elektronik.Clustering.PlanesDetection
 {
     public class PlanesDetectionFactory : ElektronikPluginsFactoryBase<PlanesDetectionSettings>,
-                                          IClusterizationAlgorithmFactory
+                                          IClusteringAlgorithmFactory
     {
         protected override IElektronikPlugin StartPlugin(PlanesDetectionSettings settings, ICSConverter converter)
         {

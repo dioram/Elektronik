@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using JetBrains.Annotations;

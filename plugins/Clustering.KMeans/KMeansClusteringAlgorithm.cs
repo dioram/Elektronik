@@ -7,9 +7,9 @@ using Elektronik.PluginsSystem;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 
-namespace Elektronik.Clusterization.KMeans
+namespace Elektronik.Clustering.KMeans
 {
-    public class KMeansClusterizationAlgorithm: ClusterizationAlgorithmBase<KMeansSettings>
+    public class KMeansClusterizationAlgorithm: ClusteringAlgorithmBase<KMeansSettings>
     {
         public KMeansClusterizationAlgorithm(KMeansSettings settings, string displayName) : base(settings)
         {

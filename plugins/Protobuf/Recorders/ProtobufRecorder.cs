@@ -8,7 +8,7 @@ using Google.Protobuf;
 
 namespace Elektronik.Protobuf.Recorders
 {
-    public class ProtobufRecorder : FileRecorderBase
+    public class ProtobufRecorder : FileRecorderPluginBase
     {
         public const uint Marker = 0xDEADBEEF;
         

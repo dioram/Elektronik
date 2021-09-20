@@ -2,8 +2,8 @@
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers.CloudRenderers;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Settings.Bags;
 using UnityEngine;
+using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.PluginsSystem
 {

@@ -72,6 +72,30 @@ namespace Elektronik
                 return 0;
             }
 
+            public bool Equals(Version other)
+            {
+                return Major == other.Major && Minor == other.Minor && Fix == other.Fix && Rc == other.Rc 
+                        && Wip == other.Wip;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Version other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    var hashCode = Major;
+                    hashCode = (hashCode * 397) ^ Minor;
+                    hashCode = (hashCode * 397) ^ Fix;
+                    hashCode = (hashCode * 397) ^ Rc;
+                    hashCode = (hashCode * 397) ^ Wip.GetHashCode();
+                    return hashCode;
+                }
+            }
+
             public static bool operator >(Version first, Version second)
             {
                 return first.CompareTo(second) > 0;
@@ -84,7 +108,7 @@ namespace Elektronik
 
             public static bool operator ==(Version first, Version second)
             {
-                return first.CompareTo(second) == 0;
+                return first.Equals(second);
             }
 
             public static bool operator !=(Version first, Version second)
@@ -146,8 +170,6 @@ namespace Elektronik
         }
 
         private readonly List<Release> _releases = new List<Release>();
-        
-        private static int Parse(string str) => int.TryParse(str, out var res) ? res : 0;
         
         private void GetReleases()
         {

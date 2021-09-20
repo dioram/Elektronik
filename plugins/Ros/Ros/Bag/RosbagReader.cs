@@ -7,7 +7,7 @@ using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros.Bag.Parsers;
 using Elektronik.RosPlugin.Ros.Bag.Parsers.Records;
-using Elektronik.Settings.Bags;
+using Elektronik.Settings;
 using Elektronik.Threading;
 using UnityEngine;
 

@@ -10,7 +10,7 @@ using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
-using Elektronik.Settings.Bags;
+using Elektronik.Settings;
 using Elektronik.Threading;
 using UnityEngine;
 
@@ -57,7 +57,7 @@ namespace Elektronik.Protobuf.Offline
             };
         }
 
-        #region IDataSourceOffline
+        #region IDataSourcePlugin
 
         public ISourceTreeNode Data { get; }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using Elektronik.Settings;
-using Elektronik.Settings.Bags;
 
 namespace Elektronik.Protobuf.Online
 {

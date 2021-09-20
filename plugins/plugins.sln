@@ -23,9 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ros.Exporter", "Ros.Exporte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protobuf.Benchmarks", "Protobuf.Benchmarks\Protobuf.Benchmarks.csproj", "{EF4BC2CD-30B5-4E40-9921-EF44825E37DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clusterization.KMeans", "Clusterization.KMeans\Clusterization.KMeans.csproj", "{4C4BB0E5-928A-4B96-843D-931F23B030FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clustering.KMeans", "Clustering.KMeans\Clustering.KMeans.csproj", "{4C4BB0E5-928A-4B96-843D-931F23B030FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clusterization.PlanesDetection", "Clusterization.PlanesDetection\Clusterization.PlanesDetection.csproj", "{E015921B-A8D5-42D8-B88A-58280488460B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clustering.PlanesDetection", "Clustering.PlanesDetection\Clustering.PlanesDetection.csproj", "{E015921B-A8D5-42D8-B88A-58280488460B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugins.Common", "Plugins.Common\Plugins.Common.csproj", "{D592FDD5-33A3-416E-A09E-383DF5560E28}"
 EndProject

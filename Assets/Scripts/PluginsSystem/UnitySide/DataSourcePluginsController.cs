@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Elektronik.Data;
 using Elektronik.Data.Converters;
 using Elektronik.DataControllers;
 using Elektronik.Threading;
@@ -11,12 +10,17 @@ namespace Elektronik.PluginsSystem.UnitySide
 {
     public class DataSourcePluginsController : MonoBehaviour
     {
-        public static readonly List<IElektronikPlugin> Plugins = new List<IElektronikPlugin>();
+        #region Editor fields
+        
         [SerializeField] private CSConverter Converter;
         [SerializeField] private PlayerEventsController PlayerEvents;
         [SerializeField] private GameObject ScreenLocker;
         [SerializeField] private DataSourcesController DataSourcesController;
         [SerializeField] private PluginWindowsManager PluginWindowsManager;
+
+        #endregion
+
+        private static readonly List<IElektronikPlugin> Plugins = new List<IElektronikPlugin>();
 
         public IDataSourcePlugin CurrentSource { get; private set; }
 

@@ -1,6 +1,6 @@
 ﻿using Elektronik.Data.Converters;
 using Elektronik.PluginsSystem;
-using Elektronik.Settings.Bags;
+using Elektronik.Settings;
 
 namespace Elektronik.Protobuf.Recorders
 {
