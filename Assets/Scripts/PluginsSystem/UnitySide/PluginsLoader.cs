@@ -11,14 +11,12 @@ namespace Elektronik.PluginsSystem.UnitySide
 {
     public class PluginsLoader : MonoBehaviour
     {
-        public List<IElektronikPluginsFactory> PluginFactories;
-        public static PluginsLoader Instance;
+        public static readonly Lazy<List<IElektronikPluginsFactory>> PluginFactories =
+                new Lazy<List<IElektronikPluginsFactory>>(LoadPluginFactories);
 
         private void Awake()
         {
-            if (Instance is null) Instance = this;
-            else throw new Exception("There can't be more than one instances of PluginsLoader.");
-            PluginFactories = LoadPluginFactories();
+            Debug.Log($"Loaded {PluginFactories.Value.Count} plugins");
         }
 
         #region Private

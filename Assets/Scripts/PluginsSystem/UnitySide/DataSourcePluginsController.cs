@@ -24,7 +24,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         public IDataSourcePlugin CurrentSource { get; private set; }
 
-        public void SetNewSource(IDataSourcePluginsFactory factory)
+        public void SetNewSource(IDataSourcePluginsFactory factory, bool autoPlay = true)
         {
             if (!(CurrentSource is null))
             {
@@ -51,7 +51,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                     PlayerEvents.DataSourcePlugin = CurrentSource;
                     DataSourcesController.AddDataSource(CurrentSource.Data);
                     ScreenLocker.SetActive(false);
-                    CurrentSource.Play();
+                    if (autoPlay) CurrentSource.Play();
                 });
             });
         }

@@ -75,7 +75,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         private void InitCustomRecorders()
         {
-            var plugins = PluginsLoader.Instance.PluginFactories
+            var plugins = PluginsLoader.PluginFactories.Value
                 .OfType<ICustomRecorderPluginsFactory>()
                 .Select(f => (IDataRecorderPlugin)f.Start(Converter));
             foreach (var plugin in plugins)
@@ -87,7 +87,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         private void InitFileRecorders()
         {
-            _fileRecordersFactories = PluginsLoader.Instance.PluginFactories
+            _fileRecordersFactories = PluginsLoader.PluginFactories.Value
                 .OfType<IFileRecorderPluginsFactory>()
                 .ToArray();
 
