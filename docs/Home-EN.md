@@ -13,9 +13,8 @@ Choose a section:
 - [Build from source](Build-EN.md)
 - [Usage](Usage-EN.md)
 - [Internal API](API-EN.md)
-- [Write your own plugin](Plugins-EN.md)
-- [Windows for additional data](Windows-EN.md)
-
-Embeded plugins:
-- [Protobuf](Protobuf-EN.md)
-- [ROS](ROS-EN.md)
+- [Plugins for Elektronik](Plugins-EN.md)
+  - Embeded plugins:
+    - [Protobuf](Protobuf-EN.md)
+    - [ROS](ROS-EN.md)
+  - [Write your own plugin](WritePlugin-EN.md)

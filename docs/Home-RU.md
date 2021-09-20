@@ -13,9 +13,8 @@
 - [Сборка из исходников](Build-RU.md)
 - [Использование](Usage-RU.md)
 - [Внутреннее API](API-RU.md)
-- [Написать свой плагин](Plugins-RU.md)
-- [Окна для вывода дополнительных данных](Windows-RU.md)
-
-Встроенные плагины:
-- [Protobuf](Protobuf-RU.md)
-- [ROS](ROS-RU.md)
+- [Плагины для электроника](Plugins-RU.md)
+  - Встроенные:
+      - [Protobuf](Protobuf-RU.md)
+      - [ROS](ROS-RU.md)
+  - [Написать свой плагин](WritePlugin-RU.md)

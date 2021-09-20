@@ -1,233 +1,129 @@
-# Write your own plugin
+# Plugins for Elektronik
 
-For now Elektronik supports only plugins for new data sources such as data transfer protocols or file formats.
+One of main features of Elektronik is extendability using plugins.
+All work with data transport protocols, reading from files etc. is doing by external plugins.
+Elektronik itself only renders data and connects plugins to each other.
+Elektronik is shipped with two plugins for processing incoming data: [Protobuf](Protobuf-EN.md),
+[ROS](ROS-EN.md). You may use it as reference for developing your own plugins.
 
-If you need protocol or format not supported by Elektronik this page will help you write
-your own plugin.
+In general Elektronik works with plugins this way:
+- Data source plugins create tree of data sources and fill it with data.
+- Elektronik subscribes data consumers to updates of data sources.
+- Data consumers can render data on screen, or write it to file, or do something else.
 
-## Introduction
+![Diagram](Images/ElektronikDiagram.png)
 
-You can use any language supported by .Net.
-Your plugin need to reference files `UnityEngine.dll`, `Assembly-CSharp.dll`, `Assembly-CSharp-firstpass.dll` 
-from `<YOUR_ELEKTRONIK_DIR>\Elektronik_Data\Managed`.
-Also you maybe have to reference other Unity dll.
-For `Vector3` you should reference `UnityEngine.CoreModule.dll`.
+## Structure of plugins
 
-Plugin should contains classes implements one of these interfaces:
-- [IDataSourceOnline](../Assets/Scripts/PluginsSystem/IDataSourceOnline.cs) for streaming data.
-- [IDataSourceOffline](../Assets/Scripts/PluginsSystem/IDataSourceOffline.cs) for reading files 
-  or any other data which can be stopped or rewinded.
+Elektronik uses pattern abstract factory for working with plugins.
+Each plugins should implement factory class that implements 
+[IElektronikPluginsFactory](../Assets/Scripts/PluginsSystem/Factories/IElektronikPluginsFactory.cs) implements,
+this class creates and initialises plugin.
+Plugin itself must implement [IElektronikPlugin](../Assets/Scripts/PluginsSystem/Plugins/IElektronikPlugin.cs) interface.
 
-In offline mode elektronik supports only one active data source.
+Plugins can be divided on three categories (there will be more of them in future),
+each of them has its own interfaces of factories and plugins:
+- Data sources. You may think of them as model in MVC or MVP pattern.
+    - Factories:
+        - [IDataSourcePluginsFactory](../Assets/Scripts/PluginsSystem/Factories/IDataSourcePluginsFactory.cs)
+          Interface for any data source plugin factories.
+        - [ISnapshotReaderPluginFactory](../Assets/Scripts/PluginsSystem/Factories/IDataSourcePluginsFactory.cs)
+          inherits `IDataSourcedPluginsFactory`. Marks that plugin can be used for reading snapshots saved to file.
+    - Plugins:
+        - [IDataSourcePlugin](../Assets/Scripts/PluginsSystem/Plugins/IDataSourcePlugin.cs) Interface for any data source plugin.
+- Data recorders. Consumes data from sources.
+    - Factories:
+        - [ICustomRecorderPluginsFactory](../Assets/Scripts/PluginsSystem/Factories/IDataRecorderPluginsFactory.cs)
+          Interface for any data consumer plugin factories.
+        - [IFileRecorderPluginsFactory](../Assets/Scripts/PluginsSystem/Factories/IDataRecorderPluginsFactory.cs)
+          Interface for data consumer plugins factorys that writes data to file.
+          It used to group this type of plugins in UI. See [UI](#UI).
+    - Plugins:
+        - [IDataRecorderPlugin](../Assets/Scripts/PluginsSystem/Plugins/IDataRecorderPlugin.cs) Interface for any data consumer plugin.
+- Algorithms for clustering points cloud. Consumes list of points, returns list of lists of points clustered by implemented algorithm.
+    - Factory: [IClusteringAlgorithmFactory](../Assets/Scripts/PluginsSystem/Factories/IClusteringAlgorithmFactory.cs)
+    - Plugin: [IClusteringAlgorithm](../Assets/Scripts/PluginsSystem/Plugins/IClusteringAlgorithm.cs)
 
-## Common
+![Диаграмма](Images/FactoriesDiargam.png)
+![Диаграмма](Images/PluginsDiargam.png)
 
-You need to implement these functions and properties:
-```c#
-/// <summary> Name to display in plugins settings. </summary>
-string DisplayName { get; }
+Plugins can implement special type for their settings. This types mast be inherited from [SettingsBag](../Assets/Scripts/Settings/SettingsBag.cs),
+and for them will be generated UI, that will allow user to control plugins settings. See [UI](#UI), [Settings](#Settings).
 
-/// <summary> Plugins description. Will be displayed in plugins settings </summary>
-string Description { get; }
-```
-- Just name and description to be displayed in settings menu.
-```c#
-/// <summary> Converter for raw Vector3 and Quaternions </summary>
-ICSConverter Converter { get; set; }
-```
-- At plugin here will be written convertor form right-handed to left-handed coordinate system.
-  You can use it or implement your own.
-```c#
-/// <summary> Containers with cloud data. </summary>
-IContainerTree Data { get; }
-```
-- Root of cloud containers tree. In Elektronik all data about cloud objects (points, lines, planes, etc.) are placed
-  in containers and containers implement a tree structure. More information [here](#Cloud-data-containers).
-  This property should be initialized statically or in constructor.
-```c#
-/// <summary> Containers with any data. </summary>
-DataPresenter PresentersChain { get; }
-```
-- Chain of containers for not cloud data such as images or text. More information [here](#Other-types-of-data).
-  This property should be initialized statically or in constructor.
-```c#
-/// <summary> Starts plugin. </summary>
-void Start();
-```
-- Function where you should start your plugin. This function can be call several times at program execution.
-  `Stop()` would be called before any new call of `Start()` (except first time).
-```c#
-/// <summary> Stops plugin. </summary>
-void Stop();
-```
-- Function whwre you sholud stop your plugin and clear all it internal data and state. 
-  This function can be call several times at program execution.
-```c#
-/// <summary> Calls every time when Unity.Update() event happens. </summary>
-/// <param name="delta"> Time from previous update call in seconds. </param>
-void Update(float delta);
-```
-- This functions will be called each time unity render a new frame. You can use it as you wish, but don't do long operations in here.
-```c#
-/// <summary> Plugins settings. </summary>
-SettingsBag Settings { get; set; }
-```
-- Plugins settings object. For example it can contains path to file to open or port for data listening.
-  More information [here](#Settings).
-```c#
-/// <summary> Container for settings history. </summary>
-ISettingsHistory SettingsHistory { get; }
-```
-- Object that keeping plugin's settings history. Most likely you will not use it.
-  But it should be initialized statically or in constructor of pluing.
-  More information [here](#Settings).
+## UI
 
-## Online mode
+![Toolbar](Images/ToolbarPlugins.png)
 
-Create a class implementing [IDataSourceOnline](../Assets/Scripts/PluginsSystem/IDataSourceOnline.cs)
-to implement online mode. There is nothing to implement here except common functions and properties.
+From UI's point of view plugins could be divided on two groups:
+- plugins that have UI implemented in Elektronik's side.
+  - **Data sources** (1). This plugins have special window where user can chose source, set settings (or use recent), start playing.
+  There can be only one playing source in time, so before start of new one, old one will be stopped and disposed.
 
-## Offline mode
+  ![image](Images/ConnectionsWindow.png)
 
-Create a class implementing [IDataSourceOffline](../Assets/Scripts/PluginsSystem/IDataSourceOffline.cs)
-to implement offline mode.
-```c#
-public interface IDataSourceOffline : IDataSource
-{
-    /// <summary> Amount of frames (commands) in file. </summary>
-    int AmountOfFrames { get; }
-    
-    /// <summary> Displaying timestamp of current frame. </summary>
-    int CurrentTimestamp { get; }
-    
-    /// <summary> Number of current frame. </summary>
-    int CurrentPosition { get; set; }
-    
-    /// <summary> Play button pressed handler. </summary>
-    void Play();
-    
-    /// <summary> Next button pressed handler. </summary>
-    void Pause();
-    
-    /// <summary> Stop button pressed handler. </summary>
-    void StopPlaying();
-    
-    /// <summary> Previous frame button pressed handler. </summary>
-    void PreviousKeyFrame();
-    
-    /// <summary> Next frame button pressed handler. </summary>
-    void NextKeyFrame();
+  - **Data recorders to file** (2). This plugins have special window where user can chose filename of saved file.
+    Plugin will be chosen by file extension.
 
-    /// <summary> Reached end of the file. </summary>
-    event Action Finished;
-}
-```
-Here you have to implement functions for handling control buttons and properties for displaying state of player.
+  ![image](Images/RecordToFileWindow.png)
 
-## Plugins loading
+  - ** Clustering algorithm ** (3).
 
-Your plugin must be dll library with any additional files.
-Electronik will search in `<YOUR_ELEKTRONIK_DIR>\Plugins` for any plugins.
-Plugin must have following structure:
-```
-\Plugins
-  \your_plugin_name
-    \libraries
-      \your_plugin.dll
-      \additional_libs.dll
-    \data
-      \some_optional_data.csv
-```
-In settings menu user will select plugins to activate and settings for those plugins.
-Playing can be started only after at least one data source is choosed and its settings are correct.
+  ![image](Images/ClusterizationWindow.png)
+- plugins with custom UI.
+  - Elektronik creates button on toolbar for all other plugins. This button opens window with generated fields for plugins settings.
+  - Example: **Plugin for transmitting scene state via gRPC** (4)
 
-## Cloud data containers
+    ![image](Images/RetranslatorWindow.png)
 
-[IContainer\<T\>](../Assets/Scripts/Containers/IContainer.cs) is using for containing cloud objects.
-You can write container for your own data or use one of [standard](../Assets/Scripts/Containers). 
-For now Elektronk can render only:
-- points clouds (T=[SlamPoint](../Assets/Scripts/Data/PackageObjects/SlamPoint.cs)),
-- lines clouds (T=[SlamLine](../Assets/Scripts/Data/PackageObjects/SlamLine.cs)),
-- infinite planes clouds (T=[SlamInfinitePlane](../Assets/Scripts/Data/PackageObjects/SlamInfinitePlane.cs)),
-- observation graph (T=[SlamObservation](../Assets/Scripts/Data/PackageObjects/SlamObservation.cs)),
-- and objects with track (T=[SlamTrackedObject](../Assets/Scripts/Data/PackageObjects/SlamTrackedObject.cs)).
-
-For rendering other types of cloud data convert them to one of types above or implement your on 
-[cloud renderer](API-EN.md#Rendering-classes).
-
-Containers should implement [IContainerTree](../Assets/Scripts/Containers/IContainerTree.cs)
-for grouping in tree structure. Before playing started all cloud renderers will be set for containers using function
-`Data.SetRenderer(renderer)`. If you are implementing your own type of container you should subscribe renderer on container updates.
-Like here:
-```c#
-public void SetRenderer(object renderer)
-{
-  if (renderer is ICloudRenderer<SlamLine> typedRenderer)
-  {
-      OnAdded += typedRenderer.OnItemsAdded;
-      OnUpdated += typedRenderer.OnItemsUpdated;
-      OnRemoved += typedRenderer.OnItemsRemoved;
-      if (Count > 0)
-      {
-          OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(this));
-      }
-  }
-  foreach (var child in Children)
-  {
-      child.SetRenderer(renderer)
-  }
-}
-```
-If you are planning to use several containers then you need ot create root container for all others.
-You can find [example](../plugins/Protobuf/Data/ProtobufContainerTree.cs) in Protobuf plugin.
-
-## Other types of data
-
-If you need to present other types of data such as camera images or some text use class
-[DataPresenter](../Assets/Scripts/Presenters/DataPresenter.cs).
-This class implements pattern chain of responsibility and should parse incoming data and sent it to UI for rendering.
-Before playing started all renderers will be set for presenters using function
-`PresentersChain.SetRenderer(renderer)`. If you are implementing your own type of presenter you should subscribe renderer on its updates.
-Like here:
-```c#
-if (dataRenderer is IDataRenderer<byte[]> renderer)
-{
-    _renderer = renderer;
-}
-Successor?.SetRenderer(dataRenderer);
-```
+Logo for plugins should be in `<Elektronik_DIR>/Plugins/<Plugin_Name>/data/<IElektronikPluginsFactory.DisplayName>_Logo.png`,
+if that file not found toolbar button will show plugin's name instead of logo.
 
 ## Settings
 
-Create class inherited from [SettingsBag](../Assets/Scripts/Settings/SettingsBag.cs) for setting of you plugin.
-This class also should have `Serializable` attribute.
-All public fields of this class will be displayed in settings menu.
-If you not want to show some of fields, mark them with `NowShow` atribute.
-Mark fields with `Tooltip(string)` attribute to change displaying name of this field.
+Each plugin and its factory can have settings, that can be changed by user.
+This settings should be class inherited from [SettingsBag](../Assets/Scripts/Settings/SettingsBag.cs).
+UI fields will be generated for all public fields with supported types that don't have attribute
+[\[Hide\]](../Assets/Scripts/Settings/HideAttribute.cs).
+Field name in UI will be get from field name from code using [Humanizer](https://github.com/Humanizr/Humanizer).
+Also you can add `[Tooltip("text")]` attribute to show user additional information,
+Supported field types:
+- `bool`
 
-If you need to validate settings override `bool Validate()` it should return true if settings are correct.
-Playing will not started before all turned on plugins have correct settings.
+  ![image](Images/BoolField.png)
 
-Some of popular types of settings are already implemented:
-[AddressPortScaleSettingsBag](../Assets/Scripts/Settings/Bags/AddressPortScaleSettingsBag.cs)
-[FileScaleSettingsBag](../Assets/Scripts/Settings/Bags/FileScaleSettingsBag.cs)
+- `int`, `float`
 
-For keeping history of setting create a specialization of class [SettingsHistory\<T\>](../Assets/Scripts/Settings/SettingsHistory.cs)
-for your setting class.
+- ![image](Images/NumberField.png)
 
-Initialize properties
-```c#
-/// <summary> Plugins settings. </summary>
-SettingsBag Settings { get; set; }
-/// <summary> Container for settings history. </summary>
-ISettingsHistory SettingsHistory { get; }
-```
-in your plugin statically or in constructor using created classes.
+- `int`, `float` with attribute `[Range(minValue, maxValue)]`
 
-Or instead of specialization of class [SettingsHistory\<T\>](../Assets/Scripts/Settings/SettingsHistory.cs), 
-you can inherit [DataSourceBase\<T\>](../Assets/Scripts/PluginsSystem/DataSourceBase.cs), where T is settings bag class.
-In **DataSourceBase\<T\>** settings history is already implemented.
+- ![image](Images/RangedNumberField.png)
 
-All settings and history are stored in `C:\Users\<User>\AppData\LocalLow\Dioram\Elektronik\<Plugin.DisplayName>.json`.
+- `string`
 
-[<- Internal API](API-EN.md) | [Windows for additional data ->](Windows-EN.md)
+- ![image](Images/StringField.png)
+
+- `string` with attribute [\[Path\]](../Assets/Scripts/Settings/PathAttribute.cs)
+
+- ![image](Images/PathField.png)
+
+- `Vector3`
+
+- ![image](Images/Vector3Field.png)
+
+- `Action`
+
+- ![image](Images/SettingsButton.png)
+
+[SettingsBag](../Assets/Scripts/Settings/SettingsBag.cs) defines virtual method `Validate()`,
+which you can override. For data sources and clustering algorithms result of this method is checked in UI.
+
+[SettingsBag](../Assets/Scripts/Settings/SettingsBag.cs) implements method `Equals`, it checks equality
+of all public field with [CheckForEquals](../Assets/Scripts/Settings/CheckForEqualsAttribute.cs) attribute.
+
+On this moment [SettingsBag](../Assets/Scripts/Settings/SettingsBag.cs) has only one-way connection,
+data comes from UI to code. In future there will be two-way connection.
+
+All history of setting stored in `C:\Users\<User>\AppData\LocalLow\Dioram\Elektronik\<Plugin.DisplayName>.json`.
+
+[<- Internal API](API-EN.md) | [Write your own plugin ->](WritePlugin-EN.md)

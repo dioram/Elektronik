@@ -18,9 +18,11 @@
 
 Источники данных могут реализовывать дополнительные интерфейсы, которые позволяют пользователю взаимодействовать с ними через окно "Дерево данных":
 - ![button](Images/VisibilityButton.png) [IVisible](../Assets/Scripts/DataSources/SpecialInterfaces/IVisible.cs) Позволяет включать или выключать отображение источника.
-  *Посылает в рендер сигнал о удалении всех объектов при выключении видимости и о добавлении - при включении.* Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/DataSources/Containers/CloudContainer.cs).
+  *Посылает в рендер сигнал о удалении всех объектов при выключении видимости и о добавлении - при включении.* 
+  Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/DataSources/Containers/CloudContainer.cs).
 - ![button](Images/LookAtButton.png) [ILookable](../Assets/Scripts/DataSources/SpecialInterfaces/ILookable.cs) Позволяет навести камеру на данные.
-  *Для переданных координат камеры возвращает ближайшие координаты с которых будет видно всё содержимое контейнера* Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/DataSources/Containers/CloudContainer.cs).
+  *Для переданных координат камеры возвращает ближайшие координаты с которых будет видно всё содержимое контейнера* 
+  Референсная реализация: [CloudContainer\<T\>](../Assets/Scripts/DataSources/Containers/CloudContainer.cs).
 - ![button](Images/LookAtButton.png) [IFollowable](../Assets/Scripts/DataSources/SpecialInterfaces/IFollowable.cs) Позволяет закрепить камеру за объектом.
   Референсная реализация: [TrackContainer](../Assets/Scripts/DataSources/Containers/TrackContainer.cs).
 - ![button](Images/DeleteButton.png) [IRemovable](../Assets/Scripts/DataSources/SpecialInterfaces/IRemovable.cs) Позволяет удалить источник данных из дерева. 
