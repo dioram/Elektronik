@@ -176,7 +176,10 @@ namespace Elektronik.DataControllers
                 if (factory is null) return;
                 factory.SetFileName(path);
                 var plugin = (IDataSourcePlugin)factory.Start(Converter);
-                plugin.Position = plugin.AmountOfFrames - 1;
+                if (plugin is IRewindableDataSource p)
+                {
+                    p.Position = p.AmountOfFrames - 1;
+                }
                 AddDataSource(new SnapshotContainer(Path.GetFileName(path), plugin.Data.Children.ToList()));
             }
         }

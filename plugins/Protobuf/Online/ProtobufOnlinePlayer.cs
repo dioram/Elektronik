@@ -19,7 +19,7 @@ namespace Elektronik.Protobuf.Online
 {
     using GrpcServer = Server;
 
-    public class ProtobufOnlinePlayer : IDataSourcePlugin
+    public class ProtobufOnlinePlayer : IRewindableDataSource, IChangingSpeed
     {
         public ProtobufOnlinePlayer(string displayName, Texture2D? logo, OnlineSettingsBag settings,
                                     ICSConverter converter, ILogger? logger = null)
@@ -138,7 +138,6 @@ namespace Elektronik.Protobuf.Online
             set => Rewind(value);
         }
 
-        public float Speed { get; set; }
         public bool IsPlaying { get; private set; }
         public event Action? OnPlayingStarted;
         public event Action? OnPaused;
@@ -169,7 +168,13 @@ namespace Elektronik.Protobuf.Online
 
         #endregion
 
-        #region Private definitions
+        #region IChangingSpeed
+
+        public float Speed { get; set; }
+
+        #endregion
+
+        #region Private
 
         private GrpcServer _server;
         private readonly OnlineFrameBuffer _buffer = new();

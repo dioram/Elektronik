@@ -18,6 +18,7 @@ namespace Elektronik.UI
         [SerializeField] private Button StopButton;
         [SerializeField] private Button RewindForward;
         [SerializeField] private Button RewindBackward;
+        [SerializeField] private Button SpeedPanelButton;
 
         [Header("Play/Pause")] 
         [SerializeField] private Button PlayPauseButton;
@@ -57,6 +58,19 @@ namespace Elektronik.UI
         public void SetPausedState()
         {
             MainThreadInvoker.Enqueue(() => PlayPauseImage.sprite = PlayImage);
+        }
+
+        public void ActivateSpeedButtons(bool state)
+        {
+            if (state == false)
+            {
+                SpeedButtonsPanel.gameObject.SetActive(false);
+                SpeedPanelButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                SpeedPanelButton.gameObject.SetActive(true);
+            }
         }
 
         /// <summary> Displays new position on slider. </summary>

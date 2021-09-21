@@ -14,9 +14,9 @@ namespace Elektronik.Protobuf.Recorders
 {
     public class ProtobufRetranslator : DataRecorderPluginBase
     {
-        public ProtobufRetranslator(string displayName, Texture2D? logo, ICSConverter converter)
+        public ProtobufRetranslator(string displayName, Texture2D? logo, ICSConverter? converter)
         {
-            Converter = converter;
+            _converter = converter;
             DisplayName = displayName;
             Logo = logo;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -29,31 +29,37 @@ namespace Elektronik.Protobuf.Recorders
 
         public override void OnItemsAdded(object sender, AddedEventArgs<SlamPoint> e)
         {
-            SendPacket(e.ToProtobuf(Converter));
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
         public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamPoint> e)
         {
-            SendPacket(e.ToProtobuf(Converter));
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
         public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamPoint> e)
         {
+            if (!_isTransmitting || _clients == null) return;
             SendPacket(e.ToProtobuf());
         }
 
         public override void OnItemsAdded(object sender, AddedEventArgs<SlamLine> e)
         {
-            SendPacket(e.ToProtobuf(Converter));
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
         public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamLine> e)
         {
-            SendPacket(e.ToProtobuf(Converter));
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
         public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamLine> e)
         {
+            if (!_isTransmitting || _clients == null) return;
             SendPacket(e.ToProtobuf());
         }
 
@@ -74,46 +80,55 @@ namespace Elektronik.Protobuf.Recorders
 
         public override void OnItemsAdded(object sender, AddedEventArgs<SlamObservation> e)
         {
-            SendPacket(e.ToProtobuf(Converter));
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
         public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamObservation> e)
         {
-            SendPacket(e.ToProtobuf(Converter));
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
         public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamObservation> e)
         {
+            if (!_isTransmitting || _clients == null) return;
             SendPacket(e.ToProtobuf());
         }
 
         public override void OnItemsAdded(object sender, AddedEventArgs<SlamTrackedObject> e)
         {
-            SendPacket(e.ToProtobuf(Converter));
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
         public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamTrackedObject> e)
         {
-            SendPacket(e.ToProtobuf(Converter));
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
         public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamTrackedObject> e)
         {
+            if (!_isTransmitting || _clients == null) return;
             SendPacket(e.ToProtobuf());
         }
 
         public override void OnItemsAdded(object sender, AddedEventArgs<SlamPlane> e)
         {
-            SendPacket(e.ToProtobuf(Converter));
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
         public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamPlane> e)
         {
-            SendPacket(e.ToProtobuf(Converter));
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
         public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamPlane> e)
         {
+            if (!_isTransmitting || _clients == null) return;
             SendPacket(e.ToProtobuf());
         }
 
@@ -122,7 +137,7 @@ namespace Elektronik.Protobuf.Recorders
         public override SettingsBag Settings => _typedSettings;
         public override Texture2D? Logo { get; }
 
-        public ICSConverter Converter { get; set; }
+        private readonly ICSConverter? _converter;
 
         #endregion
 
@@ -153,7 +168,7 @@ namespace Elektronik.Protobuf.Recorders
 
         private void SendPacket(PacketPb packet)
         {
-            if (!_isTransmitting || _clients == null) return;
+            if (_clients == null) return;
             foreach (var client in _clients)
             {
                 client.HandleAsync(packet);

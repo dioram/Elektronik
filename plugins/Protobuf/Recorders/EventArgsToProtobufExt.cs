@@ -8,7 +8,7 @@ namespace Elektronik.Protobuf.Recorders
 {
     public static class EventArgsToProtobufExt
     {
-        public static PacketPb ToProtobuf(this AddedEventArgs<SlamPoint> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this AddedEventArgs<SlamPoint> data, ICSConverter? converter)
         {
             var packet = new PacketPb
             {
@@ -19,7 +19,7 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this AddedEventArgs<SlamLine> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this AddedEventArgs<SlamLine> data, ICSConverter? converter)
         {
             var packet = new PacketPb
             {
@@ -30,7 +30,7 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this AddedEventArgs<SlamObservation> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this AddedEventArgs<SlamObservation> data, ICSConverter? converter)
         {
             var packet = new PacketPb
             {
@@ -41,7 +41,7 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this AddedEventArgs<SlamTrackedObject> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this AddedEventArgs<SlamTrackedObject> data, ICSConverter? converter)
         {
             var packet = new PacketPb
             {
@@ -52,7 +52,7 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this AddedEventArgs<SlamPlane> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this AddedEventArgs<SlamPlane> data, ICSConverter? converter)
         {
             var packet = new PacketPb
             {
@@ -63,7 +63,7 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamPoint> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamPoint> data, ICSConverter? converter)
         {
             var packet = new PacketPb
             {
@@ -74,7 +74,7 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamLine> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamLine> data, ICSConverter? converter)
         {
             var packet = new PacketPb
             {
@@ -85,7 +85,7 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamObservation> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamObservation> data, ICSConverter? converter)
         {
             var packet = new PacketPb
             {
@@ -96,7 +96,7 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamTrackedObject> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamTrackedObject> data, ICSConverter? converter)
         {
             var packet = new PacketPb
             {
@@ -107,7 +107,7 @@ namespace Elektronik.Protobuf.Recorders
             return packet;
         }
 
-        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamPlane> data, ICSConverter converter)
+        public static PacketPb ToProtobuf(this UpdatedEventArgs<SlamPlane> data, ICSConverter? converter)
         {
             var packet = new PacketPb
             {

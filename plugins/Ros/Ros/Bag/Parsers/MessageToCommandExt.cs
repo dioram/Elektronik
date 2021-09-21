@@ -17,7 +17,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
         public static ICommand ToCommand(this Message message, ISourceTreeNode container) => message switch
         {
             PointCloud2 cloud when container is IContainer<SlamPoint> pointsContainer =>
-                    new MacroCommand(new ICommand[]
+                    new MacroCommand(new ICommand[] // TODO: change to special command
                     {
                         new ClearCommand<SlamPoint>(pointsContainer),
                         new AddCommand<SlamPoint>(pointsContainer, cloud.ToSlamPoints())

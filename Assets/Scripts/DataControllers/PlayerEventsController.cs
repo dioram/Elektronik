@@ -10,9 +10,14 @@ namespace Elektronik.DataControllers
     {
         [SerializeField] private HotkeysRouter HotkeysRouter;
         [SerializeField] private PlayerUIControls PlayerUIControls;
-        [CanBeNull] private IDataSourcePlugin _dataSourcePlugin;
+        [CanBeNull] private IRewindableDataSource _dataSourcePlugin;
 
-        public IDataSourcePlugin DataSourcePlugin
+        public void ActivateUI(bool state)
+        {
+            PlayerUIControls.gameObject.SetActive(state);
+        }
+
+        public IRewindableDataSource DataSourcePlugin
         {
             get => _dataSourcePlugin;
             set
@@ -52,6 +57,8 @@ namespace Elektronik.DataControllers
                 _dataSourcePlugin.OnPositionChanged += PlayerUIControls.SetSliderPosition;
                 _dataSourcePlugin.OnAmountOfFramesChanged += PlayerUIControls.SetSliderMaxValue;
                 _dataSourcePlugin.OnTimestampChanged += PlayerUIControls.SetTimestamp;
+
+                PlayerUIControls.ActivateSpeedButtons(_dataSourcePlugin is IChangingSpeed);
             }
         }
 
@@ -104,8 +111,8 @@ namespace Elektronik.DataControllers
                     .AddTo(this);
 
             PlayerUIControls.OnSpeedChanged
-                    .Where(_ => !(DataSourcePlugin is null))
-                    .Subscribe(speed => DataSourcePlugin.Speed = 1 / speed)
+                    .Where(_ => DataSourcePlugin is IChangingSpeed)
+                    .Subscribe(speed => ((IChangingSpeed)DataSourcePlugin).Speed = 1 / speed)
                     .AddTo(this);
         }
 

@@ -26,6 +26,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         public void SetNewSource(IDataSourcePluginsFactory factory, bool autoPlay = true)
         {
+            ScreenLocker.SetActive(true);
             if (!(CurrentSource is null))
             {
                 PluginWindowsManager.UnregisterPlugin(CurrentSource);
@@ -48,10 +49,18 @@ namespace Elektronik.PluginsSystem.UnitySide
                 MainThreadInvoker.Enqueue(() =>
                 {
                     PluginWindowsManager.RegisterPlugin(CurrentSource);
-                    PlayerEvents.DataSourcePlugin = CurrentSource;
                     DataSourcesController.AddDataSource(CurrentSource.Data);
                     ScreenLocker.SetActive(false);
-                    if (autoPlay) CurrentSource.Play();
+                    if (CurrentSource is IRewindableDataSource source)
+                    {
+                        PlayerEvents.DataSourcePlugin = source;
+                        PlayerEvents.ActivateUI(true);
+                        if (autoPlay) source.Play();
+                    }
+                    else
+                    {
+                        PlayerEvents.ActivateUI(false);
+                    }
                 });
             });
         }

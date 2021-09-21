@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Bag
 {
-    public class RosbagReader : IDataSourcePlugin
+    public class RosbagReader : IRewindableDataSource
     {
         public RosbagReader(string displayName, Texture2D? logo, RosbagSettings settings)
         {
@@ -21,24 +21,24 @@ namespace Elektronik.RosPlugin.Ros.Bag
             DisplayName = displayName;
             _container = new RosbagContainerTree(settings, "TMP");
             Data = _container;
-            OnFinished += () => _playing = false;
+            OnFinished += Pause;
             _startTimestamp = _container.Parser.ReadMessagesAsync().FirstOrDefaultAsync().Result?.Timestamp ?? 0;
             var actualConnections = _container.Parser.GetTopics()
                     .Where(t => _container.ActualTopics.Select(a => a.Name).Contains(t.Topic));
             _frames = new FramesAsyncCollection<Frame>(() => ReadNext(actualConnections));
+            _frames.OnCurrentSizeChanged += i => OnAmountOfFramesChanged?.Invoke(i);
             var converter = new RosConverter();
             converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = converter;
             _threadWorker = new ThreadQueueWorker();
         }
-        
+
         #region IDataSourcePlugin
 
         public ISourceTreeNode Data { get; }
 
         public int AmountOfFrames => _frames.CurrentSize;
-        public float Speed { get; set; }
-        public bool IsPlaying { get; }
+        public bool IsPlaying { get; private set; }
         public event Action? OnPlayingStarted;
         public event Action? OnPaused;
         public event Action<int>? OnPositionChanged;
@@ -52,15 +52,15 @@ namespace Elektronik.RosPlugin.Ros.Bag
         {
             get
             {
-                var t = _frames.Current?.Timestamp ?? 0;  // One who designed this time storage format is really weird.
-                var s = _startTimestamp;                  // Instead of saving time as 1 long or ulong value
-                var ts = (int) t; // secs                 // or saving 2 separate int values
-                var tn = (int) (t >> 32); // nanosecs     // He took 2 ints and store them inside 1 long value.
-                var ss = (int) s; // secs                 // WTF???
-                var sn = (int) (s >> 32); // nanosecs
+                var t = _frames.Current?.Timestamp ?? 0; // One who designed this time storage format is really weird.
+                var s = _startTimestamp;                 // Instead of saving time as 1 long or ulong value
+                var ts = (int)t; // secs                      // or saving 2 separate int values
+                var tn = (int)(t >> 32); // nanosecs          // He took 2 ints and store them inside 1 long value.
+                var ss = (int)s; // secs                      // WTF???
+                var sn = (int)(s >> 32); // nanosecs
                 t = ts * 1000 + tn / 1000000;
                 s = ss * 1000 + sn / 1000000;
-                return $"{(t-s)/1000f:F3}";
+                return $"{(t - s) / 1000f:F3}";
             }
         }
 
@@ -82,14 +82,13 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         public void Update(float delta)
         {
-            // if (_threadWorker == null/* || _threadWorker.AmountOfActions > 0*/) return;
-            if (_playing)
+            if (IsPlaying)
             {
                 NextKeyFrame();
             }
             else if (_rewindAt > 0)
             {
-                _playing = false;
+                IsPlaying = false;
                 OnRewindStarted?.Invoke();
                 if (Position > _rewindAt)
                 {
@@ -113,17 +112,20 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         public void Play()
         {
-            _playing = true;
+            IsPlaying = true;
+            OnPlayingStarted?.Invoke();
         }
 
         public void Pause()
         {
-            _playing = false;
+            IsPlaying = false;
+            OnPaused?.Invoke();
         }
 
         public void StopPlaying()
         {
-            _playing = false;
+            IsPlaying = false;
+            OnPaused?.Invoke();
             _threadWorker.Enqueue(() =>
             {
                 Data.Clear();
@@ -142,6 +144,8 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 // ReSharper disable once ConstantConditionalAccessQualifier
                 _frames.Current?.Rewind();
                 if (!_frames.MovePrevious()) _frames.SoftReset();
+                OnPositionChanged?.Invoke(Position);
+                OnTimestampChanged?.Invoke(Timestamp);
             });
         }
 
@@ -158,9 +162,11 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 {
                     MainThreadInvoker.Enqueue(() => OnFinished?.Invoke());
                 }
+                OnPositionChanged?.Invoke(Position);
+                OnTimestampChanged?.Invoke(Timestamp);
             });
         }
-        
+
         #endregion
 
         #region Private
@@ -168,7 +174,6 @@ namespace Elektronik.RosPlugin.Ros.Bag
         private readonly RosbagContainerTree _container;
         private readonly FramesAsyncCollection<Frame> _frames;
         private readonly ThreadQueueWorker _threadWorker;
-        private bool _playing;
         private readonly long _startTimestamp;
         private int _rewindAt = -1;
 

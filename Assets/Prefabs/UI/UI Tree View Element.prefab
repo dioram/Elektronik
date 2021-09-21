@@ -260,7 +260,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Remove
   Offset: {x: 0, y: 40}
 --- !u!1 &690437898311979858
@@ -772,7 +771,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Trace
   Offset: {x: 0, y: 40}
 --- !u!1 &2214842138114993958
@@ -930,7 +928,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Show window
   Offset: {x: 0, y: 40}
 --- !u!1 &2425527349260746645
@@ -1022,7 +1019,6 @@ GameObject:
   - component: {fileID: 4996134713169142822}
   - component: {fileID: 6604339467638316273}
   - component: {fileID: 4837642631904317121}
-  - component: {fileID: 8383973747513718376}
   m_Layer: 0
   m_Name: SaveButton
   m_TagString: Untagged
@@ -1164,21 +1160,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Save
   Offset: {x: 0, y: 40}
---- !u!114 &8383973747513718376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2954416904317966673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81564c95490e4c7abd88898c69e394ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &3654434711590099038
 GameObject:
   m_ObjectHideFlags: 0
@@ -1629,7 +1612,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Visibility
   Offset: {x: 0, y: 40}
 --- !u!1 &3654434712727471053
@@ -2248,7 +2230,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Connections weight
   Offset: {x: 0, y: 60}
 --- !u!114 &4134652343334661207
@@ -2263,8 +2244,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 727a4e2e6c8fcff41a43466ac7017272, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectWithDesiredState: {fileID: 453699548129275634}
-  invokeIfTrue:
+  ObjectWithDesiredState: {fileID: 453699548129275634}
+  InvokeIfTrue:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 453699548129275634}
@@ -2279,7 +2260,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  invokeIfFalse:
+  InvokeIfFalse:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 453699548129275634}
@@ -2770,7 +2751,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Follow
   Offset: {x: 0, y: 40}
 --- !u!114 &1614324604654281675
@@ -3381,7 +3361,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Show window
   Offset: {x: 0, y: 40}
 --- !u!1 &8633133071377530578
@@ -3650,7 +3629,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipPrefab: {fileID: 8531784670073564332, guid: 1700d32096f5b9d4aa1eb39fa4d956b0, type: 3}
   TooltipText: Look at
   Offset: {x: 0, y: 40}
 --- !u!1 &9133970860865255461

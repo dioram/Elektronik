@@ -13,7 +13,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         public List<(string Name, string Type)> ActualTopics = new ();
         public readonly Dictionary<string, ISourceTreeNode> RealChildren = new();
 
-        public RosContainerTree(string displayName) : base(displayName)
+        protected RosContainerTree(string displayName) : base(displayName)
         {
         }
 
@@ -57,11 +57,11 @@ namespace Elektronik.RosPlugin.Common.Containers
         {
             ChildrenList.Clear();
 
-            foreach (var topic in ActualTopics)
+            foreach (var (topicName, topicType) in ActualTopics)
             {
-                var path = topic.Name.Split('/').Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                var path = topicName.Split('/').Where(s => !string.IsNullOrEmpty(s)).ToArray();
                 VirtualSource parent = this;
-                for (int i = 0; i < path.Length - 1; i++)
+                for (var i = 0; i < path.Length - 1; i++)
                 {
                     if (parent.Children.FirstOrDefault(c => c.DisplayName == path[i]) is VirtualSource container)
                     {
@@ -75,32 +75,32 @@ namespace Elektronik.RosPlugin.Common.Containers
                     }
                 }
 
-                if (!RealChildren.ContainsKey(topic.Name))
+                if (!RealChildren.ContainsKey(topicName))
                 {
-                    var child = CreateContainer(topic.Name, topic.Type);
+                    var child = CreateContainer(topicName, topicType);
                     switch (child)
                     {
                     case IRendersToWindow w:
-                        w.Title = topic.Name;
+                        w.Title = topicName;
                         break;
                     case TrackedObjectsContainer t:
-                        t.ObjectLabel = topic.Name;
+                        t.ObjectLabel = topicName;
                         break;
                     }
 
-                    RealChildren[topic.Name] = child;
+                    RealChildren[topicName] = child;
                     
                     foreach (var renderer in _consumers)
                     {
-                        RealChildren[topic.Name].AddConsumer(renderer);
+                        RealChildren[topicName].AddConsumer(renderer);
                     }
                 }
                 else
                 {
-                    RealChildren[topic.Name].DisplayName = topic.Name.Split('/').Last();
+                    RealChildren[topicName].DisplayName = topicName.Split('/').Last();
                 }
 
-                parent.AddChild(RealChildren[topic.Name]);
+                parent.AddChild(RealChildren[topicName]);
             }
         }
 

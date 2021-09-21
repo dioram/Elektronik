@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline
 {
-    public class ProtobufFilePlayer : IDataSourcePlugin
+    public class ProtobufFilePlayer : IRewindableDataSource, IChangingSpeed
     {
         public ProtobufFilePlayer(string displayName, Texture2D? logo, OfflineSettingsBag settings,
                                   ICSConverter converter)
@@ -86,8 +86,7 @@ namespace Elektronik.Protobuf.Offline
             get => _frames.CurrentIndex;
             set => RewindAt(value);
         }
-
-        public float Speed { get; set; } = 1;
+        
         public bool IsPlaying { get; private set; }
         public event Action? OnPlayingStarted;
         public event Action? OnPaused;
@@ -186,6 +185,12 @@ namespace Elektronik.Protobuf.Offline
                 OnRewindFinished?.Invoke();
             });
         }
+
+        #endregion
+
+        #region IChangingSpeed
+
+        public float Speed { get; set; } = 1;
 
         #endregion
 

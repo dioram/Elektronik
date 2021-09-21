@@ -66,7 +66,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         #endregion
 
-        #region ICloudRenderer implementation
+        #region ICloudRenderer
 
         public override void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
