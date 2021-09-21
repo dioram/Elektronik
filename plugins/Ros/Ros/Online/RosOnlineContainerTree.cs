@@ -17,7 +17,6 @@ namespace Elektronik.RosPlugin.Ros.Online
 
         public RosOnlineContainerTree(Ros1Settings settings, string displayName) : base(displayName)
         {
-            // TODO: Check if this will work with 0.0.0.0 
             var uri = $"ws://{settings.IPAddress}:{settings.ListeningPort}";
             DisplayName = $"ROS: {uri}";
             Socket = new RosSocket(new RosSharp.RosBridgeClient.Protocols.WebSocketNetProtocol(uri));

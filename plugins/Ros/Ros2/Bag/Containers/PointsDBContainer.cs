@@ -6,6 +6,7 @@ using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.CloudRenderers;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
@@ -31,23 +32,22 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         {
             _center = new Vector3(float.NaN, float.NaN, float.NaN);
             _bounds = new Vector3(float.NaN, float.NaN, float.NaN);
-            OnClear?.Invoke(this);
+            OnRemove?.Invoke(this, new RemovedEventArgs<SlamPoint>(Current));
+            Current = null;
         }
 
         public override void AddConsumer(IDataConsumer consumer)
         {
             if (consumer is not ICloudRenderer<SlamPoint> pointRenderer) return;
-            _pointsRenderers.Add(pointRenderer);
-            // OnShow += pointRenderer.ShowItems;
-            // OnClear += pointRenderer.OnClear;
+            OnShow += pointRenderer.OnItemsAdded;
+            OnRemove += pointRenderer.OnItemsRemoved;
         }
 
         public override void RemoveConsumer(IDataConsumer consumer)
         {
             if (consumer is not ICloudRenderer<SlamPoint> pointRenderer) return;
-            _pointsRenderers.Remove(pointRenderer);
-            // OnShow += pointRenderer.ShowItems;
-            // OnClear += pointRenderer.OnClear;
+            OnShow -= pointRenderer.OnItemsAdded;
+            OnRemove -= pointRenderer.OnItemsRemoved;
         }
 
         public override bool IsVisible
@@ -66,10 +66,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         protected override void SetData()
         {
+            if (Current is not null) OnRemove?.Invoke(this, new RemovedEventArgs<SlamPoint>(Current));
             base.SetData();
             if (Current is null) return;
             CalculateBounds(Current);
-            OnShow?.Invoke(this, Current);
+            OnShow?.Invoke(this, new AddedEventArgs<SlamPoint>(Current));
         }
 
         protected override SlamPoint[] ToRenderType(PointCloud2 message)
@@ -99,12 +100,10 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region Private definitinons
 
-        private event Action<object, IList<SlamPoint>>? OnShow;
-        private event Action<object>? OnClear;
+        private event Action<object, AddedEventArgs<SlamPoint>>? OnShow;
+        private event Action<object, RemovedEventArgs<SlamPoint>>? OnRemove;
         private Vector3 _center = new(float.NaN, float.NaN, float.NaN);
         private Vector3 _bounds = new(float.NaN, float.NaN, float.NaN);
-        private readonly List<ICloudRenderer<SlamPoint>> _pointsRenderers = new();
-
         private void CalculateBounds(SlamPoint[] points)
         {
             Vector3 min = Vector3.positiveInfinity;

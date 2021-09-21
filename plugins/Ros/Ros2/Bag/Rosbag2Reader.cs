@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag
 {
-    public class Rosbag2Reader : IDataSourcePlugin
+    public class Rosbag2Reader : IRewindableDataSource
     {
         public Rosbag2Reader(string displayName, Texture2D? logo, Rosbag2Settings settings)
         {
@@ -43,12 +43,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public void Update(float delta)
         {
-            if (_playing)
+            if (IsPlaying)
             {
                 if (Position == AmountOfFrames - 1)
                 {
                     MainThreadInvoker.Enqueue(() => OnFinished?.Invoke());
-                    _playing = false;
+                    IsPlaying = false;
+                    OnPaused?.Invoke();
                     return;
                 }
 
@@ -63,6 +64,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag
                 {
                     _data.ShowAt(_actualTimestamps[_currentPosition], true);
                     OnRewindFinished?.Invoke();
+                    OnPositionChanged?.Invoke(_currentPosition);
+                    OnTimestampChanged?.Invoke(Timestamp);
                 });
             }
         }
@@ -73,21 +76,26 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public void Play()
         {
-            _playing = true;
+            IsPlaying = true;
+            OnPlayingStarted?.Invoke();
         }
 
         public void Pause()
         {
-            _playing = false;
+            IsPlaying = false;
+            OnPaused?.Invoke();
         }
 
         public void StopPlaying()
         {
-            _playing = false;
+            IsPlaying = false;
+            OnPaused?.Invoke();
             _threadWorker.Enqueue(() =>
             {
                 _currentPosition = 0;
                 Data.Clear();
+                OnPositionChanged?.Invoke(_currentPosition);
+                OnTimestampChanged?.Invoke(Timestamp);
             });
         }
 
@@ -102,6 +110,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag
                 if (Position == 0) return;
                 _currentPosition--;
                 _data.ShowAt(_actualTimestamps[Position]);
+                OnPositionChanged?.Invoke(_currentPosition);
+                OnTimestampChanged?.Invoke(Timestamp);
             });
         }
 
@@ -114,13 +124,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
                 _currentPosition++;
                 _data.ShowAt(_actualTimestamps[Position]);
+                OnPositionChanged?.Invoke(_currentPosition);
+                OnTimestampChanged?.Invoke(Timestamp);
             });
         }
 
         public int AmountOfFrames => _actualTimestamps.Length;
 
-        public string Timestamp =>
-                $"{(_actualTimestamps[Position] - _actualTimestamps[0]) / 1000000000f:F3}";
+        public string Timestamp => $"{(_actualTimestamps[Position] - _actualTimestamps[0]) / 1000000000f:F3}";
 
         public int Position
         {
@@ -129,12 +140,12 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             {
                 if (value < 0 || value >= AmountOfFrames || _currentPosition == value) return;
                 _rewindPlannedPos = value;
-                _playing = false;
+                IsPlaying = false;
+                OnPaused?.Invoke();
             }
         }
 
-        public float Speed { get; set; }
-        public bool IsPlaying { get; }
+        public bool IsPlaying { get; private set; }
         public event Action? OnPlayingStarted;
         public event Action? OnPaused;
         public event Action<int>? OnPositionChanged;
@@ -151,7 +162,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         private readonly Rosbag2ContainerTree _data;
         private readonly ThreadQueueWorker _threadWorker;
-        private bool _playing;
         private int _currentPosition;
         private readonly long[] _actualTimestamps;
         private int _rewindPlannedPos;

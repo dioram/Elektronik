@@ -24,55 +24,8 @@ namespace Elektronik.RosPlugin.Ros2.Online
         
         #region IDataSourcePlugin
 
-        public void Play()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Pause()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void StopPlaying()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PreviousKeyFrame()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void NextKeyFrame()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PreviousFrame()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void NextFrame()
-        {
-            throw new NotImplementedException();
-        }
 
         public ISourceTreeNode Data { get; }
-        public int AmountOfFrames { get; }
-        public string Timestamp { get; private set; } = "";
-        public int Position { get; set; }
-        public float Speed { get; set; }
-        public bool IsPlaying { get; }
-        public event Action? OnPlayingStarted;
-        public event Action? OnPaused;
-        public event Action<int>? OnPositionChanged;
-        public event Action<int>? OnAmountOfFramesChanged;
-        public event Action<string>? OnTimestampChanged;
-        public event Action? OnRewindStarted;
-        public event Action? OnRewindFinished;
-        public event Action? OnFinished;
 
         public void Dispose()
         {

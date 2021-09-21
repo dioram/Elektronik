@@ -98,11 +98,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private (long time, int pos) GetValidTimestamp(long newTimestamp)
         {
-            long time = Timestamp;
-            int pos = _pos;
+            var time = Timestamp;
+            var pos = _pos;
             if (newTimestamp > Timestamp)
             {
-                for (int i = _pos; i < ActualTimestamps.Count; i++)
+                for (var i = _pos; i < ActualTimestamps.Count; i++)
                 {
                     if (ActualTimestamps[i] > newTimestamp) break;
                     pos = i;
@@ -111,7 +111,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             }
             else
             {
-                for (int i = _pos; i >= 0; i--)
+                for (var i = _pos; i >= 0; i--)
                 {
                     pos = i;
                     time = ActualTimestamps[i];

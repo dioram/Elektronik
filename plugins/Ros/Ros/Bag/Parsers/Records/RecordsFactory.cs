@@ -40,18 +40,17 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers.Records
             return res;
         }
         
-        //TODO: plural
-        public static Record ReadHeaders(Stream stream)
+        public static BagHeader ReadBagHeader(Stream stream)
         {
             var header = ReadHeader(stream);
-            int dataLen = stream.ReadInt32();
+            var dataLen = stream.ReadInt32();
             stream.Position += dataLen;
-            return CreateRecord(header);
+            return (CreateRecord(header) as BagHeader)!;
         }
 
         public static (string name, byte[] data) ReadField(Stream stream)
         {
-            int len = stream.ReadInt32();
+            var len = stream.ReadInt32();
             var buffer = stream.ReadBytes(len).Split((byte) '=').ToArray();
             if (buffer.Length > 2)
             {
