@@ -29,8 +29,14 @@ namespace Elektronik.PluginsSystem.UnitySide
             var windowGO = Instantiate(WindowPrefab, Canvas);
             var window = windowGO.GetComponent<Window>();
             window.TitleLabel.text = plugin.DisplayName;
+            if (!(plugin.Logo is null))
+            {
+                window.Icon.sprite = Sprite.Create(plugin.Logo, new Rect(0, 0, plugin.Logo.width, plugin.Logo.height),
+                                                   Vector2.one * 0.5f);
+            }
+
             window.SetManager(WindowsManager);
-            
+
             var go = Instantiate(ButtonPrefab, Toolbar);
             var button = go.GetComponent<ToolbarButton>();
             button.Setup(plugin.Logo, plugin.DisplayName);
@@ -38,7 +44,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
             var generator = windowGO.GetComponent<SettingsGenerator>();
             generator.Generate(plugin.Settings);
-            
+
             _gameObjects.Add(plugin, (button, window));
         }
 

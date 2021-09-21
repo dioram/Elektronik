@@ -21,6 +21,7 @@ namespace Elektronik.UI.Windows
         public TMP_Text TitleLabel;
         public float MinHeight = 40;
         public float MinWidth = 80;
+        public Image Icon;
 
         #endregion
         
