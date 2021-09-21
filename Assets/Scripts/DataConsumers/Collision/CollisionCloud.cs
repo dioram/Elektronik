@@ -42,8 +42,8 @@ namespace Elektronik.DataConsumers.Collision
         #endregion
         
         #region ICloudRenderer
-        
-        public float Scale { get; set; }
+
+        public float Scale { get; set; } = 1;
 
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
