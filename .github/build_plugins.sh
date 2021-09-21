@@ -12,6 +12,7 @@ dotnet publish Protobuf -o ../build/Plugins/Protobuf/libraries
 cd ../build/Plugins/Protobuf
 mkdir ./data
 mv ./libraries/*.csv ./data
+mv ./libraries/*.png ./data
 cd ../../../plugins
 cp ./Protobuf/*.proto ../build/Plugins/Protobuf/data
 
@@ -19,6 +20,7 @@ dotnet publish Ros -o ../build/Plugins/Ros/libraries
 cd ../build/Plugins/Ros
 mkdir ./data
 mv ./libraries/*.csv ./data
+mv ./libraries/*.png ./data
 cd ../../../plugins
 
 # Copy plugins to VR build
