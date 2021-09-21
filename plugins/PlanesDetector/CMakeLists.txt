@@ -11,11 +11,11 @@ set_source_files_properties(include/Detector.i PROPERTIES CPLUSPLUS ON)
 if (UNIX)
     set_property(SOURCE include/Detector.i PROPERTY COMPILE_OPTIONS
             -namespace Elektronik.Clustering.PlanesDetection.Native
-            -dllimport Plugins/PlanesDetection/libraries/PlanesDetector.so)
+            -dllimport Plugins/Clustering.PlanesDetection/libraries/PlanesDetector.so)
 elseif (WIN32)
     set_property(SOURCE include/Detector.i PROPERTY COMPILE_OPTIONS
             -namespace Elektronik.Clustering.PlanesDetection.Native
-            -dllimport Plugins/PlanesDetection/libraries/PlanesDetector.dll)
+            -dllimport Plugins/Clustering.PlanesDetection/libraries/PlanesDetector.dll)
 endif()
 
 if (MSVC)
@@ -34,5 +34,5 @@ swig_add_library(PlanesDetector
 
 TARGET_LINK_LIBRARIES(PlanesDetector ${OpenCV_LIBS})
 
-set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../build/Plugins/PlanesDetection/libraries)
+set(CMAKE_INSTALL_BINDIR ${PROJECT_SOURCE_DIR}/../../build/Plugins/Clustering.PlanesDetection/libraries)
 install(DIRECTORY ${CMAKE_BINARY_DIR}/ DESTINATION ${CMAKE_INSTALL_BINDIR} FILES_MATCHING REGEX ".*\\.((lib)|(so)|(dll))")

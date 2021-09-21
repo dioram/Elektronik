@@ -27,6 +27,9 @@ jobs:
       - name: Build plugins
         run: .\.github\build_plugins.bat
 
+      - name: Copy plugins to VR build
+        run: xcopy .\\build\\Plugins\\ .\\build_vr\\Plugins\\
+
       - name: Run protobuf plugin unit tests
         uses: zyborg/dotnet-tests-report@v1
         if: ${{ !cancelled() }}
@@ -87,9 +90,9 @@ jobs:
         uses: lukka/run-vcpkg@v7
         with:
           setupOnly: true
+          vcpkgArguments: 'openssl fastrtps opencv pcl'
           appendedCacheKey: 'openssl fastrtps opencv pcl'
-          vcpkgGitCommitId: 1257354a3ab0bebd8abe95281ca561537853578c
-          vcpkgTriplet: ${{ matrix.triplet }}
+          vcpkgGitCommitId: e79aa099adccebcf52d7806c6b0df96791391965
           additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
 
       - name: Install vcpkg packages
