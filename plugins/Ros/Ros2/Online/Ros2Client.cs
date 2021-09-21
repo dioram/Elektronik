@@ -1,5 +1,4 @@
 ﻿#if !NO_ROS2DDS
-using System;
 using Elektronik.DataSources;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;

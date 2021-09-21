@@ -8,9 +8,15 @@ FIND_PACKAGE(OpenCV REQUIRED)
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 set_source_files_properties(include/Detector.i PROPERTIES CPLUSPLUS ON)
-set_property(SOURCE include/Detector.i PROPERTY COMPILE_OPTIONS
-        -namespace Elektronik.Clustering.PlanesDetection.Native
-        -dllimport Plugins/PlanesDetection/libraries/PlanesDetector.dll)
+if (UNIX)
+    set_property(SOURCE include/Detector.i PROPERTY COMPILE_OPTIONS
+            -namespace Elektronik.Clustering.PlanesDetection.Native
+            -dllimport Plugins/PlanesDetection/libraries/PlanesDetector.so)
+elseif (WIN32)
+    set_property(SOURCE include/Detector.i PROPERTY COMPILE_OPTIONS
+            -namespace Elektronik.Clustering.PlanesDetection.Native
+            -dllimport Plugins/PlanesDetection/libraries/PlanesDetector.dll)
+endif()
 
 if (MSVC)
     set(CMAKE_CXX_FLAGS -EHsc)
@@ -20,7 +26,7 @@ include_directories(include)
 swig_add_library(PlanesDetector
         TYPE SHARED
         LANGUAGE csharp
-        OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../Plugins/Clustering.PlanesDetection/Native
+        OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../../plugins/Clustering.PlanesDetection/Native
         OUTFILE_DIR ${PROJECT_SOURCE_DIR}
         SOURCES include/Octree.h include/Plane.h include/Point.h include/PointCloud.h include/Ransac.h include/RGB.h
                 include/UnionFind.h include/Vector3.h src/Octree.cpp src/Plane.cpp src/PointCloud.cpp src/Ransac.cpp
