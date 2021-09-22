@@ -1,1 +1,1 @@
-﻿D:/Unity/2020.3.18f1/Editor/Unity.exe -accept-apiupdate -batchmode -nographics -logFile ./Logs/tests.log -projectPath ./ -runTests -testResults ./tests.xml -runSynchronously
+"C:\Program Files\Unity\Hub\Editor\2020.3.11f1\Editor\Unity.exe" -accept-apiupdate -batchmode -logFile .\Logs\tests.log -projectPath .\ -runTests -testResults .\tests.xml -runSynchronously
