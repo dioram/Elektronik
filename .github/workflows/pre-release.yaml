@@ -46,7 +46,7 @@ jobs:
         os: [[ self-hosted, windows ], [ self-hosted, linux ]]
         include:
           - os: [ self-hosted, windows ]
-            ext: bat
+            ext: ps1
             p_ext: zip
             content_type: application/zip
           - os: [ self-hosted, linux ]
