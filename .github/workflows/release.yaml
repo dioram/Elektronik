@@ -1,0 +1,86 @@
+name: Make release
+on:
+  workflow_run:
+    workflows: [ "Build project" ]
+    branches:
+      - pre-release*
+      - master
+    types: 
+      - completed
+  workflow_dispatch:
+
+jobs:
+  on_failed:
+    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    runs-on: [ self-hosted, windows ]
+    name: On failed
+    steps:
+      - run: echo Failed
+  
+  release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: Create pre-release
+    runs-on: [ self-hosted, windows ]
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.ver }}
+    steps:
+      - name: Get version
+        id: get_version
+        run: |
+          $el=cat .\ProjectSettings\ProjectSettings.asset | Select-String -Pattern '(?:bundleVersion: )(\d*\.\d*\.\d*(?:-rc\d*)?)' | % {$_.Matches.Groups[1].Value}
+          echo "::set-output name=ver::$el"
+        shell: pwsh
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get_version.outputs.ver }}
+          release_name: Pre-release v${{ steps.get_version.outputs.ver }}
+          body_path: ReleaseNotes.md
+          draft: ${{ endsWith(github.ref, 'CI') }}
+          prerelease: ${{ endsWith(github.ref, 'master') }}
+
+
+  upload:
+    name: Upload ${{ matrix.os[1] }} build
+    runs-on: ${{ matrix.os }}
+    needs: release
+    strategy:
+      matrix:
+        os: [[ self-hosted, windows ], [ self-hosted, linux ]]
+        include:
+          - os: [ self-hosted, windows ]
+            ext: bat
+            p_ext: zip
+            content_type: application/zip
+          - os: [ self-hosted, linux ]
+            ext: sh
+            p_ext: deb
+            content_type: application/x-deb
+    steps:
+      - name: Make packges
+        run: ./.github/make_packages.${{ matrix.ext }}
+        
+      - name: Upload ${{ matrix.os[1] }} release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: elektronik.${{ matrix.p_ext }}
+          asset_name: elektronik-{{ needs.release.outputs.version }}.${{ matrix.p_ext }}
+          asset_content_type: ${{ matrix.content_type }}
+
+      - name: Upload ${{ matrix.os[1] }} VR release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: elektronik_vr.${{ matrix.p_ext }}
+          asset_name: elektronik_vr${{ needs.release.outputs.version }}.${{ matrix.p_ext }}
+          asset_content_type: ${{ matrix.content_type }}

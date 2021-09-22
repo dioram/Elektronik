@@ -1,0 +1,102 @@
+name: Build project
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  
+jobs:
+  Build:
+    name: Build for ${{ matrix.os[1] }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix: 
+        os: [[ self-hosted, windows ], [ self-hosted, linux ]]
+        include:
+         - os: [ self-hosted, windows ]
+           ext: bat
+           ext_alt: ps1
+         - os: [ self-hosted, linux ]
+           ext: sh
+           ext_alt: sh
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Update release version
+        if: ${{ endsWith(github.ref, 'master') }}
+        run: ./.github/update_version.${{ matrix.ext_alt }}
+          
+      - name: Make scripts executable
+        if: matrix.os[1]  == 'linux'
+        run: chmod +x ./.github/*.sh
+
+      - name: Build ROS2DDS
+        run: ${{ github.workspace }}/.github/build_natives.${{ matrix.ext }} ./plugins/ROS2DDS
+
+      - name: Build PlanesDetector
+        run: ${{ github.workspace }}/.github/build_natives.${{ matrix.ext }} ./plugins/PlanesDetector
+
+      - name: Build MeshBuilder
+        run: ${{ github.workspace }}/.github/build_natives.${{ matrix.ext }} ./plugins/MeshBuilder
+
+      - name: Build unity player
+        run: ./.github/build_unity.${{ matrix.ext }}
+
+      - name: Build Protobuf plugin
+        run: dotnet publish Protobuf -o ${{ github.workspace }}/build/plugins/Protobuf/libraries
+        working-directory: ./plugins
+
+      - name: Build Ros plugin
+        run: dotnet publish Ros -o ${{ github.workspace }}/build/plugins/Ros/libraries
+        working-directory: ./plugins
+
+      - name: Build Clustering.KMeans plugin
+        run: dotnet publish Clustering.KMeans -o ${{ github.workspace }}/build/plugins/Clustering.KMeans/libraries
+        working-directory: ./plugins
+
+      - name: Build Clustering.PlanesDetection plugin
+        run: dotnet publish Clustering.PlanesDetection -o ${{ github.workspace }}/build/plugins/Clustering.PlanesDetection/libraries
+        working-directory: ./plugins
+
+      - name: Build ContextMenuSetter plugin
+        if: matrix.os[1] == 'windows'
+        run: dotnet publish ContextMenuSetter -o ${{ github.workspace }}/build/plugins/ContextMenuSetter/libraries
+        working-directory: ./plugins
+
+      - name: Build Updater plugin
+        if: matrix.os[1] == 'windows'
+        run: dotnet publish Updater -o ${{ github.workspace }}/build/plugins/Updater/libraries
+        working-directory: ./plugins
+        
+      - name: Copy plugin data
+        run: ./.github/copy_all_plugin_data.${{ matrix.ext }}
+
+      - name: Run protobuf plugin unit tests
+        uses: zyborg/dotnet-tests-report@v1
+        with:
+          project_path: plugins/Protobuf.Tests.Internal
+          set_check_status_from_test_outcome: true
+          report_name: Protobuf unit tests ${{ matrix.os[1] }}
+          report_title: Protobuf unit tests ${{ matrix.os[1] }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run ROS plugin unit tests
+        uses: zyborg/dotnet-tests-report@v1
+        with:
+          project_path: plugins/Ros.Tests
+          set_check_status_from_test_outcome: true
+          report_name: ROS unit tests ${{ matrix.os[1] }}
+          report_title: ROS unit tests ${{ matrix.os[1] }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run unity tests
+        run: ./.github/run_unity_tests.${{ matrix.ext }}
