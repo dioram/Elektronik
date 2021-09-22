@@ -2,9 +2,6 @@ name: Build project
 
 on:
   push:
-    branches:
-      - CI*
-  pull_request: { }
   workflow_dispatch:
 
 env:
@@ -20,9 +17,10 @@ jobs:
         include:
          - os: [ self-hosted, windows ]
            ext: bat
+           ext_alt: ps1
          - os: [ self-hosted, linux ]
            ext: sh
-    
+           ext_alt: sh
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -32,6 +30,10 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
+
+      - name: Update release version
+        if: ${{ endsWith(github.ref, 'master') }}
+        run: ./.github/update_version.${{ matrix.ext_alt }}
           
       - name: Make scripts executable
         if: matrix.os[1]  == 'linux'
