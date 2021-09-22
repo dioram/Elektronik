@@ -31,6 +31,9 @@ jobs:
           $el=cat .\ProjectSettings\ProjectSettings.asset | Select-String -Pattern '(?:bundleVersion: )(\d*\.\d*\.\d*(?:-rc\d*)?)' | % {$_.Matches.Groups[1].Value}
           echo "::set-output name=ver::$el"
         shell: pwsh
+        
+      - name: Echo branch
+        run: echo ${{ github.ref }}
 
       - name: Create Release
         id: create_release
@@ -42,7 +45,7 @@ jobs:
           release_name: Pre-release v${{ steps.get_version.outputs.ver }}
           body_path: ReleaseNotes.md
           draft: ${{ endsWith(github.ref, 'CI') }}
-          prerelease: ${{ endsWith(github.ref, 'master') }}
+          prerelease: ${{ !endsWith(github.ref, 'master') }}
 
 
   upload:
