@@ -1,9 +1,9 @@
-name: Make release
+name: Make pre-release
 on:
   workflow_run:
     workflows: [ "Build project" ]
     branches:
-      - master
+      - pre-release*
     types: 
       - completed
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
 jobs:
   release:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    name: Create release
+    name: Create pre-release
     runs-on: [ self-hosted, windows ]
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -34,7 +34,7 @@ jobs:
           release_name: Pre-release v${{ steps.get_version.outputs.ver }}
           body_path: ReleaseNotes.md
           draft: false
-          prerelease: false
+          prerelease: true
 
 
   upload:
