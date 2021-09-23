@@ -1,4 +1,4 @@
-![GitHub release (by tag)](https://img.shields.io/github/downloads/dioram/Elektronik-Tools-2.0/v3.2.1/total)
+![GitHub release (by tag)](https://img.shields.io/github/downloads/dioram/Elektronik/v3.2.1/total)
 
 # Новое в этой версии:
 - Исправлена лента новостей в которой предлагалось "обновиться" до более старых версий.

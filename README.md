@@ -3,7 +3,8 @@ The tool for testing and debugging SLAM.
 
 ![](docs/Images/Screenshot.png)
 
-[![Release](https://github.com/dioram/Elektronik-Tools-2.0/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/dioram/Elektronik-Tools-2.0/actions/workflows/release.yml)
+[![Build](https://github.com/dioram/Elektronik/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/dioram/Elektronik/actions/workflows/build.yaml)
+[![Release](https://github.com/dioram/Elektronik/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/dioram/Elektronik/actions/workflows/release.yaml)
 
 Elektronik is a tool that is actively used by the Dioram development team in developing tracking algorithms and SLAM.
 This software allows you to visually track:
@@ -49,7 +50,7 @@ All useful information can be found [here](docs/Plugins-EN.md) in docs.
 We are trying to make the Elektronik code as convenient 
 as possible for debugging and supporting, so we actively use OOP techniques and patterns.
 
-You can [download](https://github.com/dioram/Elektronik-Tools-2.0/releases) actual release of Elektronik or [build](docs/Build-EN.md) it yourself.
+You can [download](https://github.com/dioram/Elektronik/releases) actual release of Elektronik or [build](docs/Build-EN.md) it yourself.
 
 We hope that Elektronik will help you in developing the SLAM of your dream and will be grateful for your help in its development!
 
