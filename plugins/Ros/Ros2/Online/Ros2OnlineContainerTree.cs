@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Ros2.Online.Handlers;
 using ImageHandler = Elektronik.RosPlugin.Ros2.Online.Handlers.ImageHandler;
@@ -16,53 +16,43 @@ namespace Elektronik.RosPlugin.Ros2.Online
 {
     public class Ros2OnlineContainerTree : RosContainerTree
     {
-        public Ros2OnlineContainerTree(string displayName) : base(displayName)
+        public Ros2OnlineContainerTree(Ros2Settings settings, string displayName) : base(displayName)
         {
-            _logger = new UnityLogger();
+            DisplayName = $"ROS2: {settings.DomainId}";
+            _connector = new Connector(settings.DomainId, new UnityLogger());
+            _topicsHandler = new TopicsHandler();
+            _topicsHandler.OnNewTopic += AddTopic;
+            _connector.SubscribeOnNewTopics(_topicsHandler);
         }
-
-        public void Init(Ros2Settings settings)
+        
+        public override void Dispose()
         {
             lock (this)
             {
-                DisplayName = $"ROS2: {settings.DomainId}";
-                _connector = new Connector(settings.DomainId, _logger);
-                _topicsHandler = new TopicsHandler();
-                _topicsHandler.OnNewTopic += AddTopic;
-                _connector.SubscribeOnNewTopics(_topicsHandler);
-            }
-        }
-
-        public override void Reset()
-        {
-            lock (this)
-            {
-                base.Reset();
-                _connector?.UnsubscribeFromNewTopics(_topicsHandler);
-                _topicsHandler?.Dispose();
-                _topicsHandler = null;
+                base.Dispose();
+                _connector.UnsubscribeFromNewTopics(_topicsHandler);
+                _topicsHandler.Dispose();
                 foreach (var pair in _handlers)
                 {
-                    _connector?.UnsubscribeFromMessages(pair.Key, pair.Value);
+                    _connector.UnsubscribeFromMessages(pair.Key, pair.Value);
                     pair.Value.Dispose();
                 }
 
                 _handlers.Clear();
-                _connector?.Dispose();
-                _connector = null;
+                _connector.Dispose();
             }
         }
 
         #region Protected
 
-        protected override ISourceTree CreateContainer(string topicName, string topicType)
+        protected override ISourceTreeNode CreateContainer(string topicName, string topicType)
         {
             lock (this)
             {
-                var container = (ISourceTree) Activator.CreateInstance(SupportedMessages[topicType].container,
+                var container = (ISourceTreeNode) Activator.CreateInstance(SupportedMessages[topicType].container,
                                                                        topicName.Split('/').Last());
                 var handler = (MessageHandler) Activator.CreateInstance(SupportedMessages[topicType].handler, container);
-                _connector?.SubscribeOnMessages(MessageExt.GetDdsTopic(topicName), 
+                _connector.SubscribeOnMessages(MessageExt.GetDdsTopic(topicName), 
                                                 MessageExt.GetDdsType(topicType),
                                                 handler);
                 _handlers.Add(topicName, handler);
@@ -83,9 +73,8 @@ namespace Elektronik.RosPlugin.Ros2.Online
         };
 
         private readonly Dictionary<string, MessageHandler> _handlers = new();
-        private Connector? _connector;
-        private TopicsHandler? _topicsHandler;
-        private readonly UnityLogger _logger;
+        private readonly Connector _connector;
+        private readonly TopicsHandler _topicsHandler;
 
         private void AddTopic(string topicName, string topicType)
         {

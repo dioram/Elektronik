@@ -3,133 +3,177 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Settings;
-using Elektronik.Settings.Bags;
 using Grpc.Core;
+using UnityEngine;
 
 namespace Elektronik.Protobuf.Recorders
 {
-    public class ProtobufRetranslator : ProtobufRecorderBase, IDataRecorderPlugin
+    public class ProtobufRetranslator : DataRecorderPluginBase
     {
-        public ProtobufRetranslator()
+        public ProtobufRetranslator(string displayName, Texture2D? logo, ICSConverter? converter)
         {
+            _converter = converter;
+            DisplayName = displayName;
+            Logo = logo;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
+            _typedSettings.StartRetranslation += StartRetranslation;
+            _typedSettings.StopRetranslation += StopRetranslation;
         }
         
         #region IDataRecorderPlugin
 
-        public void Start()
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamPoint> e)
         {
-            _clients = _settings.Addresses
-                    .Split(';')
-                    .Where(s => !string.IsNullOrEmpty(s))
-                    .Select(address => new Channel(address, ChannelCredentials.Insecure))
-                    .Select(channel => new MapsManagerPb.MapsManagerPbClient(channel))
-                    .ToList();
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
-        public void Stop()
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamPoint> e)
         {
-            // Do nothing
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
-        public void Update(float delta)
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamPoint> e)
         {
-            // Do nothing
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf());
         }
 
-        public string DisplayName { get; } = "Protobuf retranslator";
-        public string Description { get; } = "Allows Elektronik to transmit data from one instance to another";
-        public SettingsBag Settings
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamLine> e)
         {
-            get => _settings;
-            set => _settings = (AddressesSettingsBag) value;
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
-        public ISettingsHistory SettingsHistory { get; } =
-            new SettingsHistory<AddressesSettingsBag>($"{nameof(ProtobufRetranslator)}.json");
-
-        public void StartRecording()
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamLine> e)
         {
-            // Do nothing
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
-        public void StopRecording()
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamLine> e)
         {
-            // Do nothing
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf());
         }
 
-        public void OnAdded<TCloudItem>(string topicName, IList<TCloudItem> args) 
-            where TCloudItem : struct, ICloudItem
+        public override void OnItemsAdded(object sender, AddedEventArgs<SimpleLine> e)
         {
-            var packet = CreateAddedPacket(args, GetTimestamp(), Converter);
-            foreach (var client in _clients)
-            {
-                client.HandleAsync(packet);
-            }
+            // Can't transmit this type. Do nothing.
         }
 
-        public void OnUpdated<TCloudItem>(string topicName, IList<TCloudItem> args) 
-            where TCloudItem : struct, ICloudItem
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SimpleLine> e)
         {
-            var packet = CreateUpdatedPacket(args, GetTimestamp(), Converter);
-            foreach (var client in _clients)
-            {
-                client.HandleAsync(packet);
-            }
+            // Can't transmit this type. Do nothing.
         }
 
-        public void OnRemoved<TCloudItem>(string topicName, IList<int> args) 
-            where TCloudItem : struct, ICloudItem
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SimpleLine> e)
         {
-            var packet = CreateRemovedPacket<TCloudItem>(args, GetTimestamp());
-            foreach (var client in _clients)
-            {
-                client.HandleAsync(packet);
-            }
+            // Can't transmit this type. Do nothing.
         }
 
-        public void OnConnectionsUpdated<TCloudItem>(string topicName, IList<(int id1, int id2)> items)
-                where TCloudItem : struct, ICloudItem
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamObservation> e)
         {
-            var packet = CreateConnectionsUpdatedPacket<TCloudItem>(items, GetTimestamp());
-            foreach (var client in _clients)
-            {
-                client.HandleAsync(packet);
-            }
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
-        public void OnConnectionsRemoved<TCloudItem>(string topicName, IList<(int id1, int id2)> items)
-                where TCloudItem : struct, ICloudItem
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamObservation> e)
         {
-            var packet = CreateConnectionsRemovedPacket<TCloudItem>(items, GetTimestamp());
-            foreach (var client in _clients)
-            {
-                client.HandleAsync(packet);
-            }
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
         }
 
-        public bool StartsFromSceneLoading { get; } = true;
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamObservation> e)
+        {
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf());
+        }
 
-        public string Extension { get; } = "";
-        public string FileName { get; set; }
-        public ICSConverter Converter { get; set; }
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamTrackedObject> e)
+        {
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
+        }
+
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamTrackedObject> e)
+        {
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
+        }
+
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamTrackedObject> e)
+        {
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf());
+        }
+
+        public override void OnItemsAdded(object sender, AddedEventArgs<SlamPlane> e)
+        {
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
+        }
+
+        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamPlane> e)
+        {
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf(_converter));
+        }
+
+        public override void OnItemsRemoved(object sender, RemovedEventArgs<SlamPlane> e)
+        {
+            if (!_isTransmitting || _clients == null) return;
+            SendPacket(e.ToProtobuf());
+        }
+
+        public override string DisplayName { get; }
+
+        public override SettingsBag Settings => _typedSettings;
+        public override Texture2D? Logo { get; }
+
+        private readonly ICSConverter? _converter;
 
         #endregion
 
         #region Private
+        
+        private List<MapsManagerPb.MapsManagerPbClient>? _clients;
+        private readonly RetranslatorSettingsBag _typedSettings = new ();
+        private bool _isTransmitting;
 
-        private int GetTimestamp()
-        {
-            return (int)(DateTime.Now - _initTime).TotalMilliseconds;
+        private void StartRetranslation()
+        { 
+            if (_isTransmitting) return;
+            _clients = _typedSettings.Addresses
+                .Split(';')
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Select(address => new Channel(address, ChannelCredentials.Insecure))
+                .Select(channel => new MapsManagerPb.MapsManagerPbClient(channel))
+                .ToList();
+            
+            _isTransmitting = true;
         }
 
-        private AddressesSettingsBag _settings = new AddressesSettingsBag();
-        private List<MapsManagerPb.MapsManagerPbClient> _clients = new List<MapsManagerPb.MapsManagerPbClient>();
-        private readonly DateTime _initTime = DateTime.Now;
+        private void StopRetranslation()
+        {
+            _isTransmitting = false;
+            _clients = null;
+        }
+
+        private void SendPacket(PacketPb packet)
+        {
+            if (_clients == null) return;
+            foreach (var client in _clients)
+            {
+                client.HandleAsync(packet);
+            }
+        }
 
         #endregion
     }

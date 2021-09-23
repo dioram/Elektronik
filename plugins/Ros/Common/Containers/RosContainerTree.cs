@@ -1,21 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Data;
-using Elektronik.UI.Windows;
+using Elektronik.DataConsumers;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.SpecialInterfaces;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
-    public abstract class RosContainerTree : VirtualContainer
+    public abstract class RosContainerTree : VirtualSource, IDisposable
     {
         public List<(string Name, string Type)> ActualTopics = new ();
-        public readonly Dictionary<string, ISourceTree> RealChildren = new();
+        public readonly Dictionary<string, ISourceTreeNode> RealChildren = new();
 
-        public RosContainerTree(string displayName) : base(displayName)
+        protected RosContainerTree(string displayName) : base(displayName)
         {
         }
 
-        public virtual void Reset()
+        public virtual void Dispose()
         {
             Clear();
             ActualTopics.Clear();
@@ -23,17 +25,23 @@ namespace Elektronik.RosPlugin.Common.Containers
             ChildrenList.Clear();
         }
 
-        public override void SetRenderer(ISourceRenderer renderer)
+        public override void AddConsumer(IDataConsumer consumer)
         {
-            _renderers.Add(renderer);
-            base.SetRenderer(renderer);
+            _consumers.Add(consumer);
+            base.AddConsumer(consumer);
+        }
+
+        public override void RemoveConsumer(IDataConsumer consumer)
+        {
+            _consumers.Remove(consumer);
+            base.RemoveConsumer(consumer);
         }
 
         #region Protected
 
-        protected abstract ISourceTree CreateContainer(string topicName, string topicType);
+        protected abstract ISourceTreeNode CreateContainer(string topicName, string topicType);
 
-        protected virtual void RebuildTree()
+        protected void RebuildTree()
         {
             BuildTree();
             Squeeze();
@@ -43,48 +51,56 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #region Private
 
-        private readonly List<ISourceRenderer> _renderers = new ();
+        private readonly List<IDataConsumer> _consumers = new ();
 
         private void BuildTree()
         {
             ChildrenList.Clear();
 
-            foreach (var topic in ActualTopics)
+            foreach (var (topicName, topicType) in ActualTopics)
             {
-                var path = topic.Name.Split('/').Where(s => !string.IsNullOrEmpty(s)).ToArray();
-                VirtualContainer parent = this;
-                for (int i = 0; i < path.Length - 1; i++)
+                var path = topicName.Split('/').Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                VirtualSource parent = this;
+                for (var i = 0; i < path.Length - 1; i++)
                 {
-                    if (parent.Children.FirstOrDefault(c => c.DisplayName == path[i]) is VirtualContainer container)
+                    if (parent.Children.FirstOrDefault(c => c.DisplayName == path[i]) is VirtualSource container)
                     {
                         parent = container;
                     }
                     else
                     {
-                        var newContainer = new VirtualContainer(path[i]);
+                        var newContainer = new VirtualSource(path[i]);
                         parent.AddChild(newContainer);
                         parent = newContainer;
                     }
                 }
 
-                if (!RealChildren.ContainsKey(topic.Name))
+                if (!RealChildren.ContainsKey(topicName))
                 {
-                    var child = CreateContainer(topic.Name, topic.Type);
-                    if (child is IRendersToWindow w) w.Title = topic.Name;
-                    if (child is TrackedObjectsContainer t) t.ObjectLabel = topic.Name;
-                    RealChildren[topic.Name] = child;
-                    
-                    foreach (var renderer in _renderers)
+                    var child = CreateContainer(topicName, topicType);
+                    switch (child)
                     {
-                        RealChildren[topic.Name].SetRenderer(renderer);
+                    case IRendersToWindow w:
+                        w.Title = topicName;
+                        break;
+                    case TrackedObjectsContainer t:
+                        t.ObjectLabel = topicName;
+                        break;
+                    }
+
+                    RealChildren[topicName] = child;
+                    
+                    foreach (var renderer in _consumers)
+                    {
+                        RealChildren[topicName].AddConsumer(renderer);
                     }
                 }
                 else
                 {
-                    RealChildren[topic.Name].DisplayName = topic.Name.Split('/').Last();
+                    RealChildren[topicName].DisplayName = topicName.Split('/').Last();
                 }
 
-                parent.AddChild(RealChildren[topic.Name]);
+                parent.AddChild(RealChildren[topicName]);
             }
         }
 

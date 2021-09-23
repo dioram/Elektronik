@@ -2,8 +2,6 @@ Shader "Elektronik/MeshShaderUnlit"
 {
     Properties
     {
-        _Smoothness ("Smoothness", Range(0, 1)) = 0.9
-        [Gamma] _Metallic ("Metallic", Range(0, 1)) = 0
         _Scale("Scale", Float) = 1
     }
     SubShader
@@ -35,11 +33,8 @@ Shader "Elektronik/MeshShaderUnlit"
             #include "UnityPBSLighting.cginc"
 
             half _Scale;
-            half _Size;
             StructuredBuffer<float4> _VertsBuffer;
             StructuredBuffer<float4> _NormalsBuffer;
-            float _Metallic;
-            float _Smoothness;
             #define MAX_BRIGHTNESS 16
 
             struct VertexInput

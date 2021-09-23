@@ -1,44 +1,36 @@
-﻿using Elektronik.PluginsSystem;
+﻿using Elektronik.DataSources;
+using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
-using Elektronik.Settings.Bags;
+using Elektronik.Settings;
 using RosSharp.RosBridgeClient.MessageTypes.Rosapi;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros.Online
 {
-    public class Ros1Client : DataSourcePluginBase<AddressPortScaleSettingsBag>, IDataSourcePluginOnline
+    public class Ros1Client : IDataSourcePlugin
     {
-        public Ros1Client()
+        public Ros1Client(string displayName, Texture2D? logo, Ros1Settings settings)
         {
-            _container = new RosOnlineContainerTree("TMP");
+            DisplayName = displayName;
+            Logo = logo;
+            _container = new RosOnlineContainerTree(settings, "TMP");
             Data = _container;
+            var converter = new RosConverter();
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
+            RosMessageConvertExtender.Converter = converter;
         }
 
-        #region IDataSourceOnline
+        #region IDataSourcePlayer
 
-        public override string DisplayName => "ROS listener";
+        public ISourceTreeNode Data { get; }
 
-        public override string Description => "Client for " +
-                "<#7f7fe5><u><link=\"http://wiki.ros.org/noetic/Installation\">ROS1</link></u></color>" +
-                " network. Needs to be used with " +
-                "<#7f7fe5><u><link=\"http://wiki.ros.org/rosbridge_suite/Tutorials/RunningRosbridge\">" +
-                "Rosbridge</link></u></color>.";
-
-        public override void Start()
+        public void Dispose()
         {
-            _container.Init(TypedSettings);
-            Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
-            RosMessageConvertExtender.Converter = Converter;
+            _container.Dispose();
         }
 
-        public override void Stop()
-        {
-            _container.Reset();
-        }
-
-        public override void Update(float delta)
+        public void Update(float delta)
         {
             if (_topicsUpdateTimeout < 0)
             {
@@ -49,6 +41,10 @@ namespace Elektronik.RosPlugin.Ros.Online
 
             _topicsUpdateTimeout -= delta;
         }
+
+        public string DisplayName { get; }
+        public SettingsBag? Settings => null;
+        public Texture2D? Logo { get; }
 
         #endregion
 

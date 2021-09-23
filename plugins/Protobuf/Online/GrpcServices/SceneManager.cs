@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Elektronik.Data;
 using Elektronik.Protobuf.Data;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -11,12 +10,13 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class SceneManager : SceneManagerPb.SceneManagerPbBase
     {
-        public ILogger Logger = new UnityLogger();
-        private readonly ISourceTree _container;
+        private readonly ILogger _logger;
 
-        public SceneManager(ISourceTree container)
+        public event Action? OnClear;
+
+        public SceneManager(ILogger logger)
         {
-            _container = container;
+            _logger = logger;
         }
 
         public override Task<ErrorStatusPb> Clear(Empty request, ServerCallContext context)
@@ -28,10 +28,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             };
             try
             {
-                foreach (var child in _container.Children)
-                {
-                    child.Clear();
-                }
+                Task.Run(() => OnClear?.Invoke());
             }
             catch (Exception e)
             {
@@ -40,7 +37,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             }
 
             timer.Stop();
-            Logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err.Message}");
+            _logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err.Message}");
 
             return Task.FromResult(err);
         }

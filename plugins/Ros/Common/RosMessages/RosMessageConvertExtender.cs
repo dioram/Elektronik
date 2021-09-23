@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Elektronik.Data.Converters;
@@ -182,11 +183,14 @@ namespace Elektronik.RosPlugin.Common.RosMessages
             switch (value)
             {
             case RosVector3 vector:
-                return new[] {$"{vector.x:F3}, {vector.y:F3}, {vector.z:F3}"};
+                FormattableString f1 = $"{vector.x:F3}, {vector.y:F3}, {vector.z:F3}";
+                return new[] {f1.ToString(CultureInfo.InvariantCulture)};
             case Point point:
-                return new[] {$"{point.x:F3}, {point.y:F3}, {point.z:F3}"};
+                FormattableString f2 = $"{point.x:F3}, {point.y:F3}, {point.z:F3}";
+                return new[] {f2.ToString(CultureInfo.InvariantCulture)};
             case RosQuaternion quaternion:
-                return new[] {$"{quaternion.x:F3}, {quaternion.y:F3}, {quaternion.z:F3}, {quaternion.w:F3}"};
+                FormattableString f3 = $"{quaternion.x:F3}, {quaternion.y:F3}, {quaternion.z:F3}, {quaternion.w:F3}";
+                return new[] {f3.ToString(CultureInfo.InvariantCulture)};
             case Header header:
                 return new[] {$"{header.stamp.secs}.{header.stamp.nsecs:000000000},{header.frame_id}"};
             case RosMessage message:

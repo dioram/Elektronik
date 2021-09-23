@@ -46,7 +46,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
             if (_chunkInfos.Count == 0)
             {
                 _file.Position = 13;
-                var bagHeader = RecordsFactory.ReadHeaders(_file) as BagHeader;
+                var bagHeader = RecordsFactory.ReadBagHeader(_file) as BagHeader;
                 _file.Position = bagHeader!.IndexPos;
                 while (_file.Position < _file.Length)
                 {

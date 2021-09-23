@@ -1,9 +1,9 @@
-﻿using Elektronik.Commands;
-using Elektronik.Commands.Generic;
-using Elektronik.Containers;
-using Elektronik.Data;
-using Elektronik.Data.PackageObjects;
-using Elektronik.Renderers;
+﻿using Elektronik.Data.PackageObjects;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
+using Elektronik.Plugins.Common.Commands;
+using Elektronik.Plugins.Common.Commands.Generic;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Common.RosMessages;
 using RosSharp.RosBridgeClient;
@@ -14,10 +14,10 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
 {
     public static class MessageToCommandExt
     {
-        public static ICommand ToCommand(this Message message, ISourceTree container) => message switch
+        public static ICommand ToCommand(this Message message, ISourceTreeNode container) => message switch
         {
             PointCloud2 cloud when container is IContainer<SlamPoint> pointsContainer =>
-                    new MacroCommand(new ICommand[]
+                    new MacroCommand(new ICommand[] // TODO: change to special command
                     {
                         new ClearCommand<SlamPoint>(pointsContainer),
                         new AddCommand<SlamPoint>(pointsContainer, cloud.ToSlamPoints())

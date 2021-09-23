@@ -1,28 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Containers.SpecialInterfaces;
-using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.PluginsSystem;
+using Elektronik.DataConsumers;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.Protobuf.Offline.Presenters;
 
 namespace Elektronik.Protobuf.Data
 {
-    public class ProtobufContainerTree : ISourceTree, ISnapshotable, IVisible
+    public class ProtobufContainerTree : ISourceTreeNode, IVisible
     {
         public readonly ITrackedContainer<SlamTrackedObject> TrackedObjs;
         public readonly IConnectableObjectsContainer<SlamObservation> Observations;
         public readonly IConnectableObjectsContainer<SlamPoint> Points;
         public readonly IContainer<SlamLine> Lines;
-        public readonly IContainer<SlamInfinitePlane> InfinitePlanes;
-        public readonly ISourceTree Image;
+        public readonly IContainer<SlamPlane> Planes;
+        public readonly ISourceTreeNode? Image;
         public readonly IMeshContainer MeshContainer;
         public readonly Connector Connector;
-        public readonly SlamDataInfoPresenter SpecialInfo;
+        public readonly SlamDataInfoPresenter? SpecialInfo;
 
-        public ProtobufContainerTree(string displayName, ISourceTree image, SlamDataInfoPresenter specialInfo = null)
+        public ProtobufContainerTree(string displayName, ISourceTreeNode? image, SlamDataInfoPresenter? specialInfo = null)
         {
             DisplayName = displayName;
             Image = image;
@@ -40,31 +40,31 @@ namespace Elektronik.Protobuf.Data
             Connector = new Connector(Points, Observations, "Connections");
             Lines = new SlamLinesContainer("Lines");
             MeshContainer = new MeshReconstructor(Points, "Mesh");
-            InfinitePlanes = new CloudContainer<SlamInfinitePlane>("Infinite planes");
-            var observationsGraph = new VirtualContainer("Observations graph", new List<ISourceTree>
+            Planes = new CloudContainer<SlamPlane>("Planes");
+            var observationsGraph = new VirtualSource("Observations graph", new List<ISourceTreeNode>
             {
-                (ISourceTree) Observations,
+                (ISourceTreeNode) Observations,
                 Connector
             });
-            var ch =  new List<ISourceTree>
+            var ch =  new List<ISourceTreeNode>
             {
-                (ISourceTree) Points,
-                (ISourceTree) TrackedObjs,
-                (ISourceTree) InfinitePlanes,
+                (ISourceTreeNode) Points,
+                (ISourceTreeNode) TrackedObjs,
+                (ISourceTreeNode) Planes,
                 observationsGraph,
-                (ISourceTree) Lines,
+                (ISourceTreeNode) Lines,
                 MeshContainer,
-                Image,
             };
+            if (Image != null) ch.Add(Image);
             if (SpecialInfo != null) ch.Add(SpecialInfo);
             Children = ch.ToArray();
         }
 
-        #region ISourceTree implementation
+        #region ISourceTreeNode implementation
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTree> Children { get; }
+        public IEnumerable<ISourceTreeNode> Children { get; }
 
         public void Clear()
         {
@@ -74,11 +74,19 @@ namespace Elektronik.Protobuf.Data
             }
         }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddConsumer(IDataConsumer consumer)
         {
             foreach (var child in Children)
             {
-                child.SetRenderer(renderer);
+                child.AddConsumer(consumer);
+            }
+        }
+
+        public void RemoveConsumer(IDataConsumer consumer)
+        {
+            foreach (var child in Children)
+            {
+                child.RemoveConsumer(consumer);
             }
         }
 
@@ -86,26 +94,18 @@ namespace Elektronik.Protobuf.Data
 
         #region ISnapshotable
 
-        public ISnapshotable TakeSnapshot()
+        public ISourceTreeNode TakeSnapshot()
         {
-            var children = new List<ISourceTree>()
+            var children = new List<ISourceTreeNode>
             {
-                (TrackedObjs as ISnapshotable)!.TakeSnapshot() as ISourceTree,
-                (Observations as ISnapshotable)!.TakeSnapshot() as ISourceTree,
-                (Points as ISnapshotable)!.TakeSnapshot() as ISourceTree,
-                (Lines as ISnapshotable)!.TakeSnapshot() as ISourceTree,
-                (InfinitePlanes as ISnapshotable)!.TakeSnapshot() as ISourceTree,
+                (TrackedObjs as ISourceTreeNode)!.TakeSnapshot(),
+                (Observations as ISourceTreeNode)!.TakeSnapshot(),
+                (Points as ISourceTreeNode)!.TakeSnapshot(),
+                (Lines as ISourceTreeNode)!.TakeSnapshot(),
+                (Planes as ISourceTreeNode)!.TakeSnapshot(),
             };
             
-            return new VirtualContainer(DisplayName, children);
-        }
-
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            foreach (var snapshotable in Children.OfType<ISnapshotable>())
-            {
-                snapshotable.WriteSnapshot(recorder);
-            }
+            return new VirtualSource(DisplayName, children);
         }
 
         #endregion
@@ -129,7 +129,7 @@ namespace Elektronik.Protobuf.Data
 
         public bool ShowButton { get; } = true;
         
-        public event Action<bool> OnVisibleChanged;
+        public event Action<bool>? OnVisibleChanged;
 
         #endregion
 

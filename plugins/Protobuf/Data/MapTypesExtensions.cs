@@ -3,104 +3,106 @@ using System.IO;
 using System.Linq;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.Plugins.Common.DataDiff;
 using UnityEngine;
 
 namespace Elektronik.Protobuf.Data
 {
     public static class PacketPbExtensions
     {
-        public static IEnumerable<SlamPointDiff> ExtractPoints(this PacketPb packet, ICSConverter converter = null)
+        public static SlamPointDiff[] ExtractPoints(this PacketPb packet, ICSConverter? converter = null)
         {
-            foreach (var p in packet.Points.Data)
+            var result = new SlamPointDiff[packet.Points.Data.Count];
+            for (var i = 0; i < result.Length; i++)
             {
-                SlamPointDiff point = p;
-                if (point.Position.HasValue) point.Position = converter?.Convert(point.Position.Value);
-                yield return point;
+                result[i] = packet.Points.Data[i];
+                var position = result[i].Position;
+                if (position.HasValue) result[i].Position = converter?.Convert(position.Value);
             }
+
+            return result;
         }
 
-        public static IEnumerable<SlamObservationDiff> ExtractObservations(this PacketPb packet,
-                                                                           ICSConverter converter,
-                                                                           string imageDir)
+        public static SlamObservationDiff[] ExtractObservations(this PacketPb packet,
+                                                              ICSConverter? converter,
+                                                              string imageDir)
         {
-            foreach (var o in packet.Observations.Data)
+            var result = new SlamObservationDiff[packet.Observations.Data.Count];
+            for (var i = 0; i < result.Length; i++)
             {
-                SlamObservationDiff observation = o;
-                if (observation.Point.Position.HasValue)
-                {
-                    observation.Point.Position = converter?.Convert(observation.Point.Position.Value);
-                }
+                result[i] = packet.Observations.Data[i];
+                
+                var position = result[i].Point.Position;
+                if (position.HasValue) result[i].Point.Position = converter?.Convert(position.Value);
 
-                if (observation.Rotation.HasValue)
-                {
-                    observation.Rotation = converter?.Convert(observation.Rotation.Value);
-                }
+                var rotation = result[i].Rotation;
+                if (rotation.HasValue) result[i].Rotation = converter?.Convert(rotation.Value);
 
-                if (!string.IsNullOrEmpty(observation.FileName) 
-                    && !Path.IsPathRooted(observation.FileName))
+                if (!string.IsNullOrEmpty(result[i].FileName) && !Path.IsPathRooted(result[i].FileName))
                 {
-                    observation.FileName = Path.Combine(imageDir, observation.FileName);
+                    result[i].FileName = Path.Combine(imageDir, result[i].FileName!);
                 }
-
-                yield return observation;
             }
+
+            return result;
         }
 
-        public static IEnumerable<SlamTrackedObjectDiff> ExtractTrackedObjects(this PacketPb packet,
-                                                                               ICSConverter converter = null)
+        public static SlamTrackedObjectDiff[] ExtractTrackedObjects(this PacketPb packet,
+                                                                  ICSConverter? converter = null)
         {
-            foreach (var o in packet.TrackedObjs.Data)
+            var result = new SlamTrackedObjectDiff[packet.TrackedObjs.Data.Count];
+            for (var i = 0; i < result.Length; i++)
             {
-                SlamTrackedObjectDiff trackedObject = o;
-                if (trackedObject.Position.HasValue)
-                {
-                    trackedObject.Position = converter?.Convert(trackedObject.Position.Value);
-                }
+                result[i] = packet.TrackedObjs.Data[i];
+                
+                var position = result[i].Position;
+                if (position.HasValue) result[i].Position = converter?.Convert(position.Value);
 
-                if (trackedObject.Rotation.HasValue)
-                {
-                    trackedObject.Rotation = converter?.Convert(trackedObject.Rotation.Value);
-                }
-
-                yield return trackedObject;
+                var rotation = result[i].Rotation;
+                if (rotation.HasValue) result[i].Rotation = converter?.Convert(rotation.Value);
             }
+
+            return result;
         }
 
-        public static IEnumerable<SlamLineDiff> ExtractLines(this PacketPb packet, ICSConverter converter = null)
+        public static SlamLineDiff[] ExtractLines(this PacketPb packet, ICSConverter? converter = null)
         {
-            foreach (var l in packet.Lines.Data)
+            var result = new SlamLineDiff[packet.Lines.Data.Count];
+            for (var i = 0; i < result.Length; i++)
             {
-                SlamLineDiff line = l;
-                if (line.Point1.Position.HasValue)
-                {
-                    line.Point1.Position = converter?.Convert(line.Point1.Position.Value);
-                }
+                result[i] = packet.Lines.Data[i];
+                
+                var position = result[i].Point1.Position;
+                if (position.HasValue) result[i].Point1.Position = converter?.Convert(position.Value);
 
-                if (line.Point2.Position.HasValue)
-                {
-                    line.Point2.Position = converter?.Convert(line.Point2.Position.Value);
-                }
-
-                yield return line;
+                position = result[i].Point2.Position;
+                if (position.HasValue) result[i].Point2.Position = converter?.Convert(position.Value);
             }
+
+            return result;
         }
 
-        public static IEnumerable<SlamInfinitePlaneDiff> ExtractInfinitePlanes(this PacketPb packet,
-                                                                               ICSConverter converter = null)
+        public static SlamPlaneDiff[] ExtractPlanes(this PacketPb packet, ICSConverter? converter = null)
         {
-            foreach (var p in packet.InfinitePlanes.Data)
+            var result = new SlamPlaneDiff[packet.Planes.Data.Count];
+            for (var i = 0; i < result.Length; i++)
             {
-                SlamInfinitePlaneDiff plane = p;
-                if (plane.Offset.HasValue) plane.Offset = converter?.Convert(plane.Offset.Value);
-                if (plane.Normal.HasValue) plane.Normal = converter?.Convert(plane.Normal.Value);
-                yield return plane;
+                result[i] = packet.Planes.Data[i];
+                
+                var offset = result[i].Offset;
+                if (offset.HasValue) result[i].Offset = converter?.Convert(offset.Value);
+
+                var normal = result[i].Normal;
+                if (normal.HasValue) result[i].Normal = converter?.Convert(normal.Value);
             }
+
+            return result;
         }
     }
 
     public partial class Vector3Pb
     {
-        public static implicit operator Vector3?(Vector3Pb v)
+        public static implicit operator Vector3?(Vector3Pb? v)
         {
             if (v == null) return null;
             return new Vector3((float) v.X, (float) v.Y, (float) v.Z);
@@ -109,7 +111,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class Vector4Pb
     {
-        public static implicit operator Quaternion?(Vector4Pb v)
+        public static implicit operator Quaternion?(Vector4Pb? v)
         {
             if (v == null) return null;
             return new Quaternion((float) v.X, (float) v.Y, (float) v.Z, (float) v.W);
@@ -118,7 +120,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class ColorPb
     {
-        public static implicit operator Color32?(ColorPb c)
+        public static implicit operator Color32?(ColorPb? c)
         {
             if (c == null) return null;
             return new Color32((byte) c.R, (byte) c.G, (byte) c.B, 255);
@@ -133,7 +135,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class PointPb
     {
-        public static implicit operator SlamPointDiff(PointPb p)
+        public static implicit operator SlamPointDiff(PointPb? p)
             => p != null
                     ? new SlamPointDiff {Id = p.id_, Position = p.position_, Color = p.color_, Message = p.message_}
                     : default;
@@ -141,7 +143,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class LinePb
     {
-        public static implicit operator SlamLineDiff(LinePb c)
+        public static implicit operator SlamLineDiff(LinePb? c)
             => c != null ? new SlamLineDiff {Point1 = c.pt1_, Point2 = c.pt2_} : default;
     }
 
@@ -154,12 +156,12 @@ namespace Elektronik.Protobuf.Data
                 public static implicit operator SlamObservation.Stats(Stats s)
                     => default; // TODO: make statistics
 
-                public static implicit operator Stats(SlamObservation.Stats s)
+                public static implicit operator Stats?(SlamObservation.Stats s)
                     => default; // TODO: make statistics
             }
         }
 
-        public static implicit operator SlamObservationDiff(ObservationPb o)
+        public static implicit operator SlamObservationDiff(ObservationPb? o)
             => o != null
                     ? new SlamObservationDiff
                     {
@@ -174,7 +176,7 @@ namespace Elektronik.Protobuf.Data
 
     public partial class TrackedObjPb
     {
-        public static implicit operator SlamTrackedObjectDiff(TrackedObjPb o)
+        public static implicit operator SlamTrackedObjectDiff(TrackedObjPb? o)
             => o != null
                     ? new SlamTrackedObjectDiff
                     {
@@ -187,11 +189,11 @@ namespace Elektronik.Protobuf.Data
                     : default;
     }
 
-    public partial class InfinitePlanePb
+    public partial class PlanePb
     {
-        public static implicit operator SlamInfinitePlaneDiff(InfinitePlanePb p)
+        public static implicit operator SlamPlaneDiff(PlanePb? p)
             => p != null
-                    ? new SlamInfinitePlaneDiff
+                    ? new SlamPlaneDiff
                     {
                         Id = p.Id,
                         Color = p.Color,
@@ -204,13 +206,13 @@ namespace Elektronik.Protobuf.Data
 
     public static class Conversions
     {
-        public static Vector3Pb ToProtobuf(this Vector3 v, ICSConverter converter)
+        public static Vector3Pb ToProtobuf(this Vector3 v, ICSConverter? converter = null)
         {
             converter?.ConvertBack(ref v);
             return new Vector3Pb {X = v.x, Y = v.y, Z = v.z};
         }
 
-        public static Vector4Pb ToProtobuf(this Quaternion q, ICSConverter converter)
+        public static Vector4Pb ToProtobuf(this Quaternion q, ICSConverter? converter = null)
         {
             if (converter != null)
             {
@@ -221,31 +223,31 @@ namespace Elektronik.Protobuf.Data
             return new Vector4Pb {X = q.x, Y = q.y, Z = q.z, W = q.w};
         }
 
-        public static PointPb ToProtobuf(this SlamPoint p, ICSConverter converter)
-            => new PointPb
+        public static PointPb ToProtobuf(this SlamPoint p, ICSConverter? converter = null)
+            => new()
             {
                 Id = p.Id, Position = p.Position.ToProtobuf(converter), Color = p.Color, Message = p.Message ?? ""
             };
 
-        public static LinePb ToProtobuf(this SlamLine l, ICSConverter converter)
-            => new LinePb {Pt1 = l.Point1.ToProtobuf(converter), Pt2 = l.Point2.ToProtobuf(converter)};
+        public static LinePb ToProtobuf(this SlamLine l, ICSConverter? converter = null)
+            => new() {Pt1 = l.Point1.ToProtobuf(converter), Pt2 = l.Point2.ToProtobuf(converter)};
 
-        public static ObservationPb ToProtobuf(this SlamObservation o, ICSConverter converter)
+        public static ObservationPb ToProtobuf(this SlamObservation o, ICSConverter? converter = null)
         {
             var pb = new ObservationPb
             {
                 Point = o.Point.ToProtobuf(converter),
                 Orientation = o.Rotation.ToProtobuf(converter),
-                Message = o.Message,
-                Filename = o.FileName,
+                Message = o.Message ?? "",
+                Filename = o.FileName ?? "",
                 Stats = o.Statistics
             };
-            pb.ObservedPoints.AddRange(o.ObservedPoints);
+            pb.ObservedPoints.AddRange(o.ObservedPoints ?? new HashSet<int>());
             return pb;
         }
 
-        public static TrackedObjPb ToProtobuf(this SlamTrackedObject o, ICSConverter converter)
-            => new TrackedObjPb
+        public static TrackedObjPb ToProtobuf(this SlamTrackedObject o, ICSConverter? converter = null)
+            => new()
             {
                 Id = o.Id,
                 Position = o.Position.ToProtobuf(converter),
@@ -254,8 +256,8 @@ namespace Elektronik.Protobuf.Data
                 Message = o.Message
             };
 
-        public static InfinitePlanePb ToProtobuf(this SlamInfinitePlane p, ICSConverter converter)
-            => new InfinitePlanePb
+        public static PlanePb ToProtobuf(this SlamPlane p, ICSConverter? converter = null)
+            => new()
             {
                 Color = p.Color,
                 Id = p.Id,

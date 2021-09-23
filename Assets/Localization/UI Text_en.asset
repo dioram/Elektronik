@@ -126,7 +126,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 76602098716672
-    m_Localized: Infinite planes
+    m_Localized: Planes
     m_Metadata:
       m_Items: []
   - m_Id: 76666057658368
@@ -207,7 +207,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1179022329516032
-    m_Localized: Show data tree
+    m_Localized: Show source tree
     m_Metadata:
       m_Items: []
   - m_Id: 1180012348837888
@@ -235,7 +235,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2901965152849920
-    m_Localized: Cloud clusterization
+    m_Localized: Cloud clustering
     m_Metadata:
       m_Items: []
   - m_Id: 2941787762462720
@@ -256,10 +256,6 @@ MonoBehaviour:
     m_Localized: Compute
     m_Metadata:
       m_Items: []
-  - m_Id: 2949819334529024
-    m_Localized: Simple 3 plane clusterization
-    m_Metadata:
-      m_Items: []
   - m_Id: 3665984348360704
     m_Localized: Previous observation
     m_Metadata:
@@ -269,7 +265,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3982083857727488
-    m_Localized: K-means clusterisation
+    m_Localized: K-means clustering
     m_Metadata:
       m_Items: []
   - m_Id: 5097350304071680
@@ -331,7 +327,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 13065452374421504
-    m_Localized: Analytical tools
+    m_Localized: Point cloud clustering
     m_Metadata:
       m_Items: []
   - m_Id: 13067747757617152
@@ -355,8 +351,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 13163167775158272
-    m_Localized: Turn on logging (Warning! During continious run it can generate
-      gigabytes of log!!)
+    m_Localized: Turn on logging
     m_Metadata:
       m_Items: []
   - m_Id: 20769850134511616
@@ -402,51 +397,6 @@ MonoBehaviour:
     m_Localized: Help
     m_Metadata:
       m_Items: []
-  - m_Id: 36291689841573888
-    m_Localized: 'How to filter edges of observations graph:'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36291901028974592
-    m_Localized: Open Data tree -> Expand Observations graph -> Press button near
-      Connections -> Choose minimal weight for graph edges.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36292451585900544
-    m_Localized: 'How to record data:'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36292733426352128
-    m_Localized: First of all activate protobuf recorder plugin in settings.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36292930021769216
-    m_Localized: 'Then if you want to make snapshot:
-
-      Open Scene tools and
-      Data tree -> Press button Take snapshot -> Press save button near snapshot
-      in data tree -> Choose save path.'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36293536933363712
-    m_Localized: 'If you want to record changes of the data then:
-
-      Open Scene
-      tools -> Press Record button -> Choose save path -> When recording is done
-      press Stop button.'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36294039750721536
-    m_Localized: 'How to play recorded data:'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 36294217106866176
-    m_Localized: 'You can play recorded data in offline mode using protobuf plugin.
-
-      Also
-      you can load snapshots in any mode by pressing Load snapshot button in Scene
-      tools.'
-    m_Metadata:
-      m_Items: []
   - m_Id: 41412972170330112
     m_Localized: Calculation...
     m_Metadata:
@@ -465,6 +415,146 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 46797231349448704
     m_Localized: Override colors for mesh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48610551962755072
+    m_Localized: Camera controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48610891395194880
+    m_Localized: Forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48610977978212352
+    m_Localized: Yaw
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611099944378368
+    m_Localized: Pitch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611185839529984
+    m_Localized: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611324192841728
+    m_Localized: Hot keys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611468233629696
+    m_Localized: Play/Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611538907652096
+    m_Localized: Rewind forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611623439654912
+    m_Localized: Rewind backward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611676921225216
+    m_Localized: One frame forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611799805943808
+    m_Localized: One frame backward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611844492058624
+    m_Localized: Start/Stop recording
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48611922602582016
+    m_Localized: Show scene tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612417119412224
+    m_Localized: Show analytics tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612758997131264
+    m_Localized: Toggle grid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612827695636480
+    m_Localized: Toggle axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48612874097221632
+    m_Localized: Toggle mesh color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51874347606753280
+    m_Localized: Open/Connect...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51883897906937856
+    m_Localized: Recent settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51891097131958272
+    m_Localized: Connect to... / Open file...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51891238681329664
+    m_Localized: Connect / Open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53291475219587072
+    m_Localized: Port is not valid. Should be between 0 and 65563
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53291679125676032
+    m_Localized: IP address is not valid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53294368442097664
+    m_Localized: File not found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53294573413539840
+    m_Localized: At least one of addresses is incorrect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54750546028208128
+    m_Localized: Record...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54755928226209792
+    m_Localized: 'Save to:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54756304220397568
+    m_Localized: Start recording
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55920037377679360
+    m_Localized: New updates available!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55922574944182272
+    m_Localized: Updates
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55930117183578112
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56159015255220224
+    m_Localized: Some text elements will be translated only after restart.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56163336374001664
+    m_Localized: Warning! During continuous run it can generate gigabytes of log!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56636672027729920
+    m_Localized: Data sources
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56918065295204352
+    m_Localized: Clustering
     m_Metadata:
       m_Items: []
   references:

@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data;
+using Elektronik.DataSources;
+using Elektronik.UI.Buttons;
 using Elektronik.UI.Localization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,7 @@ namespace Elektronik.UI
     [RequireComponent(typeof(LayoutElement))]
     public class SourceTreeElement : MonoBehaviour
     {
-        public ISourceTree Node;
+        public ISourceTreeNode Node;
         public Text NameLabel;
         public RectTransform Content;
         public GameObject Spacer;

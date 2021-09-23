@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Elektronik.Data;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.UI.Windows;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
     public abstract class PresenterBase<TMessage, TRenderer, TRendererType> 
-            : IPresenter<TMessage>, ISourceTree, IRendersToWindow
-            where TRenderer : IDataRenderer<TRendererType>
+            : IPresenter<TMessage>, ISourceTreeNode, IRendersToWindow
+            where TRenderer : class, IDataRenderer<TRendererType>
     {
         protected PresenterBase(string displayName)
         {
@@ -18,7 +20,7 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #region IPresenter
 
-        public TMessage Current { get; private set; }
+        public TMessage? Current { get; private set; }
 
         public void Present(TMessage data)
         {
@@ -29,19 +31,21 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #endregion
 
-        #region ISourceTree
+        #region ISourceTreeNode
+
+        public ISourceTreeNode? TakeSnapshot() => null;
 
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
+        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
 
         public void Clear()
         {
             if (Renderer is not null) Renderer.Clear();
         }
 
-        public void SetRenderer(ISourceRenderer renderer)
+        public void AddConsumer(IDataConsumer consumer)
         {
-            if (renderer is WindowsManager factory)
+            if (consumer is WindowsManager factory)
             {
                 factory.CreateWindow<TRenderer>(Title, (r, window) =>
                 {
@@ -52,12 +56,19 @@ namespace Elektronik.RosPlugin.Common.Containers
             }
         }
 
+        public void RemoveConsumer(IDataConsumer consumer)
+        {
+            if (Renderer != consumer) return;
+            Renderer = null;
+            Window = null;
+        }
+
         #endregion
 
         #region IRendersToWindow
 
-        public Window Window { get; private set; }
-        public string Title { get; set; }
+        public Window? Window { get; private set; }
+        public string? Title { get; set; }
 
         #endregion
 

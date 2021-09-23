@@ -2,123 +2,121 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Timers;
-using Elektronik.Extensions;
-using Elektronik.Offline;
+using Elektronik.Data.Converters;
+using Elektronik.DataSources;
+using Elektronik.Plugins.Common.FrameBuffers;
+using Elektronik.Plugins.Common.Parsing;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Offline.Presenters;
+using Elektronik.Settings;
 using Elektronik.Threading;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Elektronik.Protobuf.Offline
 {
-    public class ProtobufFilePlayer : DataSourcePluginBase<OfflineSettingsBag>, IDataSourcePluginOffline
+    public class ProtobufFilePlayer : IRewindableDataSource, IChangingSpeed
     {
-        public ProtobufFilePlayer()
+        public ProtobufFilePlayer(string displayName, Texture2D? logo, OfflineSettingsBag settings,
+                                  ICSConverter converter)
         {
             _containerTree = new ProtobufContainerTree("Protobuf",
-                                                       new FileImagePresenter("Camera", TypedSettings.ImagePath),
+                                                       new FileImagePresenter("Camera", settings.PathToImagesDirectory),
                                                        new SlamDataInfoPresenter("Special info"));
             Data = _containerTree;
+            DisplayName = displayName;
+            Logo = logo;
             _parsersChain = new DataParser<PacketPb>[]
             {
-                new ObjectsParser(_containerTree.InfinitePlanes,
-                                  _containerTree.Points,
-                                  _containerTree.Observations,
-                                  TypedSettings.ImagePath),
+                new ObjectsParser(_containerTree.Planes, _containerTree.Points, _containerTree.Observations,
+                                  settings.PathToImagesDirectory),
                 new TrackedObjectsParser(_containerTree.TrackedObjs),
                 new InfoParser(_containerTree.SpecialInfo),
             }.BuildChain();
-        }
 
-        #region IDataSourceOffline
-
-        public override string DisplayName => "Protobuf";
-
-        public override string Description => "This plugin reads " +
-                "<#7f7fe5><u><link=\"https://developers.google.com/protocol-buffers/\">protobuf</link></u></color>" +
-                " packages from file. You can find documentation for data package format " +
-                "<#7f7fe5><u><link=\"https://github.com/dioram/Elektronik-Tools-2.0/blob/master/docs/Protobuf-EN.md\">" +
-                "here</link></u></color>. Also you can see *.proto files in <ElektronikDir>/Plugins/Protobuf/data.";
-
-        public override void Start()
-        {
-            _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(TypedSettings.FilePath)}";
-            _input = File.OpenRead(TypedSettings.FilePath!);
-            Converter?.SetInitTRS(Vector3.zero, Quaternion.identity);
-            _parsersChain.SetConverter(Converter);
+            _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
+            _input = File.OpenRead(settings.PathToFile);
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
+            _parsersChain?.SetConverter(converter);
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
+            _frames.OnSizeChanged += i => OnAmountOfFramesChanged?.Invoke(i);
             _threadWorker = new ThreadQueueWorker();
-            _timer = new Timer(DelayBetweenFrames);
+            _timer = new Timer(DefaultSpeed * Speed);
+            // ReSharper disable once UnusedParameter.Local
             _timer.Elapsed += (_, __) =>
             {
+                _timer.Interval = DefaultSpeed * Speed;
                 _threadWorker.Enqueue(() =>
                 {
-                    if (NextFrame()) return;
-                    _timer?.Stop();
-                    MainThreadInvoker.Enqueue(() => Finished?.Invoke());
+                    if (GoToNextFrame()) return;
+                    _timer.Stop();
+                    MainThreadInvoker.Enqueue(() => OnFinished?.Invoke());
                 });
             };
         }
 
-        public override void Stop()
+        #region IDataSourcePlugin
+
+        public ISourceTreeNode Data { get; }
+
+        public void Dispose()
         {
             Data.Clear();
             _input.Dispose();
             _threadWorker.Dispose();
         }
 
-        public override void Update(float delta)
+        public void Update(float delta)
         {
             // Do nothing
         }
 
-        public void SetFileName(string filename)
+        public string DisplayName { get; }
+        public SettingsBag? Settings => null;
+        public Texture2D? Logo { get; }
+
+        public int AmountOfFrames => _frames.CurrentSize;
+
+        public string Timestamp => $"{_frames.Current?.Timestamp ?? 0} ({Position})";
+
+        public int Position
         {
-            TypedSettings.FilePath = filename;
-        }
-
-        public int AmountOfFrames => _frames?.CurrentSize ?? 0;
-
-        public string CurrentTimestamp => $"{_frames?.Current?.Timestamp ?? 0} ({CurrentPosition})";
-        public string[] SupportedExtensions { get; } = {".dat"};
-
-        public int CurrentPosition
-        {
-            get => _frames?.CurrentIndex ?? 0;
+            get => _frames.CurrentIndex;
             set => RewindAt(value);
         }
+        
+        public bool IsPlaying { get; private set; }
+        public event Action? OnPlayingStarted;
+        public event Action? OnPaused;
+        public event Action<int>? OnPositionChanged;
+        public event Action<int>? OnAmountOfFramesChanged;
+        public event Action<string>? OnTimestampChanged;
 
-        public int DelayBetweenFrames
-        {
-            get => _delayBetweenFrames;
-            set
-            {
-                if (_delayBetweenFrames == value) return;
-
-                _delayBetweenFrames = value;
-                if (_timer != null) _timer.Interval = _delayBetweenFrames;
-            }
-        }
-
-        public event Action<bool> Rewind;
+        public event Action? OnRewindStarted;
+        public event Action? OnRewindFinished;
+        public event Action? OnFinished;
 
         public void Play()
         {
-            _timer?.Start();
+            IsPlaying = true;
+            OnPlayingStarted?.Invoke();
+            _timer.Start();
         }
 
         public void Pause()
         {
-            _timer?.Stop();
+            IsPlaying = false;
+            _timer.Stop();
+            OnPaused?.Invoke();
         }
 
         public void StopPlaying()
         {
-            _timer?.Stop();
+            IsPlaying = false;
+            _timer.Stop();
+            OnPaused?.Invoke();
             _threadWorker.Enqueue(() =>
             {
                 Data.Clear();
@@ -128,52 +126,89 @@ namespace Elektronik.Protobuf.Offline
 
         public void PreviousKeyFrame()
         {
+            OnRewindStarted?.Invoke();
             _threadWorker.Enqueue(() =>
             {
-                if (_frames?.CurrentIndex == 0)
+                if (_frames.CurrentIndex == 0)
                 {
-                    _frames?.Current?.Rewind();
-                    _frames?.SoftReset();
+                    _frames.Current?.Rewind();
+                    _frames.SoftReset();
                     return;
                 }
+
                 do
                 {
-                    if (!PreviousFrame()) break;
-                } while (!(_frames?.Current?.IsSpecial) ?? false);
+                    if (!GoToPreviousFrame()) break;
+                } while (!(_frames.Current?.IsSpecial) ?? false);
 
+                OnRewindFinished?.Invoke();
             });
         }
 
         public void NextKeyFrame()
         {
+            OnRewindStarted?.Invoke();
             _threadWorker.Enqueue(() =>
             {
                 do
                 {
-                    if (!NextFrame()) break;
-                } while (!(_frames?.Current?.IsSpecial) ?? false);
+                    if (!GoToNextFrame()) break;
+                } while (!(_frames.Current?.IsSpecial) ?? false);
+
+                OnRewindFinished?.Invoke();
             });
         }
 
-        public event Action Finished;
+        public void PreviousFrame()
+        {
+            OnRewindStarted?.Invoke();
+            _threadWorker.Enqueue(() =>
+            {
+                if (_frames.CurrentIndex == 0)
+                {
+                    _frames.Current?.Rewind();
+                    _frames.SoftReset();
+                    return;
+                }
+
+                GoToPreviousFrame();
+                OnRewindFinished?.Invoke();
+            });
+        }
+
+        public void NextFrame()
+        {
+            OnRewindStarted?.Invoke();
+            _threadWorker.Enqueue(() =>
+            {
+                GoToNextFrame();
+                OnRewindFinished?.Invoke();
+            });
+        }
+
+        #endregion
+
+        #region IChangingSpeed
+
+        public float Speed { get; set; } = 1;
 
         #endregion
 
         #region Private definitions
 
         private readonly ProtobufContainerTree _containerTree;
-        private FileStream _input;
-        private FramesCollection<Frame> _frames;
-        private readonly DataParser<PacketPb> _parsersChain;
-        private ThreadQueueWorker _threadWorker;
-        [CanBeNull] private Timer _timer;
-        private int _delayBetweenFrames = 2;
+        private readonly FileStream _input;
+        private readonly FramesCollection<Frame> _frames;
+        private readonly DataParser<PacketPb>? _parsersChain;
+        private readonly ThreadQueueWorker _threadWorker;
+        private readonly Timer _timer;
+        private const int DefaultSpeed = 2;
 
         private IEnumerator<Frame> ReadCommands(int size)
         {
             if (size > 0)
             {
-                for (int i = 0; i < size; i++)
+                for (var i = 0; i < size; i++)
                 {
                     var packet = PacketPb.Parser.ParseDelimitedFrom(_input);
                     yield return Frame.ParsePacket(packet, _parsersChain);
@@ -208,40 +243,38 @@ namespace Elektronik.Protobuf.Offline
             return 0;
         }
 
-        private bool PreviousFrame()
+        private bool GoToPreviousFrame()
         {
-            _frames?.Current?.Rewind();
-            if (_frames?.MovePrevious() ?? false)
-            {
-                (_containerTree.Image as FileImagePresenter)?.Present(_frames?.Current);
-                return true;
-            }
+            _frames.Current?.Rewind();
+            if (!_frames.MovePrevious()) return false;
 
-            return false;
+            (_containerTree.Image as FileImagePresenter)?.Present(_frames.Current);
+            OnPositionChanged?.Invoke(Position);
+            OnTimestampChanged?.Invoke(Timestamp);
+            return true;
         }
 
-        private bool NextFrame()
+        private bool GoToNextFrame()
         {
-            if (_frames.MoveNext())
-            {
-                _frames?.Current?.Show();
-                (_containerTree.Image as FileImagePresenter)?.Present(_frames?.Current);
-                return true;
-            }
+            if (!_frames.MoveNext()) return false;
 
-            return false;
+            _frames.Current?.Show();
+            (_containerTree.Image as FileImagePresenter)?.Present(_frames.Current);
+            OnPositionChanged?.Invoke(Position);
+            OnTimestampChanged?.Invoke(Timestamp);
+            return true;
         }
 
         private void RewindAt(int pos)
         {
-            if (pos < 0 || pos >= AmountOfFrames || pos == CurrentPosition) return;
+            if (pos < 0 || pos >= AmountOfFrames || pos == Position) return;
 
             _threadWorker.Enqueue(() =>
             {
                 while (_frames.CurrentIndex != pos)
                 {
-                    if (_frames.CurrentIndex < pos) NextFrame();
-                    else PreviousFrame();
+                    if (_frames.CurrentIndex < pos) GoToNextFrame();
+                    else GoToPreviousFrame();
                 }
             });
         }

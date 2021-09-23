@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Clouds;
-using Elektronik.Containers;
-using Elektronik.Containers.SpecialInterfaces;
 using Elektronik.Data.PackageObjects;
-using Elektronik.PluginsSystem;
+using Elektronik.DataConsumers;
+using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.EventArgs;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
@@ -14,7 +16,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable, ISnapshotable
+    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable
     {
         public PointsDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
                                  List<long> actualTimestamps)
@@ -24,20 +26,28 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region DBContainer
 
-        public override bool ShowButton { get; } = true;
+        public override bool ShowButton => true;
 
         public override void Clear()
         {
             _center = new Vector3(float.NaN, float.NaN, float.NaN);
             _bounds = new Vector3(float.NaN, float.NaN, float.NaN);
-            OnClear?.Invoke(this);
+            OnRemove?.Invoke(this, new RemovedEventArgs<SlamPoint>(Current));
+            Current = null;
         }
 
-        public override void SetRenderer(ISourceRenderer renderer)
+        public override void AddConsumer(IDataConsumer consumer)
         {
-            if (renderer is not ICloudRenderer<SlamPoint> pointRenderer) return;
-            OnShow += pointRenderer.ShowItems;
-            OnClear += pointRenderer.OnClear;
+            if (consumer is not ICloudRenderer<SlamPoint> pointRenderer) return;
+            OnShow += pointRenderer.OnItemsAdded;
+            OnRemove += pointRenderer.OnItemsRemoved;
+        }
+
+        public override void RemoveConsumer(IDataConsumer consumer)
+        {
+            if (consumer is not ICloudRenderer<SlamPoint> pointRenderer) return;
+            OnShow -= pointRenderer.OnItemsAdded;
+            OnRemove -= pointRenderer.OnItemsRemoved;
         }
 
         public override bool IsVisible
@@ -56,15 +66,23 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         protected override void SetData()
         {
+            if (Current is not null) OnRemove?.Invoke(this, new RemovedEventArgs<SlamPoint>(Current));
             base.SetData();
             if (Current is null) return;
             CalculateBounds(Current);
-            OnShow?.Invoke(this, Current);
+            OnShow?.Invoke(this, new AddedEventArgs<SlamPoint>(Current));
         }
 
         protected override SlamPoint[] ToRenderType(PointCloud2 message)
         {
             return message.ToSlamPoints();
+        }
+        
+        public override ISourceTreeNode TakeSnapshot()
+        {
+            var res = new CloudContainer<SlamPoint>(DisplayName);
+            res.AddRange(Current);
+            return res;
         }
 
         #endregion
@@ -80,29 +98,12 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #endregion
 
-        #region ISnapshotable
-
-        public ISnapshotable TakeSnapshot()
-        {
-            var res = new CloudContainer<SlamPoint>(DisplayName);
-            res.AddRange(Current);
-            return res;
-        }
-
-        public void WriteSnapshot(IDataRecorderPlugin recorder)
-        {
-            recorder.OnAdded(DisplayName, Current);
-        }
-
-        #endregion
-
         #region Private definitinons
 
-        private event Action<object, IEnumerable<SlamPoint>>? OnShow;
-        private event Action<object>? OnClear;
+        private event Action<object, AddedEventArgs<SlamPoint>>? OnShow;
+        private event Action<object, RemovedEventArgs<SlamPoint>>? OnRemove;
         private Vector3 _center = new(float.NaN, float.NaN, float.NaN);
         private Vector3 _bounds = new(float.NaN, float.NaN, float.NaN);
-
         private void CalculateBounds(SlamPoint[] points)
         {
             Vector3 min = Vector3.positiveInfinity;

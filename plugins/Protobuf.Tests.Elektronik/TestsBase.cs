@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using Elektronik.Protobuf.Data;
+using FluentAssertions;
 using Google.Protobuf;
 using Grpc.Core;
-using NUnit.Framework;
 
 namespace Protobuf.Tests.Elektronik
 {
@@ -30,7 +30,7 @@ namespace Protobuf.Tests.Elektronik
                 packet.WriteDelimitedTo(file);
             }
             var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
         }
     }
 }

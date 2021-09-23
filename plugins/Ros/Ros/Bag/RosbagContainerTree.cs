@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Ros.Bag.Parsers;
 
@@ -21,16 +21,12 @@ namespace Elektronik.RosPlugin.Ros.Bag
             {"*", typeof(UnknownTypePresenter)},
         };
 
-        public BagParser? Parser { get; private set; }
+        public BagParser Parser { get; }
 
-        public RosbagContainerTree(string displayName) : base(displayName)
+        public RosbagContainerTree(RosbagSettings settings, string displayName) : base(displayName)
         {
-        }
-
-        public void Init(RosbagSettings settings)
-        {
-            DisplayName = settings.FilePath.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
-            Parser = new BagParser(settings.FilePath);
+            DisplayName = settings.PathToBag.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
+            Parser = new BagParser(settings.PathToBag);
             ActualTopics = Parser.GetTopics()
                     .Where(t => SupportedMessages.ContainsKey(t.Type) || UnknownTypePresenter.CanParseTopic(t.Type))
                     .Select(t => (t.Topic, t.Type))
@@ -38,24 +34,24 @@ namespace Elektronik.RosPlugin.Ros.Bag
             RebuildTree();
         }
 
-        public override void Reset()
+        public override void Dispose()
         {
-            Parser?.Dispose();
-            base.Reset();
+            Parser.Dispose();
+            base.Dispose();
         }
 
         #region Protected
 
-        protected override ISourceTree CreateContainer(string topicName, string topicType)
+        protected override ISourceTreeNode CreateContainer(string topicName, string topicType)
         {
             if (SupportedMessages.ContainsKey(topicType))
             {
-                return (ISourceTree) Activator.CreateInstance(SupportedMessages[topicType],
-                                                              topicName.Split('/').Last());
+                return (ISourceTreeNode) Activator.CreateInstance(SupportedMessages[topicType],
+                                                                  topicName.Split('/').Last());
             }
             
-            return (ISourceTree) Activator.CreateInstance(SupportedMessages["*"],
-                                                          topicName.Split('/').Last());
+            return (ISourceTreeNode) Activator.CreateInstance(SupportedMessages["*"],
+                                                              topicName.Split('/').Last());
         }
 
         #endregion

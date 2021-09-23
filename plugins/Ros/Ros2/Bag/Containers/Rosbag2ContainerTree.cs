@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Elektronik.Data;
+using Elektronik.DataSources;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using SQLite;
@@ -13,24 +13,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
     {
         public readonly Dictionary<int, List<long>> Timestamps = new ();
         
-        public Rosbag2ContainerTree(string displayName) : base(displayName)
+        public Rosbag2ContainerTree(Rosbag2Settings settings) : base("")
         {
-        }
+            DisplayName = settings.PathToFile.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
 
-        private class QueryRow
-        {
-            [Column("timestamp")]
-            public long Timestamp { get; set; }
-            
-            [Column("topic_id")]
-            public int TopicId { get; set; }
-        }
-
-        public void Init(Rosbag2Settings settings)
-        {
-            DisplayName = settings.FilePath.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s)) ?? "Rosbag: /";
-
-            DBModels = GetDBFiles(settings.FilePath);
+            DBModels = GetDBFiles(settings.PathToFile);
             _actualTopicsSql = DBModels.SelectMany(model => model.Table<Topic>().ToList())
                     .Distinct()
                     .Where(t => SupportedMessages.ContainsKey(t.Type))
@@ -52,6 +39,15 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             RebuildTree();
         }
 
+        private class QueryRow
+        {
+            [Column("timestamp")]
+            public long Timestamp { get; set; }
+            
+            [Column("topic_id")]
+            public int TopicId { get; set; }
+        }
+        
         public void ShowAt(long timestamp, bool rewind = false)
         {
             foreach (var dbContainer in RealChildren.Values.OfType<IDBContainer>())
@@ -60,7 +56,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             }
         }
 
-        public override void Reset()
+        public override void Dispose()
         {
             if (DBModels is not null)
             {
@@ -69,14 +65,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
                     model.Dispose();
                 }   
             }
-            base.Reset();
+            base.Dispose();
         }
 
         public List<SQLiteConnection>? DBModels { get; private set; }
 
         #region Protected
 
-        protected override ISourceTree CreateContainer(string topicName, string topicType)
+        protected override ISourceTreeNode CreateContainer(string topicName, string topicType)
         {
             var topic = _actualTopicsSql!.First(t => t.Name == topicName);
 
@@ -88,14 +84,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             
             if (SupportedMessages.ContainsKey(topicType))
             {
-                return (ISourceTree)Activator.CreateInstance(SupportedMessages[topic.Type],
+                return (ISourceTreeNode)Activator.CreateInstance(SupportedMessages[topic.Type],
                                                              topicName.Split('/').Last(),
                                                              DBModels,
                                                              topic,
                                                              timestamps);
             }
             
-            return (ISourceTree)Activator.CreateInstance(SupportedMessages["*"],
+            return (ISourceTreeNode)Activator.CreateInstance(SupportedMessages["*"],
                                                          topicName.Split('/').Last(),
                                                          DBModels,
                                                          topic,

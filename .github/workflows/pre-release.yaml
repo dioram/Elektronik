@@ -1,240 +1,21 @@
-name: Build and make pre-release
+name: Make pre-release
 on:
-  push:
+  workflow_run:
+    workflows: [ "Build project" ]
     branches:
       - pre-release*
+    types: 
+      - completed
   workflow_dispatch:
 
 jobs:
-  build_windows:
-    name: Build for windows
-    runs-on: [ self-hosted, windows ]
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          lfs: true
-
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-
-      - name: Building native libs
-        run: .\.github\build_natives.bat
-
-      - name: Build unity player
-        run: .\.github\build_unity.bat ${{ secrets.UNITY_SERIAL }} ${{ secrets.UNITY_USERNAME }} ${{ secrets.UNITY_PASSWORD }}
-
-      - name: Build plugins
-        run: .\.github\build_plugins.bat
-
-      - name: Run protobuf plugin unit tests
-        uses: zyborg/dotnet-tests-report@v1
-        if: ${{ !cancelled() }}
-        with:
-          project_path: plugins/Protobuf.Tests.Internal
-          set_check_status_from_test_outcome: true
-          report_name: protobuf_unit_tests_windows
-          report_title: Protobuf unit tests windows
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run ROS plugin unit tests
-        uses: zyborg/dotnet-tests-report@v1
-        if: ${{ !cancelled() }}
-        with:
-          project_path: plugins/Ros.Tests
-          set_check_status_from_test_outcome: true
-          report_name: ros_unit_tests_windows
-          report_title: ROS unit tests windows
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run unity tests
-        if: ${{ !cancelled() }}
-        run: .\.github\run_unity_tests.bat
-
-
-  build_linux:
-    name: Linux build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-
-      - name: Update debian package version
-        run: |
-          export el=`cat ./ProjectSettings/ProjectSettings.asset | grep -oP '(?<=bundleVersion: )\d*.\d*.\d*(?:-rc\d*)?'`
-          perl -pe 's/(?<=Version: )\d*.\d*.\d*(?:-rc\d*)?/'$el'/' < ./package/DEBIAN/control > control.txt
-          cp -f control.txt ./package/DEBIAN/control
-
-      - uses: actions/cache@v2
-        with:
-          path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: |
-            Library-
-
-      - name: Install apt packages
-        run: sudo apt -y install make swig curl python libssl-dev
-
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '5.0.x'
-
-      - uses: lukka/get-cmake@latest
-
-      - name: Restore artifacts, or setup vcpkg (do not install any package)
-        uses: lukka/run-vcpkg@v7
-        with:
-          setupOnly: true
-          appendedCacheKey: 'openssl fastrtps opencv pcl'
-          vcpkgGitCommitId: 1257354a3ab0bebd8abe95281ca561537853578c
-          vcpkgTriplet: ${{ matrix.triplet }}
-          additionalCachedPaths: ${{ env.buildNativeDir }}/vcpkg_installed
-
-      - name: Install vcpkg packages
-        run: $VCPKG_ROOT/vcpkg install openssl fastrtps opencv pcl
-
-      - name: Clear vcpkg temp files
-        run: |
-          rm -rf $VCPKG_ROOT/packages
-          rm -rf $VCPKG_ROOT/buildtrees
-          rm -rf $VCPKG_ROOT/downloads
-
-      - name: Upload vcpkg logs if failed
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: vcspkg_logs
-          path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
-
-      - run: sudo chmod +x ./.github/*.sh
-
-      - name: Build ROS2DDS
-        run: ../../.github/build_natives.sh
-        working-directory: ./plugins/ROS2DDS
-
-      - name: Build MeshReconstructor
-        run: ../../.github/build_natives.sh
-        working-directory: ./plugins/MeshBuilder
-
-      - name: Build PlanesDetector
-        run: ../../.github/build_natives.sh
-        working-directory: ./plugins/PlanesDetector
-
-      - name: Build Unity player addressables
-        uses: game-ci/unity-builder@v2
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        with:
-          buildName: Elektronik
-          allowDirtyBuild: true
-          buildMethod: Elektronik.Editor.PlayerBuildScript.BuildAddressables
-          targetPlatform: StandaloneLinux64
-
-      - name: Build Unity player itself
-        uses: game-ci/unity-builder@v2
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        with:
-          buildName: Elektronik
-          allowDirtyBuild: true
-          targetPlatform: StandaloneLinux64
-          versioning: None
-
-      - name: Enable VR
-        run: git apply ./ProjectSettings/EnableVR.patch
-
-      - name: Build Unity player itself (VR version)
-        uses: game-ci/unity-builder@v2
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        with:
-          buildName: Elektronik
-          allowDirtyBuild: true
-          targetPlatform: StandaloneLinux64
-          versioning: None
-          buildsPath: build_vr
-
-      - name: Build plugins
-        run: |
-          sudo chown -R $USER:$USER ${{ github.workspace }}
-          ./.github/build_plugins.sh
-
-      - name: Run protobuf plugin unit tests
-        uses: zyborg/dotnet-tests-report@v1
-        if: ${{ !cancelled() }}
-        with:
-          project_path: plugins/Protobuf.Tests.Internal
-          set_check_status_from_test_outcome: true
-          report_name: protobuf_unit_tests_linux
-          report_title: Protobuf unit tests linux
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run ROS plugin unit tests
-        uses: zyborg/dotnet-tests-report@v1
-        if: ${{ !cancelled() }}
-        with:
-          project_path: plugins/Ros.Tests
-          set_check_status_from_test_outcome: true
-          report_name: ros_unit_tests_linux
-          report_title: ROS unit tests linux
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run Unity tests
-        uses: game-ci/unity-test-runner@v2
-        if: ${{ !cancelled() }}
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        with:
-          testMode: EditMode
-          projectPath: ./
-          artifactsPath: ./test_artifacts
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          checkName: Unity tests results for linux
-
-      - name: Build deb package
-        run: |
-          mkdir -p ./package/opt/elektronik
-          cp -r ./build/* ./package/opt/elektronik
-          sudo dpkg-deb --build package
-          mv package.deb elektronik.deb
-          
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: elektronik.deb
-          path: elektronik.deb
-          
-      - name: Build deb package for VR
-        run: |
-          rm -rf ./package/opt/elektronik/*
-          rm elektronik.deb
-          cp -r ./build_vr/* ./package/opt/elektronik
-          sudo dpkg-deb --build package
-          mv package.deb elektronik_vr.deb
-
-      - name: Upload artifact for vr
-        uses: actions/upload-artifact@v2
-        with:
-          name: elektronik_vr.deb
-          path: elektronik_vr.deb
-
-
   release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Create pre-release
     runs-on: [ self-hosted, windows ]
-    needs: build_windows
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.ver }}
     steps:
       - name: Get version
         id: get_version
@@ -256,73 +37,42 @@ jobs:
           prerelease: true
 
 
-  upload_windows:
-    name: Upload windows build
-    runs-on: [ self-hosted, windows ]
-    needs: [ build_windows, release ]
+  upload:
+    name: Upload ${{ matrix.os[1] }} build
+    runs-on: ${{ matrix.os }}
+    needs: release
+    strategy:
+      matrix:
+        os: [[ self-hosted, windows ], [ self-hosted, linux ]]
+        include:
+          - os: [ self-hosted, windows ]
+            ext: ps1
+            p_ext: zip
+            content_type: application/zip
+          - os: [ self-hosted, linux ]
+            ext: sh
+            p_ext: deb
+            content_type: application/x-deb
     steps:
-      - name: Zip builds
-        run: | 
-          & { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\build', 'build.zip'); }
-          & { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('.\build_vr', 'build_vr.zip'); }
-        shell: pwsh
-      
-      - name: Upload Windows release asset
-        id: upload-release-asset-win
+      - name: Make packges
+        run: ./.github/make_packages.${{ matrix.ext }}
+        
+      - name: Upload ${{ matrix.os[1] }} release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: build.zip
-          asset_name: Release.zip
-          asset_content_type: application/zip
+          asset_path: elektronik.${{ matrix.p_ext }}
+          asset_name: elektronik-${{ needs.release.outputs.version }}.${{ matrix.p_ext }}
+          asset_content_type: ${{ matrix.content_type }}
 
-      - name: Upload Windows VR release asset
-        id: upload-release-asset-win-vr
+      - name: Upload ${{ matrix.os[1] }} VR release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: build_vr.zip
-          asset_name: Release_vr.zip
-          asset_content_type: application/zip
-
-
-  upload_linux:
-    name: Upload linux build
-    runs-on: ubuntu-latest
-    needs: [ build_linux, release ]
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with: 
-          name: elektronik.deb
-          
-      - name: Download artifact for VR
-        uses: actions/download-artifact@v2
-        with:
-          name: elektronik_vr.deb
-
-      - name: Upload Linux release asset
-        id: upload-release-asset-linux
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: elektronik.deb
-          asset_name: elektronik.deb
-          asset_content_type: application/x-deb
-
-      - name: Upload Linux VR release asset
-        id: upload-release-asset-linux-vr
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: elektronik_vr.deb
-          asset_name: elektronik_vr.deb
-          asset_content_type: application/x-deb
+          asset_path: elektronik_vr.${{ matrix.p_ext }}
+          asset_name: elektronik_vr-${{ needs.release.outputs.version }}.${{ matrix.p_ext }}
+          asset_content_type: ${{ matrix.content_type }}

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using Elektronik.Settings;
+using Elektronik.UI.Buttons;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,11 +12,20 @@ namespace Elektronik.UI.Windows
     [RequireComponent(typeof(RectTransform))]
     public class Window : MonoBehaviour, IPointerDownHandler
     {
+        #region Editor fields
+
+        [SerializeField] private Color BaseHeaderColor = new Color(1, 1, 1, 0.5f);
+        [SerializeField] private Color HighlightHeaderColor = Color.blue;
+        [SerializeField] private ChangingButton MinimizeButton;
+        [SerializeField] private bool SavingSettings = false;
+        public TMP_Text TitleLabel;
         public float MinHeight = 40;
         public float MinWidth = 80;
-        public bool IsMinimized => _isMinimized;
-        public bool SavingSettings = false;
-        public TMP_Text TitleLabel;
+        public Image Icon;
+
+        #endregion
+        
+        public bool IsMinimized { get; private set; }
 
         public void Show()
         {
@@ -41,8 +50,8 @@ namespace Elektronik.UI.Windows
 
         public void Minimize()
         {
-            _isMinimized = true;
-            var rect = ((RectTransform)transform);
+            IsMinimized = true;
+            var rect = (RectTransform)transform;
             _maximizedHeight = rect.sizeDelta.y;
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, 42);
             _content.SetActive(false);
@@ -56,7 +65,7 @@ namespace Elektronik.UI.Windows
 
         public void Maximize()
         {
-            _isMinimized = false;
+            IsMinimized = false;
             var rect = ((RectTransform)transform);
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, _maximizedHeight);
             _content.SetActive(true);
@@ -66,6 +75,15 @@ namespace Elektronik.UI.Windows
             }
 
             SaveSettings();
+        }
+        
+        public void SetManager(WindowsManager manager)
+        {
+            transform.Find("Header").GetComponent<HeaderDragHandler>().Manager = manager;
+            foreach (var edge in GetComponentsInChildren<ResizingEdge>())
+            {
+                edge.Manager = manager;
+            }
         }
 
         #region Unity events
@@ -132,14 +150,10 @@ namespace Elektronik.UI.Windows
 
         #region Private
 
-        [SerializeField] private Color BaseHeaderColor = new Color(1, 1, 1, 0.5f);
-        [SerializeField] private Color HighlightHeaderColor = Color.blue;
-        [SerializeField] private ChangingButton MinimizeButton;
         private ResizingEdge[] _edges;
         private Image _header;
         private GameObject _content;
         private float _maximizedHeight;
-        private bool _isMinimized;
         private bool _isInited = false;
         private SettingsHistory<WindowSettingsBag> _windowSettings;
 
@@ -152,8 +166,8 @@ namespace Elektronik.UI.Windows
                 X = rect.anchoredPosition.x,
                 Y = rect.anchoredPosition.y,
                 Width = rect.sizeDelta.x,
-                Height = _isMinimized ? _maximizedHeight : rect.sizeDelta.y,
-                IsMaximized = !_isMinimized,
+                Height = IsMinimized ? _maximizedHeight : rect.sizeDelta.y,
+                IsMaximized = !IsMinimized,
                 IsShowing = gameObject.activeSelf,
             };
             _windowSettings.Add(bag);

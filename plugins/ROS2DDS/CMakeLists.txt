@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 project(ROS2DDS CXX)
 include(CopyDlls.cmake)
 include(GNUInstallDirs)
@@ -13,7 +13,11 @@ find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 set_source_files_properties(interface/Connector.i PROPERTIES CPLUSPLUS ON)
 # SWIG command line option. Sets where to find native dll in runtime.
-set_property(SOURCE interface/Connector.i PROPERTY COMPILE_OPTIONS -dllimport Plugins/Ros/libraries/ROS2DDS.dll)
+if (UNIX)
+    set_property(SOURCE interface/Connector.i PROPERTY COMPILE_OPTIONS -dllimport Plugins/Ros/libraries/ROS2DDS.so)
+elseif(WIN32)
+    set_property(SOURCE interface/Connector.i PROPERTY COMPILE_OPTIONS -dllimport Plugins/Ros/libraries/ROS2DDS.dll)
+endif()
 
 if (MSVC)
     set(CMAKE_CXX_FLAGS -EHsc)

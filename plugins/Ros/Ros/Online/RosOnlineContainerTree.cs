@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Containers;
-using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Ros.Online.Handlers;
-using Elektronik.Settings.Bags;
 using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.MessageTypes.Rosapi;
 
@@ -16,8 +15,12 @@ namespace Elektronik.RosPlugin.Ros.Online
     {
         public RosSocket? Socket;
 
-        public RosOnlineContainerTree(string displayName) : base(displayName)
+        public RosOnlineContainerTree(Ros1Settings settings, string displayName) : base(displayName)
         {
+            var uri = $"ws://{settings.IPAddress}:{settings.ListeningPort}";
+            DisplayName = $"ROS: {uri}";
+            Socket = new RosSocket(new RosSharp.RosBridgeClient.Protocols.WebSocketNetProtocol(uri));
+            UpdateTopics(null);
         }
 
         public void UpdateTopics(TopicsResponse? message)
@@ -46,17 +49,9 @@ namespace Elektronik.RosPlugin.Ros.Online
             RebuildTree();
         }
 
-        public void Init(AddressPortScaleSettingsBag settings)
+        public override void Dispose()
         {
-            var uri = $"ws://{settings.IPAddress}:{settings.Port}";
-            DisplayName = $"ROS: {uri}";
-            Socket = new RosSocket(new RosSharp.RosBridgeClient.Protocols.WebSocketNetProtocol(uri));
-            UpdateTopics(null);
-        }
-
-        public override void Reset()
-        {
-            base.Reset();
+            base.Dispose();
             foreach (var handler in _handlers)
             {
                 handler.Dispose();
@@ -66,9 +61,9 @@ namespace Elektronik.RosPlugin.Ros.Online
 
         #region Protected
 
-        protected override ISourceTree CreateContainer(string topicName, string topicType)
+        protected override ISourceTreeNode CreateContainer(string topicName, string topicType)
         {
-            var container = (ISourceTree) Activator.CreateInstance(SupportedMessages[topicType].container,
+            var container = (ISourceTreeNode) Activator.CreateInstance(SupportedMessages[topicType].container,
                                                                    topicName.Split('/').Last());
             _handlers.Add((IMessageHandler) Activator.CreateInstance(SupportedMessages[topicType].handler, container,
                                                                      Socket, topicName));

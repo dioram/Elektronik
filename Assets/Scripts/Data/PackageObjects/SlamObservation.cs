@@ -44,5 +44,17 @@ namespace Elektronik.Data.PackageObjects
             get => Point.Id;
             set => Point.Id = value;
         }
+
+        public bool Equals(SlamObservation other)
+        {
+            return Point.Equals(other.Point) && Rotation.Equals(other.Rotation) && FileName == other.FileName && Message == other.Message;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is SlamObservation other && Equals(other);
+        }
+
+        public override int GetHashCode() => Id;
     }
 }

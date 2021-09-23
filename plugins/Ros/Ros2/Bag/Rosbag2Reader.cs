@@ -1,61 +1,55 @@
 ﻿using System;
 using System.Linq;
+using Elektronik.DataSources;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Containers;
+using Elektronik.Settings;
 using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag
 {
-    public class Rosbag2Reader : DataSourcePluginBase<Rosbag2Settings>, IDataSourcePluginOffline
+    public class Rosbag2Reader : IRewindableDataSource
     {
-        public Rosbag2Reader()
+        public Rosbag2Reader(string displayName, Texture2D? logo, Rosbag2Settings settings)
         {
-            _data = new Rosbag2ContainerTree("TMP");
+            DisplayName = displayName;
+            Logo = logo;
+            _data = new Rosbag2ContainerTree(settings);
             Data = _data;
-        }
-
-        #region IDataSourceOffline implementation
-
-        public override string DisplayName => "ROS2 bag";
-
-        public override string Description => "This plugins allows Elektronik to read data saved from " +
-                "<#7f7fe5><u><link=\"https://docs.ros.org/en/foxy/index.html\">ROS2</link></u></color> using " +
-                "<#7f7fe5><u><link=\"https://docs.ros.org/en/foxy/Tutorials/Ros2bag/Recording-And-Playing-Back-Data.html\">" +
-                "rosbag2</link></u></color>.";
-
-        public override void Start()
-        {
             _threadWorker = new ThreadQueueWorker();
-            _data.Init(TypedSettings);
 
             _actualTimestamps = _data.Timestamps.Values
                     .SelectMany(l => l)
                     .OrderBy(i => i)
                     .ToArray();
 
-            Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
-            RosMessageConvertExtender.Converter = Converter;
+            var converter = new RosConverter();
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
+            RosMessageConvertExtender.Converter = converter;
         }
 
-        public override void Stop()
+        #region IDataSourcePlugin
+
+        public ISourceTreeNode Data { get; }
+
+        public void Dispose()
         {
-            _data.Reset();
-            _threadWorker?.Dispose();
+            _data.Dispose();
+            _threadWorker.Dispose();
         }
 
-        public override void Update(float delta)
+        public void Update(float delta)
         {
-            if (_threadWorker == null) return;
-            if (_playing)
+            if (IsPlaying)
             {
-                if (CurrentPosition == AmountOfFrames - 1)
+                if (Position == AmountOfFrames - 1)
                 {
-                    MainThreadInvoker.Enqueue(() => Finished?.Invoke());
-                    _playing = false;
+                    MainThreadInvoker.Enqueue(() => OnFinished?.Invoke());
+                    IsPlaying = false;
+                    OnPaused?.Invoke();
                     return;
                 }
 
@@ -63,97 +57,113 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             }
             else if (_rewindPlannedPos > 0)
             {
-                Rewind?.Invoke(true);
+                OnRewindStarted?.Invoke();
                 _currentPosition = _rewindPlannedPos;
                 _rewindPlannedPos = -1;
-                _threadWorker?.Enqueue(() =>
+                _threadWorker.Enqueue(() =>
                 {
-                    _data.ShowAt(_actualTimestamps![_currentPosition], true);
-                    Rewind?.Invoke(false);
+                    _data.ShowAt(_actualTimestamps[_currentPosition], true);
+                    OnRewindFinished?.Invoke();
+                    OnPositionChanged?.Invoke(_currentPosition);
+                    OnTimestampChanged?.Invoke(Timestamp);
                 });
             }
         }
 
+        public string DisplayName { get; }
+        public SettingsBag? Settings => null;
+        public Texture2D? Logo { get; }
+
         public void Play()
         {
-            _playing = true;
+            IsPlaying = true;
+            OnPlayingStarted?.Invoke();
         }
 
         public void Pause()
         {
-            _playing = false;
+            IsPlaying = false;
+            OnPaused?.Invoke();
         }
 
         public void StopPlaying()
         {
-            _playing = false;
-            _threadWorker?.Enqueue(() =>
+            IsPlaying = false;
+            OnPaused?.Invoke();
+            _threadWorker.Enqueue(() =>
             {
                 _currentPosition = 0;
                 Data.Clear();
+                OnPositionChanged?.Invoke(_currentPosition);
+                OnTimestampChanged?.Invoke(Timestamp);
             });
         }
 
-        public void PreviousKeyFrame()
+        public void PreviousKeyFrame() => PreviousFrame();
+
+        public void NextKeyFrame() => NextFrame();
+
+        public void PreviousFrame()
         {
-            _threadWorker?.Enqueue(() =>
+            _threadWorker.Enqueue(() =>
             {
-                if (CurrentPosition == 0) return;
+                if (Position == 0) return;
                 _currentPosition--;
-                _data.ShowAt(_actualTimestamps![CurrentPosition]);
+                _data.ShowAt(_actualTimestamps[Position]);
+                OnPositionChanged?.Invoke(_currentPosition);
+                OnTimestampChanged?.Invoke(Timestamp);
             });
         }
 
-        public void NextKeyFrame()
+        public void NextFrame()
         {
-            if ((_threadWorker?.ActiveActions ?? 1) > 0) return;
-            _threadWorker?.Enqueue(() =>
+            if (_threadWorker.ActiveActions > 0) return;
+            _threadWorker.Enqueue(() =>
             {
-                if (CurrentPosition == AmountOfFrames - 1) return;
+                if (Position == AmountOfFrames - 1) return;
 
                 _currentPosition++;
-                _data.ShowAt(_actualTimestamps![CurrentPosition]);
+                _data.ShowAt(_actualTimestamps[Position]);
+                OnPositionChanged?.Invoke(_currentPosition);
+                OnTimestampChanged?.Invoke(Timestamp);
             });
         }
 
-        public void SetFileName(string filename)
-        {
-            TypedSettings.FilePath = filename;
-        }
+        public int AmountOfFrames => _actualTimestamps.Length;
 
-        public int AmountOfFrames => _actualTimestamps?.Length ?? 0;
+        public string Timestamp => $"{(_actualTimestamps[Position] - _actualTimestamps[0]) / 1000000000f:F3}";
 
-        public string CurrentTimestamp =>
-                $"{(_actualTimestamps?[CurrentPosition] - _actualTimestamps?[0] ?? 0) / 1000000000f:F3}";
-
-        public string[] SupportedExtensions { get; } = {".db3"};
-
-        public int CurrentPosition
+        public int Position
         {
             get => _currentPosition;
             set
             {
                 if (value < 0 || value >= AmountOfFrames || _currentPosition == value) return;
                 _rewindPlannedPos = value;
-                _playing = false;
+                IsPlaying = false;
+                OnPaused?.Invoke();
             }
         }
 
-        public int DelayBetweenFrames { get; set; }
+        public bool IsPlaying { get; private set; }
+        public event Action? OnPlayingStarted;
+        public event Action? OnPaused;
+        public event Action<int>? OnPositionChanged;
+        public event Action<int>? OnAmountOfFramesChanged;
+        public event Action<string>? OnTimestampChanged;
 
-        public event Action<bool>? Rewind;
-
-        public event Action? Finished;
+        public event Action? OnRewindStarted;
+        public event Action? OnRewindFinished;
+        public event Action? OnFinished;
 
         #endregion
 
         #region Private definitions
 
         private readonly Rosbag2ContainerTree _data;
-        private ThreadQueueWorker? _threadWorker;
-        private bool _playing;
+        private readonly ThreadQueueWorker _threadWorker;
         private int _currentPosition;
-        private long[]? _actualTimestamps;
+        private readonly long[] _actualTimestamps;
         private int _rewindPlannedPos;
 
         #endregion

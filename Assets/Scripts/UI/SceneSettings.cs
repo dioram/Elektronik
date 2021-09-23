@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Elektronik.Settings;
-using Elektronik.Settings.Bags;
+using Elektronik.UI.Buttons;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -11,16 +11,17 @@ namespace Elektronik.UI
 {
     public class SceneSettings : MonoBehaviour
     {
-        private SettingsHistory<SceneSettingsBag> _history;
-
-        private SceneSettingsBag _bag;
+        #region Editor fields
 
         [SerializeField] private TMP_Dropdown GridDropdown;
         [SerializeField] private ChangingButton AxisButton;
         [SerializeField] private Slider PointSizeSlider;
         [SerializeField] private Slider DurationSlider;
         [SerializeField] private ColorPickerControl ColorPicker;
-        private bool _inited = false;
+
+        #endregion
+
+        #region Unity events
 
         private void Start()
         {
@@ -60,10 +61,20 @@ namespace Elektronik.UI
             });
         }
 
+        #endregion
+
+        #region Private
+
+        private SettingsHistory<SceneSettingsBag> _history;
+        private SceneSettingsBag _bag;
+        private bool _inited = false;
+
         private void SaveSettings()
         {
             _history.Add(_bag.Clone());
             _history.Save();
         }
+
+        #endregion
     }
 }

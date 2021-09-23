@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using Elektronik.UI.Windows;
 using SQLite;
@@ -10,7 +12,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
     public abstract class DBContainerToWindow<TMessage, TRender, TRenderType>
             : DBContainer<TMessage, TRenderType>, IRendersToWindow
             where TMessage : Message
-            where TRender : IDataRenderer<TRenderType>
+            where TRender : class, IDataRenderer<TRenderType>
     {
         public DBContainerToWindow(string displayName, List<SQLiteConnection> dbModels, Topic topic,
                                    List<long> actualTimestamps)
@@ -25,9 +27,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (Renderer is not null) Renderer.Clear();
         }
 
-        public override void SetRenderer(ISourceRenderer renderer)
+        public override void AddConsumer(IDataConsumer consumer)
         {
-            if (renderer is WindowsManager factory)
+            if (consumer is WindowsManager factory)
             {
                 factory.CreateWindow<TRender>(Title, (r, window) =>
                 {
@@ -36,6 +38,13 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
                     SetRendererCallback();
                 });
             }
+        }
+
+        public override void RemoveConsumer(IDataConsumer consumer)
+        {
+            if (Renderer != consumer) return;
+            Renderer = null;
+            Window = null;
         }
 
         protected override void SetData()
@@ -51,8 +60,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region IRendersToWindow
 
-        public Window Window { get; private set; }
-        public string Title { get; set; }
+        public Window? Window { get; private set; }
+        public string? Title { get; set; }
 
         #endregion
 

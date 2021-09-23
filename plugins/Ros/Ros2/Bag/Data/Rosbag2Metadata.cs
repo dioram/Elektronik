@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Linq;
 using YamlDotNet.Serialization;
+// ReSharper disable InconsistentNaming
+#pragma warning disable 8618
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Data
 {

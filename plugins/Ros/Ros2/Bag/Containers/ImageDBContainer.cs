@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources;
 using Elektronik.RosPlugin.Common.Containers;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
@@ -7,8 +8,7 @@ using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class ImageDBContainer 
-            : DBContainerToWindow<Image, ImageRenderer, ImageData>
+    public class ImageDBContainer : DBContainerToWindow<Image, ImageRenderer, ImageData>
     {
 
         public ImageDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
@@ -16,7 +16,9 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
                 : base(displayName, dbModels, topic, actualTimestamps)
         {
         }
-        
+
+        public override ISourceTreeNode? TakeSnapshot() => null;
+
         public override bool IsVisible
         {
             get => Renderer is not null && Renderer.IsShowing;
@@ -36,6 +38,5 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         }
 
         #endregion
-
     }
 }

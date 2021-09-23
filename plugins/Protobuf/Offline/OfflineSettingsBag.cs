@@ -1,23 +1,24 @@
 ﻿using System;
 using System.IO;
 using Elektronik.Settings;
-using Elektronik.Settings.Bags;
-using UnityEngine;
+using Elektronik.UI.Localization;
 
 namespace Elektronik.Protobuf.Offline
 {
     [Serializable]
     public class OfflineSettingsBag : SettingsBag
     {
-        [CheckForEquals, Path(PathAttribute.PathTypes.File, new[] {".dat"}), Tooltip("Path to file")]
-        public string FilePath;
+        [CheckForEquals, Path(new[] { ".dat" })]
+        public string PathToFile = "";
 
-        [CheckForEquals, Path(PathAttribute.PathTypes.Directory, new[] {""}), Tooltip("Path to images")]
-        public string ImagePath;
+        [CheckForEquals, Path(PathAttribute.PathTypes.Directory)]
+        public string PathToImagesDirectory = "";
 
-        public override bool Validate()
+        public override ValidationResult Validate()
         {
-            return File.Exists(FilePath);
+            return File.Exists(PathToFile)
+                    ? ValidationResult.Succeeded
+                    : ValidationResult.Failed("File not found".tr());
         }
     }
 }

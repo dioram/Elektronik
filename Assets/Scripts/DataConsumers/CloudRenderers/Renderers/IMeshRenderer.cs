@@ -1,0 +1,11 @@
+﻿using Elektronik.DataSources.Containers.EventArgs;
+
+namespace Elektronik.DataConsumers.CloudRenderers
+{
+    public interface IMeshRenderer : IDataConsumer
+    {
+        public bool OverrideColors { get; set; }
+        
+        public void OnMeshUpdated(object sender, MeshUpdatedEventArgs e);
+    }
+}

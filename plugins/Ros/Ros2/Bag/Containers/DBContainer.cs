@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Elektronik.Containers.SpecialInterfaces;
-using Elektronik.Data;
+using Elektronik.DataConsumers;
+using Elektronik.DataSources;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public abstract class DBContainer<TMessage, TRenderType> : IDBContainer, ISourceTree, IVisible
+    public abstract class DBContainer<TMessage, TRenderType> : IDBContainer, ISourceTreeNode, IVisible
             where TMessage : RosSharp.RosBridgeClient.Message
     {
         public DBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
@@ -20,14 +21,17 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             ActualTimestamps = actualTimestamps;
         }
 
-        #region ISourceTree
+        #region ISourceTreeNode
+
+        public abstract ISourceTreeNode? TakeSnapshot();
 
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTree> Children { get; } = Array.Empty<ISourceTree>();
+        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
 
         public abstract void Clear();
 
-        public abstract void SetRenderer(ISourceRenderer renderer);
+        public abstract void AddConsumer(IDataConsumer consumer);
+        public abstract void RemoveConsumer(IDataConsumer consumer);
 
         #endregion
 

@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.IO;
 using Elektronik.Cameras;
-using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources.Containers;
 using Elektronik.Threading;
 using Elektronik.UI.Localization;
 using TMPro;
@@ -16,6 +16,19 @@ namespace Elektronik.UI.Windows
     [RequireComponent(typeof(Window))]
     public class ObservationViewer : MonoBehaviour, IDataRenderer<(IContainer<SlamObservation>, SlamObservation)>
     {
+        #region Editor fields
+
+        [SerializeField] private RawImage Image;
+        [SerializeField] private TMP_Text Message;
+        [SerializeField] private Window Window;
+        [SerializeField] private GameObject TextView;
+        [SerializeField] private AspectRatioFitter Fitter;
+        [SerializeField] private Button PreviousButton;
+        [SerializeField] private Button NextButton;
+        [SerializeField] private Button MoveToButton;
+        
+        #endregion
+        
         public int ObservationId => _observation.Id;
 
         public int ObservationContainer => _container.GetHashCode();
@@ -51,9 +64,7 @@ namespace Elektronik.UI.Windows
 
         #region IDataRenderer
 
-        public void SetScale(float value)
-        {
-        }
+        public float Scale { get; set; }
         
         public bool IsShowing
         {
@@ -80,15 +91,6 @@ namespace Elektronik.UI.Windows
         #endregion
 
         #region Private
-
-        [SerializeField] private RawImage Image;
-        [SerializeField] private TMP_Text Message;
-        [SerializeField] private Window Window;
-        [SerializeField] private GameObject TextView;
-        [SerializeField] private AspectRatioFitter Fitter;
-        [SerializeField] private Button PreviousButton;
-        [SerializeField] private Button NextButton;
-        [SerializeField] private Button MoveToButton;
 
         private IContainer<SlamObservation> _container;
         private SlamObservation _observation;

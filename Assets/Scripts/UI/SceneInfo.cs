@@ -1,4 +1,4 @@
-﻿using Elektronik.Clouds;
+﻿using Elektronik.DataConsumers.CloudRenderers;
 using Elektronik.UI.Localization;
 using TMPro;
 using UnityEngine;
@@ -9,13 +9,15 @@ namespace Elektronik.UI
     public class SceneInfo : MonoBehaviour
     {
         [SerializeField] private PointCloudRenderer PointCloudRenderer;
-        [SerializeField] private LineCloudRenderer LineCloudRenderer;
-        [SerializeField] private InfinitePlaneCloudRenderer InfinitePlaneCloudRenderer;
+        [SerializeField] private SlamLineCloudRenderer SlamLineCloudRenderer;
+        [SerializeField] private SimpleLineCloudRenderer SimpleLineCloudRenderer;
+        [SerializeField] private PlaneCloudRenderer PlaneCloudRenderer;
         [SerializeField] private ObservationCloudRenderer ObservationCloudRenderer;
         [SerializeField] private TrackedObjectCloud TrackedObjectCloud;
 
         [HideInInspector] public int PointsCount;
-        [HideInInspector] public int LinesCount;
+        [HideInInspector] public int SlamLinesCount;
+        [HideInInspector] public int SimpleLinesCount;
         [HideInInspector] public int InfinitePlanesCount;
         [HideInInspector] public int ObservationsCount;
         [HideInInspector] public int TrackedObjectsCount;
@@ -30,15 +32,16 @@ namespace Elektronik.UI
         private void Update()
         {
             bool isUpdated = UpdateValue(ref PointsCount, PointCloudRenderer.ItemsCount);
-            isUpdated = isUpdated || UpdateValue(ref LinesCount, LineCloudRenderer.ItemsCount);
-            isUpdated = isUpdated || UpdateValue(ref InfinitePlanesCount, InfinitePlaneCloudRenderer.ItemsCount);
+            isUpdated = isUpdated || UpdateValue(ref SlamLinesCount, SlamLineCloudRenderer.ItemsCount);
+            isUpdated = isUpdated || UpdateValue(ref SimpleLinesCount, SimpleLineCloudRenderer.ItemsCount);
+            isUpdated = isUpdated || UpdateValue(ref InfinitePlanesCount, PlaneCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref ObservationsCount, ObservationCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref TrackedObjectsCount, TrackedObjectCloud.ItemsCount);
 
             if (isUpdated)
             {
-                _label.SetLocalizedText("Scene info", PointsCount, LinesCount, InfinitePlanesCount, ObservationsCount,
-                                        TrackedObjectsCount);
+                _label.SetLocalizedText("Scene info", PointsCount, SlamLinesCount + SimpleLinesCount,
+                                        InfinitePlanesCount, ObservationsCount, TrackedObjectsCount);
             }
         }
 

@@ -28,10 +28,9 @@
 /plugins/*/*CSHARP_wrap*
 /plugins/*/cmake-build-*
 /plugins/ROS2DDS/CMakeSettings.json
-/Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative
-/Assets/Scripts/Clusterization/Algorithms/PlanesDetectionNative.meta
-/Assets/Scripts/Containers/MeshBuildNative
-/Assets/Scripts/Containers/MeshBuildNative.meta
+/plugins/Clustering.PlanesDetection/Native
+/Assets/Scripts/DataSources/Containers/NativeMesh
+/Assets/Scripts/DataSources/Containers/NativeMesh.meta
 /Assets/Plugins/Native
 /Assets/Plugins/Native.meta
 /Assets/generatedFiles/

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Containers;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources.Containers;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
 using SQLite;
@@ -67,12 +67,10 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             if (messages.Count == 0) return;
 
             var obj = new SlamTrackedObject(0, messages.Last().Item1, messages.Last().Item2);
-            var history = new SlamLine[messages.Count - 1];
+            var history = new SimpleLine[messages.Count - 1];
             for (int i = 0; i < messages.Count - 1; i++)
             {
-                history[i] = new SlamLine(new SlamPoint(i, messages[i].Item1, Color.black),
-                                          new SlamPoint(i + 1, messages[i + 1].Item1, Color.black),
-                                          i);
+                history[i] = new SimpleLine(i, messages[i].pos, messages[i + 1].pos, Color.black);
             }
 
             AddWithHistory(obj, history);
@@ -100,11 +98,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private (long time, int pos) GetValidTimestamp(long newTimestamp)
         {
-            long time = Timestamp;
-            int pos = _pos;
+            var time = Timestamp;
+            var pos = _pos;
             if (newTimestamp > Timestamp)
             {
-                for (int i = _pos; i < ActualTimestamps.Count; i++)
+                for (var i = _pos; i < ActualTimestamps.Count; i++)
                 {
                     if (ActualTimestamps[i] > newTimestamp) break;
                     pos = i;
@@ -113,7 +111,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             }
             else
             {
-                for (int i = _pos; i >= 0; i--)
+                for (var i = _pos; i >= 0; i--)
                 {
                     pos = i;
                     time = ActualTimestamps[i];

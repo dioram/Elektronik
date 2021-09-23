@@ -1,39 +1,47 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Elektronik.Containers;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources.Containers;
+using Elektronik.Plugins.Common.Commands;
+using Elektronik.Plugins.Common.Commands.Generic;
+using Elektronik.Plugins.Common.DataDiff;
+using Elektronik.Plugins.Common.FrameBuffers;
+using Elektronik.Plugins.Common.Parsing;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
 using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    using UnityDebug = UnityEngine.Debug;
-
     /// <summary> 
-    /// Base class for handle data in online mode. Used in pattern "Chain of responsibility".
+    /// Base class for handle data in online mode (buffered). Used in pattern "Chain of responsibility".
     /// </summary>
     /// <typeparam name="TCloudItem"></typeparam>
     /// <typeparam name="TCloudItemDiff"></typeparam>
     public abstract class MapManager<TCloudItem, TCloudItemDiff>
             : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
             where TCloudItem : struct, ICloudItem
-            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
+            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
-        public ILogger Logger = new UnityLogger();
+        protected readonly ILogger Logger;
+        protected readonly OnlineFrameBuffer Buffer;
+        protected readonly ICSConverter? Converter;
 
-        public MapManager(IContainer<TCloudItem> container)
+        protected MapManager(OnlineFrameBuffer buffer, IContainer<TCloudItem> container,
+                             ICSConverter? converter, ILogger logger)
         {
             Container = container;
+            Logger = logger;
+            Converter = converter;
+            Buffer = buffer;
         }
 
-        MapsManagerPb.MapsManagerPbBase _link;
+        private MapsManagerPb.MapsManagerPbBase? _link;
 
-        public IChainable<MapsManagerPb.MapsManagerPbBase> SetSuccessor(
-            IChainable<MapsManagerPb.MapsManagerPbBase> link)
+        public IChainable<MapsManagerPb.MapsManagerPbBase>? SetSuccessor(
+            IChainable<MapsManagerPb.MapsManagerPbBase>? link)
         {
             _link = link as MapsManagerPb.MapsManagerPbBase;
             return link;
@@ -58,32 +66,30 @@ namespace Elektronik.Protobuf.Online.GrpcServices
         }
 
         protected readonly IContainer<TCloudItem> Container;
-        protected Stopwatch Timer;
+        protected Stopwatch? Timer;
 
-        protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, IList<TCloudItemDiff> data)
+        protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, TCloudItemDiff[] data,
+                                             bool isKeyFrame, DateTime timestamp)
         {
-            var readOnlyData = new ReadOnlyCollection<TCloudItemDiff>(data);
-            ErrorStatusPb errorStatus = new ErrorStatusPb() {ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded};
+            ErrorStatusPb errorStatus = new() { ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded };
             try
             {
+                ICommand command;
                 lock (Container)
                 {
-                    switch (action)
+                    command = action switch
                     {
-                    case PacketPb.Types.ActionType.Add:
-                        Container.AddRange(readOnlyData);
-                        break;
-                    case PacketPb.Types.ActionType.Update:
-                        Container.Update(readOnlyData);
-                        break;
-                    case PacketPb.Types.ActionType.Remove:
-                        Container.Remove(readOnlyData);
-                        break;
-                    case PacketPb.Types.ActionType.Clear:
-                        Container.Clear();
-                        break;
-                    }
+                        PacketPb.Types.ActionType.Add => new AddCommand<TCloudItem, TCloudItemDiff>(Container, data),
+                        PacketPb.Types.ActionType.Update => new UpdateCommand<TCloudItem, TCloudItemDiff>(
+                            Container, data),
+                        PacketPb.Types.ActionType.Remove => new RemoveCommand<TCloudItem, TCloudItemDiff>(
+                            Container, data),
+                        PacketPb.Types.ActionType.Clear => new ClearCommand<TCloudItem>(Container),
+                        _ => throw new ArgumentOutOfRangeException(nameof(action), "Unknown action type")
+                    };
                 }
+
+                Buffer.Add(command, timestamp, isKeyFrame);
             }
             catch (Exception err)
             {
@@ -91,9 +97,9 @@ namespace Elektronik.Protobuf.Online.GrpcServices
                 errorStatus.Message = err.Message;
             }
 
-            Timer.Stop();
+            Timer?.Stop();
             Logger.Info($"[{GetType().Name}.Handle] {DateTime.Now} " +
-                        $"Elapsed time: {Timer.ElapsedMilliseconds} ms. " +
+                        $"Elapsed time: {Timer?.ElapsedMilliseconds} ms. " +
                         $"Error status: {errorStatus}");
 
             return Task.FromResult(errorStatus);

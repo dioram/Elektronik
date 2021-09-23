@@ -102,6 +102,7 @@ namespace Protobuf.Tests.Elektronik
                     Action = PacketPb.Types.Connections.Types.Action.Add,
                 },
             };
+            packet.Connections.Data.Add(_connections);
             
             SendAndCheck(packet, Filename);
         }
@@ -119,6 +120,7 @@ namespace Protobuf.Tests.Elektronik
                     Action = PacketPb.Types.Connections.Types.Action.Remove,
                 },
             };
+            packet.Connections.Data.Add(new[] {_connections[0], _connections[1]});
             
             SendAndCheck(packet, Filename);
         }

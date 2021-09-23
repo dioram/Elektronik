@@ -1,12 +1,13 @@
 ﻿using Elektronik.Cameras;
-using Elektronik.Containers.SpecialInterfaces;
-using Elektronik.Data;
 using Elektronik.Data.PackageObjects;
-using Elektronik.UI.Windows;
+using Elektronik.DataSources;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.SpecialInterfaces;
+using Elektronik.PluginsSystem.UnitySide;
+using Elektronik.UI.Buttons;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Elektronik.UI
@@ -14,20 +15,24 @@ namespace Elektronik.UI
     [RequireComponent(typeof(SourceTreeElement))]
     public class SourceTreeButtons : MonoBehaviour
     {
-        public Button WindowButton;
-        public ButtonChangingIcons VisibleButton;
-        public ButtonChangingIcons TraceButton;
-        public Button RemoveButton;
-        [FormerlySerializedAs("CameraButton")] public Button LookAtButton;
-        public ButtonChangingIcons FollowButton;
-        public Button SaveButton;
+        #region Editor fields
 
-        public Button WeightButton;
-        public Slider WeightSlider;
-        public TMP_Text MinWeightLabel;
-        public TMP_Text MaxWeightLabel;
+        [SerializeField] private Button WindowButton;
+        [SerializeField] private ButtonChangingIcons VisibleButton;
+        [SerializeField] private ButtonChangingIcons TraceButton;
+        [SerializeField] private Button RemoveButton;
+        [SerializeField] private Button LookAtButton;
+        [SerializeField] private ButtonChangingIcons FollowButton;
+        [SerializeField] private Button SaveButton;
+        [SerializeField] private Button MeshColorButton;
+        [SerializeField] private Button WeightButton;
+        [SerializeField] private Slider WeightSlider;
+        [SerializeField] private TMP_Text MinWeightLabel;
+        [SerializeField] private TMP_Text MaxWeightLabel;
 
-        private ISourceTree _node;
+        #endregion
+
+        private ISourceTreeNode _node;
 
         public void Start()
         {
@@ -73,6 +78,15 @@ namespace Elektronik.UI
                 RemoveButton.gameObject.SetActive(false);
             }
 
+            if (_node is IMeshContainer mesh)
+            {
+                MeshColorButton.OnClickAsObservable().Subscribe(_ => mesh.OverrideColors()).AddTo(this);
+            }
+            else
+            {
+                MeshColorButton.gameObject.SetActive(false);
+            }
+
             if (Camera.main.GetComponent<LookableCamera>() is { } cam)
             {
                 switch (_node)
@@ -103,9 +117,9 @@ namespace Elektronik.UI
                 }
             }
 
-            if (_node is ISave s)
+            if (_node is ISave _)
             {
-                SaveButton.OnClickAsObservable().Subscribe(_ => s.Save());
+                SaveButton.OnClickAsObservable().Subscribe(_ => RecorderPluginsController.Save(_node));
             }
             else
             {

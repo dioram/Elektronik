@@ -1,42 +1,44 @@
 ﻿#if !NO_ROS2DDS
+using Elektronik.DataSources;
 using Elektronik.PluginsSystem;
 using Elektronik.RosPlugin.Common;
 using Elektronik.RosPlugin.Common.RosMessages;
+using Elektronik.Settings;
 using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Online
 {
-    public class Ros2Client : DataSourcePluginBase<Ros2Settings>, IDataSourcePluginOnline
+    public class Ros2Client : IDataSourcePlugin
     {
-        public Ros2Client()
+        public Ros2Client(string displayName, Texture2D? logo, Ros2Settings settings)
         {
-            _container = new Ros2OnlineContainerTree("TMP");
+            DisplayName = displayName;
+            Logo = logo;
+            _container = new Ros2OnlineContainerTree(settings, "TMP");
             Data = _container;
+            var converter = new RosConverter();
+            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
+            RosMessageConvertExtender.Converter = converter;
         }
         
-        #region IDataSourceOnline
+        #region IDataSourcePlugin
 
-        public override string DisplayName => "ROS2 listener";
-        public override string Description => "Client for " +
-                "<#7f7fe5><u><link=\"https://docs.ros.org/en/foxy/index.html\">ROS2</link></u></color> network.";
-        
-        public override void Start()
+
+        public ISourceTreeNode Data { get; }
+
+        public void Dispose()
         {
-            _container.Init(TypedSettings);
-            Converter = new RosConverter();
-            Converter.SetInitTRS(Vector3.zero, Quaternion.identity);
-            RosMessageConvertExtender.Converter = Converter;
+            _container.Dispose();
         }
 
-        public override void Stop()
-        {
-            _container.Reset();
-        }
-
-        public override void Update(float delta)
+        public void Update(float delta)
         {
             // Do nothing
         }
+
+        public string DisplayName { get; }
+        public SettingsBag? Settings => null;
+        public Texture2D? Logo { get; }
 
         #endregion
 
@@ -47,6 +49,4 @@ namespace Elektronik.RosPlugin.Ros2.Online
         #endregion
     }
 }
-#else
-
 #endif

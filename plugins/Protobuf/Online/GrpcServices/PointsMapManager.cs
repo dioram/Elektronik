@@ -1,30 +1,33 @@
-﻿using System.Diagnostics;
-using System.Linq;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
-using Elektronik.Containers;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources.Containers;
+using Elektronik.Plugins.Common.DataDiff;
+using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Protobuf.Data;
 using Grpc.Core;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class PointsMapManager : ConnectableObjectsMapManager<SlamPoint, SlamPointDiff>
     {
-        private readonly ICSConverter _converter;
-
-        public PointsMapManager(IConnectableObjectsContainer<SlamPoint> container, ICSConverter converter)
-                : base(container)
+        public PointsMapManager(OnlineFrameBuffer buffer, IConnectableObjectsContainer<SlamPoint> container, 
+                                ICSConverter? converter, ILogger logger)
+                : base(buffer, container, converter, logger)
         {
-            _converter = converter;
         }
 
         public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
             if (request.DataCase != PacketPb.DataOneofCase.Points) return base.Handle(request, context);
             Timer = Stopwatch.StartNew();
-            var pts = request.ExtractPoints(_converter).ToList();
-            return HandleConnections(request, Handle(request.Action, pts));
+            var timestamp = DateTime.Now;
+            return HandleConnections(request, Handle(request.Action, request.ExtractPoints(Converter), request.Special,
+                                                     timestamp),
+                                     request.Special, timestamp);
         }
     }
 }

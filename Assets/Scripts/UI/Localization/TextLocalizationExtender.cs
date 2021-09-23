@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TMPro;
-using UnityEngine;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
@@ -13,44 +11,33 @@ namespace Elektronik.UI.Localization
     {
         public static void ImportTranslations(string filename)
         {
-            try
+            if (!File.Exists(filename)) return;
+            var data = File.ReadAllLines(filename);
+            var locales = data[0].Split(',');
+            foreach (var str in data.Skip(1))
             {
-                var data = File.ReadAllLines(filename);
-                var locales = data[0].Split(',');
-                foreach (var str in data.Skip(1))
+                var line = str.Split(',');
+                if (Translations.ContainsKey(line[0])) continue;
+                Translations.Add(line[0], new Dictionary<string, string>());
+                for (var i = 0; i < line.Length; i++)
                 {
-                    var line = str.Split(',');
-                    try
-                    {
-                        Translations.Add(line[0], new Dictionary<string, string>());
-                        for (int i = 0; i < line.Length; i++)
-                        {
-                            Translations[line[0]][locales[i]] = line[i];
-                        }
-                    }
-                    // ReSharper disable once EmptyGeneralCatchClause
-                    catch
-                    {
-                    }
+                    Translations[line[0]][locales[i]] = line[i];
                 }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Error when reading translation file: {e.Message}");
             }
         }
 
         public static void SetLocalizedText(this Text label, string text, params object[] args)
         {
-            label.text = GetLocalizedString(text, args);
+            label.text = text.tr(args);
         }
 
         public static void SetLocalizedText(this TMP_Text label, string text, params object[] args)
         {
-            label.text = GetLocalizedString(text, args);
+            label.text = text.tr(args);
         }
 
-        public static string GetLocalizedString(string text, params object[] args)
+        // ReSharper disable once InconsistentNaming
+        public static string tr(this string text, params object[] args)
         {
             var defaultTable = LocalizationSettings.Instance.GetStringDatabase().GetDefaultTableAsync().Result;
             if (defaultTable != null)

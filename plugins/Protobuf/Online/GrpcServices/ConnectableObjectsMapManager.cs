@@ -2,25 +2,35 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Elektronik.Containers;
+using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataSources.Containers;
+using Elektronik.Plugins.Common.Commands;
+using Elektronik.Plugins.Common.Commands.Generic;
+using Elektronik.Plugins.Common.DataDiff;
+using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Protobuf.Data;
+using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public abstract class ConnectableObjectsMapManager<TCloudItem, TCloudItemDiff>
             : MapManager<TCloudItem, TCloudItemDiff>
             where TCloudItem : struct, ICloudItem
-            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItem>
+            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         private readonly IConnectableObjectsContainer<TCloudItem> _connectableContainer;
 
-        protected ConnectableObjectsMapManager(IConnectableObjectsContainer<TCloudItem> container) : base(container)
+        protected ConnectableObjectsMapManager(OnlineFrameBuffer buffer,
+                                               IConnectableObjectsContainer<TCloudItem> container,
+                                               ICSConverter? converter, ILogger logger)
+                : base(buffer, container, converter, logger)
         {
             _connectableContainer = container;
         }
 
-        protected virtual Task<ErrorStatusPb> HandleConnections(PacketPb request, Task<ErrorStatusPb> baseStatus)
+        protected Task<ErrorStatusPb> HandleConnections(PacketPb request, Task<ErrorStatusPb> baseStatus,
+                                                        bool isKeyFrame, DateTime timestamp)
         {
             var timer = Stopwatch.StartNew();
             var status = baseStatus.Result;
@@ -34,18 +44,18 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 
             if (request.Connections != null && request.Connections.Data.Count != 0)
             {
-                var connections = request.Connections.Data.Select(c => (c.Id1, c.Id2));
+                var connections = request.Connections.Data.Select(c => (c.Id1, c.Id2)).ToArray();
                 try
                 {
-                    switch (request.Connections.Action)
+                    ICommand? command = request.Connections.Action switch
                     {
-                    case PacketPb.Types.Connections.Types.Action.Add:
-                        _connectableContainer.AddConnections(connections);
-                        break;
-                    case PacketPb.Types.Connections.Types.Action.Remove:
-                        _connectableContainer.RemoveConnections(connections);
-                        break;
-                    }
+                        PacketPb.Types.Connections.Types.Action.Add => new AddConnectionsCommand<TCloudItem>(
+                            _connectableContainer, connections),
+                        PacketPb.Types.Connections.Types.Action.Remove => new RemoveConnectionsCommand<TCloudItem>(
+                            _connectableContainer, connections),
+                        _ => null,
+                    };
+                    if (command != null) Buffer.Add(command, timestamp, isKeyFrame);
                 }
                 catch (Exception e)
                 {

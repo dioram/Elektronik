@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using Elektronik.Data;
-using Elektronik.Renderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataConsumers.Windows;
+using Elektronik.DataSources;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Data
 {
-    public abstract class ImagePresenter<T> : ISourceTree, IRendersToWindow
+    public abstract class ImagePresenter<T> : ISourceTreeNode, IRendersToWindow
     {
         protected ImagePresenter(string displayName)
         {
             DisplayName = displayName;
         }
         
-        #region ISourceTree
+        #region ISourceTreeNode
+
+        public ISourceTreeNode? TakeSnapshot() => null;
 
         public string DisplayName { get; set; }
         
-        public IEnumerable<ISourceTree> Children => Array.Empty<ISourceTree>();
+        public IEnumerable<ISourceTreeNode> Children => Array.Empty<ISourceTreeNode>();
 
         #endregion
 
@@ -28,28 +32,40 @@ namespace Elektronik.Protobuf.Data
 
         public abstract void Present(T data);
 
-        public void SetRenderer(ISourceRenderer dataRenderer)
+        public void AddConsumer(IDataConsumer consumer)
         {
-            if (dataRenderer is WindowsManager factory)
+            switch (consumer)
             {
-                factory.CreateWindow<ImageRenderer>(DisplayName, (renderer, window) =>
-                {
+                case WindowsManager factory:
+                    factory.CreateWindow<ImageRenderer>(DisplayName, (renderer, window) =>
+                    {
+                        Renderer = renderer;
+                        Window = window;
+                    });
+                    break;
+                case IDataRenderer<byte[]> renderer:
                     Renderer = renderer;
-                    Window = window;
-                });
+                    break;
             }
+        }
+
+        public void RemoveConsumer(IDataConsumer consumer)
+        {
+            if (Renderer != consumer) return;
+            Renderer = null;
+            Window = null;
         }
 
         #region IRendersToWindow
 
-        public Window Window { get; private set; }
-        public string Title { get; set; }
+        public Window? Window { get; private set; }
+        public string? Title { get; set; }
 
         #endregion
 
         #region Protected
 
-        protected IDataRenderer<byte[]> Renderer;
+        protected IDataRenderer<byte[]>? Renderer;
 
         #endregion
 

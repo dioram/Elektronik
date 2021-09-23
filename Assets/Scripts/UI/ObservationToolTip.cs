@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Elektronik.Collision;
-using Elektronik.Containers;
-using Elektronik.Containers.EventArgs;
 using Elektronik.Data.PackageObjects;
+using Elektronik.DataConsumers.Collision;
+using Elektronik.DataSources.Containers;
+using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.Threading;
 using Elektronik.UI.Windows;
 using UnityEngine;
@@ -113,12 +113,12 @@ namespace Elektronik.UI
             }
         }
 
-        private void DestroyObsoleteWindows(object container, RemovedEventArgs args)
+        private void DestroyObsoleteWindows(object container, RemovedEventArgs<SlamObservation> args)
         {
-            foreach (var id in args.RemovedIds)
+            foreach (var obs in args.RemovedItems)
             {
                 var v = _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == container.GetHashCode()
-                                                              && w.ObservationId == id);
+                                                              && w.ObservationId == obs.Id);
                 if (v != null)
                 {
                     MainThreadInvoker.Enqueue(() =>

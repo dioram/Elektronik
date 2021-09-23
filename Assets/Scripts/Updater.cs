@@ -11,28 +11,127 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 namespace Elektronik
 {
     public class Updater : MonoBehaviour
     {
-        [SerializeField] private GameObject ReleasePrefab;
-        [SerializeField] private Transform ReleaseRenderTarget;
-        [SerializeField] private Transform PreReleaseRenderTarget;
-        [SerializeField] private GameObject ReleasesPanel;
-        [SerializeField] private GameObject PrereleasesPanel;
-        [SerializeField] private string ApiPath = "https://api.github.com/repos/dioram/Elektronik-Tools-2.0/releases";
-        [SerializeField] private TMP_Text VersionLabel;
-        [SerializeField] private Color NewReleaseColor;
-        [SerializeField] private Color NewPrereleaseColor;
+        #region Editor fields
 
+        [SerializeField] private GameObject ReleasePrefab;
+        [SerializeField] private Transform ReleaseTarget;
+        [SerializeField] private string ApiPath = "https://api.github.com/repos/dioram/Elektronik-Tools-2.0/releases";
+        [SerializeField] private Button UpdateButton;
+        [SerializeField] private Image UpdateButtonImage;
+        [SerializeField] private Sprite NewReleaseSprite;
+        [SerializeField] private Sprite NewPrereleaseSprite;
+
+        #endregion
+
+        public struct Version : IComparable<Version>
+        {
+            public readonly int Major;
+            public readonly int Minor;
+            public readonly int Fix;
+            public readonly int Rc;
+            public readonly bool Wip;
+
+            public Version(string version)
+            {
+                const string pattern = @"v?(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-rc(\d+))?(-WIP)?";
+                var match = Regex.Match(version, pattern);
+
+                Major = Parse(match.Groups[1].Value);
+                Minor = Parse(match.Groups[2].Value);
+                Fix = Parse(match.Groups[3].Value);
+                Rc = Parse(match.Groups[4].Value);
+                Wip = !string.IsNullOrEmpty(match.Groups[5].Value);
+            }
+
+            public int CompareTo(Version other)
+            {
+                if (Major > other.Major) return 1;
+                if (Major < other.Major) return -1;
+            
+                if (Minor > other.Minor) return 1;
+                if (Minor < other.Minor) return -1;
+            
+                if (Fix > other.Fix) return 1;
+                if (Fix < other.Fix) return -1;
+
+                if (Rc == 0 && other.Rc > 0) return 1;
+                if (other.Rc == 0 && Rc > 0) return -1;
+            
+                if (Rc > other.Rc) return 1;
+                if (Rc < other.Rc) return -1;
+
+                if (Wip) return -1;
+                if (other.Wip) return 1;
+
+                return 0;
+            }
+
+            public bool Equals(Version other)
+            {
+                return Major == other.Major && Minor == other.Minor && Fix == other.Fix && Rc == other.Rc 
+                        && Wip == other.Wip;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Version other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    var hashCode = Major;
+                    hashCode = (hashCode * 397) ^ Minor;
+                    hashCode = (hashCode * 397) ^ Fix;
+                    hashCode = (hashCode * 397) ^ Rc;
+                    hashCode = (hashCode * 397) ^ Wip.GetHashCode();
+                    return hashCode;
+                }
+            }
+
+            public static bool operator >(Version first, Version second)
+            {
+                return first.CompareTo(second) > 0;
+            }
+
+            public static bool operator <(Version first, Version second)
+            {
+                return first.CompareTo(second) < 0;
+            }
+
+            public static bool operator ==(Version first, Version second)
+            {
+                return first.Equals(second);
+            }
+
+            public static bool operator !=(Version first, Version second)
+            {
+                return !(first == second);
+            }
+
+            public override string ToString()
+            {
+                var rc = Rc > 0 ? $"-rc{Rc}" : "";
+                var wip = Wip ? "-WIP" : "";
+                return $"v{Major}.{Minor}.{Fix}{rc}{wip}";
+            }
+            
+            private static int Parse(string str) => int.TryParse(str, out var res) ? res : 0;
+        }
+        
         #region Unity events
 
         private void Start()
         {
             GetReleases();
-            ShowReleases(true);
-            ShowReleases(false);
+            ShowReleases();
         }
 
         #endregion
@@ -41,13 +140,15 @@ namespace Elektronik
 
         private struct Release
         {
-            public string Version;
+            public Version Version;
             public string ReleaseNotes;
             public bool IsPreRelease;
 
             public void Update()
             {
                 var currentDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+                if (currentDir == null) throw new ArgumentNullException(nameof(currentDir));
+                
                 var updaterOldDir = Path.Combine(currentDir, "Plugins/Updater");
                 var updaterNewDir = Path.Combine(currentDir, "../ElektronikUpdater");
                 
@@ -69,76 +170,61 @@ namespace Elektronik
         }
 
         private readonly List<Release> _releases = new List<Release>();
-
-        private bool IsNewer(string version1, string version2, bool ignorePreRelease)
-        {
-            const string pattern = @"v?(\d*)(?:\.(\d*))?(?:\.(\d*))?(?:-rc(\d*))?";
-            var match1 = Regex.Match(version1, pattern);
-            var match2 = Regex.Match(version2, pattern);
-            for (int i = 1; i < match1.Groups.Count; i++)
-            {
-                int v1 = string.IsNullOrEmpty(match1.Groups[i].Value) ? 0 : int.Parse(match1.Groups[i].Value);
-                int v2 = string.IsNullOrEmpty(match2.Groups[i].Value) ? 0 : int.Parse(match2.Groups[i].Value);
-                if (i == 4 && ignorePreRelease) return false;
-                if (v1 > v2) return true;
-                if (v1 < v2) return false;
-            }
-
-            return false;
-        }
-
+        
         private void GetReleases()
         {
-            var request = WebRequest.CreateHttp(ApiPath);
-            request.UserAgent = "request";
-            var response = request.GetResponse();
-            var serializer = new JsonSerializer();
-
-            using var sr = new StreamReader(response.GetResponseStream());
-            using var jsonTextReader = new JsonTextReader(sr);
-            var data = serializer.Deserialize<JArray>(jsonTextReader);
-            foreach (var field in data)
+            try
             {
-                try
+                var request = WebRequest.CreateHttp(ApiPath);
+                request.UserAgent = "request";
+                var response = request.GetResponse();
+                var serializer = new JsonSerializer();
+
+                using var sr = new StreamReader(response.GetResponseStream());
+                using var jsonTextReader = new JsonTextReader(sr);
+                var data = serializer.Deserialize<JArray>(jsonTextReader);
+                foreach (var field in data)
                 {
                     _releases.Add(new Release
                     {
-                        Version = (string) field["tag_name"],
+                        Version = new Version((string) field["tag_name"]),
                         ReleaseNotes = (string) field["body"],
                         IsPreRelease = (bool) field["prerelease"],
                     });
                 }
-                // ReSharper disable once EmptyGeneralCatchClause
-                catch
-                {
-                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
             }
         }
 
-        private void ShowReleases(bool preReleases)
+        private void ShowReleases()
         {
-            var releases = _releases
-                    .Where(r => IsNewer(r.Version, Application.version, !preReleases))
-                    .Where(r => r.IsPreRelease == preReleases).ToList();
+            var releases = _releases.Where(r => r.Version > new Version(Application.version)).ToList();
+            var hasReleases = releases.Any(r => !r.IsPreRelease);
+            
             foreach (var release in releases)
             {
-                var go = Instantiate(ReleasePrefab, preReleases ? PreReleaseRenderTarget : ReleaseRenderTarget);
-                go.transform.Find("Header/Version").GetComponent<TMP_Text>().text = release.Version;
+                var go = Instantiate(ReleasePrefab, ReleaseTarget);
+                go.transform.Find("Header/Version").GetComponent<TMP_Text>().text = release.Version.ToString();
                 go.transform.Find("Notes").GetComponent<TMP_Text>().text = release.ReleaseNotes;
-                var updateButton =  go.transform.Find("Header/UpdateButton").GetComponent<Button>();
-                updateButton.OnClickAsObservable().Subscribe(_ => release.Update());
+                var button = go.transform.Find("Header/UpdateButton").GetComponent<Button>();
+                button.OnClickAsObservable().Subscribe(_ => release.Update());
 #if UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX
-                updateButton.gameObject.SetActive(false);
+                button.gameObject.SetActive(false);
 #endif
             }
 
             if (releases.Count > 0)
             {
-                VersionLabel.color = preReleases ? NewPrereleaseColor : NewReleaseColor;
-                return;
+                UpdateButton.gameObject.SetActive(true);
+                UpdateButtonImage.sprite = hasReleases ? NewReleaseSprite : NewPrereleaseSprite;
             }
-            if (preReleases) PrereleasesPanel.SetActive(false);
-            else ReleasesPanel.SetActive(false);
+            else
+            {
+                UpdateButton.gameObject.SetActive(false);
+            }
         }
 
         #endregion

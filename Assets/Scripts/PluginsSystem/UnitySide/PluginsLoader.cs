@@ -1,32 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Elektronik.UI.Localization;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Elektronik.PluginsSystem.UnitySide
 {
-    public static class PluginsLoader
+    public class PluginsLoader : MonoBehaviour
     {
-        public static readonly Lazy<List<IElektronikPlugin>> Plugins = new Lazy<List<IElektronikPlugin>>(LoadPlugins);
-        public static readonly List<IElektronikPlugin> ActivePlugins = new List<IElektronikPlugin>();
+        public static readonly Lazy<List<IElektronikPluginsFactory>> PluginFactories =
+                new Lazy<List<IElektronikPluginsFactory>>(LoadPluginFactories);
 
-        public static void EnablePlugin(IElektronikPlugin plugin)
+        private void Awake()
         {
-            if (!ActivePlugins.Contains(plugin)) ActivePlugins.Add(plugin);
+            Debug.Log($"Loaded {PluginFactories.Value.Count} plugins");
         }
 
-        public static void DisablePlugin(IElektronikPlugin plugin)
-        {
-            if (ActivePlugins.Contains(plugin)) ActivePlugins.Remove(plugin);
-        }
+        #region Private
 
-        private static List<IElektronikPlugin> LoadPlugins()
+        private static List<IElektronikPluginsFactory> LoadPluginFactories()
         {
-            var res = new List<IElektronikPlugin>();
+            var res = new List<IElektronikPluginsFactory>();
             try
             {
                 var currentDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) ?? "";
@@ -39,14 +36,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                 {
                     try
                     {
-                        res.AddRange(Assembly.LoadFrom(file)
-                                             .GetTypes()
-                                             .Where(p => typeof(IElektronikPlugin).IsAssignableFrom(p) && p.IsClass &&
-                                                            !p.IsAbstract)
-                                             .Select(InstantiatePlugin<IElektronikPlugin>)
-                                             .Where(p => p != null));
-                        TextLocalizationExtender.ImportTranslations(Path.Combine(Path.GetDirectoryName(file)!,
-                                                                        @"../data/translations.csv"));
+                        res.AddRange(LoadFromFile(file));
                     }
                     catch (Exception e)
                     {
@@ -59,39 +49,34 @@ namespace Elektronik.PluginsSystem.UnitySide
                 Debug.LogError($"PluginsLoader initialized with error: {e.Message}");
             }
 
-            SetupContextMenu(Environment.GetCommandLineArgs()[0],
-                             res.OfType<IDataSourcePluginOffline>().SelectMany(p => p.SupportedExtensions));
             return res;
         }
 
-        private static void SetupContextMenu(string elektronikExe, IEnumerable<string> extensions)
+        private static List<IElektronikPluginsFactory> LoadFromFile(string path)
         {
-#if UNITY_STANDALONE_WIN
-            try
+            var factories = Assembly.LoadFrom(path)
+                    .GetTypes()
+                    .Where(p => typeof(IElektronikPluginsFactory).IsAssignableFrom(p) &&
+                                   p.IsClass && !p.IsAbstract)
+                    .Select(InstantiatePluginFactory<IElektronikPluginsFactory>)
+                    .Where(p => p != null)
+                    .ToList();
+            foreach (var factory in factories)
             {
-                var setter = new Process
-                {
-                    StartInfo =
-                    {
-                        FileName = Path.Combine(Path.GetDirectoryName(elektronikExe)!,
-                                                @"Plugins\ContextMenuSetter\ContextMenuSetter.exe"),
-                        Arguments = $"\"{elektronikExe}\" {string.Join(" ", extensions)}"
-                    }
-                };
-                setter.Start();
+                factory.LoadLogo(Path.Combine(Path.GetDirectoryName(path)!,
+                                              $@"../data/{factory.DisplayName}_Logo.png"));
             }
-            catch (Exception e)
-            {
-                Debug.LogError($"Context menu setter error: {e.Message}");
-            }
-#endif
+
+            TextLocalizationExtender.ImportTranslations(Path.Combine(Path.GetDirectoryName(path)!,
+                                                                     @"../data/translations.csv"));
+            return factories;
         }
 
-        private static T InstantiatePlugin<T>(Type t) where T : class
+        private static T InstantiatePluginFactory<T>(Type t) where T : class
         {
             try
             {
-                return (T) Activator.CreateInstance(t);
+                return (T)Activator.CreateInstance(t);
             }
             catch (Exception e)
             {
@@ -100,5 +85,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
             return null;
         }
+
+        #endregion
     }
 }

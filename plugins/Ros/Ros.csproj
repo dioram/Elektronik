@@ -2,19 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>preview</LangVersion>
+        <LangVersion>latestmajor</LangVersion>
         <Nullable>enable</Nullable>
         <RootNamespace>Elektronik.RosPlugin</RootNamespace>
         <Deterministic>False</Deterministic>
         <AssemblyVersion>1.2.*</AssemblyVersion>
         <FileVersion>1.2.*</FileVersion>
     </PropertyGroup>
-    
-    <ItemGroup>
-        <!-- Note that this is not a "normal" ProjectReference.
-             It needs the additional 'OutputItemType' and 'ReferenceOutputAssmbly' attributes. -->
-        <ProjectReference Include="../RosMessageParserGenerator/RosMessageParserGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    </ItemGroup>
 
     <ItemGroup>
         <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -38,10 +32,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="3.9.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis" Version="3.11.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="RosSharpRosBridgeClient" Version="1.7.0" />
         <PackageReference Include="SharpZipLib" Version="1.3.2" />
@@ -64,6 +55,11 @@
 
     <ItemGroup>
         <Folder Include="Ros2\Online\SWIG_generated" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Plugins.Common\Plugins.Common.csproj" />
+      <ProjectReference Include="..\RosMessageParserGenerator\RosMessageParserGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>

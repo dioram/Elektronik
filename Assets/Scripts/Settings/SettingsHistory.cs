@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Security;
-using Elektronik.Settings.Bags;
+using Elektronik.Threading;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -30,7 +30,7 @@ namespace Elektronik.Settings
         public void Add(T recent)
         {
             if (recent == null) return;
-            if (!recent.Validate()) return;
+            if (!recent.Validate().Success) return;
 
             T existing = _recent.Items.Find(setting => setting.Equals(recent));
             if (existing != null)
@@ -48,7 +48,7 @@ namespace Elektronik.Settings
 
         public void Save()
         {
-            Serialize();
+            MainThreadInvoker.Enqueue(Serialize);
         }
 
         #region Private definitions

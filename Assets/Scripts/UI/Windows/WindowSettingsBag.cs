@@ -1,5 +1,5 @@
 ﻿using Elektronik.Settings;
-using Elektronik.Settings.Bags;
+using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.UI.Windows
 {
