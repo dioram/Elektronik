@@ -3,8 +3,8 @@ The tool for testing and debugging SLAM.
 
 ![](docs/Images/Screenshot.png)
 
-[![Build](https://github.com/dioram/Elektronik/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/dioram/Elektronik/actions/workflows/build.yaml)
-[![Release](https://github.com/dioram/Elektronik/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/dioram/Elektronik/actions/workflows/release.yaml)
+[![Build](https://github.com/dioram/Elektronik/actions/workflows/build.yaml/badge.svg?branch=master)](https://github.com/dioram/Elektronik/actions/workflows/build.yaml)
+[![Release](https://github.com/dioram/Elektronik/actions/workflows/release.yaml/badge.svg?branch=master)](https://github.com/dioram/Elektronik/actions/workflows/release.yaml)
 
 Elektronik is a tool that is actively used by the Dioram development team in developing tracking algorithms and SLAM.
 This software allows you to visually track:
