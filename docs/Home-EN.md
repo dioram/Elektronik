@@ -1,4 +1,4 @@
-﻿## Elektronik Tools 3.0 
+﻿## Elektronik
 
 is a tool that is actively used by the Dioram development team in developing tracking algorithms and SLAM.
 This software allows you to visually track changes in the point cloud and the connectivity graph of observations in a map

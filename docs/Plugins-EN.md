@@ -31,6 +31,8 @@ each of them has its own interfaces of factories and plugins:
           inherits `IDataSourcedPluginsFactory`. Marks that plugin can be used for reading snapshots saved to file.
     - Plugins:
         - [IDataSourcePlugin](../Assets/Scripts/PluginsSystem/Plugins/IDataSourcePlugin.cs) Interface for any data source plugin.
+        - [IRewindableDataSource](../Assets/Scripts/PluginsSystem/Plugins/IRewindableDataSource.cs)
+          Interface for any data source plugin supporting rewind.
 - Data recorders. Consumes data from sources.
     - Factories:
         - [ICustomRecorderPluginsFactory](../Assets/Scripts/PluginsSystem/Factories/IDataRecorderPluginsFactory.cs)
