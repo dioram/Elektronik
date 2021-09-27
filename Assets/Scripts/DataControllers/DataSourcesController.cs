@@ -11,6 +11,7 @@ using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
 using Elektronik.UI;
 using Elektronik.UI.Localization;
+using Elektronik.UI.Windows;
 using SimpleFileBrowser;
 using UnityEngine;
 
@@ -23,6 +24,8 @@ namespace Elektronik.DataControllers
         [SerializeField] private RectTransform SourceTreeView;
         [SerializeField] private GameObject TreeElementPrefab;
         [SerializeField] private GameObject RenderersRoot;
+        [SerializeField] private Window DataSourceWindow;
+        
         public CSConverter Converter;
 
         #endregion
@@ -76,6 +79,7 @@ namespace Elektronik.DataControllers
 
         public void AddDataSource(ISourceTreeNode source)
         {
+            DataSourceWindow.Show();
             _dataSources.Add(source);
             var treeElement = Instantiate(TreeElementPrefab, SourceTreeView).GetComponent<SourceTreeElement>();
             _roots.Add(treeElement);
