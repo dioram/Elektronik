@@ -557,6 +557,10 @@ MonoBehaviour:
     m_Localized: Clustering
     m_Metadata:
       m_Items: []
+  - m_Id: 60979707659673600
+    m_Localized: Use ortographic projection
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:
