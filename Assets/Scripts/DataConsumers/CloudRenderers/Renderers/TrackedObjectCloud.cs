@@ -22,7 +22,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     Pose pose = GetObjectPose(obj);
                     MainThreadInvoker.Enqueue(() =>
                     {
-                        var go = ObservationsPool.Spawn(pose.position, pose.rotation);
+                        var go = ObjectsPool.Spawn(pose.position, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
 
                         var dc = go.GetComponent(DataComponent<SlamTrackedObject>.GetInstantiable());

@@ -24,8 +24,8 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 vs[0], vs[2], vs[3],
                 vs[0], vs[3], vs[4],
                 vs[0], vs[4], vs[1],
-                vs[1], vs[2], vs[3],
-                vs[3], vs[4], vs[1],
+                vs[1], vs[3], vs[2],
+                vs[3], vs[1], vs[4],
             };
             for (int i = 0; i < vertices.Length; i++)
             {

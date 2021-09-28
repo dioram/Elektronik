@@ -565,6 +565,10 @@ MonoBehaviour:
     m_Localized: Switch material
     m_Metadata:
       m_Items: []
+  - m_Id: 61316093583548416
+    m_Localized: Render observation messages
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

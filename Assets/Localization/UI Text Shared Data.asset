@@ -543,6 +543,10 @@ MonoBehaviour:
     m_Key: Switch material
     m_Metadata:
       m_Items: []
+  - m_Id: 61316093583548416
+    m_Key: Render observation messages
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

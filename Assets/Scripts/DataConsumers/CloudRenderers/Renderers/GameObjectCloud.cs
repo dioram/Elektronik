@@ -52,7 +52,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 GameObjects.Clear();
                 if (MainThreadInvoker.Instance != null)
                 {
-                    MainThreadInvoker.Enqueue(() => ObservationsPool?.DespawnAllActiveObjects());
+                    MainThreadInvoker.Enqueue(() => ObjectsPool?.DespawnAllActiveObjects());
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     Pose pose = GetObjectPose(obj);
                     MainThreadInvoker.Enqueue(() =>
                     {
-                        var go = ObservationsPool.Spawn(pose.position * _scale, pose.rotation);
+                        var go = ObjectsPool.Spawn(pose.position * _scale, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
                         go.GetComponent<MeshRenderer>().material.SetColor(ColorProperty, obj.AsPoint().Color);
 
@@ -123,7 +123,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     MainThreadInvoker.Enqueue(() =>
                     {
                         
-                        ObservationsPool.Despawn(go);
+                        ObjectsPool.Despawn(go);
                         GameObjects.Remove(key);
                     });
                 }
@@ -136,24 +136,22 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         private void Awake()
         {
-            ObservationsPool = new ObjectPool(ItemPrefab);
+            ObjectsPool = new ObjectPool(ItemPrefab);
         }
 
         protected virtual void OnEnable()
         {
-            foreach (var o in ObservationsPool.ActiveObject)
+            foreach (var o in GameObjects.Values)
             {
-                var meshRenderer = o.GetComponent<MeshRenderer>();
-                meshRenderer.enabled = true;
+                o.SetActive(true);
             }
         }
 
         protected virtual void OnDisable()
         {
-            foreach (var o in ObservationsPool.ActiveObject.Where(o => o != null))
+            foreach (var o in GameObjects.Values.Where(o => o != null))
             {
-                var meshRenderer = o.GetComponent<MeshRenderer>();
-                meshRenderer.enabled = false;
+                o.SetActive(false);
             }
         }
 
@@ -169,7 +167,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         protected readonly SortedDictionary<(int, int), GameObject> GameObjects =
                 new SortedDictionary<(int, int), GameObject>();
 
-        protected ObjectPool ObservationsPool;
+        protected ObjectPool ObjectsPool;
         // ReSharper disable once StaticMemberInGenericType
         private static readonly int ColorProperty = Shader.PropertyToID("_Color");
 
