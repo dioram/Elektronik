@@ -24,10 +24,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public float ItemSize;
 
-        public IEnumerable<Vector3> GetPoints() => _pointPlaces.Values
-                .Select(v => Blocks[v / CloudBlock.Capacity].GetItems()[v % CloudBlock.Capacity])
-                .Select(i => i.Position);
-
         public override int ItemsCount
         {
             get

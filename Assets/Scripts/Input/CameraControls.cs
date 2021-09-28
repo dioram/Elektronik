@@ -352,7 +352,7 @@ namespace Elektronik.Input
                     ""id"": ""dd9bbc29-3dca-44cd-8f43-5a6037c57fab"",
                     ""path"": ""1DAxis"",
                     ""interactions"": """",
-                    ""processors"": ""Scale(factor=50)"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""RotateRoll"",
                     ""isComposite"": true,

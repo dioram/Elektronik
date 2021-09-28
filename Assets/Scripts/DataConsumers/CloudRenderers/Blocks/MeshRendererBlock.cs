@@ -11,8 +11,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         
         public new const int Capacity = 256 * 256 * 3;
 
-        public override GPUItem[] GetItems() => Vertices;
-
         public override void SetScale(float value)
         {
             foreach (var material in _materials)

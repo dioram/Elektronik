@@ -10,13 +10,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public float ItemSize { get; set; } = 1f;
         public int ItemsCount { get; set; }  = 0;
 
-        public abstract GPUItem[] GetItems();
-
-        public virtual void Clear()
-        {
-            Updated = true;
-        }
-
         public virtual void SetScale(float value)
         {
             _renderMaterial.SetFloat(_scaleShaderProp, value);
@@ -74,14 +67,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         protected abstract void Draw();
 
         protected abstract void ReleaseBuffers();
-
-        protected void ClearArray(GPUItem[] array)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                array[i] = default;
-            }
-        }
 
         #endregion
 

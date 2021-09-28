@@ -31,7 +31,7 @@ namespace Protobuf.Tests.Elektronik
             _map[2].Point.Position = new Vector3Pb {X = -.5, Y = -.5};
             _map[3].Point.Position = new Vector3Pb {X = -.5, Y = 0};
             _map[4].Point.Position = new Vector3Pb {X = .5, Y = 0};
-            _map[0].Point.Color = new ColorPb{R = 255};
+            _map[0].Point.Color = new ColorPb {R = 255};
             _map[1].Point.Color = new ColorPb {G = 255};
             _map[2].Point.Color = new ColorPb {B = 255};
             _map[3].Point.Color = new ColorPb {R = 255, G = 255};

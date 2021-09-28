@@ -13,7 +13,7 @@ namespace Elektronik.Protobuf.Online
 
         public void Error(string format, params object[] formatArgs) => UnityEngine.Debug.LogErrorFormat(format, formatArgs);
 
-        public void Error(Exception exception, string message) => UnityEngine.Debug.LogError(message);
+        public void Error(Exception exception, string message) => UnityEngine.Debug.LogException(exception);
 
         public ILogger ForType<T>() => this;
 
@@ -27,7 +27,7 @@ namespace Elektronik.Protobuf.Online
 
         public void Warning(Exception exception, string message)
         {
-            UnityEngine.Debug.LogWarning(message);
+            UnityEngine.Debug.LogException(exception);
             throw exception;
         }
     }

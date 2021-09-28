@@ -21,16 +21,13 @@ Shader "Elektronik/MeshShaderTransparent"
             }
             CGPROGRAM
             #pragma target 3.0
-
+            #pragma require geometry
             #pragma vertex vertex_shader
             #pragma geometry geometry_shader
             #pragma fragment fragment_shader
             #pragma multi_compile _ _COMPUTE_BUFFER
 
             #include "UnityCG.cginc"
-            #include "UnityStandardBRDF.cginc"
-            #include "UnityLightingCommon.cginc"
-            #include "UnityPBSLighting.cginc"
 
             half _Scale;
             StructuredBuffer<float4> _VertsBuffer;

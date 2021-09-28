@@ -7,14 +7,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
     {
         public GPUItem[] Points;
 
-        public override GPUItem[] GetItems() => Points;
-
-        public override void Clear()
-        {
-            ClearArray(Points);
-            base.Clear();
-        }
-
         #region Protected definitions
 
         protected override void Init()
