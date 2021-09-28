@@ -26,7 +26,7 @@ namespace Elektronik.Input
                     ""id"": ""e24ac579-c14e-4cc3-8d8c-2050856141c0"",
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Hold(duration=0.001)""
                 },
                 {
                     ""name"": ""Move Sides"",
@@ -46,7 +46,7 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""Boost"",
-                    ""type"": ""Value"",
+                    ""type"": ""Button"",
                     ""id"": ""82748281-e420-40ac-b2a5-ada86d74f579"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
@@ -57,6 +57,38 @@ namespace Elektronik.Input
                     ""type"": ""Button"",
                     ""id"": ""e56fad53-e5b3-4ab9-bf9d-41b347ab0cda"",
                     ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""RotateRoll"",
+                    ""type"": ""Value"",
+                    ""id"": ""db0a9b74-2e68-41ee-a37e-e8de98713aa3"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""RotateMouseDrag"",
+                    ""type"": ""Value"",
+                    ""id"": ""33b5b0e5-d3a9-446f-9bc4-0a9d90dc3f82"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""MoveScroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""ad39ff12-ed05-4443-ba5d-b3cbd2241f48"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""MoveMouseDrag"",
+                    ""type"": ""Value"",
+                    ""id"": ""738e6622-390b-44a3-811a-05df58a6c1a7"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -129,21 +161,10 @@ namespace Elektronik.Input
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""8d35484f-01be-4c01-8c10-4e67651e1527"",
-                    ""path"": ""<Mouse>/scroll/y"",
-                    ""interactions"": """",
-                    ""processors"": ""Scale"",
-                    ""groups"": """",
-                    ""action"": ""Move Forward"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
                     ""name"": ""2D Vector"",
                     ""id"": ""518a5f76-4951-4875-9ce9-b082c52e44b5"",
                     ""path"": ""2DVector"",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold(duration=0.001)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Move Sides"",
@@ -199,7 +220,7 @@ namespace Elektronik.Input
                     ""id"": ""b6370aae-aa65-4980-946e-89eaef76305f"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
-                    ""processors"": ""ScaleVector2(x=50,y=50)"",
+                    ""processors"": ""ScaleVector2(x=50,y=-50)"",
                     ""groups"": """",
                     ""action"": ""Rotate"",
                     ""isComposite"": true,
@@ -250,20 +271,20 @@ namespace Elektronik.Input
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""Mouse Drag"",
-                    ""id"": ""bfec3a7b-0d2b-4bd6-92a2-61c44c3d8c51"",
-                    ""path"": ""MouseDrag"",
+                    ""name"": ""2D Vector"",
+                    ""id"": ""5a592485-7f6b-464d-9610-d0e467b50045"",
+                    ""path"": ""2DVector"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""ScaleVector2(x=50,y=-50)"",
                     ""groups"": """",
                     ""action"": ""Rotate"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""Button"",
-                    ""id"": ""9280b4ed-8e34-42e7-86df-85d5b03c9ca4"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""name"": ""up"",
+                    ""id"": ""fccb2606-1fb2-4480-9084-5f71cb7a8a49"",
+                    ""path"": ""<Keyboard>/numpad8"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -272,22 +293,33 @@ namespace Elektronik.Input
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""Axis1"",
-                    ""id"": ""f5491cf3-74e7-4fa2-ae06-b4c1afd3ffee"",
-                    ""path"": ""<Mouse>/delta/x"",
+                    ""name"": ""down"",
+                    ""id"": ""2c0fecb5-d8d7-4893-8763-a07016c5ac07"",
+                    ""path"": ""<Keyboard>/numpad2"",
                     ""interactions"": """",
-                    ""processors"": ""Scale(factor=5)"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""Axis2"",
-                    ""id"": ""f1685354-8f7e-45a3-bc18-44808782c381"",
-                    ""path"": ""<Mouse>/delta/y"",
+                    ""name"": ""left"",
+                    ""id"": ""1cf9004c-cc88-4694-a8aa-0bdd4034781a"",
+                    ""path"": ""<Keyboard>/numpad4"",
                     ""interactions"": """",
-                    ""processors"": ""Scale(factor=5),Invert"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""5aea85ba-b86a-4b29-99cb-2b0d34018fe0"",
+                    ""path"": ""<Keyboard>/numpad6"",
+                    ""interactions"": """",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
@@ -314,6 +346,138 @@ namespace Elektronik.Input
                     ""action"": ""Reset"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""dd9bbc29-3dca-44cd-8f43-5a6037c57fab"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateRoll"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""32137499-c9ce-4cd6-9c47-dafc3b966232"",
+                    ""path"": ""<Keyboard>/numpad7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateRoll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""70cf9b73-e326-4237-ba52-63a37ab9c1bd"",
+                    ""path"": ""<Keyboard>/numpad9"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateRoll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Mouse Drag"",
+                    ""id"": ""55e7f5f8-d865-4ae8-9af8-7948fed91293"",
+                    ""path"": ""MouseDrag"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateMouseDrag"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Button"",
+                    ""id"": ""69d6b647-a804-48a8-a22c-a201c00ff3cc"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateMouseDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Axis1"",
+                    ""id"": ""6951c7f7-3f84-405c-b9d9-8fd5d01a9b75"",
+                    ""path"": ""<Mouse>/delta/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateMouseDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Axis2"",
+                    ""id"": ""60be5947-1f77-40d4-b91b-039a3d391dd7"",
+                    ""path"": ""<Mouse>/delta/y"",
+                    ""interactions"": """",
+                    ""processors"": ""Invert"",
+                    ""groups"": """",
+                    ""action"": ""RotateMouseDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a1f20538-aedc-48c1-ba1e-5668a94dfc22"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveScroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Mouse Drag"",
+                    ""id"": ""e3463f8e-5cbf-4b51-bbea-f534fdd11b8c"",
+                    ""path"": ""MouseDrag"",
+                    ""interactions"": """",
+                    ""processors"": ""ScaleVector2(x=0.5,y=0.5),InvertVector2"",
+                    ""groups"": """",
+                    ""action"": ""MoveMouseDrag"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Button"",
+                    ""id"": ""e82cbb09-dabc-492d-84bf-44e5bd39addb"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveMouseDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Axis1"",
+                    ""id"": ""b154eb64-d83d-4f9e-a07c-2f73988709ba"",
+                    ""path"": ""<Mouse>/delta/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveMouseDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Axis2"",
+                    ""id"": ""11ffd488-e1ad-4f77-955a-3508c40009e0"",
+                    ""path"": ""<Mouse>/delta/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveMouseDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -995,6 +1159,10 @@ namespace Elektronik.Input
             m_Controls_Rotate = m_Controls.FindAction("Rotate", throwIfNotFound: true);
             m_Controls_Boost = m_Controls.FindAction("Boost", throwIfNotFound: true);
             m_Controls_Reset = m_Controls.FindAction("Reset", throwIfNotFound: true);
+            m_Controls_RotateRoll = m_Controls.FindAction("RotateRoll", throwIfNotFound: true);
+            m_Controls_RotateMouseDrag = m_Controls.FindAction("RotateMouseDrag", throwIfNotFound: true);
+            m_Controls_MoveScroll = m_Controls.FindAction("MoveScroll", throwIfNotFound: true);
+            m_Controls_MoveMouseDrag = m_Controls.FindAction("MoveMouseDrag", throwIfNotFound: true);
             // Default
             m_Default = asset.FindActionMap("Default", throwIfNotFound: true);
             m_Default_Cancel = m_Default.FindAction("Cancel", throwIfNotFound: true);
@@ -1074,6 +1242,10 @@ namespace Elektronik.Input
         private readonly InputAction m_Controls_Rotate;
         private readonly InputAction m_Controls_Boost;
         private readonly InputAction m_Controls_Reset;
+        private readonly InputAction m_Controls_RotateRoll;
+        private readonly InputAction m_Controls_RotateMouseDrag;
+        private readonly InputAction m_Controls_MoveScroll;
+        private readonly InputAction m_Controls_MoveMouseDrag;
         public struct ControlsActions
         {
             private @CameraControls m_Wrapper;
@@ -1083,6 +1255,10 @@ namespace Elektronik.Input
             public InputAction @Rotate => m_Wrapper.m_Controls_Rotate;
             public InputAction @Boost => m_Wrapper.m_Controls_Boost;
             public InputAction @Reset => m_Wrapper.m_Controls_Reset;
+            public InputAction @RotateRoll => m_Wrapper.m_Controls_RotateRoll;
+            public InputAction @RotateMouseDrag => m_Wrapper.m_Controls_RotateMouseDrag;
+            public InputAction @MoveScroll => m_Wrapper.m_Controls_MoveScroll;
+            public InputAction @MoveMouseDrag => m_Wrapper.m_Controls_MoveMouseDrag;
             public InputActionMap Get() { return m_Wrapper.m_Controls; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1107,6 +1283,18 @@ namespace Elektronik.Input
                     @Reset.started -= m_Wrapper.m_ControlsActionsCallbackInterface.OnReset;
                     @Reset.performed -= m_Wrapper.m_ControlsActionsCallbackInterface.OnReset;
                     @Reset.canceled -= m_Wrapper.m_ControlsActionsCallbackInterface.OnReset;
+                    @RotateRoll.started -= m_Wrapper.m_ControlsActionsCallbackInterface.OnRotateRoll;
+                    @RotateRoll.performed -= m_Wrapper.m_ControlsActionsCallbackInterface.OnRotateRoll;
+                    @RotateRoll.canceled -= m_Wrapper.m_ControlsActionsCallbackInterface.OnRotateRoll;
+                    @RotateMouseDrag.started -= m_Wrapper.m_ControlsActionsCallbackInterface.OnRotateMouseDrag;
+                    @RotateMouseDrag.performed -= m_Wrapper.m_ControlsActionsCallbackInterface.OnRotateMouseDrag;
+                    @RotateMouseDrag.canceled -= m_Wrapper.m_ControlsActionsCallbackInterface.OnRotateMouseDrag;
+                    @MoveScroll.started -= m_Wrapper.m_ControlsActionsCallbackInterface.OnMoveScroll;
+                    @MoveScroll.performed -= m_Wrapper.m_ControlsActionsCallbackInterface.OnMoveScroll;
+                    @MoveScroll.canceled -= m_Wrapper.m_ControlsActionsCallbackInterface.OnMoveScroll;
+                    @MoveMouseDrag.started -= m_Wrapper.m_ControlsActionsCallbackInterface.OnMoveMouseDrag;
+                    @MoveMouseDrag.performed -= m_Wrapper.m_ControlsActionsCallbackInterface.OnMoveMouseDrag;
+                    @MoveMouseDrag.canceled -= m_Wrapper.m_ControlsActionsCallbackInterface.OnMoveMouseDrag;
                 }
                 m_Wrapper.m_ControlsActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1126,6 +1314,18 @@ namespace Elektronik.Input
                     @Reset.started += instance.OnReset;
                     @Reset.performed += instance.OnReset;
                     @Reset.canceled += instance.OnReset;
+                    @RotateRoll.started += instance.OnRotateRoll;
+                    @RotateRoll.performed += instance.OnRotateRoll;
+                    @RotateRoll.canceled += instance.OnRotateRoll;
+                    @RotateMouseDrag.started += instance.OnRotateMouseDrag;
+                    @RotateMouseDrag.performed += instance.OnRotateMouseDrag;
+                    @RotateMouseDrag.canceled += instance.OnRotateMouseDrag;
+                    @MoveScroll.started += instance.OnMoveScroll;
+                    @MoveScroll.performed += instance.OnMoveScroll;
+                    @MoveScroll.canceled += instance.OnMoveScroll;
+                    @MoveMouseDrag.started += instance.OnMoveMouseDrag;
+                    @MoveMouseDrag.performed += instance.OnMoveMouseDrag;
+                    @MoveMouseDrag.canceled += instance.OnMoveMouseDrag;
                 }
             }
         }
@@ -1355,6 +1555,10 @@ namespace Elektronik.Input
             void OnRotate(InputAction.CallbackContext context);
             void OnBoost(InputAction.CallbackContext context);
             void OnReset(InputAction.CallbackContext context);
+            void OnRotateRoll(InputAction.CallbackContext context);
+            void OnRotateMouseDrag(InputAction.CallbackContext context);
+            void OnMoveScroll(InputAction.CallbackContext context);
+            void OnMoveMouseDrag(InputAction.CallbackContext context);
         }
         public interface IDefaultActions
         {

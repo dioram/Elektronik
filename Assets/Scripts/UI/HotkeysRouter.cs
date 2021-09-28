@@ -13,6 +13,8 @@ namespace Elektronik.UI
 {
     public class HotkeysRouter : MonoBehaviour
     {
+        #region Editor fields
+
         [SerializeField] private DataSourcesController DataSourcesController;
         [SerializeField] private VrController VrController;
         [SerializeField] private GpuMeshRenderer MeshRenderer;
@@ -24,6 +26,8 @@ namespace Elektronik.UI
         [SerializeField] private Window ConnectionsWindow;
         [Header("Buttons")] [SerializeField] private ChangingButton ToggleAxisButton;
         [Space] [SerializeField] private TMP_Dropdown GridSelector;
+
+        #endregion
 
         public IObservable<Unit> OnPlayPause { get; private set; }
         public IObservable<Unit> OnStop { get; private set; }
