@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Elektronik.Data.Converters;
 using Elektronik.DataControllers;
 using Elektronik.Threading;
+using Elektronik.UI.Windows;
+using TMPro;
 using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
@@ -17,6 +19,8 @@ namespace Elektronik.PluginsSystem.UnitySide
         [SerializeField] private GameObject ScreenLocker;
         [SerializeField] private DataSourcesController DataSourcesController;
         [SerializeField] private PluginWindowsManager PluginWindowsManager;
+        [SerializeField] private Window ConnectionsWindow;
+        [SerializeField] private TMP_Text LoadingErrorLabel;
 
         #endregion
 
@@ -33,21 +37,28 @@ namespace Elektronik.PluginsSystem.UnitySide
                 DataSourcesController.RemoveDataSource(CurrentSource.Data);
                 CurrentSource.Dispose();
             }
-            IDataSourcePlugin plugin = null;
             Task.Run(() =>
             {
                 try
                 {
-                    plugin = (IDataSourcePlugin) factory.Start(Converter);
-                    Plugins.Add(plugin);
+                    CurrentSource = (IDataSourcePlugin) factory.Start(Converter);
+                    Plugins.Add(CurrentSource);
                 }
                 catch (Exception e)
                 {
                     Debug.LogException(e);
+                    MainThreadInvoker.Enqueue(() =>
+                    {
+                        ScreenLocker.SetActive(false);
+                        ConnectionsWindow.Show();
+                        LoadingErrorLabel.text = $"Could not load data source: {e.Message}";
+                        LoadingErrorLabel.enabled = true;
+                    });
+                    return;
                 }
-                CurrentSource = plugin;
                 MainThreadInvoker.Enqueue(() =>
                 {
+                    LoadingErrorLabel.enabled = false;
                     PluginWindowsManager.RegisterPlugin(CurrentSource);
                     DataSourcesController.AddDataSource(CurrentSource.Data);
                     ScreenLocker.SetActive(false);

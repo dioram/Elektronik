@@ -7,7 +7,7 @@ namespace Elektronik.UI
     {
         [SerializeField] private GameObject RowPrefab;
 
-        struct Row
+        private readonly struct Row
         {
             public readonly bool IsLabel;
             public readonly string Name;
@@ -16,7 +16,7 @@ namespace Elektronik.UI
 
             public Row(string name, string main = "", string alternative = "")
             {
-                IsLabel = false;
+                IsLabel = string.IsNullOrEmpty(main) && string.IsNullOrEmpty(alternative);
                 Name = name;
                 Main = main;
                 Alternative = alternative;
