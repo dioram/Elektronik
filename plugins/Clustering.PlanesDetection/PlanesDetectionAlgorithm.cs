@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Clustering.PlanesDetection.Native;
 using Elektronik.Data.PackageObjects;
@@ -16,17 +17,27 @@ namespace Elektronik.Clustering.PlanesDetection
         protected override IList<IList<SlamPoint>> Compute(IList<SlamPoint> points, PlanesDetectionSettings settings)
         {
             var detector = new PlanesDetector();
-            var indexes = detector.FindPlanes(new PointsList(points.Select(ToNative)), settings.ToPrefs());
-            return points.Zip(indexes, (point, i) => (point, i))
-                .Where(z => z.i != 0)
-                .GroupBy(v => v.i)
-                .Select(g => (IList<SlamPoint>)g.Select(v => v.point).ToList())
-                .ToList();
+            var clustered = detector.FindPlanes(new PointsList(points.Select(ToNative)), settings.ToPrefs());
+            var res = new List<IList<SlamPoint>>();
+            for (var i = 0; i < clustered.Count; i++)
+            {
+                foreach (var plane in clustered[i])
+                {
+                    if (res.Count <= plane)
+                    {
+                        res.AddRange(Enumerable.Range(0, plane + 1 - res.Count).Select(_ => new List<SlamPoint>()));
+                    }
+
+                    res[plane].Add(points[i]);
+                }
+            }
+
+            return res;
         }
 
         public override string DisplayName { get; }
 
         private static Vector3d ToNative(SlamPoint point) =>
-            new Vector3d(point.Position.x, point.Position.y, point.Position.z);
+                new Vector3d(point.Position.x, point.Position.y, point.Position.z);
     }
 }
