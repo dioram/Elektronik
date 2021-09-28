@@ -561,6 +561,10 @@ MonoBehaviour:
     m_Localized: Use ortographic projection
     m_Metadata:
       m_Items: []
+  - m_Id: 61273090366103552
+    m_Localized: Switch material
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

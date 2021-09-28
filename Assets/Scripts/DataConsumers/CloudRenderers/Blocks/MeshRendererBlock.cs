@@ -5,9 +5,9 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class MeshRendererBlock : CloudBlock
     {
-        public Shader CloudShaderLit;
-        public bool OverrideColors = false;
         public GPUItem[] Vertices;
+        public Shader[] Shaders;
+        public int ShaderId;
         
         public new const int Capacity = 256 * 256 * 3;
 
@@ -15,23 +15,26 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public override void SetScale(float value)
         {
-            _renderMaterialLit.SetFloat(_scaleShaderProp, value);
-            _renderMaterialUnlit.SetFloat(_scaleShaderProp, value);
+            foreach (var material in _materials)
+            {
+                material.SetFloat(_scaleShaderProp, value);
+            }
         }
 
         #region Unity events
 
         protected override void Start()
         {
-            _renderMaterialUnlit = new Material(CloudShader) {hideFlags = HideFlags.DontSave};
-            _renderMaterialUnlit.EnableKeyword("_COMPUTE_BUFFER");
-            _renderMaterialLit = new Material(CloudShaderLit) {hideFlags = HideFlags.DontSave};
-            _renderMaterialLit.EnableKeyword("_COMPUTE_BUFFER");
+            _materials = Shaders.Select(sh => new Material(sh) { hideFlags = HideFlags.DontSave }).ToArray();
+            foreach (var material in _materials)
+            {
+                material.EnableKeyword("_COMPUTE_BUFFER");
+            }
         }
         
         protected override void OnRenderObject()
         {
-            var renderMat = OverrideColors ? _renderMaterialLit : _renderMaterialUnlit;
+            var renderMat = _materials[ShaderId % _materials.Length];
             renderMat.SetPass(0);
             SendData(renderMat);
             Draw();
@@ -40,6 +43,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         #endregion
 
         #region Protected
+        
         protected override void Init()
         {
             Vertices = Enumerable.Repeat(default(GPUItem), Capacity).ToArray();
@@ -73,8 +77,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         private readonly int _vertexBufferShaderProp = Shader.PropertyToID("_VertsBuffer");
         private readonly int _scaleShaderProp = Shader.PropertyToID("_Scale");
         private ComputeBuffer _vertexBuffer;
-        private Material _renderMaterialUnlit;
-        private Material _renderMaterialLit;
+        private Material[] _materials;
 
         #endregion
     }

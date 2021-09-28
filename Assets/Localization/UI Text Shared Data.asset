@@ -539,6 +539,10 @@ MonoBehaviour:
     m_Key: Use ortographic projection
     m_Metadata:
       m_Items: []
+  - m_Id: 61273090366103552
+    m_Key: Switch material
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

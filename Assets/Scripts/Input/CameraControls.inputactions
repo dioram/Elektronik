@@ -47,9 +47,9 @@
                 },
                 {
                     "name": "RotateRoll",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "db0a9b74-2e68-41ee-a37e-e8de98713aa3",
-                    "expectedControlType": "Axis",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 },
@@ -64,7 +64,7 @@
                 {
                     "name": "MoveScroll",
                     "type": "Value",
-                    "id": "ad39ff12-ed05-4443-ba5d-b3cbd2241f48",
+                    "id": "de2e6d8c-6004-49f6-92c5-2e2c225526f5",
                     "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
@@ -72,9 +72,9 @@
                 {
                     "name": "MoveMouseDrag",
                     "type": "Value",
-                    "id": "738e6622-390b-44a3-811a-05df58a6c1a7",
+                    "id": "644726d4-afa3-4b51-b429-6b13d16354f7",
                     "expectedControlType": "Vector2",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=0.5,y=0.5)",
                     "interactions": ""
                 }
             ],
@@ -205,7 +205,7 @@
                     "id": "b6370aae-aa65-4980-946e-89eaef76305f",
                     "path": "2DVector",
                     "interactions": "",
-                    "processors": "ScaleVector2(x=50,y=-50)",
+                    "processors": "ScaleVector2(x=-50,y=50)",
                     "groups": "",
                     "action": "Rotate",
                     "isComposite": true,
@@ -337,7 +337,7 @@
                     "id": "dd9bbc29-3dca-44cd-8f43-5a6037c57fab",
                     "path": "1DAxis",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Scale(factor=50)",
                     "groups": "",
                     "action": "RotateRoll",
                     "isComposite": true,
@@ -411,7 +411,7 @@
                 },
                 {
                     "name": "",
-                    "id": "a1f20538-aedc-48c1-ba1e-5668a94dfc22",
+                    "id": "8b68a925-08c3-4e0b-8343-7572ea3336e7",
                     "path": "<Mouse>/scroll/y",
                     "interactions": "",
                     "processors": "",
@@ -422,10 +422,10 @@
                 },
                 {
                     "name": "Mouse Drag",
-                    "id": "e3463f8e-5cbf-4b51-bbea-f534fdd11b8c",
+                    "id": "f2c85c2a-7203-40a7-9cd6-fc5559f29cf0",
                     "path": "MouseDrag",
                     "interactions": "",
-                    "processors": "ScaleVector2(x=0.5,y=0.5),InvertVector2",
+                    "processors": "",
                     "groups": "",
                     "action": "MoveMouseDrag",
                     "isComposite": true,
@@ -433,7 +433,7 @@
                 },
                 {
                     "name": "Button",
-                    "id": "e82cbb09-dabc-492d-84bf-44e5bd39addb",
+                    "id": "637e7701-94be-4f4d-b0c2-aaa290cf91b6",
                     "path": "<Mouse>/middleButton",
                     "interactions": "",
                     "processors": "",
@@ -444,7 +444,7 @@
                 },
                 {
                     "name": "Axis1",
-                    "id": "b154eb64-d83d-4f9e-a07c-2f73988709ba",
+                    "id": "d53e56fe-2e5f-4f39-a682-cc040f81de04",
                     "path": "<Mouse>/delta/x",
                     "interactions": "",
                     "processors": "",
@@ -455,7 +455,7 @@
                 },
                 {
                     "name": "Axis2",
-                    "id": "11ffd488-e1ad-4f77-955a-3508c40009e0",
+                    "id": "b3a803c5-6221-4ebf-bbcc-a23b8c26a41e",
                     "path": "<Mouse>/delta/y",
                     "interactions": "",
                     "processors": "",
@@ -640,7 +640,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "ToggleMeshColor",
+                    "name": "SwitchMeshShader",
                     "type": "Button",
                     "id": "8ffc8d36-4edd-416e-915e-63ac04b0b7c4",
                     "expectedControlType": "Button",
@@ -963,7 +963,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleMeshColor",
+                    "action": "SwitchMeshShader",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -974,7 +974,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleMeshColor",
+                    "action": "SwitchMeshShader",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -985,7 +985,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleMeshColor",
+                    "action": "SwitchMeshShader",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },

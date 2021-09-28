@@ -80,7 +80,7 @@ namespace Elektronik.UI
 
             if (_node is IMeshContainer mesh)
             {
-                MeshColorButton.OnClickAsObservable().Subscribe(_ => mesh.OverrideColors()).AddTo(this);
+                MeshColorButton.OnClickAsObservable().Subscribe(_ => mesh.SwitchShader()).AddTo(this);
             }
             else
             {

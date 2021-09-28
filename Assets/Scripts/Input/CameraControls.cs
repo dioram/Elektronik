@@ -62,9 +62,9 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""RotateRoll"",
-                    ""type"": ""Value"",
+                    ""type"": ""Button"",
                     ""id"": ""db0a9b74-2e68-41ee-a37e-e8de98713aa3"",
-                    ""expectedControlType"": ""Axis"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 },
@@ -79,7 +79,7 @@ namespace Elektronik.Input
                 {
                     ""name"": ""MoveScroll"",
                     ""type"": ""Value"",
-                    ""id"": ""ad39ff12-ed05-4443-ba5d-b3cbd2241f48"",
+                    ""id"": ""de2e6d8c-6004-49f6-92c5-2e2c225526f5"",
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -87,9 +87,9 @@ namespace Elektronik.Input
                 {
                     ""name"": ""MoveMouseDrag"",
                     ""type"": ""Value"",
-                    ""id"": ""738e6622-390b-44a3-811a-05df58a6c1a7"",
+                    ""id"": ""644726d4-afa3-4b51-b429-6b13d16354f7"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
+                    ""processors"": ""ScaleVector2(x=0.5,y=0.5)"",
                     ""interactions"": """"
                 }
             ],
@@ -220,7 +220,7 @@ namespace Elektronik.Input
                     ""id"": ""b6370aae-aa65-4980-946e-89eaef76305f"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
-                    ""processors"": ""ScaleVector2(x=50,y=-50)"",
+                    ""processors"": ""ScaleVector2(x=-50,y=50)"",
                     ""groups"": """",
                     ""action"": ""Rotate"",
                     ""isComposite"": true,
@@ -352,7 +352,7 @@ namespace Elektronik.Input
                     ""id"": ""dd9bbc29-3dca-44cd-8f43-5a6037c57fab"",
                     ""path"": ""1DAxis"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""Scale(factor=50)"",
                     ""groups"": """",
                     ""action"": ""RotateRoll"",
                     ""isComposite"": true,
@@ -426,7 +426,7 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a1f20538-aedc-48c1-ba1e-5668a94dfc22"",
+                    ""id"": ""8b68a925-08c3-4e0b-8343-7572ea3336e7"",
                     ""path"": ""<Mouse>/scroll/y"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -437,10 +437,10 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""Mouse Drag"",
-                    ""id"": ""e3463f8e-5cbf-4b51-bbea-f534fdd11b8c"",
+                    ""id"": ""f2c85c2a-7203-40a7-9cd6-fc5559f29cf0"",
                     ""path"": ""MouseDrag"",
                     ""interactions"": """",
-                    ""processors"": ""ScaleVector2(x=0.5,y=0.5),InvertVector2"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""MoveMouseDrag"",
                     ""isComposite"": true,
@@ -448,7 +448,7 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""Button"",
-                    ""id"": ""e82cbb09-dabc-492d-84bf-44e5bd39addb"",
+                    ""id"": ""637e7701-94be-4f4d-b0c2-aaa290cf91b6"",
                     ""path"": ""<Mouse>/middleButton"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -459,7 +459,7 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""Axis1"",
-                    ""id"": ""b154eb64-d83d-4f9e-a07c-2f73988709ba"",
+                    ""id"": ""d53e56fe-2e5f-4f39-a682-cc040f81de04"",
                     ""path"": ""<Mouse>/delta/x"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -470,7 +470,7 @@ namespace Elektronik.Input
                 },
                 {
                     ""name"": ""Axis2"",
-                    ""id"": ""11ffd488-e1ad-4f77-955a-3508c40009e0"",
+                    ""id"": ""b3a803c5-6221-4ebf-bbcc-a23b8c26a41e"",
                     ""path"": ""<Mouse>/delta/y"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -655,7 +655,7 @@ namespace Elektronik.Input
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""ToggleMeshColor"",
+                    ""name"": ""SwitchMeshShader"",
                     ""type"": ""Button"",
                     ""id"": ""8ffc8d36-4edd-416e-915e-63ac04b0b7c4"",
                     ""expectedControlType"": ""Button"",
@@ -978,7 +978,7 @@ namespace Elektronik.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ToggleMeshColor"",
+                    ""action"": ""SwitchMeshShader"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -989,7 +989,7 @@ namespace Elektronik.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ToggleMeshColor"",
+                    ""action"": ""SwitchMeshShader"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -1000,7 +1000,7 @@ namespace Elektronik.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ToggleMeshColor"",
+                    ""action"": ""SwitchMeshShader"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -1183,7 +1183,7 @@ namespace Elektronik.Input
             m_Hotkeys_ShowAnalyticsTools = m_Hotkeys.FindAction("ShowAnalyticsTools", throwIfNotFound: true);
             m_Hotkeys_ToggleGrid = m_Hotkeys.FindAction("ToggleGrid", throwIfNotFound: true);
             m_Hotkeys_ToggleAxis = m_Hotkeys.FindAction("ToggleAxis", throwIfNotFound: true);
-            m_Hotkeys_ToggleMeshColor = m_Hotkeys.FindAction("ToggleMeshColor", throwIfNotFound: true);
+            m_Hotkeys_SwitchMeshShader = m_Hotkeys.FindAction("SwitchMeshShader", throwIfNotFound: true);
             m_Hotkeys_GoToVR = m_Hotkeys.FindAction("GoToVR", throwIfNotFound: true);
             m_Hotkeys_VRHelp = m_Hotkeys.FindAction("VR Help", throwIfNotFound: true);
             m_Hotkeys_Stop = m_Hotkeys.FindAction("Stop", throwIfNotFound: true);
@@ -1389,7 +1389,7 @@ namespace Elektronik.Input
         private readonly InputAction m_Hotkeys_ShowAnalyticsTools;
         private readonly InputAction m_Hotkeys_ToggleGrid;
         private readonly InputAction m_Hotkeys_ToggleAxis;
-        private readonly InputAction m_Hotkeys_ToggleMeshColor;
+        private readonly InputAction m_Hotkeys_SwitchMeshShader;
         private readonly InputAction m_Hotkeys_GoToVR;
         private readonly InputAction m_Hotkeys_VRHelp;
         private readonly InputAction m_Hotkeys_Stop;
@@ -1412,7 +1412,7 @@ namespace Elektronik.Input
             public InputAction @ShowAnalyticsTools => m_Wrapper.m_Hotkeys_ShowAnalyticsTools;
             public InputAction @ToggleGrid => m_Wrapper.m_Hotkeys_ToggleGrid;
             public InputAction @ToggleAxis => m_Wrapper.m_Hotkeys_ToggleAxis;
-            public InputAction @ToggleMeshColor => m_Wrapper.m_Hotkeys_ToggleMeshColor;
+            public InputAction @SwitchMeshShader => m_Wrapper.m_Hotkeys_SwitchMeshShader;
             public InputAction @GoToVR => m_Wrapper.m_Hotkeys_GoToVR;
             public InputAction @VRHelp => m_Wrapper.m_Hotkeys_VRHelp;
             public InputAction @Stop => m_Wrapper.m_Hotkeys_Stop;
@@ -1468,9 +1468,9 @@ namespace Elektronik.Input
                     @ToggleAxis.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleAxis;
                     @ToggleAxis.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleAxis;
                     @ToggleAxis.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleAxis;
-                    @ToggleMeshColor.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleMeshColor;
-                    @ToggleMeshColor.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleMeshColor;
-                    @ToggleMeshColor.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleMeshColor;
+                    @SwitchMeshShader.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSwitchMeshShader;
+                    @SwitchMeshShader.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSwitchMeshShader;
+                    @SwitchMeshShader.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSwitchMeshShader;
                     @GoToVR.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnGoToVR;
                     @GoToVR.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnGoToVR;
                     @GoToVR.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnGoToVR;
@@ -1529,9 +1529,9 @@ namespace Elektronik.Input
                     @ToggleAxis.started += instance.OnToggleAxis;
                     @ToggleAxis.performed += instance.OnToggleAxis;
                     @ToggleAxis.canceled += instance.OnToggleAxis;
-                    @ToggleMeshColor.started += instance.OnToggleMeshColor;
-                    @ToggleMeshColor.performed += instance.OnToggleMeshColor;
-                    @ToggleMeshColor.canceled += instance.OnToggleMeshColor;
+                    @SwitchMeshShader.started += instance.OnSwitchMeshShader;
+                    @SwitchMeshShader.performed += instance.OnSwitchMeshShader;
+                    @SwitchMeshShader.canceled += instance.OnSwitchMeshShader;
                     @GoToVR.started += instance.OnGoToVR;
                     @GoToVR.performed += instance.OnGoToVR;
                     @GoToVR.canceled += instance.OnGoToVR;
@@ -1581,7 +1581,7 @@ namespace Elektronik.Input
             void OnShowAnalyticsTools(InputAction.CallbackContext context);
             void OnToggleGrid(InputAction.CallbackContext context);
             void OnToggleAxis(InputAction.CallbackContext context);
-            void OnToggleMeshColor(InputAction.CallbackContext context);
+            void OnSwitchMeshShader(InputAction.CallbackContext context);
             void OnGoToVR(InputAction.CallbackContext context);
             void OnVRHelp(InputAction.CallbackContext context);
             void OnStop(InputAction.CallbackContext context);

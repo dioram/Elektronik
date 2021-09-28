@@ -9,19 +9,18 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class GpuMeshRenderer : MonoBehaviour, IMeshRenderer
     {
-        public Shader CloudShaderUnlit;
-        public Shader CloudShaderLit;
+        [SerializeField] private Shader[] Shaders;
 
-        public bool OverrideColors
+        public int ShaderId
         {
-            get => _overrideColors;
+            get => _shaderId;
             set
             {
-                if (_overrideColors == value) return;
-                _overrideColors = value;
+                if (_shaderId == value) return;
+                _shaderId = value % Shaders.Length;
                 foreach (var block in _blocks)
                 {
-                    block.OverrideColors = value;
+                    block.ShaderId = value;
                 }
             }
         }
@@ -49,8 +48,8 @@ namespace Elektronik.DataConsumers.CloudRenderers
         #region Private
 
         private readonly List<MeshRendererBlock> _blocks = new List<MeshRendererBlock>();
-        private bool _overrideColors = false;
         private float _scale;
+        private int _shaderId;
 
         private void UpdateMesh((Vector3 pos, Color color)[] vertices, int[] indexes, bool takeLock = true)
         {
@@ -92,7 +91,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                         var requiredSpace = (indexes.Length - _blocks.Count * MeshRendererBlock.Capacity) +
                                 MeshRendererBlock.Capacity;
                         var requiredBlocks = requiredSpace / MeshRendererBlock.Capacity + 1;
-                        for (int i = 0; i < requiredBlocks; i++)
+                        for (var i = 0; i < requiredBlocks; i++)
                         {
                             CreateNewBlock();
                         }
@@ -125,8 +124,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 // We can just live with that.
             }
             var block = go.AddComponent<MeshRendererBlock>();
-            block.CloudShader = CloudShaderUnlit;
-            block.CloudShaderLit = CloudShaderLit;
+            block.Shaders = Shaders;
             block.Updated = true;
             _blocks.Add(block);
         }

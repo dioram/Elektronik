@@ -82,8 +82,8 @@ namespace Elektronik.UI
             hotkeys.ToggleAxis.PerformedAsObservable()
                     .Subscribe(_ => ToggleAxisButton.Toggle())
                     .AddTo(this);
-            hotkeys.ToggleMeshColor.PerformedAsObservable()
-                    .Subscribe(_ => MeshRenderer.OverrideColors = !MeshRenderer.OverrideColors)
+            hotkeys.SwitchMeshShader.PerformedAsObservable()
+                    .Subscribe(_ => MeshRenderer.ShaderId++)
                     .AddTo(this);
             hotkeys.StartRecording.PerformedAsObservable()
                     .Subscribe(_ => RecorderPluginsController.Toggle())

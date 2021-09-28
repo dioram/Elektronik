@@ -1,4 +1,4 @@
-Shader "Elektronik/MeshShaderTransparent"
+Shader "Elektronik/MeshShaderUnlit"
 {
     Properties
     {
@@ -87,6 +87,8 @@ Shader "Elektronik/MeshShaderTransparent"
                 const float delta = fwidth(min_bary);
                 min_bary = smoothstep(0.5 * delta, 1.5 * delta, min_bary);
 
+                clip(0.5 - min_bary);
+                
                 return i.color * min_bary;
             }
             ENDCG
