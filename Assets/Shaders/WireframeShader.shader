@@ -13,6 +13,7 @@
         Pass
         {
             CGPROGRAM
+            #pragma target 4.0
             #pragma vertex vert
             #pragma geometry geometry_shader
             #pragma fragment frag
@@ -27,7 +28,7 @@
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
             };
-
+            
             struct v2f
             {
                 float4 vertex : SV_POSITION;
@@ -41,7 +42,7 @@
                 o.bary_coord = float2(0, 0);
                 return o;
             }
-
+            
             [maxvertexcount(3)]
             void geometry_shader(triangle v2f i[3], inout TriangleStream<v2f> stream)
             {

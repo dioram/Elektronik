@@ -17,7 +17,7 @@ namespace Protobuf.Tests.Elektronik
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
 
-            var channel = new Channel("127.0.0.1:5050", ChannelCredentials.Insecure);
+            var channel = new Channel("192.168.1.182:5050", ChannelCredentials.Insecure);
             MapClient = new MapsManagerPb.MapsManagerPbClient(channel);
             ImageClient = new ImageManagerPb.ImageManagerPbClient(channel);
         }

@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Elektronik.UI.Localization;
+using UniRx;
 using UnityEngine;
+using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
 
 namespace Elektronik.PluginsSystem.UnitySide
@@ -23,6 +27,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         private static List<IElektronikPluginsFactory> LoadPluginFactories()
         {
+#if !UNITY_ANDROID
             var res = new List<IElektronikPluginsFactory>();
             try
             {
@@ -50,9 +55,12 @@ namespace Elektronik.PluginsSystem.UnitySide
             }
 
             return res;
+#else
+            return AndroidPluginsLoader.Factories;
+#endif
         }
 
-        private static List<IElektronikPluginsFactory> LoadFromFile(string path)
+        public static List<IElektronikPluginsFactory> LoadFromFile(string path)
         {
             var factories = Assembly.LoadFrom(path)
                     .GetTypes()

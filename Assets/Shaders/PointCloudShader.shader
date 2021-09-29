@@ -21,6 +21,7 @@ Shader "Elektronik/PointCloudShader"
                 "LightMode"="ForwardBase"
             }
             CGPROGRAM
+            #pragma target 4.0
             #pragma vertex Vertex
             #pragma geometry Geometry
             #pragma fragment Fragment

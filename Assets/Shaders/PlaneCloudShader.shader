@@ -72,8 +72,8 @@ Shader "Elektronik/PlaneCloudShader"
 
             half3 Fragment(VertexOutput input) : SV_Target
             {
-                float camDist = length(input.viewPos) / 10;
-                return float4(input.color, 1) / camDist;
+                const float cam_dist = length(input.viewPos) / 10;
+                return float4(input.color, 1) / cam_dist;
             }
             ENDCG
         }

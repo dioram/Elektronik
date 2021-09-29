@@ -111,8 +111,10 @@ namespace Ros.Exporter
                         im.SetPixel(i, j, ReadColor(stream, imageMessage.Encoding));
                     }
                 }
-                
-                im.Save($"{data.TopicName.Replace("/", "_")}//{data.Timestamp}.png", ImageFormat.Png);
+
+                var ts = $"{image.header.stamp.secs}{image.header.stamp.nsecs:000000000}";
+                var filepath = Path.Join(path, $"{data.TopicName.Replace("/", "_")}//{ts}.png");
+                im.Save(filepath, ImageFormat.Png);
                 return true;
             }
             case VideoFrame:
@@ -144,8 +146,9 @@ namespace Ros.Exporter
                         im.SetPixel(i, j, ReadColor(stream, imageMessage.Encoding));
                     }
                 }
-                
-                im.Save($"{topic.Name.Replace("/", "_")}//{data.Timestamp}.png", ImageFormat.Png);
+                var ts = $"{image.header.stamp.secs}{image.header.stamp.nsecs:000000000}";
+                var filepath = Path.Join(path, $"{topic.Name.Replace("/", "_")}//{ts}.png");
+                im.Save(filepath, ImageFormat.Png);
                 return;
             }
             case VideoFrame:
@@ -162,7 +165,7 @@ namespace Ros.Exporter
             {
             case "-1":
             {
-                var parser = new BagParser(args[0]);
+                var parser = new BagParser(args[1]);
                 await parser.ReadMessagesAsync()
                         .Where(m => m.TopicName is not null && m.TopicType is not null)
                         .Select(m => ExportData(m, args[2])).ToArrayAsync();
