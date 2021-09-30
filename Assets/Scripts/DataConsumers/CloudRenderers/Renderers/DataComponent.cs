@@ -38,4 +38,8 @@ namespace Elektronik.DataConsumers.CloudRenderers
     public class TrackedObjectData : DataComponent<SlamTrackedObject>
     {
     }
+
+    public class CubeObjectData : DataComponent<SlamMarker>
+    {
+    }
 }

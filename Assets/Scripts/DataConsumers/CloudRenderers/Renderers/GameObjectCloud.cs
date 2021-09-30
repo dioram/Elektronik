@@ -25,7 +25,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
         
-
         public override float Scale
         {
             get => _scale;

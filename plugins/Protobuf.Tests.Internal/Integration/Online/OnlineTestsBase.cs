@@ -26,6 +26,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
         protected readonly Mock<ICloudRenderer<SlamObservation>> MockedObservationsRenderer;
         protected readonly Mock<ICloudRenderer<SlamTrackedObject>> MockedTrackedObjsRenderer;
         protected readonly Mock<ICloudRenderer<SlamPlane>> MockedPlanesRenderer;
+        protected readonly Mock<ICloudRenderer<SlamMarker>> MockedMarkerRenderer;
         protected readonly Mock<IDataRenderer<byte[]>> MockedImageRenderer;
 
         protected OnlineTestsBase(int port)
@@ -46,6 +47,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             MockedObservationsRenderer = new Mock<ICloudRenderer<SlamObservation>>();
             MockedTrackedObjsRenderer = new Mock<ICloudRenderer<SlamTrackedObject>>();
             MockedPlanesRenderer = new Mock<ICloudRenderer<SlamPlane>>();
+            MockedMarkerRenderer = new Mock<ICloudRenderer<SlamMarker>>();
             MockedImageRenderer = new Mock<IDataRenderer<byte[]>>();
 
             SetupPrintFromMocks();
@@ -57,6 +59,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             Sut.Data.AddConsumer(MockedTrackedObjsRenderer.Object);
             Sut.Data.AddConsumer(MockedPlanesRenderer.Object);
             Sut.Data.AddConsumer(MockedImageRenderer.Object);
+            Sut.Data.AddConsumer(MockedMarkerRenderer.Object);
         }
 
         protected void SendPacket(PacketPb packet)
@@ -191,6 +194,31 @@ namespace Protobuf.Tests.Internal.Integration.Online
                         TestContext.WriteLine(
                             $"Simple lines removed: {sender}\n{string.Join(", ", e.RemovedItems.Select(i => i.Id))}");
                     });
+
+
+            MockedMarkerRenderer
+                    .Setup(r => r.OnItemsAdded(It.IsAny<object>(), It.IsAny<AddedEventArgs<SlamMarker>>()))
+                    .Callback((object sender, AddedEventArgs<SlamMarker> e) =>
+                    {
+                        var ss = e.AddedItems
+                                .Select(ToString);
+                        TestContext.WriteLine($"Markers added: {sender}\n{string.Join("\n", ss)}");
+                    });
+            MockedMarkerRenderer
+                    .Setup(r => r.OnItemsUpdated(It.IsAny<object>(), It.IsAny<UpdatedEventArgs<SlamMarker>>()))
+                    .Callback((object sender, UpdatedEventArgs<SlamMarker> e) =>
+                    {
+                        var ss = e.UpdatedItems
+                                .Select(ToString);
+                        TestContext.WriteLine($"Markers updated: {sender}\n{string.Join("\n", ss)}");
+                    });
+            MockedMarkerRenderer
+                    .Setup(r => r.OnItemsRemoved(It.IsAny<object>(), It.IsAny<RemovedEventArgs<SlamMarker>>()))
+                    .Callback((object sender, RemovedEventArgs<SlamMarker> e) =>
+                    {
+                        TestContext.WriteLine(
+                            $"Markers removed: {sender}\n{string.Join(", ", e.RemovedItems.Select(i => i.Id))}");
+                    });
         }
 
         private string ToString(SlamPoint p) => $"{p.Id}, {p.Position}, {p.Color}, \"{p.Message}\"";
@@ -199,5 +227,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 $"{p.Id}, {p.Position}, {p.Rotation}, {p.Color}, \"{p.Message}\"";
 
         private string ToString(SimpleLine p) => $"{p.Id}, {p.BeginPos}, {p.EndPos}, {p.BeginColor}, {p.EndColor}";
+
+        private string ToString(SlamMarker m) =>
+                $"{m.Id}, {m.Type}, {m.Position}, {m.Rotation}, {m.Scale}, \"{m.Message}\"";
     }
 }

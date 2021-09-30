@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Clustering.PlanesDetection.Native;
 using Elektronik.Data.PackageObjects;

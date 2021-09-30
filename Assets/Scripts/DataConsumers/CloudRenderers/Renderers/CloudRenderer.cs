@@ -5,6 +5,7 @@ using System.Threading;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.Threading;
+using JetBrains.Annotations;
 using UnityEngine;
 using Grid = Elektronik.Cameras.Grid;
 
@@ -66,22 +67,24 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public override void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
+            var addedItems = Filter is null ? e.AddedItems : e.AddedItems.Where(Filter).ToArray();
             if (!IsSenderVisible(sender)) return;
-            if (CheckAndCreateReserves(sender, e.AddedItems)) return;
-            AddItems(sender, e.AddedItems);
+            if (CheckAndCreateReserves(sender, addedItems)) return;
+            AddItems(sender, addedItems);
         }
 
         public override void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
+            var updatedItems = Filter is null ? e.UpdatedItems : e.UpdatedItems.Where(Filter);
             if (!IsSenderVisible(sender)) return;
             lock (_pointPlaces)
             {
-                foreach (var item in e.UpdatedItems)
+                foreach (var item in updatedItems)
                 {
                     if (item.Message == GridMessage && item is SlamPlane) continue;
                     var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
-                    int layer = index / CloudBlock.Capacity;
-                    int inLayerId = index % CloudBlock.Capacity;
+                    var layer = index / CloudBlock.Capacity;
+                    var inLayerId = index % CloudBlock.Capacity;
                     lock (Blocks[layer])
                     {
                         ProcessItem(Blocks[layer], item, inLayerId);
@@ -93,9 +96,10 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public override void OnItemsRemoved(object sender, RemovedEventArgs<TCloudItem> e)
         {
+            var removedItems = Filter is null ? e.RemovedItems : e.RemovedItems.Where(Filter).ToList();
             lock (_pointPlaces)
             {
-                foreach (var item in e.RemovedItems)
+                foreach (var item in removedItems)
                 {
                     if (!_pointPlaces.ContainsKey((sender.GetHashCode(), item.Id))) continue;
 
@@ -104,8 +108,8 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     if (index == _maxPlace - 1) _maxPlace--;
                     else _freePlaces.Enqueue(index);
 
-                    int layer = index / CloudBlock.Capacity;
-                    int inLayerId = index % CloudBlock.Capacity;
+                    var layer = index / CloudBlock.Capacity;
+                    var inLayerId = index % CloudBlock.Capacity;
                     lock (Blocks[layer])
                     {
                         RemoveItem(Blocks[layer], inLayerId);
@@ -114,7 +118,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     }
                 }
 
-                _amountOfItems -= e.RemovedItems.Count();
+                _amountOfItems -= removedItems.Count();
             }
         }
 
@@ -127,6 +131,8 @@ namespace Elektronik.DataConsumers.CloudRenderers
         protected abstract void RemoveItem(TCloudBlock block, int inBlockId);
 
         protected readonly List<TCloudBlock> Blocks = new List<TCloudBlock>();
+
+        [CanBeNull] protected virtual Func<TCloudItem, bool> Filter { get; } = null;
 
         #endregion
 

@@ -8,7 +8,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
     {
         protected override void ProcessItem(PlaneCloudBlock block, SlamPlane item, int inBlockId)
         {
-            float halfSide = ItemSize / 2;
+            var halfSide = ItemSize / 2;
             var v1 = new Vector3(-halfSide, 0, -halfSide);
             var v2 = new Vector3(halfSide, 0, -halfSide);
             var v3 = new Vector3(halfSide, 0, halfSide);
@@ -27,7 +27,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 rotation * v2 + item.Offset,
                 rotation * v1 + item.Offset,
             };
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < 8; i++)
             {
                 block.Planes[inBlockId * 8 + i] = new GPUItem(vertices[i], item.Color);
             }
@@ -35,7 +35,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         protected override void RemoveItem(PlaneCloudBlock block, int inBlockId)
         {
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < 8; i++)
             {
                 block.Planes[inBlockId * 8 + i] = default;
             }

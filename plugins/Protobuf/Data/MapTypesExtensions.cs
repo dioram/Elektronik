@@ -98,6 +98,26 @@ namespace Elektronik.Protobuf.Data
 
             return result;
         }
+        
+        public static SlamMarkerDiff[] ExtractMarkers(this PacketPb packet, ICSConverter? converter = null)
+        {
+            var result = new SlamMarkerDiff[packet.Markers.Data.Count];
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = packet.Markers.Data[i];
+                
+                var position = result[i].Position;
+                if (position.HasValue) result[i].Position = converter?.Convert(position.Value);
+
+                var rotation = result[i].Rotation;
+                if (rotation.HasValue) result[i].Rotation = converter?.Convert(rotation.Value);
+
+                var scale = result[i].Scale;
+                if (scale.HasValue) result[i].Scale = scale.Value;
+            }
+
+            return result;
+        }
     }
 
     public partial class Vector3Pb
@@ -202,6 +222,34 @@ namespace Elektronik.Protobuf.Data
                         Offset = p.Offset
                     }
                     : default;
+    }
+    
+    public partial class MarkerPb
+    {
+        public static implicit operator SlamMarkerDiff(MarkerPb? p)
+            => p != null
+                    ? new SlamMarkerDiff
+                    {
+                        Id = p.Id,
+                        Color = p.Color,
+                        Position = p.Position,
+                        Message = p.Message,
+                        Rotation = p.Orientation,
+                        Scale = p.Scale,
+                        Type = p.HasPrimitive ? FromProtobuf(p.Primitive) : null,
+                    }
+                    : default;
+
+        private static SlamMarker.MarkerType? FromProtobuf(MarkerPb.Types.Type t) =>
+                t switch
+                {
+                    Types.Type.Sphere => SlamMarker.MarkerType.Sphere,
+                    Types.Type.Cube => SlamMarker.MarkerType.Cube,
+                    Types.Type.Crystal => SlamMarker.MarkerType.Crystal,
+                    Types.Type.SemitransparentCube => SlamMarker.MarkerType.SemitransparentCube,
+                    Types.Type.SemitransparentSphere => SlamMarker.MarkerType.SemitransparentSphere,
+                    _ => null,
+                };
     }
 
     public static class Conversions

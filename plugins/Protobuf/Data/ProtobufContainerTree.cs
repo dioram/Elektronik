@@ -17,12 +17,14 @@ namespace Elektronik.Protobuf.Data
         public readonly IConnectableObjectsContainer<SlamPoint> Points;
         public readonly IContainer<SlamLine> Lines;
         public readonly IContainer<SlamPlane> Planes;
+        public readonly IContainer<SlamMarker> Markers;
         public readonly ISourceTreeNode? Image;
         public readonly IMeshContainer MeshContainer;
         public readonly Connector Connector;
         public readonly SlamDataInfoPresenter? SpecialInfo;
 
-        public ProtobufContainerTree(string displayName, ISourceTreeNode? image, SlamDataInfoPresenter? specialInfo = null)
+        public ProtobufContainerTree(string displayName, ISourceTreeNode? image,
+                                     SlamDataInfoPresenter? specialInfo = null)
         {
             DisplayName = displayName;
             Image = image;
@@ -41,18 +43,20 @@ namespace Elektronik.Protobuf.Data
             Lines = new SlamLinesContainer("Lines");
             MeshContainer = new MeshReconstructor(Points, "Mesh");
             Planes = new CloudContainer<SlamPlane>("Planes");
+            Markers = new CloudContainer<SlamMarker>("Markers");
             var observationsGraph = new VirtualSource("Observations graph", new List<ISourceTreeNode>
             {
-                (ISourceTreeNode) Observations,
+                (ISourceTreeNode)Observations,
                 Connector
             });
-            var ch =  new List<ISourceTreeNode>
+            var ch = new List<ISourceTreeNode>
             {
-                (ISourceTreeNode) Points,
-                (ISourceTreeNode) TrackedObjs,
-                (ISourceTreeNode) Planes,
+                (ISourceTreeNode)Points,
+                (ISourceTreeNode)TrackedObjs,
+                (ISourceTreeNode)Planes,
                 observationsGraph,
-                (ISourceTreeNode) Lines,
+                (ISourceTreeNode)Lines,
+                (ISourceTreeNode)Markers,
                 MeshContainer,
             };
             if (Image != null) ch.Add(Image);
@@ -104,7 +108,7 @@ namespace Elektronik.Protobuf.Data
                 (Lines as ISourceTreeNode)!.TakeSnapshot(),
                 (Planes as ISourceTreeNode)!.TakeSnapshot(),
             };
-            
+
             return new VirtualSource(DisplayName, children);
         }
 
@@ -123,12 +127,13 @@ namespace Elektronik.Protobuf.Data
                 {
                     child.IsVisible = value;
                 }
+
                 OnVisibleChanged?.Invoke(value);
             }
         }
 
         public bool ShowButton { get; } = true;
-        
+
         public event Action<bool>? OnVisibleChanged;
 
         #endregion

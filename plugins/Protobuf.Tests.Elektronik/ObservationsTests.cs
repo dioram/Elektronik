@@ -90,11 +90,11 @@ namespace Protobuf.Tests.Elektronik
                 Timestamp = ++_timestamp,
             };
             
-            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 0}, Orientation = new Vector4Pb {W = 1, X = 1}});
-            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 1}, Orientation = new Vector4Pb {W = 1, X = 1}});
-            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 2}, Orientation = new Vector4Pb {W = 1, X = 1}});
-            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3}, Orientation = new Vector4Pb {W = 1, X = 1}});
-            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4}, Orientation = new Vector4Pb {W = 1, X = 1}});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 0}, Orientation = new Vector4Pb { X = 0.70710676908493042, W = 0.70710676908493042 }});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 1}, Orientation = new Vector4Pb { X = 0.70710676908493042, W = 0.70710676908493042 }});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 2}, Orientation = new Vector4Pb { X = 0.70710676908493042, W = 0.70710676908493042 }});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3}, Orientation = new Vector4Pb { X = 0.70710676908493042, W = 0.70710676908493042 }});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4}, Orientation = new Vector4Pb { X = 0.70710676908493042, W = 0.70710676908493042 }});
 
             SendAndCheck(packet, Filename);
         }

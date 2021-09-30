@@ -67,6 +67,23 @@ message TrackedObjPb {
   optional string message = 5;
 }
 
+message MarkerPb {
+  int32 id = 1;
+  optional Vector3Pb position = 2;
+  optional Vector4Pb orientation = 3;
+  optional Vector3Pb scale = 4;
+  optional ColorPb color = 5;
+  optional string message = 6;
+  enum Type {
+    Sphere = 0;
+    Cube = 1;
+    Crystal = 2;
+    SemitransparentCube = 3;
+    SemitransparentSphere = 4;
+  }
+  optional Type primitive = 7;
+}
+
 message PacketPb {
   enum ActionType {
     add = 0;
@@ -90,6 +107,9 @@ message PacketPb {
   message Planes {
     repeated PlanePb data = 1;
   }
+  message Markers {
+    repeated MarkerPb data = 1;
+  }
   message Connections {
     enum Action {
       unknown = 0;
@@ -112,6 +132,7 @@ message PacketPb {
     Observations observations = 14;
     Lines lines = 15;
     Planes planes = 16;
+    Markers markers = 17;
   }
 }
 
