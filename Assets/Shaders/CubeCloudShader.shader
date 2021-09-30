@@ -50,7 +50,6 @@
                 float4 position : SV_POSITION;
                 half3 color : COLOR0;
                 float3 localPos: TEXCOORD5;
-                half2 barycentricCoords: TEXCOORD9;
             };
 
             Cube Vertex(VertexInput input)
@@ -74,7 +73,7 @@
                 const float4x4 transform = input[0].transform;
                 const float3 scale = input[0].scale;
                 
-                if (IsInvalid(input[0].scale)) return;
+                if (IsInvalid(scale)) return;
 
                 const float3 points[8] = {
                     float3( 1,  1,  1),
@@ -85,12 +84,6 @@
                     float3(-1,  1, -1),
                     float3(-1, -1,  1),
                     float3(-1, -1, -1),
-                };
-
-                const half2 bary[3] = {
-                    half2(0, 0),
-                    half2(0, 1),
-                    half2(1, 0),
                 };
 
                 const uint indexes[VERTEX_COUNT] = {
@@ -114,7 +107,6 @@
                     const float3 pos = mul(transform, float4(points[indexes[i]] * scale * 0.5, 1));
                     o.position = UnityObjectToClipPos(pos * _Scale);
                     o.localPos = points[indexes[i]];
-                    o.barycentricCoords = bary[i % 3];
                     o.color = input[0].color;
                     stream.Append(o);
                 }
