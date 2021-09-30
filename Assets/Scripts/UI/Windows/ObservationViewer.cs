@@ -158,6 +158,7 @@ namespace Elektronik.UI.Windows
 
         private void SetData()
         {
+            _observation = _container[_observation.Id];
             Message.text = _observation.Message;
             TextView.SetActive(!string.IsNullOrEmpty(Message.text));
 

@@ -128,16 +128,35 @@ namespace Protobuf.Tests.Elektronik
                 Timestamp = ++_timestamp,
             };
             
-            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 0}, Message = "0", Filename = ""});
-            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 1}, Message = "1", Filename = ""});
-            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 2}, Message = "2", Filename = ""});
-            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3}, Message = "3", Filename = ""});
-            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4}, Message = "4", Filename = ""});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 0}, Message = "0"});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 1}, Message = "1"});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 2}, Message = "2"});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3}, Message = "3"});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4}, Message = "4"});
+
+            SendAndCheck(packet, Filename);
+        }
+        
+        [Test, Order(6), Explicit]
+        public void UpdateImage()
+        {
+            var packet = new PacketPb
+            {
+                Action = PacketPb.Types.ActionType.Update,
+                Observations = new PacketPb.Types.Observations(),
+                Timestamp = ++_timestamp,
+            };
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "2.png");
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 0}, Filename = path});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 1}, Filename = path});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 2}, Filename = path});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 3}, Filename = path});
+            packet.Observations.Data.Add(new ObservationPb{Point = new PointPb{Id = 4}, Filename = path});
 
             SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(6), Explicit]
+        [Test, Order(7), Explicit]
         public void UpdateConnections()
         {
             var packet = new PacketPb
@@ -155,7 +174,7 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(7), Explicit]
+        [Test, Order(8), Explicit]
         public void RemoveConnections()
         {
             var packet = new PacketPb
@@ -173,7 +192,7 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(8), Explicit]
+        [Test, Order(9), Explicit]
         public void Remove()
         {
             var packet = new PacketPb
@@ -188,7 +207,7 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(9), Explicit]
+        [Test, Order(10), Explicit]
         public void Clear()
         {
             var packet = new PacketPb

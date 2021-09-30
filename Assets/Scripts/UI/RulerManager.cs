@@ -14,6 +14,13 @@ namespace Elektronik.UI
         private Camera _camera;
         private Ruler _currentRuler = null;
         
+        public float Scale = 1;
+
+        public void SetScale(float value)
+        {
+            Scale = value;
+        }
+        
         #region Unity events
         
         private void Awake()
@@ -70,7 +77,7 @@ namespace Elektronik.UI
                 if (pointData.HasValue)
                 {
                     Cursor.gameObject.SetActive(true);
-                    Cursor.position = pointData.Value.item.Position;
+                    Cursor.position = pointData.Value.item.Position * Scale;
                     Cursor.localScale = Vector3.one * (PointCollisionCloud.Radius * 2.2f);
                 }
                 else

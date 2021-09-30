@@ -5,6 +5,7 @@ using Elektronik.DataConsumers;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Elektronik.UI
@@ -18,7 +19,9 @@ namespace Elektronik.UI
         [SerializeField] private LookableCamera Camera;
         
         public event Action<float> OnScaleChanged;
-        
+
+        public UnityEvent<float> OnScaleChangedUnity = new UnityEvent<float>();
+
         private void Start()
         {
             // ReSharper disable once LocalVariableHidesMember
@@ -38,6 +41,7 @@ namespace Elektronik.UI
                         .Where(v => Slider.minValue <= v && v <= Slider.maxValue)
                         .Do(v => Slider.value = v)
                         .Do(v => Camera.Scale = v)
+                        .Do(v => OnScaleChangedUnity.Invoke(v))
                         .Subscribe();
         }
     }
