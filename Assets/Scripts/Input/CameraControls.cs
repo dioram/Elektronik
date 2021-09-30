@@ -89,7 +89,7 @@ namespace Elektronik.Input
                     ""type"": ""Value"",
                     ""id"": ""644726d4-afa3-4b51-b429-6b13d16354f7"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": ""ScaleVector2(x=0.5,y=0.5)"",
+                    ""processors"": ""ScaleVector2(x=0.2,y=0.2),InvertVector2"",
                     ""interactions"": """"
                 }
             ],

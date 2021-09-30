@@ -8,15 +8,13 @@ namespace Elektronik.DataConsumers.CloudRenderers
     {
         protected override void ProcessItem(ObservationCloudBlock block, SlamObservation item, int inBlockId)
         {
-            block.Positions[inBlockId] = item.Point.Position;
-            block.Rotations[inBlockId] = Matrix4x4.Rotate(item.Rotation);
+            block.Transforms[inBlockId] = Matrix4x4.TRS(item.Point.Position, item.Rotation, Vector3.one);
             block.Colors[inBlockId] = item.Point.Color;
         }
 
         protected override void RemoveItem(ObservationCloudBlock block, int inBlockId)
         {
-            block.Rotations[inBlockId] = default;
-            block.Positions[inBlockId] = default;
+            block.Transforms[inBlockId] = default;
             block.Colors[inBlockId] = default;
         }
 

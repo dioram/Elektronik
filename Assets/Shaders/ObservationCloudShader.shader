@@ -31,8 +31,7 @@
             #include "UnityCG.cginc"
 
             half _Scale;
-            StructuredBuffer<float3> _PositionsBuffer;
-            StructuredBuffer<float3x3> _RotationsBuffer;
+            StructuredBuffer<float4x4> _TransformsBuffer;
             StructuredBuffer<float4> _ColorsBuffer;
 
             struct VertexInput
@@ -42,8 +41,7 @@
 
             struct Observation
             {
-                float3x3 rotation: TEXCOORD8;
-                float3 position: TEXCOORD7;
+                float4x4 transform: TEXCOORD8;
                 half3 color : COLOR1;
             };
 
@@ -57,25 +55,25 @@
             Observation Vertex(VertexInput input)
             {
                 Observation o;
-                o.position = _PositionsBuffer[input.vertexID];
-                o.rotation = _RotationsBuffer[input.vertexID];
+                o.transform = _TransformsBuffer[input.vertexID];
                 o.color = _ColorsBuffer[input.vertexID].rgb;
                 return o;
             }
 
-            bool IsInvalid(const in Observation o)
+            bool IsInvalid(const in float4x4 m)
             {
-                return o.rotation[0][0] == 0 && o.rotation[0][1] == 0 && o.rotation[0][2] == 0
-                    && o.rotation[1][0] == 0 && o.rotation[1][1] == 0 && o.rotation[1][2] == 0
-                    && o.rotation[2][0] == 0 && o.rotation[2][1] == 0 && o.rotation[2][2] == 0
-                    && o.position[0] == 0    && o.position[1] == 0    && o.position[2] == 0
-                    && o.color[0] == 0       && o.color[1] == 0       && o.color[2] == 0;
+                return m[0][0] == 0 && m[0][1] == 0 && m[0][2] == 0 && m[0][3] == 0
+                    && m[1][0] == 0 && m[1][1] == 0 && m[1][2] == 0 && m[1][3] == 0
+                    && m[2][0] == 0 && m[2][1] == 0 && m[2][2] == 0 && m[2][3] == 0
+                    && m[3][0] == 0 && m[3][1] == 0 && m[3][2] == 0 && m[3][3] == 0;
             }
 
             [maxvertexcount(VERTEX_COUNT)]
             void Geometry(point Observation input[1], inout TriangleStream<VertexOutput> stream)
             {
-                if (IsInvalid(input[0])) return;
+                const float4x4 transform = input[0].transform;
+                
+                if (IsInvalid(transform)) return;
                 
                 const float3 points[5] = {
                     float3(0, 0, -1),
@@ -99,12 +97,21 @@
                     1, 3, 2,
                     3, 1, 4
                 };
+
+                const float4 T = float4(transform[0][3] * _Scale, transform[1][3] * _Scale, transform[2][3] * _Scale, 1);
+
+                const float4x4 RS = float4x4(
+                    transform[0][0], transform[0][1], transform[0][2], 0,
+                    transform[1][0], transform[1][1], transform[1][2], 0,
+                    transform[2][0], transform[2][1], transform[2][2], 0,
+                    transform[3][0], transform[3][1], transform[3][2], 1
+                );
                 
                 for (uint i = 0; i < VERTEX_COUNT; i++)
                 {
                     VertexOutput o;
-                    const float3 pos = mul(input[0].rotation, points[indexes[i]] * INTERNAL_SCALE);
-                    o.position = UnityObjectToClipPos(pos + input[0].position * _Scale);
+                    const float3 pos = mul(RS, float4(points[indexes[i]] * INTERNAL_SCALE, 1));
+                    o.position = UnityObjectToClipPos(pos + T);
                     o.barycentricCoords = bary[i % 3];
                     o.color = input[0].color;
                     stream.Append(o);
@@ -119,6 +126,7 @@
                 float minBary = min(barys.x, min(barys.y, barys.z));
                 float delta = abs(ddx(minBary)) + abs(ddy(minBary));
                 minBary = smoothstep(0, delta, minBary);
+                minBary = clamp(minBary*2, 0.7, 1);
                 return input.color * minBary + (1 - input.color) * (1 - minBary);
             }
             ENDCG
