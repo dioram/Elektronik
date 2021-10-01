@@ -5,7 +5,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public interface ICloudRenderer<TCloudItem> : IDataConsumer
             where TCloudItem : struct, ICloudItem
-    {
+    {   
         void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e);
 
         void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e);

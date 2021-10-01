@@ -22,7 +22,7 @@ namespace Protobuf.Tests.Elektronik
             _map[0].Orientation = new Vector4Pb { X = 0.70710676908493042, W = 0.70710676908493042 };
             _map[0].Message = "chair";
             _map[0].Color = new ColorPb { R = 255 };
-            _map[1].Position = new Vector3Pb { X = 2.5, Y = -2.5 };
+            _map[1].Position = new Vector3Pb { X = 1 };
             _map[1].Color = new ColorPb { G = 255 };
             _map[2].Position = new Vector3Pb { X = -2.5, Y = -2.5 };
             _map[2].Color = new ColorPb { B = 255 };

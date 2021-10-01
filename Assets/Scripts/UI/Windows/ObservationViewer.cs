@@ -112,7 +112,7 @@ namespace Elektronik.UI.Windows
 
         private void ShowNextObservation()
         {
-            bool found = false;
+            var found = false;
             foreach (var observation in _container)
             {
                 if (observation.Id == _observation.Id)
@@ -131,7 +131,7 @@ namespace Elektronik.UI.Windows
 
         private void ShowPreviousObservation()
         {
-            SlamObservation prev = _observation;
+            var prev = _observation;
             foreach (var observation in _container)
             {
                 if (observation.Id == _observation.Id)
@@ -150,7 +150,7 @@ namespace Elektronik.UI.Windows
         {
             while (true)
             {
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(0.1f);
                 SetData();
             }
             // ReSharper disable once IteratorNeverReturns

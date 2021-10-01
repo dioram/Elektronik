@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class GpuMeshRenderer : MonoBehaviour, IMeshRenderer
+    public class GpuMeshRenderer : MonoBehaviour, IMeshRenderer, IQueueableRenderer
     {
         [SerializeField] private Shader[] Shaders;
 
@@ -18,9 +16,12 @@ namespace Elektronik.DataConsumers.CloudRenderers
             {
                 if (_shaderId == value) return;
                 _shaderId = value % Shaders.Length;
-                foreach (var block in _blocks)
+                lock (_blocks)
                 {
-                    block.ShaderId = value;
+                    foreach (var block in _blocks)
+                    {
+                        block.ShaderId = value;
+                    }
                 }
             }
         }
@@ -31,103 +32,92 @@ namespace Elektronik.DataConsumers.CloudRenderers
             set
             {
                 if (Math.Abs(_scale - value) < float.Epsilon) return;
-                
-                foreach (var block in _blocks)
+
+                lock (_blocks)
                 {
-                    block.SetScale(value);
-                } 
+                    foreach (var block in _blocks)
+                    {
+                        block.Scale = value;
+                    }
+                }
             }
         }
 
         public void OnMeshUpdated(object sender, MeshUpdatedEventArgs e)
         {
-            if (CheckAndCreateReserves(e.Vertices, e.Triangles)) return;
-            UpdateMesh(e.Vertices, e.Triangles);
+            lock (_blocks)
+            {
+                while (e.Triangles.Length > _blocks.Count * MeshRendererBlock.Capacity)
+                {
+                    _blocks.Add(new MeshRendererBlock(Shaders));
+                }
+
+                var reservedSpace = _blocks.Count * MeshRendererBlock.Capacity;
+                for (var i = 0; i < reservedSpace; i++)
+                {
+                    var blockIndex = i / MeshRendererBlock.Capacity;
+                    var inBlockIndex = i % MeshRendererBlock.Capacity;
+
+                    if (i < e.Triangles.Length)
+                    {
+                        _blocks[blockIndex][inBlockIndex] = new GPUItem(e.Vertices[e.Triangles[i]]);
+                    }
+                    else
+                    {
+                        _blocks[blockIndex][inBlockIndex] = default;
+                    }
+                }
+            }
         }
+
+        #region IQueueableRenderer
+
+        public void RenderNow()
+        {
+            lock (_blocks)
+            {
+                foreach (var block in _blocks)
+                {
+                    block.RenderData();
+                }
+            }
+        }
+
+        public int RenderQueue
+        {
+            get
+            {
+                var res = 0;
+                lock (_blocks)
+                {
+                    if (_blocks.Count > 0) res = _blocks[0].RenderQueue;
+                }
+
+                return res;
+            }
+        }
+
+        #endregion
+
+        #region Unity events
+
+        private void Update()
+        {
+            lock (_blocks)
+            {
+                foreach (var block in _blocks)
+                {
+                    block.UpdateDataOnGPU();
+                }
+            }
+        }
+        #endregion
 
         #region Private
 
         private readonly List<MeshRendererBlock> _blocks = new List<MeshRendererBlock>();
         private float _scale;
         private int _shaderId;
-
-        private void UpdateMesh((Vector3 pos, Color color)[] vertices, int[] indexes, bool takeLock = true)
-        {
-            if (takeLock) Monitor.Enter(_blocks);
-
-            var reservedSpace = _blocks.Count * MeshRendererBlock.Capacity;
-            for (var i = 0; i < reservedSpace; i++)
-            {
-                var blockIndex = i / MeshRendererBlock.Capacity;
-                var inBlockIndex = i % MeshRendererBlock.Capacity;
-
-                if (i < indexes.Length)
-                {
-                    _blocks[blockIndex].Vertices[inBlockIndex] = new GPUItem(vertices[indexes[i]]);
-                }
-                else
-                {
-                    _blocks[blockIndex].Vertices[inBlockIndex] = default;
-                }
-            }
-
-            foreach (var block in _blocks)
-            {
-                block.Updated = true;
-            }
-
-            if (takeLock) Monitor.Exit(_blocks);
-        }
-        
-        private bool CheckAndCreateReserves((Vector3 pos, Color color)[] vertices, int[] indexes)
-        {
-            if (indexes.Length > _blocks.Count * MeshRendererBlock.Capacity)
-            {
-                // reserves overloaded
-                MainThreadInvoker.Enqueue(() =>
-                {
-                    lock (_blocks)
-                    {
-                        var requiredSpace = (indexes.Length - _blocks.Count * MeshRendererBlock.Capacity) +
-                                MeshRendererBlock.Capacity;
-                        var requiredBlocks = requiredSpace / MeshRendererBlock.Capacity + 1;
-                        for (var i = 0; i < requiredBlocks; i++)
-                        {
-                            CreateNewBlock();
-                        }
-
-                        UpdateMesh(vertices, indexes, false);
-                    }
-                });
-                return true;
-            }
-
-            if (indexes.Length > (_blocks.Count - 1) * MeshRendererBlock.Capacity)
-            {
-                // add reserves
-                MainThreadInvoker.Enqueue(CreateNewBlock);
-            }
-
-            return false;
-        }
-
-        private void CreateNewBlock()
-        {
-            var go = new GameObject($"{GetType().Name} {_blocks.Count}");
-            try
-            {
-                go.transform.SetParent(transform);
-            }
-            catch (NullReferenceException)
-            {
-                // Sometimes for unknown reasons this.transform causes NullReferenceException.
-                // We can just live with that.
-            }
-            var block = go.AddComponent<MeshRendererBlock>();
-            block.Shaders = Shaders;
-            block.Updated = true;
-            _blocks.Add(block);
-        }
 
         #endregion
     }

@@ -1,37 +1,23 @@
-﻿using System;
-using Elektronik.Data.PackageObjects;
+﻿using Elektronik.Data.PackageObjects;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class ObservationCloudRenderer : CloudRenderer<SlamObservation, ObservationCloudBlock>
+    public class ObservationCloudRenderer 
+            : CloudRenderer<SlamObservation, ObservationCloudBlock, (Matrix4x4 transform, Color color)>
     {
         protected override void ProcessItem(ObservationCloudBlock block, SlamObservation item, int inBlockId)
         {
-            block.Transforms[inBlockId] = Matrix4x4.TRS(item.Point.Position, item.Rotation, Vector3.one);
-            block.Colors[inBlockId] = item.Point.Color;
+            block[inBlockId] = (Matrix4x4.TRS(item.Point.Position, item.Rotation, Vector3.one), item.Point.Color);
         }
 
         protected override void RemoveItem(ObservationCloudBlock block, int inBlockId)
         {
-            block.Transforms[inBlockId] = default;
-            block.Colors[inBlockId] = default;
+            block[inBlockId] = default;
         }
 
-        public override float Scale
-        {
-            get => _scale;
-            set
-            {
-                if (Math.Abs(_scale - value) < float.Epsilon) return;
-                
-                foreach (var block in Blocks)
-                {
-                    block.SetScale(value);
-                } 
-            }
-        }
-
-        private float _scale;
+        protected override int BlockCapacity => ObservationCloudBlock.Capacity;
+        
+        protected override ObservationCloudBlock CreateNewBlock() => new ObservationCloudBlock(CloudShader);
     }
 }

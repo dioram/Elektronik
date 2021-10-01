@@ -12,15 +12,8 @@ Shader "Elektronik/TransparentCubeCloudShader"
         }
         Pass
         {
-            Cull Front
+            Cull Off
             ZWrite On
-            ColorMask 0
-        }
-        Pass
-        {
-            Cull Front
-            Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite Off
             CGPROGRAM
             #pragma require geometry
             #pragma vertex Vertex
@@ -69,7 +62,6 @@ Shader "Elektronik/TransparentCubeCloudShader"
             {
                 return f[0] == 0 && f[1] == 0 && f[2] == 0;
             }
-
 
             [maxvertexcount(VERTEX_COUNT)]
             void Geometry(point Cube input[1], inout TriangleStream<VertexOutput> stream)
@@ -140,20 +132,15 @@ Shader "Elektronik/TransparentCubeCloudShader"
                     y1 = y;
                 }
                 
-                float dist = pow(x1, 10) + pow(y1, 10) - pow(0.9, 10);
-                return input.color * clamp(dist*2, 0.3, 1);
+                float dist = pow(x1, 10) + pow(y1, 10) - pow(0.95, 10);
+                clip(dist);
+                return input.color;
             }
             ENDCG
         }
         Pass
         {
-            Cull Back
-            ZWrite On
-            ColorMask 0
-        }
-        Pass
-        {
-            Cull Back
+            Cull Off
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
             CGPROGRAM
@@ -226,18 +213,18 @@ Shader "Elektronik/TransparentCubeCloudShader"
                 };
 
                 const uint indexes[VERTEX_COUNT] = {
-                    0, 3, 1,
-                    0, 2, 3,
-                    0, 1, 5,
-                    0, 5, 4,
-                    0, 6, 2,
-                    0, 4, 6,
-                    7, 1, 3,
-                    7, 5, 1,
-                    7, 3, 2,
-                    7, 2, 6,
-                    7, 4, 5,
-                    7, 6, 4,
+                    0, 1, 3,
+                    0, 3, 2,
+                    0, 5, 1,
+                    0, 4, 5,
+                    0, 2, 6,
+                    0, 6, 4,
+                    7, 3, 1,
+                    7, 1, 5,
+                    7, 2, 3,
+                    7, 6, 2,
+                    7, 5, 4,
+                    7, 4, 6,
                 };
                 
                 for (uint i = 0; i < VERTEX_COUNT; i++)
@@ -254,29 +241,7 @@ Shader "Elektronik/TransparentCubeCloudShader"
 
             half4 Fragment(VertexOutput input) : SV_Target
             {
-                const float x = abs(input.localPos.x);
-                const float y = abs(input.localPos.y);
-                const float z = abs(input.localPos.z);
-                
-                float x1, y1;
-                if (abs(x - 1) < 0.001f)
-                {
-                    x1 = y;
-                    y1 = z;
-                }
-                else if (abs(y - 1) < 0.001f)
-                {
-                    x1 = x;
-                    y1 = z;
-                }
-                else
-                {
-                    x1 = x;
-                    y1 = y;
-                }
-                
-                float dist = pow(x1, 10) + pow(y1, 10) - pow(0.9, 10);
-                return input.color * clamp(dist*2, 0.3, 1);
+                return half4(input.color.rgb, 0.3);
             }
             ENDCG
         }

@@ -82,9 +82,8 @@ NativeMesh MeshBuilder::FromPoints(const std::vector<NativePoint>& points)
     // Compute
     reconstructor.performReconstruction(output_cloud, output_polygons);
 
-    // Process output
+    // Postprocessing
     std::set<int> excluded_points;
-
     NativeMesh result;
     for (int i = 0; i < output_cloud.size(); i++) {
         auto p = pcl::PointXYZ(output_cloud[i].x, output_cloud[i].y, output_cloud[i].z);

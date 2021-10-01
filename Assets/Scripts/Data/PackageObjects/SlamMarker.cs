@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Diagnostics.CodeAnalysis;
+using UnityEngine;
 
 namespace Elektronik.Data.PackageObjects
 {
@@ -51,6 +52,7 @@ namespace Elektronik.Data.PackageObjects
             return obj is SlamMarker other && Equals(other);
         }
 
+        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
         public override int GetHashCode()
         {
             unchecked

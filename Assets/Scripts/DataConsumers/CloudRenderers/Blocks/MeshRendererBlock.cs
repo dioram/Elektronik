@@ -1,81 +1,74 @@
 ﻿using System.Linq;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class MeshRendererBlock : CloudBlock
+    public class MeshRendererBlock : ICloudBlock<GPUItem>
     {
-        public GPUItem[] Vertices;
-        public Shader[] Shaders;
+        public float Scale { get; set; } = 1;
+
+        public const int Capacity = 256 * 256 * 3;
+
+        public int RenderQueue => 2000;
+
         public int ShaderId;
-        
-        public new const int Capacity = 256 * 256 * 3;
 
-        public override void SetScale(float value)
+        public MeshRendererBlock(Shader[] shaders)
         {
-            foreach (var material in _materials)
-            {
-                material.SetFloat(_scaleShaderProp, value);
-            }
-        }
-
-        #region Unity events
-
-        protected override void Start()
-        {
-            _materials = Shaders.Select(sh => new Material(sh) { hideFlags = HideFlags.DontSave }).ToArray();
+            _vertices = Enumerable.Repeat(default(GPUItem), Capacity).ToArray();
             foreach (var material in _materials)
             {
                 material.EnableKeyword("_COMPUTE_BUFFER");
             }
+            
+            MainThreadInvoker.Enqueue(() =>
+            {
+                _materials = shaders.Select(sh => new Material(sh) { hideFlags = HideFlags.DontSave }).ToArray();
+                _vertexBuffer = new ComputeBuffer(_vertices.Length, GPUItem.Size);
+                _initialized = true;
+            });
         }
-        
-        protected override void OnRenderObject()
+
+        public void UpdateDataOnGPU()
+        {
+            if (!_initialized) return;
+            if (_updated) _vertexBuffer.SetData(_vertices);
+        }
+
+        public void RenderData()
         {
             var renderMat = _materials[ShaderId % _materials.Length];
+            renderMat.SetFloat(_scaleShaderProp, Scale);
+            renderMat.SetBuffer(_vertexBufferShaderProp, _vertexBuffer);
             renderMat.SetPass(0);
-            SendData(renderMat);
-            Draw();
+            Graphics.DrawProceduralNow(MeshTopology.Triangles, _vertices.Length);
         }
 
-        #endregion
-
-        #region Protected
-        
-        protected override void Init()
+        public GPUItem this[int index]
         {
-            Vertices = Enumerable.Repeat(default(GPUItem), Capacity).ToArray();
-            _vertexBuffer = new ComputeBuffer(Vertices.Length, GPUItem.Size);
+            get => _vertices[index];
+            set
+            {
+                _vertices[index] = value;
+                _updated = true;
+            }
         }
 
-        protected override void SendData(Material renderMaterial)
-        {
-            renderMaterial.SetBuffer(_vertexBufferShaderProp, _vertexBuffer);
-        }
-
-        protected override void OnUpdated()
-        {
-             _vertexBuffer.SetData(Vertices);
-        }
-
-        protected override void Draw()
-        {
-            Graphics.DrawProceduralNow(MeshTopology.Triangles, Vertices.Length);
-        }
-
-        protected override void ReleaseBuffers()
+        public void Dispose()
         {
             _vertexBuffer.Release();
         }
 
-        #endregion
-
         #region Private
-        
+
         private readonly int _vertexBufferShaderProp = Shader.PropertyToID("_VertsBuffer");
         private readonly int _scaleShaderProp = Shader.PropertyToID("_Scale");
         private ComputeBuffer _vertexBuffer;
         private Material[] _materials;
+        private readonly GPUItem[] _vertices;
+        private bool _updated;
+        private bool _initialized;
 
         #endregion
     }

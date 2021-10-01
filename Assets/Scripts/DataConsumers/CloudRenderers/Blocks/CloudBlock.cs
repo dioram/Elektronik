@@ -2,79 +2,31 @@
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public abstract class CloudBlock : MonoBehaviour, ICloudBlock
+    public abstract class CloudBlock<TGpuItem>: ICloudBlock<TGpuItem>
     {
-        public const int Capacity = 256 * 256;
-        public Shader CloudShader;
-        public bool Updated { get; set; }
-        public float ItemSize { get; set; } = 1f;
-        public int ItemsCount { get; set; }  = 0;
+        public abstract int RenderQueue { get; }
 
-        public virtual void SetScale(float value)
+        public float Scale { get; set; } = 1;
+
+        public virtual void UpdateDataOnGPU()
         {
-            _renderMaterial.SetFloat(_scaleShaderProp, value);
+            Updated = false;
+        }
+
+        public virtual void RenderData()
+        {
+            RenderMaterial.SetFloat(_scaleShaderProp, Scale);
         }
         
-        #region Unity events
+        public abstract TGpuItem this[int index] { get; set; }
 
-        protected virtual void Awake()
-        {
-            Init();
-        }
+        public abstract void Dispose();
 
-        protected virtual void Start()
-        {
-            _renderMaterial = new Material(CloudShader) {hideFlags = HideFlags.DontSave};
-            _renderMaterial.EnableKeyword("_COMPUTE_BUFFER");
-        }
+        #region Protected
 
-        protected virtual void Update()
-        {
-            lock (this)
-            {
-                if (!Updated) return;
-            
-                OnUpdated();
-
-                Updated = false;
-            }
-        }
-
-        protected virtual void OnRenderObject()
-        {
-            if (ItemsCount <= 0) return;
-            _renderMaterial.SetPass(0);
-            _renderMaterial.SetFloat(_sizeShaderProp, ItemSize);
-            SendData(_renderMaterial);
-            Draw();
-        }
-
-        private void OnDestroy()
-        {
-            ReleaseBuffers();
-        }
-
-        #endregion
-
-        #region Protected definitions
-        
-        protected abstract void Init();
-
-        protected abstract void SendData(Material renderMaterial);
-
-        protected abstract void OnUpdated();
-
-        protected abstract void Draw();
-
-        protected abstract void ReleaseBuffers();
-
-        #endregion
-
-        #region Private definitions
-        
-        private readonly int _sizeShaderProp = Shader.PropertyToID("_Size");
+        protected Material RenderMaterial;
+        protected bool Updated = false;
         private readonly int _scaleShaderProp = Shader.PropertyToID("_Scale");
-        private Material _renderMaterial;
 
         #endregion
     }

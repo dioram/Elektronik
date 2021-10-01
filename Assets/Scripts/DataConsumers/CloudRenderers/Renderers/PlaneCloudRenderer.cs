@@ -1,11 +1,27 @@
-﻿using System;
+﻿using System.Linq;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class PlaneCloudRenderer : CloudRenderer<SlamPlane, PlaneCloudBlock>
+    public class PlaneCloudRenderer : CloudRenderer<SlamPlane, PlaneCloudBlock, GPUItem[]>, IResizableRenderer
     {
+        public float ItemSize;
+
+        public void SetSize(float newSize)
+        {
+            ItemSize = newSize;
+
+            foreach (var block in Blocks)
+            {
+                block.ItemSize = ItemSize;
+            }
+        }
+
+        protected override int BlockCapacity => PlaneCloudBlock.Capacity;
+
+        protected override PlaneCloudBlock CreateNewBlock() => new PlaneCloudBlock(CloudShader, ItemSize);
+
         protected override void ProcessItem(PlaneCloudBlock block, SlamPlane item, int inBlockId)
         {
             var halfSide = ItemSize / 2;
@@ -18,43 +34,20 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
             var vertices = new[]
             {
-                rotation * v1 + item.Offset,
-                rotation * v2 + item.Offset,
-                rotation * v3 + item.Offset,
-                rotation * v4 + item.Offset,
-                rotation * v4 + item.Offset,
-                rotation * v3 + item.Offset,
-                rotation * v2 + item.Offset,
-                rotation * v1 + item.Offset,
+                new GPUItem(rotation * v1 + item.Offset, item.Color),
+                new GPUItem(rotation * v2 + item.Offset, item.Color),
+                new GPUItem(rotation * v3 + item.Offset, item.Color),
+                new GPUItem(rotation * v4 + item.Offset, item.Color),
             };
-            for (var i = 0; i < 8; i++)
-            {
-                block.Planes[inBlockId * 8 + i] = new GPUItem(vertices[i], item.Color);
-            }
+            block[inBlockId] = vertices;
         }
 
         protected override void RemoveItem(PlaneCloudBlock block, int inBlockId)
         {
-            for (var i = 0; i < 8; i++)
-            {
-                block.Planes[inBlockId * 8 + i] = default;
-            }
+            block[inBlockId] = _defaultData;
         }
 
-        public override float Scale
-        {
-            get => _scale;
-            set
-            {
-                if (Math.Abs(_scale - value) < float.Epsilon) return;
-                
-                foreach (var block in Blocks)
-                {
-                    block.SetScale(value);
-                } 
-            }
-        }
-
-        private float _scale;
+        private readonly GPUItem[] _defaultData =
+                Enumerable.Repeat<GPUItem>(default, PlaneCloudBlock.VerticesPerPlane).ToArray();
     }
 }

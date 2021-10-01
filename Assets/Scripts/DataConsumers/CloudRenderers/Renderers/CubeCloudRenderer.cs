@@ -1,41 +1,27 @@
 ﻿using System;
 using Elektronik.Data.PackageObjects;
 using UnityEngine;
+using MarkerGpuData = Elektronik.DataConsumers.CloudRenderers.MarkerCloudBlock.MarkerGpuData;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class CubeCloudRenderer : CloudRenderer<SlamMarker, CubeCloudBlock>
+    public class CubeCloudRenderer : CloudRenderer<SlamMarker, TransparentMarkerCloudBlock, MarkerGpuData>
     {
+        protected override int BlockCapacity => MarkerCloudBlock.Capacity;
+
         protected override Func<SlamMarker, bool> Filter { get; } = marker => marker.Type == SlamMarker.MarkerType.Cube;
 
-        protected override void ProcessItem(CubeCloudBlock block, SlamMarker item, int inBlockId)
+        protected override TransparentMarkerCloudBlock CreateNewBlock() => new TransparentMarkerCloudBlock(CloudShader);
+
+        protected override void ProcessItem(TransparentMarkerCloudBlock block, SlamMarker item, int inBlockId)
         {
-            block.Transforms[inBlockId] = Matrix4x4.TRS(item.Position, item.Rotation, Vector3.one);
-            block.Scales[inBlockId] = item.Scale;
-            block.Colors[inBlockId] = item.Color;
+            block[inBlockId] = new MarkerGpuData(Matrix4x4.TRS(item.Position, item.Rotation, Vector3.one),
+                                                 item.Scale, item.Color);
         }
 
-        protected override void RemoveItem(CubeCloudBlock block, int inBlockId)
+        protected override void RemoveItem(TransparentMarkerCloudBlock block, int inBlockId)
         {
-            block.Transforms[inBlockId] = default;
-            block.Scales[inBlockId] = default;
-            block.Colors[inBlockId] = default;
+            block[inBlockId] = default;
         }
-
-        public override float Scale
-        {
-            get => _scale;
-            set
-            {
-                if (Math.Abs(_scale - value) < float.Epsilon) return;
-
-                foreach (var block in Blocks)
-                {
-                    block.SetScale(value);
-                }
-            }
-        }
-
-        private float _scale;
     }
 }

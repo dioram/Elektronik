@@ -1,46 +1,77 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class PlaneCloudBlock : CloudBlock
+    public class PlaneCloudBlock : CloudBlock<GPUItem[]>
     {
-        public GPUItem[] Planes;
+        public float ItemSize { get; set; }
+        public const int Capacity = 256 * 256;
+        public override int RenderQueue => 2000;
 
-        #region Protected definitions
+        public const int VerticesPerPlane = 4;
 
-        protected override void Init()
+        public PlaneCloudBlock(Shader shader, float itemSize)
         {
-            Planes = Enumerable.Repeat(default(GPUItem), Capacity * 8).ToArray();
-            _vertsBuffer = new ComputeBuffer(Planes.Length, GPUItem.Size);
+            ItemSize = itemSize;
+            _planes = Enumerable.Repeat(default(GPUItem), Capacity * VerticesPerPlane).ToArray();
+            MainThreadInvoker.Enqueue(() =>
+            {
+                RenderMaterial = new Material(shader) { hideFlags = HideFlags.DontSave };
+                _vertsBuffer = new ComputeBuffer(_planes.Length, GPUItem.Size);
+                _initialized = true;
+            });
         }
 
-        protected override void SendData(Material renderMaterial)
+        public override void UpdateDataOnGPU()
         {
-            renderMaterial.SetBuffer(_vertsBufferShaderProp, _vertsBuffer);
+            if (!_initialized) return;
+            if (Updated) _vertsBuffer.SetData(_planes);
+            base.UpdateDataOnGPU();
         }
 
-        protected override void OnUpdated()
+        public override void RenderData()
         {
-            _vertsBuffer.SetData(Planes);
-        }
-
-        protected override void Draw()
-        {
+            base.RenderData();
+            RenderMaterial.SetFloat(_sizeShaderProp, ItemSize);
+            RenderMaterial.SetBuffer(_vertsBufferShaderProp, _vertsBuffer);
+            RenderMaterial.SetPass(0);
             Graphics.DrawProceduralNow(MeshTopology.Quads, _vertsBuffer.count);
         }
 
-        protected override void ReleaseBuffers()
+        public override GPUItem[] this[int index]
+        {
+            get => _planes.Skip(index).Take(VerticesPerPlane).ToArray();
+            set
+            {
+                if (value.Length != VerticesPerPlane)
+                {
+                    throw new ArgumentException("Wrong amount of vertices for plane");
+                }
+
+                for (var i = 0; i < VerticesPerPlane; i++)
+                {
+                    _planes[index * VerticesPerPlane + i] = value[i];
+                }
+
+                Updated = true;
+            }
+        }
+
+        public override void Dispose()
         {
             _vertsBuffer.Release();
         }
 
-        #endregion
-
         #region Private definitions
 
+        private readonly int _sizeShaderProp = Shader.PropertyToID("_Size");
         private readonly int _vertsBufferShaderProp = Shader.PropertyToID("_VertsBuffer");
         private ComputeBuffer _vertsBuffer;
+        private readonly GPUItem[] _planes;
+        private bool _initialized;
 
         #endregion
     }

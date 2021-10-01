@@ -1,46 +1,65 @@
 ﻿using System.Linq;
+using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class PointCloudBlock : CloudBlock
+    public class PointCloudBlock : CloudBlock<GPUItem>
     {
-        public GPUItem[] Points;
-
-        #region Protected definitions
-
-        protected override void Init()
-        {
-            Points = Enumerable.Repeat(default(GPUItem), Capacity).ToArray();
-            _pointsBuffer = new ComputeBuffer(Points.Length, GPUItem.Size);
-        }
-
-        protected override void SendData(Material renderMaterial)
-        {
-            renderMaterial.SetBuffer(_pointsBufferShaderProp, _pointsBuffer);
-        }
+        public float ItemSize { get; set; }
+        public override int RenderQueue => 2000;
+        public const int Capacity = 256 * 256;
         
-        protected override void OnUpdated()
+        public PointCloudBlock(Shader shader, float itemSize)
         {
-            _pointsBuffer.SetData(Points);
+            ItemSize = itemSize;
+            _points = Enumerable.Repeat(default(GPUItem), Capacity).ToArray();
+            MainThreadInvoker.Enqueue(() =>
+            {
+                RenderMaterial = new Material(shader) {hideFlags = HideFlags.DontSave};
+                _pointsBuffer = new ComputeBuffer(_points.Length, GPUItem.Size);
+                _initialized = true;
+            });
         }
 
-        protected override void Draw()
+        public override void UpdateDataOnGPU()
         {
+            if (!_initialized) return;
+            if (Updated) _pointsBuffer.SetData(_points);
+            base.UpdateDataOnGPU();
+        }
+
+        public override void RenderData()
+        {
+            base.RenderData();
+            RenderMaterial.SetFloat(_sizeShaderProp, ItemSize);
+            RenderMaterial.SetBuffer(_pointsBufferShaderProp, _pointsBuffer);
+            RenderMaterial.SetPass(0);
             Graphics.DrawProceduralNow(MeshTopology.Points, _pointsBuffer.count);
         }
 
-        protected override void ReleaseBuffers()
+        public override GPUItem this[int index]
+        {
+            get => _points[index];
+            set
+            {
+                _points[index] = value;
+                Updated = true;
+            }
+        }
+
+        public override void Dispose()
         {
             _pointsBuffer.Release();
         }
 
-        #endregion
+        #region Private
 
-        #region Private definitions
-        
+        private readonly int _sizeShaderProp = Shader.PropertyToID("_Size");
         private readonly int _pointsBufferShaderProp = Shader.PropertyToID("_ItemsBuffer");
         private ComputeBuffer _pointsBuffer;
+        private readonly GPUItem[] _points;
+        private bool _initialized;
 
         #endregion
     }

@@ -1,9 +1,17 @@
-﻿namespace Elektronik.DataConsumers.CloudRenderers
+﻿using System;
+
+namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public interface ICloudBlock
+    public interface ICloudBlock<TGpuItem> : IDisposable
     {
-        public bool Updated { get; set; }
-        public float ItemSize { get; set; }
-        int ItemsCount { get; set; }
+        float Scale { get; set; }
+        
+        TGpuItem this[int index] { get; set; }
+        
+        int RenderQueue { get; }
+
+        void UpdateDataOnGPU();
+
+        void RenderData();
     }
 }

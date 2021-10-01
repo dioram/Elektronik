@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.Threading;
@@ -14,16 +13,15 @@ namespace Elektronik.DataConsumers.CloudRenderers
     /// <summary> Base class for rendering object clouds. Such as point cloud, line cloud, etc. </summary>
     /// <typeparam name="TCloudItem"></typeparam>
     /// <typeparam name="TCloudBlock"></typeparam>
-    public abstract class CloudRenderer<TCloudItem, TCloudBlock>
-            : CloudRendererComponent<TCloudItem>
+    /// <typeparam name="TGpuItem"></typeparam>
+    public abstract class CloudRenderer<TCloudItem, TCloudBlock, TGpuItem>
+            : CloudRendererComponent<TCloudItem>, IQueueableRenderer
             where TCloudItem : struct, ICloudItem
-            where TCloudBlock : CloudBlock
+            where TCloudBlock : class, ICloudBlock<TGpuItem>
     {
         public const string GridMessage = "Grid";
         public Grid Grid;
         public Shader CloudShader;
-
-        public float ItemSize;
 
         public override int ItemsCount
         {
@@ -36,60 +34,106 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
-        public void SetSize(float newSize)
-        {
-            ItemSize = newSize;
-
-            foreach (var block in Blocks)
-            {
-                block.ItemSize = ItemSize;
-            }
-        }
-
         #region Unity events
 
         private void Start()
         {
-            CreateNewBlock();
+            lock (_pointPlaces)
+            {
+                Blocks.Add(CreateNewBlock());
+            }
         }
 
         private void Update()
         {
-            foreach (var block in Blocks)
+            lock (_pointPlaces)
             {
-                block.ItemSize = ItemSize;
+                foreach (var block in Blocks)
+                {
+                    block.UpdateDataOnGPU();
+                }
             }
         }
 
         #endregion
 
+        #region IQueueableRenderer
+
+        public void RenderNow()
+        {
+            lock (_pointPlaces)
+            {
+                foreach (var block in Blocks)
+                {
+                    block.RenderData();
+                }
+            }
+        }
+
+        public int RenderQueue => Blocks.Count > 0 ? Blocks[0].RenderQueue : 0;
+
+        #endregion
+
         #region ICloudRenderer
+
+        public override float Scale
+        {
+            get => _scale;
+            set
+            {
+                if (Math.Abs(_scale - value) < float.Epsilon) return;
+
+                foreach (var block in Blocks)
+                {
+                    block.Scale = value;
+                }
+            }
+        }
 
         public override void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
-            var addedItems = Filter is null ? e.AddedItems : e.AddedItems.Where(Filter).ToArray();
             if (!IsSenderVisible(sender)) return;
-            if (CheckAndCreateReserves(sender, addedItems)) return;
-            AddItems(sender, addedItems);
+            var addedItems = Filter is null ? e.AddedItems : e.AddedItems.Where(Filter).ToArray();
+            var newAmountOfItems = _amountOfItems + addedItems.Count;
+            lock (_pointPlaces)
+            {
+                while (newAmountOfItems > Blocks.Count * BlockCapacity)
+                {
+                    Blocks.Add(CreateNewBlock());
+                }
+
+                foreach (var item in addedItems)
+                {
+                    if (item.Message == GridMessage && item is SlamPlane plane)
+                    {
+                        MainThreadInvoker.Enqueue(() => Grid.SetPlane(plane));
+                        continue;
+                    }
+
+                    var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
+                    _pointPlaces[(sender.GetHashCode(), item.Id)] = index;
+                    var layer = index / BlockCapacity;
+                    var inLayerId = index % BlockCapacity;
+                    ProcessItem(Blocks[layer], item, inLayerId);
+                }
+
+                _amountOfItems = newAmountOfItems;
+            }
         }
 
         public override void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
-            var updatedItems = Filter is null ? e.UpdatedItems : e.UpdatedItems.Where(Filter);
             if (!IsSenderVisible(sender)) return;
+            var updatedItems = Filter is null ? e.UpdatedItems : e.UpdatedItems.Where(Filter);
             lock (_pointPlaces)
             {
                 foreach (var item in updatedItems)
                 {
                     if (item.Message == GridMessage && item is SlamPlane) continue;
                     var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
-                    var layer = index / CloudBlock.Capacity;
-                    var inLayerId = index % CloudBlock.Capacity;
-                    lock (Blocks[layer])
-                    {
-                        ProcessItem(Blocks[layer], item, inLayerId);
-                        Blocks[layer].Updated = true;
-                    }
+                    var layer = index / BlockCapacity;
+                    var inLayerId = index % BlockCapacity;
+                    ProcessItem(Blocks[layer], item, inLayerId);
                 }
             }
         }
@@ -108,17 +152,12 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     if (index == _maxPlace - 1) _maxPlace--;
                     else _freePlaces.Enqueue(index);
 
-                    var layer = index / CloudBlock.Capacity;
-                    var inLayerId = index % CloudBlock.Capacity;
-                    lock (Blocks[layer])
-                    {
-                        RemoveItem(Blocks[layer], inLayerId);
-                        Blocks[layer].Updated = true;
-                        Blocks[layer].ItemsCount--;
-                    }
+                    var layer = index / BlockCapacity;
+                    var inLayerId = index % BlockCapacity;
+                    RemoveItem(Blocks[layer], inLayerId);
                 }
 
-                _amountOfItems -= removedItems.Count();
+                _amountOfItems -= removedItems.Count;
             }
         }
 
@@ -132,7 +171,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         protected readonly List<TCloudBlock> Blocks = new List<TCloudBlock>();
 
+        protected abstract int BlockCapacity { get; }
+
         [CanBeNull] protected virtual Func<TCloudItem, bool> Filter { get; } = null;
+
+        protected abstract TCloudBlock CreateNewBlock();
 
         #endregion
 
@@ -142,91 +185,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         private readonly Queue<int> _freePlaces = new Queue<int>();
         private int _maxPlace = 0;
         private int _amountOfItems;
-
-        private void CreateNewBlock()
-        {
-            var go = new GameObject($"{GetType().Name} {Blocks.Count}");
-            try
-            {
-                go.transform.SetParent(transform);
-            }
-            catch (NullReferenceException)
-            {
-                // Sometimes for unknown reasons this.transform causes NullReferenceException.
-                // We can just live with that.
-                // TODO: Investigate this properly
-            }
-            var block = go.AddComponent<TCloudBlock>();
-            block.CloudShader = CloudShader;
-            block.Updated = true;
-            Blocks.Add(block);
-        }
-
-        private void AddItems(object sender, IList<TCloudItem> items, bool takeLock = true)
-        {
-            if (takeLock) Monitor.Enter(_pointPlaces);
-            foreach (var item in items)
-            {
-                if (item.Message == GridMessage && item is SlamPlane plane)
-                {
-                    MainThreadInvoker.Enqueue(() => Grid.SetPlane(plane));
-                    continue;
-                }
-
-                var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
-                _pointPlaces[(sender.GetHashCode(), item.Id)] = index;
-                int layer = index / CloudBlock.Capacity;
-                int inLayerId = index % CloudBlock.Capacity;
-                lock (Blocks[layer])
-                {
-                    ProcessItem(Blocks[layer], item, inLayerId);
-                    Blocks[layer].Updated = true;
-                    Blocks[layer].ItemsCount++;
-                }
-            }
-
-            _amountOfItems += items.Count;
-            if (takeLock) Monitor.Exit(_pointPlaces);
-        }
-
-        private bool CheckAndCreateReserves(object sender, IList<TCloudItem> items)
-        {
-            var newAmountOfItems = _amountOfItems + items.Count;
-            if (newAmountOfItems > Blocks.Count * CloudBlock.Capacity)
-            {
-                // reserves overloaded
-                MainThreadInvoker.Enqueue(() =>
-                {
-                    lock (_pointPlaces)
-                    {
-                        var requiredSpace = (newAmountOfItems - Blocks.Count * CloudBlock.Capacity) +
-                                CloudBlock.Capacity;
-                        var requiredBlocks = requiredSpace / CloudBlock.Capacity;
-                        if (requiredBlocks < 0)
-                        {
-                            throw new ArgumentOutOfRangeException(nameof(requiredBlocks),
-                                                                  "Can't be negative required blocks");
-                        }
-
-                        for (int i = 0; i < requiredBlocks; i++)
-                        {
-                            CreateNewBlock();
-                        }
-
-                        AddItems(sender, items, false);
-                    }
-                });
-                return true;
-            }
-
-            if (newAmountOfItems > (Blocks.Count - 1) * CloudBlock.Capacity)
-            {
-                // add reserves
-                MainThreadInvoker.Enqueue(CreateNewBlock);
-            }
-
-            return false;
-        }
+        private float _scale;
 
         #endregion
     }
