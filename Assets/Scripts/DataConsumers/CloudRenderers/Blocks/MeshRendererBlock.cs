@@ -39,6 +39,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public void RenderData()
         {
             var renderMat = _materials[ShaderId % _materials.Length];
+            if (renderMat is null) return;
             renderMat.SetFloat(_scaleShaderProp, Scale);
             renderMat.SetBuffer(_vertexBufferShaderProp, _vertexBuffer);
             renderMat.SetPass(0);

@@ -48,6 +48,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public override void RenderData()
         {
             base.RenderData();
+            if (RenderMaterial is null) return;
             RenderMaterial.SetBuffer(_transformsBufferShaderProp, _transformsBuffer);
             RenderMaterial.SetBuffer(_colorsBufferShaderProp, _colorsBuffer);
             RenderMaterial.SetPass(0);

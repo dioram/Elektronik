@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.DataSources.SpecialInterfaces;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
@@ -13,17 +11,19 @@ namespace Elektronik.DataConsumers.CloudRenderers
     /// <typeparam name="TCloudItem"></typeparam>
     /// <typeparam name="TCloudBlock"></typeparam>
     /// <typeparam name="TGpuItem"></typeparam>
-    public abstract class CloudRenderer<TCloudItem, TCloudBlock, TGpuItem>
-            : ICloudRenderer<TCloudItem>, IQueueableRenderer
+    public abstract class GpuCloudRenderer<TCloudItem, TCloudBlock, TGpuItem>
+            : ICloudRenderer<TCloudItem>, IGpuRenderer
             where TCloudItem : struct, ICloudItem
             where TCloudBlock : class, ICloudBlock<TGpuItem>
     {
-        public CloudRenderer(Shader shader)
+        public GpuCloudRenderer(Shader shader)
         {
             Shader = shader;
         }
 
         public IReadOnlyCollection<TCloudBlock> Blocks => _blocks.AsReadOnly();
+
+        #region IGpuRenderer
         
         public void UpdateDataOnGpu()
         {
@@ -35,8 +35,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 }
             }
         }
-
-        #region IQueueableRenderer
 
         public void RenderNow()
         {
@@ -83,8 +81,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
-            var addedItems = Filter is null ? e.AddedItems : e.AddedItems.Where(Filter).ToArray();
-            var newAmountOfItems = _amountOfItems + addedItems.Count;
+            var newAmountOfItems = _amountOfItems + e.AddedItems.Count;
             lock (_pointPlaces)
             {
                 while (newAmountOfItems > _blocks.Count * BlockCapacity)
@@ -92,7 +89,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     _blocks.Add(CreateNewBlock());
                 }
 
-                foreach (var item in addedItems)
+                foreach (var item in e.AddedItems)
                 {
                     var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
                     _pointPlaces[(sender.GetHashCode(), item.Id)] = index;
@@ -108,10 +105,9 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
-            var updatedItems = Filter is null ? e.UpdatedItems : e.UpdatedItems.Where(Filter);
             lock (_pointPlaces)
             {
-                foreach (var item in updatedItems)
+                foreach (var item in e.UpdatedItems)
                 {
                     var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
                     var layer = index / BlockCapacity;
@@ -123,10 +119,10 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public void OnItemsRemoved(object sender, RemovedEventArgs<TCloudItem> e)
         {
-            var removedItems = Filter is null ? e.RemovedItems : e.RemovedItems.Where(Filter).ToList();
             lock (_pointPlaces)
             {
-                foreach (var item in removedItems)
+                var removed = 0;
+                foreach (var item in e.RemovedItems)
                 {
                     if (!_pointPlaces.ContainsKey((sender.GetHashCode(), item.Id))) continue;
 
@@ -137,9 +133,10 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     var layer = index / BlockCapacity;
                     var inLayerId = index % BlockCapacity;
                     RemoveItem(_blocks[layer], inLayerId);
+                    removed++;
                 }
 
-                _amountOfItems -= removedItems.Count;
+                _amountOfItems -= removed;
             }
         }
 
@@ -162,8 +159,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         protected abstract void RemoveItem(TCloudBlock block, int inBlockId);
 
         protected abstract int BlockCapacity { get; }
-
-        [CanBeNull] protected virtual Func<TCloudItem, bool> Filter { get; } = null;
 
         protected abstract TCloudBlock CreateNewBlock();
 

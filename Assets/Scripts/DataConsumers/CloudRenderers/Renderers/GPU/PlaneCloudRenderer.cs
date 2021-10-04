@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class PlaneCloudRenderer : CloudRenderer<SlamPlane, PlaneCloudBlock, GPUItem[]>, IResizableRenderer
+    public class PlaneCloudRenderer : GpuCloudRenderer<SlamPlane, PlaneCloudBlock, GPUItem[]>, IResizableRenderer
     {
         public PlaneCloudRenderer(Shader shader) : base(shader)
         {

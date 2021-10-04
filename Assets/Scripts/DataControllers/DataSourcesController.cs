@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Elektronik.Data.Converters;
 using Elektronik.DataConsumers;
+using Elektronik.DataConsumers.CloudRenderers;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.SpecialInterfaces;
@@ -22,7 +23,7 @@ namespace Elektronik.DataControllers
     {
         #region Editor fields
 
-        [SerializeField] private GameObject RenderersRoot;
+        [SerializeField] private ConsumersRoot ConsumersRoot;
         [SerializeField] [CanBeNull] private Window DataSourceWindow;
 
         public CSConverter Converter;
@@ -127,7 +128,7 @@ namespace Elektronik.DataControllers
 
         private void Awake()
         {
-            _consumers = RenderersRoot.GetComponentsInChildren<IDataConsumer>().ToList();
+            _consumers = ConsumersRoot.GetConsumers();
             if (DataSourceWindow is { })
             {
                 _dataSourcesTreeWidget = DataSourceWindow.GetComponent<DataSourcesTreeWidget>();

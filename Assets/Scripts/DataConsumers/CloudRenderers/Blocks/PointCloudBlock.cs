@@ -32,6 +32,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public override void RenderData()
         {
             base.RenderData();
+            if (RenderMaterial is null) return;
             RenderMaterial.SetFloat(_sizeShaderProp, ItemSize);
             RenderMaterial.SetBuffer(_pointsBufferShaderProp, _pointsBuffer);
             RenderMaterial.SetPass(0);

@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class PointCloudRenderer : CloudRenderer<SlamPoint, PointCloudBlock, GPUItem>, IResizableRenderer
+    public class PointCloudRenderer : GpuCloudRenderer<SlamPoint, PointCloudBlock, GPUItem>, IResizableRenderer
     {
-
         public PointCloudRenderer(Shader shader) : base(shader)
         {
         }

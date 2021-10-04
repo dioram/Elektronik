@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class GpuMeshRenderer : MonoBehaviour, IMeshRenderer, IQueueableRenderer
+    public class GpuMeshRenderer : MonoBehaviour, IMeshRenderer, IGpuRenderer
     {
         [SerializeField] private Shader[] Shaders;
 
@@ -72,6 +72,17 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         #region IQueueableRenderer
 
+        public void UpdateDataOnGpu()
+        {
+            lock (_blocks)
+            {
+                foreach (var block in _blocks)
+                {
+                    block.UpdateDataOnGpu();
+                }
+            }
+        }
+
         public void RenderNow()
         {
             lock (_blocks)
@@ -103,14 +114,9 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         private void Update()
         {
-            lock (_blocks)
-            {
-                foreach (var block in _blocks)
-                {
-                    block.UpdateDataOnGpu();
-                }
-            }
+            UpdateDataOnGpu();
         }
+        
         #endregion
 
         #region Private

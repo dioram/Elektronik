@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using JetBrains.Annotations;
+using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
@@ -15,7 +16,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public virtual void RenderData()
         {
-            RenderMaterial.SetFloat(_scaleShaderProp, Scale);
+            if (RenderMaterial is { }) RenderMaterial.SetFloat(_scaleShaderProp, Scale);
         }
         
         public abstract TGpuItem this[int index] { get; set; }
@@ -24,7 +25,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         #region Protected
 
-        protected Material RenderMaterial;
+        [CanBeNull] protected Material RenderMaterial;
         protected bool Updated = false;
         private readonly int _scaleShaderProp = Shader.PropertyToID("_Scale");
 

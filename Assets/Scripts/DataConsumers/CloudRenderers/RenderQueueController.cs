@@ -5,11 +5,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class RenderQueueController : MonoBehaviour
     {
-        private IQueueableRenderer[] _renderers;
+        private IGpuRenderer[] _renderers;
 
         private void Start()
         {
-            _renderers = GetComponentsInChildren<IQueueableRenderer>()
+            _renderers = GetComponentsInChildren<IGpuRenderer>()
                     .OrderBy(r => r.RenderQueue)
                     .ToArray();
         }

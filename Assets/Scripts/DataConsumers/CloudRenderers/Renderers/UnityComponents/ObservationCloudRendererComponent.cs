@@ -3,9 +3,10 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class ObservationCloudRendererComponent
-            : CloudRendererComponent<SlamObservation, ObservationCloudBlock, (Matrix4x4 transform, Color color)>
+    public class ObservationCloudRendererComponent : CloudRendererComponent<SlamObservation>
     {
+        [SerializeField] private Shader CloudShader;
+        
         private void Awake()
         {
             NestedRenderer = new ObservationCloudRenderer(CloudShader);

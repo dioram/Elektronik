@@ -14,7 +14,7 @@ namespace Elektronik.Threading
     
     public class MainThreadInvoker : MonoBehaviour, IMainThreadInvoker
     {
-        public static IMainThreadInvoker Instance { get; private set; }
+        public static IMainThreadInvoker Instance { get; set; }
 
         private static Thread _mainThread;
 

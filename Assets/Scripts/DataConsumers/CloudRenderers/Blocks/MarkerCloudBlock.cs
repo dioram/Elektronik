@@ -24,11 +24,15 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public override int RenderQueue => 2000;
 
-        public MarkerCloudBlock(Shader shader)
+        public MarkerCloudBlock()
         {
             _transforms = Enumerable.Repeat(default(Matrix4x4), Capacity).ToArray();
             _scales = Enumerable.Repeat(default(Vector3), Capacity).ToArray();
             _colors = Enumerable.Repeat(default(Color), Capacity).ToArray();
+        }
+
+        public void InitShader(Shader shader)
+        {
             MainThreadInvoker.Instance.Enqueue(() =>
             {
                 RenderMaterial = new Material(shader) {hideFlags = HideFlags.DontSave};
@@ -54,6 +58,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public override void RenderData()
         {
             base.RenderData();
+            if (RenderMaterial is null) return;
             RenderMaterial.SetBuffer(_transformsBufferShaderProp, _transformsBuffer);
             RenderMaterial.SetBuffer(_scalesBufferShaderProp, _scalesBuffer);
             RenderMaterial.SetBuffer(_colorsBufferShaderProp, _colorsBuffer);

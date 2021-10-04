@@ -1,9 +1,12 @@
 ﻿using Elektronik.Data.PackageObjects;
+using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class SlamLineCloudRendererComponent : CloudRendererComponent<SlamLine, LineCloudBlock, (GPUItem begin, GPUItem end)>
+    public class SlamLineCloudRendererComponent : CloudRendererComponent<SlamLine>
     {
+        [SerializeField] private Shader CloudShader;
+        
         private void Awake()
         {
             NestedRenderer = new SlamLineCloudRenderer(CloudShader);

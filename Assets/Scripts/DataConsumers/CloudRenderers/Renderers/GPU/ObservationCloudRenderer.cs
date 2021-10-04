@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class ObservationCloudRenderer 
-            : CloudRenderer<SlamObservation, ObservationCloudBlock, (Matrix4x4 transform, Color color)>
+            : GpuCloudRenderer<SlamObservation, ObservationCloudBlock, (Matrix4x4 transform, Color color)>
     {
         public ObservationCloudRenderer(Shader shader) : base(shader)
         {

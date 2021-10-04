@@ -1,5 +1,4 @@
-﻿using System;
-using Elektronik.Data.PackageObjects;
+﻿using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using UnityEngine;
 
@@ -7,16 +6,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     /// <summary> Base class for rendering object clouds. Such as point cloud, line cloud, etc. </summary>
     /// <typeparam name="TCloudItem"></typeparam>
-    /// <typeparam name="TCloudBlock"></typeparam>
-    /// <typeparam name="TGpuItem"></typeparam>
-    public abstract class CloudRendererComponent<TCloudItem, TCloudBlock, TGpuItem>
-            : MonoBehaviour, ICloudRenderer<TCloudItem>, IQueueableRenderer
+    public abstract class CloudRendererComponent<TCloudItem>
+            : MonoBehaviour, ICloudRenderer<TCloudItem>, IGpuRenderer
             where TCloudItem : struct, ICloudItem
-            where TCloudBlock : class, ICloudBlock<TGpuItem>
     {
-        public Shader CloudShader;
-
-        protected CloudRenderer<TCloudItem, TCloudBlock, TGpuItem> NestedRenderer;
+        protected ICloudRenderer<TCloudItem> NestedRenderer;
 
         public int ItemsCount => NestedRenderer.ItemsCount;
 
@@ -24,7 +18,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         private void Update()
         {
-            NestedRenderer.UpdateDataOnGpu();
+            UpdateDataOnGpu();
         }
 
         private void OnDestroy()
@@ -34,14 +28,19 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         #endregion
 
-        #region IQueueableRenderer
+        #region IGpuRenderer
+
+        public void UpdateDataOnGpu()
+        {
+            (NestedRenderer as IGpuRenderer)?.UpdateDataOnGpu();
+        }
 
         public void RenderNow()
         {
-            NestedRenderer.RenderNow();
+            (NestedRenderer as IGpuRenderer)?.RenderNow();
         }
 
-        public int RenderQueue => NestedRenderer.RenderQueue;
+        public int RenderQueue => (NestedRenderer as IGpuRenderer)?.RenderQueue ?? 0;
 
         #endregion
 

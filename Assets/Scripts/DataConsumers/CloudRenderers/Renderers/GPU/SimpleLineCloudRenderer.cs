@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class SimpleLineCloudRenderer : CloudRenderer<SimpleLine, LineCloudBlock, (GPUItem begin, GPUItem end)>
+    public class SimpleLineCloudRenderer : GpuCloudRenderer<SimpleLine, LineCloudBlock, (GPUItem begin, GPUItem end)>
     {
         public SimpleLineCloudRenderer(Shader shader) : base(shader)
         {
