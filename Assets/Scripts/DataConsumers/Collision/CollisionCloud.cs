@@ -36,7 +36,7 @@ namespace Elektronik.DataConsumers.Collision
 
         private void OnDestroy()
         {
-            _threadQueueWorker.Dispose();
+            Dispose();
         }
 
         #endregion
@@ -44,6 +44,8 @@ namespace Elektronik.DataConsumers.Collision
         #region ICloudRenderer
 
         public float Scale { get; set; } = 1;
+
+        public int ItemsCount { get; private set; }
 
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
@@ -63,6 +65,7 @@ namespace Elektronik.DataConsumers.Collision
                     }
                 }
             });
+            ItemsCount += e.AddedItems.Count;
         }
 
         public void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
@@ -102,6 +105,15 @@ namespace Elektronik.DataConsumers.Collision
                     }
                 }
             });
+            ItemsCount -= e.RemovedItems.Count;
+        }
+
+        public void Dispose()
+        {
+            _data.Clear();
+            _dataReverse.Clear();
+            _topBlock.Clear();
+            _threadQueueWorker.Dispose();
         }
 
         #endregion

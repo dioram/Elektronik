@@ -4,17 +4,18 @@ using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
+using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.Threading;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public abstract class GameObjectCloud<TCloudItem> : CloudRendererComponent<TCloudItem>
+    public abstract class GameObjectCloud<TCloudItem> : MonoBehaviour, ICloudRenderer<TCloudItem>
             where TCloudItem : struct, ICloudItem
     {
         public GameObject ItemPrefab;
 
-        public override int ItemsCount
+        public int ItemsCount
         {
             get
             {
@@ -25,7 +26,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
         
-        public override float Scale
+        public virtual float Scale
         {
             get => _scale;
             set
@@ -51,7 +52,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 GameObjects.Clear();
                 if (MainThreadInvoker.Instance != null)
                 {
-                    MainThreadInvoker.Enqueue(() => ObjectsPool?.DespawnAllActiveObjects());
+                    MainThreadInvoker.Instance.Enqueue(() => ObjectsPool?.DespawnAllActiveObjects());
                 }
             }
         }
@@ -66,15 +67,15 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         #region ICloudRenderer implementaion
 
-        public override void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
+        public virtual void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
             lock (GameObjects)
             {
                 foreach (var obj in e.AddedItems)
                 {
-                    Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Enqueue(() =>
+                    var pose = GetObjectPose(obj);
+                    MainThreadInvoker.Instance.Enqueue(() =>
                     {
                         var go = ObjectsPool.Spawn(pose.position * _scale, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
@@ -90,15 +91,15 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
-        public override void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
+        public virtual void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
             lock (GameObjects)
             {
                 foreach (var obj in e.UpdatedItems)
                 {
-                    Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Enqueue(() =>
+                    var pose = GetObjectPose(obj);
+                    MainThreadInvoker.Instance.Enqueue(() =>
                     {
                         var go = GameObjects[(sender.GetHashCode(), obj.Id)];
                         go.transform.SetPositionAndRotation(pose.position * _scale, pose.rotation);
@@ -109,7 +110,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
-        public override void OnItemsRemoved(object sender, RemovedEventArgs<TCloudItem> e)
+        public virtual void OnItemsRemoved(object sender, RemovedEventArgs<TCloudItem> e)
         {
             lock (GameObjects)
             {
@@ -119,7 +120,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     if (!GameObjects.ContainsKey(key)) continue;
 
                     var go = GameObjects[key];
-                    MainThreadInvoker.Enqueue(() =>
+                    MainThreadInvoker.Instance.Enqueue(() =>
                     {
                         
                         ObjectsPool.Despawn(go);
@@ -127,6 +128,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     });
                 }
             }
+        }
+
+        public virtual void Dispose()
+        {
+            Clear();
         }
 
         #endregion
@@ -169,6 +175,8 @@ namespace Elektronik.DataConsumers.CloudRenderers
         protected ObjectPool ObjectsPool;
         // ReSharper disable once StaticMemberInGenericType
         private static readonly int ColorProperty = Shader.PropertyToID("_Color");
+        
+        protected static bool IsSenderVisible(object sender) => (sender as IVisible)?.IsVisible ?? true;
 
         protected abstract Pose GetObjectPose(TCloudItem obj);
 

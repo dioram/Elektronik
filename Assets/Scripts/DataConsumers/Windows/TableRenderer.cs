@@ -23,7 +23,7 @@ namespace Elektronik.DataConsumers.Windows
         
         public void SetHeader(string[] header)
         {
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 Table.Clear();
                 var rect = (RectTransform) transform;
@@ -68,7 +68,7 @@ namespace Elektronik.DataConsumers.Windows
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Enqueue(() => gameObject.SetActive(_isShowing));
+                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
             }
         }
 
@@ -76,7 +76,7 @@ namespace Elektronik.DataConsumers.Windows
 
         public void Render(string[] data)
         {
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 foreach (var pair in data.Zip(_columns, (s, column) => (s, column)))
                 {
@@ -87,7 +87,7 @@ namespace Elektronik.DataConsumers.Windows
 
         public void Clear()
         {
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 foreach (var column in _columns)
                 {

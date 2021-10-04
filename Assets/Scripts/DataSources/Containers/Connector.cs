@@ -31,7 +31,7 @@ namespace Elektronik.DataSources.Containers
             {
                 if (_maxWeight == value) return;
                 _maxWeight = value;
-                MainThreadInvoker.Enqueue(() => OnMaxWeightChanged?.Invoke(_maxWeight));
+                MainThreadInvoker.Instance.Enqueue(() => OnMaxWeightChanged?.Invoke(_maxWeight));
             }
         }
 

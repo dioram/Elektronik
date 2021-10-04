@@ -47,7 +47,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
             {
                 if (Position == AmountOfFrames - 1)
                 {
-                    MainThreadInvoker.Enqueue(() => OnFinished?.Invoke());
+                    MainThreadInvoker.Instance.Enqueue(() => OnFinished?.Invoke());
                     IsPlaying = false;
                     OnPaused?.Invoke();
                     return;

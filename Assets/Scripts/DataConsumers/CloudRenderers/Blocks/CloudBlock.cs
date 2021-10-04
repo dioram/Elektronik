@@ -8,7 +8,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public float Scale { get; set; } = 1;
 
-        public virtual void UpdateDataOnGPU()
+        public virtual void UpdateDataOnGpu()
         {
             Updated = false;
         }

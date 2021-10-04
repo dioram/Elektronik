@@ -7,13 +7,18 @@ using Debug = UnityEngine.Debug;
 
 namespace Elektronik.Threading
 {
-    public class MainThreadInvoker : MonoBehaviour
+    public interface IMainThreadInvoker
     {
-        public static MainThreadInvoker Instance { get; private set; }
+        public void Enqueue(Action action);
+    }
+    
+    public class MainThreadInvoker : MonoBehaviour, IMainThreadInvoker
+    {
+        public static IMainThreadInvoker Instance { get; private set; }
 
         private static Thread _mainThread;
 
-        private static readonly ConcurrentQueue<Action> Actions = new ConcurrentQueue<Action>();
+        private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
 
         private void Awake()
         {
@@ -33,11 +38,11 @@ namespace Elektronik.Threading
             Instance = null;
         }
 
-        public static void Enqueue(Action action)
+        public void Enqueue(Action action)
         {
             if (Thread.CurrentThread != _mainThread)
             {
-                Actions.Enqueue(action);
+                _actions.Enqueue(action);
                 return;
             }
 
@@ -54,10 +59,10 @@ namespace Elektronik.Threading
         private void Update()
         {
             var w = Stopwatch.StartNew();
-            var actionsAmount = Actions.Count;
-            while (Actions.Count != 0)
+            var actionsAmount = _actions.Count;
+            while (_actions.Count != 0)
             {
-                if (!Actions.TryDequeue(out Action a)) continue;
+                if (!_actions.TryDequeue(out Action a)) continue;
                 
                 try
                 {

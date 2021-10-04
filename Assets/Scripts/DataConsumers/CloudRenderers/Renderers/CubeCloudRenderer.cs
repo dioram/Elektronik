@@ -7,11 +7,15 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class CubeCloudRenderer : CloudRenderer<SlamMarker, TransparentMarkerCloudBlock, MarkerGpuData>
     {
+        public CubeCloudRenderer(Shader shader) : base(shader)
+        {
+        }
+        
         protected override int BlockCapacity => MarkerCloudBlock.Capacity;
 
         protected override Func<SlamMarker, bool> Filter { get; } = marker => marker.Type == SlamMarker.MarkerType.Cube;
 
-        protected override TransparentMarkerCloudBlock CreateNewBlock() => new TransparentMarkerCloudBlock(CloudShader);
+        protected override TransparentMarkerCloudBlock CreateNewBlock() => new TransparentMarkerCloudBlock(Shader);
 
         protected override void ProcessItem(TransparentMarkerCloudBlock block, SlamMarker item, int inBlockId)
         {

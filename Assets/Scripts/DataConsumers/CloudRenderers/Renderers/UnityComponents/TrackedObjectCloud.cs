@@ -20,7 +20,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 foreach (var obj in e.AddedItems)
                 {
                     Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Enqueue(() =>
+                    MainThreadInvoker.Instance.Enqueue(() =>
                     {
                         var go = ObjectsPool.Spawn(pose.position, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;

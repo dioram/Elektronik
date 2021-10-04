@@ -38,7 +38,7 @@ namespace Elektronik.DataConsumers.Windows
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Enqueue(() => gameObject.SetActive(_isShowing));
+                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
             }
         }
 
@@ -46,7 +46,7 @@ namespace Elektronik.DataConsumers.Windows
 
         public void Render(string data)
         {
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 switch (Mode)
                 {
@@ -65,7 +65,7 @@ namespace Elektronik.DataConsumers.Windows
 
         public void Clear()
         {
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 if (Label != null) Label.text = "";
             });

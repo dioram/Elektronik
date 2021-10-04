@@ -6,21 +6,26 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class PlaneCloudRenderer : CloudRenderer<SlamPlane, PlaneCloudBlock, GPUItem[]>, IResizableRenderer
     {
-        public float ItemSize;
-
-        public void SetSize(float newSize)
+        public PlaneCloudRenderer(Shader shader) : base(shader)
         {
-            ItemSize = newSize;
+        }
 
-            foreach (var block in Blocks)
+        public float ItemSize
+        {
+            get => _itemSize;
+            set
             {
-                block.ItemSize = ItemSize;
+                _itemSize = value;
+                foreach (var block in Blocks)
+                {
+                    block.ItemSize = ItemSize;
+                }
             }
         }
 
         protected override int BlockCapacity => PlaneCloudBlock.Capacity;
 
-        protected override PlaneCloudBlock CreateNewBlock() => new PlaneCloudBlock(CloudShader, ItemSize);
+        protected override PlaneCloudBlock CreateNewBlock() => new PlaneCloudBlock(Shader, ItemSize);
 
         protected override void ProcessItem(PlaneCloudBlock block, SlamPlane item, int inBlockId)
         {
@@ -49,5 +54,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         private readonly GPUItem[] _defaultData =
                 Enumerable.Repeat<GPUItem>(default, PlaneCloudBlock.VerticesPerPlane).ToArray();
+
+        private float _itemSize;
     }
 }

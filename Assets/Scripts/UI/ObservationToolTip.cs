@@ -73,12 +73,12 @@ namespace Elektronik.UI
 
                     if (collision.HasValue)
                     {
-                        MainThreadInvoker.Enqueue(
+                        MainThreadInvoker.Instance.Enqueue(
                             () => ProcessRaycast(collision.Value.container, collision.Value.item, mousePosition));
                     }
                     else
                     {
-                        MainThreadInvoker.Enqueue(HideViewer);
+                        MainThreadInvoker.Instance.Enqueue(HideViewer);
                     }
                 });
                 yield return new WaitForSeconds(CollisionCheckTimeout);
@@ -129,7 +129,7 @@ namespace Elektronik.UI
                                                               && w.ObservationId == obs.Id);
                 if (v != null)
                 {
-                    MainThreadInvoker.Enqueue(() =>
+                    MainThreadInvoker.Instance.Enqueue(() =>
                     {
                         Destroy(v.gameObject);
                         _pinnedViewers.Remove(v);

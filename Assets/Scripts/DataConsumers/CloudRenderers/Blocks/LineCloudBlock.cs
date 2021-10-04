@@ -17,7 +17,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public LineCloudBlock(Shader shader)
         {
             _points = Enumerable.Repeat(default(GPUItem), Capacity * VerticesPerLine).ToArray();
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 RenderMaterial = new Material(shader) {hideFlags = HideFlags.DontSave};
                 _pointsBuffer = new ComputeBuffer(_points.Length, GPUItem.Size);
@@ -25,11 +25,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
             });
         }
 
-        public override void UpdateDataOnGPU()
+        public override void UpdateDataOnGpu()
         {
             if (!_initialized) return;
             if (Updated) _pointsBuffer.SetData(_points);
-            base.UpdateDataOnGPU();
+            base.UpdateDataOnGpu();
         }
 
         public override void RenderData()

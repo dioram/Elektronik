@@ -32,7 +32,7 @@ namespace Elektronik.DataConsumers.Windows
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Enqueue(() => gameObject.SetActive(_isShowing));
+                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
             }
         }
 

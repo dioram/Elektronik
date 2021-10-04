@@ -31,7 +31,7 @@ namespace Elektronik.UI.Windows
         public void CreateWindow<TComponent>(string title, Action<TComponent, Window> callback,
                                              params object[] titleFormatArgs)
         {
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 var prefab = RendererWindowsPrefabs.First(g => g.GetComponent<TComponent>() != null);
                 var go = Instantiate(prefab, Canvas);

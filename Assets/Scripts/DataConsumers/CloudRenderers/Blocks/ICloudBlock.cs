@@ -10,7 +10,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         
         int RenderQueue { get; }
 
-        void UpdateDataOnGPU();
+        void UpdateDataOnGpu();
 
         void RenderData();
     }

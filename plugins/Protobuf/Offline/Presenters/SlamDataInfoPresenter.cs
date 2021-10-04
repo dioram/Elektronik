@@ -23,9 +23,9 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public void Present(PacketPb data, ICSConverter? converter)
         {
-            MainThreadInvoker.Enqueue(() => _info?.Clear());
+            MainThreadInvoker.Instance.Enqueue(() => _info?.Clear());
             IEnumerable<ICloudItem> objects = Pkg2Pts(data, converter).ToArray();
-            MainThreadInvoker.Enqueue(() => _info?.Render((data.Message, objects)));
+            MainThreadInvoker.Instance.Enqueue(() => _info?.Render((data.Message, objects)));
         }
 
         #region ISourceTreeNode
@@ -56,7 +56,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public void Clear()
         {
-            MainThreadInvoker.Enqueue(() => _info?.Clear());
+            MainThreadInvoker.Instance.Enqueue(() => _info?.Clear());
         }
 
         #endregion

@@ -21,8 +21,8 @@ namespace Elektronik.DataConsumers.CloudRenderers
             {
                 foreach (var obj in e.AddedItems)
                 {
-                    Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Enqueue(() =>
+                    var pose = GetObjectPose(obj);
+                    MainThreadInvoker.Instance.Enqueue(() =>
                     {
                         var go = ObjectsPool.Spawn(pose.position * Scale, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
@@ -45,8 +45,8 @@ namespace Elektronik.DataConsumers.CloudRenderers
             {
                 foreach (var obj in e.UpdatedItems)
                 {
-                    Pose pose = GetObjectPose(obj);
-                    MainThreadInvoker.Enqueue(() =>
+                    var pose = GetObjectPose(obj);
+                    MainThreadInvoker.Instance.Enqueue(() =>
                     {
                         var go = GameObjects[(sender.GetHashCode(), obj.Id)];
                         go.transform.SetPositionAndRotation(pose.position * Scale, pose.rotation);

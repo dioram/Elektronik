@@ -47,7 +47,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                 catch (Exception e)
                 {
                     Debug.LogException(e);
-                    MainThreadInvoker.Enqueue(() =>
+                    MainThreadInvoker.Instance.Enqueue(() =>
                     {
                         ScreenLocker.SetActive(false);
                         ConnectionsWindow.Show();
@@ -56,7 +56,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                     });
                     return;
                 }
-                MainThreadInvoker.Enqueue(() =>
+                MainThreadInvoker.Instance.Enqueue(() =>
                 {
                     LoadingErrorLabel.enabled = false;
                     PluginWindowsManager.RegisterPlugin(CurrentSource);

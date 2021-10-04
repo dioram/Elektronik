@@ -107,7 +107,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             {
                 foreach (var block in _blocks)
                 {
-                    block.UpdateDataOnGPU();
+                    block.UpdateDataOnGpu();
                 }
             }
         }

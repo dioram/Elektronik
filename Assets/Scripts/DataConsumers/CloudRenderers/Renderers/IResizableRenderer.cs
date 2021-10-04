@@ -2,6 +2,6 @@
 {
     public interface IResizableRenderer
     {
-        void SetSize(float newSize);
+        float ItemSize { get; set; }
     }
 }

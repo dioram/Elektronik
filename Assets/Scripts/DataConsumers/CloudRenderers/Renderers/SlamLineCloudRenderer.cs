@@ -1,9 +1,14 @@
 ﻿using Elektronik.Data.PackageObjects;
+using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class SlamLineCloudRenderer : CloudRenderer<SlamLine, LineCloudBlock, (GPUItem begin, GPUItem end)>
     {
+        public SlamLineCloudRenderer(Shader shader) : base(shader)
+        {
+        }
+        
         public void SetAlpha(float alpha)
         {
             foreach (var block in Blocks)
@@ -14,7 +19,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         protected override int BlockCapacity => LineCloudBlock.Capacity;
 
-        protected override LineCloudBlock CreateNewBlock() => new LineCloudBlock(CloudShader);
+        protected override LineCloudBlock CreateNewBlock() => new LineCloudBlock(Shader);
         
         protected override void ProcessItem(LineCloudBlock block, SlamLine item, int inBlockId)
         {

@@ -52,12 +52,12 @@ namespace Elektronik.UI
 
         public void SetPlayingState()
         {
-            MainThreadInvoker.Enqueue(() => PlayPauseImage.sprite = PauseImage);
+            MainThreadInvoker.Instance.Enqueue(() => PlayPauseImage.sprite = PauseImage);
         }
 
         public void SetPausedState()
         {
-            MainThreadInvoker.Enqueue(() => PlayPauseImage.sprite = PlayImage);
+            MainThreadInvoker.Instance.Enqueue(() => PlayPauseImage.sprite = PlayImage);
         }
 
         public void ActivateSpeedButtons(bool state)
@@ -77,7 +77,7 @@ namespace Elektronik.UI
         /// <remarks> This will not trigger <c>OnPositionChanged</c> </remarks>
         public void SetSliderPosition(float sliderValue)
         {
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 _settingUpPosition = true;
                 if (sliderValue > PositionSlider.maxValue)
@@ -100,12 +100,12 @@ namespace Elektronik.UI
 
         public void SetTimestamp(string timestamp)
         {
-            MainThreadInvoker.Enqueue(() => TimestampLabel.text = timestamp);
+            MainThreadInvoker.Instance.Enqueue(() => TimestampLabel.text = timestamp);
         }
 
         public void SetSliderMaxValue(float sliderMax)
         {
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 _settingUpPosition = true;
                 if (PositionSlider.value > sliderMax)
@@ -122,7 +122,7 @@ namespace Elektronik.UI
 
         public void SetSliderMinValue(float sliderMin)
         {
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 _settingUpPosition = true;
                 if (PositionSlider.value < sliderMin)

@@ -17,7 +17,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         {
             ItemSize = itemSize;
             _planes = Enumerable.Repeat(default(GPUItem), Capacity * VerticesPerPlane).ToArray();
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 RenderMaterial = new Material(shader) { hideFlags = HideFlags.DontSave };
                 _vertsBuffer = new ComputeBuffer(_planes.Length, GPUItem.Size);
@@ -25,11 +25,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
             });
         }
 
-        public override void UpdateDataOnGPU()
+        public override void UpdateDataOnGpu()
         {
             if (!_initialized) return;
             if (Updated) _vertsBuffer.SetData(_planes);
-            base.UpdateDataOnGPU();
+            base.UpdateDataOnGpu();
         }
 
         public override void RenderData()

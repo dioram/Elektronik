@@ -91,7 +91,7 @@ namespace Elektronik.DataControllers
 
             SaveClustersContainers(clustered, container as IVisible);
 
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 DataSourcesController.AddDataSource(clustered);
                 panel.enabled = true;

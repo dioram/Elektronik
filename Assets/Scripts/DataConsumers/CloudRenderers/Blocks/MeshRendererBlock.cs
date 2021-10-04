@@ -22,7 +22,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 material.EnableKeyword("_COMPUTE_BUFFER");
             }
             
-            MainThreadInvoker.Enqueue(() =>
+            MainThreadInvoker.Instance.Enqueue(() =>
             {
                 _materials = shaders.Select(sh => new Material(sh) { hideFlags = HideFlags.DontSave }).ToArray();
                 _vertexBuffer = new ComputeBuffer(_vertices.Length, GPUItem.Size);
@@ -30,7 +30,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             });
         }
 
-        public void UpdateDataOnGPU()
+        public void UpdateDataOnGpu()
         {
             if (!_initialized) return;
             if (_updated) _vertexBuffer.SetData(_vertices);

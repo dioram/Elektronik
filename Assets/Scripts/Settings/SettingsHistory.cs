@@ -48,7 +48,7 @@ namespace Elektronik.Settings
 
         public void Save()
         {
-            MainThreadInvoker.Enqueue(Serialize);
+            MainThreadInvoker.Instance.Enqueue(Serialize);
         }
 
         #region Private definitions

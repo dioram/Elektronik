@@ -8,11 +8,11 @@ namespace Elektronik.UI
     [RequireComponent(typeof(TMP_Text))]
     public class SceneInfo : MonoBehaviour
     {
-        [SerializeField] private PointCloudRenderer PointCloudRenderer;
-        [SerializeField] private SlamLineCloudRenderer SlamLineCloudRenderer;
-        [SerializeField] private SimpleLineCloudRenderer SimpleLineCloudRenderer;
-        [SerializeField] private PlaneCloudRenderer PlaneCloudRenderer;
-        [SerializeField] private ObservationCloudRenderer ObservationCloudRenderer;
+        [SerializeField] private PointCloudRendererComponent PointCloudRenderer;
+        [SerializeField] private SlamLineCloudRendererComponent SlamLineCloudRenderer;
+        [SerializeField] private SimpleLineCloudRendererComponent SimpleLineCloudRenderer;
+        [SerializeField] private PlaneCloudRendererComponent PlaneCloudRenderer;
+        [SerializeField] private ObservationCloudRendererComponent ObservationCloudRenderer;
         [SerializeField] private TrackedObjectCloud TrackedObjectCloud;
 
         [HideInInspector] public int PointsCount;
@@ -31,7 +31,7 @@ namespace Elektronik.UI
 
         private void Update()
         {
-            bool isUpdated = UpdateValue(ref PointsCount, PointCloudRenderer.ItemsCount);
+            var isUpdated = UpdateValue(ref PointsCount, PointCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref SlamLinesCount, SlamLineCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref SimpleLinesCount, SimpleLineCloudRenderer.ItemsCount);
             isUpdated = isUpdated || UpdateValue(ref InfinitePlanesCount, PlaneCloudRenderer.ItemsCount);
