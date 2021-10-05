@@ -69,6 +69,8 @@ namespace Elektronik.TestScene
                 yield return new WaitForSeconds(0.5f);
                 _container.Update(_observations.Select(Rotated).ToArray());
                 yield return new WaitForSeconds(0.5f);
+                _container.Update(_observations.Select(ChangePosition).ToArray());
+                yield return new WaitForSeconds(0.5f);
                 _container.Update(_observations.Select(ChangeColor).ToArray());
                 yield return new WaitForSeconds(0.5f);
                 _container.RemoveConnections(new[] { (0, 1), (0, 2) });
@@ -84,6 +86,12 @@ namespace Elektronik.TestScene
         private SlamObservation ChangeColor(SlamObservation obs)
         {
             return new SlamObservation(new SlamPoint(obs.Point.Id, obs.Point.Position, Color.black),
+                                       obs.Rotation, obs.Message, obs.FileName);
+        }
+
+        private SlamObservation ChangePosition(SlamObservation obs)
+        {
+            return new SlamObservation(new SlamPoint(obs.Point.Id, obs.Point.Position + Vector3.up, obs.Point.Color),
                                        obs.Rotation, obs.Message, obs.FileName);
         }
         

@@ -90,6 +90,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         {
             foreach (var group in markers.GroupBy(m => m.Type))
             {
+                if (!_renderers.ContainsKey(group.Key)) continue;
                 _renderers[group.Key].OnItemsAdded(sender, new AddedEventArgs<SlamMarker>(group.ToArray()));
             }
         }
@@ -106,6 +107,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         {
             foreach (var group in markers.GroupBy(m => m.Type))
             {
+                if (!_renderers.ContainsKey(group.Key)) continue;
                 _renderers[group.Key].OnItemsRemoved(sender, new RemovedEventArgs<SlamMarker>(group.ToArray()));
             }
         }

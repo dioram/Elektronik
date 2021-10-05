@@ -47,6 +47,10 @@ namespace Elektronik.TestScene
                            SlamMarker.MarkerType.Cube),
             new SlamMarker(1, Vector3.down * 2, Quaternion.identity, Vector3.one, Color.blue, "second",
                            SlamMarker.MarkerType.SemitransparentCube),
+            new SlamMarker(2, Vector3.forward * 2, Quaternion.identity, Vector3.one, Color.green, "third",
+                           SlamMarker.MarkerType.Sphere),
+            new SlamMarker(3, Vector3.back * 2, Quaternion.identity, Vector3.one, Color.yellow, "forth",
+                           SlamMarker.MarkerType.SemitransparentSphere),
         };
 
         private readonly CloudContainer<SlamMarker> _container = new CloudContainer<SlamMarker>();
@@ -65,6 +69,8 @@ namespace Elektronik.TestScene
                 _container.Update(_markers.Select(ChangePosition).ToArray());
                 yield return new WaitForSeconds(0.5f);
                 _container.Update(_markers.Select(ChangeColor).ToArray());
+                yield return new WaitForSeconds(0.5f);
+                _container.Update(_markers.Select(ChangeScale).ToArray());
                 yield return new WaitForSeconds(0.5f);
                 _container.Update(SwapTypes());
                 yield return new WaitForSeconds(0.5f);
@@ -94,17 +100,25 @@ namespace Elektronik.TestScene
                                   marker.Scale, marker.Color, marker.Message, marker.Type);
         }
 
+        private static SlamMarker ChangeScale(SlamMarker marker)
+        {
+            return new SlamMarker(marker.Id, marker.Position, marker.Rotation,
+                                  new Vector3(1, 0.5f, 3), marker.Color, marker.Message, marker.Type);
+        }
+
         private static SlamMarker ChangeColor(SlamMarker marker)
         {
             return new SlamMarker(marker.Id, marker.Position, marker.Rotation,
-                                  marker.Scale, Color.black, marker.Message, marker.Type);
+                                  marker.Scale, Color.white, marker.Message, marker.Type);
         }
 
         private SlamMarker[] SwapTypes()
         {
             var m = _markers.ToArray();
-            m[0].Type = SlamMarker.MarkerType.SemitransparentCube;
-            m[1].Type = SlamMarker.MarkerType.Cube;
+            m[0].Type = SlamMarker.MarkerType.SemitransparentSphere;
+            m[1].Type = SlamMarker.MarkerType.Sphere;
+            m[2].Type = SlamMarker.MarkerType.SemitransparentCube;
+            m[3].Type = SlamMarker.MarkerType.Cube;
             return m;
         }
 

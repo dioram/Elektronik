@@ -4,11 +4,6 @@ using MarkerGpuData = Elektronik.DataConsumers.CloudRenderers.MarkerCloudBlock.M
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public interface IMarkerCloudRenderer: ICloudRenderer<SlamMarker>
-    {
-        public SlamMarker.MarkerType MarkerType { get; }
-    }
-
     public class MarkerCloudRenderer<TCloudBlock> : GpuCloudRenderer<SlamMarker, TCloudBlock, MarkerGpuData>,
                                                     IMarkerCloudRenderer
             where TCloudBlock : MarkerCloudBlock, new()

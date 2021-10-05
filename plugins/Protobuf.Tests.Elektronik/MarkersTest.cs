@@ -65,6 +65,24 @@ namespace Protobuf.Tests.Elektronik
         }
 
         [Test, Order(3), Explicit]
+        public void UpdateTypes()
+        {
+            var packet = new PacketPb
+            {
+                Action = PacketPb.Types.ActionType.Update,
+                Markers = new PacketPb.Types.Markers(),
+            };
+
+            packet.Markers.Data.Add(new MarkerPb { Id = 0, Primitive = MarkerPb.Types.Type.Crystal });
+            packet.Markers.Data.Add(new MarkerPb { Id = 1, Primitive = MarkerPb.Types.Type.Cube });
+            packet.Markers.Data.Add(new MarkerPb { Id = 2, Primitive = MarkerPb.Types.Type.SemitransparentCube });
+            packet.Markers.Data.Add(new MarkerPb { Id = 3, Primitive = MarkerPb.Types.Type.Sphere });
+            packet.Markers.Data.Add(new MarkerPb { Id = 4, Primitive = MarkerPb.Types.Type.SemitransparentSphere });
+
+            SendAndCheck(packet, Filename);
+        }
+
+        [Test, Order(4), Explicit]
         public void UpdateColors()
         {
             var packet = new PacketPb
@@ -82,7 +100,7 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(4), Explicit]
+        [Test, Order(5), Explicit]
         public void UpdateScales()
         {
             var packet = new PacketPb
@@ -100,7 +118,7 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(5), Explicit]
+        [Test, Order(6), Explicit]
         public void UpdateOrientations()
         {
             var packet = new PacketPb
@@ -118,7 +136,7 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(6), Explicit]
+        [Test, Order(7), Explicit]
         public void UpdateMessages()
         {
             var packet = new PacketPb
@@ -136,7 +154,7 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(7), Explicit]
+        [Test, Order(8), Explicit]
         public void Remove()
         {
             var packet = new PacketPb
@@ -151,7 +169,7 @@ namespace Protobuf.Tests.Elektronik
             SendAndCheck(packet, Filename);
         }
 
-        [Test, Order(8), Explicit]
+        [Test, Order(9), Explicit]
         public void Clear()
         {
             var packet = new PacketPb()

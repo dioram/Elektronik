@@ -4,10 +4,7 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    /// <summary> Base class for rendering object clouds. Such as point cloud, line cloud, etc. </summary>
-    /// <typeparam name="TCloudItem"></typeparam>
-    public abstract class CloudRendererComponent<TCloudItem>
-            : MonoBehaviour, ICloudRenderer<TCloudItem>, IGpuRenderer
+    public abstract class CloudRendererComponent<TCloudItem> : MonoBehaviour, ICloudRenderer<TCloudItem>, IGpuRenderer
             where TCloudItem : struct, ICloudItem
     {
         protected ICloudRenderer<TCloudItem> NestedRenderer;

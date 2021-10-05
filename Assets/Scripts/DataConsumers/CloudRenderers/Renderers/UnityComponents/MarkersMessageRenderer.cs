@@ -71,7 +71,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     foreach (var go in GameObjects.Values)
                     {
                         go.transform.position *= factor;
-                        var obj = go.GetComponent<CubeObjectData>().Data;
+                        var obj = go.GetComponent<MarkerObjectData>().Data;
                         go.transform.position = obj.Position * _scale;
                         go.GetComponentInChildren<TMP_Text>().fontSize = _scale * FontSizeMultiplier;
                         go.GetComponentInChildren<LookAtCamera>().Radius = (obj.Scale.y * 0.7f + Padding) * _scale;

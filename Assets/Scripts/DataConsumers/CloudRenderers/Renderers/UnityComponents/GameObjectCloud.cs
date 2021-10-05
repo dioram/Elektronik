@@ -13,7 +13,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
     public abstract class GameObjectCloud<TCloudItem> : MonoBehaviour, ICloudRenderer<TCloudItem>
             where TCloudItem : struct, ICloudItem
     {
-        public GameObject ItemPrefab;
+        #region Editor fields
+
+        [SerializeField] private GameObject ItemPrefab;
+        
+        #endregion
 
         public int ItemsCount
         {
@@ -75,18 +79,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 foreach (var obj in e.AddedItems)
                 {
                     var pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() =>
-                    {
-                        var go = ObjectsPool.Spawn(pose.position * _scale, pose.rotation);
-                        GameObjects[(sender.GetHashCode(), obj.Id)] = go;
-                        go.GetComponent<MeshRenderer>().material.SetColor(ColorProperty, obj.AsPoint().Color);
-
-                        var dc = go.GetComponent(DataComponent<TCloudItem>.GetInstantiable());
-                        if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
-                        var dataComponent = (DataComponent<TCloudItem>) dc;
-                        dataComponent.Data = obj;
-                        dataComponent.Container = sender as IContainer<TCloudItem>;
-                    });
+                    MainThreadInvoker.Instance.Enqueue(() => AddInMainThread(sender, obj, pose));
                 }
             }
         }
@@ -99,13 +92,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 foreach (var obj in e.UpdatedItems)
                 {
                     var pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() =>
-                    {
-                        var go = GameObjects[(sender.GetHashCode(), obj.Id)];
-                        go.transform.SetPositionAndRotation(pose.position * _scale, pose.rotation);
-                        go.GetComponent<DataComponent<TCloudItem>>().Data = obj;
-                        go.GetComponent<MeshRenderer>().material.SetColor(ColorProperty, obj.AsPoint().Color);
-                    });
+                    MainThreadInvoker.Instance.Enqueue(() => UpdateInMainThread(sender, obj, pose));
                 }
             }
         }
@@ -120,12 +107,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     if (!GameObjects.ContainsKey(key)) continue;
 
                     var go = GameObjects[key];
-                    MainThreadInvoker.Instance.Enqueue(() =>
-                    {
-                        
-                        ObjectsPool.Despawn(go);
-                        GameObjects.Remove(key);
-                    });
+                    MainThreadInvoker.Instance.Enqueue(() => RemoveInMainThread(sender, item, go));
                 }
             }
         }
@@ -179,6 +161,35 @@ namespace Elektronik.DataConsumers.CloudRenderers
         protected static bool IsSenderVisible(object sender) => (sender as IVisible)?.IsVisible ?? true;
 
         protected abstract Pose GetObjectPose(TCloudItem obj);
+
+        protected virtual GameObject AddInMainThread(object sender, TCloudItem item, Pose pose)
+        {
+            var go = ObjectsPool.Spawn(pose.position * _scale, pose.rotation);
+            GameObjects[(sender.GetHashCode(), item.Id)] = go;
+            go.GetComponent<MeshRenderer>().material.SetColor(ColorProperty, item.AsPoint().Color);
+
+            var dc = go.GetComponent(DataComponent<TCloudItem>.GetInstantiable());
+            if (dc == null) dc = go.AddComponent(DataComponent<TCloudItem>.GetInstantiable());
+            var dataComponent = (DataComponent<TCloudItem>) dc;
+            dataComponent.Data = item;
+            dataComponent.Container = sender as IContainer<TCloudItem>;
+            return go;
+        }
+        
+        protected virtual GameObject UpdateInMainThread(object sender, TCloudItem item, Pose pose)
+        {
+            var go = GameObjects[(sender.GetHashCode(), item.Id)];
+            go.transform.SetPositionAndRotation(pose.position * _scale, pose.rotation);
+            go.GetComponent<DataComponent<TCloudItem>>().Data = item;
+            go.GetComponent<MeshRenderer>().material.SetColor(ColorProperty, item.AsPoint().Color);
+            return go;
+        }
+
+        protected virtual void RemoveInMainThread(object sender, TCloudItem item, GameObject go)
+        {
+            ObjectsPool.Despawn(go);
+            GameObjects.Remove((sender.GetHashCode(), item.Id));
+        }
 
         #endregion
 

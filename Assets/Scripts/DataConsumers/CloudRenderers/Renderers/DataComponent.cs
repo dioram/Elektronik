@@ -14,16 +14,14 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public static Type GetInstantiable()
         {
-            if (_instantiable == null)
-            {
-                _instantiable = Assembly
-                        .GetExecutingAssembly()
-                        .GetTypes()
-                        .FirstOrDefault(t => t.BaseType is { IsGenericType: true } 
-                                                && t.BaseType.GetGenericTypeDefinition() == typeof(DataComponent<>) 
-                                                && t.BaseType.GetGenericArguments().Contains(typeof(TCloudItem)));
-            }
-
+            if (_instantiable != null) return _instantiable;
+            
+            _instantiable = Assembly
+                    .GetExecutingAssembly()
+                    .GetTypes()
+                    .FirstOrDefault(t => t.BaseType is { IsGenericType: true } 
+                                            && t.BaseType.GetGenericTypeDefinition() == typeof(DataComponent<>) 
+                                            && t.BaseType.GetGenericArguments().Contains(typeof(TCloudItem)));
             return _instantiable;
         }
 
@@ -39,7 +37,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
     {
     }
 
-    public class CubeObjectData : DataComponent<SlamMarker>
+    public class MarkerObjectData : DataComponent<SlamMarker>
     {
     }
 }
