@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Elektronik.Data.Converters;
+using Elektronik.Plugins.Common;
 using Elektronik.Protobuf.Data;
 using Moq;
 using NUnit.Framework;
@@ -18,6 +19,7 @@ namespace Protobuf.Tests.Internal
         [SetUp]
         public void Setup()
         {
+            var _ = new FakeMainThreadInvoker();
             _mockedConverter.Setup(c => c.Convert(ref It.Ref<Vector3>.IsAny, ref It.Ref<Quaternion>.IsAny))
                     .Callback(new Convert2Callback((ref Vector3 v, ref Quaternion q) =>
                     {

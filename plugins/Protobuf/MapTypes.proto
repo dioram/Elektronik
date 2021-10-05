@@ -30,15 +30,11 @@ message PointPb {
 }
 
 message ObservationPb {
-  message Stats {
-    reserved 1 to 4;
-  }
   PointPb point = 1;
   optional Vector4Pb orientation = 2;
   optional string message = 3;
   optional string filename = 4;
   repeated int32 observedPoints = 5;
-  Stats stats = 16;
 }
 
 message ConnectionPb {

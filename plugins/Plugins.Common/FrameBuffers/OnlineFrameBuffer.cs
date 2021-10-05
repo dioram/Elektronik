@@ -5,7 +5,7 @@ using Elektronik.Plugins.Common.Commands;
 
 namespace Elektronik.Plugins.Common.FrameBuffers
 {
-    public class OnlineFrameBuffer
+    public class OnlineFrameBuffer : IOnlineFrameBuffer
     {
         public class Frame
         {

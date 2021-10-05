@@ -1,7 +1,7 @@
 ﻿using System;
 using Elektronik.Threading;
 
-namespace Protobuf.Benchmarks
+namespace Elektronik.Plugins.Common
 {
     public class FakeMainThreadInvoker : IMainThreadInvoker
     {

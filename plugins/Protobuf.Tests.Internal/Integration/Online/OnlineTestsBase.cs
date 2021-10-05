@@ -4,6 +4,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers.CloudRenderers;
 using Elektronik.DataConsumers.Windows;
 using Elektronik.DataSources.Containers.EventArgs;
+using Elektronik.Plugins.Common;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online;
 using FluentAssertions;
@@ -31,6 +32,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
 
         protected OnlineTestsBase(int port)
         {
+            var _ = new FakeMainThreadInvoker();
             var f = new ProtobufOnlinePlayerFactory()
                     { Settings = new OnlineSettingsBag { ListeningPort = port }, Logger = new TestsLogger() };
             Sut = (ProtobufOnlinePlayer)f.Start(new FakeConverter());
