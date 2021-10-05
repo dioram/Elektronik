@@ -573,6 +573,10 @@ MonoBehaviour:
     m_Localized: Markers
     m_Metadata:
       m_Items: []
+  - m_Id: 63853394966421504
+    m_Localized: Observations size
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

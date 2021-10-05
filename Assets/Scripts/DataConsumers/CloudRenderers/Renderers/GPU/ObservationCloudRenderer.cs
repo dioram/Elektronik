@@ -4,8 +4,22 @@ using UnityEngine;
 namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class ObservationCloudRenderer 
-            : GpuCloudRenderer<SlamObservation, ObservationCloudBlock, (Matrix4x4 transform, Color color)>
+            : GpuCloudRenderer<SlamObservation, ObservationCloudBlock, (Matrix4x4 transform, Color color)>,
+              IResizableRenderer
     {
+        public float ItemSize
+        {
+            get => _itemSize;
+            set
+            {
+                _itemSize = value;
+                foreach (var block in Blocks)
+                {
+                    block.ItemSize = ItemSize;
+                }
+            }
+        }
+        
         public ObservationCloudRenderer(Shader shader) : base(shader)
         {
         }
@@ -22,7 +36,8 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         protected override int BlockCapacity => ObservationCloudBlock.Capacity;
         
-        protected override ObservationCloudBlock CreateNewBlock() => new ObservationCloudBlock(Shader);
-
+        protected override ObservationCloudBlock CreateNewBlock() => new ObservationCloudBlock(Shader, ItemSize);
+        
+        private float _itemSize;
     }
 }

@@ -44,6 +44,12 @@ namespace UniRx
                                                   return events.Subscribe(observer);
                                               });
         }
+        public static IObservable<string> OnSubmitAsObservable(this TMP_InputField inputField)
+        {
+            var subject = new Subject<string>();
+            inputField.onSubmit.AddListener(v => subject.OnNext(v));
+            return subject;
+        }
 
         public static IObservable<Unit> RepeatEveryUpdateUntilEventOrDestroyed<T>(
             this IObservable<Unit> observable, IObservable<T> @event, MonoBehaviour obj)

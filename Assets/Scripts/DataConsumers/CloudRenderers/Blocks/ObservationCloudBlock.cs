@@ -8,9 +8,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
     {
         public const int Capacity = 256 * 256;
         public override int RenderQueue => 2000;
+        public float ItemSize { get; set; }
 
-        public ObservationCloudBlock(Shader shader)
+        public ObservationCloudBlock(Shader shader, float itemSize)
         {
+            ItemSize = itemSize;
             _transforms = Enumerable.Repeat(default(Matrix4x4), Capacity).ToArray();
             _colors = Enumerable.Repeat(default(Color), Capacity).ToArray();
             
@@ -49,6 +51,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         {
             base.RenderData();
             if (RenderMaterial is null) return;
+            RenderMaterial.SetFloat(_sizeShaderProp, ItemSize);
             RenderMaterial.SetBuffer(_transformsBufferShaderProp, _transformsBuffer);
             RenderMaterial.SetBuffer(_colorsBufferShaderProp, _colorsBuffer);
             RenderMaterial.SetPass(0);
@@ -65,6 +68,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         private readonly int _transformsBufferShaderProp = Shader.PropertyToID("_TransformsBuffer");
         private readonly int _colorsBufferShaderProp = Shader.PropertyToID("_ColorsBuffer");
+        private readonly int _sizeShaderProp = Shader.PropertyToID("_Size");
         private ComputeBuffer _transformsBuffer;
         private ComputeBuffer _colorsBuffer;
         private readonly Matrix4x4[] _transforms;

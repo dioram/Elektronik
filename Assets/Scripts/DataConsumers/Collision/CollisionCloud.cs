@@ -13,17 +13,19 @@ namespace Elektronik.DataConsumers.Collision
             where TCloudItem : struct, ICloudItem
     {
         public float Radius;
+
+        public float RadiusMultiplier = 1;
         
         // for Unity editor binding.
         public void SetRadius(float value)
         {
-            Radius = value;
+            Radius = value * RadiusMultiplier;
         }
 
         public (IContainer<TCloudItem> container, TCloudItem item)? FindCollided(Ray ray)
         {
             ray.origin /= Scale;
-            var id = _topBlock.FindItem(ray, Radius);
+            var id = _topBlock.FindItem(ray, Radius / Scale);
             if (!id.HasValue) return null;
             
             var (sender, senderId) = _dataReverse[id.Value];

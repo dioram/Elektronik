@@ -551,6 +551,10 @@ MonoBehaviour:
     m_Key: Markers
     m_Metadata:
       m_Items: []
+  - m_Id: 63853394966421504
+    m_Key: Observations size
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -2,6 +2,7 @@
 {
     Properties
     {
+        _Size("Point Size", Float) = 0.1
         _Scale("Scale", Float) = 1
     }
     SubShader
@@ -31,6 +32,7 @@
             #include "UnityCG.cginc"
 
             half _Scale;
+            half _Size;
             StructuredBuffer<float4x4> _TransformsBuffer;
             StructuredBuffer<float4> _ColorsBuffer;
 
@@ -76,11 +78,11 @@
                 if (IsInvalid(transform)) return;
                 
                 const float3 points[5] = {
-                    float3(0, 0, -1),
-                    float3(0.707, 0.707, 1 / 3.0),
-                    float3(0.707, -0.707, 1 / 3.0),
-                    float3(-0.707, -0.707, 1 / 3.0),
-                    float3(-0.707, 0.707, 1 / 3.0)
+                    float3(0, 0, -1) * _Size,
+                    float3(0.707, 0.707, 1 / 3.0) * _Size,
+                    float3(0.707, -0.707, 1 / 3.0) * _Size,
+                    float3(-0.707, -0.707, 1 / 3.0) * _Size,
+                    float3(-0.707, 0.707, 1 / 3.0) * _Size
                 };
                 
                 const half2 bary[3] = {
