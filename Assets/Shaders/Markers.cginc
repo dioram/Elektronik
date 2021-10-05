@@ -14,14 +14,6 @@ struct Marker
     float3 scale: TEXCOORD7;
     half3 color : COLOR1;
 };
-
-struct FragmentInput
-{
-    float4 position : SV_POSITION;
-    half3 color : COLOR0;
-    float3 localPos: TEXCOORD5;
-    float3 scale: TEXCOORD6;
-};
             
 bool IsInvalid(const in float3 f)
 {

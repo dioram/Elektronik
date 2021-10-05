@@ -51,6 +51,8 @@ namespace Elektronik.TestScene
                            SlamMarker.MarkerType.Sphere),
             new SlamMarker(3, Vector3.back * 2, Quaternion.identity, Vector3.one, Color.yellow, "forth",
                            SlamMarker.MarkerType.SemitransparentSphere),
+            new SlamMarker(4, Vector3.zero, Quaternion.identity, Vector3.one, Color.magenta, "fifth",
+                           SlamMarker.MarkerType.Crystal),
         };
 
         private readonly CloudContainer<SlamMarker> _container = new CloudContainer<SlamMarker>();
@@ -118,7 +120,8 @@ namespace Elektronik.TestScene
             m[0].Type = SlamMarker.MarkerType.SemitransparentSphere;
             m[1].Type = SlamMarker.MarkerType.Sphere;
             m[2].Type = SlamMarker.MarkerType.SemitransparentCube;
-            m[3].Type = SlamMarker.MarkerType.Cube;
+            m[3].Type = SlamMarker.MarkerType.Crystal;
+            m[4].Type = SlamMarker.MarkerType.Cube;
             return m;
         }
 

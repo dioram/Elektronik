@@ -1,6 +1,14 @@
 #include "UnityCG.cginc"
 #include "Markers.cginc"
 
+struct FragmentInput
+{
+    float4 position : SV_POSITION;
+    half3 color : COLOR0;
+    float3 localPos: TEXCOORD5;
+    float3 scale: TEXCOORD6;
+};
+
 #define VERTEX_COUNT 36
 
 [maxvertexcount(VERTEX_COUNT)]
