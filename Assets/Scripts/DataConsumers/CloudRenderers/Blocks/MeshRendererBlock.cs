@@ -17,11 +17,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public MeshRendererBlock(Shader[] shaders)
         {
             _vertices = Enumerable.Repeat(default(GPUItem), Capacity).ToArray();
-            foreach (var material in _materials)
-            {
-                material.EnableKeyword("_COMPUTE_BUFFER");
-            }
-            
             MainThreadInvoker.Instance.Enqueue(() =>
             {
                 _materials = shaders.Select(sh => new Material(sh) { hideFlags = HideFlags.DontSave }).ToArray();

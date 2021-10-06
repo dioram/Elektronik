@@ -24,7 +24,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public IReadOnlyCollection<TCloudBlock> Blocks => _blocks.AsReadOnly();
 
         #region IGpuRenderer
-        
+
         public void UpdateDataOnGpu()
         {
             lock (_pointPlaces)
@@ -84,17 +84,16 @@ namespace Elektronik.DataConsumers.CloudRenderers
             var newAmountOfItems = _amountOfItems + e.AddedItems.Count;
             lock (_pointPlaces)
             {
-                while (newAmountOfItems > _blocks.Count * BlockCapacity)
-                {
-                    _blocks.Add(CreateNewBlock());
-                }
-
                 foreach (var item in e.AddedItems)
                 {
                     var index = _freePlaces.Count > 0 ? _freePlaces.Dequeue() : _maxPlace++;
                     _pointPlaces[(sender.GetHashCode(), item.Id)] = index;
                     var layer = index / BlockCapacity;
                     var inLayerId = index % BlockCapacity;
+                    while (layer >= _blocks.Count)
+                    {
+                        _blocks.Add(CreateNewBlock());
+                    }
                     ProcessItem(_blocks[layer], item, inLayerId);
                 }
 
@@ -129,6 +128,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     var index = _pointPlaces[(sender.GetHashCode(), item.Id)];
                     _pointPlaces.Remove((sender.GetHashCode(), item.Id));
                     if (index == _maxPlace - 1) _maxPlace--;
+                    else _freePlaces.Enqueue(index);
 
                     var layer = index / BlockCapacity;
                     var inLayerId = index % BlockCapacity;
@@ -146,6 +146,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             {
                 block.Dispose();
             }
+
             _blocks.Clear();
             _pointPlaces.Clear();
         }

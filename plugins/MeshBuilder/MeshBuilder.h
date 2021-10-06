@@ -12,6 +12,11 @@ struct NativePoint
 
     NativePoint(float x, float y, float z, float r, float g, float b) : x(x), y(y), z(z), r(r), g(g), b(b)
     { }
+
+    bool operator ==(const NativePoint& other) const
+    {
+        return x == other.x && y == other.y && z == other.z && r == other.r && g == other.g && b == other.b;
+    }
 };
 
 struct NativeMesh
