@@ -80,6 +80,13 @@ message MarkerPb {
   optional Type primitive = 7;
 }
 
+message ImagePb {
+  oneof Image {
+    bytes bytes = 1;
+    string path = 2;
+  }
+}
+
 message PacketPb {
   enum ActionType {
     add = 0;
@@ -129,9 +136,6 @@ message PacketPb {
     Lines lines = 15;
     Planes planes = 16;
     Markers markers = 17;
+    ImagePb image = 18;
   }
-}
-
-message ImagePacketPb {
-  bytes image_data = 1;
 }

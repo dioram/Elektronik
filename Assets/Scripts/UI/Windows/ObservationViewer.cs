@@ -18,6 +18,7 @@ namespace Elektronik.UI.Windows
     {
         #region Editor fields
 
+        [SerializeField] private float ImageUpdateDelay = 1;
         [SerializeField] private RawImage Image;
         [SerializeField] private TMP_Text Message;
         [SerializeField] private Window Window;
@@ -150,7 +151,7 @@ namespace Elektronik.UI.Windows
         {
             while (true)
             {
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(ImageUpdateDelay);
                 SetData();
             }
             // ReSharper disable once IteratorNeverReturns

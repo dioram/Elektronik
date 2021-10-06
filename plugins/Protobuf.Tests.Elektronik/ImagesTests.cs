@@ -9,23 +9,21 @@ namespace Protobuf.Tests.Elektronik
 {
     public class ImagesTests : TestsBase
     {
-        private readonly string _filename = $"{nameof(ImagesTests)}.dat";
-
         [Test, Explicit]
         public void OnlineImage()
         {
-            for (int i = 1; i < 4; i++)
-            {
-                byte[] array = File.ReadAllBytes($"{i}.png");
-                
-                var packet = new ImagePacketPb
-                {
-                    ImageData = ByteString.CopyFrom(array, 0, array.Length),
-                };
-
-                var response = ImageClient.Handle(packet);
-                Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
+            var packets = Enumerable.Range(0, 3).Select(_ => new PacketPb {Image = new ImagePb()}).ToArray();
             
+            byte[] array = File.ReadAllBytes("1.png");
+            packets[0].Image.Bytes = ByteString.CopyFrom(array, 0, array.Length);
+            array = File.ReadAllBytes("2.png");
+            packets[1].Image.Bytes = ByteString.CopyFrom(array, 0, array.Length);
+            packets[2].Image.Path = Path.Combine(Directory.GetCurrentDirectory(), "3.png");
+
+            foreach (var packet in packets)
+            {
+                var response = MapClient.Handle(packet);
+                Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
                 Thread.Sleep(1000);
             }
         }
@@ -33,16 +31,14 @@ namespace Protobuf.Tests.Elektronik
         [Test, Explicit]
         public void OfflineImage()
         {
-            using var f = File.Open(_filename, FileMode.Create);
+            var packets = Enumerable.Range(0, 3).Select(_ => new PacketPb {Image = new ImagePb()}).ToArray();
+            byte[] array = File.ReadAllBytes("1.png");
+            packets[0].Image.Bytes = ByteString.CopyFrom(array, 0, array.Length);
+            array = File.ReadAllBytes("2.png");
+            packets[1].Image.Bytes = ByteString.CopyFrom(array, 0, array.Length);
+            packets[2].Image.Path = Path.Combine(Directory.GetCurrentDirectory(), "3.png");
 
-            var packets = Enumerable.Range(1, 4).Select(i => new PacketPb
-            {
-                Special = true,
-                Timestamp = i,
-                Action = PacketPb.Types.ActionType.Clear,
-                Points = new PacketPb.Types.Points(),
-            });
-
+            using var f = File.Open("OfflineImages.dat", FileMode.Create);
             foreach (var packet in packets)
             {
                 packet.WriteDelimitedTo(f);

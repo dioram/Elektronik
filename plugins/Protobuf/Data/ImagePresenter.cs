@@ -8,9 +8,9 @@ using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Data
 {
-    public abstract class ImagePresenter<T> : ISourceTreeNode, IRendersToWindow
+    public class ImagePresenter : ISourceTreeNode, IRendersToWindow
     {
-        protected ImagePresenter(string displayName)
+        public ImagePresenter(string displayName)
         {
             DisplayName = displayName;
         }
@@ -30,7 +30,10 @@ namespace Elektronik.Protobuf.Data
             Renderer?.Clear();
         }
 
-        public abstract void Present(T data);
+        public void Present(byte[] data)
+        {
+            Renderer?.Render(data);
+        }
 
         public void AddConsumer(IDataConsumer consumer)
         {

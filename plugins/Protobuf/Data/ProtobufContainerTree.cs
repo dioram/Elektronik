@@ -18,18 +18,17 @@ namespace Elektronik.Protobuf.Data
         public readonly IContainer<SlamLine> Lines;
         public readonly IContainer<SlamPlane> Planes;
         public readonly IContainer<SlamMarker> Markers;
-        public readonly ISourceTreeNode? Image;
+        public readonly ImagePresenter Image;
         public readonly IMeshContainer MeshContainer;
         public readonly Connector Connector;
         public readonly SlamDataInfoPresenter? SpecialInfo;
 
-        public ProtobufContainerTree(string displayName, ISourceTreeNode? image,
-                                     SlamDataInfoPresenter? specialInfo = null)
+        public ProtobufContainerTree(string displayName, SlamDataInfoPresenter? specialInfo = null)
         {
             DisplayName = displayName;
-            Image = image;
             SpecialInfo = specialInfo;
 
+            Image = new ImagePresenter("Camera");
             TrackedObjs = new TrackedObjectsContainer("Tracked objects");
             Observations = new ConnectableObjectsContainer<SlamObservation>(
                 new CloudContainer<SlamObservation>("Points"),
@@ -58,8 +57,8 @@ namespace Elektronik.Protobuf.Data
                 (ISourceTreeNode)Lines,
                 (ISourceTreeNode)Markers,
                 MeshContainer,
+                Image,
             };
-            if (Image != null) ch.Add(Image);
             if (SpecialInfo != null) ch.Add(SpecialInfo);
             Children = ch.ToArray();
         }

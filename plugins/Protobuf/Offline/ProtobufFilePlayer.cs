@@ -22,7 +22,6 @@ namespace Elektronik.Protobuf.Offline
                                   ICSConverter converter)
         {
             _containerTree = new ProtobufContainerTree("Protobuf",
-                                                       new FileImagePresenter("Camera", settings.PathToImagesDirectory),
                                                        new SlamDataInfoPresenter("Special info"));
             Data = _containerTree;
             DisplayName = displayName;
@@ -33,6 +32,7 @@ namespace Elektronik.Protobuf.Offline
                                   settings.PathToImagesDirectory),
                 new TrackedObjectsParser(_containerTree.TrackedObjs),
                 new InfoParser(_containerTree.SpecialInfo),
+                new ImageParser(_containerTree.Image, settings.PathToImagesDirectory),
             }.BuildChain();
 
             _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
@@ -248,7 +248,6 @@ namespace Elektronik.Protobuf.Offline
             _frames.Current?.Rewind();
             if (!_frames.MovePrevious()) return false;
 
-            (_containerTree.Image as FileImagePresenter)?.Present(_frames.Current);
             OnPositionChanged?.Invoke(Position);
             OnTimestampChanged?.Invoke(Timestamp);
             return true;
@@ -259,7 +258,6 @@ namespace Elektronik.Protobuf.Offline
             if (!_frames.MoveNext()) return false;
 
             _frames.Current?.Show();
-            (_containerTree.Image as FileImagePresenter)?.Present(_frames.Current);
             OnPositionChanged?.Invoke(Position);
             OnTimestampChanged?.Invoke(Timestamp);
             return true;

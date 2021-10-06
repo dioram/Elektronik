@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
@@ -113,6 +114,23 @@ namespace Elektronik.Protobuf.Data
             }
 
             return result;
+        }
+
+        public static byte[] ExtractImage(this PacketPb packetPb, string imageDir)
+        {
+            switch (packetPb.Image.ImageCase)
+            {
+            case ImagePb.ImageOneofCase.Bytes:
+                return packetPb.Image.Bytes.ToByteArray();
+            case ImagePb.ImageOneofCase.Path:
+                string fullPath;
+                var filename = packetPb.Image.Path;
+                if (Path.IsPathRooted(filename) || string.IsNullOrEmpty(imageDir)) fullPath = filename;
+                else fullPath = Path.Combine(imageDir, filename);
+                return File.Exists(fullPath) ? File.ReadAllBytes(fullPath) : Array.Empty<byte>();
+            default:
+                return Array.Empty<byte>();
+            }
         }
     }
 

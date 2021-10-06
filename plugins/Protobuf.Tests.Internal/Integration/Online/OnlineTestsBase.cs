@@ -17,7 +17,6 @@ namespace Protobuf.Tests.Internal.Integration.Online
     public class OnlineTestsBase
     {
         protected readonly MapsManagerPb.MapsManagerPbClient MapClient;
-        protected readonly ImageManagerPb.ImageManagerPbClient ImageClient;
         protected readonly SceneManagerPb.SceneManagerPbClient SceneClient;
 
         protected readonly ProtobufOnlinePlayer Sut;
@@ -40,7 +39,6 @@ namespace Protobuf.Tests.Internal.Integration.Online
 
             var channel = new Channel($"127.0.0.1:{port}", ChannelCredentials.Insecure);
             MapClient = new MapsManagerPb.MapsManagerPbClient(channel);
-            ImageClient = new ImageManagerPb.ImageManagerPbClient(channel);
             SceneClient = new SceneManagerPb.SceneManagerPbClient(channel);
 
             MockedPointsRenderer = new Mock<ICloudRenderer<SlamPoint>>();
