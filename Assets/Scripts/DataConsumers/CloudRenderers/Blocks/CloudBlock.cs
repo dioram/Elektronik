@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public abstract class CloudBlock<TGpuItem>: ICloudBlock<TGpuItem>
+    public abstract class CloudBlock<TGpuItem> : ICloudBlock<TGpuItem>
     {
         public abstract int RenderQueue { get; }
 
@@ -16,9 +16,10 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public virtual void RenderData()
         {
-            if (RenderMaterial is { }) RenderMaterial.SetFloat(_scaleShaderProp, Scale);
+            if (RenderMaterial is null) return;
+            RenderMaterial.SetFloat(_scaleShaderProp, Scale);
         }
-        
+
         public abstract TGpuItem this[int index] { get; set; }
 
         public abstract void Dispose();

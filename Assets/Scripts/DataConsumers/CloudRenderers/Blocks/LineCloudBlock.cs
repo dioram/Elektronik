@@ -21,13 +21,12 @@ namespace Elektronik.DataConsumers.CloudRenderers
             {
                 RenderMaterial = new Material(shader) {hideFlags = HideFlags.DontSave};
                 _pointsBuffer = new ComputeBuffer(_points.Length, GPUItem.Size);
-                _initialized = true;
             });
         }
 
         public override void UpdateDataOnGpu()
         {
-            if (!_initialized) return;
+            if (_pointsBuffer is null) return;
             if (Updated) _pointsBuffer.SetData(_points);
             base.UpdateDataOnGpu();
         }
@@ -64,7 +63,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         private readonly int _pointsBufferShaderProp = Shader.PropertyToID("_ItemsBuffer");
         private ComputeBuffer _pointsBuffer;
         private readonly GPUItem[] _points;
-        private bool _initialized;
 
         #endregion
     }

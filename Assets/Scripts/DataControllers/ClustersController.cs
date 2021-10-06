@@ -32,7 +32,7 @@ namespace Elektronik.DataControllers
 
         private void Start()
         {
-            var factories = PluginsLoader.PluginFactories.Value.OfType<IClusteringAlgorithmFactory>().ToArray();
+            var factories = PluginsLoader.PluginFactories.OfType<IClusteringAlgorithmFactory>().ToArray();
             if (factories.Length == 0)
             {
                 ToolbarButton.SetActive(false);

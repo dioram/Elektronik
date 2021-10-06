@@ -21,7 +21,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 RenderMaterial = new Material(shader) {hideFlags = HideFlags.DontSave};
                 _transformsBuffer = new ComputeBuffer(_transforms.Length, sizeof(float) * 16);
                 _colorsBuffer = new ComputeBuffer(_colors.Length, sizeof(float) * 4);
-                _initialized = true;
             });
         }
         
@@ -38,7 +37,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public override void UpdateDataOnGpu()
         {
-            if (!_initialized) return;
+            if (_colorsBuffer is null) return;
             if (Updated)
             {
                 _transformsBuffer.SetData(_transforms);
@@ -73,7 +72,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         private ComputeBuffer _colorsBuffer;
         private readonly Matrix4x4[] _transforms;
         private readonly Color[] _colors;
-        private bool _initialized;
 
         #endregion
     }

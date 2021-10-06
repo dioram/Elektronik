@@ -21,20 +21,19 @@ namespace Elektronik.DataConsumers.CloudRenderers
             {
                 _materials = shaders.Select(sh => new Material(sh) { hideFlags = HideFlags.DontSave }).ToArray();
                 _vertexBuffer = new ComputeBuffer(_vertices.Length, GPUItem.Size);
-                _initialized = true;
             });
         }
 
         public void UpdateDataOnGpu()
         {
-            if (!_initialized) return;
+            if (_vertexBuffer is null) return;
             if (_updated) _vertexBuffer.SetData(_vertices);
         }
 
         public void RenderData()
         {
+            if (_materials is null) return;
             var renderMat = _materials[ShaderId % _materials.Length];
-            if (renderMat is null) return;
             renderMat.SetFloat(_scaleShaderProp, Scale);
             renderMat.SetBuffer(_vertexBufferShaderProp, _vertexBuffer);
             renderMat.SetPass(0);
@@ -64,7 +63,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         private Material[] _materials;
         private readonly GPUItem[] _vertices;
         private bool _updated;
-        private bool _initialized;
 
         #endregion
     }

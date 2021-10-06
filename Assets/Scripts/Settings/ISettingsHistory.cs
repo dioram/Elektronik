@@ -8,4 +8,9 @@ namespace Elektronik.Settings
         ReadOnlyCollection<SettingsBag> Recent { get; }
         void Save();
     }
+    
+    public static class SettingsRepository
+    {
+        public static string Path = "./";
+    }
 }

@@ -50,7 +50,7 @@ namespace Elektronik.UI.Windows
             DestroyChildren(PluginsTarget);
             DestroyChildren(RecentSettingsTarget);
             
-            foreach (var factory in PluginsLoader.PluginFactories.Value.OfType<IDataSourcePluginsFactory>())
+            foreach (var factory in PluginsLoader.PluginFactories.OfType<IDataSourcePluginsFactory>())
             {
                 var go = Instantiate(PluginWidgetPrefab, PluginsTarget);
                 var widget = go.GetComponent<PluginWidget>();

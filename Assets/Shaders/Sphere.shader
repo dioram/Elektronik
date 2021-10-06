@@ -9,7 +9,7 @@
     {
         Tags
         {
-            "Queue"="Opaque"
+            "RenderType"="Opaque"
         }
         Pass
         {

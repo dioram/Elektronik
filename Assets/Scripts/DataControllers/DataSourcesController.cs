@@ -116,7 +116,7 @@ namespace Elektronik.DataControllers
 
         public void LoadSnapshot()
         {
-            FileBrowser.SetFilters(false, PluginsLoader.PluginFactories.Value
+            FileBrowser.SetFilters(false, PluginsLoader.PluginFactories
                                            .OfType<ISnapshotReaderPluginsFactory>()
                                            .SelectMany(r => r.SupportedExtensions));
             FileBrowser.ShowLoadDialog(LoadSnapshot, () => { },
@@ -160,7 +160,7 @@ namespace Elektronik.DataControllers
         {
             foreach (var path in files)
             {
-                var factory = PluginsLoader.PluginFactories.Value
+                var factory = PluginsLoader.PluginFactories
                         .OfType<ISnapshotReaderPluginsFactory>()
                         .FirstOrDefault(pl => pl.SupportedExtensions.Any(e => path.EndsWith(e)));
                 if (factory is null) return;

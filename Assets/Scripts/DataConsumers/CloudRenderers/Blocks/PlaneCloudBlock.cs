@@ -21,13 +21,12 @@ namespace Elektronik.DataConsumers.CloudRenderers
             {
                 RenderMaterial = new Material(shader) { hideFlags = HideFlags.DontSave };
                 _vertsBuffer = new ComputeBuffer(_planes.Length, GPUItem.Size);
-                _initialized = true;
             });
         }
 
         public override void UpdateDataOnGpu()
         {
-            if (!_initialized) return;
+            if (_vertsBuffer is null) return;
             if (Updated) _vertsBuffer.SetData(_planes);
             base.UpdateDataOnGpu();
         }
@@ -72,7 +71,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         private readonly int _vertsBufferShaderProp = Shader.PropertyToID("_VertsBuffer");
         private ComputeBuffer _vertsBuffer;
         private readonly GPUItem[] _planes;
-        private bool _initialized;
 
         #endregion
     }

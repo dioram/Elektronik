@@ -22,7 +22,7 @@ namespace Elektronik
             var args = Environment.GetCommandLineArgs();
             if (args.Length < 2 || !File.Exists(args[1])) return;
             var extension = Path.GetExtension(args[1]);
-            var factory = PluginsLoader.PluginFactories.Value
+            var factory = PluginsLoader.PluginFactories
                     .OfType<ISnapshotReaderPluginsFactory>()
                     .FirstOrDefault(p => p.SupportedExtensions.Contains(extension));
             if (factory is null)

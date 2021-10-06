@@ -555,6 +555,10 @@ MonoBehaviour:
     m_Key: Observations size
     m_Metadata:
       m_Items: []
+  - m_Id: 64159542005276672
+    m_Key: Loading plugins...
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

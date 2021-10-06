@@ -39,13 +39,12 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 _transformsBuffer = new ComputeBuffer(Capacity, sizeof(float) * 16);
                 _scalesBuffer = new ComputeBuffer(Capacity, sizeof(float) * 3);
                 _colorsBuffer = new ComputeBuffer(Capacity, sizeof(float) * 4);
-                _initialized = true;
             });
         }
 
         public override void UpdateDataOnGpu()
         {
-            if (!_initialized) return;
+            if (_colorsBuffer is null) return;
             if (Updated)
             {
                 _transformsBuffer.SetData(_transforms);
@@ -96,7 +95,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         private readonly Matrix4x4[] _transforms;
         private readonly Vector3[] _scales;
         private readonly Color[] _colors;
-        private bool _initialized;
 
         #endregion
     }

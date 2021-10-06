@@ -12,12 +12,7 @@ namespace Elektronik.Protobuf.Recorders
             return new ProtobufRecorder(Filename, converter);
         }
 
-        public void LoadLogo(string path)
-        {
-            // Do nothing.
-        }
-
-        public Texture2D? Logo => null;
+        public Texture2D? Logo { get; set; }
         public string DisplayName => "Recorder to Protobuf";
         public string Description => "Records data to Protobuf file";
         public SettingsBag? Settings { get; set; } = null;

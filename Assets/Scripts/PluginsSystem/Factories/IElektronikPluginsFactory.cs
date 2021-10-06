@@ -15,11 +15,7 @@ namespace Elektronik.PluginsSystem
     {
         /// <summary> Logo of the plugin. Will be displayed in connections window and toolbar. </summary>
         /// <remarks> Should be set by <c>void LoadLogo(string path)</c> </remarks>
-        Texture2D Logo { get; }
-
-        /// <summary> Loads plugin's logo from file. </summary>
-        /// <param name="path"> Path to logo file. </param>
-        void LoadLogo(string path);
+        Texture2D Logo { get; set; }
         
         /// <summary> Name to display in connections window. </summary>
         string DisplayName { get; }
