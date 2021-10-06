@@ -61,7 +61,7 @@ namespace Elektronik.Plugins.Common.DataDiff
 
         public bool Equals(SlamTrackedObjectDiff other)
         {
-            return ((!Color.HasValue && !Color.HasValue) || ((Color32)Color).Equals((Color32)other.Color))
+            return (!Color.HasValue && !Color.HasValue || Color.Value.Equals((Color32)other.Color!.Value))
                     && Nullable.Equals(Position, other.Position)
                     && Nullable.Equals(Rotation, other.Rotation)
                     && ((string.IsNullOrEmpty(Message) && string.IsNullOrEmpty(other.Message)) ||

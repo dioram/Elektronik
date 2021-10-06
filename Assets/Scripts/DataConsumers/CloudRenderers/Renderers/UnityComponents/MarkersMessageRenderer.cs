@@ -2,9 +2,9 @@
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Threading;
 using Elektronik.UI;
 using TMPro;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
@@ -22,7 +22,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 foreach (var obj in e.AddedItems)
                 {
                     var pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    UniRxExtensions.StartOnMainThread(() =>
                     {
                         var go = ObjectsPool.Spawn(pose.position * Scale, pose.rotation);
                         GameObjects[(sender.GetHashCode(), obj.Id)] = go;
@@ -33,7 +33,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                         dataComponent.Data = obj;
                         dataComponent.Container = sender as IContainer<SlamMarker>;
                         UpdateMessage(go, obj);
-                    });
+                    }).Subscribe();
                 }
             }
         }
@@ -46,13 +46,13 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 foreach (var obj in e.UpdatedItems)
                 {
                     var pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    UniRxExtensions.StartOnMainThread(() =>
                     {
                         var go = GameObjects[(sender.GetHashCode(), obj.Id)];
                         go.transform.SetPositionAndRotation(pose.position * Scale, pose.rotation);
                         go.GetComponent<DataComponent<SlamMarker>>().Data = obj;
                         UpdateMessage(go, obj);
-                    });
+                    }).Subscribe();
                 }
             }
         }

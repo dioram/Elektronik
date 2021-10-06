@@ -7,7 +7,6 @@ using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
-using Elektronik.Threading;
 using Elektronik.UI;
 using JetBrains.Annotations;
 using TMPro;
@@ -91,11 +90,11 @@ namespace Elektronik.DataControllers
 
             SaveClustersContainers(clustered, container as IVisible);
 
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 DataSourcesController.AddDataSource(clustered);
                 panel.enabled = true;
-            });
+            }).Subscribe();
         }
 
         private void UpdateClusterableContainers()

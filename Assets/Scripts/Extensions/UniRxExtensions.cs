@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using TMPro;
 using UniRx.Triggers;
 using UnityEngine;
@@ -10,6 +11,42 @@ namespace UniRx
 {
     public static class UniRxExtensions
     {
+        public static IObservable<Unit> StartOnMainThread(Action action)
+        {
+            try
+            {
+                return Observable.Start(action, Scheduler.MainThread);
+            }
+            catch (SecurityException)
+            {
+                return Observable.Empty<Unit>();
+            }
+        }
+        
+        public static IObservable<T> StartOnMainThread<T>(Func<T> func)
+        {
+            try
+            {
+                return Observable.Start(func, Scheduler.MainThread);
+            }
+            catch (SecurityException)
+            {
+                return Observable.Empty<T>();
+            }
+        }
+        
+        public static IObservable<T> ObserveOnMainThreadSafe<T>(this IObservable<T> obs)
+        {
+            try
+            {
+                return obs.ObserveOnMainThread();
+            }
+            catch (SecurityException)
+            {
+                return Observable.Empty<T>();
+            }
+        }
+
         public static IObservable<string> OnValueChangedAsObservable(this TMP_InputField inputField)
         {
             return Observable.CreateWithState<string, TMP_InputField>(inputField, (i, observer) =>

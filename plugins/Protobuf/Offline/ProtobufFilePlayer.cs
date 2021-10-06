@@ -52,7 +52,7 @@ namespace Elektronik.Protobuf.Offline
                 {
                     if (GoToNextFrame()) return;
                     _timer.Stop();
-                    MainThreadInvoker.Instance.Enqueue(() => OnFinished?.Invoke());
+                    OnFinished?.Invoke();
                 });
             };
         }

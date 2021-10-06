@@ -23,7 +23,7 @@ namespace Elektronik.PluginsSystem.UnitySide
             SettingsRepository.Path = Application.persistentDataPath;
             var pluginsLoading = Observable.Start(LoadPluginFactories);
             Observable.WhenAll(pluginsLoading)
-                    .ObserveOnMainThread()
+                    .ObserveOnMainThreadSafe()
                     .Do(_ => LoadLogos())
                     .Do(_ => Debug.Log($"Loaded {PluginFactories.Count} plugins"))
                     .Do(_ => SceneManager.LoadScene("Scenes/Main"))

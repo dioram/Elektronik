@@ -9,7 +9,6 @@ using Elektronik.DataSources;
 using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
-using Elektronik.Threading;
 using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Offline.Presenters
@@ -23,9 +22,9 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public void Present(PacketPb data, ICSConverter? converter)
         {
-            MainThreadInvoker.Instance.Enqueue(() => _info?.Clear());
-            IEnumerable<ICloudItem> objects = Pkg2Pts(data, converter).ToArray();
-            MainThreadInvoker.Instance.Enqueue(() => _info?.Render((data.Message, objects)));
+            _info?.Clear();
+            var objects = Pkg2Pts(data, converter).ToArray();
+            _info?.Render((data.Message, objects));
         }
 
         #region ISourceTreeNode
@@ -56,7 +55,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
 
         public void Clear()
         {
-            MainThreadInvoker.Instance.Enqueue(() => _info?.Clear());
+            _info?.Clear();
         }
 
         #endregion

@@ -6,7 +6,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
     public class ObservationCloudRendererComponent : CloudRendererComponent<SlamObservation>
     {
         [SerializeField] private Shader CloudShader;
-        [Range(0, 1)] public float ItemSize = 0.5f;
+        [Range(0.5f, 3)] public float ItemSize = 0.5f;
         
         public void SetSize(float value)
         {

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Elektronik.Threading;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
@@ -17,11 +17,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public MeshRendererBlock(Shader[] shaders)
         {
             _vertices = Enumerable.Repeat(default(GPUItem), Capacity).ToArray();
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 _materials = shaders.Select(sh => new Material(sh) { hideFlags = HideFlags.DontSave }).ToArray();
                 _vertexBuffer = new ComputeBuffer(_vertices.Length, GPUItem.Size);
-            });
+            }).Subscribe();
         }
 
         public void UpdateDataOnGpu()

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Threading;
 using Elektronik.UI.ListBox;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.Windows
@@ -23,7 +23,7 @@ namespace Elektronik.DataConsumers.Windows
         
         public void SetHeader(string[] header)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            Observable.Start(() =>
             {
                 Table.Clear();
                 var rect = (RectTransform) transform;
@@ -37,7 +37,7 @@ namespace Elektronik.DataConsumers.Windows
                 }
 
                 rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, rect.sizeDelta.x + 1);
-            });
+            }, Scheduler.MainThread).Subscribe();
         }
 
         #region Unity events
@@ -68,7 +68,7 @@ namespace Elektronik.DataConsumers.Windows
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
+                UniRxExtensions.StartOnMainThread(() => gameObject.SetActive(_isShowing)).Subscribe();
             }
         }
 
@@ -76,24 +76,24 @@ namespace Elektronik.DataConsumers.Windows
 
         public void Render(string[] data)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 foreach (var pair in data.Zip(_columns, (s, column) => (s, column)))
                 {
                     pair.column.AddRow(pair.s);
                 }
-            });
+            }).Subscribe();
         }
 
         public void Clear()
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 foreach (var column in _columns)
                 {
                     column.Clear();
                 }
-            });
+            }).Subscribe();
         }
 
         #endregion

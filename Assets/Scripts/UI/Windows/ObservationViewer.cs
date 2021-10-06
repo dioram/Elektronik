@@ -4,7 +4,6 @@ using Elektronik.Cameras;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers.Windows;
 using Elektronik.DataSources.Containers;
-using Elektronik.Threading;
 using Elektronik.UI.Localization;
 using TMPro;
 using UniRx;
@@ -75,14 +74,14 @@ namespace Elektronik.UI.Windows
 
         public void Render((IContainer<SlamObservation>, SlamObservation) data)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 gameObject.SetActive(true);
                 _container = data.Item1;
                 _observation = data.Item2;
                 Window.TitleLabel.SetLocalizedText("Observation #{0}", _observation.Id);
                 SetData();
-            });
+            }).Subscribe();
         }
 
         public void Clear()

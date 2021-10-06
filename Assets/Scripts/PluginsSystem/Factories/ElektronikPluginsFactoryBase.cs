@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using Elektronik.Data.Converters;
 using Elektronik.Settings;
 using UnityEngine;

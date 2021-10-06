@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Security;
-using Elektronik.Threading;
 using Newtonsoft.Json;
-using UnityEngine;
+using UniRx;
 
 namespace Elektronik.Settings
 {
@@ -48,7 +46,7 @@ namespace Elektronik.Settings
 
         public void Save()
         {
-            MainThreadInvoker.Instance.Enqueue(Serialize);
+            UniRxExtensions.StartOnMainThread(Serialize).Subscribe();
         }
 
         #region Private definitions

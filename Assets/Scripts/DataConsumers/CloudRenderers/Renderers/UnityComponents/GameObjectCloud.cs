@@ -5,7 +5,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.DataSources.SpecialInterfaces;
-using Elektronik.Threading;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
@@ -54,10 +54,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             lock (GameObjects)
             {
                 GameObjects.Clear();
-                if (MainThreadInvoker.Instance != null)
-                {
-                    MainThreadInvoker.Instance.Enqueue(() => ObjectsPool?.DespawnAllActiveObjects());
-                }
+                UniRxExtensions.StartOnMainThread(() => ObjectsPool?.DespawnAllActiveObjects()).Subscribe();
             }
         }
 
@@ -79,7 +76,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 foreach (var obj in e.AddedItems)
                 {
                     var pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() => AddInMainThread(sender, obj, pose));
+                    UniRxExtensions.StartOnMainThread(() => AddInMainThread(sender, obj, pose)).Subscribe();
                 }
             }
         }
@@ -92,7 +89,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                 foreach (var obj in e.UpdatedItems)
                 {
                     var pose = GetObjectPose(obj);
-                    MainThreadInvoker.Instance.Enqueue(() => UpdateInMainThread(sender, obj, pose));
+                    UniRxExtensions.StartOnMainThread(() => UpdateInMainThread(sender, obj, pose)).Subscribe();
                 }
             }
         }
@@ -107,7 +104,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                     if (!GameObjects.ContainsKey(key)) continue;
 
                     var go = GameObjects[key];
-                    MainThreadInvoker.Instance.Enqueue(() => RemoveInMainThread(sender, item, go));
+                    UniRxExtensions.StartOnMainThread(() => RemoveInMainThread(sender, item, go)).Subscribe();
                 }
             }
         }

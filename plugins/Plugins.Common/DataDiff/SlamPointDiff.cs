@@ -55,7 +55,7 @@ namespace Elektronik.Plugins.Common.DataDiff
         public bool Equals(SlamPointDiff other)
         {
             return Nullable.Equals(Position, other.Position) 
-                    && ((!Color.HasValue && !Color.HasValue) || ((Color32)Color).Equals((Color32)other.Color))
+                    && (!Color.HasValue && !Color.HasValue || Color.Value.Equals((Color32)other.Color!.Value))
                     && ((string.IsNullOrEmpty(Message) && string.IsNullOrEmpty(other.Message)) || Message == other.Message)
                     && Id == other.Id;
         }

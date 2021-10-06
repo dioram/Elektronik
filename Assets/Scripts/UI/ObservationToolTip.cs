@@ -7,7 +7,6 @@ using Elektronik.DataConsumers.Collision;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.Input;
-using Elektronik.Threading;
 using Elektronik.UI.Windows;
 using UniRx;
 using UnityEngine;
@@ -42,7 +41,7 @@ namespace Elektronik.UI
                     .Where(data => data.HasValue)
                     // ReSharper disable once PossibleInvalidOperationException
                     .Select(v => v.Value)
-                    .ObserveOnMainThread()
+                    .ObserveOnMainThreadSafe()
                     .Do(data => CreateOrShowWindow(data.container, data.item, "Observation #{0}"))
                     .Subscribe()
                     .AddTo(this);
@@ -73,12 +72,13 @@ namespace Elektronik.UI
 
                     if (collision.HasValue)
                     {
-                        MainThreadInvoker.Instance.Enqueue(
-                            () => ProcessRaycast(collision.Value.container, collision.Value.item, mousePosition));
+                        UniRxExtensions.StartOnMainThread(
+                            () => ProcessRaycast(collision.Value.container, collision.Value.item, mousePosition))
+                                .Subscribe();
                     }
                     else
                     {
-                        MainThreadInvoker.Instance.Enqueue(HideViewer);
+                        UniRxExtensions.StartOnMainThread(HideViewer).Subscribe();
                     }
                 });
                 yield return new WaitForSeconds(CollisionCheckTimeout);
@@ -121,21 +121,22 @@ namespace Elektronik.UI
             }
         }
 
+        private ObservationViewer GetViewer(object container, SlamObservation obs)
+        {
+            return _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == container.GetHashCode()
+                                                         && w.ObservationId == obs.Id);
+        }
+
+
         private void DestroyObsoleteWindows(object container, RemovedEventArgs<SlamObservation> args)
         {
-            foreach (var obs in args.RemovedItems)
-            {
-                var v = _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == container.GetHashCode()
-                                                              && w.ObservationId == obs.Id);
-                if (v != null)
-                {
-                    MainThreadInvoker.Instance.Enqueue(() =>
-                    {
-                        Destroy(v.gameObject);
-                        _pinnedViewers.Remove(v);
-                    });
-                }
-            }
+            args.RemovedItems.ToObservable()
+                    .Select(obs => GetViewer(container, obs))
+                    .Where(obs => obs != null)
+                    .ObserveOnMainThreadSafe()
+                    .Do(v => Destroy(v.gameObject))
+                    .Do(v => _pinnedViewers.Remove(v))
+                    .Subscribe();
         }
 
         #endregion

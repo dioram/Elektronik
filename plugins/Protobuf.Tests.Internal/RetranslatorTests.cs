@@ -6,7 +6,6 @@ using System.Threading;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.Commands.Generic;
 using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Plugins.Common.FrameBuffers;
@@ -37,7 +36,6 @@ namespace Protobuf.Tests.Internal
         [SetUp]
         public void Setup()
         {
-            var _ = new FakeMainThreadInvoker();
             _mockedBuffer = new Mock<IOnlineFrameBuffer>();
             _mockedPointsContainer = new Mock<IConnectableObjectsContainer<SlamPoint>>();
             _mockedObservationsContainer = new Mock<IConnectableObjectsContainer<SlamObservation>>();

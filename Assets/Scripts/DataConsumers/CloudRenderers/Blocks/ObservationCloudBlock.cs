@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Elektronik.Threading;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
@@ -16,12 +16,12 @@ namespace Elektronik.DataConsumers.CloudRenderers
             _transforms = Enumerable.Repeat(default(Matrix4x4), Capacity).ToArray();
             _colors = Enumerable.Repeat(default(Color), Capacity).ToArray();
             
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 RenderMaterial = new Material(shader) {hideFlags = HideFlags.DontSave};
                 _transformsBuffer = new ComputeBuffer(_transforms.Length, sizeof(float) * 16);
                 _colorsBuffer = new ComputeBuffer(_colors.Length, sizeof(float) * 4);
-            });
+            }).Subscribe();
         }
         
         public override (Matrix4x4 transform, Color color) this[int index]

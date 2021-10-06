@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Elektronik.Threading;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
@@ -33,13 +33,13 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public void InitShader(Shader shader)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 RenderMaterial = new Material(shader) {hideFlags = HideFlags.DontSave};
                 _transformsBuffer = new ComputeBuffer(Capacity, sizeof(float) * 16);
                 _scalesBuffer = new ComputeBuffer(Capacity, sizeof(float) * 3);
                 _colorsBuffer = new ComputeBuffer(Capacity, sizeof(float) * 4);
-            });
+            }).Subscribe();
         }
 
         public override void UpdateDataOnGpu()

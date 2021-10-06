@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Recorders;
@@ -18,11 +17,6 @@ namespace Protobuf.Tests.Internal
     public class RecorderTests
     {
         private string _filename;
-
-        public RecorderTests()
-        {
-            var _ = new FakeMainThreadInvoker();
-        }
 
         [TearDown]
         public void TearDown()

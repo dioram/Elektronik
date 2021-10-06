@@ -1,4 +1,4 @@
-﻿using Elektronik.Threading;
+﻿using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,7 +37,7 @@ namespace Elektronik.DataConsumers.Windows
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
+                UniRxExtensions.StartOnMainThread(() => gameObject.SetActive(_isShowing)).Subscribe();
             }
         }
 
@@ -45,19 +45,19 @@ namespace Elektronik.DataConsumers.Windows
         
         public void Render(byte[] array)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 var texture2D = Texture2D.blackTexture;
                 texture2D.LoadImage(array);
                 texture2D.filterMode = FilterMode.Trilinear;
                 Fitter.aspectRatio = texture2D.width / (float) texture2D.height;
                 Target.texture = texture2D;
-            });
+            }).Subscribe();
         }
 
         public void Render(ImageData data)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 if (!data.IsSupported)
                 {
@@ -79,15 +79,15 @@ namespace Elektronik.DataConsumers.Windows
                 _texture.Apply();
                 Fitter.aspectRatio = data.Width / (float) data.Height;
                 Target.texture = _texture;
-            });
+            }).Subscribe();
         }
 
         public void Clear()
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 if (Target != null) Target.texture = Texture2D.whiteTexture;
-            });
+            }).Subscribe();
         }
 
         #endregion

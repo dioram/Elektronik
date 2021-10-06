@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Threading;
 using Elektronik.UI.Buttons;
 using TMPro;
 using UniRx;
@@ -52,12 +51,12 @@ namespace Elektronik.UI
 
         public void SetPlayingState()
         {
-            MainThreadInvoker.Instance.Enqueue(() => PlayPauseImage.sprite = PauseImage);
+            UniRxExtensions.StartOnMainThread(() => PlayPauseImage.sprite = PauseImage).Subscribe();
         }
 
         public void SetPausedState()
         {
-            MainThreadInvoker.Instance.Enqueue(() => PlayPauseImage.sprite = PlayImage);
+            UniRxExtensions.StartOnMainThread(() => PlayPauseImage.sprite = PlayImage).Subscribe();
         }
 
         public void ActivateSpeedButtons(bool state)
@@ -77,7 +76,7 @@ namespace Elektronik.UI
         /// <remarks> This will not trigger <c>OnPositionChanged</c> </remarks>
         public void SetSliderPosition(float sliderValue)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 _settingUpPosition = true;
                 if (sliderValue > PositionSlider.maxValue)
@@ -93,19 +92,19 @@ namespace Elektronik.UI
                     PositionSlider.value = sliderValue;
                 }
                 _settingUpPosition = false;
-            });
+            }).Subscribe();
         }
 
         public void SetSliderPosition(int sliderValue) => SetSliderPosition((float)sliderValue);
 
         public void SetTimestamp(string timestamp)
         {
-            MainThreadInvoker.Instance.Enqueue(() => TimestampLabel.text = timestamp);
+            UniRxExtensions.StartOnMainThread(() => TimestampLabel.text = timestamp).Subscribe();
         }
 
         public void SetSliderMaxValue(float sliderMax)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 _settingUpPosition = true;
                 if (PositionSlider.value > sliderMax)
@@ -115,14 +114,14 @@ namespace Elektronik.UI
 
                 PositionSlider.maxValue = sliderMax;
                 _settingUpPosition = false;
-            });
+            }).Subscribe();
         }
 
         public void SetSliderMaxValue(int sliderMax) => SetSliderMaxValue((float)sliderMax);
 
         public void SetSliderMinValue(float sliderMin)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 _settingUpPosition = true;
                 if (PositionSlider.value < sliderMin)
@@ -131,8 +130,8 @@ namespace Elektronik.UI
                 }
 
                 PositionSlider.minValue = sliderMin;
-                _settingUpPosition = false;  
-            });
+                _settingUpPosition = false;
+            }).Subscribe();
         }
 
         public void SetSliderMinValue(int sliderMin) => SetSliderMinValue((float)sliderMin);

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Elektronik.Threading;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
@@ -17,11 +17,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
         {
             ItemSize = itemSize;
             _planes = Enumerable.Repeat(default(GPUItem), Capacity * VerticesPerPlane).ToArray();
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 RenderMaterial = new Material(shader) { hideFlags = HideFlags.DontSave };
                 _vertsBuffer = new ComputeBuffer(_planes.Length, GPUItem.Size);
-            });
+            }).Subscribe();
         }
 
         public override void UpdateDataOnGpu()

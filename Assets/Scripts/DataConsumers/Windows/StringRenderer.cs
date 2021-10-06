@@ -1,6 +1,6 @@
 ﻿using System;
-using Elektronik.Threading;
 using TMPro;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.Windows
@@ -38,7 +38,7 @@ namespace Elektronik.DataConsumers.Windows
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Instance.Enqueue(() => gameObject.SetActive(_isShowing));
+                UniRxExtensions.StartOnMainThread(() => gameObject.SetActive(_isShowing)).Subscribe();
             }
         }
 
@@ -46,7 +46,7 @@ namespace Elektronik.DataConsumers.Windows
 
         public void Render(string data)
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 switch (Mode)
                 {
@@ -60,15 +60,15 @@ namespace Elektronik.DataConsumers.Windows
                 default:
                     throw new ArgumentOutOfRangeException();
                 }
-            });
+            }).Subscribe();
         }
 
         public void Clear()
         {
-            MainThreadInvoker.Instance.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 if (Label != null) Label.text = "";
-            });
+            }).Subscribe();
         }
 
         #endregion

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Elektronik.Data.Converters;
 using Elektronik.DataControllers;
-using Elektronik.Threading;
 using Elektronik.UI.Windows;
 using TMPro;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
@@ -47,16 +47,16 @@ namespace Elektronik.PluginsSystem.UnitySide
                 catch (Exception e)
                 {
                     Debug.LogException(e);
-                    MainThreadInvoker.Instance.Enqueue(() =>
+                    UniRxExtensions.StartOnMainThread(() =>
                     {
                         ScreenLocker.SetActive(false);
                         ConnectionsWindow.Show();
                         LoadingErrorLabel.text = $"Could not load data source: {e.Message}";
                         LoadingErrorLabel.enabled = true;
-                    });
+                    }).Subscribe();
                     return;
                 }
-                MainThreadInvoker.Instance.Enqueue(() =>
+                UniRxExtensions.StartOnMainThread(() =>
                 {
                     LoadingErrorLabel.enabled = false;
                     PluginWindowsManager.RegisterPlugin(CurrentSource);
@@ -72,7 +72,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                     {
                         PlayerEvents.ActivateUI(false);
                     }
-                });
+                }).Subscribe();
             });
         }
 

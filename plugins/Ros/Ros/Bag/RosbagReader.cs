@@ -160,7 +160,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
                 }
                 else
                 {
-                    MainThreadInvoker.Instance.Enqueue(() => OnFinished?.Invoke());
+                    OnFinished?.Invoke();
                 }
                 OnPositionChanged?.Invoke(Position);
                 OnTimestampChanged?.Invoke(Timestamp);
