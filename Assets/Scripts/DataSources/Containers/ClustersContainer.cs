@@ -118,7 +118,7 @@ namespace Elektronik.DataSources.Containers
             for (var i = 0; i < data.Count; i++)
             {
                 var cluster = data[i];
-                var container = new CloudContainer<SlamPoint>($"Cluster {i}");
+                var container = new CloudCluster(cluster.FirstOrDefault().Color, $"Cluster {i}");
                 foreach (var renderer in _consumers)
                 {
                     container.AddConsumer(renderer);

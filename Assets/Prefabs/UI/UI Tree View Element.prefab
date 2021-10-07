@@ -1319,6 +1319,7 @@ MonoBehaviour:
   WeightSlider: {fileID: 2750410890576548568}
   MinWeightLabel: {fileID: 8584815492687513512}
   MaxWeightLabel: {fileID: 8601169822160353395}
+  NameLabel: {fileID: 3654434711717410252}
 --- !u!114 &3654434711664828003
 MonoBehaviour:
   m_ObjectHideFlags: 0

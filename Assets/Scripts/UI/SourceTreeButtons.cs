@@ -29,6 +29,7 @@ namespace Elektronik.UI
         [SerializeField] private Slider WeightSlider;
         [SerializeField] private TMP_Text MinWeightLabel;
         [SerializeField] private TMP_Text MaxWeightLabel;
+        [SerializeField] private Text NameLabel;
 
         #endregion
 
@@ -142,6 +143,11 @@ namespace Elektronik.UI
             else
             {
                 WeightButton.gameObject.SetActive(false);
+            }
+
+            if (_node is IColorful c)
+            {
+                NameLabel.color = c.Color;
             }
         }
 
