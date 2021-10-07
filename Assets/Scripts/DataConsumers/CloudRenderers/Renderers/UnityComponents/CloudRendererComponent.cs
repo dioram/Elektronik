@@ -45,8 +45,12 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public float Scale
         {
-            get => NestedRenderer.Scale;
-            set => NestedRenderer.Scale = value;
+            get => _scale;
+            set
+            {
+                _scale = value;
+                NestedRenderer.Scale = value;
+            }
         }
 
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
@@ -64,11 +68,17 @@ namespace Elektronik.DataConsumers.CloudRenderers
             NestedRenderer.OnItemsRemoved(sender, e);
         }
 
-        #endregion
-
         public void Dispose()
         {
             NestedRenderer?.Dispose();
         }
+
+        #endregion
+
+        #region Private
+
+        private float _scale = 1;
+
+        #endregion
     }
 }

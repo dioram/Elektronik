@@ -14,7 +14,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public float Alpha = 1;
 
-        public LineCloudBlock(Shader shader)
+        public LineCloudBlock(Shader shader, float scale) : base(scale)
         {
             _points = Enumerable.Repeat(default(GPUItem), Capacity * VerticesPerLine).ToArray();
             UniRxExtensions.StartOnMainThread(() =>

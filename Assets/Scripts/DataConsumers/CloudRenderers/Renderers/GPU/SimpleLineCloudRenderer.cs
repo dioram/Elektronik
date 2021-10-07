@@ -5,7 +5,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class SimpleLineCloudRenderer : GpuCloudRenderer<SimpleLine, LineCloudBlock, (GPUItem begin, GPUItem end)>
     {
-        public SimpleLineCloudRenderer(Shader shader) : base(shader)
+        public SimpleLineCloudRenderer(Shader shader, float scale) : base(shader, scale)
         {
         }
         
@@ -19,7 +19,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         protected override int BlockCapacity => LineCloudBlock.Capacity;
 
-        protected override LineCloudBlock CreateNewBlock() => new LineCloudBlock(Shader);
+        protected override LineCloudBlock CreateNewBlock() => new LineCloudBlock(Shader, Scale);
         
         protected override void ProcessItem(LineCloudBlock block, SimpleLine item, int inBlockId)
         {

@@ -24,7 +24,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public override int RenderQueue => 2000;
 
-        public MarkerCloudBlock()
+        public MarkerCloudBlock() : base(1)
         {
             _transforms = Enumerable.Repeat(default(Matrix4x4), Capacity).ToArray();
             _scales = Enumerable.Repeat(default(Vector3), Capacity).ToArray();

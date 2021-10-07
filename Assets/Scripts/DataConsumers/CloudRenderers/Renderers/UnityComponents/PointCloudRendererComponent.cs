@@ -15,8 +15,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         
         private void Awake()
         {
-            NestedRenderer = new PointCloudRenderer(CloudShader);
-            SetSize(ItemSize);
+            NestedRenderer = new PointCloudRenderer(CloudShader, Scale, ItemSize);
         }
     }
 }

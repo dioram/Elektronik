@@ -5,8 +5,9 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class PointCloudRenderer : GpuCloudRenderer<SlamPoint, PointCloudBlock, GPUItem>, IResizableRenderer
     {
-        public PointCloudRenderer(Shader shader) : base(shader)
+        public PointCloudRenderer(Shader shader, float scale, float itemSize) : base(shader, scale)
         {
+            _itemSize = itemSize;
         }
 
         public float ItemSize
@@ -24,7 +25,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         protected override int BlockCapacity => PointCloudBlock.Capacity;
         
-        protected override PointCloudBlock CreateNewBlock() => new PointCloudBlock(Shader, ItemSize);
+        protected override PointCloudBlock CreateNewBlock() => new PointCloudBlock(Shader, ItemSize, Scale);
         
         protected override void ProcessItem(PointCloudBlock block, SlamPoint item, int inBlockId)
         {

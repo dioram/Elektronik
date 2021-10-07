@@ -10,7 +10,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         
         private void Awake()
         {
-            NestedRenderer = new PlaneCloudRenderer(CloudShader) { ItemSize = ItemSize };
+            NestedRenderer = new PlaneCloudRenderer(CloudShader, Scale, ItemSize);
         }
     }
 }

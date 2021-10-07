@@ -6,7 +6,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class MeshRendererBlock : ICloudBlock<GPUItem>
     {
-        public float Scale { get; set; } = 1;
+        public float Scale { get; set; }
 
         public const int Capacity = 256 * 256 * 3;
 
@@ -14,8 +14,9 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public int ShaderId;
 
-        public MeshRendererBlock(Shader[] shaders)
+        public MeshRendererBlock(Shader[] shaders, float scale)
         {
+            Scale = scale;
             _vertices = Enumerable.Repeat(default(GPUItem), Capacity).ToArray();
             UniRxExtensions.StartOnMainThread(() =>
             {

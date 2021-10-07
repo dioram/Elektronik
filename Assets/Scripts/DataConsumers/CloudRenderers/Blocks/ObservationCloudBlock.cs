@@ -10,7 +10,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public override int RenderQueue => 2000;
         public float ItemSize { get; set; }
 
-        public ObservationCloudBlock(Shader shader, float itemSize)
+        public ObservationCloudBlock(Shader shader, float itemSize, float scale) : base(scale)
         {
             ItemSize = itemSize;
             _transforms = Enumerable.Repeat(default(Matrix4x4), Capacity).ToArray();

@@ -8,7 +8,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
                                                     IMarkerCloudRenderer
             where TCloudBlock : MarkerCloudBlock, new()
     {
-        public MarkerCloudRenderer(Shader shader, SlamMarker.MarkerType markerType) : base(shader)
+        public MarkerCloudRenderer(Shader shader, SlamMarker.MarkerType markerType, float scale) : base(shader, scale)
         {
             MarkerType = markerType;
         }
@@ -21,6 +21,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         {
             var res = new TCloudBlock();
             res.InitShader(Shader);
+            res.Scale = Scale;
             return res;
         }
 

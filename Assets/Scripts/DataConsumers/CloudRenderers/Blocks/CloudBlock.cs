@@ -7,7 +7,12 @@ namespace Elektronik.DataConsumers.CloudRenderers
     {
         public abstract int RenderQueue { get; }
 
-        public float Scale { get; set; } = 1;
+        public float Scale { get; set; }
+
+        protected CloudBlock(float scale)
+        {
+            Scale = scale;
+        }
 
         public virtual void UpdateDataOnGpu()
         {

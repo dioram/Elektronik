@@ -16,9 +16,10 @@ namespace Elektronik.DataConsumers.CloudRenderers
             where TCloudItem : struct, ICloudItem
             where TCloudBlock : class, ICloudBlock<TGpuItem>
     {
-        public GpuCloudRenderer(Shader shader)
+        public GpuCloudRenderer(Shader shader, float scale)
         {
             Shader = shader;
+            _scale = scale;
         }
 
         public IReadOnlyCollection<TCloudBlock> Blocks => _blocks.AsReadOnly();
@@ -71,6 +72,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             {
                 if (Math.Abs(_scale - value) < float.Epsilon) return;
 
+                _scale = value;
                 foreach (var block in _blocks)
                 {
                     block.Scale = value;

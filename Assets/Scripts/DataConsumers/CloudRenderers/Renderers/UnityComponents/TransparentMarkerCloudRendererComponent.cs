@@ -13,7 +13,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         
         private void Awake()
         {
-            NestedRenderer = new MarkerCloudRenderer<TransparentMarkerCloudBlock>(CloudShader, MarkerType);
+            NestedRenderer = new MarkerCloudRenderer<TransparentMarkerCloudBlock>(CloudShader, MarkerType, Scale);
         }
     }
 }

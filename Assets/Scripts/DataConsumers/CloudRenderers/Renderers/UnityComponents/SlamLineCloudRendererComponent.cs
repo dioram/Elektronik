@@ -9,7 +9,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         
         private void Awake()
         {
-            NestedRenderer = new SlamLineCloudRenderer(CloudShader);
+            NestedRenderer = new SlamLineCloudRenderer(CloudShader, Scale);
         }
     }
 }

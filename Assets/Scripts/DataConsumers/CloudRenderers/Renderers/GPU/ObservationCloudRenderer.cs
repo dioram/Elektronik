@@ -20,8 +20,9 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
         
-        public ObservationCloudRenderer(Shader shader) : base(shader)
+        public ObservationCloudRenderer(Shader shader, float scale, float itemSize) : base(shader, scale)
         {
+            _itemSize = itemSize;
         }
         
         protected override void ProcessItem(ObservationCloudBlock block, SlamObservation item, int inBlockId)
@@ -36,7 +37,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         protected override int BlockCapacity => ObservationCloudBlock.Capacity;
         
-        protected override ObservationCloudBlock CreateNewBlock() => new ObservationCloudBlock(Shader, ItemSize);
+        protected override ObservationCloudBlock CreateNewBlock() => new ObservationCloudBlock(Shader, ItemSize, Scale);
         
         private float _itemSize;
     }

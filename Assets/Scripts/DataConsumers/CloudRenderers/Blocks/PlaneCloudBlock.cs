@@ -13,7 +13,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         public const int VerticesPerPlane = 4;
 
-        public PlaneCloudBlock(Shader shader, float itemSize)
+        public PlaneCloudBlock(Shader shader, float itemSize, float scale) : base(scale)
         {
             ItemSize = itemSize;
             _planes = Enumerable.Repeat(default(GPUItem), Capacity * VerticesPerPlane).ToArray();

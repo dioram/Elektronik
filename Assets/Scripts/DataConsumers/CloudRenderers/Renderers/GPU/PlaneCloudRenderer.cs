@@ -6,8 +6,9 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class PlaneCloudRenderer : GpuCloudRenderer<SlamPlane, PlaneCloudBlock, GPUItem[]>, IResizableRenderer
     {
-        public PlaneCloudRenderer(Shader shader) : base(shader)
+        public PlaneCloudRenderer(Shader shader, float scale, float itemSize) : base(shader, scale)
         {
+            _itemSize = itemSize;
         }
 
         public float ItemSize
@@ -25,7 +26,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         protected override int BlockCapacity => PlaneCloudBlock.Capacity;
 
-        protected override PlaneCloudBlock CreateNewBlock() => new PlaneCloudBlock(Shader, ItemSize);
+        protected override PlaneCloudBlock CreateNewBlock() => new PlaneCloudBlock(Shader, ItemSize, Scale);
 
         protected override void ProcessItem(PlaneCloudBlock block, SlamPlane item, int inBlockId)
         {

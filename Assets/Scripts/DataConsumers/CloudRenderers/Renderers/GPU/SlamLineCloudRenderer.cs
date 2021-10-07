@@ -5,7 +5,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 {
     public class SlamLineCloudRenderer : GpuCloudRenderer<SlamLine, LineCloudBlock, (GPUItem begin, GPUItem end)>
     {
-        public SlamLineCloudRenderer(Shader shader) : base(shader)
+        public SlamLineCloudRenderer(Shader shader, float scale) : base(shader, scale)
         {
         }
         
@@ -19,7 +19,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         protected override int BlockCapacity => LineCloudBlock.Capacity;
 
-        protected override LineCloudBlock CreateNewBlock() => new LineCloudBlock(Shader);
+        protected override LineCloudBlock CreateNewBlock() => new LineCloudBlock(Shader, Scale);
         
         protected override void ProcessItem(LineCloudBlock block, SlamLine item, int inBlockId)
         {

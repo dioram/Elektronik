@@ -10,7 +10,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public override int RenderQueue => 2000;
         public const int Capacity = 256 * 256;
         
-        public PointCloudBlock(Shader shader, float itemSize)
+        public PointCloudBlock(Shader shader, float itemSize, float scale) : base(scale)
         {
             ItemSize = itemSize;
             _points = Enumerable.Repeat(default(GPUItem), Capacity).ToArray();

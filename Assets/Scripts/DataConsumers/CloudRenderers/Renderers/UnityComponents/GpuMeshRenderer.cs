@@ -49,7 +49,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             {
                 while (e.Triangles.Length > _blocks.Count * MeshRendererBlock.Capacity)
                 {
-                    _blocks.Add(new MeshRendererBlock(Shaders));
+                    _blocks.Add(new MeshRendererBlock(Shaders, Scale));
                 }
 
                 var reservedSpace = _blocks.Count * MeshRendererBlock.Capacity;
