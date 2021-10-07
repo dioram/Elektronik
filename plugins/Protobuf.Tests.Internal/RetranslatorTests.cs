@@ -151,11 +151,11 @@ namespace Protobuf.Tests.Internal
             var removeCommand = new RemoveCommand<SlamObservation, SlamObservationDiff>(_mockedObservationsContainer.Object, removed);
             
             _retranslator.OnItemsAdded(null, new AddedEventArgs<SlamObservation>(added.Select(o => o.Apply()).ToArray()));
-            Thread.Sleep(50);
-            _retranslator.OnItemsUpdated(null, new UpdatedEventArgs<SlamObservation>(updated.Select(o => o.Apply()).ToArray()));
-            Thread.Sleep(50);
-            _retranslator.OnItemsRemoved(null, new RemovedEventArgs<SlamObservation>(removed.Select(o => o.Apply()).ToArray()));
             Thread.Sleep(100);
+            _retranslator.OnItemsUpdated(null, new UpdatedEventArgs<SlamObservation>(updated.Select(o => o.Apply()).ToArray()));
+            Thread.Sleep(100);
+            _retranslator.OnItemsRemoved(null, new RemovedEventArgs<SlamObservation>(removed.Select(o => o.Apply()).ToArray()));
+            Thread.Sleep(200);
 
             _mockedBuffer.Verify(b => b.Add(addCommand, It.IsAny<DateTime>(), false), Times.Once);
             _mockedBuffer.Verify(b => b.Add(updateCommand, It.IsAny<DateTime>(), false), Times.Once);
