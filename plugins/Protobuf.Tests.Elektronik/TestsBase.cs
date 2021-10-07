@@ -1,14 +1,22 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Google.Protobuf;
 using Grpc.Core;
+using NUnit.Framework;
 
 namespace Protobuf.Tests.Elektronik
 {
     public abstract class TestsBase
     {
+        [TearDown]
+        public void AddDelay()
+        {
+            Thread.Sleep(500);
+        }
+        
         protected readonly MapsManagerPb.MapsManagerPbClient MapClient;
 
         protected TestsBase()
