@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Security;
-using Elektronik.Threading;
 using Newtonsoft.Json;
-using UnityEngine;
+using UniRx;
 
 namespace Elektronik.Settings
 {
@@ -48,7 +46,7 @@ namespace Elektronik.Settings
 
         public void Save()
         {
-            MainThreadInvoker.Enqueue(Serialize);
+            UniRxExtensions.StartOnMainThread(Serialize).Subscribe();
         }
 
         #region Private definitions
@@ -63,22 +61,9 @@ namespace Elektronik.Settings
         private readonly int _maxCountOfRecentFiles;
         private RecentItems _recent;
 
-        private string SavePath => Application.persistentDataPath;
-
         private void Deserialize()
         {
-            string pathToAppData;
-            try
-            {
-                pathToAppData = Path.Combine(SavePath, _fileName);
-            }
-            catch (SecurityException)
-            {
-                Console.WriteLine("Security exception was raised. " +
-                                  "Probably because you are running UnityEngine.dll outside Unity player.");
-                pathToAppData = _fileName;
-            }
-
+            var pathToAppData = Path.Combine(SettingsRepository.Path, _fileName);
             if (File.Exists(pathToAppData))
             {
                 _recent = JsonConvert.DeserializeObject<RecentItems>(File.ReadAllText(pathToAppData));
@@ -91,17 +76,7 @@ namespace Elektronik.Settings
 
         private void Serialize()
         {
-            string pathToAppData;
-            try
-            {
-                pathToAppData = Path.Combine(SavePath, _fileName);
-            }
-            catch (SecurityException)
-            {
-                Console.WriteLine("Security exception was raised. " +
-                                  "Probably because you are running UnityEngine.dll outside Unity player.");
-                pathToAppData = _fileName;
-            }
+            var pathToAppData = Path.Combine(SettingsRepository.Path, _fileName);
             var fi = new FileInfo(pathToAppData);
             if (!fi.Directory.Exists) fi.Directory.Create();
             File.WriteAllText(pathToAppData, JsonConvert.SerializeObject(_recent));

@@ -209,12 +209,13 @@ into section `<PropertyGroup>`. Example:
 </PropertyGroup>
 ```
 
-The easiest way to build all plugins just run form root directory of repo script [build_plugins.sh](../.github/build_plugins.sh).
-This script will build plugins and install them to Elektronik if it was built in `./build` dir.
-
-If you what to build plugins your self then open file `./plugins/plugins.sln` in any .NET IDE.
-Make changes if you want to and build solution. Now you need to install plugins to Elektronik.
+Now you need to install plugins to Elektronik.
 Publish plugins to folder `<PATH_TO_ELEKTRONIK>/Plugins/<PLUGIN_NAME>/libraries/`.
+`<PATH_TO_ELEKTRONIK>/build/Plugins/<PLUGIN_NAME>/libraries/`.
+```
+cd ./plugins
+dotnet publish <PLUGIN_NAME> ../build/Plugins/<PLUGIN_NAME>/libraries
+```
 After that copy files with translations `translations.csv` to `<PATH_TO_ELEKTRONIK>/Plugins/<PLUGIN_NAME>/data`.
 
 Congratulations! Elektronik is built and ready to work.

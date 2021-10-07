@@ -14,7 +14,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class PointsMapManager : ConnectableObjectsMapManager<SlamPoint, SlamPointDiff>
     {
-        public PointsMapManager(OnlineFrameBuffer buffer, IConnectableObjectsContainer<SlamPoint> container, 
+        public PointsMapManager(IOnlineFrameBuffer buffer, IConnectableObjectsContainer<SlamPoint> container, 
                                 ICSConverter? converter, ILogger logger)
                 : base(buffer, container, converter, logger)
         {

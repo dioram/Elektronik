@@ -6,8 +6,9 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers.Collision;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Threading;
+using Elektronik.Input;
 using Elektronik.UI.Windows;
+using UniRx;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -30,6 +31,20 @@ namespace Elektronik.UI
                 viewer.Hide();
             });
             StartCoroutine(CheckCollisionCoroutine());
+
+            var controls = new CameraControls().Default;
+            controls.Enable();
+            controls.Click.PerformedAsObservable()
+                    .Select(_ => Mouse.current.position.ReadValue())
+                    .Select(v => _camera.ScreenPointToRay(v))
+                    .Select(ray => CollisionCloud.FindCollided(ray))
+                    .Where(data => data.HasValue)
+                    // ReSharper disable once PossibleInvalidOperationException
+                    .Select(v => v.Value)
+                    .ObserveOnMainThreadSafe()
+                    .Do(data => CreateOrShowWindow(data.container, data.item, "Observation #{0}"))
+                    .Subscribe()
+                    .AddTo(this);
         }
 
         private void OnDestroy()
@@ -57,12 +72,13 @@ namespace Elektronik.UI
 
                     if (collision.HasValue)
                     {
-                        MainThreadInvoker.Enqueue(
-                            () => ProcessRaycast(collision.Value.container, collision.Value.item, mousePosition));
+                        UniRxExtensions.StartOnMainThread(
+                            () => ProcessRaycast(collision.Value.container, collision.Value.item, mousePosition))
+                                .Subscribe();
                     }
                     else
                     {
-                        MainThreadInvoker.Enqueue(HideViewer);
+                        UniRxExtensions.StartOnMainThread(HideViewer).Subscribe();
                     }
                 });
                 yield return new WaitForSeconds(CollisionCheckTimeout);
@@ -73,16 +89,8 @@ namespace Elektronik.UI
         private void ProcessRaycast(IContainer<SlamObservation> container, SlamObservation observation,
                                     Vector3 mousePosition)
         {
-            if (Mouse.current.leftButton.wasReleasedThisFrame)
-            {
-                CreateOrShowWindow(container, observation, "Observation #{0}");
-            }
-            else
-            {
-                if (_floatingViewer.gameObject.activeInHierarchy) return;
-                _floatingViewer.Render((container, observation));
-                _floatingViewer.transform.position = mousePosition;
-            }
+            _floatingViewer.Render((container, observation));
+            _floatingViewer.transform.position = mousePosition + new Vector3(15, -15);
         }
 
         private void HideViewer()
@@ -113,21 +121,22 @@ namespace Elektronik.UI
             }
         }
 
+        private ObservationViewer GetViewer(object container, SlamObservation obs)
+        {
+            return _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == container.GetHashCode()
+                                                         && w.ObservationId == obs.Id);
+        }
+
+
         private void DestroyObsoleteWindows(object container, RemovedEventArgs<SlamObservation> args)
         {
-            foreach (var obs in args.RemovedItems)
-            {
-                var v = _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == container.GetHashCode()
-                                                              && w.ObservationId == obs.Id);
-                if (v != null)
-                {
-                    MainThreadInvoker.Enqueue(() =>
-                    {
-                        Destroy(v.gameObject);
-                        _pinnedViewers.Remove(v);
-                    });
-                }
-            }
+            args.RemovedItems.ToObservable()
+                    .Select(obs => GetViewer(container, obs))
+                    .Where(obs => obs != null)
+                    .ObserveOnMainThreadSafe()
+                    .Do(v => Destroy(v.gameObject))
+                    .Do(v => _pinnedViewers.Remove(v))
+                    .Subscribe();
         }
 
         #endregion

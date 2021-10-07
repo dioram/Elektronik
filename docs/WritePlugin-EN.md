@@ -55,6 +55,8 @@ Plugin must:
   - [IDataSourcePlugin](../Assets/Scripts/PluginsSystem/Plugins/IDataSourcePlugin.cs)
     Interface for any data source plugins.
     Reference implementation: [ProtobufOnlinePlayer](../Plugins/Protobuf/Online/ProtobufOnlinePlayer.cs)
+  - [IRewindableDataSource](../Assets/Scripts/PluginsSystem/Plugins/IRewindableDataSource.cs)
+    Interface for any data source plugin supporting rewind.
 
 ## Data recorder (consumer) plugins
 - Factories:

@@ -9,7 +9,6 @@ using Elektronik.Plugins.Common.Parsing;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.GrpcServices;
-using Elektronik.Protobuf.Online.Presenters;
 using Elektronik.Settings;
 using Grpc.Core;
 using UnityEngine;
@@ -24,7 +23,7 @@ namespace Elektronik.Protobuf.Online
         public ProtobufOnlinePlayer(string displayName, Texture2D? logo, OnlineSettingsBag settings,
                                     ICSConverter converter, ILogger? logger = null)
         {
-            var containerTree = new ProtobufContainerTree("Protobuf", _cameraImage);
+            var containerTree = new ProtobufContainerTree("Protobuf");
             Data = containerTree;
             DisplayName = displayName;
             Logo = logo;
@@ -41,7 +40,9 @@ namespace Elektronik.Protobuf.Online
                 new ObservationsMapManager(_buffer, containerTree.Observations, converter, _logger),
                 new TrackedObjsMapManager(_buffer, containerTree.TrackedObjs, converter, _logger),
                 new LinesMapManager(_buffer, containerTree.Lines, converter, _logger),
-                new PlanesMapManager(_buffer, containerTree.Planes, converter, _logger)
+                new PlanesMapManager(_buffer, containerTree.Planes, converter, _logger),
+                new MarkersMapManager(_buffer, containerTree.Markers, converter, _logger),
+                new ImageManager(_buffer, containerTree.Image, _logger),
             }.BuildChain();
             _sceneManager = new SceneManager(_logger);
             _sceneManager.OnClear += () =>
@@ -185,7 +186,6 @@ namespace Elektronik.Protobuf.Online
         private CancellationTokenSource? _playingCancellation;
         private Task? _playTask;
         private readonly SceneManager _sceneManager;
-        private readonly RawImagePresenter _cameraImage = new("Camera");
 
         private void Play(CancellationToken token)
         {
@@ -227,7 +227,6 @@ namespace Elektronik.Protobuf.Online
                 {
                     MapsManagerPb.BindService(_services),
                     SceneManagerPb.BindService(_sceneManager),
-                    ImageManagerPb.BindService(new ImageManager(_cameraImage, _buffer, _logger))
                 },
                 Ports = { new ServerPort("0.0.0.0", _port, ServerCredentials.Insecure) },
             };

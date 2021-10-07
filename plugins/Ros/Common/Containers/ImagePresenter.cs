@@ -2,13 +2,8 @@
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
-    public class ImagePresenter
-            : PresenterBase<
-                ImageData,
-                ImageRenderer,
-                ImageData>
+    public class ImagePresenter : PresenterBase<ImageData, ImageRenderer, ImageData>
     {
-
         public ImagePresenter(string displayName) : base(displayName)
         {
         }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Elektronik.Plugins.Common.FrameBuffers;
+using Elektronik.Plugins.Common.Parsing;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online.Presenters;
 using Grpc.Core;
@@ -9,30 +11,47 @@ using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online.GrpcServices
 {
-    public class ImageManager : ImageManagerPb.ImageManagerPbBase
+    public class ImageManager : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
     {
         private readonly ILogger _logger;
-        private readonly RawImagePresenter _presenter;
+        private readonly ImagePresenter _presenter;
         private readonly OnlineFrameBuffer _buffer;
         private ImageCommand? _lastCommand;
 
-        public ImageManager(RawImagePresenter presenter, OnlineFrameBuffer buffer, ILogger logger)
+        public ImageManager(OnlineFrameBuffer buffer, ImagePresenter presenter, ILogger logger)
         {
             _presenter = presenter;
             _logger = logger;
             _buffer = buffer;
         }
 
-        public override Task<ErrorStatusPb> Handle(ImagePacketPb request, ServerCallContext context)
+        public override Task<ErrorStatusPb> Handle(PacketPb request, ServerCallContext context)
         {
-            var timer = Stopwatch.StartNew();
-            var err = new ErrorStatusPb
+            if (request.DataCase != PacketPb.DataOneofCase.Image)
             {
-                ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded,
-            };
+                Task<ErrorStatusPb> status;
+                if (_link != null)
+                {
+                    status = _link.Handle(request, context);
+                }
+                else
+                {
+                    status = Task.FromResult(new ErrorStatusPb
+                    {
+                        ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Unknown,
+                        Message = "Valid MapManager not found for this message"
+                    });
+                }
+
+                return status;
+            }
+
+            var timer = Stopwatch.StartNew();
+            var err = new ErrorStatusPb { ErrType = ErrorStatusPb.Types.ErrorStatusEnum.Succeeded };
             try
             {
-                var command = new ImageCommand(_presenter, request.ImageData.ToByteArray(), _lastCommand);
+                var command = new ImageCommand(_presenter, request.ExtractImage(Directory.GetCurrentDirectory()),
+                                               _lastCommand);
                 _buffer.Add(command, DateTime.Now, false);
                 _lastCommand = command;
             }
@@ -46,6 +65,15 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             _logger.Info($"[{GetType().Name}.Handle] Elapsed time: {timer.ElapsedMilliseconds} ms. ErrorStatus: {err}");
 
             return Task.FromResult(err);
+        }
+
+        private MapsManagerPb.MapsManagerPbBase? _link;
+
+        public IChainable<MapsManagerPb.MapsManagerPbBase>? SetSuccessor(
+            IChainable<MapsManagerPb.MapsManagerPbBase>? link)
+        {
+            _link = link as MapsManagerPb.MapsManagerPbBase;
+            return link;
         }
     }
 }

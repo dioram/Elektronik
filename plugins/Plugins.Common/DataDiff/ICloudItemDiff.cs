@@ -2,9 +2,9 @@
 
 namespace Elektronik.Plugins.Common.DataDiff
 {
-    public interface ICloudItemDiff<TCloudItemDiff, TCloudItem> 
+    public interface ICloudItemDiff<TCloudItemDiff, TCloudItem>
             where TCloudItem : ICloudItem
-            where TCloudItemDiff: ICloudItemDiff<TCloudItemDiff, TCloudItem>
+            where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         int Id { get; }
         public TCloudItem Apply();

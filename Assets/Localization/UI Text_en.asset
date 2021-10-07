@@ -557,6 +557,38 @@ MonoBehaviour:
     m_Localized: Clustering
     m_Metadata:
       m_Items: []
+  - m_Id: 60979707659673600
+    m_Localized: Use ortographic projection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61273090366103552
+    m_Localized: Switch material
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61316093583548416
+    m_Localized: Render observation messages
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61993039734579200
+    m_Localized: Markers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63853394966421504
+    m_Localized: Observations size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64159542005276672
+    m_Localized: Loading plugins...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64512197248491520
+    m_Localized: Persp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64512245462016000
+    m_Localized: Ortho
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

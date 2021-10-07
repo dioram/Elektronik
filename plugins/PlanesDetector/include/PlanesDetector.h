@@ -25,6 +25,6 @@ public:
 class PlanesDetector
 {
 public:
-    std::vector<int> FindPlanes(const std::vector<Vector3d>& points, const Preferences& preferences) const;
+    std::vector<std::vector<int>> FindPlanes(const std::vector<Vector3d>& points, const Preferences& preferences) const;
 };
 

@@ -13,6 +13,8 @@ namespace Elektronik.DataConsumers.Collision
             where TCloudItem : struct, ICloudItem
     {
         public float Radius;
+
+        public float RadiusMultiplier = 1;
         
         // for Unity editor binding.
         public void SetRadius(float value)
@@ -23,7 +25,7 @@ namespace Elektronik.DataConsumers.Collision
         public (IContainer<TCloudItem> container, TCloudItem item)? FindCollided(Ray ray)
         {
             ray.origin /= Scale;
-            var id = _topBlock.FindItem(ray, Radius);
+            var id = _topBlock.FindItem(ray, Radius * RadiusMultiplier / Scale);
             if (!id.HasValue) return null;
             
             var (sender, senderId) = _dataReverse[id.Value];
@@ -36,7 +38,7 @@ namespace Elektronik.DataConsumers.Collision
 
         private void OnDestroy()
         {
-            _threadQueueWorker.Dispose();
+            Dispose();
         }
 
         #endregion
@@ -44,6 +46,8 @@ namespace Elektronik.DataConsumers.Collision
         #region ICloudRenderer
 
         public float Scale { get; set; } = 1;
+
+        public int ItemsCount { get; private set; }
 
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
@@ -63,6 +67,7 @@ namespace Elektronik.DataConsumers.Collision
                     }
                 }
             });
+            ItemsCount += e.AddedItems.Count;
         }
 
         public void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
@@ -102,6 +107,15 @@ namespace Elektronik.DataConsumers.Collision
                     }
                 }
             });
+            ItemsCount -= e.RemovedItems.Count;
+        }
+
+        public void Dispose()
+        {
+            _data.Clear();
+            _dataReverse.Clear();
+            _topBlock.Clear();
+            _threadQueueWorker.Dispose();
         }
 
         #endregion

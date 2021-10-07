@@ -31,7 +31,7 @@ namespace Protobuf.Tests.Elektronik
             return Enumerable.Range(0, amount).Select(id => new ObservationPb()
             {
                 Filename = "",
-                Orientation = new Vector4Pb {W = 1},
+                Orientation = new Vector4Pb { Y = 0.70710676908493042, W = 0.70710676908493042 },
                 Point = new PointPb()
                 {
                     Id = id,
@@ -82,7 +82,7 @@ namespace Protobuf.Tests.Elektronik
         [Test, Explicit]
         public void ComplexTest()
         {
-            int iterations = 10000;
+            int iterations = 1000;
             int pointsAmount = 600;
             int obsAmount = 5;
             float scale = 1f;

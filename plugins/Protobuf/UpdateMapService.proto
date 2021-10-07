@@ -20,10 +20,6 @@ service MapsManagerPb {
 	rpc Handle(PacketPb) returns(ErrorStatusPb) {}
 }
 
-service ImageManagerPb {
-	rpc Handle(ImagePacketPb) returns(ErrorStatusPb) {}
-}
-
 service SceneManagerPb {
 	rpc Clear(google.protobuf.Empty) returns(ErrorStatusPb) {}
 }

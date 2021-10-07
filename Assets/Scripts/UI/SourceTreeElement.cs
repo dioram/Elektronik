@@ -30,6 +30,8 @@ namespace Elektronik.UI
 
         public void ChangeState()
         {
+            if (!_isInitialized) return;
+            
             if (_isExpanded)
             {
                 TreeButton.State = 0;
@@ -60,6 +62,7 @@ namespace Elektronik.UI
         {
             _rectTransform = (RectTransform) transform;
             _layoutElement = GetComponent<LayoutElement>();
+            _isInitialized = true;
         }
 
         public void Start()
@@ -73,6 +76,8 @@ namespace Elektronik.UI
         #endregion
 
         #region Private
+
+        private bool _isInitialized = false;
 
         private float GetExpandedSize(bool ignoreSelfExpand = false)
         {

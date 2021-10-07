@@ -1,5 +1,4 @@
-﻿using System;
-using Elektronik.Data.PackageObjects;
+﻿using Elektronik.Data.PackageObjects;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
@@ -27,12 +26,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         {
             Position = vert.offset;
             Color = EncodeColor(vert.color);
-        }
-
-        public GPUItem(Quaternion rotation)
-        {
-            Position = new Vector3(rotation.x, rotation.y, rotation.z);
-            Color = BitConverter.ToUInt32(BitConverter.GetBytes(rotation.w), 0);
         }
             
         static uint EncodeColor(Color c)

@@ -14,7 +14,7 @@ namespace Elektronik.Plugins.Common.Commands.TrackedObj
         private readonly ITrackedContainer<SlamTrackedObject> _container;
 
         public RemoveTrackedObjCommands(ITrackedContainer<SlamTrackedObject> container,
-                                        IList<SlamTrackedObject> objects)
+                                        SlamTrackedObject[] objects)
                 : base(container, objects)
         {
             _container = container;
@@ -43,7 +43,7 @@ namespace Elektronik.Plugins.Common.Commands.TrackedObj
         private readonly ITrackedContainer<SlamTrackedObject> _container;
 
         public RemoveTrackedObjDiffCommands(ITrackedContainer<SlamTrackedObject> container,
-                                            IList<SlamTrackedObjectDiff> objects)
+                                            SlamTrackedObjectDiff[] objects)
                 : base(container, objects)
         {
             _container = container;

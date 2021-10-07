@@ -11,7 +11,7 @@ namespace Elektronik.Plugins.Common.Commands.Generic
         private readonly IList<(int, int)> _connections;
         private readonly IConnectableObjectsContainer<T> _container;
 
-        public ConnectableRemoveCommand(IConnectableObjectsContainer<T> container, IList<T> objects)
+        public ConnectableRemoveCommand(IConnectableObjectsContainer<T> container, T[] objects)
                 : base(container, objects)
         {
             _container = container;
@@ -32,8 +32,7 @@ namespace Elektronik.Plugins.Common.Commands.Generic
         private readonly IList<(int, int)> _connections;
         private readonly IConnectableObjectsContainer<TCloudItem> _container;
 
-        public ConnectableRemoveCommand(IConnectableObjectsContainer<TCloudItem> container,
-                                        IList<TCloudItemDiff> objects)
+        public ConnectableRemoveCommand(IConnectableObjectsContainer<TCloudItem> container, TCloudItemDiff[] objects)
                 : base(container, objects)
         {
             _container = container;

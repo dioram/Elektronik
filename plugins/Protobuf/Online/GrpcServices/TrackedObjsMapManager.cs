@@ -14,7 +14,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class TrackedObjsMapManager : MapManager<SlamTrackedObject, SlamTrackedObjectDiff>
     {
-        public TrackedObjsMapManager(OnlineFrameBuffer buffer, IContainer<SlamTrackedObject> container,
+        public TrackedObjsMapManager(IOnlineFrameBuffer buffer, IContainer<SlamTrackedObject> container,
                                      ICSConverter? converter, ILogger logger)
                 : base(buffer, container, converter, logger)
         {

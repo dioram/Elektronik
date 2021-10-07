@@ -1,16 +1,23 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Google.Protobuf;
 using Grpc.Core;
+using NUnit.Framework;
 
 namespace Protobuf.Tests.Elektronik
 {
     public abstract class TestsBase
     {
+        [TearDown]
+        public void AddDelay()
+        {
+            Thread.Sleep(500);
+        }
+        
         protected readonly MapsManagerPb.MapsManagerPbClient MapClient;
-        protected readonly ImageManagerPb.ImageManagerPbClient ImageClient;
 
         protected TestsBase()
         {
@@ -19,7 +26,6 @@ namespace Protobuf.Tests.Elektronik
 
             var channel = new Channel("127.0.0.1:5050", ChannelCredentials.Insecure);
             MapClient = new MapsManagerPb.MapsManagerPbClient(channel);
-            ImageClient = new ImageManagerPb.ImageManagerPbClient(channel);
         }
 
         protected void SendAndCheck(PacketPb packet, string? filename = null, bool isFirst = false)

@@ -24,11 +24,11 @@ namespace Elektronik.DataSources.Containers
 
         public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
 
-        public void OverrideColors()
+        public void SwitchShader()
         {
             foreach (var renderer in _renderer)
             {
-                renderer.OverrideColors = !renderer.OverrideColors;
+                renderer.ShaderId++;
             }
         }
 

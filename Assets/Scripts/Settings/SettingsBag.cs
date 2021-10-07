@@ -10,9 +10,9 @@ namespace Elektronik.Settings
         [Hide]
         public string ModificationTime;
 
-        public virtual SettingsBag.ValidationResult Validate()
+        public virtual ValidationResult Validate()
         {
-            return SettingsBag.ValidationResult.Succeeded;
+            return ValidationResult.Succeeded;
         }
 
         public override string ToString()

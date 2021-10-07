@@ -4,7 +4,7 @@ By default Elektronik uses [google protocol buffers](https://developers.google.c
 and [gRPC](https://grpc.io/).
 All data is represented as data packages. 
 You can find package specification in protobuf format in file 
-[MapTypes.proto](../plugins/Protobuf/Data/MapTypes.proto).
+[MapTypes.proto](../plugins/Protobuf/MapTypes.proto).
 
 There are several types of packages:
 1. Action package
@@ -44,21 +44,13 @@ There are four actions over data:
 
 ## Timestamp
 
-Timestamp is used by the Elektronik offline mode, it is displayed on an actions rewinding slider 
-in the right-bottom corner of a window. 
+Timestamp is used to be displayed in the right-bottom corner of a window. 
 Also it will be used to find image form camera for this moment of time.
-Image file should be called \<timestamp\>.png.
-
-Online mode doesn't use this information.
+Image file should be called `<TIMESTAMP>.png`.
 
 ## Special package flag
 
-Special package flag is used by offline mode, it is intended 
-to skip non interesting actions by clicking rewinding buttons to jump to nearest special package.
-
-## Message
-
-A message is displayed for all special packages in the right-top corner of window in offline mode.
+Special package flag is intended to skip non interesting actions by clicking rewinding buttons to jump to nearest special package.
 
 ## Connections set
 
@@ -147,7 +139,7 @@ So now metadata is 8 bytes containing marker and amount of packages;
 
 # C#
 
-You can familiar with Elektronik interaction example in the folder [Plugins/Protobuf.Tests.Elektronik](../Plugins/Protobuf.Tests.Elektronik). 
+You can familiar with Elektronik interaction example in the folder [Plugins/Protobuf.Tests.Elektronik](../plugins/Protobuf.Tests.Elektronik). 
 The example is implemented as Unit-tests. Before starting tests you should run Elektronik in online mode. 
 After tests was ran, there will be files \<TestName\>.dat in the executable files directory folder 
 which can be used as Elektronik opportunities presentation in offline mode.

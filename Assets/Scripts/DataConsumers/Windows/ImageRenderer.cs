@@ -1,4 +1,4 @@
-﻿using Elektronik.Threading;
+﻿using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,7 +37,7 @@ namespace Elektronik.DataConsumers.Windows
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Enqueue(() => gameObject.SetActive(_isShowing));
+                UniRxExtensions.StartOnMainThread(() => gameObject.SetActive(_isShowing)).Subscribe();
             }
         }
 
@@ -45,19 +45,19 @@ namespace Elektronik.DataConsumers.Windows
         
         public void Render(byte[] array)
         {
-            MainThreadInvoker.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
-                Texture2D texture2D = Texture2D.blackTexture;
+                var texture2D = Texture2D.blackTexture;
                 texture2D.LoadImage(array);
                 texture2D.filterMode = FilterMode.Trilinear;
                 Fitter.aspectRatio = texture2D.width / (float) texture2D.height;
                 Target.texture = texture2D;
-            });
+            }).Subscribe();
         }
 
         public void Render(ImageData data)
         {
-            MainThreadInvoker.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 if (!data.IsSupported)
                 {
@@ -79,15 +79,15 @@ namespace Elektronik.DataConsumers.Windows
                 _texture.Apply();
                 Fitter.aspectRatio = data.Width / (float) data.Height;
                 Target.texture = _texture;
-            });
+            }).Subscribe();
         }
 
         public void Clear()
         {
-            MainThreadInvoker.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 if (Target != null) Target.texture = Texture2D.whiteTexture;
-            });
+            }).Subscribe();
         }
 
         #endregion
@@ -101,16 +101,17 @@ namespace Elektronik.DataConsumers.Windows
 
         private static void FlipTextureVertically(Texture2D original)
         {
+            // TODO: May be i can flip image on scene instead of iterating over texture
             var originalPixels = original.GetPixels();
 
-            Color[] newPixels = new Color[originalPixels.Length];
+            var newPixels = new Color[originalPixels.Length];
 
-            int width = original.width;
-            int rows = original.height;
+            var width = original.width;
+            var rows = original.height;
 
-            for (int x = 0; x < width; x++)
+            for (var x = 0; x < width; x++)
             {
-                for (int y = 0; y < rows; y++)
+                for (var y = 0; y < rows; y++)
                 {
                     newPixels[x + y * width] = originalPixels[x + (rows - y - 1) * width];
                 }

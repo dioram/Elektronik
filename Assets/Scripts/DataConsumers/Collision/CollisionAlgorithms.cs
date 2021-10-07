@@ -34,12 +34,6 @@ namespace Elektronik.DataConsumers.Collision
         /// <returns> true if ray intersects with sphere. </returns>
         public static bool RaySphere(Ray ray, Vector3 position, float radius)
         {
-            // var k1 = position - ray.origin;
-            // var a = Vector3.Angle(k1, ray.direction);
-            // if (a > 90) return false;
-            // var k2 = Mathf.Tan(a) * k1.magnitude;
-            // return k2 <= radius;
-
             var k = ray.origin - position;
             var b = Vector3.Dot(k, ray.direction);
             var c = Vector3.Dot(k, k) - radius * radius;

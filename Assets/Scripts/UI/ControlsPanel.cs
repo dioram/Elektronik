@@ -7,7 +7,7 @@ namespace Elektronik.UI
     {
         [SerializeField] private GameObject RowPrefab;
 
-        struct Row
+        private readonly struct Row
         {
             public readonly bool IsLabel;
             public readonly string Name;
@@ -16,7 +16,7 @@ namespace Elektronik.UI
 
             public Row(string name, string main = "", string alternative = "")
             {
-                IsLabel = false;
+                IsLabel = string.IsNullOrEmpty(main) && string.IsNullOrEmpty(alternative);
                 Name = name;
                 Main = main;
                 Alternative = alternative;
@@ -30,8 +30,9 @@ namespace Elektronik.UI
             new Row ("Y", "Q/E"),
             new Row ("Z", "W/S", "Mouse wheel"),
             new Row ("Forward", "LMB + RMB"),
-            new Row ("Yaw", "Left/Right", "Mouse X"),
-            new Row ("Pitch", "Up/Down", "Mouse Y"),
+            new Row ("Yaw", "Left/Right", "Numpad4/Numpad6"),
+            new Row ("Roll", "Numpad7/Numpad9"),
+            new Row ("Pitch", "Up/Down", "Numpad8/Numpad2"),
             new Row ("Reset", "Backspace"),
             new Row ("Hot keys"),
             new Row ("Help", "F1"),

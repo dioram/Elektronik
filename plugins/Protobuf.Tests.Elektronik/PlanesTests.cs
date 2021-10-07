@@ -50,30 +50,6 @@ namespace Protobuf.Tests.Elektronik
             }).ToArray();
         }
 
-        [Test, Explicit]
-        public void Grid()
-        {
-            var packet = new PacketPb
-            {
-                Special = true,
-                Action = PacketPb.Types.ActionType.Add,
-                Planes = new PacketPb.Types.Planes(),
-            };
-            packet.Planes.Data.Add(new PlanePb
-            {
-                Id = -10000,
-                Message = "Grid",
-                Normal = new Vector3Pb {X = 1, Y = 1, Z = 1},
-                Offset = new Vector3Pb {X = 1, Y = 1, Z = 1},
-            });
-
-            using var file = File.Open(Filename, FileMode.Create);
-            packet.WriteDelimitedTo(file);
-
-            var response = MapClient.Handle(packet);
-            Assert.True(response.ErrType == ErrorStatusPb.Types.ErrorStatusEnum.Succeeded, response.Message);
-        }
-
         [Test, Order(1), Explicit]
         public void Create()
         {

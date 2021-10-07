@@ -1,51 +1,77 @@
 ﻿using System.Linq;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class ObservationCloudBlock : CloudBlock
+    public class ObservationCloudBlock : CloudBlock<(Matrix4x4 transform, Color color)>
     {
-        public GPUItem[] Points;
-        public const int CapacityMultiplier = 18;
+        public const int Capacity = 256 * 256;
+        public override int RenderQueue => 2000;
+        public float ItemSize { get; set; }
 
-        public override GPUItem[] GetItems() => Points;
-
-        public override void Clear()
+        public ObservationCloudBlock(Shader shader, float itemSize)
         {
-            ClearArray(Points);
-            base.Clear();
+            ItemSize = itemSize;
+            _transforms = Enumerable.Repeat(default(Matrix4x4), Capacity).ToArray();
+            _colors = Enumerable.Repeat(default(Color), Capacity).ToArray();
+            
+            UniRxExtensions.StartOnMainThread(() =>
+            {
+                RenderMaterial = new Material(shader) {hideFlags = HideFlags.DontSave};
+                _transformsBuffer = new ComputeBuffer(_transforms.Length, sizeof(float) * 16);
+                _colorsBuffer = new ComputeBuffer(_colors.Length, sizeof(float) * 4);
+            }).Subscribe();
         }
         
-        protected override void Init()
+        public override (Matrix4x4 transform, Color color) this[int index]
         {
-            Points = Enumerable.Repeat(default(GPUItem), Capacity * CapacityMultiplier).ToArray();
-            _pointsBuffer = new ComputeBuffer(Points.Length, GPUItem.Size);
+            get => (_transforms[index], _colors[index]);
+            set
+            {
+                _transforms[index] = value.transform;
+                _colors[index] = value.color;
+                Updated = true;
+            }
         }
 
-        protected override void SendData(Material renderMaterial)
+        public override void UpdateDataOnGpu()
         {
-            renderMaterial.SetBuffer(_pointsBufferShaderProp, _pointsBuffer);
+            if (_colorsBuffer is null) return;
+            if (Updated)
+            {
+                _transformsBuffer.SetData(_transforms);
+                _colorsBuffer.SetData(_colors);
+            }
+            base.UpdateDataOnGpu();
         }
 
-        protected override void OnUpdated()
+        public override void RenderData()
         {
-            _pointsBuffer.SetData(Points);
+            base.RenderData();
+            if (RenderMaterial is null) return;
+            RenderMaterial.SetFloat(_sizeShaderProp, ItemSize);
+            RenderMaterial.SetBuffer(_transformsBufferShaderProp, _transformsBuffer);
+            RenderMaterial.SetBuffer(_colorsBufferShaderProp, _colorsBuffer);
+            RenderMaterial.SetPass(0);
+            Graphics.DrawProceduralNow(MeshTopology.Points, _transformsBuffer.count);
         }
 
-        protected override void Draw()
+        public override void Dispose()
         {
-            Graphics.DrawProceduralNow(MeshTopology.Triangles, _pointsBuffer.count);
-        }
-
-        protected override void ReleaseBuffers()
-        {
-            _pointsBuffer.Release();
+            _transformsBuffer.Release();
+            _colorsBuffer.Release();
         }
 
         #region Private
-        
-        private readonly int _pointsBufferShaderProp = Shader.PropertyToID("_ItemsBuffer");
-        private ComputeBuffer _pointsBuffer;
+
+        private readonly int _transformsBufferShaderProp = Shader.PropertyToID("_TransformsBuffer");
+        private readonly int _colorsBufferShaderProp = Shader.PropertyToID("_ColorsBuffer");
+        private readonly int _sizeShaderProp = Shader.PropertyToID("_Size");
+        private ComputeBuffer _transformsBuffer;
+        private ComputeBuffer _colorsBuffer;
+        private readonly Matrix4x4[] _transforms;
+        private readonly Color[] _colors;
 
         #endregion
     }

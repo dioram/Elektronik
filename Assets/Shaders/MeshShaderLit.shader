@@ -24,7 +24,7 @@ Shader "Elektronik/MeshShaderLit"
             }
             CGPROGRAM
             #pragma target 3.0
-
+            #pragma require geometry
             #pragma vertex vertex_shader
             #pragma geometry geometry_shader
             #pragma fragment fragment_shader

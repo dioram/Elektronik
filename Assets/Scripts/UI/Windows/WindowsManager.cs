@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Elektronik.DataConsumers;
-using Elektronik.Threading;
 using Elektronik.UI.Localization;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
 
@@ -31,7 +31,7 @@ namespace Elektronik.UI.Windows
         public void CreateWindow<TComponent>(string title, Action<TComponent, Window> callback,
                                              params object[] titleFormatArgs)
         {
-            MainThreadInvoker.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 var prefab = RendererWindowsPrefabs.First(g => g.GetComponent<TComponent>() != null);
                 var go = Instantiate(prefab, Canvas);
@@ -41,7 +41,7 @@ namespace Elektronik.UI.Windows
                 go.SetActive(false);
                 Windows.Add(window);
                 callback(go.GetComponent<TComponent>(), window);
-            });
+            }).Subscribe();
         }
 
         public void OnWindowDestroyed(Window sender)

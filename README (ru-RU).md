@@ -3,7 +3,8 @@
 
 ![](docs/Images/Screenshot.png)
 
-[![Release](https://github.com/dioram/Elektronik-Tools-2.0/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/dioram/Elektronik-Tools-2.0/actions/workflows/release.yml)
+[![Build](https://github.com/dioram/Elektronik/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/dioram/Elektronik/actions/workflows/build.yaml)
+[![Release](https://github.com/dioram/Elektronik/actions/workflows/release.yml/badge.svg?branch=master)](https://github.com/dioram/Elektronik/actions/workflows/release.yaml)
 
 Elektronik Tools - это инструмент на базе движка Unity, который активно используется командой разработчиков Dioram 
 при разработке алгоритмов трекинга и SLAM. 
@@ -51,7 +52,7 @@ Elektronik Tools - это инструмент на базе движка Unity,
 Мы стараемся делать код Электроника как можно удобнее для отладки и сопровождения, 
 поэтому в коде активно используются приёмы и паттерны ООП.
 
-Вы можете [скачать](https://github.com/dioram/Elektronik-Tools-2.0/releases) актуальный релиз Электроника или [собрать](docs/Build-RU.md) его самостоятельно.
+Вы можете [скачать](https://github.com/dioram/Elektronik/releases) актуальный релиз Электроника или [собрать](docs/Build-RU.md) его самостоятельно.
 
 Надеемся, что Электроник поможет Вам в разработке SLAM Вашей мечты и будем признательны за Вашу помощь в его развитии!
 

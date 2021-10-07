@@ -6,11 +6,30 @@ namespace Elektronik.Plugins.Common.DataDiff
 {
     public struct SlamTrackedObjectDiff : ICloudItemDiff<SlamTrackedObjectDiff, SlamTrackedObject>
     {
-        public int Id { get; set; }
+        public int Id { get; }
         public Color? Color;
         public Vector3? Position;
         public Quaternion? Rotation;
         public string? Message;
+
+        public SlamTrackedObjectDiff(int id, Vector3? position = null, Quaternion? rotation = null, Color? color = null,
+                                     string? message = null)
+        {
+            Id = id;
+            Color = color;
+            Position = position;
+            Rotation = rotation;
+            Message = message;
+        }
+
+        public SlamTrackedObjectDiff(SlamTrackedObject obj)
+        {
+            Id = obj.Id;
+            Color = obj.Color;
+            Position = obj.Position;
+            Rotation = obj.Rotation;
+            Message = obj.Message;
+        }
 
         public SlamTrackedObject Apply()
         {
@@ -33,14 +52,39 @@ namespace Elektronik.Plugins.Common.DataDiff
         public SlamTrackedObjectDiff Apply(SlamTrackedObjectDiff right)
         {
             if (Id != right.Id) throw new Exception("Ids must be identical!");
-            return new SlamTrackedObjectDiff
+            return new SlamTrackedObjectDiff(Id,
+                                             Position = right.Position ?? Position,
+                                             Rotation = right.Rotation ?? Rotation,
+                                             Color = right.Color ?? Color,
+                                             Message = string.IsNullOrEmpty(right.Message) ? Message : right.Message);
+        }
+
+        public bool Equals(SlamTrackedObjectDiff other)
+        {
+            return (!Color.HasValue && !Color.HasValue || Color.Value.Equals((Color32)other.Color!.Value))
+                    && Nullable.Equals(Position, other.Position)
+                    && Nullable.Equals(Rotation, other.Rotation)
+                    && ((string.IsNullOrEmpty(Message) && string.IsNullOrEmpty(other.Message)) ||
+                        Message == other.Message)
+                    && Id == other.Id;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is SlamTrackedObjectDiff other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
             {
-                Id = Id,
-                Position = right.Position ?? Position,
-                Rotation = right.Rotation ?? Rotation,
-                Color = right.Color ?? Color,
-                Message = string.IsNullOrEmpty(right.Message) ? Message : right.Message,
-            };
+                var hashCode = Color.GetHashCode();
+                hashCode = (hashCode * 397) ^ Position.GetHashCode();
+                hashCode = (hashCode * 397) ^ Rotation.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Message != null ? Message.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ Id;
+                return hashCode;
+            }
         }
     }
 }
