@@ -91,7 +91,7 @@ namespace Protobuf.Tests.Internal
             _grpcServer.ShutdownAsync().Wait();
         }
 
-        [Test]
+        [Test, Order(1)]
         public void PointsTest()
         {
             var added = new[]
@@ -122,7 +122,7 @@ namespace Protobuf.Tests.Internal
             _mockedBuffer.Verify(b => b.Add(removeCommand, It.IsAny<DateTime>(), false), Times.Once);
         }
 
-        [Test]
+        [Test, Order(2)]
         public void ObservationsTest()
         {
             var added = new[]
@@ -162,7 +162,7 @@ namespace Protobuf.Tests.Internal
             _mockedBuffer.Verify(b => b.Add(removeCommand, It.IsAny<DateTime>(), false), Times.Once);
         }
 
-        [Test]
+        [Test, Order(3)]
         public void TrackedObjectsTest()
         {
             var added = new[]
@@ -193,7 +193,7 @@ namespace Protobuf.Tests.Internal
             _mockedBuffer.Verify(b => b.Add(removeCommand, It.IsAny<DateTime>(), false), Times.Once);
         }
 
-        [Test]
+        [Test, Order(4)]
         public void InfinitePlanesTest()
         {
             var added = new[]
