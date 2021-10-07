@@ -581,6 +581,14 @@ MonoBehaviour:
     m_Localized: Loading plugins...
     m_Metadata:
       m_Items: []
+  - m_Id: 64512197248491520
+    m_Localized: Persp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64512245462016000
+    m_Localized: Ortho
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

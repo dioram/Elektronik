@@ -559,6 +559,14 @@ MonoBehaviour:
     m_Key: Loading plugins...
     m_Metadata:
       m_Items: []
+  - m_Id: 64512197248491520
+    m_Key: Persp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64512245462016000
+    m_Key: Ortho
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
