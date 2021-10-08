@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using Elektronik.Data.Converters;
 using Elektronik.DataControllers;
 using Elektronik.DataSources;
 using Elektronik.UI;
@@ -24,7 +23,6 @@ namespace Elektronik.PluginsSystem.UnitySide
         [SerializeField] private InputWithBrowse InputWithBrowse;
         [SerializeField] private Sprite RecordImage;
         [SerializeField] private Sprite StopImage;
-        [SerializeField] private CSConverter Converter;
         [SerializeField] private PluginWindowsManager WindowsManager;
 
         #endregion
@@ -54,7 +52,6 @@ namespace Elektronik.PluginsSystem.UnitySide
         private void Awake()
         {
             _toolbarButtonImage = ToolbarButton.transform.Find("Image").GetComponent<Image>();
-            _converter = Converter;
         }
 
         private void Start()
@@ -69,7 +66,6 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         private Image _toolbarButtonImage;
         private static IFileRecorderPluginsFactory[] _fileRecordersFactories;
-        private static ICSConverter _converter;
         private IDataRecorderPlugin _currentRecorder;
         private bool IsRecording => _currentRecorder != null;
 
@@ -77,7 +73,7 @@ namespace Elektronik.PluginsSystem.UnitySide
         {
             var plugins = PluginsLoader.PluginFactories
                 .OfType<ICustomRecorderPluginsFactory>()
-                .Select(f => (IDataRecorderPlugin)f.Start(Converter));
+                .Select(f => (IDataRecorderPlugin)f.Start());
             foreach (var plugin in plugins)
             {
                 WindowsManager.RegisterPlugin(plugin);
@@ -105,7 +101,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                 .Select(_ => InputWithBrowse.FilePath)
                 .Select(GetRecorderByFileName)
                 .Where(f => f != null)
-                .Select(f => (IDataRecorderPlugin)f.Start(Converter))
+                .Select(f => (IDataRecorderPlugin)f.Start())
                 .Do(r => _currentRecorder = r)
                 .Do(DataSourcesController.AddRenderer)
                 .Do(_ => _currentRecorder.OnDisposed += OnRecorderDisposed)
@@ -144,7 +140,7 @@ namespace Elektronik.PluginsSystem.UnitySide
         {
             var factory = GetRecorderByFileName(filename);
             if (factory == null) return;
-            var recorder = (IDataRecorderPlugin)factory.Start(_converter);
+            var recorder = (IDataRecorderPlugin)factory.Start();
             node.AddConsumer(recorder);
             recorder.Dispose();
             node.RemoveConsumer(recorder);

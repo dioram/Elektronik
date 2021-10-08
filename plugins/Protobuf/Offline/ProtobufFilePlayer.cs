@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Timers;
-using Elektronik.Data.Converters;
 using Elektronik.DataSources;
 using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Plugins.Common.Parsing;
@@ -18,8 +17,7 @@ namespace Elektronik.Protobuf.Offline
 {
     public class ProtobufFilePlayer : IRewindableDataSource, IChangingSpeed
     {
-        public ProtobufFilePlayer(string displayName, Texture2D? logo, OfflineSettingsBag settings,
-                                  ICSConverter converter)
+        public ProtobufFilePlayer(string displayName, Texture2D? logo, OfflineSettingsBag settings)
         {
             _containerTree = new ProtobufContainerTree("Protobuf",
                                                        new SlamDataInfoPresenter("Special info"));
@@ -37,8 +35,7 @@ namespace Elektronik.Protobuf.Offline
 
             _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
             _input = File.OpenRead(settings.PathToFile);
-            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
-            _parsersChain?.SetConverter(converter);
+            _parsersChain?.SetConverter(new ProtobufToUnityConverter());
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
             _frames.OnSizeChanged += i => OnAmountOfFramesChanged?.Invoke(i);

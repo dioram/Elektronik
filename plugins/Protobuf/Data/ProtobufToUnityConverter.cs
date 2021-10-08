@@ -1,26 +1,20 @@
 ﻿using Elektronik.Plugins.Common;
 using UnityEngine;
 
-namespace Elektronik.RosPlugin.Common
+namespace Elektronik.Protobuf.Data
 {
-    public class RosConverter : ICSConverter
+    public class ProtobufToUnityConverter : ICSConverter
     {
-        /// <inheritdoc />
-        public void Convert(ref Vector3 pos, ref Quaternion rot)
-        {
-            Convert(ref pos);
-        }
-
         /// <inheritdoc />
         public void Convert(ref Vector3 pos)
         {
-            (pos.y, pos.z) = (pos.z, pos.y);
+            pos.y = -pos.y;
         }
 
-        /// <inheritdoc />
         public void Convert(ref Quaternion rot)
         {
-            // Do nothing
+            rot.y = -rot.y;
+            rot.w = -rot.w;
         }
 
         /// <inheritdoc />
@@ -33,6 +27,8 @@ namespace Elektronik.RosPlugin.Common
         /// <inheritdoc />
         public Quaternion Converted(Quaternion rot)
         {
+            rot.y = -rot.y;
+            rot.w = -rot.w;
             return rot;
         }
 
@@ -46,35 +42,52 @@ namespace Elektronik.RosPlugin.Common
         /// <inheritdoc />
         public void ConvertBack(ref Vector3 pos)
         {
-            (pos.y, pos.z) = (pos.z, pos.y);
+            pos.y = -pos.y;
         }
 
-        void ICSConverter.ConvertBack(ref Quaternion rot)
+        /// <inheritdoc />
+        public void ConvertBack(ref Quaternion rot)
         {
-            // Do nothing
+            rot.y = -rot.y;
+            rot.w = -rot.w;
         }
 
+        /// <inheritdoc />
         public (Vector3 pos, Quaternion rot) ConvertedBack(Vector3 pos, Quaternion rot)
         {
-            (pos.y, pos.z) = (pos.z, pos.y);
+            pos.y = -pos.y;
+            rot.y = -rot.y;
+            rot.w = -rot.w;
             return (pos, rot);
         }
 
         public Vector3 ConvertedBack(Vector3 pos)
         {
-            (pos.y, pos.z) = (pos.z, pos.y);
+            pos.y = -pos.y;
             return pos;
         }
 
+        /// <inheritdoc />
         public Quaternion ConvertedBack(Quaternion rot)
         {
+            rot.y = -rot.y;
+            rot.w = -rot.w;
             return rot;
         }
 
         /// <inheritdoc />
         public void ConvertBack(ref Vector3 pos, ref Quaternion rot)
         {
-            ConvertBack(ref pos);
+            pos.y = -pos.y;
+            rot.y = -rot.y;
+            rot.w = -rot.w;
+        }
+
+        public void Convert(ref Vector3 pos, ref Quaternion rot)
+        {
+            pos.y = -pos.y;
+            rot.y = -rot.y;
+            rot.w = -rot.w;
         }
     }
 }

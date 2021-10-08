@@ -27,7 +27,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Protobuf.Tests.Internal\Protobuf.Tests.Internal.csproj" />
       <ProjectReference Include="..\Protobuf\Protobuf.csproj" />
     </ItemGroup>
 

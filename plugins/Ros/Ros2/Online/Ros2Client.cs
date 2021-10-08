@@ -17,7 +17,6 @@ namespace Elektronik.RosPlugin.Ros2.Online
             _container = new Ros2OnlineContainerTree(settings, "TMP");
             Data = _container;
             var converter = new RosConverter();
-            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = converter;
         }
         

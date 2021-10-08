@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
+using Elektronik.Plugins.Common;
 using Elektronik.PluginsSystem;
 using Elektronik.Protobuf.Data;
 using Elektronik.Settings;
@@ -14,9 +14,8 @@ namespace Elektronik.Protobuf.Recorders
 {
     public class ProtobufRetranslator : DataRecorderPluginBase
     {
-        public ProtobufRetranslator(string displayName, Texture2D? logo, ICSConverter? converter)
+        public ProtobufRetranslator(string displayName, Texture2D? logo)
         {
-            _converter = converter;
             DisplayName = displayName;
             Logo = logo;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -137,7 +136,7 @@ namespace Elektronik.Protobuf.Recorders
         public override SettingsBag Settings => _typedSettings;
         public override Texture2D? Logo { get; }
 
-        private readonly ICSConverter? _converter;
+        private readonly ICSConverter _converter = new ProtobufToUnityConverter();
 
         #endregion
 

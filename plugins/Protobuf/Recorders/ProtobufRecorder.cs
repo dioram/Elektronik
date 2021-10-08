@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
-using Elektronik.Data.Converters;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
+using Elektronik.Plugins.Common;
 using Elektronik.PluginsSystem;
+using Elektronik.Protobuf.Data;
 using Google.Protobuf;
 
 namespace Elektronik.Protobuf.Recorders
@@ -12,7 +13,7 @@ namespace Elektronik.Protobuf.Recorders
     {
         public const uint Marker = 0xDEADBEEF;
         
-        public ProtobufRecorder(string filename, ICSConverter converter) : base(filename, converter)
+        public ProtobufRecorder(string filename) : base(filename)
         {
             _file = File.OpenWrite(filename);
         }
@@ -22,7 +23,7 @@ namespace Elektronik.Protobuf.Recorders
             if (IsDisposed) return;
             lock (_file)
             {
-                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                e.ToProtobuf(_converter).WriteDelimitedTo(_file);
                 _amountOfPackets++;
             }
         }
@@ -32,7 +33,7 @@ namespace Elektronik.Protobuf.Recorders
             if (IsDisposed) return;
             lock (_file)
             {
-                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                e.ToProtobuf(_converter).WriteDelimitedTo(_file);
                 _amountOfPackets++;
             }
         }
@@ -52,7 +53,7 @@ namespace Elektronik.Protobuf.Recorders
             if (IsDisposed) return;
             lock (_file)
             {
-                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                e.ToProtobuf(_converter).WriteDelimitedTo(_file);
                 _amountOfPackets++;
             }
         }
@@ -62,7 +63,7 @@ namespace Elektronik.Protobuf.Recorders
             if (IsDisposed) return;
             lock (_file)
             {
-                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                e.ToProtobuf(_converter).WriteDelimitedTo(_file);
                 _amountOfPackets++;
             }
         }
@@ -97,7 +98,7 @@ namespace Elektronik.Protobuf.Recorders
             if (IsDisposed) return;
             lock (_file)
             {
-                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                e.ToProtobuf(_converter).WriteDelimitedTo(_file);
                 _amountOfPackets++;
             }
         }
@@ -107,7 +108,7 @@ namespace Elektronik.Protobuf.Recorders
             if (IsDisposed) return;
             lock (_file)
             {
-                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                e.ToProtobuf(_converter).WriteDelimitedTo(_file);
                 _amountOfPackets++;
             }
         }
@@ -127,7 +128,7 @@ namespace Elektronik.Protobuf.Recorders
             if (IsDisposed) return;
             lock (_file)
             {
-                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                e.ToProtobuf(_converter).WriteDelimitedTo(_file);
                 _amountOfPackets++;
             }
         }
@@ -137,7 +138,7 @@ namespace Elektronik.Protobuf.Recorders
             if (IsDisposed) return;
             lock (_file)
             {
-                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                e.ToProtobuf(_converter).WriteDelimitedTo(_file);
                 _amountOfPackets++;
             }
         }
@@ -157,7 +158,7 @@ namespace Elektronik.Protobuf.Recorders
             if (IsDisposed) return;
             lock (_file)
             {
-                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                e.ToProtobuf(_converter).WriteDelimitedTo(_file);
                 _amountOfPackets++;
             }
         }
@@ -167,7 +168,7 @@ namespace Elektronik.Protobuf.Recorders
             if (IsDisposed) return;
             lock (_file)
             {
-                e.ToProtobuf(Converter).WriteDelimitedTo(_file);
+                e.ToProtobuf(_converter).WriteDelimitedTo(_file);
                 _amountOfPackets++;
             }
         }
@@ -197,6 +198,7 @@ namespace Elektronik.Protobuf.Recorders
 
         private readonly FileStream _file;
         private int _amountOfPackets = 0;
+        private readonly ICSConverter _converter = new ProtobufToUnityConverter();
 
         #endregion
     }

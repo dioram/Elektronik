@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Elektronik.Data.Converters;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.CloudRenderers;
 using Elektronik.DataSources;
@@ -25,8 +24,6 @@ namespace Elektronik.DataControllers
 
         [SerializeField] private ConsumersRoot ConsumersRoot;
         [SerializeField] [CanBeNull] private Window DataSourceWindow;
-
-        public CSConverter Converter;
 
         #endregion
 
@@ -165,7 +162,7 @@ namespace Elektronik.DataControllers
                         .FirstOrDefault(pl => pl.SupportedExtensions.Any(e => path.EndsWith(e)));
                 if (factory is null) return;
                 factory.SetFileName(path);
-                var plugin = (IDataSourcePlugin)factory.Start(Converter);
+                var plugin = (IDataSourcePlugin)factory.Start();
                 if (plugin is IRewindableDataSource p)
                 {
                     p.Position = p.AmountOfFrames - 1;

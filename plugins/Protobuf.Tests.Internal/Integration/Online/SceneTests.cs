@@ -5,14 +5,12 @@ using System.Threading;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Moq;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace Protobuf.Tests.Internal.Integration.Online
 {
@@ -25,7 +23,6 @@ namespace Protobuf.Tests.Internal.Integration.Online
         private readonly ConnectionPb[] _connections;
         private readonly TrackedObjPb[] _objects;
         private readonly PlanePb[] _planes;
-
 
         public SceneTests() : base(40016)
         {
@@ -112,7 +109,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Points = new PacketPb.Types.Points(),
             };
             pointsPacket.Points.Data.Add(_pointsMap);
-            var e = new AddedEventArgs<SlamPoint>(_pointsMap.Select(p => ((SlamPointDiff)p).Apply()).ToArray());
+            var e = new AddedEventArgs<SlamPoint>(_pointsMap.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(pointsPacket);
 
@@ -129,7 +126,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             };
             connectionsPacket.Connections.Data.Add(_connections);
             var lines = _connections.Select(c => (_pointsMap[c.Id1], _pointsMap[c.Id2]))
-                    .Select(pair => (((SlamPointDiff)pair.Item1).Apply(), ((SlamPointDiff)pair.Item2).Apply()))
+                    .Select(pair => (pair.Item1.ToUnity(Converter).Apply(), pair.Item2.ToUnity(Converter).Apply()))
                     .Select((pair, i) => new SlamLine(pair.Item1, pair.Item2, i))
                     .ToArray();
             var e1 = new AddedEventArgs<SlamLine>(lines);
@@ -148,7 +145,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Observations = new PacketPb.Types.Observations(),
             };
             packet.Observations.Data.Add(_observationsMap);
-            var e = new AddedEventArgs<SlamObservation>(_observationsMap.Select(p => ((SlamObservationDiff)p).Apply())
+            var e = new AddedEventArgs<SlamObservation>(_observationsMap.Select(p => p.ToUnity(Converter).Apply())
                                                                 .ToArray());
 
             SendPacket(packet);
@@ -167,8 +164,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
             };
             connectionsPacket.Connections.Data.Add(_connections);
             var lines = _connections.Select(c => (_observationsMap[c.Id1], _observationsMap[c.Id2]))
-                    .Select(pair => (((SlamObservationDiff)pair.Item1).Apply(),
-                                     ((SlamObservationDiff)pair.Item2).Apply()))
+                    .Select(pair => (pair.Item1.ToUnity(Converter).Apply(),
+                                     pair.Item2.ToUnity(Converter).Apply()))
                     .Select((pair, i) => new SlamLine(pair.Item1, pair.Item2, i))
                     .ToArray();
             var el = new AddedEventArgs<SlamLine>(lines);
@@ -187,11 +184,11 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
             packet.TrackedObjs.Data.Add(_objects);
-            var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => ((SlamTrackedObjectDiff)p).Apply())
+            var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => p.ToUnity(Converter).Apply())
                                                                   .ToArray());
             var els = _objects
-                    .Select(o => new AddedEventArgs<SimpleLine>(new SimpleLine(0, (Vector3)o.Position!,
-                                                                               (Vector3)o.Position!, (Color)o.Color!)))
+                    .Select(o => new AddedEventArgs<SimpleLine>(new SimpleLine(0, o.Position!.ToUnity(Converter),
+                                                                               o.Position!.ToUnity(Converter), o.Color!.ToUnity())))
                     .ToArray();
 
             SendPacket(packet);
@@ -213,7 +210,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Planes = new PacketPb.Types.Planes(),
             };
             packet.Planes.Data.Add(_planes);
-            var e = new AddedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply()).ToArray());
+            var e = new AddedEventArgs<SlamPlane>(_planes.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 

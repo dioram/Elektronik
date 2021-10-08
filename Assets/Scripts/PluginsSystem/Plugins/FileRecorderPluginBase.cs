@@ -1,15 +1,13 @@
-﻿using Elektronik.Data.Converters;
-using UnityEngine;
+﻿using UnityEngine;
 using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.PluginsSystem
 {
     public abstract class FileRecorderPluginBase : DataRecorderPluginBase
     {
-        public FileRecorderPluginBase(string filename, ICSConverter converter)
+        public FileRecorderPluginBase(string filename)
         {
             Filename = filename;
-            Converter = converter;
         }
 
         #region DataRecorder
@@ -23,7 +21,6 @@ namespace Elektronik.PluginsSystem
         #region Protected
 
         protected readonly string Filename;
-        protected readonly ICSConverter Converter;
 
         #endregion
     }

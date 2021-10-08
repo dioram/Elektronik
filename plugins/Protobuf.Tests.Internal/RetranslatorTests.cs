@@ -41,23 +41,26 @@ namespace Protobuf.Tests.Internal
             _mockedObservationsContainer = new Mock<IConnectableObjectsContainer<SlamObservation>>();
             _mockedTrackedObjectsContainer = new Mock<IContainer<SlamTrackedObject>>();
             _mockedPlanesContainer = new Mock<IContainer<SlamPlane>>();
-            
+
             var factory = new ProtobufRetranslatorFactory();
-            _retranslator = (ProtobufRetranslator)factory.Start(new FakeConverter());
+            _retranslator = (ProtobufRetranslator)factory.Start();
             var settings = (RetranslatorSettingsBag)_retranslator.Settings;
             settings.Addresses = $"{Address}:{Port}";
             settings.StartRetranslation?.Invoke();
-            
+
+            var converter = new ProtobufToUnityConverter();
+
             var logger = new TestsLogger();
-            var pointsMapManager =
-                    new PointsMapManager(_mockedBuffer.Object, _mockedPointsContainer.Object, null, logger);
-            var observationsMapManager =
-                    new ObservationsMapManager(_mockedBuffer.Object, _mockedObservationsContainer.Object, null, logger);
-            var trackedObjsMapManager =
-                    new TrackedObjsMapManager(_mockedBuffer.Object, _mockedTrackedObjectsContainer.Object, null,
-                                              logger);
-            var planesMapManager =
-                    new PlanesMapManager(_mockedBuffer.Object, _mockedPlanesContainer.Object, null, logger);
+            var pointsMapManager = new PointsMapManager(_mockedBuffer.Object, _mockedPointsContainer.Object,
+                                                        converter, logger);
+            var observationsMapManager = new ObservationsMapManager(_mockedBuffer.Object,
+                                                                    _mockedObservationsContainer.Object,
+                                                                    converter, logger);
+            var trackedObjsMapManager = new TrackedObjsMapManager(_mockedBuffer.Object,
+                                                                  _mockedTrackedObjectsContainer.Object,
+                                                                  converter, logger);
+            var planesMapManager = new PlanesMapManager(_mockedBuffer.Object, _mockedPlanesContainer.Object,
+                                                        converter, logger);
 
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
@@ -70,14 +73,8 @@ namespace Protobuf.Tests.Internal
 
             _grpcServer = new Server
             {
-                Services =
-                {
-                    MapsManagerPb.BindService(servicesChain),
-                },
-                Ports =
-                {
-                    new ServerPort(Address, Port, ServerCredentials.Insecure),
-                },
+                Services = { MapsManagerPb.BindService(servicesChain), },
+                Ports = { new ServerPort(Address, Port, ServerCredentials.Insecure), },
             };
             _grpcServer.Start();
         }
@@ -112,7 +109,8 @@ namespace Protobuf.Tests.Internal
 
             _retranslator.OnItemsAdded(null, new AddedEventArgs<SlamPoint>(added.Select(p => p.Apply()).ToArray()));
             Thread.Sleep(50);
-            _retranslator.OnItemsUpdated(null, new UpdatedEventArgs<SlamPoint>(updated.Select(p => p.Apply()).ToArray()));
+            _retranslator.OnItemsUpdated(
+                null, new UpdatedEventArgs<SlamPoint>(updated.Select(p => p.Apply()).ToArray()));
             Thread.Sleep(50);
             _retranslator.OnItemsRemoved(null, new RemovedEventArgs<SlamPoint>(new List<int> { 1 }));
             Thread.Sleep(100);
@@ -127,10 +125,10 @@ namespace Protobuf.Tests.Internal
         {
             var added = new[]
             {
-                new SlamObservationDiff(new SlamPointDiff(0, Vector3.one, Color.blue), 
-                                        Quaternion.identity, Array.Empty<int>(), "123", 
+                new SlamObservationDiff(new SlamPointDiff(0, Vector3.one, Color.blue),
+                                        Quaternion.identity, Array.Empty<int>(), "123",
                                         Path.Combine(Directory.GetCurrentDirectory(), "f.png")),
-                new SlamObservationDiff(new SlamPointDiff(1, Vector3.down, Color.red), 
+                new SlamObservationDiff(new SlamPointDiff(1, Vector3.down, Color.red),
                                         new Quaternion(0, 5, 15, 3), Array.Empty<int>(), "321"),
                 new SlamObservationDiff(new SlamPointDiff(-10, Vector3.forward, Color.gray, "test message"),
                                         new Quaternion(59, 46, 3, 24), Array.Empty<int>(), "adsf",
@@ -139,22 +137,28 @@ namespace Protobuf.Tests.Internal
             var updated = new[]
             {
                 new SlamObservationDiff(new SlamPointDiff(0, Vector3.zero, Color.red, "Another message"),
-                                        new Quaternion(6, 2, 1, 0), Array.Empty<int>(), "123", 
+                                        new Quaternion(6, 2, 1, 0), Array.Empty<int>(), "123",
                                         Path.Combine(Directory.GetCurrentDirectory(), "f.png")),
-                new SlamObservationDiff(new SlamPointDiff(-10, Vector3.up, Color.white, "test message"), 
-                                        Quaternion.identity, Array.Empty<int>(), "123", 
+                new SlamObservationDiff(new SlamPointDiff(-10, Vector3.up, Color.white, "test message"),
+                                        Quaternion.identity, Array.Empty<int>(), "123",
                                         Path.Combine(Directory.GetCurrentDirectory(), "f.png")),
             };
             var removed = new[] { new SlamObservationDiff(new SlamPointDiff(0)), };
-            var addCommand = new AddCommand<SlamObservation, SlamObservationDiff>(_mockedObservationsContainer.Object, added);
-            var updateCommand = new UpdateCommand<SlamObservation, SlamObservationDiff>(_mockedObservationsContainer.Object, updated);
-            var removeCommand = new RemoveCommand<SlamObservation, SlamObservationDiff>(_mockedObservationsContainer.Object, removed);
-            
-            _retranslator.OnItemsAdded(null, new AddedEventArgs<SlamObservation>(added.Select(o => o.Apply()).ToArray()));
+            var addCommand = new AddCommand<SlamObservation, SlamObservationDiff>(
+                _mockedObservationsContainer.Object, added);
+            var updateCommand = new UpdateCommand<SlamObservation, SlamObservationDiff>(
+                _mockedObservationsContainer.Object, updated);
+            var removeCommand = new RemoveCommand<SlamObservation, SlamObservationDiff>(
+                _mockedObservationsContainer.Object, removed);
+
+            _retranslator.OnItemsAdded(
+                null, new AddedEventArgs<SlamObservation>(added.Select(o => o.Apply()).ToArray()));
             Thread.Sleep(100);
-            _retranslator.OnItemsUpdated(null, new UpdatedEventArgs<SlamObservation>(updated.Select(o => o.Apply()).ToArray()));
+            _retranslator.OnItemsUpdated(
+                null, new UpdatedEventArgs<SlamObservation>(updated.Select(o => o.Apply()).ToArray()));
             Thread.Sleep(100);
-            _retranslator.OnItemsRemoved(null, new RemovedEventArgs<SlamObservation>(removed.Select(o => o.Apply()).ToArray()));
+            _retranslator.OnItemsRemoved(
+                null, new RemovedEventArgs<SlamObservation>(removed.Select(o => o.Apply()).ToArray()));
             Thread.Sleep(200);
 
             _mockedBuffer.Verify(b => b.Add(addCommand, It.IsAny<DateTime>(), false), Times.Once);
@@ -177,17 +181,26 @@ namespace Protobuf.Tests.Internal
                 new SlamTrackedObjectDiff(-10, Vector3.up, Quaternion.identity, Color.white, "test message"),
             };
             var removed = new[] { new SlamTrackedObjectDiff(0), };
-            var addCommand = new AddCommand<SlamTrackedObject, SlamTrackedObjectDiff>(_mockedTrackedObjectsContainer.Object, added);
-            var updateCommand = new UpdateCommand<SlamTrackedObject, SlamTrackedObjectDiff>(_mockedTrackedObjectsContainer.Object, updated);
-            var removeCommand = new RemoveCommand<SlamTrackedObject, SlamTrackedObjectDiff>(_mockedTrackedObjectsContainer.Object, removed);
+            var addCommand =
+                    new AddCommand<SlamTrackedObject, SlamTrackedObjectDiff>(
+                        _mockedTrackedObjectsContainer.Object, added);
+            var updateCommand =
+                    new UpdateCommand<SlamTrackedObject, SlamTrackedObjectDiff>(
+                        _mockedTrackedObjectsContainer.Object, updated);
+            var removeCommand =
+                    new RemoveCommand<SlamTrackedObject, SlamTrackedObjectDiff>(
+                        _mockedTrackedObjectsContainer.Object, removed);
 
-            _retranslator.OnItemsAdded(null, new AddedEventArgs<SlamTrackedObject>(added.Select(o => o.Apply()).ToArray()));
+            _retranslator.OnItemsAdded(
+                null, new AddedEventArgs<SlamTrackedObject>(added.Select(o => o.Apply()).ToArray()));
             Thread.Sleep(50);
-            _retranslator.OnItemsUpdated(null, new UpdatedEventArgs<SlamTrackedObject>(updated.Select(o => o.Apply()).ToArray()));
+            _retranslator.OnItemsUpdated(
+                null, new UpdatedEventArgs<SlamTrackedObject>(updated.Select(o => o.Apply()).ToArray()));
             Thread.Sleep(50);
-            _retranslator.OnItemsRemoved(null, new RemovedEventArgs<SlamTrackedObject>(removed.Select(o => o.Apply()).ToArray()));
+            _retranslator.OnItemsRemoved(
+                null, new RemovedEventArgs<SlamTrackedObject>(removed.Select(o => o.Apply()).ToArray()));
             Thread.Sleep(100);
-            
+
             _mockedBuffer.Verify(b => b.Add(addCommand, It.IsAny<DateTime>(), false), Times.Once);
             _mockedBuffer.Verify(b => b.Add(updateCommand, It.IsAny<DateTime>(), false), Times.Once);
             _mockedBuffer.Verify(b => b.Add(removeCommand, It.IsAny<DateTime>(), false), Times.Once);
@@ -214,11 +227,13 @@ namespace Protobuf.Tests.Internal
 
             _retranslator.OnItemsAdded(null, new AddedEventArgs<SlamPlane>(added.Select(o => o.Apply()).ToArray()));
             Thread.Sleep(50);
-            _retranslator.OnItemsUpdated(null, new UpdatedEventArgs<SlamPlane>(updated.Select(o => o.Apply()).ToArray()));
+            _retranslator.OnItemsUpdated(
+                null, new UpdatedEventArgs<SlamPlane>(updated.Select(o => o.Apply()).ToArray()));
             Thread.Sleep(50);
-            _retranslator.OnItemsRemoved(null, new RemovedEventArgs<SlamPlane>(removed.Select(o => o.Apply()).ToArray()));
+            _retranslator.OnItemsRemoved(
+                null, new RemovedEventArgs<SlamPlane>(removed.Select(o => o.Apply()).ToArray()));
             Thread.Sleep(100);
-            
+
             _mockedBuffer.Verify(b => b.Add(addCommand, It.IsAny<DateTime>(), false), Times.Once);
             _mockedBuffer.Verify(b => b.Add(updateCommand, It.IsAny<DateTime>(), false), Times.Once);
             _mockedBuffer.Verify(b => b.Add(removeCommand, It.IsAny<DateTime>(), false), Times.Once);

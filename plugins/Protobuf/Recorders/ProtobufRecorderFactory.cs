@@ -1,5 +1,4 @@
-﻿using Elektronik.Data.Converters;
-using Elektronik.PluginsSystem;
+﻿using Elektronik.PluginsSystem;
 using Elektronik.Settings;
 using UnityEngine;
 
@@ -7,9 +6,9 @@ namespace Elektronik.Protobuf.Recorders
 {
     public class ProtobufRecorderFactory : IFileRecorderPluginsFactory
     {
-        public IElektronikPlugin Start(ICSConverter converter)
+        public IElektronikPlugin Start()
         {
-            return new ProtobufRecorder(Filename, converter);
+            return new ProtobufRecorder(Filename);
         }
 
         public Texture2D? Logo { get; set; }

@@ -10,7 +10,6 @@ using Elektronik.Plugins.Common.Parsing;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Online.GrpcServices;
-using Protobuf.Tests.Internal;
 
 namespace Protobuf.Benchmarks
 {
@@ -64,7 +63,7 @@ namespace Protobuf.Benchmarks
             var infinitePlanes = new CloudContainer<SlamPlane>();
             var parser = new ObjectsParser(infinitePlanes, points, observations, "C:/");
             var commands = new List<ICommand?> { Capacity = _packets.Length };
-            parser.SetConverter(new FakeConverter());
+            parser.SetConverter(new ProtobufToUnityConverter());
             foreach (var packet in _packets)
             {
                 var command = parser.GetCommand(packet);
@@ -92,9 +91,9 @@ namespace Protobuf.Benchmarks
             };
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
-                new PointsMapManager(buffer, points, new FakeConverter(), new FakeLogger()),
-                new ObservationsMapManager(buffer, observations, new FakeConverter(), new FakeLogger()),
-                new PlanesMapManager(buffer, infinitePlanes, new FakeConverter(), new FakeLogger())
+                new PointsMapManager(buffer, points, new ProtobufToUnityConverter(), new FakeLogger()),
+                new ObservationsMapManager(buffer, observations, new ProtobufToUnityConverter(), new FakeLogger()),
+                new PlanesMapManager(buffer, infinitePlanes, new ProtobufToUnityConverter(), new FakeLogger())
             }.BuildChain();
 
             int i = 0;

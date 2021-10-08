@@ -1,5 +1,4 @@
-﻿using Elektronik.Data.Converters;
-using Elektronik.PluginsSystem;
+﻿using Elektronik.PluginsSystem;
 using Grpc.Core.Logging;
 
 namespace Elektronik.Protobuf.Online
@@ -7,9 +6,9 @@ namespace Elektronik.Protobuf.Online
     public class ProtobufOnlinePlayerFactory : ElektronikPluginsFactoryBase<OnlineSettingsBag>,
                                                IDataSourcePluginsFactory
     {
-        protected override IElektronikPlugin StartPlugin(OnlineSettingsBag settings, ICSConverter converter)
+        protected override IElektronikPlugin StartPlugin(OnlineSettingsBag settings)
         {
-            return new ProtobufOnlinePlayer(DisplayName, Logo, settings, converter, Logger);
+            return new ProtobufOnlinePlayer(DisplayName, Logo, settings, Logger);
         }
 
         public ILogger? Logger;

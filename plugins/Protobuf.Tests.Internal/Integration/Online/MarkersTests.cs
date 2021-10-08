@@ -2,7 +2,6 @@
 using System.Linq;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Moq;
@@ -36,7 +35,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Markers = new PacketPb.Types.Markers(),
             };
             packet.Markers.Data.Add(_map);
-            var e = new AddedEventArgs<SlamMarker>(_map.Select(p => ((SlamMarkerDiff)p).Apply()).ToArray());
+            var e = new AddedEventArgs<SlamMarker>(_map.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
@@ -59,7 +58,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.Markers.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => ((SlamMarkerDiff)p).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
@@ -82,7 +81,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.Markers.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => ((SlamMarkerDiff)p).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
@@ -105,7 +104,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.Markers.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => ((SlamMarkerDiff)p).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
@@ -128,7 +127,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.Markers.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => ((SlamMarkerDiff)p).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
@@ -151,7 +150,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.Markers.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => ((SlamMarkerDiff)p).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
@@ -182,7 +181,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             }
 
             packet.Markers.Data.Add(_map);
-            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => ((SlamMarkerDiff)p).Apply()).ToArray());
+            var e = new UpdatedEventArgs<SlamMarker>(_map.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
@@ -201,8 +200,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
             packet.Markers.Data.Add(new[] { _map[1], _map[3] });
             var e = new RemovedEventArgs<SlamMarker>(new[]
             {
-                ((SlamMarkerDiff) _map[1]).Apply(),
-                ((SlamMarkerDiff) _map[3]).Apply()
+                _map[1].ToUnity(Converter).Apply(),
+                _map[3].ToUnity(Converter).Apply()
             });
 
             SendPacket(packet);
@@ -221,9 +220,9 @@ namespace Protobuf.Tests.Internal.Integration.Online
             };
             var e = new RemovedEventArgs<SlamMarker>(new[]
             {
-                ((SlamMarkerDiff) _map[0]).Apply(),
-                ((SlamMarkerDiff) _map[2]).Apply(),
-                ((SlamMarkerDiff) _map[4]).Apply(),
+                _map[0].ToUnity(Converter).Apply(),
+                _map[2].ToUnity(Converter).Apply(),
+                _map[4].ToUnity(Converter).Apply(),
             });
             
             SendPacket(packet);

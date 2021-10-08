@@ -28,7 +28,6 @@ namespace Elektronik.RosPlugin.Ros.Bag
             _frames = new FramesAsyncCollection<Frame>(() => ReadNext(actualConnections));
             _frames.OnCurrentSizeChanged += i => OnAmountOfFramesChanged?.Invoke(i);
             var converter = new RosConverter();
-            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = converter;
             _threadWorker = new ThreadQueueWorker();
         }

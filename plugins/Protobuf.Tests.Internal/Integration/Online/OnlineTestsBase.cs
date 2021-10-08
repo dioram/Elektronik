@@ -4,6 +4,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers.CloudRenderers;
 using Elektronik.DataConsumers.Windows;
 using Elektronik.DataSources.Containers.EventArgs;
+using Elektronik.Plugins.Common;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online;
 using FluentAssertions;
@@ -27,12 +28,13 @@ namespace Protobuf.Tests.Internal.Integration.Online
         protected readonly Mock<ICloudRenderer<SlamPlane>> MockedPlanesRenderer;
         protected readonly Mock<ICloudRenderer<SlamMarker>> MockedMarkerRenderer;
         protected readonly Mock<IDataRenderer<byte[]>> MockedImageRenderer;
+        protected readonly ICSConverter Converter = new ProtobufToUnityConverter();
 
         protected OnlineTestsBase(int port)
         {
             var f = new ProtobufOnlinePlayerFactory()
                     { Settings = new OnlineSettingsBag { ListeningPort = port }, Logger = new TestsLogger() };
-            Sut = (ProtobufOnlinePlayer)f.Start(new FakeConverter());
+            Sut = (ProtobufOnlinePlayer)f.Start();
             Sut.Play();
 
             var channel = new Channel($"127.0.0.1:{port}", ChannelCredentials.Insecure);

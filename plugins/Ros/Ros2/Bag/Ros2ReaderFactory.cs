@@ -1,11 +1,10 @@
-﻿using Elektronik.Data.Converters;
-using Elektronik.PluginsSystem;
+﻿using Elektronik.PluginsSystem;
 
 namespace Elektronik.RosPlugin.Ros2.Bag
 {
     public class Ros2ReaderFactory: ElektronikPluginsFactoryBase<Rosbag2Settings>, IDataSourcePluginsFactory
     {
-        protected override IElektronikPlugin StartPlugin(Rosbag2Settings settings, ICSConverter converter)
+        protected override IElektronikPlugin StartPlugin(Rosbag2Settings settings)
         {
             return new Rosbag2Reader(DisplayName, Logo, settings);
         }

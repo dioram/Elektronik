@@ -27,7 +27,7 @@ namespace Elektronik.UI
             _subject = new Subject<Unit>();
             _generator.Generate(factory.Settings);
             NameLabel.text = factory.DisplayName;
-            OnComputeRequested = _subject.Select(_ => (IClusteringAlgorithm)factory.Start(null));
+            OnComputeRequested = _subject.Select(_ => (IClusteringAlgorithm)factory.Start());
         }
 
         public IObservable<IClusteringAlgorithm> OnComputeRequested;

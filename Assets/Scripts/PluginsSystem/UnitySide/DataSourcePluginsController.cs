@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Elektronik.Data.Converters;
 using Elektronik.DataControllers;
 using Elektronik.UI.Windows;
 using TMPro;
@@ -14,7 +13,6 @@ namespace Elektronik.PluginsSystem.UnitySide
     {
         #region Editor fields
         
-        [SerializeField] private CSConverter Converter;
         [SerializeField] private PlayerEventsController PlayerEvents;
         [SerializeField] private GameObject ScreenLocker;
         [SerializeField] private DataSourcesController DataSourcesController;
@@ -41,7 +39,7 @@ namespace Elektronik.PluginsSystem.UnitySide
             {
                 try
                 {
-                    CurrentSource = (IDataSourcePlugin) factory.Start(Converter);
+                    CurrentSource = (IDataSourcePlugin) factory.Start();
                     Plugins.Add(CurrentSource);
                 }
                 catch (Exception e)

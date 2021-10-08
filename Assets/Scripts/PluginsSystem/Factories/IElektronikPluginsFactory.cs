@@ -1,5 +1,4 @@
-﻿using Elektronik.Data.Converters;
-using Elektronik.Settings;
+﻿using Elektronik.Settings;
 using UnityEngine;
 using SettingsBag = Elektronik.Settings.SettingsBag;
 
@@ -31,8 +30,7 @@ namespace Elektronik.PluginsSystem
         ISettingsHistory SettingsHistory { get; }
 
         /// <summary> This function creates and starts plugin. </summary>
-        /// <param name="converter"> Converter to unity coordinate system. </param>
         /// <returns> Instantiated plugin. </returns>
-        IElektronikPlugin Start(ICSConverter converter);
+        IElektronikPlugin Start();
     }
 }

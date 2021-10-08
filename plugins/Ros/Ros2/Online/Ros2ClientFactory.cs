@@ -1,11 +1,10 @@
-﻿using Elektronik.Data.Converters;
-using Elektronik.PluginsSystem;
+﻿using Elektronik.PluginsSystem;
 
 namespace Elektronik.RosPlugin.Ros2.Online
 {
     public class Ros2ClientFactory : ElektronikPluginsFactoryBase<Ros2Settings>, IDataSourcePluginsFactory
     {
-        protected override IElektronikPlugin StartPlugin(Ros2Settings settings, ICSConverter converter)
+        protected override IElektronikPlugin StartPlugin(Ros2Settings settings)
         {
             return new Ros2Client(DisplayName, Logo, settings);
         }
