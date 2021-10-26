@@ -108,15 +108,15 @@ namespace Elektronik.DataSources.Containers
         private readonly IContainer<SlamObservation> _observations;
         private readonly SlamLinesContainer _connections = new SlamLinesContainer();
 
-        private readonly Dictionary<(SlamPoint, SlamPoint), int> _weights =
-                new Dictionary<(SlamPoint, SlamPoint), int>();
+        private readonly Dictionary<(SlamObservation, SlamObservation), int> _weights =
+            new Dictionary<(SlamObservation, SlamObservation), int>();
 
-        private (SlamPoint, SlamPoint) GetKey(SlamPoint point1, SlamPoint point2) =>
-                point1.Id < point2.Id ? (point1, point2) : (point2, point1);
+        private (SlamObservation, SlamObservation) GetKey(SlamObservation point1, SlamObservation point2) =>
+            point1.Id < point2.Id ? (point1, point2) : (point2, point1);
 
         private void OnObservationsAdded(object sender, AddedEventArgs<SlamObservation> e)
         {
-            var points = new List<(SlamPoint, SlamPoint)>();
+            var points = new List<(SlamObservation, SlamObservation)>();
             foreach (var observation in _observations)
             {
                 lock (_weights)
@@ -139,7 +139,7 @@ namespace Elektronik.DataSources.Containers
             }
 
             if (points.Count == 0) return;
-            _connections.AddRange(points.Select(p => new SlamLine(p.Item1, p.Item2)).ToArray());
+            _connections.AddRange(points.Select(p => new SlamLine(p.Item1.AsPoint(), p.Item2.AsPoint())).ToArray());
         }
 
         private void OnObservationsUpdated(object sender, UpdatedEventArgs<SlamObservation> e)
@@ -151,7 +151,7 @@ namespace Elektronik.DataSources.Containers
 
         private void OnObservationsRemoved(object sender, RemovedEventArgs<SlamObservation> e)
         {
-            var keys = new List<(SlamPoint, SlamPoint)>();
+            var keys = new List<(SlamObservation, SlamObservation)>();
             lock (_weights)
             {
                 foreach (var obs in e.RemovedItems)
@@ -168,7 +168,7 @@ namespace Elektronik.DataSources.Containers
                 }
             }
 
-            var toRemove = keys.Select(ids => new SlamLine(ids.Item1, ids.Item2)).ToArray();
+            var toRemove = keys.Select(ids => new SlamLine(ids.Item1.AsPoint(), ids.Item2.AsPoint())).ToArray();
             if (toRemove.Length > 0) _connections.Remove(toRemove);
         }
 
@@ -198,9 +198,9 @@ namespace Elektronik.DataSources.Containers
             lock (_weights)
             {
                 toRemove = _weights.Where(pair => pair.Value >= _minWeight && pair.Value < value)
-                        .Select(p => p.Key)
-                        .Select(k => new SlamLine(k.Item1, k.Item2))
-                        .ToArray();
+                    .Select(p => p.Key)
+                    .Select(k => new SlamLine(k.Item1.AsPoint(), k.Item2.AsPoint()))
+                    .ToArray();
             }
 
             _connections.Remove(toRemove);
@@ -212,10 +212,11 @@ namespace Elektronik.DataSources.Containers
             lock (_weights)
             {
                 toAdd = _weights.Where(pair => pair.Value >= value && pair.Value < _minWeight)
-                        .Select(p => p.Key)
-                        .Select(k => new SlamLine(k.Item1, k.Item2))
-                        .ToArray();
+                    .Select(p => p.Key)
+                    .Select(k => new SlamLine(k.Item1.AsPoint(), k.Item2.AsPoint()))
+                    .ToArray();
             }
+
             _connections.AddRange(toAdd);
         }
 

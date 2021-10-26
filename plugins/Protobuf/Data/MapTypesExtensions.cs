@@ -32,8 +32,8 @@ namespace Elektronik.Protobuf.Data
             {
                 result[i] = packet.Observations.Data[i];
 
-                var position = result[i].Point.Position;
-                if (position.HasValue) result[i].Point.Position = converter?.Convert(position.Value) ?? position;
+                var position = result[i].Position;
+                if (position.HasValue) result[i].Position = converter?.Convert(position.Value) ?? position;
 
                 var rotation = result[i].Rotation;
                 if (rotation.HasValue) result[i].Rotation = converter?.Convert(rotation.Value) ?? rotation;
@@ -185,7 +185,8 @@ namespace Elektronik.Protobuf.Data
     {
         public static implicit operator SlamObservationDiff(ObservationPb? o)
             => o != null
-                    ? new SlamObservationDiff(o.point_, o.Orientation, o.observedPoints_, o.message_, o.filename_)
+                    ? new SlamObservationDiff(o.Point.Id, o.Point.Position, o.Point.Color, 
+                                              o.Orientation, o.observedPoints_, o.message_, o.filename_)
                     : default;
     }
 
@@ -262,7 +263,7 @@ namespace Elektronik.Protobuf.Data
         {
             var pb = new ObservationPb
             {
-                Point = o.Point.ToProtobuf(converter),
+                Point = new PointPb{Id = o.Id, Position = o.Position.ToProtobuf(converter), Color = o.Color},
                 Orientation = o.Rotation.ToProtobuf(converter),
                 Message = o.Message ?? "",
                 Filename = o.FileName ?? "",

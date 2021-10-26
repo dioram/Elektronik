@@ -68,17 +68,14 @@ namespace Protobuf.Tests.Internal
             var sut = CreateRecorder(1);
             var observations = new[]
             {
-                new SlamObservation(new SlamPoint(0, Vector3.one, Color.blue), Quaternion.identity, "123", "f.jpg"),
-                new SlamObservation(new SlamPoint(1, Vector3.down, Color.red), new Quaternion(0, 5, 15, 3), "321", ""),
-                new SlamObservation(new SlamPoint(-10, Vector3.forward, Color.gray, "test message"),
-                                    new Quaternion(59, 46, 3, 24), "adsf", "f.jpg"),
+                new SlamObservation(0, Vector3.one, Color.blue, Quaternion.identity, "123", "f.jpg"),
+                new SlamObservation(1, Vector3.down, Color.red, new Quaternion(0, 5, 15, 3), "321", ""),
+                new SlamObservation(-10, Vector3.forward, Color.gray, new Quaternion(59, 46, 3, 24), "adsf", "f.jpg"),
             };
             var moreObservations = new[]
             {
-                new SlamObservation(new SlamPoint(0, Vector3.zero, Color.red, "Another message"),
-                                    new Quaternion(6, 2, 1, 0), "123", "f.jpg"),
-                new SlamObservation(new SlamPoint(-10, Vector3.up, Color.white, "test message"), Quaternion.identity,
-                                    "123", "f.jpg"),
+                new SlamObservation(0, Vector3.zero, Color.red, new Quaternion(6, 2, 1, 0), "123", "f.jpg"),
+                new SlamObservation(-10, Vector3.up, Color.white, Quaternion.identity, "123", "f.jpg"),
             };
 
             sut.OnItemsAdded(null, new AddedEventArgs<SlamObservation>(observations));
@@ -118,7 +115,7 @@ namespace Protobuf.Tests.Internal
                 new SlamTrackedObject(0, Vector3.zero, new Quaternion(5, 6, 7, 0), Color.red, "Another message"),
                 new SlamTrackedObject(-10, Vector3.up, Quaternion.identity, Color.white, "test message")
             };
-            
+
             sut.OnItemsAdded(null, new AddedEventArgs<SlamTrackedObject>(trackedObjects));
             sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamTrackedObject>(moreTrackedObjects));
             sut.OnItemsRemoved(null, new RemovedEventArgs<SlamTrackedObject>(new List<int> { 0 }));
@@ -237,7 +234,7 @@ namespace Protobuf.Tests.Internal
             sut.OnItemsAdded(null, new AddedEventArgs<SlamPoint>(points));
             sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamPoint>(morePoints));
             sut.Dispose();
-            
+
             sut.OnItemsRemoved(null, new RemovedEventArgs<SlamPoint>(new List<int> { 0 }));
 
             using var input = File.OpenRead(_filename);
@@ -261,8 +258,8 @@ namespace Protobuf.Tests.Internal
         {
             float epsilon = 0.004f;
             return (Mathf.Abs(first.r - second.r) < epsilon)
-                    && (Mathf.Abs(first.g - second.g) < epsilon)
-                    && (Mathf.Abs(first.b - second.b) < epsilon);
+                   && (Mathf.Abs(first.g - second.g) < epsilon)
+                   && (Mathf.Abs(first.b - second.b) < epsilon);
         }
 
         private bool CheckDiffAndPoint(SlamPointDiff diff, SlamPoint point)
@@ -278,26 +275,27 @@ namespace Protobuf.Tests.Internal
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Points, packet.DataCase);
             Assert.IsTrue(packet.ExtractPoints()
-                                  .Zip(points, (point, item) => (point, item))
-                                  .All(d => CheckDiffAndPoint(d.point, d.item)));
+                              .Zip(points, (point, item) => (point, item))
+                              .All(d => CheckDiffAndPoint(d.point, d.item)));
         }
 
         private bool CheckDiffAndObservation(SlamObservationDiff diff, SlamObservation observation)
         {
             bool id = diff.Id == observation.Id;
-            bool point = CheckDiffAndPoint(diff.Point, observation.Point);
-            bool offset = !diff.Rotation.HasValue || diff.Rotation.Value == observation.Rotation;
+            bool position = !diff.Position.HasValue || diff.Position.Value == observation.Position;
+            bool color = !diff.Color.HasValue || AreColorsEqual(diff.Color.Value, observation.Color);
+            bool rotation = !diff.Rotation.HasValue || diff.Rotation.Value == observation.Rotation;
             bool message = string.IsNullOrEmpty(diff.Message) || diff.Message == observation.Message;
             bool filename = string.IsNullOrEmpty(diff.FileName) || diff.FileName == observation.FileName;
-            return id && offset && point && message && filename;
+            return id && position && color && rotation && message && filename;
         }
 
         private void CheckObservations(IEnumerable<SlamObservation> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Observations, packet.DataCase);
             Assert.IsTrue(packet.ExtractObservations(null, "")
-                                  .Zip(points, (point, item) => (point, item))
-                                  .All(d => CheckDiffAndObservation(d.point, d.item)));
+                              .Zip(points, (point, item) => (point, item))
+                              .All(d => CheckDiffAndObservation(d.point, d.item)));
         }
 
         private bool CheckDiffAndTrackedObj(SlamTrackedObjectDiff diff, SlamTrackedObject obj)
@@ -314,8 +312,8 @@ namespace Protobuf.Tests.Internal
         {
             Assert.AreEqual(PacketPb.DataOneofCase.TrackedObjs, packet.DataCase);
             Assert.IsTrue(packet.ExtractTrackedObjects()
-                                  .Zip(points, (point, item) => (point, item))
-                                  .All(d => CheckDiffAndTrackedObj(d.point, d.item)));
+                              .Zip(points, (point, item) => (point, item))
+                              .All(d => CheckDiffAndTrackedObj(d.point, d.item)));
         }
 
         private bool CheckDiffAndPlane(SlamPlaneDiff diff, SlamPlane plane)
@@ -332,8 +330,8 @@ namespace Protobuf.Tests.Internal
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Planes, packet.DataCase);
             Assert.IsTrue(packet.ExtractPlanes()
-                                  .Zip(points, (point, item) => (point, item))
-                                  .All(pair => CheckDiffAndPlane(pair.point, pair.item)));
+                              .Zip(points, (point, item) => (point, item))
+                              .All(pair => CheckDiffAndPlane(pair.point, pair.item)));
         }
 
         private bool CheckDiffAndLine(SlamLineDiff diff, SlamLine line)
@@ -347,8 +345,8 @@ namespace Protobuf.Tests.Internal
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Lines, packet.DataCase);
             Assert.IsTrue(packet.ExtractLines()
-                                  .Zip(points, (point, item) => (point, item))
-                                  .All(d => CheckDiffAndLine(d.point, d.item)));
+                              .Zip(points, (point, item) => (point, item))
+                              .All(d => CheckDiffAndLine(d.point, d.item)));
         }
 
         private void CheckMetadata(FileStream input, int expectedFrames)

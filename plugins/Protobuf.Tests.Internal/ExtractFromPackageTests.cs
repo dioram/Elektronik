@@ -79,8 +79,8 @@ namespace Protobuf.Tests.Internal
             var observations = packet.ExtractObservations(_mockedConverter.Object, @"./").ToArray();
             Assert.AreEqual(1, observations.Count());
             Assert.AreEqual(1, observations[0].Id);
-            Assert.AreEqual(new Vector3(-2, 3, 4), observations[0].Point.Position);
-            Assert.AreEqual(Color.white, observations[0].Point.Color);
+            Assert.AreEqual(new Vector3(-2, 3, 4), observations[0].Position);
+            Assert.AreEqual(Color.white, observations[0].Color);
             Assert.AreEqual("message", observations[0].Message);
             Assert.AreEqual(new Quaternion(5, 6, 7, -8), observations[0].Rotation);
             Assert.AreEqual(@"./1.png", observations[0].FileName);

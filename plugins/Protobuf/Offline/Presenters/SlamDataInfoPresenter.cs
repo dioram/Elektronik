@@ -87,7 +87,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
                 foreach (var observationPb in packet.Observations.Data)
                 {
                     var observation = ((SlamObservationDiff)observationPb).Apply();
-                    converter?.Convert(ref observation.Point.Position, ref observation.Rotation);
+                    converter?.Convert(ref observation.Position, ref observation.Rotation);
                     yield return observation;
                 }
                 break;

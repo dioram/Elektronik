@@ -218,7 +218,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var lines = _connections.Select(c => (_map[c.Id1], _map[c.Id2]))
                     .Select(pair => (((SlamObservationDiff)pair.Item1).Apply(),
                                      ((SlamObservationDiff)pair.Item2).Apply()))
-                    .Select((pair, i) => new SlamLine(pair.Item1, pair.Item2, i))
+                    .Select((pair, i) => new SlamLine(pair.Item1.AsPoint(), pair.Item2.AsPoint(), i))
                     .ToArray();
             var e = new AddedEventArgs<SlamLine>(lines);
 
@@ -243,8 +243,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var e = new UpdatedEventArgs<SlamObservation>(new[] { ((SlamObservationDiff)_map[2]).Apply() });
             var el = new UpdatedEventArgs<SlamLine>(new[]
             {
-                new SlamLine(((SlamObservationDiff)_map[0]).Apply(), ((SlamObservationDiff)_map[2]).Apply(), 1),
-                new SlamLine(((SlamObservationDiff)_map[2]).Apply(), ((SlamObservationDiff)_map[4]).Apply(), 2)
+                new SlamLine(((SlamObservationDiff)_map[0]).Apply().AsPoint(), ((SlamObservationDiff)_map[2]).Apply().AsPoint(), 1),
+                new SlamLine(((SlamObservationDiff)_map[2]).Apply().AsPoint(), ((SlamObservationDiff)_map[4]).Apply().AsPoint(), 2)
             });
 
             SendPacket(packet);

@@ -169,7 +169,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var lines = _connections.Select(c => (_observationsMap[c.Id1], _observationsMap[c.Id2]))
                     .Select(pair => (((SlamObservationDiff)pair.Item1).Apply(),
                                      ((SlamObservationDiff)pair.Item2).Apply()))
-                    .Select((pair, i) => new SlamLine(pair.Item1, pair.Item2, i))
+                    .Select((pair, i) => new SlamLine(pair.Item1.AsPoint(), pair.Item2.AsPoint(), i))
                     .ToArray();
             var el = new AddedEventArgs<SlamLine>(lines);
 
