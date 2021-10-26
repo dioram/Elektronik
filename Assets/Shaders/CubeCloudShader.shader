@@ -23,7 +23,7 @@
             #pragma geometry CubeGeometryProgram
             #pragma fragment Fragment
             #pragma multi_compile _ _COMPUTE_BUFFER
-            
+
             #include "Cube.cginc"
 
             half3 Fragment(FragmentInput input) : SV_Target

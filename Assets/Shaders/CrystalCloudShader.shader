@@ -26,12 +26,13 @@
             #pragma multi_compile _ _COMPUTE_BUFFER
 
             #include "Markers.cginc"
+            #include "Wireframe.cginc"
 
             struct FragmentInput
             {
                 float4 position : SV_POSITION;
-                half3 color : COLOR0;
-                half2 barys: TEXCOORD5;
+                float4 color : COLOR0;
+                BARYCENTRIC_COORDINATES
             };
 
             #define VERTEX_COUNT 24
@@ -75,8 +76,8 @@
                     FragmentInput o;
                     const float3 pos = mul(transform, float4(points[indexes[i]] * scale * 0.5, 1));
                     o.position = UnityObjectToClipPos(pos * _Scale);
-                    o.color = input[0].color;
-                    o.barys = bary[i % 3];
+                    o.color = float4(input[0].color, 1);
+                    o.barycentricCoordinates = bary[i % 3];
                     stream.Append(o);
                     if (i % 3 == 2) stream.RestartStrip();
                 }
@@ -84,14 +85,7 @@
 
             half3 Fragment(FragmentInput input) : SV_Target
             {
-                float3 barys;
-                barys.xy = input.barys;
-                barys.z = 1 - barys.x - barys.y;
-                float min_bary = min(barys.x, min(barys.y, barys.z));
-                const float delta = fwidth(min_bary);
-                min_bary = smoothstep(0.5 * delta, 1.5 * delta, min_bary);
-
-                return input.color * 0.7 * min_bary + input.color * (1 - min_bary);
+                return Wireframe(input.barycentricCoordinates, input.color * 0.7, input.color);
             }
             ENDCG
         }
