@@ -15,6 +15,7 @@ using UnityEngine;
 
 namespace Elektronik.DataControllers
 {
+    /// <summary> Controller for clustering clouds. </summary>
     public class ClustersController : MonoBehaviour
     {
         #region Editor fields
@@ -49,7 +50,7 @@ namespace Elektronik.DataControllers
                 var panel = go.GetComponent<ClusterizationAlgorithmPanel>();
                 panel.Setup(factory);
                 panel.OnComputeRequested
-                    .Subscribe(a => Task.Run(() => Compute(a, ChosenContainer, panel)));
+                        .Subscribe(a => Task.Run(() => Compute(a, ChosenContainer, panel)));
             }
         }
 
@@ -58,7 +59,7 @@ namespace Elektronik.DataControllers
         #region Private
 
         [CanBeNull]
-        private IClusterable ChosenContainer
+        private IClusterableDataSource ChosenContainer
         {
             get
             {
@@ -69,14 +70,15 @@ namespace Elektronik.DataControllers
                     return null;
                 }
 
-                return _clusterableContainers[ContainersSelector.value].container as IClusterable;
+                return _clusterableContainers[ContainersSelector.value].container as IClusterableDataSource;
             }
         }
 
-        private async void Compute(IClusteringAlgorithm algorithm, [CanBeNull] IClusterable container, ClusterizationAlgorithmPanel panel)
+        private async void Compute(IClusteringAlgorithm algorithm, [CanBeNull] IClusterableDataSource container,
+                                   ClusterizationAlgorithmPanel panel)
         {
             if (container is null) return;
-            
+
             ClustersContainer clustered;
             try
             {
@@ -88,7 +90,7 @@ namespace Elektronik.DataControllers
                 return;
             }
 
-            SaveClustersContainers(clustered, container as IVisible);
+            SaveClustersContainers(clustered, container as IVisibleDataSource);
 
             UniRxExtensions.StartOnMainThread(() =>
             {
@@ -102,21 +104,21 @@ namespace Elektronik.DataControllers
             _clusterableContainers.Clear();
             DataSourcesController.MapSourceTree(FindClusterableContainers);
             ContainersSelector.options = _clusterableContainers
-                .Select(c => new TMP_Dropdown.OptionData(c.name))
-                .ToList();
+                    .Select(c => new TMP_Dropdown.OptionData(c.name))
+                    .ToList();
         }
 
-        private void FindClusterableContainers(ISourceTreeNode element, string fullName)
+        private void FindClusterableContainers(IDataSource element, string fullName)
         {
-            if (element is IClusterable) _clusterableContainers.Add((element, fullName));
+            if (element is IClusterableDataSource) _clusterableContainers.Add((element, fullName));
         }
 
-        private readonly List<(ISourceTreeNode container, string name)> _clusterableContainers
-            = new List<(ISourceTreeNode container, string name)>();
+        private readonly List<(IDataSource container, string name)> _clusterableContainers
+                = new List<(IDataSource container, string name)>();
 
         private readonly List<ClustersContainer> _containers = new List<ClustersContainer>();
 
-        private void SaveClustersContainers(ClustersContainer clustered, IVisible source)
+        private void SaveClustersContainers(ClustersContainer clustered, IVisibleDataSource source)
         {
             foreach (var container in _containers)
             {
@@ -131,7 +133,7 @@ namespace Elektronik.DataControllers
             source.IsVisible = false;
         }
 
-        private void SetVisibility(ClustersContainer sender, IVisible source, bool isVisible)
+        private void SetVisibility(ClustersContainer sender, IVisibleDataSource source, bool isVisible)
         {
             if (!isVisible && !_containers.Any(c => c.IsVisible))
             {
@@ -141,7 +143,7 @@ namespace Elektronik.DataControllers
 
             if (!isVisible) return;
             foreach (var container in _containers.Where(container => container != sender
-                                                                     && container.SourceContainer == source))
+                                                                && container.SourceContainer == source))
             {
                 container.IsVisible = false;
             }

@@ -1,5 +1,5 @@
 ﻿using Elektronik.Cameras;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.SpecialInterfaces;
@@ -33,7 +33,7 @@ namespace Elektronik.UI
 
         #endregion
 
-        private ISourceTreeNode _node;
+        private IDataSource _node;
 
         public void Start()
         {
@@ -48,7 +48,7 @@ namespace Elektronik.UI
                 WindowButton.gameObject.SetActive(false);
             }
 
-            if (_node is IVisible v)
+            if (_node is IVisibleDataSource v)
             {
                 VisibleButton.OnStateChanged += state => v.IsVisible = state == 0;
             }
@@ -57,7 +57,7 @@ namespace Elektronik.UI
                 VisibleButton.gameObject.SetActive(false);
             }
 
-            if (_node is ITraceable t)
+            if (_node is ITraceableDataSource t)
             {
                 TraceButton.OnStateChanged += state => t.TraceEnabled = state == 1;
             }
@@ -66,7 +66,7 @@ namespace Elektronik.UI
                 TraceButton.gameObject.SetActive(false);
             }
 
-            if (_node is IRemovable r)
+            if (_node is IRemovableDataSource r)
             {
                 RemoveButton.OnClickAsObservable().Subscribe(_ =>
                 {
@@ -92,7 +92,7 @@ namespace Elektronik.UI
             {
                 switch (_node)
                 {
-                case IFollowable<SlamTrackedObject> followable when _node is ILookable l:
+                case IFollowableDataSource<SlamTrackedObject> followable when _node is ILookableDataSource l:
                     FollowButton.OnStateChanged += state =>
                     {
                         if (state == 0)
@@ -107,7 +107,7 @@ namespace Elektronik.UI
                     };
                     LookAtButton.gameObject.SetActive(false);
                     break;
-                case ILookable lookable:
+                case ILookableDataSource lookable:
                     LookAtButton.OnClickAsObservable().Subscribe(_ => cam.Look(lookable.Look(cam.transform)));
                     FollowButton.gameObject.SetActive(false);
                     break;
@@ -118,7 +118,7 @@ namespace Elektronik.UI
                 }
             }
 
-            if (_node is ISave _)
+            if (_node is ISavableDataSource _)
             {
                 SaveButton.OnClickAsObservable().Subscribe(_ => RecorderPluginsController.Save(_node));
             }
@@ -127,7 +127,7 @@ namespace Elektronik.UI
                 SaveButton.gameObject.SetActive(false);
             }
 
-            if (_node is IWeightable w)
+            if (_node is IFilterableDataSource w)
             {
                 void SetMaxWeight(int value)
                 {
@@ -145,7 +145,7 @@ namespace Elektronik.UI
                 WeightButton.gameObject.SetActive(false);
             }
 
-            if (_node is IColorful c)
+            if (_node is IColorfulDataSource c)
             {
                 NameLabel.color = c.Color;
             }
@@ -153,13 +153,13 @@ namespace Elektronik.UI
 
         private void Update()
         {
-            if (_node is IVisible v)
+            if (_node is IVisibleDataSource v)
             {
+                // TODO: use event?
                 VisibleButton.State = v.IsVisible ? 0 : 1;
-                VisibleButton.gameObject.SetActive(v.ShowButton);
             }
 
-            if (_node is IFollowable<SlamTrackedObject> f)
+            if (_node is IFollowableDataSource<SlamTrackedObject> f)
             {
                 FollowButton.SilentSetState(f.IsFollowed ? 1 : 0);
             }

@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20f39d247d024f7fb79a5a2be490a04b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Radius: 0.1
+  RadiusMultiplier: 0.1
 --- !u!1 &7296739703025488552
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,7 +381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4831ebbdf2404a5da28855483b9f4a06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Radius: 0
+  RadiusMultiplier: 1
 --- !u!1 &7296739703072376918
 GameObject:
   m_ObjectHideFlags: 0
@@ -658,7 +658,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7296739703995181297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b77433a08e0343c49352697d56da2793, type: 3}
+  m_Script: {fileID: 11500000, guid: 5abcca8fa016405f8a439d3280564e3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Shaders:
@@ -709,6 +709,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CloudShader: {fileID: 4800000, guid: e44f975a7b184e5ea5a47c39935a3bbf, type: 3}
+  ItemSize: 0.5
 --- !u!1 &7296739704005602618
 GameObject:
   m_ObjectHideFlags: 0

@@ -27,7 +27,7 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         #endregion
 
-        public static void Save(ISourceTreeNode node)
+        public static void Save(IDataSource node)
         {
             FileBrowser.SetFilters(false, _fileRecordersFactories.Select(f => f.Extension).ToArray());
             FileBrowser.ShowSaveDialog(path => Save(node, path[0]),
@@ -77,7 +77,7 @@ namespace Elektronik.PluginsSystem.UnitySide
             foreach (var plugin in plugins)
             {
                 WindowsManager.RegisterPlugin(plugin);
-                DataSourcesController.AddRenderer(plugin);
+                DataSourcesController.AddConsumer(plugin);
             }
         }
 
@@ -103,7 +103,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                 .Where(f => f != null)
                 .Select(f => (IDataRecorderPlugin)f.Start())
                 .Do(r => _currentRecorder = r)
-                .Do(DataSourcesController.AddRenderer)
+                .Do(DataSourcesController.AddConsumer)
                 .Do(_ => _currentRecorder.OnDisposed += OnRecorderDisposed)
                 .Do(_ => RecordersWindow.Hide())
                 .Subscribe(_ => _toolbarButtonImage.sprite = StopImage)
@@ -123,7 +123,7 @@ namespace Elektronik.PluginsSystem.UnitySide
         private void OnRecorderDisposed()
         {
             _currentRecorder.OnDisposed -= OnRecorderDisposed;
-            DataSourcesController.RemoveRenderer(_currentRecorder);
+            DataSourcesController.RemoveConsumer(_currentRecorder);
             _toolbarButtonImage.sprite = RecordImage;
             _currentRecorder = null;
         }
@@ -136,7 +136,7 @@ namespace Elektronik.PluginsSystem.UnitySide
             return res;
         }
 
-        static void Save(ISourceTreeNode node, string filename)
+        static void Save(IDataSource node, string filename)
         {
             var factory = GetRecorderByFileName(filename);
             if (factory == null) return;

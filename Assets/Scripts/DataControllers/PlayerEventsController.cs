@@ -1,4 +1,5 @@
-﻿using Elektronik.PluginsSystem;
+﻿using System;
+using Elektronik.PluginsSystem;
 using Elektronik.UI;
 using JetBrains.Annotations;
 using UniRx;
@@ -6,11 +7,20 @@ using UnityEngine;
 
 namespace Elektronik.DataControllers
 {
+    /// <summary> Controllers for player events such as play, pause, rewind etc. </summary>
     public class PlayerEventsController : MonoBehaviour
     {
-        [SerializeField] private HotkeysRouter HotkeysRouter;
-        [SerializeField] private PlayerUIControls PlayerUIControls;
-        [CanBeNull] private IRewindableDataSource _dataSourcePlugin;
+        #region Editor fields
+
+        /// <summary> Source of player events emitted by hotkeys. </summary>
+        [SerializeField] [Tooltip("Source of player events emitted by hotkeys.")]
+        private HotkeysRouter HotkeysRouter;
+
+        /// <summary> Source of player events emitted by UI. </summary>
+        [SerializeField] [Tooltip("Source of player events emitted by UI.")]
+        private PlayerUIControls PlayerUIControls;
+
+        #endregion
 
         public void ActivateUI(bool state)
         {
@@ -58,6 +68,7 @@ namespace Elektronik.DataControllers
                 _dataSourcePlugin.OnAmountOfFramesChanged += PlayerUIControls.SetSliderMaxValue;
                 _dataSourcePlugin.OnTimestampChanged += PlayerUIControls.SetTimestamp;
 
+                // ReSharper disable once SuspiciousTypeConversion.Global
                 PlayerUIControls.ActivateSpeedButtons(_dataSourcePlugin is IChangingSpeed);
             }
         }
@@ -66,6 +77,16 @@ namespace Elektronik.DataControllers
 
         private void Start()
         {
+            if (HotkeysRouter == null)
+            {
+                throw new ArgumentNullException(nameof(HotkeysRouter), "Editor field is not set!");
+            }
+
+            if (PlayerUIControls == null)
+            {
+                throw new ArgumentNullException(nameof(PlayerUIControls), "Editor field is not set!");
+            }
+
             new[] { HotkeysRouter.OnPlayPause, PlayerUIControls.OnPlayPause }
                     .Merge()
                     .Select(_ => DataSourcePlugin)
@@ -111,10 +132,18 @@ namespace Elektronik.DataControllers
                     .AddTo(this);
 
             PlayerUIControls.OnSpeedChanged
+                    // ReSharper disable once SuspiciousTypeConversion.Global
                     .Where(_ => DataSourcePlugin is IChangingSpeed)
+                    // ReSharper disable once SuspiciousTypeConversion.Global
                     .Subscribe(speed => ((IChangingSpeed)DataSourcePlugin).Speed = 1 / speed)
                     .AddTo(this);
         }
+
+        #endregion
+
+        #region Private
+
+        [CanBeNull] private IRewindableDataSource _dataSourcePlugin;
 
         #endregion
     }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.UI.ListBox;
 using TMPro;
 using UniRx;
@@ -7,10 +7,27 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.Windows
 {
+    /// <summary> This class renders additional information about cloud objects. </summary>
     public class SlamInfoRenderer : MonoBehaviour, IDataRenderer<(string message, IEnumerable<ICloudItem> points)>
     {
+        #region Editor fields
+
+        /// <summary> Label for packet's messages. </summary>
+        [SerializeField] [Tooltip("Label for packet's messages.")]
+        private TMP_Text MessageLabel;
+
+        /// <summary> Label for chosen point's messages. </summary>
+        [SerializeField] [Tooltip("Label for chosen point's messages.")]
+        private TMP_Text PointMessageLabel;
+
+        /// <summary> List of buttons for every point. </summary>
+        [SerializeField] [Tooltip("List of buttons for every point.")]
+        private ListBox PointButtonsBox;
+
+        #endregion
+
         #region Unity events
-        
+
         private void OnEnable()
         {
             IsShowing = true;
@@ -25,6 +42,7 @@ namespace Elektronik.DataConsumers.Windows
 
         #region IDataRenderer
 
+        /// <inheritdoc />
         public bool IsShowing
         {
             get => _isShowing;
@@ -36,8 +54,7 @@ namespace Elektronik.DataConsumers.Windows
             }
         }
 
-        public float Scale { get; set; }
-
+        /// <inheritdoc />
         public void Render((string message, IEnumerable<ICloudItem> points) data)
         {
             UniRxExtensions.StartOnMainThread(() =>
@@ -45,13 +62,14 @@ namespace Elektronik.DataConsumers.Windows
                 MessageLabel.text = $"Package message: {data.message}";
                 foreach (var point in data.points)
                 {
-                    var lbi = (SpecialInfoListBoxItem) PointButtonsBox.Add();
+                    var lbi = (SpecialInfoListBoxItem)PointButtonsBox.Add();
                     lbi.Point = point;
                     lbi.MessageLabel = PointMessageLabel;
                 }
             }).Subscribe();
         }
 
+        /// <inheritdoc />
         public void Clear()
         {
             UniRxExtensions.StartOnMainThread(() =>
@@ -63,12 +81,9 @@ namespace Elektronik.DataConsumers.Windows
         }
 
         #endregion
-        
+
         #region Private
-        
-        [SerializeField] private TMP_Text MessageLabel;
-        [SerializeField] private TMP_Text PointMessageLabel;
-        [SerializeField] private ListBox PointButtonsBox;
+
         private bool _isShowing;
 
         #endregion

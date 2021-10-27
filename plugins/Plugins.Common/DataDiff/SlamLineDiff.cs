@@ -1,4 +1,4 @@
-﻿using Elektronik.Data.PackageObjects;
+﻿using Elektronik.DataObjects;
 
 namespace Elektronik.Plugins.Common.DataDiff
 {

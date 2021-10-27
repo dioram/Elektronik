@@ -29,7 +29,7 @@ namespace Elektronik.UI
         private void Start()
         {
             // ReSharper disable once LocalVariableHidesMember
-            foreach (var renderer in Renderers.GetComponentsInChildren<IDataConsumer>())
+            foreach (var renderer in Renderers.GetComponentsInChildren<IScalable>())
             {
                 OnScaleChanged += f => renderer.Scale = f;
             }

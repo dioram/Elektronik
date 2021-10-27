@@ -3,18 +3,30 @@ using UnityEngine;
 
 namespace Elektronik.Cameras
 {
+    /// <summary> This component allows other objects to call Look at animation for camera. </summary>
     [RequireComponent(typeof(Camera))]
     public class LookableCamera : MonoBehaviour
     {
-        public float MovingTme = 1f;
-        private bool _isMoving;
-        public float Scale = 1;
+        #region Editor fields
+
+        /// <summary> Time interval for camera Look at animation. </summary>
+        [SerializeField] [Tooltip("Time interval for camera Look at animation.")]
+        private float MovingTme = 1f;
+
+        #endregion
         
-        public void Look((Vector3 pos, Quaternion rotation) pose)
+        /// <summary> Scale of scene. </summary>
+        [Tooltip("Scale of scene.")] public float SceneScale = 1;
+
+        public void Look(Pose pose)
         {
-            if (_isMoving || pose.pos == transform.position && pose.rotation == transform.rotation) return;
-            StartCoroutine(MoveTo(pose.pos * Scale, pose.rotation));
+            if (_isMoving || pose.position == transform.position && pose.rotation == transform.rotation) return;
+            StartCoroutine(MoveTo(pose.position * SceneScale, pose.rotation));
         }
+
+        #region Private
+        
+        private bool _isMoving;
 
         private IEnumerator MoveTo(Vector3 pos, Quaternion rotation)
         {
@@ -22,7 +34,7 @@ namespace Elektronik.Cameras
             var startPos = transform.position;
             var startRot = transform.rotation;
 
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
                 transform.position = Vector3.Lerp(startPos, pos, i / 100f);
                 transform.rotation = Quaternion.Lerp(startRot, rotation, i / 100f);
@@ -31,5 +43,7 @@ namespace Elektronik.Cameras
 
             _isMoving = false;
         }
+
+        #endregion
     }
 }

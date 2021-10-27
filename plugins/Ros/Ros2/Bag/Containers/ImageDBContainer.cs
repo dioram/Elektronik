@@ -8,7 +8,7 @@ using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class ImageDBContainer : DBContainerToWindow<Image, ImageRenderer, ImageData>
+    public class ImageDBContainer : DBContainerToWindow<Image, ImageRenderer, ImageData?>
     {
 
         public ImageDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
@@ -27,7 +27,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region DBContainerToWindow
         
-        protected override ImageData ToRenderType(Image message)
+        protected override ImageData? ToRenderType(Image message)
         {
             return ImageDataExt.FromImageMessage(message);
         }

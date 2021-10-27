@@ -1,6 +1,6 @@
 ﻿using System;
-using Elektronik.Data.PackageObjects;
-using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using UnityEngine;
 using SettingsBag = Elektronik.Settings.SettingsBag;

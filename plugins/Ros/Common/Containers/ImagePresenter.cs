@@ -2,7 +2,7 @@
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
-    public class ImagePresenter : PresenterBase<ImageData, ImageRenderer, ImageData>
+    public class ImagePresenter : PresenterBase<ImageData?, ImageRenderer, ImageData?>
     {
         public ImagePresenter(string displayName) : base(displayName)
         {
@@ -16,7 +16,7 @@ namespace Elektronik.RosPlugin.Common.Containers
             if (Renderer is not null) Renderer.FlipVertically = true;
         }
 
-        protected override ImageData ToRenderType(ImageData message) => message;
+        protected override ImageData? ToRenderType(ImageData? message) => message;
 
         #endregion
     }

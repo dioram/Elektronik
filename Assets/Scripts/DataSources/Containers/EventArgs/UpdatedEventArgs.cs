@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 
 namespace Elektronik.DataSources.Containers.EventArgs
 {
+    /// <summary> Event args for updating cloud items. </summary>
+    /// <typeparam name="T"> Type of cloud items. </typeparam>
     public class UpdatedEventArgs<T> : System.EventArgs
             where T : struct, ICloudItem
     {

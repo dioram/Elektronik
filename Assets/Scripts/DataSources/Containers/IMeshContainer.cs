@@ -4,7 +4,7 @@ using Elektronik.DataSources.SpecialInterfaces;
 
 namespace Elektronik.DataSources.Containers
 {
-    public interface IMeshContainer : ISourceTreeNode, IVisible
+    public interface IMeshContainer : IVisibleDataSource
     {
         public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
 

@@ -5,14 +5,28 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.Windows
 {
+    /// <summary> This class renders string to window. </summary>
     public class StringRenderer : MonoBehaviour, IDataRenderer<string>
     {
+        #region Editor fields
+
+        /// <summary> Label where text will be rendered. </summary>
+        [SerializeField] [Tooltip("Label where text will be rendered.")]
+        private TMP_Text Label;
+
+        #endregion
+
+        /// <summary> How to handle messages </summary>
         public enum Modes
         {
+            /// <summary> Next messages appends previous. </summary>
             Append,
+
+            /// <summary> Show only last one message. </summary>
             ShowLast
         }
 
+        /// <summary> Mode of handling incoming messages. </summary>
         public Modes Mode = Modes.ShowLast;
 
         #region Unity events
@@ -31,6 +45,7 @@ namespace Elektronik.DataConsumers.Windows
 
         #region IDataRenderer
 
+        /// <inheritdoc />
         public bool IsShowing
         {
             get => _isShowing;
@@ -42,8 +57,7 @@ namespace Elektronik.DataConsumers.Windows
             }
         }
 
-        public float Scale { get; set; }
-
+        /// <inheritdoc />
         public void Render(string data)
         {
             UniRxExtensions.StartOnMainThread(() =>
@@ -63,6 +77,7 @@ namespace Elektronik.DataConsumers.Windows
             }).Subscribe();
         }
 
+        /// <inheritdoc />
         public void Clear()
         {
             UniRxExtensions.StartOnMainThread(() =>
@@ -75,7 +90,6 @@ namespace Elektronik.DataConsumers.Windows
 
         #region Private
 
-        [SerializeField] private TMP_Text Label;
         private bool _isShowing;
 
         #endregion

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Elektronik.Data.PackageObjects;
-using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataConsumers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
 using Moq;
@@ -14,7 +14,7 @@ namespace Elektronik.EditorTests.ContainersTests
         [Test]
         public void TrackContainerAddPoint()
         {
-            var container = new TrackContainer(null, new SlamTrackedObject());
+            var container = new TrackCloudContainer(null, new SlamTrackedObject());
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
             container.AddConsumer(mockedRenderer.Object);
             
@@ -30,7 +30,7 @@ namespace Elektronik.EditorTests.ContainersTests
         [Test]
         public void TrackContainerAddSlamPoint()
         {
-            var container = new TrackContainer(null, new SlamTrackedObject());
+            var container = new TrackCloudContainer(null, new SlamTrackedObject());
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
             container.AddConsumer(mockedRenderer.Object);
             
@@ -46,7 +46,7 @@ namespace Elektronik.EditorTests.ContainersTests
         [Test]
         public void TrackedObjectsContainerSingle()
         {
-            var container = new TrackedObjectsContainer();
+            var container = new TrackedCloudObjectsContainer();
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
             container.AddConsumer(mockedRenderer.Object);
             Assert.AreEqual(0, container.Count);
@@ -54,12 +54,12 @@ namespace Elektronik.EditorTests.ContainersTests
             container.Add(new SlamTrackedObject(0, Vector3.zero, Quaternion.identity, Color.black));
             Assert.AreEqual(1, container.Count);
             var e1 = new AddedEventArgs<SimpleLine>(new SimpleLine(0, Vector3.zero, Vector3.zero, Color.black));
-            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), e1), Times.Once());
+            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SimpleLine>>(), e1), Times.Once());
             
             container.Update(new SlamTrackedObject(0, Vector3.one, Quaternion.identity, Color.red));
             Assert.AreEqual(1, container.Count);
             var e2 = new AddedEventArgs<SimpleLine>(new SimpleLine(1, Vector3.zero, Vector3.one, Color.black, Color.red));
-            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), e2), Times.Once());
+            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SimpleLine>>(), e2), Times.Once());
 
             container.Remove(new[] { 0 });
             Assert.AreEqual(0, container.Count);
@@ -68,13 +68,13 @@ namespace Elektronik.EditorTests.ContainersTests
                 new SimpleLine {Id = 0},
                 new SimpleLine {Id = 1},
             });
-            mockedRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SimpleLine>>(), e3), Times.Once());
+            mockedRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<ICloudContainer<SimpleLine>>(), e3), Times.Once());
         }
 
         [Test]
         public void TrackedObjectsContainerRange()
         {
-            var container = new TrackedObjectsContainer();
+            var container = new TrackedCloudObjectsContainer();
             var mockedRenderer = new Mock<ICloudRenderer<SimpleLine>>();
             container.AddConsumer(mockedRenderer.Object);
             Assert.AreEqual(0, container.Count);
@@ -89,9 +89,9 @@ namespace Elektronik.EditorTests.ContainersTests
             var e1 = new AddedEventArgs<SimpleLine>(new SimpleLine(0, Vector3.zero, Vector3.zero, Color.black));
             var e2 = new AddedEventArgs<SimpleLine>(new SimpleLine(0, Vector3.one, Vector3.one, Color.black));
             var e3 = new AddedEventArgs<SimpleLine>(new SimpleLine(0, Vector3.forward, Vector3.forward, Color.black));
-            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), e1), Times.Once());
-            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), e2), Times.Once());
-            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), e3), Times.Once());
+            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SimpleLine>>(), e1), Times.Once());
+            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SimpleLine>>(), e2), Times.Once());
+            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SimpleLine>>(), e3), Times.Once());
             
             container.Update(new []
             {
@@ -101,8 +101,8 @@ namespace Elektronik.EditorTests.ContainersTests
             Assert.AreEqual(3, container.Count);
             var e4 = new AddedEventArgs<SimpleLine>(new SimpleLine(1, Vector3.zero, Vector3.one, Color.black, Color.red));
             var e5 = new AddedEventArgs<SimpleLine>(new SimpleLine(1, Vector3.one, Vector3.zero, Color.black, Color.red));
-            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), e4), Times.Once());
-            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SimpleLine>>(), e5), Times.Once());
+            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SimpleLine>>(), e4), Times.Once());
+            mockedRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SimpleLine>>(), e5), Times.Once());
 
             container.Remove(new[] { 0, 1 });
             Assert.AreEqual(1, container.Count);
@@ -111,7 +111,7 @@ namespace Elektronik.EditorTests.ContainersTests
                 new SimpleLine {Id = 0},
                 new SimpleLine {Id = 1},
             });
-            mockedRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SimpleLine>>(), e6), Times.Exactly(2));
+            mockedRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<ICloudContainer<SimpleLine>>(), e6), Times.Exactly(2));
         }
     }
 }

@@ -4,9 +4,9 @@ using Elektronik.DataSources.SpecialInterfaces;
 
 namespace Elektronik.DataSources.Containers
 {
-    public class SnapshotContainer : VirtualSource, IRemovable, ISave
+    public class SnapshotContainer : VirtualDataSource, IRemovableDataSource, ISavableDataSource
     {
-        public SnapshotContainer(string displayName, IList<ISourceTreeNode> children) : base(displayName, children)
+        public SnapshotContainer(string displayName, IList<IDataSource> children) : base(displayName, children)
         { }
         
         #region IRemovable

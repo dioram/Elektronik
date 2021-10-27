@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataControllers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using UnityEngine;
 
@@ -25,7 +25,7 @@ namespace Elektronik.TestScene
                                 new SlamPoint(o.Id, o.Point.Position + transform.position, o.Point.Color),
                                 o.Rotation, o.Message, o.FileName))
                     .ToArray();
-            Controller.AddDataSource(_container);
+            Controller.AddDataSource(_cloudContainer);
         }
 
         private void OnEnable()
@@ -54,30 +54,30 @@ namespace Elektronik.TestScene
 
         private readonly (int id1, int id2)[] _connections = { (0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3) };
 
-        private readonly ConnectableObjectsContainer<SlamObservation> _container =
-                new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
-                                                                 new SlamLinesContainer());
+        private readonly ConnectableObjectsCloudContainer<SlamObservation> _cloudContainer =
+                new ConnectableObjectsCloudContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
+                                                                 new SlamLinesCloudContainer());
 
         private IEnumerator UpdateContainer()
         {
             yield return new WaitForSeconds(1);
             while (true)
             {
-                _container.AddRange(_observations);
+                _cloudContainer.AddRange(_observations);
                 yield return new WaitForSeconds(0.5f);
-                _container.AddConnections(_connections);
+                _cloudContainer.AddConnections(_connections);
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_observations.Select(Rotated).ToArray());
+                _cloudContainer.Update(_observations.Select(Rotated).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_observations.Select(ChangePosition).ToArray());
+                _cloudContainer.Update(_observations.Select(ChangePosition).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_observations.Select(ChangeColor).ToArray());
+                _cloudContainer.Update(_observations.Select(ChangeColor).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.RemoveConnections(new[] { (0, 1), (0, 2) });
+                _cloudContainer.RemoveConnections(new[] { (0, 1), (0, 2) });
                 yield return new WaitForSeconds(0.5f);
-                _container.Remove(new List<int> { 1, 2 });
+                _cloudContainer.Remove(new List<int> { 1, 2 });
                 yield return new WaitForSeconds(0.5f);
-                _container.Clear();
+                _cloudContainer.Clear();
                 yield return new WaitForSeconds(0.5f);
             }
             // ReSharper disable once IteratorNeverReturns

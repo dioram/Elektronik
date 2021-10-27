@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataControllers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using UnityEngine;
 
@@ -47,7 +47,7 @@ namespace Elektronik.TestScene
             new SlamTrackedObject(2, Vector3.right, Quaternion.identity, Color.green),
         };
 
-        private readonly TrackedObjectsContainer _container = new TrackedObjectsContainer();
+        private readonly TrackedCloudObjectsContainer _container = new TrackedCloudObjectsContainer();
 
         private IEnumerator UpdateContainer()
         {

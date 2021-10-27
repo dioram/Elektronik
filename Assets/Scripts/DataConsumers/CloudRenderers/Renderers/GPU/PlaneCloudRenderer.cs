@@ -1,16 +1,24 @@
 ﻿using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class PlaneCloudRenderer : GpuCloudRenderer<SlamPlane, PlaneCloudBlock, GPUItem[]>, IResizableRenderer
+    /// <summary> Implementation of renderer for planes. </summary>
+    internal class PlaneCloudRenderer : GpuCloudRenderer<SlamPlane, PlaneCloudBlock, GpuItem[]>, IResizableRenderer
     {
+        /// <summary> Constructor. </summary>
+        /// <param name="shader"> Shader for rendering this block. It should handle compute buffer. </param>
+        /// <param name="scale"> Initial scale of scene. </param>
+        /// <param name="itemSize"> Initial size of plane edge. </param>
         public PlaneCloudRenderer(Shader shader, float scale, float itemSize) : base(shader, scale)
         {
             _itemSize = itemSize;
         }
 
+        #region IResizableRenderer
+
+        /// <inheritdoc />
         public float ItemSize
         {
             get => _itemSize;
@@ -24,10 +32,17 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        #endregion
+
+        #region Protected
+
+        /// <inheritdoc />
         protected override int BlockCapacity => PlaneCloudBlock.Capacity;
 
+        /// <inheritdoc />
         protected override PlaneCloudBlock CreateNewBlock() => new PlaneCloudBlock(Shader, ItemSize, Scale);
 
+        /// <inheritdoc />
         protected override void ProcessItem(PlaneCloudBlock block, SlamPlane item, int inBlockId)
         {
             var halfSide = ItemSize / 2;
@@ -40,22 +55,29 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
             var vertices = new[]
             {
-                new GPUItem(rotation * v1 + item.Offset, item.Color),
-                new GPUItem(rotation * v2 + item.Offset, item.Color),
-                new GPUItem(rotation * v3 + item.Offset, item.Color),
-                new GPUItem(rotation * v4 + item.Offset, item.Color),
+                new GpuItem(rotation * v1 + item.Offset, item.Color),
+                new GpuItem(rotation * v2 + item.Offset, item.Color),
+                new GpuItem(rotation * v3 + item.Offset, item.Color),
+                new GpuItem(rotation * v4 + item.Offset, item.Color),
             };
             block[inBlockId] = vertices;
         }
 
+        /// <inheritdoc />
         protected override void RemoveItem(PlaneCloudBlock block, int inBlockId)
         {
-            block[inBlockId] = _defaultData;
+            block[inBlockId] = DefaultData;
         }
 
-        private readonly GPUItem[] _defaultData =
-                Enumerable.Repeat<GPUItem>(default, PlaneCloudBlock.VerticesPerPlane).ToArray();
+        #endregion
+
+        #region Private
+
+        private static readonly GpuItem[] DefaultData =
+                Enumerable.Repeat<GpuItem>(default, PlaneCloudBlock.VerticesPerPlane).ToArray();
 
         private float _itemSize;
+
+        #endregion
     }
 }

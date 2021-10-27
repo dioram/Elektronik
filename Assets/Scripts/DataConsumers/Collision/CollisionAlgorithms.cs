@@ -2,6 +2,7 @@
 
 namespace Elektronik.DataConsumers.Collision
 {
+    /// <summary> Collection of functions for checking collisions between different objects. </summary>
     public static class CollisionAlgorithms
     {
         /// <summary> Checks collision between ray and axis aligned bounding box. </summary>

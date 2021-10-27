@@ -9,6 +9,7 @@ namespace Elektronik.EditorTests
     {
         struct TestStruct
         {
+            // ReSharper disable once NotAccessedField.Local
             public int Id;
             public float F;
         }

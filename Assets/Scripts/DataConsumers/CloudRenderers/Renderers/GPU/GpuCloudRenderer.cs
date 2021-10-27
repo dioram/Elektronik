@@ -1,31 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.DataSources.SpecialInterfaces;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    /// <summary> Base class for rendering object clouds. Such as point cloud, line cloud, etc. </summary>
-    /// <typeparam name="TCloudItem"></typeparam>
-    /// <typeparam name="TCloudBlock"></typeparam>
-    /// <typeparam name="TGpuItem"></typeparam>
-    public abstract class GpuCloudRenderer<TCloudItem, TCloudBlock, TGpuItem>
+    /// <summary> Base class for rendering object clouds. Such as points, lines, etc. </summary>
+    /// <typeparam name="TCloudItem"> Type of items it can render. </typeparam>
+    /// <typeparam name="TCloudBlock"> Type of blocks this renderer is using. </typeparam>
+    /// <typeparam name="TGpuItem"> Type of data that will be sent on GPU. </typeparam>
+    internal abstract class GpuCloudRenderer<TCloudItem, TCloudBlock, TGpuItem>
             : ICloudRenderer<TCloudItem>, IGpuRenderer
             where TCloudItem : struct, ICloudItem
             where TCloudBlock : class, ICloudBlock<TGpuItem>
     {
+        /// <summary> Constructor. </summary>
+        /// <param name="shader"> Shader for rendering this block. It should handle compute buffer. </param>
+        /// <param name="scale"> Initial scale of scene. </param>
         public GpuCloudRenderer(Shader shader, float scale)
         {
             Shader = shader;
             _scale = scale;
         }
 
+        /// <summary> Read-only getter for blocks. </summary>
         public IReadOnlyCollection<TCloudBlock> Blocks => _blocks.AsReadOnly();
 
         #region IGpuRenderer
 
+        /// <inheritdoc />
         public void UpdateDataOnGpu()
         {
             lock (_pointPlaces)
@@ -37,6 +42,9 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <summary>
+        /// Renders data on GPU. Should be called in MainThread and in MonoBehaviour.OnRenderObject().
+        /// </summary>
         public void RenderNow()
         {
             lock (_pointPlaces)
@@ -48,12 +56,14 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public int RenderQueue => _blocks.Count > 0 ? _blocks[0].RenderQueue : 0;
 
         #endregion
 
         #region ICloudRenderer
 
+        /// <inheritdoc />
         public int ItemsCount
         {
             get
@@ -65,6 +75,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public float Scale
         {
             get => _scale;
@@ -80,6 +91,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public void OnItemsAdded(object sender, AddedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
@@ -103,6 +115,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public void OnItemsUpdated(object sender, UpdatedEventArgs<TCloudItem> e)
         {
             if (!IsSenderVisible(sender)) return;
@@ -118,6 +131,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public void OnItemsRemoved(object sender, RemovedEventArgs<TCloudItem> e)
         {
             lock (_pointPlaces)
@@ -142,6 +156,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             foreach (var block in _blocks)
@@ -155,18 +170,33 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         #endregion
 
-        #region Protected definitions
+        #region Protected
 
+        /// <summary> Adds item to block. </summary>
+        /// <param name="block"> Block where item should be added. </param>
+        /// <param name="item"> Item to add. </param>
+        /// <param name="inBlockId"> Index of item in block. </param>
         protected abstract void ProcessItem(TCloudBlock block, TCloudItem item, int inBlockId);
 
+        /// <summary> Removes item from block </summary>
+        /// <param name="block"> Block from where item should be removed. </param>
+        /// <param name="inBlockId"> Index of item in block. </param>
         protected abstract void RemoveItem(TCloudBlock block, int inBlockId);
 
+        /// <summary> How many items block can contain. </summary>
         protected abstract int BlockCapacity { get; }
 
+        /// <summary> Adds new block of specific type. </summary>
+        /// <returns> Created block. </returns>
         protected abstract TCloudBlock CreateNewBlock();
 
-        protected static bool IsSenderVisible(object sender) => (sender as IVisible)?.IsVisible ?? true;
+        /// <summary> Checks is object that sends update event is visible. </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        protected static bool IsSenderVisible(object sender) => (sender as IVisibleDataSource)?.IsVisible ?? true;
 
+        /// <summary> Shader for rendering this block. </summary>
+        /// <remarks> It should handle compute buffer. </remarks>
         protected readonly Shader Shader;
 
         #endregion

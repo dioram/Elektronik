@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers.Collision;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.Input;
@@ -86,10 +86,10 @@ namespace Elektronik.UI
             // ReSharper disable once IteratorNeverReturns
         }
 
-        private void ProcessRaycast(IContainer<SlamObservation> container, SlamObservation observation,
+        private void ProcessRaycast(ICloudContainer<SlamObservation> cloudContainer, SlamObservation observation,
                                     Vector3 mousePosition)
         {
-            _floatingViewer.Render((container, observation));
+            _floatingViewer.Render((cloudContainer, observation));
             _floatingViewer.transform.position = mousePosition + new Vector3(15, -15);
         }
 
@@ -98,18 +98,18 @@ namespace Elektronik.UI
             if (_floatingViewer != null) _floatingViewer.Hide();
         }
 
-        private void CreateOrShowWindow(IContainer<SlamObservation> container, SlamObservation observation,
+        private void CreateOrShowWindow(ICloudContainer<SlamObservation> cloudContainer, SlamObservation observation,
                                         string title)
         {
-            var v = _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == container.GetHashCode()
+            var v = _pinnedViewers.FirstOrDefault(w => w.ObservationContainer == cloudContainer.GetHashCode()
                                                           && w.ObservationId == observation.Id);
 
             if (v is null)
             {
-                container.OnRemoved += DestroyObsoleteWindows;
+                cloudContainer.OnRemoved += DestroyObsoleteWindows;
                 Manager.CreateWindow<ObservationViewer>(title, (viewer, window) =>
                                                         {
-                                                            viewer.Render((container, observation));
+                                                            viewer.Render((cloudContainer, observation));
                                                             _pinnedViewers.Add(
                                                                 window.GetComponent<ObservationViewer>());
                                                         },

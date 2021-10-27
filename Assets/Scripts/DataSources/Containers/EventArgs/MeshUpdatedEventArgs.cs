@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Elektronik.DataSources.Containers.EventArgs
 {
+    /// <summary> Event args for updating mesh. </summary>
     public class MeshUpdatedEventArgs : System.EventArgs
     {
         public readonly (Vector3 pos, Color color)[] Vertices;
@@ -21,11 +22,13 @@ namespace Elektronik.DataSources.Containers.EventArgs
             {
                 if (!Equals(first, second)) return false;
             }
+
             if (Triangles.Length != other.Triangles.Length) return false;
             foreach (var (first, second) in Triangles.Zip(other.Triangles, (arg1, arg2) => (arg1, arg2)))
             {
                 if (!Equals(first, second)) return false;
             }
+
             return true;
         }
 
@@ -41,7 +44,8 @@ namespace Elektronik.DataSources.Containers.EventArgs
         {
             unchecked
             {
-                return ((Vertices != null ? Vertices.GetHashCode() : 0) * 397) ^ (Triangles != null ? Triangles.GetHashCode() : 0);
+                return ((Vertices != null ? Vertices.GetHashCode() : 0) * 397) ^
+                        (Triangles != null ? Triangles.GetHashCode() : 0);
             }
         }
     }

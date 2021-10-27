@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace Elektronik.DataSources.Containers.EventArgs
 {
+    /// <summary> Event args for updating connections between cloud items. </summary>
     public class ConnectionsEventArgs : System.EventArgs
     {
         public readonly IList<(int id1, int id2)> Items;

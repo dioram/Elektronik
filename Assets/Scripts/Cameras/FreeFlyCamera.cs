@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Elektronik.Cameras
 {
+    /// <summary> This component allows user to control camera from keyboard and mouse. </summary>
     [RequireComponent(typeof(Camera))]
-    public class FreeFlyCamera : MonoBehaviour
+    internal sealed class FreeFlyCamera : MonoBehaviour
     {
-        private Vector3 _initPosition;
-        private Quaternion _initRotation;
+        #region Unity events
 
         private void Start()
         {
@@ -17,7 +17,7 @@ namespace Elektronik.Cameras
 
             var controls = new CameraControls().Controls;
             controls.Enable();
-            
+
             var boost = new[]
                     {
                         controls.Boost.StartedAsObservable(),
@@ -40,7 +40,7 @@ namespace Elektronik.Cameras
                 controls.MoveMouseDrag.PerformedAsObservable()
                         .Select(v => (Vector3)v.ReadValue<Vector2>()),
             };
-            
+
             move.Merge()
                     .CombineLatest(boost, (v, f) => v * f)
                     .Subscribe(Move)
@@ -68,6 +68,13 @@ namespace Elektronik.Cameras
                     .AddTo(this);
         }
 
+        #endregion
+
+        #region Private
+
+        private Vector3 _initPosition;
+        private Quaternion _initRotation;
+        
         private void Move(Vector3 delta)
         {
             var deltaPosition = (transform.forward * delta.z + transform.right * delta.x + transform.up * delta.y)
@@ -90,5 +97,7 @@ namespace Elektronik.Cameras
                                                   transform.eulerAngles.z);
             transform.Rotate(Vector3.forward, rotation.z, Space.Self);
         }
+
+        #endregion
     }
 }

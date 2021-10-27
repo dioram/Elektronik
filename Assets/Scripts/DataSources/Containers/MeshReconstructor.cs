@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.DataSources.Containers.NativeMesh;
 using Elektronik.Threading;
@@ -13,7 +13,7 @@ namespace Elektronik.DataSources.Containers
 {
     public class MeshReconstructor : IMeshContainer
     {
-        public MeshReconstructor(IContainer<SlamPoint> points, string displayName = "Mesh")
+        public MeshReconstructor(ICloudContainer<SlamPoint> points, string displayName = "Mesh")
         {
             _points = points;
             DisplayName = displayName;
@@ -36,7 +36,7 @@ namespace Elektronik.DataSources.Containers
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
+        public IEnumerable<IDataSource> Children { get; } = Array.Empty<IDataSource>();
 
         public void Clear()
         {
@@ -58,7 +58,7 @@ namespace Elektronik.DataSources.Containers
             OnMeshUpdated -= meshRenderer.OnMeshUpdated;
         }
 
-        public ISourceTreeNode TakeSnapshot() => null;
+        public IDataSource TakeSnapshot() => null;
 
         #endregion
 
@@ -81,14 +81,12 @@ namespace Elektronik.DataSources.Containers
 
         public event Action<bool> OnVisibleChanged;
 
-        public bool ShowButton => true;
-
         #endregion
 
         #region Private
 
         private bool _isVisible = false;
-        private readonly IContainer<SlamPoint> _points;
+        private readonly ICloudContainer<SlamPoint> _points;
         private readonly ThreadWorkerSingleAwaiter _threadWorker = new ThreadWorkerSingleAwaiter();
         private readonly List<IMeshRenderer> _renderer = new List<IMeshRenderer>();
 

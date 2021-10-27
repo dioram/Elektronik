@@ -6,11 +6,24 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.Windows
 {
+    /// <summary> This class renders incoming data as table. </summary>
     public class TableRenderer : MonoBehaviour, IDataRenderer<string[]>
     {
-        [Range(0, 50)]
-        public int MaxAmountOfRows;
+        #region Editor fields
+        
+        /// <summary> Maximal amount of rows. </summary>
+        /// <remarks> Too many rows will cause critical performance hit. </remarks>
+        [SerializeField] [Range(0, 50)]
+        [Tooltip("Maximal amount of rows.")]
+        private int MaxAmountOfRows;
+        
+        [SerializeField] private ListBox Table;
 
+        #endregion
+
+        /// <summary> Loads all content of table. </summary>
+        /// <param name="header">List of columns names.</param>
+        /// <param name="data"> Cells. </param>
         public void LoadData(string[] header, string[][] data)
         {
             Clear();
@@ -21,6 +34,8 @@ namespace Elektronik.DataConsumers.Windows
             }
         }
         
+        /// <summary> Sets header of table. </summary>
+        /// <param name="header"> List of columns names. </param>
         public void SetHeader(string[] header)
         {
             Observable.Start(() =>
@@ -61,6 +76,7 @@ namespace Elektronik.DataConsumers.Windows
 
         #region IDataRenderer
 
+        /// <inheritdoc />
         public bool IsShowing
         {
             get => _isShowing;
@@ -72,8 +88,7 @@ namespace Elektronik.DataConsumers.Windows
             }
         }
 
-        public float Scale { get; set; }
-
+        /// <inheritdoc />
         public void Render(string[] data)
         {
             UniRxExtensions.StartOnMainThread(() =>
@@ -85,6 +100,7 @@ namespace Elektronik.DataConsumers.Windows
             }).Subscribe();
         }
 
+        /// <inheritdoc />
         public void Clear()
         {
             UniRxExtensions.StartOnMainThread(() =>
@@ -100,7 +116,6 @@ namespace Elektronik.DataConsumers.Windows
 
         #region Private
 
-        [SerializeField] private ListBox Table;
         private readonly List<TableColumn> _columns = new List<TableColumn>();
         private bool _isShowing;
 

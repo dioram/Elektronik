@@ -19,21 +19,20 @@ namespace Elektronik.Protobuf.Offline
     {
         public ProtobufFilePlayer(string displayName, Texture2D? logo, OfflineSettingsBag settings)
         {
-            _containerTree = new ProtobufContainerTree("Protobuf",
-                                                       new SlamDataInfoPresenter("Special info"));
-            Data = _containerTree;
+            var containerTree = new ProtobufContainerTree("Protobuf", new SlamDataInfoPresenter("Special info"));
+            Data = containerTree;
             DisplayName = displayName;
             Logo = logo;
             _parsersChain = new DataParser<PacketPb>[]
             {
-                new ObjectsParser(_containerTree.Planes, _containerTree.Points, _containerTree.Observations,
+                new ObjectsParser(containerTree.Planes, containerTree.Points, containerTree.Observations,
                                   settings.PathToImagesDirectory),
-                new TrackedObjectsParser(_containerTree.TrackedObjs),
-                new InfoParser(_containerTree.SpecialInfo),
-                new ImageParser(_containerTree.Image, settings.PathToImagesDirectory),
+                new TrackedObjectsParser(containerTree.TrackedObjs),
+                new InfoParser(containerTree.SpecialInfo),
+                new ImageParser(containerTree.Image, settings.PathToImagesDirectory),
             }.BuildChain();
 
-            _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
+            containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
             _input = File.OpenRead(settings.PathToFile);
             _parsersChain?.SetConverter(new ProtobufToUnityConverter());
 
@@ -83,7 +82,7 @@ namespace Elektronik.Protobuf.Offline
             get => _frames.CurrentIndex;
             set => RewindAt(value);
         }
-        
+
         public bool IsPlaying { get; private set; }
         public event Action? OnPlayingStarted;
         public event Action? OnPaused;
@@ -193,7 +192,6 @@ namespace Elektronik.Protobuf.Offline
 
         #region Private definitions
 
-        private readonly ProtobufContainerTree _containerTree;
         private readonly FileStream _input;
         private readonly FramesCollection<Frame> _frames;
         private readonly DataParser<PacketPb>? _parsersChain;

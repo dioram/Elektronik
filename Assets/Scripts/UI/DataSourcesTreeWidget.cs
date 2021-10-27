@@ -14,17 +14,17 @@ namespace Elektronik.UI
 
         #endregion
         
-        public void AddDataSource(ISourceTreeNode source)
+        public void AddDataSource(IDataSource dataSource)
         {
             var treeElement = Instantiate(TreeElementPrefab, SourceTreeView).GetComponent<SourceTreeElement>();
             _roots.Add(treeElement);
-            treeElement.Node = source;
+            treeElement.Node = dataSource;
             if (_roots.Count == 1)
             {
                 treeElement.ChangeState();
             }
 
-            if (source is IRemovable r)
+            if (dataSource is IRemovableDataSource r)
             {
                 r.OnRemoved += () =>
                 {
@@ -33,9 +33,9 @@ namespace Elektronik.UI
             }
         }
 
-        public void RemoveDataSource(ISourceTreeNode source)
+        public void RemoveDataSource(IDataSource dataSource)
         {
-            var treeElement = _roots.Find(r => r.Node == source);
+            var treeElement = _roots.Find(r => r.Node == dataSource);
             if (treeElement is null) return;
             _roots.Remove(treeElement);
             Destroy(treeElement.gameObject);

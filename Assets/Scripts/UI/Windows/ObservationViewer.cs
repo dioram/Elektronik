@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.IO;
 using Elektronik.Cameras;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers.Windows;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.UI.Localization;
 using TMPro;
@@ -13,7 +13,7 @@ using UnityEngine.UI;
 namespace Elektronik.UI.Windows
 {
     [RequireComponent(typeof(Window))]
-    public class ObservationViewer : MonoBehaviour, IDataRenderer<(IContainer<SlamObservation>, SlamObservation)>
+    public class ObservationViewer : MonoBehaviour, IDataRenderer<(ICloudContainer<SlamObservation>, SlamObservation)>
     {
         #region Editor fields
 
@@ -31,7 +31,7 @@ namespace Elektronik.UI.Windows
         
         public int ObservationId => _observation.Id;
 
-        public int ObservationContainer => _container.GetHashCode();
+        public int ObservationContainer => _cloudContainer.GetHashCode();
 
         public void Hide()
         {
@@ -72,12 +72,12 @@ namespace Elektronik.UI.Windows
             set => gameObject.SetActive(value);
         }
 
-        public void Render((IContainer<SlamObservation>, SlamObservation) data)
+        public void Render((ICloudContainer<SlamObservation>, SlamObservation) data)
         {
             UniRxExtensions.StartOnMainThread(() =>
             {
                 gameObject.SetActive(true);
-                _container = data.Item1;
+                _cloudContainer = data.Item1;
                 _observation = data.Item2;
                 Window.TitleLabel.SetLocalizedText("Observation #{0}", _observation.Id);
                 SetData();
@@ -92,7 +92,7 @@ namespace Elektronik.UI.Windows
 
         #region Private
 
-        private IContainer<SlamObservation> _container;
+        private ICloudContainer<SlamObservation> _cloudContainer;
         private SlamObservation _observation;
         
         public void MoveCameraToObservation()
@@ -107,13 +107,13 @@ namespace Elektronik.UI.Windows
             var newPos = _observation.Point.Position - direction;
             var rotation = Quaternion.LookRotation(direction);
             
-            lookable.Look((newPos, rotation));
+            lookable.Look(new Pose(newPos, rotation));
         }
 
         private void ShowNextObservation()
         {
             var found = false;
-            foreach (var observation in _container)
+            foreach (var observation in _cloudContainer)
             {
                 if (observation.Id == _observation.Id)
                 {
@@ -132,7 +132,7 @@ namespace Elektronik.UI.Windows
         private void ShowPreviousObservation()
         {
             var prev = _observation;
-            foreach (var observation in _container)
+            foreach (var observation in _cloudContainer)
             {
                 if (observation.Id == _observation.Id)
                 {
@@ -158,7 +158,7 @@ namespace Elektronik.UI.Windows
 
         private void SetData()
         {
-            _observation = _container[_observation.Id];
+            _observation = _cloudContainer[_observation.Id];
             Message.text = _observation.Message;
             TextView.SetActive(!string.IsNullOrEmpty(Message.text));
 

@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class ConsumersRoot : MonoBehaviour
+    /// <summary> This component gets all consumers from unity's scene tree. </summary>
+    internal class ConsumersRoot : MonoBehaviour
     {
         public List<IDataConsumer> GetConsumers()
         {
