@@ -17,7 +17,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         {
         }
 
-        public override ISourceTreeNode? TakeSnapshot() => null;
+        public override IDataSource? TakeSnapshot() => null;
 
         public override bool IsVisible
         {
@@ -32,11 +32,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             return ImageDataExt.FromImageMessage(message);
         }
         
-        protected override void SetRendererCallback()
-        {
-            if (Renderer is not null) Renderer.FlipVertically = true;
-        }
-
         #endregion
     }
 }

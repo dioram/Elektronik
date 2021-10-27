@@ -12,7 +12,7 @@ using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Offline.Presenters
 {
-    public class SlamDataInfoPresenter : ISourceTreeNode, IRendersToWindow
+    public class SlamDataInfoPresenter : IRendersToWindow
     {
         public SlamDataInfoPresenter(string displayName)
         {
@@ -26,12 +26,12 @@ namespace Elektronik.Protobuf.Offline.Presenters
             _info?.Render((data.Message, objects));
         }
 
-        #region ISourceTreeNode
+        #region IRendersToWindow
 
-        public ISourceTreeNode? TakeSnapshot() => null;
+        public IDataSource? TakeSnapshot() => null;
 
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
+        public IEnumerable<IDataSource> Children { get; } = Array.Empty<IDataSource>();
 
         public void AddConsumer(IDataConsumer consumer)
         {
@@ -57,12 +57,7 @@ namespace Elektronik.Protobuf.Offline.Presenters
             _info?.Clear();
         }
 
-        #endregion
-
-        #region IRendersToWindow
-
         public Window? Window { get; private set; }
-        public string? Title { get; set; }
 
         #endregion
 

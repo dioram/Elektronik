@@ -18,7 +18,7 @@ namespace Elektronik.RosPlugin.Ros2.Online.Handlers
             var image = message.CastTo<ImageMessage>();
             if (image is null) return;
             _presenter.Present(new ImageData((int)image.width, (int)image.height,
-                                             ImageDataExt.GetTextureFormat(image.encoding), image.data.ToArray()));
+                                             ImageDataExt.GetTextureFormat(image.encoding), image.data.ToArray(), true));
             message.Dispose();
         }
     }

@@ -7,9 +7,9 @@ using RosSharp.RosBridgeClient.MessageTypes.Nav;
 
 namespace Elektronik.RosPlugin.Ros.Online.Handlers
 {
-    public class OdometryHandler : MessageHandler<Odometry, IContainer<SlamTrackedObject>>
+    public class OdometryHandler : MessageHandler<Odometry, ICloudContainer<SlamTrackedObject>>
     {
-        public OdometryHandler(ISourceTreeNode container, RosSocket socket, string topic) : base(
+        public OdometryHandler(IDataSource container, RosSocket socket, string topic) : base(
             container, socket, topic)
         {
         }

@@ -7,7 +7,7 @@ namespace Elektronik.RosPlugin.Ros.Online.Handlers
 {
     public class ImageHandler: MessageHandler<Image, ImagePresenter>
     {
-        public ImageHandler(ISourceTreeNode container, RosSocket socket, string topic) : base(container, socket, topic)
+        public ImageHandler(IDataSource container, RosSocket socket, string topic) : base(container, socket, topic)
         {
         }
 

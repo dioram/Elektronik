@@ -55,11 +55,11 @@ namespace Protobuf.Benchmarks
         [Benchmark]
         public void OfflineAdd()
         {
-            var points = new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
-                                                                    new SlamLinesContainer());
+            var points = new ConnectableObjectsCloudContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
+                                                                         new SlamLinesCloudContainer());
             var observations =
-                    new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
-                                                                     new SlamLinesContainer());
+                    new ConnectableObjectsCloudContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
+                                                                          new SlamLinesCloudContainer());
             var infinitePlanes = new CloudContainer<SlamPlane>();
             var parser = new ObjectsParser(infinitePlanes, points, observations, "C:/");
             var commands = new List<ICommand?> { Capacity = _packets.Length };
@@ -78,11 +78,11 @@ namespace Protobuf.Benchmarks
         [Benchmark]
         public void OnlineBufferedAdd()
         {
-            var points = new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
-                                                                    new SlamLinesContainer());
+            var points = new ConnectableObjectsCloudContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
+                                                                         new SlamLinesCloudContainer());
             var observations =
-                    new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
-                                                                     new SlamLinesContainer());
+                    new ConnectableObjectsCloudContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
+                                                                          new SlamLinesCloudContainer());
             var infinitePlanes = new CloudContainer<SlamPlane>();
             var buffer = new OnlineFrameBuffer();
             buffer.OnFramesAmountChanged += _ =>

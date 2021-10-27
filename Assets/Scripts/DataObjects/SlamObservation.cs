@@ -12,42 +12,43 @@ namespace Elektronik.DataObjects
     [Serializable]
     public struct SlamObservation : ICloudItem
     {
-        public SlamPoint Point;
+        public int Id { get; set; }
+        public Vector3 Position;
+        public Color Color;
         public Quaternion Rotation;
 
         /// <inheritdoc />
         public string Message { get; set; }
 
         /// <inheritdoc />
-        public SlamPoint ToPoint() => Point;
+        public SlamPoint ToPoint() => new SlamPoint(Id, Position, Color);
 
         public string FileName;
         
         /// <summary> Ids of points observed in this frame. </summary>
         public HashSet<int> ObservedPoints;
 
-        public SlamObservation(SlamPoint pt, Quaternion orientation, string message, string fileName,
+        public SlamObservation(int id, Vector3 position, Color color, Quaternion orientation, string message,
+                               string fileName,
                                IList<int> observedPoints = null)
         {
-            Point = pt;
+            Id = id;
+            Position = position;
+            Color = color;
             Rotation = orientation;
             Message = message;
             FileName = fileName;
             ObservedPoints = new HashSet<int>(observedPoints ?? Array.Empty<int>());
         }
 
-        public static implicit operator SlamPoint(SlamObservation obs) => obs.Point;
-
-        public int Id
-        {
-            get => Point.Id;
-            set => Point.Id = value;
-        }
-
         public bool Equals(SlamObservation other)
         {
-            return Point.Equals(other.Point) && Rotation.Equals(other.Rotation) 
-                    && FileName == other.FileName && Message == other.Message;
+            return Id.Equals(Id) 
+                   && Position.Equals(other.Position) 
+                   && ((Color32)Color).Equals((Color32)other.Color) 
+                   && Rotation.Equals(other.Rotation) 
+                   && FileName == other.FileName 
+                   && Message == other.Message;
         }
 
         public override bool Equals(object obj)

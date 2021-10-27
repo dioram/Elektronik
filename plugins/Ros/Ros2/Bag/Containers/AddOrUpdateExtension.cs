@@ -6,14 +6,14 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
     public static class AddOrUpdateExtension
     {
-        public static void AddOrUpdate<TCloudItem>(this IContainer<TCloudItem> container, TCloudItem item)
+        public static void AddOrUpdate<TCloudItem>(this ICloudContainer<TCloudItem> container, TCloudItem item)
                 where TCloudItem : struct, ICloudItem
         {
             if (container.Contains(item)) container.Update(item);
             else container.Add(item);
         }
 
-        public static void AddOrUpdate<TCloudItem>(this IContainer<TCloudItem> container, IEnumerable<TCloudItem> items)
+        public static void AddOrUpdate<TCloudItem>(this ICloudContainer<TCloudItem> container, IEnumerable<TCloudItem> items)
                 where TCloudItem : struct, ICloudItem
         {
             var added = new List<TCloudItem>();

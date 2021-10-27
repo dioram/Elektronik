@@ -7,9 +7,9 @@ namespace Elektronik.Plugins.Common.Commands.Generic
     public class ClearCommand<T> : ICommand where T : struct, ICloudItem
     {
         protected readonly T[] UndoObjects;
-        private readonly IContainer<T> _container;
+        private readonly ICloudContainer<T> _container;
 
-        public ClearCommand(IContainer<T> container)
+        public ClearCommand(ICloudContainer<T> container)
         {
             _container = container;
             UndoObjects = _container.ToArray();

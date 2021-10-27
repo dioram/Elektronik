@@ -120,7 +120,8 @@ namespace Elektronik.Protobuf.Data
     public partial class ObservationPb
     {
         public SlamObservationDiff ToUnity(ICSConverter? converter) =>
-                new(Point.ToUnity(converter), Orientation?.ToUnity(converter), ObservedPoints, Message, Filename);
+                new(Point.Id, Point.Position?.ToUnity(converter), Point.Color?.ToUnity(),
+                    Orientation?.ToUnity(converter), ObservedPoints, Message, Filename);
     }
 
     public partial class TrackedObjPb
@@ -186,7 +187,10 @@ namespace Elektronik.Protobuf.Data
         {
             var pb = new ObservationPb
             {
-                Point = o.Point.ToProtobuf(converter),
+                Point = new PointPb
+                {
+                    Id = o.Id, Position = o.Position.ToProtobuf(converter), Color = ColorPb.FromUnity(o.Color)
+                },
                 Orientation = o.Rotation.ToProtobuf(converter),
                 Message = o.Message ?? "",
                 Filename = o.FileName ?? "",

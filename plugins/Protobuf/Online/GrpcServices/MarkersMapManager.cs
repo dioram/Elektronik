@@ -14,7 +14,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class MarkersMapManager : MapManager<SlamMarker, SlamMarkerDiff>
     {
-        public MarkersMapManager(OnlineFrameBuffer buffer, IContainer<SlamMarker> container, ICSConverter? converter,
+        public MarkersMapManager(OnlineFrameBuffer buffer, ICloudContainer<SlamMarker> container, ICSConverter? converter,
                                ILogger logger)
                 : base(buffer, container, converter, logger)
         {

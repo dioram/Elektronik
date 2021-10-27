@@ -32,7 +32,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         #region IDataSourcePlugin
 
-        public ISourceTreeNode Data { get; }
+        public IDataSource Data { get; }
 
         public void Dispose()
         {

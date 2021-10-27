@@ -61,9 +61,9 @@ namespace Elektronik.RosPlugin.Ros.Online
 
         #region Protected
 
-        protected override ISourceTreeNode CreateContainer(string topicName, string topicType)
+        protected override IDataSource CreateContainer(string topicName, string topicType)
         {
-            var container = (ISourceTreeNode) Activator.CreateInstance(SupportedMessages[topicType].container,
+            var container = (IDataSource) Activator.CreateInstance(SupportedMessages[topicType].container,
                                                                    topicName.Split('/').Last());
             _handlers.Add((IMessageHandler) Activator.CreateInstance(SupportedMessages[topicType].handler, container,
                                                                      Socket, topicName));
@@ -76,8 +76,8 @@ namespace Elektronik.RosPlugin.Ros.Online
 
         private static readonly Dictionary<string, (Type container, Type handler)> SupportedMessages = new()
         {
-            {"geometry_msgs/PoseStamped", (typeof(TrackedObjectsContainer), typeof(PoseStampedHandler))},
-            {"nav_msgs/Odometry", (typeof(TrackedObjectsContainer), typeof(OdometryHandler))},
+            {"geometry_msgs/PoseStamped", (typeof(TrackedCloudObjectsContainer), typeof(PoseStampedHandler))},
+            {"nav_msgs/Odometry", (typeof(TrackedCloudObjectsContainer), typeof(OdometryHandler))},
             {"sensor_msgs/PointCloud2", (typeof(CloudContainer<SlamPoint>), typeof(PointCloud2Handler))},
             {"sensor_msgs/Image", (typeof(ImagePresenter), typeof(ImageHandler))},
         };

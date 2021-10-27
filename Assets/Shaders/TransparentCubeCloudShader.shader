@@ -27,7 +27,7 @@ Shader "Elektronik/TransparentCubeCloudShader"
 
             half4 Fragment(FragmentInput input) : SV_Target
             {
-                clip(IsGrid(input)-1);
+                clip(IsGrid(input) - 1);
                 return half4(input.color, 1);
             }
             ENDCG

@@ -133,7 +133,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
 
             SendPacket(connectionsPacket);
 
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SlamLine>>(), e1), Times.Once);
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SlamLine>>(), e1), Times.Once);
         }
 
         [Test, Order(3)]
@@ -166,13 +166,14 @@ namespace Protobuf.Tests.Internal.Integration.Online
             var lines = _connections.Select(c => (_observationsMap[c.Id1], _observationsMap[c.Id2]))
                     .Select(pair => (pair.Item1.ToUnity(Converter).Apply(),
                                      pair.Item2.ToUnity(Converter).Apply()))
-                    .Select((pair, i) => new SlamLine(pair.Item1, pair.Item2, i))
+                    .Select((pair, i) => new SlamLine(pair.Item1.ToPoint(), pair.Item2.ToPoint(), i))
                     .ToArray();
             var el = new AddedEventArgs<SlamLine>(lines);
 
             SendPacket(connectionsPacket);
 
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SlamLine>>(), el), Times.Exactly(2));
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SlamLine>>(), el),
+                                           Times.Exactly(2));
         }
 
         [Test, Order(4)]
@@ -188,7 +189,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                                                   .ToArray());
             var els = _objects
                     .Select(o => new AddedEventArgs<SimpleLine>(new SimpleLine(0, o.Position!.ToUnity(Converter),
-                                                                               o.Position!.ToUnity(Converter), o.Color!.ToUnity())))
+                                                                               o.Position!.ToUnity(Converter),
+                                                                               o.Color!.ToUnity())))
                     .ToArray();
 
             SendPacket(packet);
@@ -197,7 +199,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -239,14 +241,15 @@ namespace Protobuf.Tests.Internal.Integration.Online
             MockedObservationsRenderer.Verify(
                 r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, eo5),
                 Times.Once);
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(), el5),
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<ICloudContainer<SlamLine>>(), el5),
                                            Times.Exactly(2));
             MockedPlanesRenderer.Verify(
                 r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Planes, eip5),
                 Times.Once);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e3),
                                              Times.Once);
-            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackContainer>(), e1), Times.Exactly(3));
+            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackCloudContainer>(), e1),
+                                             Times.Exactly(3));
         }
 
         [Test, Order(7)]

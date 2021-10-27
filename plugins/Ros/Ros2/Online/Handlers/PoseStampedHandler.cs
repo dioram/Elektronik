@@ -8,9 +8,9 @@ namespace Elektronik.RosPlugin.Ros2.Online.Handlers
 {
     public class PoseStampedHandler : MessageHandler
     {
-        private readonly IContainer<SlamTrackedObject> _container;
+        private readonly ICloudContainer<SlamTrackedObject> _container;
 
-        public PoseStampedHandler(IContainer<SlamTrackedObject> container)
+        public PoseStampedHandler(ICloudContainer<SlamTrackedObject> container)
         {
             _container = container;
         }

@@ -18,6 +18,7 @@
             #pragma fragment frag
             
             #include "UnityCG.cginc"
+            #include "Wireframe.cginc"
 
             float4 _Color;
             float4 _WireColor;
@@ -54,14 +55,7 @@
             
             fixed4 frag (v2f i) : SV_Target
             {
-                float3 barys;
-                barys.xy = i.bary_coord;
-                barys.z = 1 - barys.x - barys.y;
-                float min_bary = min(barys.x, min(barys.y, barys.z));
-                const float delta = fwidth(min_bary);
-                min_bary = smoothstep(0.5 * delta, 1.5 * delta, min_bary);
-                
-                return _Color * min_bary + _WireColor * (1 - min_bary);
+                return Wireframe(i.bary_coord, _Color, _WireColor);
             }
             ENDCG
         }

@@ -8,9 +8,9 @@ namespace Elektronik.RosPlugin.Ros2.Online.Handlers
 {
     public class OdometryHandler : MessageHandler
     {
-        private readonly IContainer<SlamTrackedObject> _container;
+        private readonly ICloudContainer<SlamTrackedObject> _container;
 
-        public OdometryHandler(IContainer<SlamTrackedObject> container)
+        public OdometryHandler(ICloudContainer<SlamTrackedObject> container)
         {
             _container = container;
         }

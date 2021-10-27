@@ -11,7 +11,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         {
             try
             {
-                return new ImageData((int)image.width, (int)image.height, GetTextureFormat(image.encoding), image.data);
+                return new ImageData((int)image.width, (int)image.height, GetTextureFormat(image.encoding), image.data, true);
             }
             catch (ArgumentOutOfRangeException)
             {

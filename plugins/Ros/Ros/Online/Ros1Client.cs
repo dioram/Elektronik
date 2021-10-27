@@ -22,7 +22,7 @@ namespace Elektronik.RosPlugin.Ros.Online
 
         #region IDataSourcePlayer
 
-        public ISourceTreeNode Data { get; }
+        public IDataSource Data { get; }
 
         public void Dispose()
         {

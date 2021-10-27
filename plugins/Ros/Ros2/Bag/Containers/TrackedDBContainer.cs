@@ -10,7 +10,7 @@ using RosMessage = RosSharp.RosBridgeClient.Message;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class TrackedDBContainer : TrackedObjectsContainer, IDBContainer
+    public class TrackedDBContainer : TrackedCloudObjectsContainer, IDBContainer
     {
         public TrackedDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
                                   List<long> actualTimestamps) :

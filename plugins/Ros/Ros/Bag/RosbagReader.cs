@@ -34,7 +34,7 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         #region IDataSourcePlugin
 
-        public ISourceTreeNode Data { get; }
+        public IDataSource Data { get; }
 
         public int AmountOfFrames => _frames.CurrentSize;
         public bool IsPlaying { get; private set; }

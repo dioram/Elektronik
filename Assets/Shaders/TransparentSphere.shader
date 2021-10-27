@@ -19,7 +19,7 @@
             #pragma require geometry
             #pragma vertex vert
             #pragma fragment frag
-            
+
             uniform float _GridThickness;
             uniform float4 _Color;
 
@@ -43,9 +43,9 @@
                 output.worldPos = mul(unity_ObjectToWorld, input.vertex);
                 output.localPos = input.vertex.xyz;
                 output.worldScale = float3(
-                    length(float3(unity_ObjectToWorld[0].x, unity_ObjectToWorld[1].x, unity_ObjectToWorld[2].x)), // scale x axis
-                    length(float3(unity_ObjectToWorld[0].y, unity_ObjectToWorld[1].y, unity_ObjectToWorld[2].y)), // scale y axis
-                    length(float3(unity_ObjectToWorld[0].z, unity_ObjectToWorld[1].z, unity_ObjectToWorld[2].z))  // scale z axis
+                    length(float3(unity_ObjectToWorld[0].x, unity_ObjectToWorld[1].x, unity_ObjectToWorld[2].x)),
+                    length(float3(unity_ObjectToWorld[0].y, unity_ObjectToWorld[1].y, unity_ObjectToWorld[2].y)),
+                    length(float3(unity_ObjectToWorld[0].z, unity_ObjectToWorld[1].z, unity_ObjectToWorld[2].z))
                 );
                 return output;
             }
@@ -56,7 +56,7 @@
                 const float x = abs(input.localPos.x * input.worldScale.x);
                 const float y = abs(input.localPos.y * input.worldScale.y);
                 const float z = abs(input.localPos.z * input.worldScale.z);
-                clip((x < _GridThickness || y < _GridThickness || z < _GridThickness)-1);
+                clip((x < _GridThickness || y < _GridThickness || z < _GridThickness) - 1);
                 return _Color;
             }
             ENDCG
@@ -71,7 +71,7 @@
             #pragma vertex vert
             #pragma fragment frag
             #include "UnityCG.cginc"
-            
+
             uniform float4 _Color;
 
             struct vertexInput

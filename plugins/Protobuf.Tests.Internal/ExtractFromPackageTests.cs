@@ -77,9 +77,9 @@ namespace Protobuf.Tests.Internal
             });
             var expected = new[]
             {
-                new SlamObservationDiff(new SlamPointDiff(1, new Vector3(2, -3, 4), Color.white, "message"),
+                new SlamObservationDiff(1, new Vector3(2, -3, 4), Color.white,
                                         new Quaternion(5, -6, 7, -8), new[] { 0, 1, 3, 5 }, "message", @"./1.png"),
-                new SlamObservationDiff(new SlamPointDiff(4, new Vector3(5, -6, 7), Color.black, "test"),
+                new SlamObservationDiff(4, new Vector3(5, -6, 7), Color.black,
                                         new Quaternion(8, -7, 6, -5), new[] { 3, 2, 1 }, "test", @"./3.png")
             };
 
@@ -207,7 +207,7 @@ namespace Protobuf.Tests.Internal
                     Message = "test"
                 }
             });
-            var expected = new []
+            var expected = new[]
             {
                 new SlamPlaneDiff(1, new Vector3(2, -3, 4), new Vector3(5, -6, 7), Color.white, "message"),
                 new SlamPlaneDiff(3, new Vector3(0, -1, 3), new Vector3(5, -7, 8), Color.black, "test")

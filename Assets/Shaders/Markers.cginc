@@ -14,7 +14,7 @@ struct Marker
     float3 scale: TEXCOORD7;
     half3 color : COLOR1;
 };
-            
+
 bool IsInvalid(const in float3 f)
 {
     return f[0] == 0 && f[1] == 0 && f[2] == 0;

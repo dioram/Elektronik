@@ -19,10 +19,10 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             where TCloudItem : struct, ICloudItem
             where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
-        private readonly IConnectableObjectsContainer<TCloudItem> _connectableContainer;
+        private readonly IConnectableObjectsCloudContainer<TCloudItem> _connectableContainer;
 
         protected ConnectableObjectsMapManager(IOnlineFrameBuffer buffer,
-                                               IConnectableObjectsContainer<TCloudItem> container,
+                                               IConnectableObjectsCloudContainer<TCloudItem> container,
                                                ICSConverter? converter, ILogger logger)
                 : base(buffer, container, converter, logger)
         {

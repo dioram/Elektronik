@@ -8,11 +8,11 @@ namespace Elektronik.Plugins.Common.Commands.Generic
 {
     public class UpdateCommand<T> : ICommand where T : struct, ICloudItem
     {
-        protected readonly IContainer<T> Container;
+        protected readonly ICloudContainer<T> Container;
         protected readonly T[] Objs2Update;
         protected T[] Objs2Restore = Array.Empty<T>();
 
-        public UpdateCommand(IContainer<T> container, T[] objects)
+        public UpdateCommand(ICloudContainer<T> container, T[] objects)
         {
             Container = container;
             Objs2Update = objects;
@@ -53,11 +53,11 @@ namespace Elektronik.Plugins.Common.Commands.Generic
             where TCloudItem : struct, ICloudItem
             where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
-        protected readonly IContainer<TCloudItem> Container;
+        protected readonly ICloudContainer<TCloudItem> Container;
         protected readonly TCloudItemDiff[] Objs2Update;
         protected TCloudItem[] Objs2Restore = Array.Empty<TCloudItem>();
 
-        public UpdateCommand(IContainer<TCloudItem> container, TCloudItemDiff[] objects)
+        public UpdateCommand(ICloudContainer<TCloudItem> container, TCloudItemDiff[] objects)
         {
             Container = container;
             Objs2Update = objects;

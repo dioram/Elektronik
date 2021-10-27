@@ -28,19 +28,19 @@ namespace Protobuf.Tests.Internal
         private ProtobufRetranslator _retranslator;
         private Mock<IOnlineFrameBuffer> _mockedBuffer;
 
-        private Mock<IConnectableObjectsContainer<SlamPoint>> _mockedPointsContainer;
-        private Mock<IConnectableObjectsContainer<SlamObservation>> _mockedObservationsContainer;
-        private Mock<IContainer<SlamTrackedObject>> _mockedTrackedObjectsContainer;
-        private Mock<IContainer<SlamPlane>> _mockedPlanesContainer;
+        private Mock<IConnectableObjectsCloudContainer<SlamPoint>> _mockedPointsContainer;
+        private Mock<IConnectableObjectsCloudContainer<SlamObservation>> _mockedObservationsContainer;
+        private Mock<ICloudContainer<SlamTrackedObject>> _mockedTrackedObjectsContainer;
+        private Mock<ICloudContainer<SlamPlane>> _mockedPlanesContainer;
 
         [SetUp]
         public void Setup()
         {
             _mockedBuffer = new Mock<IOnlineFrameBuffer>();
-            _mockedPointsContainer = new Mock<IConnectableObjectsContainer<SlamPoint>>();
-            _mockedObservationsContainer = new Mock<IConnectableObjectsContainer<SlamObservation>>();
-            _mockedTrackedObjectsContainer = new Mock<IContainer<SlamTrackedObject>>();
-            _mockedPlanesContainer = new Mock<IContainer<SlamPlane>>();
+            _mockedPointsContainer = new Mock<IConnectableObjectsCloudContainer<SlamPoint>>();
+            _mockedObservationsContainer = new Mock<IConnectableObjectsCloudContainer<SlamObservation>>();
+            _mockedTrackedObjectsContainer = new Mock<ICloudContainer<SlamTrackedObject>>();
+            _mockedPlanesContainer = new Mock<ICloudContainer<SlamPlane>>();
 
             var factory = new ProtobufRetranslatorFactory();
             _retranslator = (ProtobufRetranslator)factory.Start();
@@ -125,25 +125,23 @@ namespace Protobuf.Tests.Internal
         {
             var added = new[]
             {
-                new SlamObservationDiff(new SlamPointDiff(0, Vector3.one, Color.blue),
-                                        Quaternion.identity, Array.Empty<int>(), "123",
+                new SlamObservationDiff(0, Vector3.one, Color.blue, Quaternion.identity, Array.Empty<int>(), "123",
                                         Path.Combine(Directory.GetCurrentDirectory(), "f.png")),
-                new SlamObservationDiff(new SlamPointDiff(1, Vector3.down, Color.red),
-                                        new Quaternion(0, 5, 15, 3), Array.Empty<int>(), "321"),
-                new SlamObservationDiff(new SlamPointDiff(-10, Vector3.forward, Color.gray, "test message"),
-                                        new Quaternion(59, 46, 3, 24), Array.Empty<int>(), "adsf",
+                new SlamObservationDiff(1, Vector3.down, Color.red, new Quaternion(0, 5, 15, 3), Array.Empty<int>(),
+                                        "321"),
+                new SlamObservationDiff(-10, Vector3.forward, Color.gray, new Quaternion(59, 46, 3, 24),
+                                        Array.Empty<int>(), "adsf",
                                         Path.Combine(Directory.GetCurrentDirectory(), "f.png")),
             };
             var updated = new[]
             {
-                new SlamObservationDiff(new SlamPointDiff(0, Vector3.zero, Color.red, "Another message"),
-                                        new Quaternion(6, 2, 1, 0), Array.Empty<int>(), "123",
+                new SlamObservationDiff(0, Vector3.zero, Color.red, new Quaternion(6, 2, 1, 0), Array.Empty<int>(),
+                                        "123",
                                         Path.Combine(Directory.GetCurrentDirectory(), "f.png")),
-                new SlamObservationDiff(new SlamPointDiff(-10, Vector3.up, Color.white, "test message"),
-                                        Quaternion.identity, Array.Empty<int>(), "123",
+                new SlamObservationDiff(-10, Vector3.up, Color.white, Quaternion.identity, Array.Empty<int>(), "123",
                                         Path.Combine(Directory.GetCurrentDirectory(), "f.png")),
             };
-            var removed = new[] { new SlamObservationDiff(new SlamPointDiff(0)), };
+            var removed = new[] { new SlamObservationDiff(0) };
             var addCommand = new AddCommand<SlamObservation, SlamObservationDiff>(
                 _mockedObservationsContainer.Object, added);
             var updateCommand = new UpdateCommand<SlamObservation, SlamObservationDiff>(

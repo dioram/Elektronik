@@ -153,7 +153,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
 
             ((ProtobufContainerTree)Sut.Data).Points.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Points.Connections.Count().Should().Be(_connections.Length);
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SlamLine>>(), e), Times.Once);
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SlamLine>>(), e), Times.Once);
         }
 
         [Test, Order(6)]
@@ -185,7 +185,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             ((ProtobufContainerTree)Sut.Data).Points.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Points.Connections.Count().Should().Be(_connections.Length);
             MockedPointsRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Points, e), Times.Once);
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsUpdated(It.IsAny<IContainer<SlamLine>>(), el), Times.Once);
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsUpdated(It.IsAny<ICloudContainer<SlamLine>>(), el), Times.Once);
         }
 
         [Test, Order(7)]
@@ -206,7 +206,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
 
             ((ProtobufContainerTree)Sut.Data).Points.Count.Should().Be(_map.Length);
             ((ProtobufContainerTree)Sut.Data).Points.Connections.Count().Should().Be(_connections.Length - 2);
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(), 
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<ICloudContainer<SlamLine>>(), 
                                                                  It.IsAny<RemovedEventArgs<SlamLine>>()), 
                                            Times.Once);
         }
@@ -231,7 +231,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             ((ProtobufContainerTree)Sut.Data).Points.Count.Should().Be(_map.Length - 2);
             ((ProtobufContainerTree)Sut.Data).Points.Connections.Count().Should().Be(1);
             MockedPointsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Points, e), Times.Once);
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(), 
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<ICloudContainer<SlamLine>>(), 
                                                                  It.IsAny<RemovedEventArgs<SlamLine>>()), 
                                            Times.Exactly(2));
         }
@@ -256,7 +256,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             ((ProtobufContainerTree)Sut.Data).Points.Count.Should().Be(0);
             ((ProtobufContainerTree)Sut.Data).Points.Connections.Count().Should().Be(0);
             MockedPointsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Points, e), Times.Once);
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(), 
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<ICloudContainer<SlamLine>>(), 
                                                                  It.IsAny<RemovedEventArgs<SlamLine>>()), 
                                            Times.Exactly(3));
         }

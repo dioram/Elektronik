@@ -11,9 +11,9 @@ namespace Elektronik.Protobuf.Offline.Parsers
 {
     public class TrackedObjectsParser : DataParser<PacketPb>
     {
-        private readonly ITrackedContainer<SlamTrackedObject> _container;
+        private readonly ITrackedCloudContainer<SlamTrackedObject> _container;
 
-        public TrackedObjectsParser(ITrackedContainer<SlamTrackedObject> container)
+        public TrackedObjectsParser(ITrackedCloudContainer<SlamTrackedObject> container)
         {
             _container = container;
         }

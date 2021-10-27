@@ -14,7 +14,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class PlanesMapManager : MapManager<SlamPlane, SlamPlaneDiff>
     {
-        public PlanesMapManager(IOnlineFrameBuffer buffer, IContainer<SlamPlane> container,
+        public PlanesMapManager(IOnlineFrameBuffer buffer, ICloudContainer<SlamPlane> container,
                                         ICSConverter? converter, ILogger logger)
             : base(buffer, container, converter, logger)
         {

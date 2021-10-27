@@ -48,7 +48,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -79,7 +79,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -109,7 +109,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -140,7 +140,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -170,7 +170,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -207,7 +207,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -232,7 +232,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(_objects.Length - 1);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
-            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackContainer>(), el),
+            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackCloudContainer>(), el),
                                              Times.Once);
         }
 
@@ -259,7 +259,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(0);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
-            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackContainer>(), el),
+            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackCloudContainer>(), el),
                                              Times.Exactly(3));
         }
 

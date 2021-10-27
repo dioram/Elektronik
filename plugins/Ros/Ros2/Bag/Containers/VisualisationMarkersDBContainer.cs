@@ -13,7 +13,7 @@ using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class VisualisationMarkersDBContainer : ISourceTreeNode, IDBContainer, IVisible
+    public class VisualisationMarkersDBContainer : IDBContainer, IVisibleDataSource
     {
         public VisualisationMarkersDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
                                                List<long> actualTimestamps)
@@ -23,44 +23,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             Topic = topic;
             ActualTimestamps = actualTimestamps;
         }
-
-        #region ISourceTreeNode
-
-        public void Clear()
-        {
-            lock (_children)
-            {
-                foreach (var value in _children.Values)
-                {
-                    value.Clear();
-                }
-
-                _children.Clear();
-            }
-        }
-
-        public void AddConsumer(IDataConsumer consumer)
-        {
-            _consumers.Add(consumer);
-        }
-
-        public void RemoveConsumer(IDataConsumer consumer)
-        {
-            _consumers.Remove(consumer);
-        }
-
-        public ISourceTreeNode TakeSnapshot()
-        {
-            return new VirtualSource(DisplayName, _children.Values
-                                         .Select(ch => ch.TakeSnapshot())
-                                         .Where(ch => ch is not null)
-                                         .ToList());
-        }
-
-        public string DisplayName { get; set; }
-        public IEnumerable<ISourceTreeNode> Children => _children.Values.ToList();
-
-        #endregion
 
         #region IDBContainer
 
@@ -89,7 +51,41 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
+
+        public void Clear()
+        {
+            lock (_children)
+            {
+                foreach (var value in _children.Values)
+                {
+                    value.Clear();
+                }
+
+                _children.Clear();
+            }
+        }
+
+        public void AddConsumer(IDataConsumer consumer)
+        {
+            _consumers.Add(consumer);
+        }
+
+        public void RemoveConsumer(IDataConsumer consumer)
+        {
+            _consumers.Remove(consumer);
+        }
+
+        public IDataSource TakeSnapshot()
+        {
+            return new VirtualDataSource(DisplayName, _children.Values
+                                             .Select(ch => ch.TakeSnapshot())
+                                             .Where(ch => ch is not null)
+                                             .ToList());
+        }
+
+        public string DisplayName { get; set; }
+        public IEnumerable<IDataSource> Children => _children.Values.ToList();
 
         public bool IsVisible
         {
@@ -101,7 +97,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
                     if (_isVisible == value) return;
                     _isVisible = value;
                     OnVisibleChanged?.Invoke(_isVisible);
-                    foreach (var child in _children.Values.OfType<IVisible>())
+                    foreach (var child in _children.Values.OfType<IVisibleDataSource>())
                     {
                         child.IsVisible = value;
                     }
@@ -118,8 +114,8 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private bool _isVisible = true;
         private int _pos;
-        private readonly SortedDictionary<string, ISourceTreeNode> _children = new();
-        private readonly List<IDataConsumer> _consumers = new ();
+        private readonly SortedDictionary<string, IDataSource> _children = new();
+        private readonly List<IDataConsumer> _consumers = new();
         private readonly Dictionary<long, List<Marker>> _delayedRemoving = new();
 
         private (long time, int pos) GetValidTimestamp(long newTimestamp)
@@ -184,7 +180,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             foreach (var marker in markers.Where(m => m.IsSimple))
             {
                 if (_children.ContainsKey(marker.Ns))
-                    (_children[marker.Ns] as IContainer<SlamPoint>)?.Remove(new SlamPoint {Id = marker.Id});
+                    (_children[marker.Ns] as ICloudContainer<SlamPoint>)?.Remove(new SlamPoint { Id = marker.Id });
             }
 
             foreach (var key in markers.Where(m => m.IsList || m.IsLines)
@@ -203,15 +199,15 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             {
                 var key = marker.IsSimple ? marker.Ns : $"{marker.Ns} {marker.Form} {marker.Id}";
                 if (!_children.ContainsKey(key)) CreateContainer(typeof(CloudContainer<SlamPoint>), key);
-                (_children[key] as IContainer<SlamPoint>)?.AddOrUpdate(marker.GetPoints());
+                (_children[key] as ICloudContainer<SlamPoint>)?.AddOrUpdate(marker.GetPoints());
                 SetToAutoRemove(marker);
             }
 
             foreach (var marker in markers.Where(m => m.IsLines))
             {
                 var key = marker.IsSimple ? marker.Ns : $"{marker.Ns} {marker.Form} {marker.Id}";
-                if (!_children.ContainsKey(key)) CreateContainer(typeof(SlamLinesContainer), key);
-                (_children[key] as IContainer<SlamLine>)?.AddOrUpdate(marker.GetLines());
+                if (!_children.ContainsKey(key)) CreateContainer(typeof(SlamLinesCloudContainer), key);
+                (_children[key] as ICloudContainer<SlamLine>)?.AddOrUpdate(marker.GetLines());
                 SetToAutoRemove(marker);
             }
         }
@@ -230,7 +226,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         private void CreateContainer(Type containerType, string key)
         {
-            _children[key] = (ISourceTreeNode) Activator.CreateInstance(containerType, key);
+            _children[key] = (IDataSource)Activator.CreateInstance(containerType, key);
             foreach (var consumer in _consumers)
             {
                 _children[key].AddConsumer(consumer);

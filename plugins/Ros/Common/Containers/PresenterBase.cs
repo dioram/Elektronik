@@ -10,7 +10,7 @@ using Elektronik.UI.Windows;
 namespace Elektronik.RosPlugin.Common.Containers
 {
     public abstract class PresenterBase<TMessage, TRenderer, TRendererType> 
-            : IPresenter<TMessage>, ISourceTreeNode, IRendersToWindow
+            : IPresenter<TMessage>, IRendersToWindow
             where TRenderer : class, IDataRenderer<TRendererType>
     {
         protected PresenterBase(string displayName)
@@ -31,12 +31,12 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #endregion
 
-        #region ISourceTreeNode
+        #region IRendersToWindow
 
-        public ISourceTreeNode? TakeSnapshot() => null;
+        public IDataSource? TakeSnapshot() => null;
 
         public string DisplayName { get; set; }
-        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
+        public IEnumerable<IDataSource> Children { get; } = Array.Empty<IDataSource>();
 
         public void Clear()
         {
@@ -47,7 +47,7 @@ namespace Elektronik.RosPlugin.Common.Containers
         {
             if (consumer is WindowsManager factory)
             {
-                factory.CreateWindow<TRenderer>(Title, (r, window) =>
+                factory.CreateWindow<TRenderer>(DisplayName, (r, window) =>
                 {
                     Renderer = r;
                     Window = window;
@@ -63,12 +63,7 @@ namespace Elektronik.RosPlugin.Common.Containers
             Window = null;
         }
 
-        #endregion
-
-        #region IRendersToWindow
-
         public Window? Window { get; private set; }
-        public string? Title { get; set; }
 
         #endregion
 

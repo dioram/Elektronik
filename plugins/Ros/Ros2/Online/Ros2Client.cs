@@ -21,9 +21,8 @@ namespace Elektronik.RosPlugin.Ros2.Online
         }
         
         #region IDataSourcePlugin
-
-
-        public ISourceTreeNode Data { get; }
+        
+        public IDataSource Data { get; }
 
         public void Dispose()
         {

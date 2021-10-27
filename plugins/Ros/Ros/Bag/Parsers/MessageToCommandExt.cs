@@ -14,9 +14,9 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
 {
     public static class MessageToCommandExt
     {
-        public static ICommand ToCommand(this Message message, ISourceTreeNode container) => message switch
+        public static ICommand ToCommand(this Message message, IDataSource container) => message switch
         {
-            PointCloud2 cloud when container is IContainer<SlamPoint> pointsContainer =>
+            PointCloud2 cloud when container is ICloudContainer<SlamPoint> pointsContainer =>
                     new MacroCommand(new ICommand[] // TODO: change to special command
                     {
                         new ClearCommand<SlamPoint>(pointsContainer),
@@ -26,7 +26,7 @@ namespace Elektronik.RosPlugin.Ros.Bag.Parsers
                     new ShowCommand<ImagePresenter, ImageData?>(presenter, ImageDataExt.FromImageMessage(image)),
             String str when container is StringPresenter presenter => 
                     new ShowCommand<StringPresenter, String>(presenter, str),
-            _ when container is TrackedObjectsContainer trackedContainer && message.GetPose() is { } pose =>
+            _ when container is TrackedCloudObjectsContainer trackedContainer && message.GetPose() is { } pose =>
                     trackedContainer.Count switch
                     {
                         0 => new AddCommand<SlamTrackedObject>(trackedContainer, new[] {pose.ToTracked()}),

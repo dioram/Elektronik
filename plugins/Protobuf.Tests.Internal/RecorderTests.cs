@@ -70,17 +70,14 @@ namespace Protobuf.Tests.Internal
             var sut = CreateRecorder(1);
             var observations = new[]
             {
-                new SlamObservation(new SlamPoint(0, Vector3.one, Color.blue), Quaternion.identity, "123", "f.jpg"),
-                new SlamObservation(new SlamPoint(1, Vector3.down, Color.red), new Quaternion(0, 5, 15, 3), "321", ""),
-                new SlamObservation(new SlamPoint(-10, Vector3.forward, Color.gray, "test message"),
-                                    new Quaternion(59, 46, 3, 24), "adsf", "f.jpg"),
+                new SlamObservation(0, Vector3.one, Color.blue, Quaternion.identity, "123", "f.jpg"),
+                new SlamObservation(1, Vector3.down, Color.red, new Quaternion(0, 5, 15, 3), "321", ""),
+                new SlamObservation(-10, Vector3.forward, Color.gray, new Quaternion(59, 46, 3, 24), "adsf", "f.jpg"),
             };
             var moreObservations = new[]
             {
-                new SlamObservation(new SlamPoint(0, Vector3.zero, Color.red, "Another message"),
-                                    new Quaternion(6, 2, 1, 0), "123", "f.jpg"),
-                new SlamObservation(new SlamPoint(-10, Vector3.up, Color.white, "test message"), Quaternion.identity,
-                                    "123", "f.jpg"),
+                new SlamObservation(0, Vector3.zero, Color.red, new Quaternion(6, 2, 1, 0), "123", "f.jpg"),
+                new SlamObservation(-10, Vector3.up, Color.white, Quaternion.identity, "123", "f.jpg"),
             };
 
             sut.OnItemsAdded(null, new AddedEventArgs<SlamObservation>(observations));
@@ -288,7 +285,8 @@ namespace Protobuf.Tests.Internal
         private void CheckDiffAndObservation(SlamObservationDiff diff, SlamObservation observation)
         {
             diff.Id.Should().Be(observation.Id);
-            CheckDiffAndPoint(diff.Point, observation.Point);
+            diff.Position?.Should().Be(observation.Position);
+            if (diff.Color.HasValue) CheckColors(diff.Color.Value, observation.Color);
             diff.Rotation?.Should().Be(observation.Rotation);
             if (!string.IsNullOrEmpty(diff.Message)) diff.Message.Should().Be(observation.Message);
             if (!string.IsNullOrEmpty(diff.FileName)) diff.FileName.Should().Be(observation.FileName);
