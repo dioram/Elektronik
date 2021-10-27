@@ -6,6 +6,7 @@ using System.Threading;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
+using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.Commands.Generic;
 using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Plugins.Common.FrameBuffers;
@@ -48,7 +49,7 @@ namespace Protobuf.Tests.Internal
             settings.Addresses = $"{Address}:{Port}";
             settings.StartRetranslation?.Invoke();
 
-            var converter = new ProtobufToUnityConverter();
+            var converter = new RightHandToLeftHandConverter();
 
             var logger = new TestsLogger();
             var pointsMapManager = new PointsMapManager(_mockedBuffer.Object, _mockedPointsContainer.Object,

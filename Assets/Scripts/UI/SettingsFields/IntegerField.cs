@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Elektronik.UI.SettingsFields
 {
-    public class IntegerField: SettingsField<int>
+    public class IntegerField: SettingsField<int>   
     {
         [SerializeField] private TMP_InputField InputField;
         [SerializeField] private Button Increase;

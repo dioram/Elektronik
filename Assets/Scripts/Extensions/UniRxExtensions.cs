@@ -56,6 +56,16 @@ namespace UniRx
             });
         }
 
+        public static IObservable<int> OnValueChangedAsObservable(this TMP_Dropdown dropdown)
+        {
+            return Observable.CreateWithState<int, TMP_Dropdown>(dropdown, (i, observer) =>
+            {
+                observer.OnNext(i.value);
+                return i.onValueChanged.AsObservable().Subscribe(observer);
+            });
+        }
+
+
         public static IObservable<InputContext> PerformedAsObservable(this InputAction inputAction) =>
                 Observable.FromEvent<InputContext>(h => inputAction.performed += h,
                                                    h => inputAction.performed -= h);

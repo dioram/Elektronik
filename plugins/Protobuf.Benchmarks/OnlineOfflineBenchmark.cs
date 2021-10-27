@@ -4,6 +4,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataSources.Containers;
+using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.Commands;
 using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Plugins.Common.Parsing;
@@ -63,7 +64,7 @@ namespace Protobuf.Benchmarks
             var infinitePlanes = new CloudContainer<SlamPlane>();
             var parser = new ObjectsParser(infinitePlanes, points, observations, "C:/");
             var commands = new List<ICommand?> { Capacity = _packets.Length };
-            parser.SetConverter(new ProtobufToUnityConverter());
+            parser.SetConverter(new RightHandToLeftHandConverter());
             foreach (var packet in _packets)
             {
                 var command = parser.GetCommand(packet);
@@ -91,9 +92,9 @@ namespace Protobuf.Benchmarks
             };
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
-                new PointsMapManager(buffer, points, new ProtobufToUnityConverter(), new FakeLogger()),
-                new ObservationsMapManager(buffer, observations, new ProtobufToUnityConverter(), new FakeLogger()),
-                new PlanesMapManager(buffer, infinitePlanes, new ProtobufToUnityConverter(), new FakeLogger())
+                new PointsMapManager(buffer, points, new RightHandToLeftHandConverter(), new FakeLogger()),
+                new ObservationsMapManager(buffer, observations, new RightHandToLeftHandConverter(), new FakeLogger()),
+                new PlanesMapManager(buffer, infinitePlanes, new RightHandToLeftHandConverter(), new FakeLogger())
             }.BuildChain();
 
             int i = 0;

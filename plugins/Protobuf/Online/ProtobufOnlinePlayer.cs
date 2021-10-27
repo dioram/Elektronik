@@ -32,7 +32,7 @@ namespace Elektronik.Protobuf.Online
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             GrpcEnvironment.SetLogger(_logger);
-            var converter = new ProtobufToUnityConverter();
+            var converter = new RightHandToLeftHandConverter();
 
             _services = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {

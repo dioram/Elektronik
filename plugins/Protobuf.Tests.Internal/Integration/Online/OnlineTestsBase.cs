@@ -28,7 +28,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
         protected readonly Mock<ICloudRenderer<SlamPlane>> MockedPlanesRenderer;
         protected readonly Mock<ICloudRenderer<SlamMarker>> MockedMarkerRenderer;
         protected readonly Mock<IDataRenderer<byte[]>> MockedImageRenderer;
-        protected readonly ICSConverter Converter = new ProtobufToUnityConverter();
+        protected readonly ICSConverter Converter = new RightHandToLeftHandConverter();
 
         protected OnlineTestsBase(int port)
         {

@@ -198,7 +198,7 @@ namespace Elektronik.Protobuf.Recorders
 
         private readonly FileStream _file;
         private int _amountOfPackets = 0;
-        private readonly ICSConverter _converter = new ProtobufToUnityConverter();
+        private readonly ICSConverter _converter = new RightHandToLeftHandConverter();
 
         #endregion
     }

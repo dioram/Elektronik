@@ -24,10 +24,11 @@ namespace Elektronik.UI.SettingsFields
         [SerializeField] private GameObject RangedIntegerFieldPrefab;
         [SerializeField] private GameObject RangedFloatFieldPrefab;
         [SerializeField] private GameObject SettingsButtonPrefab;
+        [SerializeField] private GameObject EnumFieldPrefab;
         [SerializeField] private Transform Target;
 
         #endregion
-        
+
         [CanBeNull] public SettingsBag Settings { get; private set; }
 
         public void Generate(SettingsBag settings)
@@ -60,7 +61,7 @@ namespace Elektronik.UI.SettingsFields
         }
 
         #region Private
-        
+
         private readonly List<SettingsFieldBase> _fields = new List<SettingsFieldBase>();
 
         private void AddField(FieldInfo fieldInfo, SettingsBag obj)
@@ -119,6 +120,18 @@ namespace Elektronik.UI.SettingsFields
                         .Subscribe(_ => ((Action)fieldInfo.GetValue(obj))?.Invoke())
                         .AddTo(field);
             }
+            else if (fieldInfo.FieldType.IsEnum)
+            {
+                var go = Instantiate(EnumFieldPrefab, Target);
+                var field = go.GetComponent<EnumField>();
+                var tooltip = (TooltipAttribute)Attribute.GetCustomAttribute(fieldInfo, typeof(TooltipAttribute));
+                field.Setup(fieldInfo.Name.Humanize(), tooltip?.tooltip ?? "", fieldInfo.FieldType,
+                            (int)fieldInfo.GetValue(obj));
+                field.OnValueChanged()
+                        .Subscribe(v => fieldInfo.SetValue(obj, v))
+                        .AddTo(field);
+                uiField = field;
+            }
             else
             {
                 throw new ArgumentOutOfRangeException(fieldInfo.Name,
@@ -127,7 +140,7 @@ namespace Elektronik.UI.SettingsFields
 
             _fields.Add(uiField);
         }
-        
+
         private TFieldComponentType AddField<TFieldComponentType, TFieldType>(
             FieldInfo fieldInfo, SettingsBag obj)
                 where TFieldComponentType : SettingsField<TFieldType>
@@ -164,6 +177,7 @@ namespace Elektronik.UI.SettingsFields
                 throw new ArgumentOutOfRangeException(typeof(TFieldType).Name,
                                                       $"Don't know how to make field for {typeof(TFieldType).Name}.");
             }
+
             field.Setup(fieldInfo.Name.Humanize(), tooltip?.tooltip ?? "", (TFieldType)fieldInfo.GetValue(obj),
                         min, max);
             field.OnValueChanged()

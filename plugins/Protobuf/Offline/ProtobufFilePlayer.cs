@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Timers;
 using Elektronik.DataSources;
+using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Plugins.Common.Parsing;
 using Elektronik.PluginsSystem;
@@ -35,7 +36,7 @@ namespace Elektronik.Protobuf.Offline
 
             _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
             _input = File.OpenRead(settings.PathToFile);
-            _parsersChain?.SetConverter(new ProtobufToUnityConverter());
+            _parsersChain?.SetConverter(new RightHandToLeftHandConverter());
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
             _frames.OnSizeChanged += i => OnAmountOfFramesChanged?.Invoke(i);
