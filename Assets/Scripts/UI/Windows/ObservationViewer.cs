@@ -103,8 +103,8 @@ namespace Elektronik.UI.Windows
             var lookable = cam.GetComponent<LookableCamera>();
             if (lookable is null) return;
 
-            var direction = (_observation.Point.Position - cam.transform.position).normalized;
-            var newPos = _observation.Point.Position - direction;
+            var direction = (_observation.Position - cam.transform.position).normalized;
+            var newPos = _observation.Position - direction;
             var rotation = Quaternion.LookRotation(direction);
             
             lookable.Look((newPos, rotation));

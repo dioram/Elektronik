@@ -8,26 +8,33 @@ namespace Elektronik.Plugins.Common.DataDiff
 {
     public struct SlamObservationDiff : ICloudItemDiff<SlamObservationDiff, SlamObservation>
     {
-        public int Id => Point.Id;
-        public SlamPointDiff Point;
+        public int Id { get; }
+        public Vector3? Position;
+        public Color? Color;
         public Quaternion? Rotation;
         public IList<int>? ObservedPoints;
         public string? Message;
         public string? FileName;
 
-        public SlamObservationDiff(SlamPointDiff point, Quaternion? rotation = null, IList<int>? observedPoints = null,
+        public SlamObservationDiff(int id, Vector3? position = null, Color? color = null, Quaternion? rotation = null,
+                                   IList<int>? observedPoints = null,
                                    string? message = null, string? fileName = null)
         {
-            Point = point;
+            Id = id;
+            Position = position;
+            Color = color;
             Rotation = rotation;
             ObservedPoints = observedPoints;
             Message = message;
             FileName = fileName;
         }
 
+
         public SlamObservation Apply()
         {
-            return new SlamObservation(Point.Apply(),
+            return new SlamObservation(Id,
+                                       Position ?? Vector3.zero,
+                                       Color ?? UnityEngine.Color.black,
                                        Rotation ?? Quaternion.identity,
                                        string.IsNullOrEmpty(Message) ? "" : Message,
                                        string.IsNullOrEmpty(FileName) ? "" : FileName,
@@ -36,7 +43,8 @@ namespace Elektronik.Plugins.Common.DataDiff
 
         public SlamObservation Apply(SlamObservation item)
         {
-            item.Point = Point.Apply(item.Point);
+            item.Position = Position ?? item.Position;
+            item.Color = Color ?? item.Color;
             item.Rotation = Rotation ?? item.Rotation;
             item.Message = string.IsNullOrEmpty(Message) ? item.Message : Message;
             item.FileName = string.IsNullOrEmpty(FileName) ? item.FileName : FileName;
@@ -52,9 +60,11 @@ namespace Elektronik.Plugins.Common.DataDiff
         {
             if (Id != right.Id) throw new Exception("Ids must be identical!");
             var observedPoints = right.ObservedPoints is null || right.ObservedPoints.Count == 0
-                    ? ObservedPoints
-                    : right.ObservedPoints;
-            return new SlamObservationDiff(Point.Apply(right.Point),
+                                     ? ObservedPoints
+                                     : right.ObservedPoints;
+            return new SlamObservationDiff(Id,
+                                           right.Position ?? Position,
+                                           right.Color ?? Color,
                                            right.Rotation ?? Rotation,
                                            observedPoints,
                                            string.IsNullOrEmpty(right.Message) ? Message : right.Message,
@@ -63,11 +73,15 @@ namespace Elektronik.Plugins.Common.DataDiff
 
         public bool Equals(SlamObservationDiff other)
         {
-            return Point.Equals(other.Point) 
-                    && Nullable.Equals(Rotation, other.Rotation) 
-                    && IsObservedEquals(ObservedPoints, other.ObservedPoints)
-                    && ((string.IsNullOrEmpty(Message) && string.IsNullOrEmpty(other.Message)) || Message == other.Message)
-                    && ((string.IsNullOrEmpty(FileName) && string.IsNullOrEmpty(other.FileName)) || FileName == other.FileName);
+            return Id == other.Id
+                   && Nullable.Equals(Position, other.Position)
+                   && (!Color.HasValue && !Color.HasValue || Color.Value.Equals((Color32)other.Color!.Value))
+                   && Nullable.Equals(Rotation, other.Rotation)
+                   && IsObservedEquals(ObservedPoints, other.ObservedPoints)
+                   && ((string.IsNullOrEmpty(Message) && string.IsNullOrEmpty(other.Message)) ||
+                       Message == other.Message)
+                   && ((string.IsNullOrEmpty(FileName) && string.IsNullOrEmpty(other.FileName)) ||
+                       FileName == other.FileName);
         }
 
         private bool IsObservedEquals(IList<int>? left, IList<int>? right)
@@ -88,7 +102,9 @@ namespace Elektronik.Plugins.Common.DataDiff
         {
             unchecked
             {
-                var hashCode = Point.GetHashCode();
+                var hashCode = Position.GetHashCode();
+                hashCode = (hashCode * 397) ^ Color.GetHashCode();
+                hashCode = (hashCode * 397) ^ Id;
                 hashCode = (hashCode * 397) ^ Rotation.GetHashCode();
                 hashCode = (hashCode * 397) ^ (ObservedPoints != null ? ObservedPoints.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Message != null ? Message.GetHashCode() : 0);

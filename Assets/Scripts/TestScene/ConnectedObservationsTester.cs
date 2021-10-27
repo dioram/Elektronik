@@ -21,10 +21,10 @@ namespace Elektronik.TestScene
         private void Start()
         {
             _observations = _observations
-                    .Select(o => new SlamObservation(
-                                new SlamPoint(o.Id, o.Point.Position + transform.position, o.Point.Color),
-                                o.Rotation, o.Message, o.FileName))
-                    .ToArray();
+                .Select(o => new SlamObservation(
+                                                 o.Id, o.Position + transform.position, o.Color,
+                                                 o.Rotation, o.Message, o.FileName))
+                .ToArray();
             Controller.AddDataSource(_container);
         }
 
@@ -44,19 +44,19 @@ namespace Elektronik.TestScene
 
         private SlamObservation[] _observations =
         {
-            new SlamObservation(new SlamPoint(0, Vector3.up, Color.red), Quaternion.identity, "", ""),
-            new SlamObservation(new SlamPoint(1, Vector3.forward, Color.blue), Quaternion.identity, "", ""),
-            new SlamObservation(new SlamPoint(2, new Vector3(Mathf.Sqrt(2) / 2, 0, -Mathf.Sqrt(2) / 2), Color.green),
+            new SlamObservation(0, Vector3.up, Color.red, Quaternion.identity, "", ""),
+            new SlamObservation(1, Vector3.forward, Color.blue, Quaternion.identity, "", ""),
+            new SlamObservation(2, new Vector3(Mathf.Sqrt(2) / 2, 0, -Mathf.Sqrt(2) / 2), Color.green,
                                 Quaternion.identity, "", ""),
-            new SlamObservation(new SlamPoint(3, new Vector3(-Mathf.Sqrt(2) / 2, 0, -Mathf.Sqrt(2) / 2), Color.yellow),
+            new SlamObservation(3, new Vector3(-Mathf.Sqrt(2) / 2, 0, -Mathf.Sqrt(2) / 2), Color.yellow,
                                 Quaternion.identity, "", ""),
         };
 
         private readonly (int id1, int id2)[] _connections = { (0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3) };
 
         private readonly ConnectableObjectsContainer<SlamObservation> _container =
-                new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
-                                                                 new SlamLinesContainer());
+            new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
+                                                             new SlamLinesContainer());
 
         private IEnumerator UpdateContainer()
         {
@@ -85,19 +85,19 @@ namespace Elektronik.TestScene
 
         private SlamObservation ChangeColor(SlamObservation obs)
         {
-            return new SlamObservation(new SlamPoint(obs.Point.Id, obs.Point.Position, Color.black),
-                                       obs.Rotation, obs.Message, obs.FileName);
+            return new SlamObservation(obs.Id, obs.Position, Color.black, obs.Rotation, obs.Message, obs.FileName);
         }
 
         private SlamObservation ChangePosition(SlamObservation obs)
         {
-            return new SlamObservation(new SlamPoint(obs.Point.Id, obs.Point.Position + Vector3.up, obs.Point.Color),
-                                       obs.Rotation, obs.Message, obs.FileName);
+            return new SlamObservation(obs.Id, obs.Position + Vector3.up, obs.Color, obs.Rotation, obs.Message,
+                                       obs.FileName);
         }
-        
+
         private static SlamObservation Rotated(SlamObservation obs)
         {
-            return new SlamObservation(obs.Point, Quaternion.AngleAxis(45, Vector3.forward) * obs.Rotation,
+            return new SlamObservation(obs.Id, obs.Position, obs.Color,
+                                       Quaternion.AngleAxis(45, Vector3.forward) * obs.Rotation,
                                        obs.Message, obs.Message);
         }
 

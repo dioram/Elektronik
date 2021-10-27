@@ -28,16 +28,11 @@ Shader "Elektronik/MeshShaderUnlit"
             #pragma multi_compile _ _COMPUTE_BUFFER
 
             #include "UnityCG.cginc"
-            
+            #include "ComputeShaders.cginc"
+
             half _Scale;
             StructuredBuffer<float4> _VertsBuffer;
             StructuredBuffer<float4> _NormalsBuffer;
-            #define MAX_BRIGHTNESS 16
-
-            struct VertexInput
-            {
-                uint vertex_id : SV_VertexID;
-            };
 
             struct VertexOutput
             {
@@ -45,15 +40,6 @@ Shader "Elektronik/MeshShaderUnlit"
                 float2 bary_coord: TEXTCOORD2;
                 half3 color: COLOR;
             };
-
-            half3 decode_color(uint data)
-            {
-                const half r = (data) & 0xff;
-                const half g = (data >> 8) & 0xff;
-                const half b = (data >> 16) & 0xff;
-                const half a = (data >> 24) & 0xff;
-                return half3(r, g, b) * a * MAX_BRIGHTNESS / (255 * 255);
-            }
 
             VertexOutput vertex_shader(const VertexInput input)
             {
@@ -85,7 +71,7 @@ Shader "Elektronik/MeshShaderUnlit"
                 min_bary = smoothstep(0.5 * delta, 1.5 * delta, min_bary);
 
                 clip(0.5 - min_bary);
-                
+
                 return i.color * min_bary;
             }
             ENDCG

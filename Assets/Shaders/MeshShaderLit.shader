@@ -2,7 +2,7 @@ Shader "Elektronik/MeshShaderLit"
 {
     Properties
     {
-        _Color ("Color", Color) = (1, 1, 1, 1) 
+        _Color ("Color", Color) = (1, 1, 1, 1)
         _Smoothness ("Smoothness", Range(0, 1)) = 0.9
         [Gamma] _Metallic ("Metallic", Range(0, 1)) = 0
         _Scale("Scale", Float) = 1
@@ -41,29 +41,17 @@ Shader "Elektronik/MeshShaderLit"
             float _Metallic;
             float _Smoothness;
             half3 _Color;
-            #define MAX_BRIGHTNESS 16
 
-            struct VertexInput
-            {
-                uint vertex_id : SV_VertexID;
-            };
+            #include "Wireframe.cginc"
+            #include "ComputeShaders.cginc"
 
             struct VertexOutput
             {
                 float4 position : SV_POSITION;
                 float3 world_pos : TEXTCOORD1;
                 half3 normal : TEXTCOORD0;
-                float2 bary_coord: TEXTCOORD2;
+                BARYCENTRIC_COORDINATES
             };
-
-            half3 decode_color(uint data)
-            {
-                half r = (data) & 0xff;
-                half g = (data >> 8) & 0xff;
-                half b = (data >> 16) & 0xff;
-                half a = (data >> 24) & 0xff;
-                return half3(r, g, b) * a * MAX_BRIGHTNESS / (255 * 255);
-            }
 
             VertexOutput vertex_shader(const VertexInput input)
             {
@@ -72,7 +60,7 @@ Shader "Elektronik/MeshShaderLit"
                 o.world_pos = pt.xyz * _Scale;
                 o.position = UnityObjectToClipPos(float4(o.world_pos, 1));
                 o.normal = float3(0, 0, 0);
-                o.bary_coord = float2(0, 0);
+                o.barycentricCoordinates = float2(0, 0);
                 return o;
             }
 
@@ -86,8 +74,8 @@ Shader "Elektronik/MeshShaderLit"
                 i[0].normal = UnityObjectToWorldNormal(triangle_normal);
                 i[1].normal = UnityObjectToWorldNormal(triangle_normal);
                 i[2].normal = UnityObjectToWorldNormal(triangle_normal);
-                i[0].bary_coord = float2(1, 0);
-                i[1].bary_coord = float2(0, 1);
+                i[0].barycentricCoordinates = float2(1, 0);
+                i[1].barycentricCoordinates = float2(0, 1);
                 stream.Append(i[0]);
                 stream.Append(i[1]);
                 stream.Append(i[2]);
@@ -114,20 +102,14 @@ Shader "Elektronik/MeshShaderLit"
                 indirect_light.diffuse = 0.1;
                 indirect_light.specular = 0.1;
 
-                float3 color = UNITY_BRDF_PBS(
+                const float4 color = UNITY_BRDF_PBS(
                     albedo, specular_tint,
                     one_minus_reflectivity, _Smoothness,
                     i.normal, view_dir,
                     light, indirect_light
                 );
-                float3 barys;
-                barys.xy = i.bary_coord;
-                barys.z = 1 - barys.x - barys.y;
-                float min_bary = min(barys.x, min(barys.y, barys.z));
-                const float delta = fwidth(min_bary);
-                min_bary = smoothstep(0.5 * delta, 1.5 * delta, min_bary);
 
-                return color * min_bary;
+                return Wireframe(i.barycentricCoordinates, color, float4(0, 0, 0, 1));
             }
             ENDCG
         }

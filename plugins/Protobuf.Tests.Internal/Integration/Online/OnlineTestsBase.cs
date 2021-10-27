@@ -128,7 +128,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                     .Callback((object sender, AddedEventArgs<SlamObservation> e) =>
                     {
                         var ss = e.AddedItems
-                                .Select(o => $"{o.Id}, [{ToString(o.Point)}], {o.Rotation}, " +
+                                .Select(o => $"{o.Id}, {o.Position}, {o.Color}, {o.Rotation}, " +
                                                 $"{o.ObservedPoints.Count}, \"{o.Message}\", \"{o.FileName}\"");
                         TestContext.WriteLine($"Observations added: {sender}\n{string.Join("\n", ss)}");
                     });
@@ -137,7 +137,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                     .Callback((object sender, UpdatedEventArgs<SlamObservation> e) =>
                     {
                         var ss = e.UpdatedItems
-                                .Select(o => $"{o.Id}, [{ToString(o.Point)}], {o.Rotation}, " +
+                                .Select(o => $"{o.Id}, {o.Position}, {o.Color}, {o.Rotation}, " +
                                                 $"{o.ObservedPoints.Count}, \"{o.Message}\", \"{o.FileName}\"");
                         TestContext.WriteLine($"Observations updated: {sender}\n{string.Join("\n", ss)}");
                     });
