@@ -1,95 +1,39 @@
-﻿using UnityEngine;
+﻿using JetBrains.Annotations;
+using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public abstract class CloudBlock : MonoBehaviour, ICloudBlock
+    public abstract class CloudBlock<TGpuItem> : ICloudBlock<TGpuItem>
     {
-        public const int Capacity = 256 * 256;
-        public Shader CloudShader;
-        public bool Updated { get; set; }
-        public float ItemSize { get; set; } = 1f;
-        public int ItemsCount { get; set; }  = 0;
+        public abstract int RenderQueue { get; }
 
-        public abstract GPUItem[] GetItems();
+        public float Scale { get; set; }
 
-        public virtual void Clear()
+        protected CloudBlock(float scale)
         {
-            Updated = true;
+            Scale = scale;
         }
 
-        public virtual void SetScale(float value)
+        public virtual void UpdateDataOnGpu()
         {
-            _renderMaterial.SetFloat(_scaleShaderProp, value);
-        }
-        
-        #region Unity events
-
-        protected virtual void Awake()
-        {
-            Init();
+            Updated = false;
         }
 
-        protected virtual void Start()
+        public virtual void RenderData()
         {
-            _renderMaterial = new Material(CloudShader) {hideFlags = HideFlags.DontSave};
-            _renderMaterial.EnableKeyword("_COMPUTE_BUFFER");
+            if (RenderMaterial is null) return;
+            RenderMaterial.SetFloat(_scaleShaderProp, Scale);
         }
 
-        protected virtual void Update()
-        {
-            lock (this)
-            {
-                if (!Updated) return;
-            
-                OnUpdated();
+        public abstract TGpuItem this[int index] { get; set; }
 
-                Updated = false;
-            }
-        }
+        public abstract void Dispose();
 
-        protected virtual void OnRenderObject()
-        {
-            if (ItemsCount <= 0) return;
-            _renderMaterial.SetPass(0);
-            _renderMaterial.SetFloat(_sizeShaderProp, ItemSize);
-            SendData(_renderMaterial);
-            Draw();
-        }
+        #region Protected
 
-        private void OnDestroy()
-        {
-            ReleaseBuffers();
-        }
-
-        #endregion
-
-        #region Protected definitions
-        
-        protected abstract void Init();
-
-        protected abstract void SendData(Material renderMaterial);
-
-        protected abstract void OnUpdated();
-
-        protected abstract void Draw();
-
-        protected abstract void ReleaseBuffers();
-
-        protected void ClearArray(GPUItem[] array)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                array[i] = default;
-            }
-        }
-
-        #endregion
-
-        #region Private definitions
-        
-        private readonly int _sizeShaderProp = Shader.PropertyToID("_Size");
+        [CanBeNull] protected Material RenderMaterial;
+        protected bool Updated = false;
         private readonly int _scaleShaderProp = Shader.PropertyToID("_Scale");
-        private Material _renderMaterial;
 
         #endregion
     }

@@ -17,11 +17,11 @@ namespace Elektronik.Protobuf.Online.GrpcServices
     public abstract class ConnectableObjectsMapManager<TCloudItem, TCloudItemDiff>
             : MapManager<TCloudItem, TCloudItemDiff>
             where TCloudItem : struct, ICloudItem
-            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
+            where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         private readonly IConnectableObjectsContainer<TCloudItem> _connectableContainer;
 
-        protected ConnectableObjectsMapManager(OnlineFrameBuffer buffer,
+        protected ConnectableObjectsMapManager(IOnlineFrameBuffer buffer,
                                                IConnectableObjectsContainer<TCloudItem> container,
                                                ICSConverter? converter, ILogger logger)
                 : base(buffer, container, converter, logger)

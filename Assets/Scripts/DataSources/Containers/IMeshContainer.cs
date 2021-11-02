@@ -8,6 +8,6 @@ namespace Elektronik.DataSources.Containers
     {
         public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
 
-        public void OverrideColors();
+        public void SwitchShader();
     }
 }

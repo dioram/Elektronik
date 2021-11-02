@@ -28,6 +28,17 @@ namespace Elektronik.EditorTests
         }
 
         [Test]
+        public void PointFoundNearest()
+        {
+            var block = new CollisionBlock(Vector3Int.zero);
+            block.AddItem(0, Vector3.up * 2.2f);
+            block.AddItem(1, Vector3.up * 2.6f);
+            var ray = new Ray(Vector3.zero, Vector3.up);
+
+            Assert.AreEqual(0, block.FindItem(ray, 0.1f).Value);
+        }
+
+        [Test]
         public void PointNotFound()
         {
             var block = new CollisionBlock(Vector3Int.zero);

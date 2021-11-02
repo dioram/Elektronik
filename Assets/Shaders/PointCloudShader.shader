@@ -13,13 +13,8 @@ Shader "Elektronik/PointCloudShader"
         }
         Cull Off
         ZWrite On
-        ZTest Less
         Pass
         {
-            Tags
-            {
-                "LightMode"="ForwardBase"
-            }
             CGPROGRAM
             #pragma vertex Vertex
             #pragma geometry Geometry

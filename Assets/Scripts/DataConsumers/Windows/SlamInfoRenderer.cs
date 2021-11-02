@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Elektronik.Data.PackageObjects;
-using Elektronik.Threading;
 using Elektronik.UI.ListBox;
 using TMPro;
+using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.Windows
@@ -32,7 +32,7 @@ namespace Elektronik.DataConsumers.Windows
             {
                 if (_isShowing == value) return;
                 _isShowing = value;
-                MainThreadInvoker.Enqueue(() => gameObject.SetActive(_isShowing));
+                UniRxExtensions.StartOnMainThread(() => gameObject.SetActive(_isShowing)).Subscribe();
             }
         }
 
@@ -40,20 +40,26 @@ namespace Elektronik.DataConsumers.Windows
 
         public void Render((string message, IEnumerable<ICloudItem> points) data)
         {
-            MessageLabel.text = $"Package message: {data.message}";
-            foreach (var point in data.points)
+            UniRxExtensions.StartOnMainThread(() =>
             {
-                var lbi = (SpecialInfoListBoxItem) PointButtonsBox.Add();
-                lbi.Point = point;
-                lbi.MessageLabel = PointMessageLabel;
-            }
+                MessageLabel.text = $"Package message: {data.message}";
+                foreach (var point in data.points)
+                {
+                    var lbi = (SpecialInfoListBoxItem) PointButtonsBox.Add();
+                    lbi.Point = point;
+                    lbi.MessageLabel = PointMessageLabel;
+                }
+            }).Subscribe();
         }
 
         public void Clear()
         {
-            if (MessageLabel != null) MessageLabel.text = "";
-            if (PointMessageLabel != null) PointMessageLabel.text = "";
-            if (PointButtonsBox != null) PointButtonsBox.Clear();
+            UniRxExtensions.StartOnMainThread(() =>
+            {
+                if (MessageLabel != null) MessageLabel.text = "";
+                if (PointMessageLabel != null) PointMessageLabel.text = "";
+                if (PointButtonsBox != null) PointButtonsBox.Clear();
+            }).Subscribe();
         }
 
         #endregion

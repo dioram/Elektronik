@@ -14,7 +14,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class LinesMapManager : MapManager<SlamLine, SlamLineDiff>
     {
-        public LinesMapManager(OnlineFrameBuffer buffer, IContainer<SlamLine> container,
+        public LinesMapManager(IOnlineFrameBuffer buffer, IContainer<SlamLine> container,
                                ICSConverter? converter, ILogger logger)
                 : base(buffer, container, converter, logger)
         { }

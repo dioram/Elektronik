@@ -3,27 +3,38 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Elektronik.Settings;
 using Elektronik.UI.Localization;
+using UniRx;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
+using UnityEngine.SceneManagement;
 
 namespace Elektronik.PluginsSystem.UnitySide
 {
     public class PluginsLoader : MonoBehaviour
     {
-        public static readonly Lazy<List<IElektronikPluginsFactory>> PluginFactories =
-                new Lazy<List<IElektronikPluginsFactory>>(LoadPluginFactories);
+        public static readonly List<IElektronikPluginsFactory> PluginFactories = new List<IElektronikPluginsFactory>();
+
+        private static readonly Dictionary<IElektronikPluginsFactory, string> PathsToDlls =
+                new Dictionary<IElektronikPluginsFactory, string>();
 
         private void Awake()
         {
-            Debug.Log($"Loaded {PluginFactories.Value.Count} plugins");
+            SettingsRepository.Path = Application.persistentDataPath;
+            var pluginsLoading = Observable.Start(LoadPluginFactories);
+            Observable.WhenAll(pluginsLoading)
+                    .ObserveOnMainThreadSafe()
+                    .Do(_ => LoadLogos())
+                    .Do(_ => Debug.Log($"Loaded {PluginFactories.Count} plugins"))
+                    .Do(_ => SceneManager.LoadScene("Scenes/Main"))
+                    .Subscribe()
+                    .AddTo(this);
         }
 
         #region Private
 
-        private static List<IElektronikPluginsFactory> LoadPluginFactories()
+        private static void LoadPluginFactories()
         {
-            var res = new List<IElektronikPluginsFactory>();
             try
             {
                 var currentDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) ?? "";
@@ -36,7 +47,12 @@ namespace Elektronik.PluginsSystem.UnitySide
                 {
                     try
                     {
-                        res.AddRange(LoadFromFile(file));
+                        var factories = LoadFromFile(file);
+                        PluginFactories.AddRange(factories);
+                        foreach (var factory in factories)
+                        {
+                            PathsToDlls[factory] = file;
+                        }
                     }
                     catch (Exception e)
                     {
@@ -48,8 +64,6 @@ namespace Elektronik.PluginsSystem.UnitySide
             {
                 Debug.LogError($"PluginsLoader initialized with error: {e.Message}");
             }
-
-            return res;
         }
 
         private static List<IElektronikPluginsFactory> LoadFromFile(string path)
@@ -61,15 +75,22 @@ namespace Elektronik.PluginsSystem.UnitySide
                     .Select(InstantiatePluginFactory<IElektronikPluginsFactory>)
                     .Where(p => p != null)
                     .ToList();
-            foreach (var factory in factories)
-            {
-                factory.LoadLogo(Path.Combine(Path.GetDirectoryName(path)!,
-                                              $@"../data/{factory.DisplayName}_Logo.png"));
-            }
 
             TextLocalizationExtender.ImportTranslations(Path.Combine(Path.GetDirectoryName(path)!,
                                                                      @"../data/translations.csv"));
             return factories;
+        }
+
+        private void LoadLogos()
+        {
+            foreach (var factory in PluginFactories)
+            {
+                var path = Path.Combine(Path.GetDirectoryName(PathsToDlls[factory])!,
+                                        $@"../data/{factory.DisplayName}_Logo.png");
+                if (!File.Exists(path)) continue;
+                factory.Logo = new Texture2D(1, 1);
+                factory.Logo.LoadImage(File.ReadAllBytes(path));
+            }
         }
 
         private static T InstantiatePluginFactory<T>(Type t) where T : class

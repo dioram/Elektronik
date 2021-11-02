@@ -15,7 +15,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class ObservationsMapManager : ConnectableObjectsMapManager<SlamObservation, SlamObservationDiff>
     {
-        public ObservationsMapManager(OnlineFrameBuffer buffer, IConnectableObjectsContainer<SlamObservation> container,
+        public ObservationsMapManager(IOnlineFrameBuffer buffer, IConnectableObjectsContainer<SlamObservation> container,
                                       ICSConverter? converter, ILogger logger)
             : base(buffer, container, converter, logger)
         {

@@ -34,6 +34,26 @@ GetKNearest(const pcl::search::KdTree<T>& tree, int k, T point)
     return std::make_pair(k_indices, k_sqr_distances);
 }
 
+double Distance(const NativePoint& point1, const NativePoint& point2)
+{
+    return sqrt((point1.x - point2.x) * (point1.x - point2.x)
+                + (point1.y - point2.y) * (point1.y - point2.y)
+                + (point1.z - point2.z) * (point1.z - point2.z));
+}
+
+bool FilterByDistance(const std::vector<NativePoint>& points,
+                      const std::vector<int>& nearest_indexes,
+                      float distance_to_nearest)
+{
+    double meanDistance = 0;
+    for (int i = 1; i < nearest_indexes.size(); i++) {
+        meanDistance += Distance(points[0], points[i]);
+    }
+    meanDistance /= nearest_indexes.size() - 1;
+
+    return distance_to_nearest > meanDistance * 2;
+}
+
 NativeMesh MeshBuilder::FromPoints(const std::vector<NativePoint>& points)
 {
     // Input processing
@@ -82,18 +102,18 @@ NativeMesh MeshBuilder::FromPoints(const std::vector<NativePoint>& points)
     // Compute
     reconstructor.performReconstruction(output_cloud, output_polygons);
 
-    // Process output
+    // Postprocessing
     std::set<int> excluded_points;
-
     NativeMesh result;
     for (int i = 0; i < output_cloud.size(); i++) {
         auto p = pcl::PointXYZ(output_cloud[i].x, output_cloud[i].y, output_cloud[i].z);
-        auto distance = GetKNearest(*tree, 1, p).second.front();
+        auto nearest = GetKNearest(*tree3, NEIGHBORS_FOR_COLOR, p);
         NativePoint point(p.x, p.y, p.z);
-        if (distance > 1) {
+        if (FilterByDistance(points, nearest.first, sqrt(nearest.second.front()))) {
             excluded_points.emplace(i);
         } else {
-            GetColor(points, GetKNearest(*tree3, NEIGHBORS_FOR_COLOR, p).first, point);
+            point = points[nearest.first.front()];
+            GetColor(points, nearest.first, point);
         }
         result.points.emplace_back(point);
     }
@@ -103,6 +123,11 @@ NativeMesh MeshBuilder::FromPoints(const std::vector<NativePoint>& points)
         auto b = triangle.vertices[1];
         auto c = triangle.vertices[2];
         if (excluded_points.count(a) > 0 || excluded_points.count(b) > 0 || excluded_points.count(c) > 0) continue;
+        if (result.points[a] == result.points[b]
+            || result.points[a] == result.points[c]
+            || result.points[b] == result.points[c]) {
+            continue;
+        }
 
         result.triangles.emplace_back(a);
         result.triangles.emplace_back(b);

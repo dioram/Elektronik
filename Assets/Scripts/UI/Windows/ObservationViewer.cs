@@ -4,7 +4,6 @@ using Elektronik.Cameras;
 using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers.Windows;
 using Elektronik.DataSources.Containers;
-using Elektronik.Threading;
 using Elektronik.UI.Localization;
 using TMPro;
 using UniRx;
@@ -18,6 +17,7 @@ namespace Elektronik.UI.Windows
     {
         #region Editor fields
 
+        [SerializeField] private float ImageUpdateDelay = 1;
         [SerializeField] private RawImage Image;
         [SerializeField] private TMP_Text Message;
         [SerializeField] private Window Window;
@@ -74,14 +74,14 @@ namespace Elektronik.UI.Windows
 
         public void Render((IContainer<SlamObservation>, SlamObservation) data)
         {
-            MainThreadInvoker.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 gameObject.SetActive(true);
                 _container = data.Item1;
                 _observation = data.Item2;
                 Window.TitleLabel.SetLocalizedText("Observation #{0}", _observation.Id);
                 SetData();
-            });
+            }).Subscribe();
         }
 
         public void Clear()
@@ -112,7 +112,7 @@ namespace Elektronik.UI.Windows
 
         private void ShowNextObservation()
         {
-            bool found = false;
+            var found = false;
             foreach (var observation in _container)
             {
                 if (observation.Id == _observation.Id)
@@ -131,7 +131,7 @@ namespace Elektronik.UI.Windows
 
         private void ShowPreviousObservation()
         {
-            SlamObservation prev = _observation;
+            var prev = _observation;
             foreach (var observation in _container)
             {
                 if (observation.Id == _observation.Id)
@@ -150,7 +150,7 @@ namespace Elektronik.UI.Windows
         {
             while (true)
             {
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(ImageUpdateDelay);
                 SetData();
             }
             // ReSharper disable once IteratorNeverReturns
@@ -158,6 +158,7 @@ namespace Elektronik.UI.Windows
 
         private void SetData()
         {
+            _observation = _container[_observation.Id];
             Message.text = _observation.Message;
             TextView.SetActive(!string.IsNullOrEmpty(Message.text));
 

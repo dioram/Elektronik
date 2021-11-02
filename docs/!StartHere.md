@@ -1,6 +1,6 @@
 ﻿![](Images/Logo.svg)
 
-# Elektronik-Tools
+# Elektronik
 
 ### Welcome to the Elektronik documentation!
 

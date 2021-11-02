@@ -20,7 +20,7 @@ MonoBehaviour:
   inputUpdateMode: 2
   poseUpdateMode: 8
   activateFirstActionSetOnStart: 1
-  editorAppKey: application.generated.unity.elektroniktools2.0.exe
+  editorAppKey: application.generated.unity.elektronik.exe
   autoEnableVR: 1
   legacyMixedRealityCamera: 1
   mixedRealityCameraPose:

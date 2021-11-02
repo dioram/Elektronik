@@ -21,15 +21,16 @@ namespace Elektronik.Protobuf.Online.GrpcServices
     /// <typeparam name="TCloudItem"></typeparam>
     /// <typeparam name="TCloudItemDiff"></typeparam>
     public abstract class MapManager<TCloudItem, TCloudItemDiff>
-            : MapsManagerPb.MapsManagerPbBase, IChainable<MapsManagerPb.MapsManagerPbBase>
+            : MapsManagerPb.MapsManagerPbBase, 
+              IChainable<MapsManagerPb.MapsManagerPbBase>
             where TCloudItem : struct, ICloudItem
-            where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
+            where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         protected readonly ILogger Logger;
-        protected readonly OnlineFrameBuffer Buffer;
+        protected readonly IOnlineFrameBuffer Buffer;
         protected readonly ICSConverter? Converter;
 
-        protected MapManager(OnlineFrameBuffer buffer, IContainer<TCloudItem> container,
+        protected MapManager(IOnlineFrameBuffer buffer, IContainer<TCloudItem> container,
                              ICSConverter? converter, ILogger logger)
         {
             Container = container;

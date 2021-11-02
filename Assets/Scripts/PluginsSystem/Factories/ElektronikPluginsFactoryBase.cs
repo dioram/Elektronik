@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using Elektronik.Data.Converters;
 using Elektronik.Settings;
 using UnityEngine;
@@ -23,7 +22,7 @@ namespace Elektronik.PluginsSystem
         }
 
         /// <inheritdoc />
-        public Texture2D Logo { get; private set; }
+        public Texture2D Logo { get; set; }
 
         /// <inheritdoc />
         public abstract string DisplayName { get; }
@@ -39,14 +38,6 @@ namespace Elektronik.PluginsSystem
         {
             SaveSettings();
             return StartPlugin(_typedSettings, converter);
-        }
-
-        /// <inheritdoc />
-        public void LoadLogo(string path)
-        {
-            if (!File.Exists(path)) return;
-            Logo = new Texture2D(1, 1);
-            Logo.LoadImage(File.ReadAllBytes(path));
         }
 
         /// <inheritdoc />

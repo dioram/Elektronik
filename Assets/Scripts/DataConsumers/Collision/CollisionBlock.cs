@@ -21,7 +21,7 @@ namespace Elektronik.DataConsumers.Collision
                 return;
             }
 
-            int childSide = _sideSize == int.MaxValue ? TopCubeSize : _sideSize / 3;
+            var childSide = _sideSize == int.MaxValue ? TopCubeSize : _sideSize / 3;
             var center = GetBlockPos(pos, childSide);
             if (!_children.ContainsKey(center))
             {
@@ -67,7 +67,7 @@ namespace Elektronik.DataConsumers.Collision
             blocks.Sort((i, j) => Comparer<float>.Default.Compare(i.distance, j.distance));
 
             int? minId = null;
-            float minDistance = float.MaxValue;
+            var minDistance = float.MaxValue;
             foreach (var (block, _) in blocks)
             {
                 foreach (var (id, pos) in block._items)
@@ -76,6 +76,7 @@ namespace Elektronik.DataConsumers.Collision
                         && (pos - ray.origin).magnitude < minDistance)
                     {
                         minId = id;
+                        minDistance = (pos - ray.origin).magnitude;
                     }
                 }
             }

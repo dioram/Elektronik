@@ -91,13 +91,13 @@ namespace Protobuf.Tests.Internal.Integration.Online
         public void SendImage()
         {
             // Sending image
-            var packet = new ImagePacketPb
+            var packet = new PacketPb
             {
-                ImageData = ByteString.CopyFrom(_imageData, 0, _imageData.Length),
+                Image = new ImagePb { Bytes = ByteString.CopyFrom(_imageData, 0, _imageData.Length) }
             };
-            
-            var response = ImageClient.Handle(packet);
-            
+
+            var response = MapClient.Handle(packet);
+
             Thread.Sleep(200);
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             MockedImageRenderer.Verify(r => r.Render(_imageData), Times.Once);
@@ -148,7 +148,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Observations = new PacketPb.Types.Observations(),
             };
             packet.Observations.Data.Add(_observationsMap);
-            var e = new AddedEventArgs<SlamObservation>(_observationsMap.Select(p => ((SlamObservationDiff)p).Apply()).ToArray());
+            var e = new AddedEventArgs<SlamObservation>(_observationsMap.Select(p => ((SlamObservationDiff)p).Apply())
+                                                                .ToArray());
 
             SendPacket(packet);
 
@@ -186,7 +187,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
             packet.TrackedObjs.Data.Add(_objects);
-            var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => ((SlamTrackedObjectDiff)p).Apply()).ToArray());
+            var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => ((SlamTrackedObjectDiff)p).Apply())
+                                                                  .ToArray());
             var els = _objects
                     .Select(o => new AddedEventArgs<SimpleLine>(new SimpleLine(0, (Vector3)o.Position!,
                                                                                (Vector3)o.Position!, (Color)o.Color!)))
@@ -222,7 +224,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
         [Test, Order(6)]
         public void ClearAll()
         {
-            var e1 = new RemovedEventArgs<SimpleLine>(new [] {0});
+            var e1 = new RemovedEventArgs<SimpleLine>(new[] { 0 });
             var e3 = new RemovedEventArgs<SlamTrackedObject>(Enumerable.Range(0, 3).ToArray());
             var ep5 = new RemovedEventArgs<SlamPoint>(Enumerable.Range(0, 5).ToArray());
             var eo5 = new RemovedEventArgs<SlamObservation>(Enumerable.Range(0, 5).ToArray());
@@ -237,8 +239,9 @@ namespace Protobuf.Tests.Internal.Integration.Online
             MockedImageRenderer.Verify(r => r.Clear(), Times.Once);
             MockedPointsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Points, ep5),
                                         Times.Once);
-            MockedObservationsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, eo5),
-                                              Times.Once);
+            MockedObservationsRenderer.Verify(
+                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, eo5),
+                Times.Once);
             MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(), el5),
                                            Times.Exactly(2));
             MockedPlanesRenderer.Verify(

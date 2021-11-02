@@ -5,7 +5,7 @@ using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.DataSources.SpecialInterfaces;
-using Elektronik.Threading;
+using UniRx;
 
 namespace Elektronik.DataSources.Containers
 {
@@ -31,7 +31,7 @@ namespace Elektronik.DataSources.Containers
             {
                 if (_maxWeight == value) return;
                 _maxWeight = value;
-                MainThreadInvoker.Enqueue(() => OnMaxWeightChanged?.Invoke(_maxWeight));
+                UniRxExtensions.StartOnMainThread(() => OnMaxWeightChanged?.Invoke(_maxWeight)).Subscribe();
             }
         }
 

@@ -14,7 +14,7 @@ std::vector<Plane> FilterPlanes(const std::vector<Plane>& planes, const Preferen
     return res;
 }
 
-std::vector<int>
+std::vector<std::vector<int>>
 PlanesDetector::FindPlanes(const std::vector<Vector3d>& points, const Preferences& preferences) const
 {
     auto cloud = PointCloud();
@@ -26,11 +26,11 @@ PlanesDetector::FindPlanes(const std::vector<Vector3d>& points, const Preference
                                       preferences.Steps, preferences.CountRatio, preferences.DCos);
     if (preferences.UseGravity) planes = FilterPlanes(planes, preferences);
 
-    std::vector<int> res(points.size(), 0);
+    std::vector<std::vector<int>> res(points.size(), std::vector<int>());
 
     for (int j = 0; j < points.size(); j++) {
         for (int i = 0; i < planes.size(); i++) {
-            if (planes[i].accept(points[j])) res[j] = i + 1;
+            if (planes[i].accept(points[j])) res[j].emplace_back(i);
         }
     }
 

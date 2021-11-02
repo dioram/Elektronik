@@ -7,7 +7,6 @@ using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.SpecialInterfaces;
 using Elektronik.PluginsSystem;
 using Elektronik.PluginsSystem.UnitySide;
-using Elektronik.Threading;
 using Elektronik.UI;
 using JetBrains.Annotations;
 using TMPro;
@@ -32,7 +31,7 @@ namespace Elektronik.DataControllers
 
         private void Start()
         {
-            var factories = PluginsLoader.PluginFactories.Value.OfType<IClusteringAlgorithmFactory>().ToArray();
+            var factories = PluginsLoader.PluginFactories.OfType<IClusteringAlgorithmFactory>().ToArray();
             if (factories.Length == 0)
             {
                 ToolbarButton.SetActive(false);
@@ -91,11 +90,11 @@ namespace Elektronik.DataControllers
 
             SaveClustersContainers(clustered, container as IVisible);
 
-            MainThreadInvoker.Enqueue(() =>
+            UniRxExtensions.StartOnMainThread(() =>
             {
                 DataSourcesController.AddDataSource(clustered);
                 panel.enabled = true;
-            });
+            }).Subscribe();
         }
 
         private void UpdateClusterableContainers()

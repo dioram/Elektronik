@@ -58,6 +58,8 @@
   - [IDataSourcePlugin](../Assets/Scripts/PluginsSystem/Plugins/IDataSourcePlugin.cs)
     Интерфейс для любых плагинов - источников данных.
     Референсная реализация: [ProtobufOnlinePlayer](../Plugins/Protobuf/Online/ProtobufOnlinePlayer.cs)
+  - [IRewindableDataSource](../Assets/Scripts/PluginsSystem/Plugins/IRewindableDataSource.cs) 
+    Интерфейс для любых плагинов - источников данных, которые поддерживают перемотку.
 
 ## Плагины - потребители данных
 - Фабрики:

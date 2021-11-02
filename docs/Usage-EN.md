@@ -1,4 +1,4 @@
-# Elektronik Tools user manual
+# Elektronik user manual
 
 ### After launch of Elektronik you will see empty scene, connections window, and some scene and playback controls.
 

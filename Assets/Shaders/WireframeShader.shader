@@ -38,6 +38,7 @@
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
+                o.bary_coord = float2(0, 0);
                 return o;
             }
 

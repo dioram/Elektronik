@@ -220,15 +220,12 @@ cmake --install .
 </PropertyGroup>
 ```
 
-Самый простой способ собрать все плагины - это запустить из корневой директории репозитория скрипт
-[build_plugins.sh](../.github/build_plugins.sh), этот скрипт соберёт плагины и установит их в электроник.
-
-Если же вы хотите собрать плагины вручную, то откройте в IDE файл `./plugins/plugins.sln`,
-внесите все необходимые изменения и соберите всё решение.
-После того, как решение было собрано необходимо установить плагины в Электроник.
-
 Для этого опубликуйте (publish) проект. В качестве места публикации выберите
-`<PATH_TO_ELEKTRONIK>/Plugins/<PLUGIN_NAME>/libraries/`.
+`<PATH_TO_ELEKTRONIK>/build/Plugins/<PLUGIN_NAME>/libraries/`.
+```
+cd ./plugins
+dotnet publish <PLUGIN_NAME> ../build/Plugins/<PLUGIN_NAME>/libraries
+```
 Затем скопиуйте файл переводов `translations.csv` в директорию `<PATH_TO_ELEKTRONIK>/Plugins/<PLUGIN_NAME>/data`.
 
 Повторите описанные действия для всех плагинов, которые вы хотите установить.

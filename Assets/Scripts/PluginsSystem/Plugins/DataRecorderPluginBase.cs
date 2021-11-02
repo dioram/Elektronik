@@ -14,6 +14,8 @@ namespace Elektronik.PluginsSystem
     {
         #region ICloudRenderer
 
+        public int ItemsCount => 0;
+        
         public abstract void OnItemsAdded(object sender, AddedEventArgs<SlamPoint> e);
         public abstract void OnItemsUpdated(object sender, UpdatedEventArgs<SlamPoint> e);
         public abstract void OnItemsRemoved(object sender, RemovedEventArgs<SlamPoint> e);

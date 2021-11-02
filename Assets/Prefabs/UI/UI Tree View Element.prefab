@@ -3361,7 +3361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce79f5bb73644505b9b0db3f43234010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TooltipText: Show window
+  TooltipText: Switch material
   Offset: {x: 0, y: 40}
 --- !u!1 &8633133071377530578
 GameObject:
