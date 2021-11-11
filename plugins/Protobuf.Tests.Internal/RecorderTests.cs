@@ -18,7 +18,7 @@ namespace Protobuf.Tests.Internal
     public class RecorderTests
     {
         private string _filename;
-        private readonly ICSConverter _converter = new ProtobufToUnityConverter();
+        private readonly ICSConverter _converter = new RightHandToLeftHandConverter();
 
         [TearDown]
         public void TearDown()

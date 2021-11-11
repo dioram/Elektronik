@@ -794,6 +794,7 @@ MonoBehaviour:
   RangedIntegerFieldPrefab: {fileID: 8779474675268355695, guid: bb7346bfa6e00c6428bf92f266b7e506, type: 3}
   RangedFloatFieldPrefab: {fileID: 8779474675268355695, guid: 5c2cbbf4906391843b4502a04ee74442, type: 3}
   SettingsButtonPrefab: {fileID: 8779474675268355695, guid: e20c3905a3495364d97bd9a0f0384525, type: 3}
+  EnumFieldPrefab: {fileID: 8779474675268355695, guid: 3e6d3db310a16724a8022b9e0e7e0236, type: 3}
   Target: {fileID: 7300327530787100957}
 --- !u!114 &7997812950178607541
 MonoBehaviour:

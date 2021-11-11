@@ -52,7 +52,7 @@ namespace Elektronik.UI
                     .Do(v => OnScaleChanged?.Invoke(v))
                     .Where(v => Slider.minValue <= v && v <= Slider.maxValue)
                     .Do(v => Slider.value = v)
-                    .Do(v => Camera.SceneScale = v)
+                    .Do(v => Camera.Scale = v)
                     .Do(v => OnScaleChangedUnity.Invoke(v))
                     .Subscribe()
                     .AddTo(this);

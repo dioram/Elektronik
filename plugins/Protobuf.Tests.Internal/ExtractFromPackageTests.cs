@@ -1,4 +1,5 @@
-﻿using Elektronik.Plugins.Common.DataDiff;
+﻿using Elektronik.Plugins.Common;
+using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using NUnit.Framework;
@@ -35,7 +36,7 @@ namespace Protobuf.Tests.Internal
                 new SlamPointDiff(4, new Vector3(5, -6, 7), Color.black, "test"),
             };
 
-            var points = packet.ExtractPoints(new ProtobufToUnityConverter());
+            var points = packet.ExtractPoints(new RightHandToLeftHandConverter());
 
             points.Should().BeEquivalentTo(expected);
         }
@@ -83,7 +84,7 @@ namespace Protobuf.Tests.Internal
                                         new Quaternion(8, -7, 6, -5), new[] { 3, 2, 1 }, "test", @"./3.png")
             };
 
-            var observations = packet.ExtractObservations(new ProtobufToUnityConverter(), @"./");
+            var observations = packet.ExtractObservations(new RightHandToLeftHandConverter(), @"./");
 
             observations.Should().BeEquivalentTo(expected);
         }
@@ -119,7 +120,7 @@ namespace Protobuf.Tests.Internal
                                           "test"),
             };
 
-            var trackedObjects = packet.ExtractTrackedObjects(new ProtobufToUnityConverter());
+            var trackedObjects = packet.ExtractTrackedObjects(new RightHandToLeftHandConverter());
 
             trackedObjects.Should().BeEquivalentTo(expected);
         }
@@ -179,7 +180,7 @@ namespace Protobuf.Tests.Internal
                 }
             };
 
-            var lines = packet.ExtractLines(new ProtobufToUnityConverter());
+            var lines = packet.ExtractLines(new RightHandToLeftHandConverter());
 
             lines.Should().BeEquivalentTo(expected);
         }
@@ -213,7 +214,7 @@ namespace Protobuf.Tests.Internal
                 new SlamPlaneDiff(3, new Vector3(0, -1, 3), new Vector3(5, -7, 8), Color.black, "test")
             };
 
-            var planes = packet.ExtractPlanes(new ProtobufToUnityConverter());
+            var planes = packet.ExtractPlanes(new RightHandToLeftHandConverter());
 
             planes.Should().BeEquivalentTo(expected);
         }

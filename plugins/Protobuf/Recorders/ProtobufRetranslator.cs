@@ -136,7 +136,7 @@ namespace Elektronik.Protobuf.Recorders
         public override SettingsBag Settings => _typedSettings;
         public override Texture2D? Logo { get; }
 
-        private readonly ICSConverter _converter = new ProtobufToUnityConverter();
+        private readonly ICSConverter _converter = new RightHandToLeftHandConverter();
 
         #endregion
 

@@ -1,9 +1,8 @@
-﻿using Elektronik.Plugins.Common;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Elektronik.Protobuf.Data
+namespace Elektronik.Plugins.Common
 {
-    public class ProtobufToUnityConverter : ICSConverter
+    public class RightHandToLeftHandConverter : ICSConverter
     {
         /// <inheritdoc />
         public void Convert(ref Vector3 pos)
