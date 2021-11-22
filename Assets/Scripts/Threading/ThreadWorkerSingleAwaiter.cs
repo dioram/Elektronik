@@ -7,14 +7,11 @@ namespace Elektronik.Threading
     /// <summary>
     /// Runs tasks in another thread.
     /// Ensures that only one task is running and only one task is waiting.
-    /// If new task enqueued when another is waiting then old task disposes and new one waiting;
+    /// If new task enqueued when another is waiting then old task disposes and new one starts waiting;
     /// </summary>
     public class ThreadWorkerSingleAwaiter
     {
-        private Action _waitingTask;
-        private bool _isRunning = false;
-        private readonly object _locker = new object();
-
+        /// <summary> Adds new task to queue. </summary>
         public void Enqueue(Action action)
         {
             lock (_locker)
@@ -28,6 +25,12 @@ namespace Elektronik.Threading
 
             Task.Run(() => RunTasks(action));
         }
+
+        #region Private
+
+        private Action _waitingTask;
+        private bool _isRunning = false;
+        private readonly object _locker = new object();
 
         private void Invoke(Action action)
         {
@@ -65,5 +68,6 @@ namespace Elektronik.Threading
                 _isRunning = false;
             }
         }
+        #endregion
     }
 }

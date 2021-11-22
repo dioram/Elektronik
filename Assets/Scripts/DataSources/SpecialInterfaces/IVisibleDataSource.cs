@@ -2,6 +2,8 @@
 
 namespace Elektronik.DataSources.SpecialInterfaces
 {
+    // TODO: May be rename somehow. All data sources are visible, this interface means that it can be hidden, but I don't like name "Hideable".
+    
     /// <summary> Marks that data source can be hidden. </summary>
     public interface IVisibleDataSource : IDataSource
     {

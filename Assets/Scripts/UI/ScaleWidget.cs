@@ -10,7 +10,8 @@ using UnityEngine.UI;
 
 namespace Elektronik.UI
 {
-    public class ScaleWidget : MonoBehaviour
+    /// <summary> This component sets scene scale based on user input.  </summary>
+    internal class ScaleWidget : MonoBehaviour
     {
         #region Editor fields
 
@@ -26,6 +27,8 @@ namespace Elektronik.UI
 
         public UnityEvent<float> OnScaleChangedUnity = new UnityEvent<float>();
 
+        #region Unity events
+        
         private void Start()
         {
             // ReSharper disable once LocalVariableHidesMember
@@ -56,6 +59,8 @@ namespace Elektronik.UI
                     .Do(v => OnScaleChangedUnity.Invoke(v))
                     .Subscribe()
                     .AddTo(this);
+
+        #endregion
         }
     }
 }

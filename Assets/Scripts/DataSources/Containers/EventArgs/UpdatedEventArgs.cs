@@ -18,7 +18,7 @@ namespace Elektronik.DataSources.Containers.EventArgs
 
         public UpdatedEventArgs(T updatedItem)
         {
-            UpdatedItems = new []{updatedItem};
+            UpdatedItems = new[] { updatedItem };
         }
 
         protected bool Equals(UpdatedEventArgs<T> other)
@@ -29,9 +29,11 @@ namespace Elektronik.DataSources.Containers.EventArgs
             {
                 if (!Equals(first, second)) return false;
             }
+
             return true;
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -40,6 +42,7 @@ namespace Elektronik.DataSources.Containers.EventArgs
             return Equals((UpdatedEventArgs<T>)obj);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return (UpdatedItems != null ? UpdatedItems.GetHashCode() : 0);

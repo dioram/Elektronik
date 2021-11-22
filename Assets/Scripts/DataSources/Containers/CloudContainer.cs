@@ -24,7 +24,7 @@ namespace Elektronik.DataSources.Containers
         {
         }
         
-        #region IContainer
+        #region ICloudContainer
 
         /// <inheritdoc />
         public override void Update(TCloudItem item)

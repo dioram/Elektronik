@@ -3,7 +3,7 @@ using Elektronik.Settings;
 
 namespace Elektronik.Protobuf.Recorders
 {
-    public class ProtobufRetranslatorFactory : ElektronikPluginsFactoryBase<SettingsBag>, ICustomRecorderPluginsFactory
+    public class ProtobufRetranslatorFactory : ElektronikPluginsFactoryBase<SettingsBag>, IDataRecorderPluginsFactory
     {
         protected override IElektronikPlugin StartPlugin(SettingsBag settings)
         {

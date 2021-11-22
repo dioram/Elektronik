@@ -10,6 +10,7 @@ namespace Elektronik.DataObjects
     {
         /// <inheritdoc />
         public int Id { get; set; }
+
         public Vector3 Offset;
         public Vector3 Normal;
         public Color Color;
@@ -31,8 +32,8 @@ namespace Elektronik.DataObjects
 
         public bool Equals(SlamPlane other)
         {
-            return Offset.Equals(other.Offset) && Normal.Equals(other.Normal) 
-                    && ((Color32) Color).Equals((Color32) other.Color) 
+            return Offset.Equals(other.Offset) && Normal.Equals(other.Normal)
+                    && ((Color32)Color).Equals((Color32)other.Color)
                     && Id == other.Id && Message == other.Message;
         }
 

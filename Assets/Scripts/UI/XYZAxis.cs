@@ -2,60 +2,53 @@
 
 namespace Elektronik.UI
 {
-    public class XYZAxis : MonoBehaviour
+    /// <summary> This component draws coordinate axes in local system of game object. </summary>
+    internal class XYZAxis : MonoBehaviour
     {
-        public bool DrawBackwardAxis;
+        /// <summary> Should backward directions of axes be rendered. </summary>
+        [Tooltip("Should backward directions of axes be rendered.")]
+        public bool DrawBackwardAxes;
+        
+        /// <summary> Length of axis line. </summary>
+        [Tooltip("Length of axis line.")]
         public float LengthOfAxis = 0.5f;
-        private static Material _lineMaterial;
-        private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
-        private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
-        private static readonly int Cull = Shader.PropertyToID("_Cull");
 
-        static void CreateLineMaterial()
+        #region Unity events
+
+        private void Awake()
         {
-            if (!_lineMaterial)
+            if (_lineMaterial) return;
+            
+            var shader = Shader.Find("Hidden/Internal-Colored");
+            _lineMaterial = new Material(shader)
             {
-                // Unity has a built-in shader that is useful for drawing
-                // simple colored things.
-                Shader shader = Shader.Find("Hidden/Internal-Colored");
-                _lineMaterial = new Material(shader);
-                _lineMaterial.hideFlags = HideFlags.HideAndDontSave;
-                // Turn on alpha blending
-                _lineMaterial.SetInt(SrcBlend, (int) UnityEngine.Rendering.BlendMode.SrcAlpha);
-                _lineMaterial.SetInt(DstBlend, (int) UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                // Turn backface culling off
-                _lineMaterial.SetInt(Cull, (int) UnityEngine.Rendering.CullMode.Off);
-            }
+                hideFlags = HideFlags.HideAndDontSave
+            };
+            _lineMaterial.SetInt(_srcBlend, (int) UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _lineMaterial.SetInt(_dstBlend, (int) UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            _lineMaterial.SetInt(_cull, (int) UnityEngine.Rendering.CullMode.Off);
         }
 
-        // Will be called after all regular rendering is done
-        public void OnRenderObject()
+        private void OnRenderObject()
         {
-            CreateLineMaterial();
-            // Apply the line material
+            // TODO: It is not really necessary but can be rewritten to Graphics.ProceduralDraw
             _lineMaterial.SetPass(0);
 
             GL.PushMatrix();
-            // Set transformation matrix for drawing to
-            // match our transform
             GL.MultMatrix(transform.localToWorldMatrix);
 
-            // Draw lines
             GL.Begin(GL.LINES);
-            //Draw X axis
             GL.Color(Color.red);
             GL.Vertex3(0, 0, 0);
             GL.Vertex3(LengthOfAxis, 0.0f, 0.0f);
-            //Draw Y axis
             GL.Color(Color.green);
             GL.Vertex3(0, 0, 0);
             GL.Vertex3(0.0f, LengthOfAxis, 0.0f);
-            //Draw Z axis
             GL.Color(Color.blue);
             GL.Vertex3(0, 0, 0);
             GL.Vertex3(0.0f, 0.0f, LengthOfAxis);
 
-            if (DrawBackwardAxis)
+            if (DrawBackwardAxes)
             {
                 GL.Color(Color.red / 2);
                 GL.Vertex3(0, 0, 0);
@@ -71,5 +64,16 @@ namespace Elektronik.UI
             GL.End();
             GL.PopMatrix();
         }
+
+        #endregion
+
+        #region Private
+
+        private Material _lineMaterial;
+        private readonly int _srcBlend = Shader.PropertyToID("_SrcBlend");
+        private readonly int _dstBlend = Shader.PropertyToID("_DstBlend");
+        private readonly int _cull = Shader.PropertyToID("_Cull");
+
+        #endregion
     }
 }

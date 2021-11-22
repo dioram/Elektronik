@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace Elektronik
 {
-    public class PrefabsStore : MonoBehaviour
+    /// <summary> Class for easy access to some popular prefabs. </summary>
+    internal class PrefabsStore : MonoBehaviour
     {
         public Texture2D DefaultCursor;
         public Texture2D LeftRightCursor;

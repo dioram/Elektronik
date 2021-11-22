@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Elektronik.DataSources.Containers
 {
-    /// <summary> Container for  </summary>
+    /// <summary> Container for objects that can have connections between each other. </summary>
     /// <typeparam name="TCloudItem"></typeparam>
     public class ConnectableObjectsCloudContainer<TCloudItem> : IConnectableObjectsCloudContainer<TCloudItem>,
                                                                 ILookableDataSource, IVisibleDataSource
@@ -18,8 +18,14 @@ namespace Elektronik.DataSources.Containers
     {
         public ConnectableObjectsCloudContainer(ICloudContainer<TCloudItem> objects,
                                                 ICloudContainer<SlamLine> connects,
-                                                string displayName = "",
-                                                SparseSquareMatrix<bool> table = null)
+                                                string displayName = "")
+                : this(objects, connects, displayName, null)
+        {
+        }
+
+        private ConnectableObjectsCloudContainer(ICloudContainer<TCloudItem> objects,
+                                                 ICloudContainer<SlamLine> connects,
+                                                 string displayName, SparseSquareMatrix<bool> table)
         {
             _connects = connects;
             _objects = objects;
@@ -29,7 +35,7 @@ namespace Elektronik.DataSources.Containers
             DisplayName = string.IsNullOrEmpty(displayName) ? GetType().Name : displayName;
         }
 
-        #region IContainer
+        #region ICloudContainer
 
         public event EventHandler<AddedEventArgs<TCloudItem>> OnAdded;
 
@@ -230,7 +236,7 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region IConnectableObjectsContainer implementation
+        #region IConnectableObjectsCloudContainer
 
         public void AddConnections(IEnumerable<(int id1, int id2)> connections)
         {
@@ -277,12 +283,15 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ISourceTree
+        #region IDataSource
 
+        /// <inheritdoc />
         public string DisplayName { get; set; }
 
+        /// <inheritdoc />
         public IEnumerable<IDataSource> Children { get; }
 
+        /// <inheritdoc />
         public void AddConsumer(IDataConsumer consumer)
         {
             foreach (var child in Children)
@@ -291,6 +300,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void RemoveConsumer(IDataConsumer consumer)
         {
             foreach (var child in Children)
@@ -299,6 +309,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public IDataSource TakeSnapshot()
         {
             var objects = _objects.TakeSnapshot() as ICloudContainer<TCloudItem>;
@@ -308,17 +319,20 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ILookable
+        #region ILookableDataSOurce
 
+        /// <inheritdoc />
         public Pose Look(Transform transform)
         {
-            return (_objects as ILookableDataSource)?.Look(transform) ?? new Pose(transform.position, transform.rotation);
+            return (_objects as ILookableDataSource)?.Look(transform) ??
+                    new Pose(transform.position, transform.rotation);
         }
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
 
+        /// <inheritdoc />
         public bool IsVisible
         {
             get => _isVisible;
@@ -334,11 +348,12 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public event Action<bool> OnVisibleChanged;
 
         #endregion
 
-        #region Private definitions
+        #region Private
 
         private readonly List<SlamLine> _linesBuffer = new List<SlamLine>();
         private readonly SparseSquareMatrix<bool> _table;

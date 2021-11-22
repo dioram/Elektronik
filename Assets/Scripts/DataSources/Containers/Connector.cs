@@ -26,6 +26,7 @@ namespace Elektronik.DataSources.Containers
             _observations.OnAdded += OnObservationsAdded;
             _observations.OnUpdated += OnObservationsUpdated;
             _observations.OnRemoved += OnObservationsRemoved;
+            // ReSharper disable once ExpressionIsAlwaysNull
             _connections.OnVisibleChanged += OnVisibleChanged;
             DisplayName = displayName;
         }
@@ -127,10 +128,10 @@ namespace Elektronik.DataSources.Containers
         private readonly SlamLinesCloudContainer _connections = new SlamLinesCloudContainer();
 
         private readonly Dictionary<(SlamObservation, SlamObservation), int> _weights =
-            new Dictionary<(SlamObservation, SlamObservation), int>();
+                new Dictionary<(SlamObservation, SlamObservation), int>();
 
         private (SlamObservation, SlamObservation) GetKey(SlamObservation point1, SlamObservation point2) =>
-            point1.Id < point2.Id ? (point1, point2) : (point2, point1);
+                point1.Id < point2.Id ? (point1, point2) : (point2, point1);
 
         private void OnObservationsAdded(object sender, AddedEventArgs<SlamObservation> e)
         {
@@ -216,9 +217,9 @@ namespace Elektronik.DataSources.Containers
             lock (_weights)
             {
                 toRemove = _weights.Where(pair => pair.Value >= _minWeight && pair.Value < value)
-                    .Select(p => p.Key)
-                    .Select(k => new SlamLine(k.Item1.ToPoint(), k.Item2.ToPoint()))
-                    .ToArray();
+                        .Select(p => p.Key)
+                        .Select(k => new SlamLine(k.Item1.ToPoint(), k.Item2.ToPoint()))
+                        .ToArray();
             }
 
             _connections.Remove(toRemove);
@@ -230,9 +231,9 @@ namespace Elektronik.DataSources.Containers
             lock (_weights)
             {
                 toAdd = _weights.Where(pair => pair.Value >= value && pair.Value < _minWeight)
-                    .Select(p => p.Key)
-                    .Select(k => new SlamLine(k.Item1.ToPoint(), k.Item2.ToPoint()))
-                    .ToArray();
+                        .Select(p => p.Key)
+                        .Select(k => new SlamLine(k.Item1.ToPoint(), k.Item2.ToPoint()))
+                        .ToArray();
             }
 
             _connections.AddRange(toAdd);

@@ -86,8 +86,8 @@ namespace Elektronik.Cameras
             _labelsPool = new ObjectPool(LabelPrefab, transform);
         }
         
-        // TODO: rewrite to Graphics.ProceduralDraw
-        public void OnRenderObject()
+        // TODO: It is not really necessary but can be rewritten to Graphics.ProceduralDraw
+        private void OnRenderObject()
         {
             if (RenderMode == GridModes.Disabled)
             {

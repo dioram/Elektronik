@@ -4,55 +4,63 @@ using System.Collections.Generic;
 using System.Linq;
 using Elektronik.DataSources;
 using Elektronik.UI.Buttons;
-using Elektronik.UI.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Elektronik.UI
+namespace Elektronik.UI.SourceTreeControls
 {
+    /// <summary> Component for rendering data sources in data source window. </summary>
     [RequireComponent(typeof(LayoutElement))]
-    public class SourceTreeElement : MonoBehaviour
+    internal class SourceTreeElement : MonoBehaviour
     {
-        public IDataSource Node;
-        public Text NameLabel;
-        public RectTransform Content;
-        public GameObject Spacer;
-        public GameObject SelfPrefab;
-        public int MinHeight = 40;
+        #region Editor fields
 
+        [SerializeField] private RectTransform Content;
+        [SerializeField] private GameObject Spacer;
+        [SerializeField] private GameObject SelfPrefab;
+        [SerializeField] private int MinHeight = 40;
+        [SerializeField] private ButtonChangingIcons TreeButton;
+
+        #endregion
+
+        /// <summary> Model for this view. </summary>
+        public IDataSource Node;
+        
+        /// <summary> This event will be raised if size of UI element was changed. </summary>
         public event Action OnSizeChanged;
 
-        private bool _isExpanded;
-        private RectTransform _rectTransform;
-        private LayoutElement _layoutElement;
-        private readonly List<SourceTreeElement> _children = new List<SourceTreeElement>();
-        public ButtonChangingIcons TreeButton;
+        /// <summary> This event will be raised if data source changed it's DisplayName. </summary>
+        public event Action<string> OnNameChanged;
 
-        public void ChangeState()
+        /// <summary> Expands this element and shows it's children. </summary>
+        public void Expand()
         {
             if (!_isInitialized) return;
             
-            if (_isExpanded)
-            {
-                TreeButton.State = 0;
-                _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, MinHeight);
-                _layoutElement.minHeight = MinHeight;
-                _layoutElement.preferredHeight = MinHeight;
-                Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
-                Content.gameObject.SetActive(false);
-                _isExpanded = false;
-            }
-            else
-            {
-                TreeButton.State = 1;
-                var expanded = GetExpandedSize(true);
-                _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded);
-                _layoutElement.minHeight = expanded;
-                Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded - MinHeight);
-                Content.gameObject.SetActive(true);
-                _isExpanded = true;
-            }
+            TreeButton.SilentSetState(1);
+            var expanded = GetExpandedSize(true);
+            _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded);
+            _layoutElement.minHeight = expanded;
+            Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, expanded - MinHeight);
+            Content.gameObject.SetActive(true);
+            _isExpanded = true;
+            
+            OnSizeChanged?.Invoke();
+        }
 
+        /// <summary> Collapses this element to one line. </summary>
+        public void Collapse()
+        {
+            if (!_isInitialized) return;
+            
+            TreeButton.SilentSetState(0);
+            _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, MinHeight);
+            _layoutElement.minHeight = MinHeight;
+            _layoutElement.preferredHeight = MinHeight;
+            Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
+            Content.gameObject.SetActive(false);
+            _isExpanded = false;
+            
             OnSizeChanged?.Invoke();
         }
 
@@ -67,9 +75,21 @@ namespace Elektronik.UI
 
         public void Start()
         {
-            TreeButton.OnStateChanged += _ => ChangeState();
-            NameLabel.SetLocalizedText(Node.DisplayName);
-
+            TreeButton.OnStateChanged += s =>
+            {
+                switch (s)
+                {
+                case 1:
+                    Expand();
+                    break;
+                case 0:
+                    Collapse();
+                    break;
+                default:
+                    Debug.LogWarning($"Button has unsupported state {s}");
+                    break;
+                }
+            };
             StartCoroutine(CheckChildrenChanges());
         }
 
@@ -78,27 +98,26 @@ namespace Elektronik.UI
         #region Private
 
         private bool _isInitialized = false;
+        private bool _isExpanded;
+        private RectTransform _rectTransform;
+        private LayoutElement _layoutElement;
+        private readonly List<SourceTreeElement> _children = new List<SourceTreeElement>();
 
         private float GetExpandedSize(bool ignoreSelfExpand = false)
         {
             if (_children.Count == 0 || (!_isExpanded && !ignoreSelfExpand)) return MinHeight;
 
-            float res = MinHeight;
-            foreach (var child in _children)
-            {
-                res += child.GetExpandedSize();
-            }
-
-            return res;
+            return MinHeight + _children.Sum(child => child.GetExpandedSize());
         }
 
+        // TODO: somehow rewrite it to events.
         private IEnumerator CheckChildrenChanges()
         {
             while (true)
             {
                 lock (Node.Children)
                 {
-                    NameLabel.SetLocalizedText(Node.DisplayName);
+                    OnNameChanged?.Invoke(Node.DisplayName);
                     var newChildren = Node.Children.Where(c => !_children.Exists(ui => ui.Node == c)).ToList();
                     foreach (var child in newChildren)
                     {

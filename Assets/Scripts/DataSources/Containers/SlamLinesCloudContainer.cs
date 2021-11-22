@@ -10,6 +10,7 @@ using UnityEngine;
 
 namespace Elektronik.DataSources.Containers
 {
+    /// <summary> Special container for <see cref="SlamLine"/>s </summary>
     public class SlamLinesCloudContainer : ICloudContainer<SlamLine>, ILookableDataSource, IVisibleDataSource
     {
         public SlamLinesCloudContainer(string displayName = "")
@@ -17,58 +18,18 @@ namespace Elektronik.DataSources.Containers
             DisplayName = string.IsNullOrEmpty(displayName) ? "Lines" : displayName;
         }
 
-        public void UpdatePositions(IEnumerable<SlamPoint> points)
-        {
-            var lines = new List<(int, SlamLine)>();
-            foreach (var point in points)
-            {
-                lock (_connections)
-                {
-                    foreach (var pair in _connections)
-                    {
-                        SlamPoint p1;
-                        SlamPoint p2;
-                        if (pair.Value.Point1.Id == point.Id)
-                        {
-                            p1 = point;
-                            p2 = pair.Value.Point2;
-                        }
-                        else if (pair.Value.Point2.Id == point.Id)
-                        {
-                            p1 = pair.Value.Point1;
-                            p2 = point;
-                        }
-                        else continue;
+        #region ICloudContaitner
 
-                        var line = new SlamLine(p1, p2);
-                        _connectionsIndices.Remove(pair.Value.GetIds());
-                        _connectionsIndices[line.GetIds()] = pair.Key;
-                        lines.Add((pair.Key, line));
-                    }
-                }
-            }
-
-            // Work around for Collection was modified exception
-            lock (_connections)
-            {
-                foreach (var (id, slamLine) in lines)
-                {
-                    _connections[id] = slamLine;
-                }
-            }
-
-            if (lines.Count == 0) return;
-            OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(lines.Select(l => l.Item2).ToArray()));
-        }
-
-        #region IContaitner
-
+        /// <inheritdoc />
         public event EventHandler<AddedEventArgs<SlamLine>> OnAdded;
 
+        /// <inheritdoc />
         public event EventHandler<UpdatedEventArgs<SlamLine>> OnUpdated;
 
+        /// <inheritdoc />
         public event EventHandler<RemovedEventArgs<SlamLine>> OnRemoved;
 
+        /// <inheritdoc />
         public int Count
         {
             get
@@ -80,8 +41,10 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public bool IsReadOnly => false;
 
+        /// <inheritdoc />
         public IEnumerator<SlamLine> GetEnumerator()
         {
             lock (_connections)
@@ -90,6 +53,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public bool Contains(SlamLine item)
@@ -100,6 +64,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public bool Contains(int id)
         {
             lock (_connections)
@@ -108,6 +73,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void CopyTo(SlamLine[] array, int arrayIndex)
         {
             lock (_connections)
@@ -116,6 +82,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public int IndexOf(SlamLine item)
         {
             lock (_connections)
@@ -133,6 +100,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public SlamLine this[int index]
         {
             get
@@ -145,6 +113,7 @@ namespace Elektronik.DataSources.Containers
             set => Update(value);
         }
 
+        /// <inheritdoc />
         public void Add(SlamLine obj)
         {
             lock (_connections)
@@ -157,8 +126,10 @@ namespace Elektronik.DataSources.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(obj));
         }
 
+        /// <inheritdoc />
         public void Insert(int index, SlamLine item) => Add(item);
 
+        /// <inheritdoc />
         public void AddRange(IList<SlamLine> items)
         {
             if (items is null) return;
@@ -179,6 +150,7 @@ namespace Elektronik.DataSources.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SlamLine>(buffer));
         }
 
+        /// <inheritdoc />
         public void Update(SlamLine item)
         {
             lock (_connections)
@@ -191,6 +163,7 @@ namespace Elektronik.DataSources.Containers
             OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamLine>(item));
         }
 
+        /// <inheritdoc />
         public void Update(IList<SlamLine> items)
         {
             if (items is null) return;
@@ -224,6 +197,7 @@ namespace Elektronik.DataSources.Containers
             if (addedItems.Count > 0) AddRange(addedItems);
         }
 
+        /// <inheritdoc />
         public bool Remove(SlamLine obj)
         {
             lock (_connections)
@@ -239,6 +213,7 @@ namespace Elektronik.DataSources.Containers
             return true;
         }
 
+        /// <inheritdoc />
         public void Remove(IList<SlamLine> items)
         {
             if (items is null) return;
@@ -270,7 +245,8 @@ namespace Elektronik.DataSources.Containers
 
             OnRemoved?.Invoke(this, new RemovedEventArgs<SlamLine>(removed));
         }
-        
+
+        /// <inheritdoc />
         public IList<SlamLine> Remove(IList<int> items)
         {
             if (items is null) return new List<SlamLine>();
@@ -304,6 +280,7 @@ namespace Elektronik.DataSources.Containers
             return removed;
         }
 
+        /// <inheritdoc />
         public void RemoveAt(int index)
         {
             SlamLine line;
@@ -315,6 +292,7 @@ namespace Elektronik.DataSources.Containers
             Remove(line);
         }
 
+        /// <inheritdoc cref="IDataSource.Clear" />
         public void Clear()
         {
             SlamLine[] lines;
@@ -332,12 +310,15 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ISourceTree
+        #region IDataSource
 
+        /// <inheritdoc />
         public string DisplayName { get; set; }
 
+        /// <inheritdoc />
         public IEnumerable<IDataSource> Children => Enumerable.Empty<IDataSource>();
 
+        /// <inheritdoc />
         public void AddConsumer(IDataConsumer consumer)
         {
             if (!(consumer is ICloudRenderer<SlamLine> typedRenderer)) return;
@@ -351,6 +332,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void RemoveConsumer(IDataConsumer consumer)
         {
             if (!(consumer is ICloudRenderer<SlamLine> typedRenderer)) return;
@@ -360,6 +342,7 @@ namespace Elektronik.DataSources.Containers
             _renderers.Remove(typedRenderer);
         }
 
+        /// <inheritdoc />
         public IDataSource TakeSnapshot()
         {
             var res = new SlamLinesCloudContainer(DisplayName);
@@ -375,8 +358,9 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ILookable
+        #region ILookableDataSource
 
+        /// <inheritdoc />
         public Pose Look(Transform transform)
         {
             lock (_connections)
@@ -402,8 +386,9 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
 
+        /// <inheritdoc />
         public bool IsVisible
         {
             get => _isVisible;
@@ -435,11 +420,12 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public event Action<bool> OnVisibleChanged;
 
         #endregion
 
-        #region Private definitions
+        #region Private
 
         private bool _isVisible = true;
 

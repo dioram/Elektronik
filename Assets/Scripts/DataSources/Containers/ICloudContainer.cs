@@ -42,11 +42,11 @@ namespace Elektronik.DataSources.Containers
         /// <summary> Update item in container. </summary>
         /// <param name="item"> Updating item. </param>
         void Update(T item);
-        
+
         /// <summary> Batched updating of items. </summary>
         /// <param name="items"> List of updating items. </param>
         void Update(IList<T> items);
-        
+
         /// <summary> Checks if this container has an item with given id. </summary>
         /// <param name="id"></param>
         /// <returns></returns>

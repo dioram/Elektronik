@@ -9,7 +9,7 @@ namespace Elektronik.DataSources.SpecialInterfaces
     public interface IFollowableDataSource<TCloudItem> : IDataSource
             where TCloudItem : struct, ICloudItem
     {
-        // TODO: refactor this?
+        // TODO: Refactor this? Maybe it should somehow be data consumer function.
         
         public void Follow();
         public void Unfollow();

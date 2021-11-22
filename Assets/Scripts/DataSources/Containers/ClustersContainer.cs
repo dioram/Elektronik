@@ -14,7 +14,7 @@ namespace Elektronik.DataSources.Containers
     {
         /// <summary> Constructor. </summary>
         /// <param name="displayName"> Name that will be displayed in tree. </param>
-        /// <param name="data"> List of point clusters. </param>
+        /// <param name="data"> List of points clusters. </param>
         /// <param name="sourceContainer"> Source of points for clusterization. </param>
         public ClustersContainer(string displayName, IList<IList<SlamPoint>> data, IDataSource sourceContainer)
         {

@@ -5,22 +5,21 @@ using UnityEngine.InputSystem;
 
 namespace Elektronik.UI
 {
-    public class RulerManager : MonoBehaviour
+    /// <summary> This component controls <see cref="Ruler"/>. </summary>
+    internal class RulerManager : MonoBehaviour
     {
-        public GameObject LineRendererPrefab;
+        #region Editor fields
+
         [SerializeField] private PointCollisionCloud PointCollisionCloud;
-        public Transform Cursor;
+        [SerializeField] private  GameObject LineRendererPrefab;
+        [SerializeField] private  Transform Cursor;
 
-        private Camera _camera;
-        private Ruler _currentRuler = null;
+        #endregion
         
-        public float Scale = 1;
+        /// <summary> Property for setting scene scale. </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
+        public float Scale { get; set; } = 1;
 
-        public void SetScale(float value)
-        {
-            Scale = value;
-        }
-        
         #region Unity events
         
         private void Awake()
@@ -30,20 +29,18 @@ namespace Elektronik.UI
 
         private void Update()
         {
-            if (Cursor.gameObject.activeSelf && Mouse.current.leftButton.wasReleasedThisFrame)
+            if (!Cursor.gameObject.activeSelf || !Mouse.current.leftButton.wasReleasedThisFrame) return;
+            if (_currentRuler is null)
             {
-                if (_currentRuler is null)
-                {
-                    _currentRuler = Instantiate(LineRendererPrefab, transform).GetComponent<Ruler>();
-                    _currentRuler.Destroyed += OnRulerDestroyed;
-                    _currentRuler.FirstPoint = Cursor.position;
-                }
-                else
-                {
-                    _currentRuler.SecondPoint = Cursor.position;
-                    _currentRuler.Destroyed -= OnRulerDestroyed;
-                    _currentRuler = null;
-                }
+                _currentRuler = Instantiate(LineRendererPrefab, transform).GetComponent<Ruler>();
+                _currentRuler.OnDestroyed += OnRulerDestroyed;
+                _currentRuler.FirstPoint = Cursor.position;
+            }
+            else
+            {
+                _currentRuler.SecondPoint = Cursor.position;
+                _currentRuler.OnDestroyed -= OnRulerDestroyed;
+                _currentRuler = null;
             }
         }
 
@@ -66,6 +63,9 @@ namespace Elektronik.UI
         #endregion
 
         #region Private
+
+        private Camera _camera;
+        private Ruler _currentRuler = null;
 
         private IEnumerator FindHoveredPoint()
         {

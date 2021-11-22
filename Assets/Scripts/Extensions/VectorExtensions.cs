@@ -4,10 +4,15 @@ namespace Elektronik.Extensions
 {
     public static class VectorExtensions
     {
+        /// <summary> Checks if all vector's dimensions are correct numbers (finite and not NAN). </summary>
         public static bool IsCorrect(this Vector3 vector)
         {
-            return !float.IsNaN(vector.x) && !float.IsNaN(vector.y) && !float.IsNaN(vector.z)
-                    && !float.IsInfinity(vector.x) && !float.IsInfinity(vector.y) && !float.IsInfinity(vector.z);
+            for (var i = 0; i < 3; i++)
+            {
+                if (float.IsNaN(vector[i]) || float.IsInfinity(vector[i])) return false;
+            }
+
+            return true;
         }
     }
 }

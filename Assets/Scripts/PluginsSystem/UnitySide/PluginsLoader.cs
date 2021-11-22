@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Elektronik.Settings;
 using Elektronik.UI.Localization;
 using UniRx;
 using UnityEngine;
@@ -11,16 +10,16 @@ using UnityEngine.SceneManagement;
 
 namespace Elektronik.PluginsSystem.UnitySide
 {
-    public class PluginsLoader : MonoBehaviour
+    /// <summary> This class loads and instantiates all factories from dll files. </summary>
+    internal class PluginsLoader : MonoBehaviour
     {
+        /// <summary> List of all loaded plugins factories. </summary>
         public static readonly List<IElektronikPluginsFactory> PluginFactories = new List<IElektronikPluginsFactory>();
 
-        private static readonly Dictionary<IElektronikPluginsFactory, string> PathsToDlls =
-                new Dictionary<IElektronikPluginsFactory, string>();
+        #region Unity events
 
         private void Awake()
         {
-            SettingsRepository.Path = Application.persistentDataPath;
             var pluginsLoading = Observable.Start(LoadPluginFactories);
             Observable.WhenAll(pluginsLoading)
                     .ObserveOnMainThreadSafe()
@@ -31,7 +30,12 @@ namespace Elektronik.PluginsSystem.UnitySide
                     .AddTo(this);
         }
 
+        #endregion
+        
         #region Private
+
+        private static readonly Dictionary<IElektronikPluginsFactory, string> PathsToDlls =
+                new Dictionary<IElektronikPluginsFactory, string>();
 
         private static void LoadPluginFactories()
         {

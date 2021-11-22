@@ -10,19 +10,24 @@ using UnityEngine;
 
 namespace Elektronik.DataSources.Containers
 {
+    /// <summary> Container for objects that should be rendered with track of it's previous positions  </summary>
     public class TrackedCloudObjectsContainer
             : ITrackedCloudContainer<SlamTrackedObject>, ILookableDataSource, IVisibleDataSource
     {
+        /// <summary> Constructor. </summary>
+        /// <param name="displayName"> Name that will be displayed in tree. </param>
         public TrackedCloudObjectsContainer(string displayName = "")
         {
             DisplayName = string.IsNullOrEmpty(displayName) ? GetType().Name : displayName;
-            ObjectLabel = DisplayName;
+            // ObjectLabel = DisplayName;
         }
 
+        /// <summary> Name that will be rendered on scene near object. </summary>
         public string ObjectLabel;
 
-        #region IContainer
+        #region ICloudContainer
 
+        /// <inheritdoc />
         public IEnumerator<SlamTrackedObject> GetEnumerator()
         {
             List<SlamTrackedObject> objects;
@@ -34,8 +39,10 @@ namespace Elektronik.DataSources.Containers
             return objects.GetEnumerator();
         }
 
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <inheritdoc />
         public void Add(SlamTrackedObject item)
         {
             lock (_objects)
@@ -48,6 +55,7 @@ namespace Elektronik.DataSources.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(item));
         }
 
+        /// <inheritdoc cref="ICloudContainer{T}.Clear" />
         public void Clear()
         {
             SlamTrackedObject[] items;
@@ -71,11 +79,13 @@ namespace Elektronik.DataSources.Containers
             OnRemoved?.Invoke(this, new RemovedEventArgs<SlamTrackedObject>(items));
         }
 
+        /// <inheritdoc />
         public bool Contains(SlamTrackedObject item)
         {
             return Contains(item.Id);
         }
 
+        /// <inheritdoc />
         public bool Contains(int id)
         {
             lock (_objects)
@@ -86,6 +96,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void CopyTo(SlamTrackedObject[] array, int arrayIndex)
         {
             lock (_objects)
@@ -94,6 +105,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public bool Remove(SlamTrackedObject item)
         {
             lock (_objects)
@@ -114,6 +126,7 @@ namespace Elektronik.DataSources.Containers
             return true;
         }
 
+        /// <inheritdoc />
         public int Count
         {
             get
@@ -125,12 +138,16 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public bool IsReadOnly => false;
 
+        /// <inheritdoc />
         public int IndexOf(SlamTrackedObject item) => item.Id;
 
+        /// <inheritdoc />
         public void Insert(int index, SlamTrackedObject item) => Add(item);
 
+        /// <inheritdoc />
         public void RemoveAt(int index)
         {
             SlamTrackedObject item;
@@ -178,12 +195,16 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public event EventHandler<AddedEventArgs<SlamTrackedObject>> OnAdded;
 
+        /// <inheritdoc />
         public event EventHandler<UpdatedEventArgs<SlamTrackedObject>> OnUpdated;
 
+        /// <inheritdoc />
         public event EventHandler<RemovedEventArgs<SlamTrackedObject>> OnRemoved;
 
+        /// <inheritdoc />
         public void AddRange(IList<SlamTrackedObject> items)
         {
             if (items is null) return;
@@ -202,6 +223,7 @@ namespace Elektronik.DataSources.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(added));
         }
 
+        /// <inheritdoc />
         public void Remove(IList<SlamTrackedObject> items)
         {
             if (items is null) return;
@@ -223,6 +245,7 @@ namespace Elektronik.DataSources.Containers
             OnRemoved?.Invoke(this, new RemovedEventArgs<SlamTrackedObject>(items));
         }
 
+        /// <inheritdoc />
         public IList<SlamTrackedObject> Remove(IList<int> items)
         {
             if (items is null) return new List<SlamTrackedObject>();
@@ -246,6 +269,7 @@ namespace Elektronik.DataSources.Containers
             return removed;
         }
 
+        /// <inheritdoc />
         public void Update(SlamTrackedObject item)
         {
             lock (_objects)
@@ -256,6 +280,7 @@ namespace Elektronik.DataSources.Containers
             OnUpdated?.Invoke(this, new UpdatedEventArgs<SlamTrackedObject>(item));
         }
 
+        /// <inheritdoc />
         public void Update(IList<SlamTrackedObject> items)
         {
             if (items is null) return;
@@ -272,10 +297,12 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ISourceTree implementation
+        #region IDataSource
 
+        /// <inheritdoc />
         public string DisplayName { get; set; }
 
+        /// <inheritdoc />
         public IEnumerable<IDataSource> Children
         {
             get
@@ -287,6 +314,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void AddConsumer(IDataConsumer consumer)
         {
             switch (consumer)
@@ -316,6 +344,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void RemoveConsumer(IDataConsumer consumer)
         {
             switch (consumer)
@@ -340,6 +369,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public IDataSource TakeSnapshot()
         {
             var res = new TrackedCloudObjectsContainer(DisplayName);
@@ -354,8 +384,9 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ITrackedContainer implementation
+        #region ITrackedCloudContainer
 
+        /// <inheritdoc />
         public IList<SimpleLine> GetHistory(int id)
         {
             lock (_objects)
@@ -364,6 +395,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void AddWithHistory(SlamTrackedObject item, IList<SimpleLine> history)
         {
             lock (_objects)
@@ -377,6 +409,7 @@ namespace Elektronik.DataSources.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SlamTrackedObject>(item));
         }
 
+        /// <inheritdoc />
         public void AddRangeWithHistory(IList<SlamTrackedObject> items, IList<IList<SimpleLine>> histories)
         {
             lock (_objects)
@@ -395,8 +428,9 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ILookable
+        #region ILookableDataSource
 
+        /// <inheritdoc />
         public Pose Look(Transform transform)
         {
             Vector3 pos;
@@ -412,8 +446,9 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
 
+        /// <inheritdoc />
         public bool IsVisible
         {
             get => _isVisible;
@@ -452,11 +487,12 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public event Action<bool> OnVisibleChanged;
 
         #endregion
 
-        #region Private definitions
+        #region Private
 
         private readonly List<ICloudRenderer<SimpleLine>> _lineRenderers = new List<ICloudRenderer<SimpleLine>>();
 

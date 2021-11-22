@@ -17,7 +17,7 @@ namespace Elektronik.DataConsumers.Windows
         /// <summary> Byte array of image data. </summary>
         public readonly byte[] Data;
 
-        /// <summary> Marks that image need to flipped vertically. </summary>
+        /// <summary> Marks that image needs to flipped vertically. </summary>
         public readonly bool IsFlippedVertically;
 
         public ImageData(int width, int height, TextureFormat encoding, byte[] data, bool isFlippedVertically)

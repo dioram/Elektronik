@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
 {
-    public class PluginWindowsManager : MonoBehaviour
+    /// <summary> This class makes windows for plugins which supports it. </summary>
+    internal class PluginWindowsManager : MonoBehaviour
     {
         #region Editor fields
 
@@ -22,6 +23,7 @@ namespace Elektronik.PluginsSystem.UnitySide
         private readonly Dictionary<IElektronikPlugin, (ToolbarButton, Window)> _gameObjects =
                 new Dictionary<IElektronikPlugin, (ToolbarButton, Window)>();
 
+        /// <summary> Creates window for given plugin if needed. </summary>
         public void RegisterPlugin(IElektronikPlugin plugin)
         {
             if (plugin.Settings == null) return;
@@ -40,14 +42,15 @@ namespace Elektronik.PluginsSystem.UnitySide
             var go = Instantiate(ButtonPrefab, Toolbar);
             var button = go.GetComponent<ToolbarButton>();
             button.Setup(plugin.Logo, plugin.DisplayName);
-            button.OnClick.Subscribe(_ => window.Show());
+            button.OnClickAsObservable.Subscribe(_ => window.Show());
 
-            var generator = windowGO.GetComponent<SettingsGenerator>();
+            var generator = windowGO.GetComponent<SettingsFieldsUiGenerator>();
             generator.Generate(plugin.Settings);
 
             _gameObjects.Add(plugin, (button, window));
         }
 
+        /// <summary> Removes window for given plugin. </summary>
         public void UnregisterPlugin(IElektronikPlugin plugin)
         {
             if (!_gameObjects.ContainsKey(plugin)) return;

@@ -10,6 +10,7 @@ namespace Elektronik.DataObjects
     {
         /// <summary> Unique ID for item </summary>
         public int Id { get; set; }
+
         public Color Color;
         public Vector3 Position;
         public Quaternion Rotation;
@@ -32,7 +33,7 @@ namespace Elektronik.DataObjects
 
         public bool Equals(SlamTrackedObject other)
         {
-            return ((Color32) Color).Equals((Color32) other.Color) && Position.Equals(other.Position) &&
+            return ((Color32)Color).Equals((Color32)other.Color) && Position.Equals(other.Position) &&
                     Rotation.Equals(other.Rotation) && Id == other.Id && Message == other.Message;
         }
 

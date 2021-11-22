@@ -5,9 +5,12 @@ using UnityEngine;
 
 namespace Elektronik.UI
 {
+    /// <summary> Component for rendering data about data sources. </summary>
     [RequireComponent(typeof(TMP_Text))]
-    public class SceneInfo : MonoBehaviour
+    internal class SceneInfo : MonoBehaviour
     {
+        #region Editor fields
+
         [SerializeField] private PointCloudRendererComponent PointCloudRenderer;
         [SerializeField] private SlamLineCloudRendererComponent SlamLineCloudRenderer;
         [SerializeField] private SimpleLineCloudRendererComponent SimpleLineCloudRenderer;
@@ -15,15 +18,10 @@ namespace Elektronik.UI
         [SerializeField] private ObservationCloudRendererComponent ObservationCloudRenderer;
         [SerializeField] private TrackedObjectCloud TrackedObjectCloud;
 
-        [HideInInspector] public int PointsCount;
-        [HideInInspector] public int SlamLinesCount;
-        [HideInInspector] public int SimpleLinesCount;
-        [HideInInspector] public int InfinitePlanesCount;
-        [HideInInspector] public int ObservationsCount;
-        [HideInInspector] public int TrackedObjectsCount;
+        #endregion
 
-        private TMP_Text _label;
-
+        #region Unity events
+        
         private void Start()
         {
             _label = GetComponent<TMP_Text>();
@@ -31,19 +29,32 @@ namespace Elektronik.UI
 
         private void Update()
         {
-            var isUpdated = UpdateValue(ref PointsCount, PointCloudRenderer.ItemsCount);
-            isUpdated = isUpdated || UpdateValue(ref SlamLinesCount, SlamLineCloudRenderer.ItemsCount);
-            isUpdated = isUpdated || UpdateValue(ref SimpleLinesCount, SimpleLineCloudRenderer.ItemsCount);
-            isUpdated = isUpdated || UpdateValue(ref InfinitePlanesCount, PlaneCloudRenderer.ItemsCount);
-            isUpdated = isUpdated || UpdateValue(ref ObservationsCount, ObservationCloudRenderer.ItemsCount);
-            isUpdated = isUpdated || UpdateValue(ref TrackedObjectsCount, TrackedObjectCloud.ItemsCount);
+            // TODO: When (if) using UniTask rewrite it to use events instead update.
+            var isUpdated = UpdateValue(ref _pointsCount, PointCloudRenderer.ItemsCount);
+            isUpdated = isUpdated || UpdateValue(ref _slamLinesCount, SlamLineCloudRenderer.ItemsCount);
+            isUpdated = isUpdated || UpdateValue(ref _simpleLinesCount, SimpleLineCloudRenderer.ItemsCount);
+            isUpdated = isUpdated || UpdateValue(ref _infinitePlanesCount, PlaneCloudRenderer.ItemsCount);
+            isUpdated = isUpdated || UpdateValue(ref _observationsCount, ObservationCloudRenderer.ItemsCount);
+            isUpdated = isUpdated || UpdateValue(ref _trackedObjectsCount, TrackedObjectCloud.ItemsCount);
 
             if (isUpdated)
             {
-                _label.SetLocalizedText("Scene info", PointsCount, SlamLinesCount + SimpleLinesCount,
-                                        InfinitePlanesCount, ObservationsCount, TrackedObjectsCount);
+                _label.SetLocalizedText("Scene info", _pointsCount, _slamLinesCount + _simpleLinesCount,
+                                        _infinitePlanesCount, _observationsCount, _trackedObjectsCount);
             }
         }
+
+        #endregion
+
+        #region Private
+
+        private TMP_Text _label;
+        private int _pointsCount;
+        private int _slamLinesCount;
+        private int _simpleLinesCount;
+        private int _infinitePlanesCount;
+        private int _observationsCount;
+        private int _trackedObjectsCount;
 
         private bool UpdateValue(ref int value, int newValue)
         {
@@ -51,5 +62,7 @@ namespace Elektronik.UI
             value = newValue;
             return true;
         }
+        
+        #endregion
     }
 }

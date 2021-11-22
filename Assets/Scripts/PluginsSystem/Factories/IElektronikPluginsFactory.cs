@@ -7,7 +7,8 @@ namespace Elektronik.PluginsSystem
     /// <summary>
     /// This interface is base for all plugins factories.
     /// It's main goal to produce plugin.
-    /// All classes with this interface will be loaded from Plugins/[PluginName]/libraries directory and instantiated.
+    /// All classes with this interface will be loaded from Plugins/[PluginName]/libraries directory
+    /// and instantiated at Elektronik loading.
     /// </summary>
     /// <remarks> It's better to inherit <c>ElektronikPluginsFactoryBase</c> than implement this interface. </remarks>
     public interface IElektronikPluginsFactory

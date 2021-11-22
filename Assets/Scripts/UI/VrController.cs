@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.XR.Management;
 
-namespace Elektronik
+namespace Elektronik.UI
 {
-    public class VrController : MonoBehaviour
+    /// <summary> This class controls entering and exiting vr mode. </summary>
+    internal class VrController : MonoBehaviour
     {
         #region Editor fields
 
@@ -16,6 +17,7 @@ namespace Elektronik
         
         public bool IsInVrMode { get; private set; } = false;
 
+        /// <summary> Checks if VR enabled in build. </summary>
         public static bool IsVrEnabled
         {
             get
@@ -24,12 +26,7 @@ namespace Elektronik
                 return XRGeneralSettings.Instance.Manager.activeLoaders.Count > 0;
             }
         }
-
-        private void Start()
-        {
-            VrModeButton.SetActive(IsVrEnabled);
-        }
-
+        
         public void ToggleVrMode()
         {
             VrModeGameObject.SetActive(!VrModeGameObject.activeSelf);
@@ -41,5 +38,14 @@ namespace Elektronik
         {
             VrHelpMenu.SetActive(!VrHelpMenu.activeSelf);
         }
+
+        #region Unity events
+
+        private void Start()
+        {
+            VrModeButton.SetActive(IsVrEnabled);
+        }
+
+        #endregion
     }
 }

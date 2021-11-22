@@ -9,7 +9,10 @@ namespace Elektronik.DataConsumers.Collision
         /// <param name="ray"> Ray. </param>
         /// <param name="leftBottom"> Point of AABB with minimal coordinates. </param>
         /// <param name="rightTop"> Point of AABB with maximum coordinates. </param>
-        /// <returns> Distance from ray origin to intersection point. If &lt; 0 then collision was not found. </returns>
+        /// <returns>
+        /// Distance from ray origin to intersection point. If &lt; 0 then collision was not found.
+        /// Can be equals to 0 if ray was from inside of AABB.
+        /// </returns>
         public static float RayAABB(Ray ray, Vector3 leftBottom, Vector3 rightTop)
         {
             var t1 = (leftBottom.x - ray.origin.x) / ray.direction.x;

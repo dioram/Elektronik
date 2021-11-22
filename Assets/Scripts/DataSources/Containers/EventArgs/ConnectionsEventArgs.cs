@@ -6,21 +6,22 @@ namespace Elektronik.DataSources.Containers.EventArgs
     /// <summary> Event args for updating connections between cloud items. </summary>
     public class ConnectionsEventArgs : System.EventArgs
     {
-        public readonly IList<(int id1, int id2)> Items;
+        public readonly IList<(int id1, int id2)> Connections;
 
-        public ConnectionsEventArgs(IList<(int id1, int id2)> items)
+        public ConnectionsEventArgs(IList<(int id1, int id2)> connections)
         {
-            Items = items;
+            Connections = connections;
         }
 
         protected bool Equals(ConnectionsEventArgs other)
         {
-            if (ReferenceEquals(Items, other.Items)) return true;
-            if (Items.Count() != other.Items.Count()) return false;
-            foreach (var (first, second) in Items.Zip(other.Items, (arg1, arg2) => (arg1, arg2)))
+            if (ReferenceEquals(Connections, other.Connections)) return true;
+            if (Connections.Count != other.Connections.Count) return false;
+            foreach (var (first, second) in Connections.Zip(other.Connections, (arg1, arg2) => (arg1, arg2)))
             {
                 if (!Equals(first, second)) return false;
             }
+
             return true;
         }
 
@@ -34,7 +35,7 @@ namespace Elektronik.DataSources.Containers.EventArgs
 
         public override int GetHashCode()
         {
-            return (Items != null ? Items.GetHashCode() : 0);
+            return (Connections != null ? Connections.GetHashCode() : 0);
         }
     }
 }

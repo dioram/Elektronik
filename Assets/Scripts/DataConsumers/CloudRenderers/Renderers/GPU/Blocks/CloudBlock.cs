@@ -13,11 +13,6 @@ namespace Elektronik.DataConsumers.CloudRenderers
         /// <inheritdoc />
         public float Scale { get; set; }
 
-        protected CloudBlock(float scale)
-        {
-            Scale = scale;
-        }
-
         /// <inheritdoc />
         public virtual void UpdateDataOnGpu()
         {
@@ -37,6 +32,11 @@ namespace Elektronik.DataConsumers.CloudRenderers
         public abstract void Dispose();
 
         #region Protected
+
+        protected CloudBlock(float scale)
+        {
+            Scale = scale;
+        }
 
         /// <summary> Material that renders this block. </summary>
         [CanBeNull] protected Material RenderMaterial;

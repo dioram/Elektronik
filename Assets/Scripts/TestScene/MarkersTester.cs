@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Elektronik.TestScene
 {
-    public class MarkersTester : MonoBehaviour
+    internal class MarkersTester : MonoBehaviour
     {
         #region Editor fields
 

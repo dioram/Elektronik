@@ -17,10 +17,6 @@ namespace Elektronik.DataConsumers.Windows
         [SerializeField] [Tooltip("Component that changes UI rect to fit image.")]
         private AspectRatioFitter Fitter;
 
-        #endregion
-
-        #region Editor fields
-
         /// <summary> Placeholder for not supported type of image. </summary>
         [SerializeField] [Tooltip("Placeholder for not supported type of image.")]
         private Texture2D NotSupportedPlaceholder;

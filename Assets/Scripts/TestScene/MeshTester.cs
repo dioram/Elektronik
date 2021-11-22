@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 
 namespace Elektronik.TestScene
 {
-    public class MeshTester : MonoBehaviour
+    internal class MeshTester : MonoBehaviour
     {
         #region Editor fields
 

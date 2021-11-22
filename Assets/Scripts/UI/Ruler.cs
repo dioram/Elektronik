@@ -5,13 +5,21 @@ using UnityEngine.InputSystem;
 
 namespace Elektronik.UI
 {
+    /// <summary> This component measures and renders distance between two cloud points. </summary>
     [RequireComponent(typeof(LineRenderer))]
-    public class Ruler : MonoBehaviour
+    internal class Ruler : MonoBehaviour
     {
-        public Vector3 Offset = new Vector3(0, 0.2f, 0);
+        #region Editor fields
+
+        [SerializeField] private Transform DeleteButton;
+        [SerializeField] private TMP_Text Label;
+        [SerializeField] private Vector3 Offset = new Vector3(0, 0.2f, 0);
+        
+        #endregion
+        
         public Vector3 FirstPoint;
 
-        public event Action<Ruler> Destroyed;
+        public event Action<Ruler> OnDestroyed;
 
         public Vector3 SecondPoint
         {
@@ -27,31 +35,14 @@ namespace Elektronik.UI
                 _secondPoint = value;
                 _isSecondPointSet = true;
                 Distance = (SecondPoint - FirstPoint).magnitude;
+                Label.text = $"{Distance:F2}m.";
                 _renderer.SetPosition(1, SecondPoint);
                 Label.gameObject.SetActive(true);
                 Label.transform.position = (SecondPoint + FirstPoint) / 2 + Offset;
             }
         }
-
-        [SerializeField] private Transform DeleteButton;
-        [SerializeField] private TMP_Text Label;
         
-        private LineRenderer _renderer;
-        private Camera _camera;
-        private float _distance;
-        private bool _isSecondPointSet = false;
-        private Vector3 _secondPoint;
-
-        public float Distance
-        {
-            get => _distance;
-            set
-            {
-                if (Math.Abs(_distance - value) < float.Epsilon) return;
-                _distance = value;
-                Label.text = $"{_distance:F2}m.";
-            }
-        }
+        public float Distance { get; private set; }
 
         public void OnClick()
         {
@@ -71,6 +62,8 @@ namespace Elektronik.UI
             }
         }
 
+        #region Unity events
+        
         private void Start()
         {
             _renderer = GetComponent<LineRenderer>();
@@ -81,16 +74,25 @@ namespace Elektronik.UI
         private void Update()
         {
             var mousePos = Mouse.current.position.ReadValue();
-            if (!_isSecondPointSet)
-            {
-                var pos = new Vector3(mousePos.x, mousePos.y, 1);
-                _renderer.SetPosition(1, _camera.ScreenToWorldPoint(pos));
-            }
+            if (_isSecondPointSet) return;
+            var pos = new Vector3(mousePos.x, mousePos.y, 1);
+            _renderer.SetPosition(1, _camera.ScreenToWorldPoint(pos));
         }
 
         private void OnDestroy()
         {
-            Destroyed?.Invoke(this);
+            OnDestroyed?.Invoke(this);
         }
+
+        #endregion
+
+        #region Private
+
+        private LineRenderer _renderer;
+        private Camera _camera;
+        private bool _isSecondPointSet = false;
+        private Vector3 _secondPoint;
+        
+        #endregion
     }
 }

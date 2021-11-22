@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 6597102443557363410}
   - component: {fileID: 2369946763590450368}
   - component: {fileID: 5994869076507911827}
+  - component: {fileID: 5801312705279217605}
   m_Layer: 0
   m_Name: RemoveButton
   m_TagString: Untagged
@@ -262,6 +263,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TooltipText: Remove
   Offset: {x: 0, y: 40}
+--- !u!114 &5801312705279217605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559339999247396957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25a9aa0400314926936627dedac61b73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3654434711664828001}
 --- !u!1 &690437898311979858
 GameObject:
   m_ObjectHideFlags: 0
@@ -613,6 +627,7 @@ GameObject:
   - component: {fileID: 6726690276359684712}
   - component: {fileID: 8599606782316953650}
   - component: {fileID: 3973071743379563035}
+  - component: {fileID: 5176245811778901172}
   m_Layer: 0
   m_Name: TraceButton
   m_TagString: Untagged
@@ -773,6 +788,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TooltipText: Trace
   Offset: {x: 0, y: 40}
+--- !u!114 &5176245811778901172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498298380941210238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e11848c2f50f4fc9b053ae307895208f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3654434711664828001}
 --- !u!1 &2214842138114993958
 GameObject:
   m_ObjectHideFlags: 0
@@ -787,6 +815,7 @@ GameObject:
   - component: {fileID: 8519741931512456391}
   - component: {fileID: 6076283851386966927}
   - component: {fileID: 3429946654588806334}
+  - component: {fileID: 6952429623615459860}
   m_Layer: 0
   m_Name: WindowButton
   m_TagString: Untagged
@@ -930,6 +959,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TooltipText: Show window
   Offset: {x: 0, y: 40}
+--- !u!114 &6952429623615459860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2214842138114993958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bc1a8bf9b104052b1f4b7b012dcc601, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3654434711664828001}
 --- !u!1 &2425527349260746645
 GameObject:
   m_ObjectHideFlags: 0
@@ -1019,6 +1061,7 @@ GameObject:
   - component: {fileID: 4996134713169142822}
   - component: {fileID: 6604339467638316273}
   - component: {fileID: 4837642631904317121}
+  - component: {fileID: 7849359051883559275}
   m_Layer: 0
   m_Name: SaveButton
   m_TagString: Untagged
@@ -1162,6 +1205,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TooltipText: Save
   Offset: {x: 0, y: 40}
+--- !u!114 &7849359051883559275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2954416904317966673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d626bce7963d4df69dde5754acc9d43c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3654434711664828001}
 --- !u!1 &3654434711590099038
 GameObject:
   m_ObjectHideFlags: 0
@@ -1247,7 +1303,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3654434711664828000}
   - component: {fileID: 3654434711664828001}
-  - component: {fileID: 3203600022186940607}
   - component: {fileID: 3654434711664828003}
   m_Layer: 0
   m_Name: UI Tree View Element
@@ -1295,31 +1350,6 @@ MonoBehaviour:
   SelfPrefab: {fileID: 3654434711664828031, guid: 76725cc8ce4a6c84bbff5d2c858af4ba, type: 3}
   MinHeight: 40
   TreeButton: {fileID: 3654434712922454082}
---- !u!114 &3203600022186940607
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3654434711664828031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a31de8d8f1b48539c8475b0f1f03864, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WindowButton: {fileID: 8519741931512456391}
-  VisibleButton: {fileID: 3654434712273500218}
-  TraceButton: {fileID: 8599606782316953650}
-  RemoveButton: {fileID: 6597102443557363410}
-  LookAtButton: {fileID: 3828753632466485585}
-  FollowButton: {fileID: 1614324604654281675}
-  SaveButton: {fileID: 4996134713169142822}
-  MeshColorButton: {fileID: 2228060075461253022}
-  WeightButton: {fileID: 8258490379711036713}
-  WeightSlider: {fileID: 2750410890576548568}
-  MinWeightLabel: {fileID: 8584815492687513512}
-  MaxWeightLabel: {fileID: 8601169822160353395}
-  NameLabel: {fileID: 3654434711717410252}
 --- !u!114 &3654434711664828003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1455,6 +1485,7 @@ GameObject:
   - component: {fileID: 3654434712273500214}
   - component: {fileID: 3654434712273500218}
   - component: {fileID: 6716704544384917487}
+  - component: {fileID: 1960386424340524647}
   m_Layer: 0
   m_Name: VisibleButton
   m_TagString: Untagged
@@ -1615,6 +1646,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TooltipText: Visibility
   Offset: {x: 0, y: 40}
+--- !u!114 &1960386424340524647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3654434712273500212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dea3e97f70a46e5b61706e5e08a1587, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3654434711664828001}
 --- !u!1 &3654434712727471053
 GameObject:
   m_ObjectHideFlags: 0
@@ -2076,6 +2120,7 @@ GameObject:
   - component: {fileID: 6812217014958088018}
   - component: {fileID: 6887655570134983057}
   - component: {fileID: 4134652343334661207}
+  - component: {fileID: 2138570936981927857}
   m_Layer: 0
   m_Name: WeightButton
   m_TagString: Untagged
@@ -2276,6 +2321,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+--- !u!114 &2138570936981927857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4227820414709770168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4902e4ba2b454260af8a3206f9f04d3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3654434711664828001}
+  Slider: {fileID: 2750410890576548568}
+  MinWeightLabel: {fileID: 8584815492687513512}
+  MaxWeightLabel: {fileID: 8601169822160353395}
 --- !u!1 &4707611570488716424
 GameObject:
   m_ObjectHideFlags: 0
@@ -2611,6 +2672,7 @@ GameObject:
   - component: {fileID: 1535716189872120019}
   - component: {fileID: 8785748172509008776}
   - component: {fileID: 1614324604654281675}
+  - component: {fileID: 2758738457105924934}
   m_Layer: 0
   m_Name: FollowButton
   m_TagString: Untagged
@@ -2771,6 +2833,19 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b203a007ca5dbeb4b92c4820a8a2ce79, type: 3}
   - {fileID: 21300000, guid: 6cc814805edc7a243be6a60de40a005d, type: 3}
   TargetImage: {fileID: 6543768332481193263}
+--- !u!114 &2758738457105924934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5554489847173382772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a3fa547ed4442168ee3a221bbf4193b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3654434711664828001}
 --- !u!1 &5631942576090839123
 GameObject:
   m_ObjectHideFlags: 0
@@ -3221,6 +3296,7 @@ GameObject:
   - component: {fileID: 2228060075461253022}
   - component: {fileID: 1005434863129840308}
   - component: {fileID: 1642527251354238325}
+  - component: {fileID: 184279821898795592}
   m_Layer: 0
   m_Name: MeshColorButton
   m_TagString: Untagged
@@ -3364,6 +3440,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TooltipText: Switch material
   Offset: {x: 0, y: 40}
+--- !u!114 &184279821898795592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8571183970563577796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01a1283a0a3c4a87b25d8bb7d2a43fbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3654434711664828001}
 --- !u!1 &8633133071377530578
 GameObject:
   m_ObjectHideFlags: 0
@@ -3489,6 +3578,7 @@ GameObject:
   - component: {fileID: 3828753632466485585}
   - component: {fileID: 1194000048086753488}
   - component: {fileID: 3476492002547441377}
+  - component: {fileID: 5052116023042399807}
   m_Layer: 0
   m_Name: LookAtButton
   m_TagString: Untagged
@@ -3632,6 +3722,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TooltipText: Look at
   Offset: {x: 0, y: 40}
+--- !u!114 &5052116023042399807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8775834957440630560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56502ad3e392441c95587659ded67dfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3654434711664828001}
 --- !u!1 &9133970860865255461
 GameObject:
   m_ObjectHideFlags: 0

@@ -116,7 +116,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public void NextFrame()
         {
-            if (_threadWorker.ActiveActions > 0) return;
             _threadWorker.Enqueue(() =>
             {
                 if (Position == AmountOfFrames - 1) return;

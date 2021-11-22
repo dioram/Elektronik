@@ -1,9 +1,11 @@
-﻿using Elektronik.DataConsumers.Collision;
+﻿using System.Diagnostics.CodeAnalysis;
+using Elektronik.DataConsumers.Collision;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Elektronik.EditorTests
+namespace Elektronik.EditorTests.Collision
 {
+    [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
     public class CollisionCloudTests
     {
         [Test]

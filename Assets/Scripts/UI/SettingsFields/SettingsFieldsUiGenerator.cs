@@ -11,7 +11,8 @@ using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.UI.SettingsFields
 {
-    public class SettingsGenerator : MonoBehaviour
+    /// <summary> This component generates UI fields for given <see cref="SettingsBag"/>. </summary>
+    public class SettingsFieldsUiGenerator : MonoBehaviour
     {
         #region Editor fields
 
@@ -27,12 +28,10 @@ namespace Elektronik.UI.SettingsFields
         [SerializeField] private Transform Target;
 
         #endregion
-        
-        [CanBeNull] public SettingsBag Settings { get; private set; }
 
+        /// <summary> Generates UI fields for given settings bag. </summary>
         public void Generate(SettingsBag settings)
         {
-            Settings = settings;
             Clear();
             var fields = settings.GetType()
                     .GetFields(BindingFlags.Public | BindingFlags.Instance)
@@ -51,6 +50,7 @@ namespace Elektronik.UI.SettingsFields
             }
         }
 
+        /// <summary> Removes all generated fields. </summary>
         public void Clear()
         {
             foreach (var field in _fields.Where(f => f != null))
@@ -60,7 +60,7 @@ namespace Elektronik.UI.SettingsFields
         }
 
         #region Private
-        
+
         private readonly List<SettingsFieldBase> _fields = new List<SettingsFieldBase>();
 
         private void AddField(FieldInfo fieldInfo, SettingsBag obj)
@@ -127,7 +127,7 @@ namespace Elektronik.UI.SettingsFields
 
             _fields.Add(uiField);
         }
-        
+
         private TFieldComponentType AddField<TFieldComponentType, TFieldType>(
             FieldInfo fieldInfo, SettingsBag obj)
                 where TFieldComponentType : SettingsField<TFieldType>
@@ -164,6 +164,7 @@ namespace Elektronik.UI.SettingsFields
                 throw new ArgumentOutOfRangeException(typeof(TFieldType).Name,
                                                       $"Don't know how to make field for {typeof(TFieldType).Name}.");
             }
+
             field.Setup(fieldInfo.Name.Humanize(), tooltip?.tooltip ?? "", (TFieldType)fieldInfo.GetValue(obj),
                         min, max);
             field.OnValueChanged()

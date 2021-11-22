@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Elektronik.DataSources;
 using Elektronik.DataSources.SpecialInterfaces;
+using Elektronik.UI.SourceTreeControls;
 using UnityEngine;
 
 namespace Elektronik.UI
@@ -21,7 +22,7 @@ namespace Elektronik.UI
             treeElement.Node = dataSource;
             if (_roots.Count == 1)
             {
-                treeElement.ChangeState();
+                treeElement.Expand();
             }
 
             if (dataSource is IRemovableDataSource r)

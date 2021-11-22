@@ -21,8 +21,11 @@ namespace Elektronik.DataSources.Containers
             _trackedObject = trackedObject;
         }
 
+        /// <summary> Creates and adds new line from end of last line to given point. </summary>
         public void AddPointToTrack(SlamPoint point) => AddPointToTrack(point.Position, point.Color);
 
+        
+        /// <summary> Creates and adds new line from end of last line to given point. </summary>
         public void AddPointToTrack(Vector3 pos, Color color)
         {
             SimpleLine line;
@@ -44,8 +47,9 @@ namespace Elektronik.DataSources.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(line));
         }
 
-        #region IContainer implementaion
+        #region ICloudContainer
 
+        /// <inheritdoc />
         public IEnumerator<SimpleLine> GetEnumerator()
         {
             lock (_lines)
@@ -54,8 +58,10 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <inheritdoc />
         public void Add(SimpleLine item)
         {
             lock (_lines)
@@ -66,6 +72,7 @@ namespace Elektronik.DataSources.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(item));
         }
 
+        /// <inheritdoc cref="ICloudContainer{T}.Clear" />
         public void Clear()
         {
             SimpleLine[] lines;
@@ -78,6 +85,7 @@ namespace Elektronik.DataSources.Containers
             OnRemoved?.Invoke(this, new RemovedEventArgs<SimpleLine>(lines));
         }
 
+        /// <inheritdoc />
         public bool Contains(int id)
         {
             lock (_lines)
@@ -87,6 +95,7 @@ namespace Elektronik.DataSources.Containers
         }
 
 
+        /// <inheritdoc />
         public bool Contains(SimpleLine item)
         {
             lock (_lines)
@@ -95,6 +104,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void CopyTo(SimpleLine[] array, int arrayIndex)
         {
             lock (_lines)
@@ -103,6 +113,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public bool Remove(SimpleLine item)
         {
             bool res;
@@ -117,6 +128,7 @@ namespace Elektronik.DataSources.Containers
             return res;
         }
 
+        /// <inheritdoc />
         public int Count
         {
             get
@@ -128,8 +140,10 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public bool IsReadOnly => false;
 
+        /// <inheritdoc />
         public int IndexOf(SimpleLine item)
         {
             lock (_lines)
@@ -138,6 +152,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void Insert(int index, SimpleLine item)
         {
             lock (_lines)
@@ -148,6 +163,7 @@ namespace Elektronik.DataSources.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(item));
         }
 
+        /// <inheritdoc />
         public void RemoveAt(int index)
         {
             SimpleLine line;
@@ -180,12 +196,16 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public event EventHandler<AddedEventArgs<SimpleLine>> OnAdded;
 
+        /// <inheritdoc />
         public event EventHandler<UpdatedEventArgs<SimpleLine>> OnUpdated;
 
+        /// <inheritdoc />
         public event EventHandler<RemovedEventArgs<SimpleLine>> OnRemoved;
 
+        /// <inheritdoc />
         public void AddRange(IList<SimpleLine> items)
         {
             if (items is null) return;
@@ -197,6 +217,7 @@ namespace Elektronik.DataSources.Containers
             OnAdded?.Invoke(this, new AddedEventArgs<SimpleLine>(items));
         }
 
+        /// <inheritdoc />
         public void Remove(IList<SimpleLine> items)
         {
             if (items is null) return;
@@ -211,6 +232,7 @@ namespace Elektronik.DataSources.Containers
             OnRemoved?.Invoke(this, new RemovedEventArgs<SimpleLine>(items));
         }
 
+        /// <inheritdoc />
         public IList<SimpleLine> Remove(IList<int> items)
         {
             if (items is null) return new List<SimpleLine>();
@@ -230,6 +252,7 @@ namespace Elektronik.DataSources.Containers
             return removed;
         }
 
+        /// <inheritdoc />
         public void Update(SimpleLine item)
         {
             lock (_lines)
@@ -242,6 +265,7 @@ namespace Elektronik.DataSources.Containers
             OnUpdated?.Invoke(this, new UpdatedEventArgs<SimpleLine>(item));
         }
 
+        /// <inheritdoc />
         public void Update(IList<SimpleLine> items)
         {
             if (items is null) return;
@@ -262,12 +286,15 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ISourceTree implementation
+        #region IDataSource
 
+        /// <inheritdoc />
         public string DisplayName { get; set; } = "Track";
 
+        /// <inheritdoc />
         public IEnumerable<IDataSource> Children => Enumerable.Empty<IDataSource>();
 
+        /// <inheritdoc />
         public void AddConsumer(IDataConsumer consumer)
         {
             if (consumer is ICloudRenderer<SimpleLine> typedRenderer)
@@ -288,6 +315,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void RemoveConsumer(IDataConsumer consumer)
         {
             if (!(consumer is ICloudRenderer<SimpleLine> typedRenderer)) return;
@@ -297,6 +325,7 @@ namespace Elektronik.DataSources.Containers
             _renderers.Remove(typedRenderer);
         }
 
+        /// <inheritdoc />
         public IDataSource TakeSnapshot()
         {
             var res = new TrackCloudContainer(_parent, _trackedObject);
@@ -310,8 +339,9 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ILookable
+        #region ILookableDataSource
 
+        /// <inheritdoc />
         public Pose Look(Transform transform)
         {
             Vector3 pos;
@@ -328,8 +358,9 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
 
+        /// <inheritdoc />
         public bool IsVisible
         {
             get => _isVisible;
@@ -359,28 +390,35 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public event Action<bool> OnVisibleChanged;
 
         #endregion
 
-        #region IFollowable
+        #region IFollowableDataSource
 
+        /// <inheritdoc />
         public void Follow()
         {
             IsFollowed = true;
             OnFollowed?.Invoke(this, _parent, _trackedObject);
         }
 
+        /// <inheritdoc />
         public void Unfollow()
         {
             IsFollowed = false;
             OnUnfollowed?.Invoke(_parent, _trackedObject);
         }
 
+        /// <inheritdoc />
         public event Action<IFollowableDataSource<SlamTrackedObject>, ICloudContainer<SlamTrackedObject>, SlamTrackedObject>
                 OnFollowed;
 
+        /// <inheritdoc />
         public event Action<ICloudContainer<SlamTrackedObject>, SlamTrackedObject> OnUnfollowed;
+
+        /// <inheritdoc />
         public bool IsFollowed { get; private set; }
 
         #endregion

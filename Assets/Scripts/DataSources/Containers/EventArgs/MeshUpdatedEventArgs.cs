@@ -32,6 +32,7 @@ namespace Elektronik.DataSources.Containers.EventArgs
             return true;
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -40,6 +41,7 @@ namespace Elektronik.DataSources.Containers.EventArgs
             return Equals((MeshUpdatedEventArgs)obj);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             unchecked

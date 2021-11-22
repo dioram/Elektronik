@@ -6,21 +6,27 @@ using Elektronik.DataSources.SpecialInterfaces;
 
 namespace Elektronik.DataSources.Containers
 {
+    /// <summary> Class for virtual sources that can be used for grouping other sources in tree. </summary>
     public class VirtualDataSource : IVisibleDataSource
     {
+        /// <summary> Constructor. </summary>
+        /// <param name="displayName"> Name that will be displayed in tree. </param>
+        /// <param name="children"> Children sources. </param>
         public VirtualDataSource(string displayName, IList<IDataSource> children = null)
         {
             DisplayName = displayName;
             ChildrenList = children ?? new List<IDataSource>();
         }
 
+        /// <summary> Adds given source to this as child. </summary>
         public void AddChild(IDataSource child)
         {
             ChildrenList.Add(child);
         }
 
-        #region ISourceTree
+        #region IDataSource
 
+        /// <inheritdoc />
         public virtual void Clear()
         {
             foreach (var child in Children)
@@ -29,6 +35,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public virtual void AddConsumer(IDataConsumer consumer)
         {
             foreach (var child in Children)
@@ -37,6 +44,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public virtual void RemoveConsumer(IDataConsumer consumer)
         {
             foreach (var child in Children)
@@ -44,6 +52,8 @@ namespace Elektronik.DataSources.Containers
                 child.RemoveConsumer(consumer);
             }
         }
+
+        /// <inheritdoc />
         public IDataSource TakeSnapshot()
         {
             return new VirtualDataSource(DisplayName, ChildrenList
@@ -52,14 +62,17 @@ namespace Elektronik.DataSources.Containers
                                          .ToList());
         }
 
+        /// <inheritdoc />
         public string DisplayName { get; set; }
 
+        /// <inheritdoc />
         public IEnumerable<IDataSource> Children => ChildrenList;
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
 
+        /// <inheritdoc />
         public bool IsVisible
         {
             get => _isVisible;
@@ -74,18 +87,21 @@ namespace Elektronik.DataSources.Containers
                 }
             }
         }
-        
+
+        /// <inheritdoc />
         public event Action<bool> OnVisibleChanged;
 
         #endregion
 
         #region Protected
         
+        /// <summary> List of children. </summary>
         protected readonly IList<IDataSource> ChildrenList;
 
+        /// <summary> Removes unused virtual child nodes. </summary>
         protected void Squeeze()
         {
-            for (int i = 0; i < ChildrenList.Count(); i++)
+            for (int i = 0; i < ChildrenList.Count; i++)
             {
                 if (!(ChildrenList[i] is VirtualDataSource @virtual)) continue;
 

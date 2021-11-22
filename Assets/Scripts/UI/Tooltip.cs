@@ -5,14 +5,11 @@ using UnityEngine.EventSystems;
 
 namespace Elektronik.UI
 {
-    public class Tooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    /// <summary> Component for rendering tooltips. </summary>
+    internal class Tooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public string TooltipText;
         public Vector2 Offset = new Vector2(0, 40);
-
-        private GameObject _tooltip;
-        private bool _isActive;
-        private TMP_Text _label;
 
         #region Unity events
 
@@ -28,6 +25,7 @@ namespace Elektronik.UI
 
         #region IPointer*Handler
 
+        /// <inheritdoc />
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (string.IsNullOrWhiteSpace(TooltipText)) return;
@@ -36,11 +34,20 @@ namespace Elektronik.UI
             _label.SetLocalizedText(TooltipText);
         }
 
+        /// <inheritdoc />
         public void OnPointerExit(PointerEventData eventData)
         {
             _isActive = false;
             _tooltip.SetActive(_isActive);
         }
+
+        #endregion
+
+        #region Private
+        
+        private GameObject _tooltip;
+        private bool _isActive;
+        private TMP_Text _label;
 
         #endregion
     }

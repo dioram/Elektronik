@@ -8,6 +8,7 @@ namespace Elektronik.Extensions
 {
     public static class LinqExtensions
     {
+        // TODO: Remove them when unity will support .net5
         [Pure]
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector, 
