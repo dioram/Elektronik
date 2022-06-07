@@ -160,13 +160,6 @@ namespace Elektronik.Protobuf.Offline
             OnRewindStarted?.Invoke();
             _threadWorker.Enqueue(() =>
             {
-                if (_frames.CurrentIndex == 0)
-                {
-                    _frames.Current?.Rewind();
-                    _frames.SoftReset();
-                    return;
-                }
-
                 GoToPreviousFrame();
                 OnRewindFinished?.Invoke();
             });

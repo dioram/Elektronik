@@ -282,7 +282,7 @@ namespace Elektronik.Protobuf.Online
 
         private bool GoToPreviousFrame()
         {
-            _buffer.Current!.Command.UnExecute();
+            _buffer.Current?.Command.UnExecute();
             if (!_buffer.MovePrevious()) return false;
 
             OnPositionChanged?.Invoke(Position);

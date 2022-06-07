@@ -41,7 +41,11 @@ namespace Elektronik.PluginsSystem.UnitySide
         {
             try
             {
+#if UNITY_EDITOR
+                var currentDir = Path.Combine(Directory.GetCurrentDirectory(), "Editor");
+#else
                 var currentDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) ?? "";
+#endif
                 var pluginsDir = Path.Combine(currentDir, @"Plugins");
                 var dlls = Directory.GetDirectories(pluginsDir)
                         .Select(d => Path.Combine(d, "libraries"))
@@ -111,6 +115,6 @@ namespace Elektronik.PluginsSystem.UnitySide
             return null;
         }
 
-        #endregion
+#endregion
     }
 }

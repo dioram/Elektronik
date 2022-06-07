@@ -40,7 +40,7 @@ namespace Elektronik.Plugins.Common.FrameBuffers
         
         public bool MovePrevious()
         {
-            if (_index <= 0)
+            if (_index < 0)
             {
                 return false;
             }

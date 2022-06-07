@@ -27,6 +27,7 @@
 /**/SWIG_generated
 /plugins/*/*CSHARP_wrap*
 /plugins/*/cmake-build-*
+/plugins/*/[Bb]uild
 /plugins/ROS2DDS/CMakeSettings.json
 /plugins/Clustering.PlanesDetection/Native
 /Assets/Scripts/DataSources/Containers/NativeMesh
@@ -43,6 +44,7 @@
 *.mdb.meta
 
 /**/.idea/
+/**/*.csproj.*
 /**/.vs/
 /**/*.sln.*
 /plugins/Ros/libraries/
