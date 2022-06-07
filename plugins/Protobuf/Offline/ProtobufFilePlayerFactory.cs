@@ -1,5 +1,4 @@
-﻿using Elektronik.Data.Converters;
-using Elektronik.PluginsSystem;
+﻿using Elektronik.PluginsSystem;
 
 namespace Elektronik.Protobuf.Offline
 {
@@ -20,13 +19,13 @@ namespace Elektronik.Protobuf.Offline
 
         public string[] SupportedExtensions { get; } = {".dat"};
 
-        protected override IElektronikPlugin StartPlugin(OfflineSettingsBag settings, ICSConverter converter)
+        protected override IElektronikPlugin StartPlugin(OfflineSettingsBag settings)
         {
             if (!string.IsNullOrEmpty(_filepath))
             {
                 settings.PathToFile = _filepath!;
             }
-            return new ProtobufFilePlayer(DisplayName, Logo, settings, converter);
+            return new ProtobufFilePlayer(DisplayName, Logo, settings);
         }
 
         private string? _filepath;

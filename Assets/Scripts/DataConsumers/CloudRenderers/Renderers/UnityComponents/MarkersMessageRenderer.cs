@@ -1,62 +1,28 @@
 ﻿using System;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
-using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.UI;
 using TMPro;
-using UniRx;
 using UnityEngine;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
-    public class MarkersMessageRenderer : GameObjectCloud<SlamMarker>
+    /// <summary> Implementation of renderer for markers messages. </summary>
+    internal class MarkersMessageRenderer : GameObjectCloud<SlamMarker>
     {
-        public float Padding = 0.5f;
-        public float FontSizeMultiplier = 4;
+        #region Editor fields
 
-        public override void OnItemsAdded(object sender, AddedEventArgs<SlamMarker> e)
-        {
-            if (!IsSenderVisible(sender)) return;
-            lock (GameObjects)
-            {
-                foreach (var obj in e.AddedItems)
-                {
-                    var pose = GetObjectPose(obj);
-                    UniRxExtensions.StartOnMainThread(() =>
-                    {
-                        var go = ObjectsPool.Spawn(pose.position * Scale, pose.rotation);
-                        GameObjects[(sender.GetHashCode(), obj.Id)] = go;
+        /// <summary> Distance between center of marker and test position. </summary>
+        [SerializeField] [Tooltip("Distance between center of marker and test position.")] 
+        private float Padding = 0.5f;
+        
+        /// <summary> Multiplier for font size - scene scale relation. </summary>
+        [SerializeField] [Tooltip("Multiplier for font size - scene scale relation.")] 
+        private float FontSizeMultiplier = 4;
 
-                        var dc = go.GetComponent(DataComponent<SlamMarker>.GetInstantiable());
-                        if (dc == null) dc = go.AddComponent(DataComponent<SlamMarker>.GetInstantiable());
-                        var dataComponent = (DataComponent<SlamMarker>)dc;
-                        dataComponent.Data = obj;
-                        dataComponent.Container = sender as IContainer<SlamMarker>;
-                        UpdateMessage(go, obj);
-                    }).Subscribe();
-                }
-            }
-        }
+        #endregion
 
-        public override void OnItemsUpdated(object sender, UpdatedEventArgs<SlamMarker> e)
-        {
-            if (!IsSenderVisible(sender)) return;
-            lock (GameObjects)
-            {
-                foreach (var obj in e.UpdatedItems)
-                {
-                    var pose = GetObjectPose(obj);
-                    UniRxExtensions.StartOnMainThread(() =>
-                    {
-                        var go = GameObjects[(sender.GetHashCode(), obj.Id)];
-                        go.transform.SetPositionAndRotation(pose.position * Scale, pose.rotation);
-                        go.GetComponent<DataComponent<SlamMarker>>().Data = obj;
-                        UpdateMessage(go, obj);
-                    }).Subscribe();
-                }
-            }
-        }
-
+        /// <inheritdoc />
         public override float Scale
         {
             get => _scale;
@@ -80,10 +46,43 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        #region Protected
+
+        /// <inheritdoc />
         protected override Pose GetObjectPose(SlamMarker obj)
         {
             return new Pose(obj.Position, obj.Rotation);
         }
+
+        /// <inheritdoc />
+        protected override GameObject AddInMainThread(object sender, SlamMarker item)
+        {
+            var pose = GetObjectPose(item);
+            var go = ObjectsPool.Spawn(pose.position * Scale, pose.rotation);
+            GameObjects[(sender.GetHashCode(), item.Id)] = go;
+
+            var dc = go.GetComponent(DataComponent<SlamMarker>.GetInstantiable());
+            if (dc == null) dc = go.AddComponent(DataComponent<SlamMarker>.GetInstantiable());
+            var dataComponent = (DataComponent<SlamMarker>)dc;
+            dataComponent.Data = item;
+            dataComponent.CloudContainer = sender as ICloudContainer<SlamMarker>;
+            UpdateMessage(go, item);
+            return go;
+        }
+
+        /// <inheritdoc />
+        protected override GameObject UpdateInMainThread(object sender, SlamMarker item)
+        {
+            var go = GameObjects[(sender.GetHashCode(), item.Id)];
+            go.transform.SetPositionAndRotation(item.Position * Scale, item.Rotation);
+            go.GetComponent<DataComponent<SlamMarker>>().Data = item;
+            UpdateMessage(go, item);
+            return go;
+        }
+
+        #endregion
+
+        #region Private
 
         private void UpdateMessage(GameObject go, SlamMarker obj)
         {
@@ -97,5 +96,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
         }
 
         private float _scale = 1;
+
+        #endregion
     }
 }

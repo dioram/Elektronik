@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.SpecialInterfaces;
@@ -10,14 +10,14 @@ using Elektronik.Protobuf.Offline.Presenters;
 
 namespace Elektronik.Protobuf.Data
 {
-    public class ProtobufContainerTree : ISourceTreeNode, IVisible
+    public class ProtobufContainerTree : IDataSource, IVisibleDataSource
     {
-        public readonly ITrackedContainer<SlamTrackedObject> TrackedObjs;
-        public readonly IConnectableObjectsContainer<SlamObservation> Observations;
-        public readonly IConnectableObjectsContainer<SlamPoint> Points;
-        public readonly IContainer<SlamLine> Lines;
-        public readonly IContainer<SlamPlane> Planes;
-        public readonly IContainer<SlamMarker> Markers;
+        public readonly ITrackedCloudContainer<SlamTrackedObject> TrackedObjs;
+        public readonly IConnectableObjectsCloudContainer<SlamObservation> Observations;
+        public readonly IConnectableObjectsCloudContainer<SlamPoint> Points;
+        public readonly ICloudContainer<SlamLine> Lines;
+        public readonly ICloudContainer<SlamPlane> Planes;
+        public readonly ICloudContainer<SlamMarker> Markers;
         public readonly ImagePresenter Image;
         public readonly IMeshContainer MeshContainer;
         public readonly Connector Connector;
@@ -29,33 +29,33 @@ namespace Elektronik.Protobuf.Data
             SpecialInfo = specialInfo;
 
             Image = new ImagePresenter("Camera");
-            TrackedObjs = new TrackedObjectsContainer("Tracked objects");
-            Observations = new ConnectableObjectsContainer<SlamObservation>(
+            TrackedObjs = new TrackedCloudObjectsContainer("Tracked objects");
+            Observations = new ConnectableObjectsCloudContainer<SlamObservation>(
                 new CloudContainer<SlamObservation>("Points"),
-                new SlamLinesContainer("Connections"),
+                new SlamLinesCloudContainer("Connections"),
                 "Observations");
-            Points = new ConnectableObjectsContainer<SlamPoint>(
+            Points = new ConnectableObjectsCloudContainer<SlamPoint>(
                 new CloudContainer<SlamPoint>("Points"),
-                new SlamLinesContainer("Connections"),
+                new SlamLinesCloudContainer("Connections"),
                 "Points");
             Connector = new Connector(Points, Observations, "Connections");
-            Lines = new SlamLinesContainer("Lines");
+            Lines = new SlamLinesCloudContainer("Lines");
             MeshContainer = new MeshReconstructor(Points, "Mesh");
             Planes = new CloudContainer<SlamPlane>("Planes");
             Markers = new CloudContainer<SlamMarker>("Markers");
-            var observationsGraph = new VirtualSource("Observations graph", new List<ISourceTreeNode>
+            var observationsGraph = new VirtualDataSource("Observations graph", new List<IDataSource>
             {
-                (ISourceTreeNode)Observations,
+                Observations,
                 Connector
             });
-            var ch = new List<ISourceTreeNode>
+            var ch = new List<IDataSource>
             {
-                (ISourceTreeNode)Points,
-                (ISourceTreeNode)TrackedObjs,
-                (ISourceTreeNode)Planes,
+                Points,
+                TrackedObjs,
+                Planes,
                 observationsGraph,
-                (ISourceTreeNode)Lines,
-                (ISourceTreeNode)Markers,
+                Lines,
+                Markers,
                 MeshContainer,
                 Image,
             };
@@ -63,11 +63,11 @@ namespace Elektronik.Protobuf.Data
             Children = ch.ToArray();
         }
 
-        #region ISourceTreeNode implementation
+        #region IDataSource implementation
 
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTreeNode> Children { get; }
+        public IEnumerable<IDataSource> Children { get; }
 
         public void Clear()
         {
@@ -97,23 +97,23 @@ namespace Elektronik.Protobuf.Data
 
         #region ISnapshotable
 
-        public ISourceTreeNode TakeSnapshot()
+        public IDataSource TakeSnapshot()
         {
-            var children = new List<ISourceTreeNode>
+            var children = new List<IDataSource>
             {
-                (TrackedObjs as ISourceTreeNode)!.TakeSnapshot(),
-                (Observations as ISourceTreeNode)!.TakeSnapshot(),
-                (Points as ISourceTreeNode)!.TakeSnapshot(),
-                (Lines as ISourceTreeNode)!.TakeSnapshot(),
-                (Planes as ISourceTreeNode)!.TakeSnapshot(),
+                (TrackedObjs as IDataSource)!.TakeSnapshot(),
+                (Observations as IDataSource)!.TakeSnapshot(),
+                (Points as IDataSource)!.TakeSnapshot(),
+                (Lines as IDataSource)!.TakeSnapshot(),
+                (Planes as IDataSource)!.TakeSnapshot(),
             };
 
-            return new VirtualSource(DisplayName, children);
+            return new VirtualDataSource(DisplayName, children);
         }
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
 
         public bool IsVisible
         {
@@ -122,7 +122,7 @@ namespace Elektronik.Protobuf.Data
             {
                 if (_isVisible == value) return;
                 _isVisible = value;
-                foreach (var child in Children.OfType<IVisible>())
+                foreach (var child in Children.OfType<IVisibleDataSource>())
                 {
                     child.IsVisible = value;
                 }

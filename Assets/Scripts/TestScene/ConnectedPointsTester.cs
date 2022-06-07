@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataControllers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using UnityEngine;
 
@@ -22,7 +22,7 @@ namespace Elektronik.TestScene
         {
             _points = _points.Select(p => new SlamPoint(p.Id, p.Position + transform.position, p.Color))
                     .ToArray();
-            Controller.AddDataSource(_container);
+            Controller.AddDataSource(_cloudContainer);
         }
 
         private void OnEnable()
@@ -49,27 +49,27 @@ namespace Elektronik.TestScene
 
         private readonly (int id1, int id2)[] _connections = { (0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3) };
 
-        private readonly ConnectableObjectsContainer<SlamPoint> _container =
-                new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(), new SlamLinesContainer());
+        private readonly ConnectableObjectsCloudContainer<SlamPoint> _cloudContainer =
+                new ConnectableObjectsCloudContainer<SlamPoint>(new CloudContainer<SlamPoint>(), new SlamLinesCloudContainer());
 
         private IEnumerator UpdateContainer()
         {
             yield return new WaitForSeconds(1);
             while (true)
             {
-                _container.AddRange(_points);
+                _cloudContainer.AddRange(_points);
                 yield return new WaitForSeconds(0.5f);
-                _container.AddConnections(_connections);
+                _cloudContainer.AddConnections(_connections);
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_points.Select(Rotated).ToArray());
+                _cloudContainer.Update(_points.Select(Rotated).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_points.Select(p => new SlamPoint(p.Id, p.Position, Color.black)).ToArray());
+                _cloudContainer.Update(_points.Select(p => new SlamPoint(p.Id, p.Position, Color.black)).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.RemoveConnections(new []{(0, 1), (0, 2)});
+                _cloudContainer.RemoveConnections(new []{(0, 1), (0, 2)});
                 yield return new WaitForSeconds(0.5f);
-                _container.Remove(new List<int> { 1, 2 });
+                _cloudContainer.Remove(new List<int> { 1, 2 });
                 yield return new WaitForSeconds(0.5f);
-                _container.Clear();
+                _cloudContainer.Clear();
                 yield return new WaitForSeconds(0.5f);
             }
             // ReSharper disable once IteratorNeverReturns

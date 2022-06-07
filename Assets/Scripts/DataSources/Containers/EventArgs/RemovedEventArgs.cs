@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 
 namespace Elektronik.DataSources.Containers.EventArgs
 {
+    /// <summary> Event args for removing cloud items. </summary>
+    /// <typeparam name="T"> Type of cloud items. </typeparam>
     public class RemovedEventArgs<T> : System.EventArgs
             where T : struct, ICloudItem
     {
@@ -36,6 +38,7 @@ namespace Elektronik.DataSources.Containers.EventArgs
             return true;
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -44,6 +47,7 @@ namespace Elektronik.DataSources.Containers.EventArgs
             return Equals((RemovedEventArgs<T>)obj);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return (RemovedItems != null ? RemovedItems.GetHashCode() : 0);

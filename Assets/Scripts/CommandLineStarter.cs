@@ -8,7 +8,9 @@ using UnityEngine;
 
 namespace Elektronik
 {
-    public class CommandLineStarter : MonoBehaviour
+    // TODO: Add tests.
+    /// <summary> Class for starting Elektronik from command line. </summary>
+    internal class CommandLineStarter : MonoBehaviour
     {
         #region Editor fields
 

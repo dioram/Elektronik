@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.Plugins.Common.Commands.Generic;
 
@@ -10,9 +10,9 @@ namespace Elektronik.Plugins.Common.Commands.TrackedObj
     {
         private readonly SortedDictionary<int, (SlamTrackedObject, IList<SimpleLine>)> _tracks = new ();
 
-        private readonly ITrackedContainer<SlamTrackedObject> _container;
+        private readonly ITrackedCloudContainer<SlamTrackedObject> _container;
 
-        public ClearTrackedObjsCommand(ITrackedContainer<SlamTrackedObject> container)
+        public ClearTrackedObjsCommand(ITrackedCloudContainer<SlamTrackedObject> container)
                 : base(container)
         {
             _container = container;

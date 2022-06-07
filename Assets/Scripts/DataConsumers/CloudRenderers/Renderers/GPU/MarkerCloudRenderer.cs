@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 
 namespace Elektronik.DataConsumers.CloudRenderers
 {
+    /// <summary> Implementation of renderer for markers. </summary>
     public class MarkerCloudRenderer : ICloudRenderer<SlamMarker>
     {
+        /// <summary> Constructor. </summary>
+        /// <param name="renderers"> Renderers for specific types of markers primitives. </param>
         public MarkerCloudRenderer(IEnumerable<IMarkerCloudRenderer> renderers)
         {
             foreach (var renderer in renderers)
@@ -17,6 +20,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
 
         #region ICloudRenderer
 
+        /// <inheritdoc />
         public float Scale
         {
             get => _scale;
@@ -33,6 +37,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public int ItemsCount
         {
             get
@@ -44,6 +49,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public void OnItemsAdded(object sender, AddedEventArgs<SlamMarker> e)
         {
             lock (_renderers)
@@ -52,6 +58,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public void OnItemsUpdated(object sender, UpdatedEventArgs<SlamMarker> e)
         {
             lock (_renderers)
@@ -61,6 +68,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public void OnItemsRemoved(object sender, RemovedEventArgs<SlamMarker> e)
         {
             lock (_renderers)
@@ -69,6 +77,7 @@ namespace Elektronik.DataConsumers.CloudRenderers
             }
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             foreach (var renderer in _renderers.Values)

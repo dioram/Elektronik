@@ -8,22 +8,20 @@ using Elektronik.UI.Windows;
 
 namespace Elektronik.Protobuf.Data
 {
-    public class ImagePresenter : ISourceTreeNode, IRendersToWindow
+    public class ImagePresenter : IRendersToWindow
     {
         public ImagePresenter(string displayName)
         {
             DisplayName = displayName;
         }
         
-        #region ISourceTreeNode
+        #region IRendersToWindow
 
-        public ISourceTreeNode? TakeSnapshot() => null;
+        public IDataSource? TakeSnapshot() => null;
 
         public string DisplayName { get; set; }
         
-        public IEnumerable<ISourceTreeNode> Children => Array.Empty<ISourceTreeNode>();
-
-        #endregion
+        public IEnumerable<IDataSource> Children => Array.Empty<IDataSource>();
 
         public void Clear()
         {
@@ -59,10 +57,7 @@ namespace Elektronik.Protobuf.Data
             Window = null;
         }
 
-        #region IRendersToWindow
-
         public Window? Window { get; private set; }
-        public string? Title { get; set; }
 
         #endregion
 

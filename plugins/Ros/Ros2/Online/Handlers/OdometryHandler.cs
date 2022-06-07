@@ -1,5 +1,5 @@
 ﻿#if !NO_ROS2DDS
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.RosPlugin.Common.RosMessages;
 using UnityEngine;
@@ -8,9 +8,9 @@ namespace Elektronik.RosPlugin.Ros2.Online.Handlers
 {
     public class OdometryHandler : MessageHandler
     {
-        private readonly IContainer<SlamTrackedObject> _container;
+        private readonly ICloudContainer<SlamTrackedObject> _container;
 
-        public OdometryHandler(IContainer<SlamTrackedObject> container)
+        public OdometryHandler(ICloudContainer<SlamTrackedObject> container)
         {
             _container = container;
         }

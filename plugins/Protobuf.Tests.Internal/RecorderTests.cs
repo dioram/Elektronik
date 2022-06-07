@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers.EventArgs;
+using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Recorders;
@@ -17,6 +18,7 @@ namespace Protobuf.Tests.Internal
     public class RecorderTests
     {
         private string _filename;
+        private readonly ICSConverter _converter = new ProtobufToUnityConverter();
 
         [TearDown]
         public void TearDown()
@@ -47,18 +49,18 @@ namespace Protobuf.Tests.Internal
 
             using var input = File.OpenRead(_filename);
             var packet = PacketPb.Parser.ParseDelimitedFrom(input);
-            Assert.AreEqual(PacketPb.Types.ActionType.Add, packet.Action);
+            packet.Action.Should().Be(PacketPb.Types.ActionType.Add);
             CheckPoints(points, packet);
 
             var anotherPacket = PacketPb.Parser.ParseDelimitedFrom(input);
-            Assert.AreEqual(PacketPb.Types.ActionType.Update, anotherPacket.Action);
+            anotherPacket.Action.Should().Be(PacketPb.Types.ActionType.Update);
             CheckPoints(morePoints, anotherPacket);
 
             var yetAnotherPacket = PacketPb.Parser.ParseDelimitedFrom(input);
-            Assert.AreEqual(PacketPb.Types.ActionType.Remove, yetAnotherPacket.Action);
-            var removingPoints = yetAnotherPacket.ExtractPoints().ToList();
-            Assert.AreEqual(1, removingPoints.Count);
-            Assert.AreEqual(0, removingPoints[0].Id);
+            yetAnotherPacket.Action.Should().Be(PacketPb.Types.ActionType.Remove);
+            var removingPoints = yetAnotherPacket.ExtractPoints(_converter).ToList();
+            removingPoints.Count.Should().Be(1);
+            removingPoints[0].Id.Should().Be(0);
             CheckMetadata(input, 3);
         }
 
@@ -68,17 +70,14 @@ namespace Protobuf.Tests.Internal
             var sut = CreateRecorder(1);
             var observations = new[]
             {
-                new SlamObservation(new SlamPoint(0, Vector3.one, Color.blue), Quaternion.identity, "123", "f.jpg"),
-                new SlamObservation(new SlamPoint(1, Vector3.down, Color.red), new Quaternion(0, 5, 15, 3), "321", ""),
-                new SlamObservation(new SlamPoint(-10, Vector3.forward, Color.gray, "test message"),
-                                    new Quaternion(59, 46, 3, 24), "adsf", "f.jpg"),
+                new SlamObservation(0, Vector3.one, Color.blue, Quaternion.identity, "123", "f.jpg"),
+                new SlamObservation(1, Vector3.down, Color.red, new Quaternion(0, 5, 15, 3), "321", ""),
+                new SlamObservation(-10, Vector3.forward, Color.gray, new Quaternion(59, 46, 3, 24), "adsf", "f.jpg"),
             };
             var moreObservations = new[]
             {
-                new SlamObservation(new SlamPoint(0, Vector3.zero, Color.red, "Another message"),
-                                    new Quaternion(6, 2, 1, 0), "123", "f.jpg"),
-                new SlamObservation(new SlamPoint(-10, Vector3.up, Color.white, "test message"), Quaternion.identity,
-                                    "123", "f.jpg"),
+                new SlamObservation(0, Vector3.zero, Color.red, new Quaternion(6, 2, 1, 0), "123", "f.jpg"),
+                new SlamObservation(-10, Vector3.up, Color.white, Quaternion.identity, "123", "f.jpg"),
             };
 
             sut.OnItemsAdded(null, new AddedEventArgs<SlamObservation>(observations));
@@ -118,7 +117,7 @@ namespace Protobuf.Tests.Internal
                 new SlamTrackedObject(0, Vector3.zero, new Quaternion(5, 6, 7, 0), Color.red, "Another message"),
                 new SlamTrackedObject(-10, Vector3.up, Quaternion.identity, Color.white, "test message")
             };
-            
+
             sut.OnItemsAdded(null, new AddedEventArgs<SlamTrackedObject>(trackedObjects));
             sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamTrackedObject>(moreTrackedObjects));
             sut.OnItemsRemoved(null, new RemovedEventArgs<SlamTrackedObject>(new List<int> { 0 }));
@@ -135,7 +134,7 @@ namespace Protobuf.Tests.Internal
 
             var yetAnotherPacket = PacketPb.Parser.ParseDelimitedFrom(input);
             Assert.AreEqual(PacketPb.Types.ActionType.Remove, yetAnotherPacket.Action);
-            var removingPoints = yetAnotherPacket.ExtractTrackedObjects().ToList();
+            var removingPoints = yetAnotherPacket.ExtractTrackedObjects(_converter).ToList();
             Assert.AreEqual(1, removingPoints.Count);
             Assert.AreEqual(0, removingPoints[0].Id);
             CheckMetadata(input, 3);
@@ -173,7 +172,7 @@ namespace Protobuf.Tests.Internal
 
             var yetAnotherPacket = PacketPb.Parser.ParseDelimitedFrom(input);
             Assert.AreEqual(PacketPb.Types.ActionType.Remove, yetAnotherPacket.Action);
-            var removingPoints = yetAnotherPacket.ExtractPlanes().ToList();
+            var removingPoints = yetAnotherPacket.ExtractPlanes(_converter).ToList();
             Assert.AreEqual(1, removingPoints.Count);
             Assert.AreEqual(0, removingPoints[0].Id);
             CheckMetadata(input, 3);
@@ -212,7 +211,7 @@ namespace Protobuf.Tests.Internal
 
             var yetAnotherPacket = PacketPb.Parser.ParseDelimitedFrom(input);
             Assert.AreEqual(PacketPb.Types.ActionType.Remove, yetAnotherPacket.Action);
-            var removingPoints = yetAnotherPacket.ExtractLines().ToList();
+            var removingPoints = yetAnotherPacket.ExtractLines(_converter).ToList();
             Assert.AreEqual(1, removingPoints.Count);
             Assert.AreEqual(0, removingPoints[0].Id);
             CheckMetadata(input, 3);
@@ -237,7 +236,7 @@ namespace Protobuf.Tests.Internal
             sut.OnItemsAdded(null, new AddedEventArgs<SlamPoint>(points));
             sut.OnItemsUpdated(null, new UpdatedEventArgs<SlamPoint>(morePoints));
             sut.Dispose();
-            
+
             sut.OnItemsRemoved(null, new RemovedEventArgs<SlamPoint>(new List<int> { 0 }));
 
             using var input = File.OpenRead(_filename);
@@ -257,98 +256,104 @@ namespace Protobuf.Tests.Internal
         #region Not tests
 
         // Color have 32 bit size, so when it converts form int to float it has 1/256 ~ 0.004 accuracy.
-        private bool AreColorsEqual(Color first, Color second)
+        private void CheckColors(Color first, Color second)
         {
             float epsilon = 0.004f;
-            return (Mathf.Abs(first.r - second.r) < epsilon)
-                    && (Mathf.Abs(first.g - second.g) < epsilon)
-                    && (Mathf.Abs(first.b - second.b) < epsilon);
+            first.r.Should().BeApproximately(second.r, epsilon);
+            first.g.Should().BeApproximately(second.g, epsilon);
+            first.b.Should().BeApproximately(second.b, epsilon);
         }
 
-        private bool CheckDiffAndPoint(SlamPointDiff diff, SlamPoint point)
+        private void CheckDiffAndPoint(SlamPointDiff diff, SlamPoint point)
         {
-            bool id = diff.Id == point.Id;
-            bool offset = !diff.Position.HasValue || diff.Position.Value == point.Position;
-            bool color = !diff.Color.HasValue || AreColorsEqual(diff.Color.Value, point.Color);
-            bool message = string.IsNullOrEmpty(diff.Message) || diff.Message == point.Message;
-            return id && offset && color && message;
+            diff.Id.Should().Be(point.Id);
+            diff.Position?.Should().Be(point.Position);
+            if (diff.Color.HasValue) CheckColors(diff.Color.Value, point.Color);
+            if (!string.IsNullOrEmpty(diff.Message)) diff.Message.Should().Be(point.Message);
         }
 
         private void CheckPoints(IEnumerable<SlamPoint> points, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Points, packet.DataCase);
-            Assert.IsTrue(packet.ExtractPoints()
-                                  .Zip(points, (point, item) => (point, item))
-                                  .All(d => CheckDiffAndPoint(d.point, d.item)));
+            foreach (var (diff, expected) in packet.ExtractPoints(_converter)
+                    .Zip(points, (point, item) => (point, item)))
+            {
+                CheckDiffAndPoint(diff, expected);
+            }
         }
 
-        private bool CheckDiffAndObservation(SlamObservationDiff diff, SlamObservation observation)
+        private void CheckDiffAndObservation(SlamObservationDiff diff, SlamObservation observation)
         {
-            bool id = diff.Id == observation.Id;
-            bool point = CheckDiffAndPoint(diff.Point, observation.Point);
-            bool offset = !diff.Rotation.HasValue || diff.Rotation.Value == observation.Rotation;
-            bool message = string.IsNullOrEmpty(diff.Message) || diff.Message == observation.Message;
-            bool filename = string.IsNullOrEmpty(diff.FileName) || diff.FileName == observation.FileName;
-            return id && offset && point && message && filename;
+            diff.Id.Should().Be(observation.Id);
+            diff.Position?.Should().Be(observation.Position);
+            if (diff.Color.HasValue) CheckColors(diff.Color.Value, observation.Color);
+            diff.Rotation?.Should().Be(observation.Rotation);
+            if (!string.IsNullOrEmpty(diff.Message)) diff.Message.Should().Be(observation.Message);
+            if (!string.IsNullOrEmpty(diff.FileName)) diff.FileName.Should().Be(observation.FileName);
         }
 
-        private void CheckObservations(IEnumerable<SlamObservation> points, PacketPb packet)
+        private void CheckObservations(IEnumerable<SlamObservation> observations, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Observations, packet.DataCase);
-            Assert.IsTrue(packet.ExtractObservations(null, "")
-                                  .Zip(points, (point, item) => (point, item))
-                                  .All(d => CheckDiffAndObservation(d.point, d.item)));
+            foreach (var (diff, expected) in packet.ExtractObservations(_converter, "")
+                    .Zip(observations, (point, item) => (point, item)))
+            {
+                CheckDiffAndObservation(diff, expected);
+            }
         }
 
-        private bool CheckDiffAndTrackedObj(SlamTrackedObjectDiff diff, SlamTrackedObject obj)
+        private void CheckDiffAndTrackedObj(SlamTrackedObjectDiff diff, SlamTrackedObject obj)
         {
-            bool id = diff.Id == obj.Id;
-            bool offset = !diff.Position.HasValue || diff.Position.Value == obj.Position;
-            bool normal = !diff.Rotation.HasValue || diff.Rotation.Value == obj.Rotation;
-            bool color = !diff.Color.HasValue || AreColorsEqual(diff.Color.Value, obj.Color);
-            bool message = string.IsNullOrEmpty(diff.Message) || diff.Message == obj.Message;
-            return id && offset && normal && color && message;
+            diff.Id.Should().Be(obj.Id);
+            diff.Position?.Should().Be(obj.Position);
+            diff.Rotation?.Should().Be(obj.Rotation);
+            if (diff.Color.HasValue) CheckColors(diff.Color.Value, obj.Color);
+            if (!string.IsNullOrEmpty(diff.Message)) diff.Message.Should().Be(obj.Message);
         }
 
-        private void CheckTrackedObjects(IEnumerable<SlamTrackedObject> points, PacketPb packet)
+        private void CheckTrackedObjects(IEnumerable<SlamTrackedObject> objs, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.TrackedObjs, packet.DataCase);
-            Assert.IsTrue(packet.ExtractTrackedObjects()
-                                  .Zip(points, (point, item) => (point, item))
-                                  .All(d => CheckDiffAndTrackedObj(d.point, d.item)));
+            foreach (var (diff, expected) in packet.ExtractTrackedObjects(_converter)
+                    .Zip(objs, (point, item) => (point, item)))
+            {
+                CheckDiffAndTrackedObj(diff, expected);
+            }
         }
 
-        private bool CheckDiffAndPlane(SlamPlaneDiff diff, SlamPlane plane)
+        private void CheckDiffAndPlane(SlamPlaneDiff diff, SlamPlane plane)
         {
-            bool id = diff.Id == plane.Id;
-            bool offset = !diff.Offset.HasValue || diff.Offset.Value == plane.Offset;
-            bool normal = !diff.Normal.HasValue || diff.Normal.Value == plane.Normal;
-            bool color = !diff.Color.HasValue || AreColorsEqual(diff.Color.Value, plane.Color);
-            bool message = string.IsNullOrEmpty(diff.Message) || diff.Message == plane.Message;
-            return id && offset && normal && color && message;
+            diff.Id.Should().Be(plane.Id);
+            diff.Offset?.Should().Be(plane.Offset);
+            diff.Normal?.Should().Be(plane.Normal);
+            if (diff.Color.HasValue) CheckColors(diff.Color.Value, plane.Color);
+            if (!string.IsNullOrEmpty(diff.Message)) diff.Message.Should().Be(plane.Message);
         }
 
-        private void CheckPlanes(IEnumerable<SlamPlane> points, PacketPb packet)
+        private void CheckPlanes(IEnumerable<SlamPlane> planes, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Planes, packet.DataCase);
-            Assert.IsTrue(packet.ExtractPlanes()
-                                  .Zip(points, (point, item) => (point, item))
-                                  .All(pair => CheckDiffAndPlane(pair.point, pair.item)));
+            foreach (var (diff, expected) in packet.ExtractPlanes(_converter)
+                    .Zip(planes, (point, item) => (point, item)))
+            {
+                CheckDiffAndPlane(diff, expected);
+            }
         }
 
-        private bool CheckDiffAndLine(SlamLineDiff diff, SlamLine line)
+        private void CheckDiffAndLine(SlamLineDiff diff, SlamLine line)
         {
-            bool point1 = CheckDiffAndPoint(diff.Point1, line.Point1);
-            bool point2 = CheckDiffAndPoint(diff.Point2, line.Point2);
-            return point1 && point2;
+            CheckDiffAndPoint(diff.Point1, line.Point1);
+            CheckDiffAndPoint(diff.Point2, line.Point2);
         }
 
-        private void CheckLines(IEnumerable<SlamLine> points, PacketPb packet)
+        private void CheckLines(IEnumerable<SlamLine> lines, PacketPb packet)
         {
             Assert.AreEqual(PacketPb.DataOneofCase.Lines, packet.DataCase);
-            Assert.IsTrue(packet.ExtractLines()
-                                  .Zip(points, (point, item) => (point, item))
-                                  .All(d => CheckDiffAndLine(d.point, d.item)));
+            foreach (var (diff, expected) in packet.ExtractLines(_converter)
+                    .Zip(lines, (point, item) => (point, item)))
+            {
+                CheckDiffAndLine(diff, expected);
+            }
         }
 
         private void CheckMetadata(FileStream input, int expectedFrames)
@@ -356,16 +361,16 @@ namespace Protobuf.Tests.Internal
             input.Position = input.Length - 8;
             var buffer = new byte[4];
             input.Read(buffer, 0, 4);
-            Assert.AreEqual(BitConverter.GetBytes(ProtobufRecorder.Marker), buffer);
+            buffer.Should().BeEquivalentTo(BitConverter.GetBytes(ProtobufRecorder.Marker));
             input.Read(buffer, 0, 4);
-            Assert.AreEqual(BitConverter.GetBytes(expectedFrames), buffer);
+            buffer.Should().BeEquivalentTo(BitConverter.GetBytes(expectedFrames));
         }
 
         private ProtobufRecorder CreateRecorder(int id)
         {
             _filename = $"test_{id}.dat";
-            var factory = new ProtobufRecorderFactory() { Filename = _filename };
-            return (ProtobufRecorder)factory.Start(new FakeConverter());
+            var factory = new ProtobufRecorderFactory { Filename = _filename };
+            return (ProtobufRecorder)factory.Start();
         }
 
         #endregion

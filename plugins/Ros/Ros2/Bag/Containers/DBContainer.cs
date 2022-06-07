@@ -9,7 +9,7 @@ using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public abstract class DBContainer<TMessage, TRenderType> : IDBContainer, ISourceTreeNode, IVisible
+    public abstract class DBContainer<TMessage, TRenderType> : IDBContainer, IVisibleDataSource
             where TMessage : RosSharp.RosBridgeClient.Message
     {
         public DBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
@@ -20,20 +20,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             Topic = topic;
             ActualTimestamps = actualTimestamps;
         }
-
-        #region ISourceTreeNode
-
-        public abstract ISourceTreeNode? TakeSnapshot();
-
-        public string DisplayName { get; set; }
-        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
-
-        public abstract void Clear();
-
-        public abstract void AddConsumer(IDataConsumer consumer);
-        public abstract void RemoveConsumer(IDataConsumer consumer);
-
-        #endregion
 
         #region IDBContainer
 
@@ -54,7 +40,17 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
+
+        public abstract IDataSource? TakeSnapshot();
+
+        public string DisplayName { get; set; }
+        public IEnumerable<IDataSource> Children { get; } = Array.Empty<IDataSource>();
+
+        public abstract void Clear();
+
+        public abstract void AddConsumer(IDataConsumer consumer);
+        public abstract void RemoveConsumer(IDataConsumer consumer);
 
         public virtual bool IsVisible
         {

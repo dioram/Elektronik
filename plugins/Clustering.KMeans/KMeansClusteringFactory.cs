@@ -1,12 +1,11 @@
-﻿using Elektronik.Data.Converters;
-using Elektronik.PluginsSystem;
+﻿using Elektronik.PluginsSystem;
 
 namespace Elektronik.Clustering.KMeans
 {
     public class KMeansClusterizationFactory : ElektronikPluginsFactoryBase<KMeansSettings>,
                                                IClusteringAlgorithmFactory
     {
-        protected override IElektronikPlugin StartPlugin(KMeansSettings settings, ICSConverter? converter)
+        protected override IElektronikPlugin StartPlugin(KMeansSettings settings)
         {
             return new KMeansClusterizationAlgorithm(settings, DisplayName);
         }

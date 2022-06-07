@@ -2,12 +2,31 @@
 
 namespace Elektronik.DataConsumers.Windows
 {
-    public struct ImageData
+    /// <summary> This struct contains all data needed by elektronik for rendering image. </summary>
+    public readonly struct ImageData
     {
-        public int Width;
-        public int Height;
-        public TextureFormat Encoding;
-        public byte[] Data;
-        public bool IsSupported;
+        /// <summary> Image width. </summary>
+        public readonly int Width;
+        
+        /// <summary> Image height. </summary>
+        public readonly int Height;
+        
+        /// <summary> Image encoding. </summary>
+        public readonly TextureFormat Encoding;
+        
+        /// <summary> Byte array of image data. </summary>
+        public readonly byte[] Data;
+
+        /// <summary> Marks that image needs to flipped vertically. </summary>
+        public readonly bool IsFlippedVertically;
+
+        public ImageData(int width, int height, TextureFormat encoding, byte[] data, bool isFlippedVertically)
+        {
+            Width = width;
+            Height = height;
+            Encoding = encoding;
+            Data = data;
+            IsFlippedVertically = isFlippedVertically;
+        }
     }
 }

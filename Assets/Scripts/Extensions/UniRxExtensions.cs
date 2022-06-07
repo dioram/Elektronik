@@ -11,6 +11,13 @@ namespace UniRx
 {
     public static class UniRxExtensions
     {
+        #region Threading
+
+        // TODO: Use UniTask instead of this
+
+        /// <summary> Launches given action in main thread. </summary>
+        /// <param name="action"> Action that will be run in main thread. </param>
+        /// <returns> Observable on action's result. </returns>
         public static IObservable<Unit> StartOnMainThread(Action action)
         {
             try
@@ -22,7 +29,10 @@ namespace UniRx
                 return Observable.Empty<Unit>();
             }
         }
-        
+
+        /// <summary> Launches given function in main thread. </summary>
+        /// <param name="func"> Function that will be run in main thread. </param>
+        /// <returns> Observable on function's result. </returns>
         public static IObservable<T> StartOnMainThread<T>(Func<T> func)
         {
             try
@@ -34,7 +44,10 @@ namespace UniRx
                 return Observable.Empty<T>();
             }
         }
-        
+
+        /// <summary>
+        /// This extension returns <c>Observable.Empty/<T/></c> in case of <see cref="SecurityException"/>.
+        /// </summary>
         public static IObservable<T> ObserveOnMainThreadSafe<T>(this IObservable<T> obs)
         {
             try
@@ -47,14 +60,9 @@ namespace UniRx
             }
         }
 
-        public static IObservable<string> OnValueChangedAsObservable(this TMP_InputField inputField)
-        {
-            return Observable.CreateWithState<string, TMP_InputField>(inputField, (i, observer) =>
-            {
-                observer.OnNext(i.text);
-                return i.onValueChanged.AsObservable().Subscribe(observer);
-            });
-        }
+        #endregion
+
+        #region InputAction
 
         public static IObservable<InputContext> PerformedAsObservable(this InputAction inputAction) =>
                 Observable.FromEvent<InputContext>(h => inputAction.performed += h,
@@ -73,7 +81,7 @@ namespace UniRx
             var events = Observable.FromEvent<InputContext>(
                 h => inputAction.canceled += h,
                 h => inputAction.canceled -= h);
-            
+
             return Observable.CreateWithState(new InputContext(),
                                               (InputContext context, IObserver<InputContext> observer) =>
                                               {
@@ -81,6 +89,20 @@ namespace UniRx
                                                   return events.Subscribe(observer);
                                               });
         }
+
+        #endregion
+
+        #region TMP_InputField
+
+        public static IObservable<string> OnValueChangedAsObservable(this TMP_InputField inputField)
+        {
+            return Observable.CreateWithState<string, TMP_InputField>(inputField, (i, observer) =>
+            {
+                observer.OnNext(i.text);
+                return i.onValueChanged.AsObservable().Subscribe(observer);
+            });
+        }
+
         public static IObservable<string> OnSubmitAsObservable(this TMP_InputField inputField)
         {
             var subject = new Subject<string>();
@@ -88,6 +110,11 @@ namespace UniRx
             return subject;
         }
 
+        #endregion
+
+        #region Observable
+
+        /// <summary> Alias for popular rx pattern. </summary>
         public static IObservable<Unit> RepeatEveryUpdateUntilEventOrDestroyed<T>(
             this IObservable<Unit> observable, IObservable<T> @event, MonoBehaviour obj)
         {
@@ -96,6 +123,7 @@ namespace UniRx
                     .RepeatUntilDestroy(obj);
         }
 
+        /// <summary> Alias for popular rx pattern. </summary>
         public static IObservable<T> RepeatEveryUpdateUntilEventOrDestroyed<T, T1>(
             this IObservable<T> observable, IObservable<T1> @event, MonoBehaviour obj)
         {
@@ -103,5 +131,7 @@ namespace UniRx
                     .TakeUntil(@event)
                     .RepeatUntilDestroy(obj);
         }
+
+        #endregion
     }
 }

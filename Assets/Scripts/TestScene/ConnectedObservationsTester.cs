@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataControllers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using UnityEngine;
 
@@ -21,11 +21,10 @@ namespace Elektronik.TestScene
         private void Start()
         {
             _observations = _observations
-                    .Select(o => new SlamObservation(
-                                new SlamPoint(o.Id, o.Point.Position + transform.position, o.Point.Color),
-                                o.Rotation, o.Message, o.FileName))
+                    .Select(o => new SlamObservation(o.Id, o.Position + transform.position, o.Color,
+                                                     o.Rotation, o.Message, o.FileName))
                     .ToArray();
-            Controller.AddDataSource(_container);
+            Controller.AddDataSource(_cloudContainer);
         }
 
         private void OnEnable()
@@ -44,40 +43,40 @@ namespace Elektronik.TestScene
 
         private SlamObservation[] _observations =
         {
-            new SlamObservation(new SlamPoint(0, Vector3.up, Color.red), Quaternion.identity, "", ""),
-            new SlamObservation(new SlamPoint(1, Vector3.forward, Color.blue), Quaternion.identity, "", ""),
-            new SlamObservation(new SlamPoint(2, new Vector3(Mathf.Sqrt(2) / 2, 0, -Mathf.Sqrt(2) / 2), Color.green),
+            new SlamObservation(0, Vector3.up, Color.red, Quaternion.identity, "", ""),
+            new SlamObservation(1, Vector3.forward, Color.blue, Quaternion.identity, "", ""),
+            new SlamObservation(2, new Vector3(Mathf.Sqrt(2) / 2, 0, -Mathf.Sqrt(2) / 2), Color.green,
                                 Quaternion.identity, "", ""),
-            new SlamObservation(new SlamPoint(3, new Vector3(-Mathf.Sqrt(2) / 2, 0, -Mathf.Sqrt(2) / 2), Color.yellow),
+            new SlamObservation(3, new Vector3(-Mathf.Sqrt(2) / 2, 0, -Mathf.Sqrt(2) / 2), Color.yellow,
                                 Quaternion.identity, "", ""),
         };
 
         private readonly (int id1, int id2)[] _connections = { (0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3) };
 
-        private readonly ConnectableObjectsContainer<SlamObservation> _container =
-                new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
-                                                                 new SlamLinesContainer());
+        private readonly ConnectableObjectsCloudContainer<SlamObservation> _cloudContainer =
+            new ConnectableObjectsCloudContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
+                                                                  new SlamLinesCloudContainer());
 
         private IEnumerator UpdateContainer()
         {
             yield return new WaitForSeconds(1);
             while (true)
             {
-                _container.AddRange(_observations);
+                _cloudContainer.AddRange(_observations);
                 yield return new WaitForSeconds(0.5f);
-                _container.AddConnections(_connections);
+                _cloudContainer.AddConnections(_connections);
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_observations.Select(Rotated).ToArray());
+                _cloudContainer.Update(_observations.Select(Rotated).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_observations.Select(ChangePosition).ToArray());
+                _cloudContainer.Update(_observations.Select(ChangePosition).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_observations.Select(ChangeColor).ToArray());
+                _cloudContainer.Update(_observations.Select(ChangeColor).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.RemoveConnections(new[] { (0, 1), (0, 2) });
+                _cloudContainer.RemoveConnections(new[] { (0, 1), (0, 2) });
                 yield return new WaitForSeconds(0.5f);
-                _container.Remove(new List<int> { 1, 2 });
+                _cloudContainer.Remove(new List<int> { 1, 2 });
                 yield return new WaitForSeconds(0.5f);
-                _container.Clear();
+                _cloudContainer.Clear();
                 yield return new WaitForSeconds(0.5f);
             }
             // ReSharper disable once IteratorNeverReturns
@@ -85,19 +84,19 @@ namespace Elektronik.TestScene
 
         private SlamObservation ChangeColor(SlamObservation obs)
         {
-            return new SlamObservation(new SlamPoint(obs.Point.Id, obs.Point.Position, Color.black),
-                                       obs.Rotation, obs.Message, obs.FileName);
+            return new SlamObservation(obs.Id, obs.Position, Color.black, obs.Rotation, obs.Message, obs.FileName);
         }
 
         private SlamObservation ChangePosition(SlamObservation obs)
         {
-            return new SlamObservation(new SlamPoint(obs.Point.Id, obs.Point.Position + Vector3.up, obs.Point.Color),
-                                       obs.Rotation, obs.Message, obs.FileName);
+            return new SlamObservation(obs.Id, obs.Position + Vector3.up, obs.Color, obs.Rotation, obs.Message,
+                                       obs.FileName);
         }
-        
+
         private static SlamObservation Rotated(SlamObservation obs)
         {
-            return new SlamObservation(obs.Point, Quaternion.AngleAxis(45, Vector3.forward) * obs.Rotation,
+            return new SlamObservation(obs.Id, obs.Position, obs.Color,
+                                       Quaternion.AngleAxis(45, Vector3.forward) * obs.Rotation,
                                        obs.Message, obs.Message);
         }
 

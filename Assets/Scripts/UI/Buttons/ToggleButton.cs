@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 namespace Elektronik.UI.Buttons
 {
+    // TODO: check if there is library implementation of this
     [RequireComponent(typeof(Button), typeof(Image))]
     public class ToggleButton : MonoBehaviour
     {

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Moq;
@@ -38,8 +37,8 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
             packet.TrackedObjs.Data.Add(_objects);
-            var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => ((SlamTrackedObjectDiff)p).Apply())
-                                                              .ToArray());
+            var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => p.ToUnity(Converter).Apply())
+                                                                  .ToArray());
             var els = _objects.Select(o => new AddedEventArgs<SimpleLine>(FromPb(0, o))).ToArray();
 
             SendPacket(packet);
@@ -49,7 +48,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -69,7 +68,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.TrackedObjs.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply())
+            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(p => p.ToUnity(Converter).Apply())
                                                                     .ToArray());
             var els = _objects.Select((o, i) => new AddedEventArgs<SimpleLine>(FromPb(1, oldObjects[i], o))).ToArray();
 
@@ -80,7 +79,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -99,7 +98,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.TrackedObjs.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply())
+            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(p => p.ToUnity(Converter).Apply())
                                                                     .ToArray());
             var els = _objects.Select(o => new AddedEventArgs<SimpleLine>(FromPb(2, o))).ToArray();
 
@@ -110,7 +109,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -130,7 +129,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.TrackedObjs.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply())
+            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(p => p.ToUnity(Converter).Apply())
                                                                     .ToArray());
             var els = _objects.Select((o, i) => new AddedEventArgs<SimpleLine>(FromPb(3, oldObjects[i], o))).ToArray();
 
@@ -141,7 +140,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -160,7 +159,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.TrackedObjs.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply())
+            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(p => p.ToUnity(Converter).Apply())
                                                                     .ToArray());
             var els = _objects.Select(o => new AddedEventArgs<SimpleLine>(FromPb(4, o))).ToArray();
 
@@ -171,7 +170,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -197,7 +196,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             }
 
             packet.TrackedObjs.Data.Add(_objects);
-            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(o => ((SlamTrackedObjectDiff)o).Apply())
+            var e = new UpdatedEventArgs<SlamTrackedObject>(_objects.Select(p => p.ToUnity(Converter).Apply())
                                                                     .ToArray());
             var els = _objects.Select((o, i) => new AddedEventArgs<SimpleLine>(FromPb(5, oldObjects[i], o))).ToArray();
 
@@ -208,7 +207,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -221,7 +220,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
             packet.TrackedObjs.Data.Add(new[] { _objects[1] });
-            var e = new RemovedEventArgs<SlamTrackedObject>(((SlamTrackedObjectDiff)_objects[1]).Apply());
+            var e = new RemovedEventArgs<SlamTrackedObject>(_objects[1].ToUnity(Converter).Apply());
             var el = new RemovedEventArgs<SimpleLine>(Enumerable
                                                               .Range(0, 6)
                                                               .Select(
@@ -233,7 +232,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(_objects.Length - 1);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
-            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackContainer>(), el),
+            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackCloudContainer>(), el),
                                              Times.Once);
         }
 
@@ -247,7 +246,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
             };
             var e = new RemovedEventArgs<SlamTrackedObject>(new[]
             {
-                ((SlamTrackedObjectDiff)_objects[0]).Apply(), ((SlamTrackedObjectDiff)_objects[2]).Apply()
+                _objects[0].ToUnity(Converter).Apply(), _objects[2].ToUnity(Converter).Apply()
             });
             var el = new RemovedEventArgs<SimpleLine>(Enumerable
                                                               .Range(0, 6)
@@ -260,18 +259,18 @@ namespace Protobuf.Tests.Internal.Integration.Online
             ((ProtobufContainerTree)Sut.Data).TrackedObjs.Count.Should().Be(0);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e),
                                              Times.Once);
-            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackContainer>(), el),
+            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackCloudContainer>(), el),
                                              Times.Exactly(3));
         }
 
         #region Not tests
 
-        private static SimpleLine FromPb(int id, TrackedObjPb obj) =>
-                new(id, (Vector3)obj.Position!, (Vector3)obj.Position!, (Color)obj.Color!);
+        private SimpleLine FromPb(int id, TrackedObjPb obj) =>
+                new(id, obj.Position!.ToUnity(Converter), obj.Position!.ToUnity(Converter), obj.Color!.ToUnity());
 
-        private static SimpleLine FromPb(int id, TrackedObjPb obj1, TrackedObjPb obj2) =>
-                new(id, (Vector3)obj1.Position!, (Vector3)(obj2.Position ?? obj1.Position)!,
-                    (Color)obj1.Color!, (Color)(obj2.Color ?? obj1.Color)!);
+        private SimpleLine FromPb(int id, TrackedObjPb obj1, TrackedObjPb obj2) =>
+                new(id, obj1.Position!.ToUnity(Converter), (obj2.Position ?? obj1.Position)!.ToUnity(Converter),
+                    obj1.Color!.ToUnity(), (obj2.Color ?? obj1.Color)!.ToUnity());
 
         private TrackedObjPb[] CreateDiff(Func<TrackedObjPb, int, (TrackedObjPb, TrackedObjPb)> func)
         {

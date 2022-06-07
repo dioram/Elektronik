@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using Elektronik.Data.Converters;
 using Elektronik.Settings;
 using UnityEngine;
 using SettingsBag = Elektronik.Settings.SettingsBag;
@@ -34,10 +33,10 @@ namespace Elektronik.PluginsSystem
         public ISettingsHistory SettingsHistory => _settingsHistory;
 
         /// <inheritdoc />
-        public IElektronikPlugin Start(ICSConverter converter)
+        public IElektronikPlugin Start()
         {
             SaveSettings();
-            return StartPlugin(_typedSettings, converter);
+            return StartPlugin(_typedSettings);
         }
 
         /// <inheritdoc />
@@ -63,9 +62,8 @@ namespace Elektronik.PluginsSystem
 
         /// <summary> This function actually instantiates plugin. </summary>
         /// <param name="settings"> Plugin's settings that are necessary for start. </param>
-        /// <param name="converter"> Converter to unity's coordinates system. </param>
         /// <returns> Plugin. </returns>
-        protected abstract IElektronikPlugin StartPlugin(TSettings settings, ICSConverter converter);
+        protected abstract IElektronikPlugin StartPlugin(TSettings settings);
 
         #endregion
 

@@ -9,7 +9,7 @@ using SettingsBag = Elektronik.Settings.SettingsBag;
 
 namespace Elektronik.UI
 {
-    [RequireComponent(typeof(SettingsGenerator))]
+    [RequireComponent(typeof(SettingsFieldsUiGenerator))]
     public class ClusterizationAlgorithmPanel : MonoBehaviour
     {
         #region Editor fields
@@ -23,11 +23,11 @@ namespace Elektronik.UI
         
         public void Setup(IClusteringAlgorithmFactory factory)
         {
-            _generator = GetComponent<SettingsGenerator>();
+            GetComponent<SettingsFieldsUiGenerator>().Generate(factory.Settings);
+            _settingsBag = factory.Settings;
             _subject = new Subject<Unit>();
-            _generator.Generate(factory.Settings);
             NameLabel.text = factory.DisplayName;
-            OnComputeRequested = _subject.Select(_ => (IClusteringAlgorithm)factory.Start(null));
+            OnComputeRequested = _subject.Select(_ => (IClusteringAlgorithm)factory.Start());
         }
 
         public IObservable<IClusteringAlgorithm> OnComputeRequested;
@@ -37,14 +37,14 @@ namespace Elektronik.UI
         private void Awake()
         {
             ComputeButton.OnClickAsObservable()
-                .Select(_ => _generator.Settings?.Validate() ?? SettingsBag.ValidationResult.Failed(""))
+                .Select(_ => _settingsBag?.Validate() ?? SettingsBag.ValidationResult.Failed(""))
                 .Where(v => !v.Success)
                 .Do(_ => ErrorLabel.gameObject.SetActive(true))
                 .Subscribe(v => ErrorLabel.text = v.Message)
                 .AddTo(this);
             
             ComputeButton.OnClickAsObservable()
-                .Select(_ => _generator.Settings?.Validate() ?? SettingsBag.ValidationResult.Failed(""))
+                .Select(_ => _settingsBag?.Validate() ?? SettingsBag.ValidationResult.Failed(""))
                 .Where(v => v.Success)
                 .Do(_ => ErrorLabel.gameObject.SetActive(false))
                 .Do(_ => enabled = false)
@@ -70,7 +70,7 @@ namespace Elektronik.UI
         #region Private
 
         private Subject<Unit> _subject;
-        private SettingsGenerator _generator;
+        private SettingsBag _settingsBag;
 
         #endregion
     }

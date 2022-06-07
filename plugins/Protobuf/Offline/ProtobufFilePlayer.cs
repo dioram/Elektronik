@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Timers;
-using Elektronik.Data.Converters;
 using Elektronik.DataSources;
 using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Plugins.Common.Parsing;
@@ -18,27 +17,24 @@ namespace Elektronik.Protobuf.Offline
 {
     public class ProtobufFilePlayer : IRewindableDataSource, IChangingSpeed
     {
-        public ProtobufFilePlayer(string displayName, Texture2D? logo, OfflineSettingsBag settings,
-                                  ICSConverter converter)
+        public ProtobufFilePlayer(string displayName, Texture2D? logo, OfflineSettingsBag settings)
         {
-            _containerTree = new ProtobufContainerTree("Protobuf",
-                                                       new SlamDataInfoPresenter("Special info"));
-            Data = _containerTree;
+            var containerTree = new ProtobufContainerTree("Protobuf", new SlamDataInfoPresenter("Special info"));
+            Data = containerTree;
             DisplayName = displayName;
             Logo = logo;
             _parsersChain = new DataParser<PacketPb>[]
             {
-                new ObjectsParser(_containerTree.Planes, _containerTree.Points, _containerTree.Observations,
+                new ObjectsParser(containerTree.Planes, containerTree.Points, containerTree.Observations,
                                   settings.PathToImagesDirectory),
-                new TrackedObjectsParser(_containerTree.TrackedObjs),
-                new InfoParser(_containerTree.SpecialInfo),
-                new ImageParser(_containerTree.Image, settings.PathToImagesDirectory),
+                new TrackedObjectsParser(containerTree.TrackedObjs),
+                new InfoParser(containerTree.SpecialInfo),
+                new ImageParser(containerTree.Image, settings.PathToImagesDirectory),
             }.BuildChain();
 
-            _containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
+            containerTree.DisplayName = $"Protobuf: {Path.GetFileName(settings.PathToFile)}";
             _input = File.OpenRead(settings.PathToFile);
-            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
-            _parsersChain?.SetConverter(converter);
+            _parsersChain?.SetConverter(new ProtobufToUnityConverter());
 
             _frames = new FramesCollection<Frame>(ReadCommands, TryGetSize());
             _frames.OnSizeChanged += i => OnAmountOfFramesChanged?.Invoke(i);
@@ -59,7 +55,7 @@ namespace Elektronik.Protobuf.Offline
 
         #region IDataSourcePlugin
 
-        public ISourceTreeNode Data { get; }
+        public IDataSource Data { get; }
 
         public void Dispose()
         {
@@ -86,7 +82,7 @@ namespace Elektronik.Protobuf.Offline
             get => _frames.CurrentIndex;
             set => RewindAt(value);
         }
-        
+
         public bool IsPlaying { get; private set; }
         public event Action? OnPlayingStarted;
         public event Action? OnPaused;
@@ -164,13 +160,6 @@ namespace Elektronik.Protobuf.Offline
             OnRewindStarted?.Invoke();
             _threadWorker.Enqueue(() =>
             {
-                if (_frames.CurrentIndex == 0)
-                {
-                    _frames.Current?.Rewind();
-                    _frames.SoftReset();
-                    return;
-                }
-
                 GoToPreviousFrame();
                 OnRewindFinished?.Invoke();
             });
@@ -196,7 +185,6 @@ namespace Elektronik.Protobuf.Offline
 
         #region Private definitions
 
-        private readonly ProtobufContainerTree _containerTree;
         private readonly FileStream _input;
         private readonly FramesCollection<Frame> _frames;
         private readonly DataParser<PacketPb>? _parsersChain;

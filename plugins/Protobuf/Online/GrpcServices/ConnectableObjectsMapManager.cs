@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Elektronik.Data.Converters;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
+using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.Commands;
 using Elektronik.Plugins.Common.Commands.Generic;
 using Elektronik.Plugins.Common.DataDiff;
@@ -19,10 +19,10 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             where TCloudItem : struct, ICloudItem
             where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
-        private readonly IConnectableObjectsContainer<TCloudItem> _connectableContainer;
+        private readonly IConnectableObjectsCloudContainer<TCloudItem> _connectableContainer;
 
         protected ConnectableObjectsMapManager(IOnlineFrameBuffer buffer,
-                                               IConnectableObjectsContainer<TCloudItem> container,
+                                               IConnectableObjectsCloudContainer<TCloudItem> container,
                                                ICSConverter? converter, ILogger logger)
                 : base(buffer, container, converter, logger)
         {

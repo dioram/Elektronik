@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.DataSources.Containers.NativeMesh;
 using Elektronik.Threading;
@@ -11,19 +11,27 @@ using UnityEngine;
 
 namespace Elektronik.DataSources.Containers
 {
+    /// <summary> This class reconstructs mesh by from given points cloud. </summary>
     public class MeshReconstructor : IMeshContainer
     {
-        public MeshReconstructor(IContainer<SlamPoint> points, string displayName = "Mesh")
+        /// <summary> Constructor. </summary>
+        /// <param name="cloud"> Container of points. </param>
+        /// <param name="displayName"> Name that will be displayed in tree. </param>
+        public MeshReconstructor(ICloudContainer<SlamPoint> cloud, string displayName = "Mesh")
         {
-            _points = points;
+            _cloud = cloud;
             DisplayName = displayName;
-            _points.OnAdded += (_, __) => RequestCalculation();
-            _points.OnUpdated += (_, __) => RequestCalculation();
-            _points.OnRemoved += (_, __) => RequestCalculation();
+            _cloud.OnAdded += (_, __) => RequestCalculation();
+            _cloud.OnUpdated += (_, __) => RequestCalculation();
+            _cloud.OnRemoved += (_, __) => RequestCalculation();
         }
 
+        #region IMeshContainer
+
+        /// <inheritdoc />
         public event EventHandler<MeshUpdatedEventArgs> OnMeshUpdated;
 
+        /// <inheritdoc />
         public void SwitchShader()
         {
             foreach (var renderer in _renderer)
@@ -32,18 +40,24 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
-        #region ISourceTree
+        #endregion
 
+        #region IDataSource
+
+        /// <inheritdoc />
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
+        /// <inheritdoc />
+        public IEnumerable<IDataSource> Children { get; } = Array.Empty<IDataSource>();
 
+        /// <inheritdoc />
         public void Clear()
         {
             OnMeshUpdated?.Invoke(this, new MeshUpdatedEventArgs(Array.Empty<(Vector3, Color)>(),
                                                                  Array.Empty<int>()));
         }
 
+        /// <inheritdoc />
         public void AddConsumer(IDataConsumer consumer)
         {
             if (!(consumer is IMeshRenderer meshRenderer)) return;
@@ -51,6 +65,7 @@ namespace Elektronik.DataSources.Containers
             OnMeshUpdated += meshRenderer.OnMeshUpdated;
         }
 
+        /// <inheritdoc />
         public void RemoveConsumer(IDataConsumer consumer)
         {
             if (!(consumer is IMeshRenderer meshRenderer)) return;
@@ -58,12 +73,14 @@ namespace Elektronik.DataSources.Containers
             OnMeshUpdated -= meshRenderer.OnMeshUpdated;
         }
 
-        public ISourceTreeNode TakeSnapshot() => null;
+        /// <inheritdoc />
+        public IDataSource TakeSnapshot() => null;
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
 
+        /// <inheritdoc />
         public bool IsVisible
         {
             get => _isVisible;
@@ -79,16 +96,15 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public event Action<bool> OnVisibleChanged;
-
-        public bool ShowButton => true;
 
         #endregion
 
         #region Private
 
         private bool _isVisible = false;
-        private readonly IContainer<SlamPoint> _points;
+        private readonly ICloudContainer<SlamPoint> _cloud;
         private readonly ThreadWorkerSingleAwaiter _threadWorker = new ThreadWorkerSingleAwaiter();
         private readonly List<IMeshRenderer> _renderer = new List<IMeshRenderer>();
 
@@ -104,7 +120,7 @@ namespace Elektronik.DataSources.Containers
 
         private void CalculateMesh()
         {
-            var points = _points.ToArray();
+            var points = _cloud.ToArray();
             var builder = new MeshBuilder();
             var output = builder.FromPoints(points);
             var outputPoints = output.points.Select(ToUnity).ToArray();

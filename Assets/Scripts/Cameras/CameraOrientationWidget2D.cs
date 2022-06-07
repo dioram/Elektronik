@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -7,43 +8,56 @@ using UnityEngine.UI.Extensions;
 
 namespace Elektronik.Cameras
 {
-    public class CameraOrientationWidget2D : MonoBehaviour
+    /// <summary> This component controls widget that shows camera orientation. </summary>
+    internal sealed class CameraOrientationWidget2D : MonoBehaviour
     {
-        [Range(0, 5)] public float RotationTime = 1;
-        [Range(0, 100)] public float Scale = 15;
-        [Range(0, 30)] public float MarkerSize = 20;
-        [SerializeField] private RectTransform[] AxisLabels = new RectTransform[6];
-        public TMP_Text PositionLabel;
-        public UILineRenderer XLine;
-        public UILineRenderer YLine;
-        public UILineRenderer ZLine;
-        public bool ShowCoordinates = true;
-        private Transform _camera;
-        private bool _rotating;
+        #region Editor fields
+
+        /// <summary> Time interval for camera alignment animation. </summary>
+        [Header("Settings")] [Range(0, 5)] [SerializeField] [Tooltip("Time interval for camera alignment animation.")]
+        private float RotationTime = 1;
+
+        /// <summary> Length of axis lines in widget. </summary>
+        [Range(0, 100)] [SerializeField] [Tooltip("Length of axis lines in widget.")]
+        private float Scale = 15;
+
+        /// <summary> Size of marker with axis name. </summary>
+        [Range(0, 30)] [SerializeField] [Tooltip("Size of marker with axis name.")]
+        private float MarkerSize = 20;
+
+        [SerializeField] private bool ShowCoordinates = true;
+
+        [Header("Objects")] [SerializeField] private RectTransform[] AxisLabels = new RectTransform[6];
+        [SerializeField] private TMP_Text PositionLabel;
+        [SerializeField] private UILineRenderer XLine;
+        [SerializeField] private UILineRenderer YLine;
+        [SerializeField] private UILineRenderer ZLine;
+
+        #endregion
+
+        #region Unity events
 
         private void Start()
         {
             _camera = Camera.main.transform;
             ShowCoordinates = ShowCoordinates && (PositionLabel != null);
-            
-            AxisLabels[0].GetComponent<Button>().OnClickAsObservable()
-                    .Subscribe(_ => StartCoroutine(RotateCamera(Vector3.forward)));
-            AxisLabels[1].GetComponent<Button>().OnClickAsObservable()
-                    .Subscribe(_ => StartCoroutine(RotateCamera(Vector3.back)));
-            AxisLabels[2].GetComponent<Button>().OnClickAsObservable()
-                    .Subscribe(_ => StartCoroutine(RotateCamera(Vector3.down)));
-            AxisLabels[3].GetComponent<Button>().OnClickAsObservable()
-                    .Subscribe(_ => StartCoroutine(RotateCamera(Vector3.up)));
-            AxisLabels[4].GetComponent<Button>().OnClickAsObservable()
-                    .Subscribe(_ => StartCoroutine(RotateCamera(Vector3.left)));
-            AxisLabels[5].GetComponent<Button>().OnClickAsObservable()
-                    .Subscribe(_ => StartCoroutine(RotateCamera(Vector3.right)));
+
+            var axes = new[]
+            {
+                Vector3.forward, Vector3.back, Vector3.down, Vector3.up, Vector3.left, Vector3.right,
+            };
+
+            AxisLabels.Select(l => l.GetComponent<Button>())
+                    .Select((button, i) => button.OnClickAsObservable().Select(_ => axes[i]))
+                    .Merge()
+                    .Subscribe(a => StartCoroutine(RotateCamera(a)))
+                    .AddTo(this);
         }
 
-        protected void Update()
+        private void Update()
         {
             UpdateCoordinatesLabel();
-            
+
             var cameraAxis = new[]
             {
                 _camera.forward,
@@ -62,7 +76,7 @@ namespace Elektronik.Cameras
             YLine.SetAllDirty();
             ZLine.SetAllDirty();
 
-            for (int i = 0; i < 6; i++)
+            for (var i = 0; i < 6; i++)
             {
                 AxisLabels[i].anchoredPosition = cameraAxis[i] * Scale;
                 if (cameraAxis[i].z > 0)
@@ -77,12 +91,20 @@ namespace Elektronik.Cameras
             }
         }
 
+        #endregion
+
+        #region Private
+
+        private Transform _camera;
+        private bool _rotating;
+
         private void UpdateCoordinatesLabel()
         {
             if (PositionLabel == null) return;
             PositionLabel.gameObject.SetActive(ShowCoordinates);
             if (!ShowCoordinates) return;
-            PositionLabel.text = $"({_camera.position.x:f2}, {_camera.position.y:f2}, {_camera.position.z:f2})";
+            var position = _camera.position;
+            PositionLabel.text = $"({position.x:f2}, {position.y:f2}, {position.z:f2})";
         }
 
         private IEnumerator RotateCamera(Vector3 forward)
@@ -99,5 +121,7 @@ namespace Elektronik.Cameras
 
             _rotating = false;
         }
+
+        #endregion
     }
 }

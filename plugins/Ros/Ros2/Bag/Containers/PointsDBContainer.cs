@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.CloudRenderers;
 using Elektronik.DataSources;
@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookable
+    public class PointsDBContainer : DBContainer<PointCloud2, SlamPoint[]>, ILookableDataSource
     {
         public PointsDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
                                  List<long> actualTimestamps)
@@ -78,7 +78,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
             return message.ToSlamPoints();
         }
         
-        public override ISourceTreeNode TakeSnapshot()
+        public override IDataSource TakeSnapshot()
         {
             var res = new CloudContainer<SlamPoint>(DisplayName);
             res.AddRange(Current);
@@ -89,11 +89,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region ILookable
 
-        public (Vector3 pos, Quaternion rot) Look(Transform transform)
+        public Pose Look(Transform transform)
         {
-            if (float.IsNaN(_bounds.x)) return (transform.position, transform.rotation);
+            if (float.IsNaN(_bounds.x)) return new Pose(transform.position, transform.rotation);
 
-            return (_center + _bounds / 2 + _bounds.normalized, Quaternion.LookRotation(-_bounds));
+            return new Pose(_center + _bounds / 2 + _bounds.normalized, Quaternion.LookRotation(-_bounds));
         }
 
         #endregion

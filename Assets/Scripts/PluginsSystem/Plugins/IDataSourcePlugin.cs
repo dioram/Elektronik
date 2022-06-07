@@ -2,9 +2,10 @@
 
 namespace Elektronik.PluginsSystem
 {
+    /// <summary> Interface for all plugins that provides data sources. </summary>
     public interface IDataSourcePlugin : IElektronikPlugin
     {
         /// <summary> Root element of containers with data. </summary>
-        ISourceTreeNode Data { get; }
+        IDataSource Data { get; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Elektronik.Data.Converters;
 using Elektronik.DataControllers;
 using Elektronik.UI.Windows;
 using TMPro;
@@ -10,11 +9,11 @@ using UnityEngine;
 
 namespace Elektronik.PluginsSystem.UnitySide
 {
+    /// <summary> Controller for all data source plugins. </summary>
     public class DataSourcePluginsController : MonoBehaviour
     {
         #region Editor fields
-        
-        [SerializeField] private CSConverter Converter;
+
         [SerializeField] private PlayerEventsController PlayerEvents;
         [SerializeField] private GameObject ScreenLocker;
         [SerializeField] private DataSourcesController DataSourcesController;
@@ -24,12 +23,15 @@ namespace Elektronik.PluginsSystem.UnitySide
 
         #endregion
 
-        private static readonly List<IElektronikPlugin> Plugins = new List<IElektronikPlugin>();
-
+        /// <summary> Current playing data source plugin. </summary>
         public IDataSourcePlugin CurrentSource { get; private set; }
 
+        /// <summary> Sets given plugin as data source, previous one will be disposed. </summary>
+        /// <param name="factory"> Factory from where plugin will be gotten. </param>
+        /// <param name="autoPlay"> Should it automatically starts playing. </param>
         public void SetNewSource(IDataSourcePluginsFactory factory, bool autoPlay = true)
         {
+            // TODO: If I will use UniTask, this should be the first place to refactor.
             ScreenLocker.SetActive(true);
             if (!(CurrentSource is null))
             {
@@ -37,25 +39,20 @@ namespace Elektronik.PluginsSystem.UnitySide
                 DataSourcesController.RemoveDataSource(CurrentSource.Data);
                 CurrentSource.Dispose();
             }
+
             Task.Run(() =>
             {
                 try
                 {
-                    CurrentSource = (IDataSourcePlugin) factory.Start(Converter);
+                    CurrentSource = (IDataSourcePlugin)factory.Start();
                     Plugins.Add(CurrentSource);
                 }
                 catch (Exception e)
                 {
-                    Debug.LogException(e);
-                    UniRxExtensions.StartOnMainThread(() =>
-                    {
-                        ScreenLocker.SetActive(false);
-                        ConnectionsWindow.Show();
-                        LoadingErrorLabel.text = $"Could not load data source: {e.Message}";
-                        LoadingErrorLabel.enabled = true;
-                    }).Subscribe();
+                    ProcessLoadingError(e);
                     return;
                 }
+
                 UniRxExtensions.StartOnMainThread(() =>
                 {
                     LoadingErrorLabel.enabled = false;
@@ -72,7 +69,7 @@ namespace Elektronik.PluginsSystem.UnitySide
                     {
                         PlayerEvents.ActivateUI(false);
                     }
-                }).Subscribe();
+                }).Subscribe().AddTo(this);
             });
         }
 
@@ -99,6 +96,24 @@ namespace Elektronik.PluginsSystem.UnitySide
 #if !UNITY_EDITOR
             System.Diagnostics.Process.GetCurrentProcess().Kill();
 #endif
+        }
+
+        #endregion
+
+        #region Private
+
+        private static readonly List<IElektronikPlugin> Plugins = new List<IElektronikPlugin>();
+
+        private void ProcessLoadingError(Exception e)
+        {
+            Debug.LogException(e);
+            UniRxExtensions.StartOnMainThread(() =>
+            {
+                ScreenLocker.SetActive(false);
+                ConnectionsWindow.Show();
+                LoadingErrorLabel.text = $"Could not load data source: {e.Message}";
+                LoadingErrorLabel.enabled = true;
+            }).Subscribe().AddTo(this);
         }
 
         #endregion

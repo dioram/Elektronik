@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.Plugins.Common.DataDiff;
 
@@ -9,9 +9,9 @@ namespace Elektronik.Plugins.Common.Commands.Generic
     public class RemoveCommand<T> : ICommand where T : struct, ICloudItem
     {
         protected readonly T[] Objs2Remove;
-        private readonly IContainer<T> _container;
+        private readonly ICloudContainer<T> _container;
 
-        public RemoveCommand(IContainer<T> container, T[] objects)
+        public RemoveCommand(ICloudContainer<T> container, T[] objects)
         {
             _container = container;
             Objs2Remove = objects;
@@ -49,9 +49,9 @@ namespace Elektronik.Plugins.Common.Commands.Generic
     {
         protected readonly TCloudItemDiff[] Objs2Remove;
         protected TCloudItem[] Objs2Add = Array.Empty<TCloudItem>();
-        private readonly IContainer<TCloudItem> _container;
+        private readonly ICloudContainer<TCloudItem> _container;
 
-        public RemoveCommand(IContainer<TCloudItem> container, TCloudItemDiff[] objects)
+        public RemoveCommand(ICloudContainer<TCloudItem> container, TCloudItemDiff[] objects)
         {
             _container = container;
             Objs2Remove = objects;

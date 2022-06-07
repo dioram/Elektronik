@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using System.Threading;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataConsumers;
+using Elektronik.DataObjects;
 using Elektronik.DataConsumers.CloudRenderers;
 using Elektronik.DataConsumers.Windows;
 using Elektronik.DataSources.Containers.EventArgs;
+using Elektronik.Plugins.Common;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Online;
 using FluentAssertions;
@@ -27,12 +29,13 @@ namespace Protobuf.Tests.Internal.Integration.Online
         protected readonly Mock<ICloudRenderer<SlamPlane>> MockedPlanesRenderer;
         protected readonly Mock<ICloudRenderer<SlamMarker>> MockedMarkerRenderer;
         protected readonly Mock<IDataRenderer<byte[]>> MockedImageRenderer;
+        protected readonly ICSConverter Converter = new ProtobufToUnityConverter();
 
         protected OnlineTestsBase(int port)
         {
             var f = new ProtobufOnlinePlayerFactory()
                     { Settings = new OnlineSettingsBag { ListeningPort = port }, Logger = new TestsLogger() };
-            Sut = (ProtobufOnlinePlayer)f.Start(new FakeConverter());
+            Sut = (ProtobufOnlinePlayer)f.Start();
             Sut.Play();
 
             var channel = new Channel($"127.0.0.1:{port}", ChannelCredentials.Insecure);
@@ -126,7 +129,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                     .Callback((object sender, AddedEventArgs<SlamObservation> e) =>
                     {
                         var ss = e.AddedItems
-                                .Select(o => $"{o.Id}, [{ToString(o.Point)}], {o.Rotation}, " +
+                                .Select(o => $"{o.Id}, {o.Position}, {o.Color}, {o.Rotation}, " +
                                                 $"{o.ObservedPoints.Count}, \"{o.Message}\", \"{o.FileName}\"");
                         TestContext.WriteLine($"Observations added: {sender}\n{string.Join("\n", ss)}");
                     });
@@ -135,7 +138,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                     .Callback((object sender, UpdatedEventArgs<SlamObservation> e) =>
                     {
                         var ss = e.UpdatedItems
-                                .Select(o => $"{o.Id}, [{ToString(o.Point)}], {o.Rotation}, " +
+                                .Select(o => $"{o.Id}, {o.Position}, {o.Color}, {o.Rotation}, " +
                                                 $"{o.ObservedPoints.Count}, \"{o.Message}\", \"{o.FileName}\"");
                         TestContext.WriteLine($"Observations updated: {sender}\n{string.Join("\n", ss)}");
                     });

@@ -1,4 +1,4 @@
-﻿using Elektronik.Data.PackageObjects;
+﻿using Elektronik.DataObjects;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.RosPlugin.Common.RosMessages;
@@ -7,9 +7,9 @@ using RosSharp.RosBridgeClient.MessageTypes.Geometry;
 
 namespace Elektronik.RosPlugin.Ros.Online.Handlers
 {
-    public class PoseStampedHandler : MessageHandler<PoseStamped, IContainer<SlamTrackedObject>>
+    public class PoseStampedHandler : MessageHandler<PoseStamped, ICloudContainer<SlamTrackedObject>>
     {
-        public PoseStampedHandler(ISourceTreeNode container, RosSocket socket, string topic) : base(container, socket, topic)
+        public PoseStampedHandler(IDataSource container, RosSocket socket, string topic) : base(container, socket, topic)
         {
         }
         

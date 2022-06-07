@@ -8,7 +8,7 @@ using SQLite;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class ImageDBContainer : DBContainerToWindow<Image, ImageRenderer, ImageData>
+    public class ImageDBContainer : DBContainerToWindow<Image, ImageRenderer, ImageData?>
     {
 
         public ImageDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
@@ -17,7 +17,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         {
         }
 
-        public override ISourceTreeNode? TakeSnapshot() => null;
+        public override IDataSource? TakeSnapshot() => null;
 
         public override bool IsVisible
         {
@@ -27,16 +27,11 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 
         #region DBContainerToWindow
         
-        protected override ImageData ToRenderType(Image message)
+        protected override ImageData? ToRenderType(Image message)
         {
             return ImageDataExt.FromImageMessage(message);
         }
         
-        protected override void SetRendererCallback()
-        {
-            if (Renderer is not null) Renderer.FlipVertically = true;
-        }
-
         #endregion
     }
 }

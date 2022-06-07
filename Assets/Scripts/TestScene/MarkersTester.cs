@@ -1,14 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataControllers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using UnityEngine;
 
 namespace Elektronik.TestScene
 {
-    public class MarkersTester : MonoBehaviour
+    internal class MarkersTester : MonoBehaviour
     {
         #region Editor fields
 
@@ -24,7 +24,7 @@ namespace Elektronik.TestScene
                     .Select(m => new SlamMarker(m.Id, m.Position + transform.position, m.Rotation, m.Scale, m.Color,
                                                 m.Message, m.Type))
                     .ToArray();
-            Controller.AddDataSource(_container);
+            Controller.AddDataSource(_cloudContainer);
         }
 
         private void OnEnable()
@@ -55,30 +55,30 @@ namespace Elektronik.TestScene
                            SlamMarker.MarkerType.Crystal),
         };
 
-        private readonly CloudContainer<SlamMarker> _container = new CloudContainer<SlamMarker>();
+        private readonly CloudContainer<SlamMarker> _cloudContainer = new CloudContainer<SlamMarker>();
 
         private IEnumerator UpdateContainer()
         {
             yield return new WaitForSeconds(1);
             while (true)
             {
-                _container.AddRange(_markers);
+                _cloudContainer.AddRange(_markers);
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_markers.Select(Rotated).ToArray());
+                _cloudContainer.Update(_markers.Select(Rotated).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_markers.Select(ChangeMessage).ToArray());
+                _cloudContainer.Update(_markers.Select(ChangeMessage).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_markers.Select(ChangePosition).ToArray());
+                _cloudContainer.Update(_markers.Select(ChangePosition).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_markers.Select(ChangeColor).ToArray());
+                _cloudContainer.Update(_markers.Select(ChangeColor).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(_markers.Select(ChangeScale).ToArray());
+                _cloudContainer.Update(_markers.Select(ChangeScale).ToArray());
                 yield return new WaitForSeconds(0.5f);
-                _container.Update(SwapTypes());
+                _cloudContainer.Update(SwapTypes());
                 yield return new WaitForSeconds(0.5f);
-                _container.Remove(new List<int> { 1 });
+                _cloudContainer.Remove(new List<int> { 1 });
                 yield return new WaitForSeconds(0.5f);
-                _container.Clear();
+                _cloudContainer.Clear();
                 yield return new WaitForSeconds(0.5f);
             }
             // ReSharper disable once IteratorNeverReturns

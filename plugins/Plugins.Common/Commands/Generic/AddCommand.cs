@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.Plugins.Common.DataDiff;
 
@@ -9,9 +9,9 @@ namespace Elektronik.Plugins.Common.Commands.Generic
     public class AddCommand<T> : ICommand where T : struct, ICloudItem
     {
         protected readonly IList<T> AddedObjects;
-        protected readonly IContainer<T> Container;
+        protected readonly ICloudContainer<T> Container;
         
-        public AddCommand(IContainer<T> container, IList<T> objects)
+        public AddCommand(ICloudContainer<T> container, IList<T> objects)
         {
             Container = container;
             AddedObjects = objects;
@@ -48,9 +48,9 @@ namespace Elektronik.Plugins.Common.Commands.Generic
             where TCloudItemDiff : ICloudItemDiff<TCloudItemDiff, TCloudItem>
     {
         protected readonly TCloudItemDiff[] AddedObjects;
-        protected readonly IContainer<TCloudItem> Container;
+        protected readonly ICloudContainer<TCloudItem> Container;
         
-        public AddCommand(IContainer<TCloudItem> container, TCloudItemDiff[] objects)
+        public AddCommand(ICloudContainer<TCloudItem> container, TCloudItemDiff[] objects)
         {
             Container = container;
             AddedObjects = objects;

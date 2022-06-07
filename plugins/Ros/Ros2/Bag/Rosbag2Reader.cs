@@ -27,13 +27,12 @@ namespace Elektronik.RosPlugin.Ros2.Bag
                     .ToArray();
 
             var converter = new RosConverter();
-            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = converter;
         }
 
         #region IDataSourcePlugin
 
-        public ISourceTreeNode Data { get; }
+        public IDataSource Data { get; }
 
         public void Dispose()
         {
@@ -117,7 +116,6 @@ namespace Elektronik.RosPlugin.Ros2.Bag
 
         public void NextFrame()
         {
-            if (_threadWorker.ActiveActions > 0) return;
             _threadWorker.Enqueue(() =>
             {
                 if (Position == AmountOfFrames - 1) return;

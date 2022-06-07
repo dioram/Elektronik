@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.RosPlugin.Common.Containers;
@@ -45,11 +45,11 @@ namespace Elektronik.RosPlugin.Ros2.Online
 
         #region Protected
 
-        protected override ISourceTreeNode CreateContainer(string topicName, string topicType)
+        protected override IDataSource CreateContainer(string topicName, string topicType)
         {
             lock (this)
             {
-                var container = (ISourceTreeNode) Activator.CreateInstance(SupportedMessages[topicType].container,
+                var container = (IDataSource) Activator.CreateInstance(SupportedMessages[topicType].container,
                                                                        topicName.Split('/').Last());
                 var handler = (MessageHandler) Activator.CreateInstance(SupportedMessages[topicType].handler, container);
                 _connector.SubscribeOnMessages(MessageExt.GetDdsTopic(topicName), 
@@ -66,8 +66,8 @@ namespace Elektronik.RosPlugin.Ros2.Online
 
         private static readonly Dictionary<string, (Type container, Type handler)> SupportedMessages = new()
         {
-            {"geometry_msgs/msg/PoseStamped", (typeof(TrackedObjectsContainer), typeof(PoseStampedHandler))},
-            {"nav_msgs/msg/Odometry", (typeof(TrackedObjectsContainer), typeof(OdometryHandler))},
+            {"geometry_msgs/msg/PoseStamped", (typeof(TrackedCloudObjectsContainer), typeof(PoseStampedHandler))},
+            {"nav_msgs/msg/Odometry", (typeof(TrackedCloudObjectsContainer), typeof(OdometryHandler))},
             {"sensor_msgs/msg/PointCloud2", (typeof(CloudContainer<SlamPoint>), typeof(PointCloud2Handler))},
             {"sensor_msgs/msg/Image", (typeof(ImagePresenter), typeof(ImageHandler))},
         };

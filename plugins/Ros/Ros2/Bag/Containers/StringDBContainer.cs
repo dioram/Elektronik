@@ -15,7 +15,7 @@ namespace Elektronik.RosPlugin.Ros2.Bag.Containers
         {
         }
 
-        public override ISourceTreeNode? TakeSnapshot() => null;
+        public override IDataSource? TakeSnapshot() => null;
 
         protected override string ToRenderType(String message)
         {

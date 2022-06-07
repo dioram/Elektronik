@@ -7,15 +7,24 @@ using UnityEngine.UI;
 
 namespace Elektronik.UI.Buttons
 {
+    // TODO: rewrite and simplify
+    
     [RequireComponent(typeof(Button))]
     public abstract class ChangingButton : MonoBehaviour
     {
         [Serializable]
-        public sealed class ButtonPressedEvent : UnityEvent { }
+        public sealed class ButtonPressedEvent : UnityEvent
+        {
+        }
+        
+        #region Editor fields
 
         public List<ButtonPressedEvent> Events = new List<ButtonPressedEvent>();
 
-        public Action<int> OnStateChanged;
+        #endregion
+
+        public event Action<int> OnStateChanged;
+        public IObservable<int> OnStateChangedAsObservable;
 
         public int State
         {
@@ -36,7 +45,7 @@ namespace Elektronik.UI.Buttons
             State = state;
             _wasInited = true;
         }
-        
+
         public void SilentSetState(int state)
         {
             if (_state >= 0 && _state < Events.Count) Events[_state]?.Invoke();
@@ -56,6 +65,8 @@ namespace Elektronik.UI.Buttons
         {
             _button = GetComponent<Button>();
             _button.OnClickAsObservable().Subscribe(_ => Toggle());
+
+            OnStateChangedAsObservable = Observable.FromEvent<int>(h => OnStateChanged += h, h => OnStateChanged -= h);
         }
 
         protected virtual void Start()

@@ -20,7 +20,7 @@ namespace Elektronik.UI.Windows
         [SerializeField] private RectTransform RecentSettingsTarget;
         [Header("Prefabs")] [SerializeField] private GameObject PluginWidgetPrefab;
         [SerializeField] private GameObject RecentSettingsPrefab;
-        [Space] [SerializeField] private SettingsGenerator Generator;
+        [Space] [SerializeField] private SettingsFieldsUiGenerator Generator;
         [SerializeField] private Button ConnectButton;
         [SerializeField] private TMP_Text ErrorLabel;
 

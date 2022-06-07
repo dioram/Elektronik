@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.RosPlugin.Common.RosMessages;
 using Elektronik.RosPlugin.Ros2.Bag.Data;
@@ -10,7 +10,7 @@ using RosMessage = RosSharp.RosBridgeClient.Message;
 
 namespace Elektronik.RosPlugin.Ros2.Bag.Containers
 {
-    public class TrackedDBContainer : TrackedObjectsContainer, IDBContainer
+    public class TrackedDBContainer : TrackedCloudObjectsContainer, IDBContainer
     {
         public TrackedDBContainer(string displayName, List<SQLiteConnection> dbModels, Topic topic,
                                   List<long> actualTimestamps) :

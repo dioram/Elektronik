@@ -8,10 +8,10 @@ using Elektronik.DataSources.SpecialInterfaces;
 
 namespace Elektronik.RosPlugin.Common.Containers
 {
-    public abstract class RosContainerTree : VirtualSource, IDisposable
+    public abstract class RosContainerTree : VirtualDataSource, IDisposable
     {
         public List<(string Name, string Type)> ActualTopics = new ();
-        public readonly Dictionary<string, ISourceTreeNode> RealChildren = new();
+        public readonly Dictionary<string, IDataSource> RealChildren = new();
 
         protected RosContainerTree(string displayName) : base(displayName)
         {
@@ -39,7 +39,7 @@ namespace Elektronik.RosPlugin.Common.Containers
 
         #region Protected
 
-        protected abstract ISourceTreeNode CreateContainer(string topicName, string topicType);
+        protected abstract IDataSource CreateContainer(string topicName, string topicType);
 
         protected void RebuildTree()
         {
@@ -60,16 +60,16 @@ namespace Elektronik.RosPlugin.Common.Containers
             foreach (var (topicName, topicType) in ActualTopics)
             {
                 var path = topicName.Split('/').Where(s => !string.IsNullOrEmpty(s)).ToArray();
-                VirtualSource parent = this;
+                VirtualDataSource parent = this;
                 for (var i = 0; i < path.Length - 1; i++)
                 {
-                    if (parent.Children.FirstOrDefault(c => c.DisplayName == path[i]) is VirtualSource container)
+                    if (parent.Children.FirstOrDefault(c => c.DisplayName == path[i]) is VirtualDataSource container)
                     {
                         parent = container;
                     }
                     else
                     {
-                        var newContainer = new VirtualSource(path[i]);
+                        var newContainer = new VirtualDataSource(path[i]);
                         parent.AddChild(newContainer);
                         parent = newContainer;
                     }
@@ -78,15 +78,7 @@ namespace Elektronik.RosPlugin.Common.Containers
                 if (!RealChildren.ContainsKey(topicName))
                 {
                     var child = CreateContainer(topicName, topicType);
-                    switch (child)
-                    {
-                    case IRendersToWindow w:
-                        w.Title = topicName;
-                        break;
-                    case TrackedObjectsContainer t:
-                        t.ObjectLabel = topicName;
-                        break;
-                    }
+                    if (child is TrackedCloudObjectsContainer t) t.ObjectLabel = topicName;
 
                     RealChildren[topicName] = child;
                     

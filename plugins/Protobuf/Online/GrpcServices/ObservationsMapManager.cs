@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Elektronik.Data.Converters;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
+using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Protobuf.Data;
@@ -15,7 +15,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class ObservationsMapManager : ConnectableObjectsMapManager<SlamObservation, SlamObservationDiff>
     {
-        public ObservationsMapManager(IOnlineFrameBuffer buffer, IConnectableObjectsContainer<SlamObservation> container,
+        public ObservationsMapManager(IOnlineFrameBuffer buffer, IConnectableObjectsCloudContainer<SlamObservation> container,
                                       ICSConverter? converter, ILogger logger)
             : base(buffer, container, converter, logger)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Elektronik.Clustering.PlanesDetection.Native;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.PluginsSystem;
 
 namespace Elektronik.Clustering.PlanesDetection

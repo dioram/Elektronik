@@ -102,13 +102,14 @@ namespace Ros.Exporter
             case RosImage image:
             {
                 var imageMessage = ImageDataExt.FromImageMessage(image);
-                var im = new Bitmap(imageMessage.Width, imageMessage.Height);
-                await using var stream = new MemoryStream(imageMessage.Data);
-                for (var j = 0; j < imageMessage.Height; j++)
+                if (!imageMessage.HasValue) return false;
+                var im = new Bitmap(imageMessage.Value.Width, imageMessage.Value.Height);
+                await using var stream = new MemoryStream(imageMessage.Value.Data);
+                for (var j = 0; j < imageMessage.Value.Height; j++)
                 {
-                    for (var i = 0; i < imageMessage.Width; i++)
+                    for (var i = 0; i < imageMessage.Value.Width; i++)
                     {
-                        im.SetPixel(i, j, ReadColor(stream, imageMessage.Encoding));
+                        im.SetPixel(i, j, ReadColor(stream, imageMessage.Value.Encoding));
                     }
                 }
                 
@@ -135,13 +136,14 @@ namespace Ros.Exporter
             case RosImage image:
             {
                 var imageMessage = ImageDataExt.FromImageMessage(image);
-                var im = new Bitmap(imageMessage.Width, imageMessage.Height);
-                await using var stream = new MemoryStream(imageMessage.Data);
-                for (var j = 0; j < imageMessage.Height; j++)
+                if (!imageMessage.HasValue) return;
+                var im = new Bitmap(imageMessage.Value.Width, imageMessage.Value.Height);
+                await using var stream = new MemoryStream(imageMessage.Value.Data);
+                for (var j = 0; j < imageMessage.Value.Height; j++)
                 {
-                    for (var i = 0; i < imageMessage.Width; i++)
+                    for (var i = 0; i < imageMessage.Value.Width; i++)
                     {
-                        im.SetPixel(i, j, ReadColor(stream, imageMessage.Encoding));
+                        im.SetPixel(i, j, ReadColor(stream, imageMessage.Value.Encoding));
                     }
                 }
                 

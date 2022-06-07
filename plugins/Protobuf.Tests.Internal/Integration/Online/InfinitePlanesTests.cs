@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Moq;
@@ -55,16 +54,14 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Planes = new PacketPb.Types.Planes(),
             };
             packet.Planes.Data.Add(_planes);
-            var e = new AddedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
-                                                          .ToArray());
+            var e = new AddedEventArgs<SlamPlane>(_planes.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             var response = MapClient.Handle(packet);
             Thread.Sleep(20);
 
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length);
-            MockedPlanesRenderer.Verify(
-                r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
+            MockedPlanesRenderer.Verify(r => r.OnItemsAdded(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(2)]
@@ -90,16 +87,14 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.Planes.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
-                                                            .ToArray());
+            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             var response = MapClient.Handle(packet);
             Thread.Sleep(20);
 
             response.ErrType.Should().Be(ErrorStatusPb.Types.ErrorStatusEnum.Succeeded);
             ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length);
-            MockedPlanesRenderer.Verify(
-                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
+            MockedPlanesRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(3)]
@@ -125,14 +120,12 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.Planes.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
-                                                            .ToArray());
+            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
             ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length);
-            MockedPlanesRenderer.Verify(
-                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
+            MockedPlanesRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(4)]
@@ -150,14 +143,12 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 return (newPb, diff);
             });
             packet.Planes.Data.Add(diff);
-            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
-                                                            .ToArray());
+            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
             ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length);
-            MockedPlanesRenderer.Verify(
-                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
+            MockedPlanesRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(5)]
@@ -181,14 +172,12 @@ namespace Protobuf.Tests.Internal.Integration.Online
             }
 
             packet.Planes.Data.Add(_planes);
-            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply())
-                                                            .ToArray());
+            var e = new UpdatedEventArgs<SlamPlane>(_planes.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
             ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length);
-            MockedPlanesRenderer.Verify(
-                r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
+            MockedPlanesRenderer.Verify(r => r.OnItemsUpdated(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(6)]
@@ -202,15 +191,14 @@ namespace Protobuf.Tests.Internal.Integration.Online
             packet.Planes.Data.Add(new[] { _planes[1], _planes[3] });
             var e = new RemovedEventArgs<SlamPlane>(new[]
             {
-                ((SlamPlaneDiff)_planes[1]).Apply(),
-                ((SlamPlaneDiff)_planes[3]).Apply(),
+                _planes[1].ToUnity(Converter).Apply(),
+                _planes[3].ToUnity(Converter).Apply(),
             });
 
             SendPacket(packet);
 
             ((ProtobufContainerTree)Sut.Data).Planes.Count.Should().Be(_planes.Length - 2);
-            MockedPlanesRenderer.Verify(
-                r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
+            MockedPlanesRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Planes, e), Times.Once);
         }
 
         [Test, Order(7)]
@@ -223,9 +211,9 @@ namespace Protobuf.Tests.Internal.Integration.Online
             };
             var e = new RemovedEventArgs<SlamPlane>(new[]
             {
-                ((SlamPlaneDiff)_planes[0]).Apply(),
-                ((SlamPlaneDiff)_planes[2]).Apply(),
-                ((SlamPlaneDiff)_planes[4]).Apply(),
+                _planes[0].ToUnity(Converter).Apply(),
+                _planes[2].ToUnity(Converter).Apply(),
+                _planes[4].ToUnity(Converter).Apply(),
             });
 
             SendPacket(packet);

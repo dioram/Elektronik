@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Elektronik.Data.Converters;
 using Elektronik.DataConsumers;
 using Elektronik.DataConsumers.CloudRenderers;
 using Elektronik.DataSources;
@@ -19,6 +18,7 @@ using UnityEngine;
 
 namespace Elektronik.DataControllers
 {
+    /// <summary> Controller for all data sources. </summary>
     public class DataSourcesController : MonoBehaviour
     {
         #region Editor fields
@@ -26,15 +26,17 @@ namespace Elektronik.DataControllers
         [SerializeField] private ConsumersRoot ConsumersRoot;
         [SerializeField] [CanBeNull] private Window DataSourceWindow;
 
-        public CSConverter Converter;
-
         #endregion
 
-        public event Action<ISourceTreeNode> OnSourceAdded;
-        public event Action<ISourceTreeNode> OnSourceRemoved;
+        /// <summary> This event is raising every time when new data source was added. </summary>
+        public event Action<IDataSource> OnSourceAdded;
 
-        // ReSharper disable once ParameterHidesMember
-        public void AddRenderer(IDataConsumer consumer)
+        /// <summary> This event is raising every time when data source was removed. </summary>
+        public event Action<IDataSource> OnSourceRemoved;
+
+        /// <summary> Adds new consumer. </summary>
+        /// <param name="consumer"> New consumer. </param>
+        public void AddConsumer(IDataConsumer consumer)
         {
             _consumers.Add(consumer);
             foreach (var source in _dataSources)
@@ -43,8 +45,9 @@ namespace Elektronik.DataControllers
             }
         }
 
-        // ReSharper disable once ParameterHidesMember
-        public void RemoveRenderer(IDataConsumer consumer)
+        /// <summary> Removes consumer. </summary>
+        /// <param name="consumer"> Removed consumer. </param>
+        public void RemoveConsumer(IDataConsumer consumer)
         {
             _consumers.Remove(consumer);
             foreach (var source in _dataSources)
@@ -53,7 +56,12 @@ namespace Elektronik.DataControllers
             }
         }
 
-        public void MapSourceTree(Action<ISourceTreeNode, string> action)
+        /// <summary> Does given action for all sources in tree using dfs. </summary>
+        /// <param name="action">
+        /// Action that will be done on every source in tree.
+        /// It takes source and its name.
+        /// </param>
+        public void MapSourceTree(Action<IDataSource, string> action)
         {
             foreach (var treeElement in _dataSources)
             {
@@ -65,11 +73,13 @@ namespace Elektronik.DataControllers
             }
         }
 
-        /// <summary> Maps tree using dfs. </summary>
+        /// <summary> Does given action for all sources in tree using dfs. </summary>
         /// <param name="action">
-        /// Action for each node. Return true if you want to go deeper and false otherwise.
+        /// Action that will be done on every source in tree.
+        /// It takes source and its name.
+        /// Return true if you want to go deeper and false otherwise.
         /// </param>
-        public void MapSourceTree(Func<ISourceTreeNode, string, bool> action)
+        public void MapSourceTree(Func<IDataSource, string, bool> action)
         {
             foreach (var treeElement in _dataSources)
             {
@@ -77,32 +87,37 @@ namespace Elektronik.DataControllers
             }
         }
 
-        public void AddDataSource(ISourceTreeNode source)
+        /// <summary> Adds new data source. </summary>
+        /// <param name="dataSource"> New data source. </param>
+        public void AddDataSource(IDataSource dataSource)
         {
-            _dataSources.Add(source);
+            _dataSources.Add(dataSource);
             foreach (var consumer in _consumers)
             {
-                source.AddConsumer(consumer);
+                dataSource.AddConsumer(consumer);
             }
 
-            if (source is IRemovable r)
+            if (dataSource is IRemovableDataSource r)
             {
-                r.OnRemoved += () => { _dataSources.Remove(source); };
+                r.OnRemoved += () => { _dataSources.Remove(dataSource); };
             }
 
             if (DataSourceWindow is { }) DataSourceWindow.Show();
-            if (_dataSourcesTreeWidget is { }) _dataSourcesTreeWidget.AddDataSource(source);
+            if (_dataSourcesTreeWidget is { }) _dataSourcesTreeWidget.AddDataSource(dataSource);
 
-            OnSourceAdded?.Invoke(source);
+            OnSourceAdded?.Invoke(dataSource);
         }
 
-        public void RemoveDataSource(ISourceTreeNode source)
+        /// <summary> Removes data source. </summary>
+        /// <param name="dataSource"> Removed data sources. </param>
+        public void RemoveDataSource(IDataSource dataSource)
         {
-            _dataSources.Remove(source);
-            if (_dataSourcesTreeWidget is { }) _dataSourcesTreeWidget.RemoveDataSource(source);
-            OnSourceRemoved?.Invoke(source);
+            _dataSources.Remove(dataSource);
+            if (_dataSourcesTreeWidget is { }) _dataSourcesTreeWidget.RemoveDataSource(dataSource);
+            OnSourceRemoved?.Invoke(dataSource);
         }
 
+        /// <summary> Takes snapshot of all data sources. </summary>
         public void TakeSnapshot()
         {
             // ReSharper disable once LocalVariableHidesMember
@@ -114,6 +129,7 @@ namespace Elektronik.DataControllers
             AddDataSource(snapshot);
         }
 
+        /// <summary> Loads snapshot from file. </summary>
         public void LoadSnapshot()
         {
             FileBrowser.SetFilters(false, PluginsLoader.PluginFactories
@@ -140,17 +156,17 @@ namespace Elektronik.DataControllers
         #region Private
 
         private static int _snapshotsCount = 0;
-        private readonly List<ISourceTreeNode> _dataSources = new List<ISourceTreeNode>();
+        private readonly List<IDataSource> _dataSources = new List<IDataSource>();
         private List<IDataConsumer> _consumers;
         [CanBeNull] private DataSourcesTreeWidget _dataSourcesTreeWidget;
 
-        private static void MapSourceTree(ISourceTreeNode treeNodeElement, string path,
-                                          Func<ISourceTreeNode, string, bool> action)
+        private static void MapSourceTree(IDataSource element, string path,
+                                          Func<IDataSource, string, bool> action)
         {
-            var fullName = $"{path}/{treeNodeElement.DisplayName}";
-            var deeper = action(treeNodeElement, fullName);
+            var fullName = $"{path}/{element.DisplayName}";
+            var deeper = action(element, fullName);
             if (!deeper) return;
-            foreach (var child in treeNodeElement.Children)
+            foreach (var child in element.Children)
             {
                 MapSourceTree(child, fullName, action);
             }
@@ -165,7 +181,7 @@ namespace Elektronik.DataControllers
                         .FirstOrDefault(pl => pl.SupportedExtensions.Any(e => path.EndsWith(e)));
                 if (factory is null) return;
                 factory.SetFileName(path);
-                var plugin = (IDataSourcePlugin)factory.Start(Converter);
+                var plugin = (IDataSourcePlugin)factory.Start();
                 if (plugin is IRewindableDataSource p)
                 {
                     p.Position = p.AmountOfFrames - 1;

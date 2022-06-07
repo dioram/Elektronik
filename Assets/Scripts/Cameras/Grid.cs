@@ -1,83 +1,104 @@
-﻿using Elektronik.Data.PackageObjects;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 namespace Elektronik.Cameras
 {
-    public class Grid : MonoBehaviour
+    /// <summary> This component draws grid using GPU. </summary>
+    internal sealed class Grid : MonoBehaviour
     {
-        public float Spacing = 10f;
-        public float Length = 100;
-        public float DetailsVisibilityDistance = 50;
-        public Color Color = Color.white;
-        public GridModes Mode;
-        public GameObject LabelPrefab;
-        public Vector2 LabelOffset = new Vector2(10.5f, 1.5f);
-        public float LineLength = 0.5f;
+        #region Editor fields
 
-        private static Material _lineMaterial;
-        private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
-        private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
-        private static readonly int Cull = Shader.PropertyToID("_Cull");
-        private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
-        private Camera _camera;
-        private ObjectPool _labelsPool;
-        private Vector3 _position;
-        private Vector3 _up;
+        /// <summary> Interval between main grid lines. </summary>
+        [SerializeField] [Tooltip("Interval between main grid lines.")]
+        private float Spacing = 10f;
 
+        /// <summary> Length of main grid line. </summary>
+        /// <remarks> For user it should look like infinite line. </remarks>
+        [SerializeField] [Tooltip("Length of main grid line.\nFor user it should look like infinite line.")]
+        private float MainLineLength = 100;
+
+        /// <summary> Max distance where additional details such as label and small grid will be rendered. </summary>
+        [SerializeField]
+        [Tooltip("Max distance where additional details such as label and small grid will be rendered.")]
+        private float DetailsVisibilityDistance = 50;
+
+        /// <summary> Color of grid lines. </summary>
+        [SerializeField] [Tooltip("Color of grid lines.")]
+        private Color Color = Color.white;
+
+        /// <summary> Sets how grid should be rendered. </summary>
+        [SerializeField] [Tooltip("Sets how grid should be rendered.")]
+        private GridModes RenderMode;
+
+        /// <summary> Prefab of coordinates label. </summary>
+        [SerializeField] [Tooltip("Prefab of coordinates label.")]
+        private GameObject LabelPrefab;
+
+        /// <summary> Offset from gid intersection for coordinates labels. </summary>
+        [SerializeField] [Tooltip("Offset from gid intersection for coordinates labels.")]
+        private Vector2 LabelOffset = new Vector2(10.5f, 1.5f);
+
+        /// <summary> Length of small grid lines. </summary>
+        [SerializeField] [Tooltip("Length of small grid lines.")]
+        private float SmallLineLength = 0.5f;
+
+        #endregion
+
+        /// <summary> Modes for grid rendering. </summary>
         public enum GridModes
         {
+            /// <summary> Grid will not be rendered. </summary>
             Disabled,
+            /// <summary> Grid will be rendered horizontally. </summary>
             EnabledHorizontal,
+            /// <summary> Grid will be rendered in plane set by <c>SetPlane()</c> </summary>
             EnabledOrientedGrid,
         }
 
-        public void SetPlane(SlamPlane plane)
+        /// <summary> Sets plane where to render grid. </summary>
+        /// <param name="origin"> Origin of coordinate system. </param>
+        /// <param name="yAxis"> Up vector. </param>
+        /// <param name="zAxis"> Forward vector. </param>
+        public void SetPlane(Vector3 origin, Vector3 yAxis, Vector3 zAxis)
         {
-            _position = plane.Offset;
-            _up = plane.Normal;
+            _position = origin;
+            _up = yAxis;
         }
 
+        /// <summary> Sets mode by its index. </summary>
+        /// <param name="modeId"></param>
         public void SetMode(int modeId)
         {
-            Mode = (GridModes) modeId;
+            RenderMode = (GridModes)modeId;
         }
+
+        #region Unity events
 
         private void Awake()
         {
-            // Unity has a built-in shader that is useful for drawing
-            // simple colored things.
             Shader shader = Shader.Find("Hidden/Internal-Colored");
-            _lineMaterial = new Material(shader);
-            _lineMaterial.hideFlags = HideFlags.HideAndDontSave;
-            // Turn on alpha blending
-            _lineMaterial.SetInt(SrcBlend, (int) UnityEngine.Rendering.BlendMode.SrcAlpha);
-            _lineMaterial.SetInt(DstBlend, (int) UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            // Turn backface culling off
-            _lineMaterial.SetInt(Cull, (int) UnityEngine.Rendering.CullMode.Off);
-            // Turn off depth writes
+            _lineMaterial = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
+            _lineMaterial.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _lineMaterial.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            _lineMaterial.SetInt(Cull, (int)UnityEngine.Rendering.CullMode.Off);
             _lineMaterial.SetInt(ZWrite, 0);
             _camera = Camera.main;
             _labelsPool = new ObjectPool(LabelPrefab, transform);
         }
-
-        // TODO: rewrite to Graphics.ProceduralDraw
-        // Will be called after all regular rendering is done
-        public void OnRenderObject()
+        
+        // TODO: It is not really necessary but can be rewritten to Graphics.ProceduralDraw
+        private void OnRenderObject()
         {
-            if (Mode == GridModes.Disabled)
+            if (RenderMode == GridModes.Disabled)
             {
                 _labelsPool.DespawnAllActiveObjects();
                 return;
             }
 
-            // Apply the line material
             _lineMaterial.SetPass(0);
 
             GL.PushMatrix();
-            // Set transformation matrix for drawing to
-            // match our transform
-            if (Mode == GridModes.EnabledOrientedGrid)
+            if (RenderMode == GridModes.EnabledOrientedGrid)
             {
                 transform.position = _position;
                 transform.up = _up;
@@ -88,21 +109,20 @@ namespace Elektronik.Cameras
                 transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             }
 
-            // Draw lines
             GL.Begin(GL.LINES);
             GL.Color(Color);
             var pos = transform.worldToLocalMatrix * _camera.transform.position;
             var offset = new Vector2(Mathf.Round(pos.x / Spacing) * Spacing,
                                      Mathf.Round(pos.z / Spacing) * Spacing);
 
-            for (float i = -Length; i < Length; i += Spacing)
+            for (var i = -MainLineLength; i < MainLineLength; i += Spacing)
             {
                 DrawGrid(offset, i);
             }
 
-            for (float i = -DetailsVisibilityDistance; i < DetailsVisibilityDistance; i += Spacing)
+            for (var i = -DetailsVisibilityDistance; i < DetailsVisibilityDistance; i += Spacing)
             {
-                for (float j = -DetailsVisibilityDistance; j < DetailsVisibilityDistance; j += Spacing)
+                for (var j = -DetailsVisibilityDistance; j < DetailsVisibilityDistance; j += Spacing)
                 {
                     DrawDetailedGrid(offset + new Vector2(i, j));
                 }
@@ -118,27 +138,41 @@ namespace Elektronik.Cameras
             GL.PopMatrix();
         }
 
+        #endregion
+
+        #region Private
+
+        private static Material _lineMaterial;
+        private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
+        private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
+        private static readonly int Cull = Shader.PropertyToID("_Cull");
+        private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
+        private Camera _camera;
+        private ObjectPool _labelsPool;
+        private Vector3 _position;
+        private Vector3 _up;
+
         private void TryDrawLabels(Vector2 offset)
         {
             _labelsPool.DespawnAllActiveObjects();
-            for (float i = -DetailsVisibilityDistance; i < DetailsVisibilityDistance; i += Spacing)
+            for (var i = -DetailsVisibilityDistance; i < DetailsVisibilityDistance; i += Spacing)
             {
-                for (float j = -DetailsVisibilityDistance; j < DetailsVisibilityDistance; j += Spacing)
+                for (var j = -DetailsVisibilityDistance; j < DetailsVisibilityDistance; j += Spacing)
                 {
                     var visible = IsGridPointVisible(new Vector2(i, j) + offset, DetailsVisibilityDistance);
                     if (!visible) continue;
                     var go = _labelsPool.Spawn();
-                    if (Mode == GridModes.EnabledOrientedGrid)
+                    if (RenderMode == GridModes.EnabledOrientedGrid)
                     {
-                        go.transform.localPosition = new Vector3(offset.x + i + LabelOffset.x, 
-                                                                 0, 
+                        go.transform.localPosition = new Vector3(offset.x + i + LabelOffset.x,
+                                                                 0,
                                                                  offset.y + j - LabelOffset.y);
                         go.transform.localRotation = Quaternion.Euler(90, 0, 0);
                     }
                     else
                     {
-                        go.transform.position = new Vector3(offset.x + i  + LabelOffset.x, 
-                                                            0, 
+                        go.transform.position = new Vector3(offset.x + i + LabelOffset.x,
+                                                            0,
                                                             offset.y + j - LabelOffset.y);
                         go.transform.rotation = Quaternion.Euler(90, 0, 0);
                     }
@@ -151,7 +185,7 @@ namespace Elektronik.Cameras
         private bool IsGridPointVisible(Vector2 gridPoint, float maxDistance)
         {
             var worldPoint = new Vector3(gridPoint.x, 0, gridPoint.y);
-            if (Mode == GridModes.EnabledOrientedGrid)
+            if (RenderMode == GridModes.EnabledOrientedGrid)
             {
                 worldPoint = transform.localToWorldMatrix * worldPoint;
             }
@@ -167,36 +201,38 @@ namespace Elektronik.Cameras
         private void DrawDetailedGrid(Vector2 offset)
         {
             GL.Color(Color);
-            for (float i = -Spacing; i < Spacing; i += Spacing / 10)
+            for (var i = -Spacing; i < Spacing; i += Spacing / 10)
             {
-                GL.Vertex3(offset.x + i, 0, offset.y + LineLength);
-                GL.Vertex3(offset.x + i, 0, offset.y - LineLength);
-                GL.Vertex3(offset.x + LineLength, 0, offset.y + i);
-                GL.Vertex3(offset.x - LineLength, 0, offset.y + i);
+                GL.Vertex3(offset.x + i, 0, offset.y + SmallLineLength);
+                GL.Vertex3(offset.x + i, 0, offset.y - SmallLineLength);
+                GL.Vertex3(offset.x + SmallLineLength, 0, offset.y + i);
+                GL.Vertex3(offset.x - SmallLineLength, 0, offset.y + i);
             }
         }
 
         private void DrawGrid(Vector2 offset, float i)
         {
-            GL.Color(Color * (1 - Mathf.Abs(i / Length)));
+            GL.Color(Color * (1 - Mathf.Abs(i / MainLineLength)));
             GL.Vertex3(offset.x, 0, offset.y + i);
             GL.Color(Color.clear);
-            GL.Vertex3(offset.x - Length, 0, offset.y + i);
+            GL.Vertex3(offset.x - MainLineLength, 0, offset.y + i);
 
-            GL.Color(Color * (1 - Mathf.Abs(i / Length)));
+            GL.Color(Color * (1 - Mathf.Abs(i / MainLineLength)));
             GL.Vertex3(offset.x, 0, offset.y + i);
             GL.Color(Color.clear);
-            GL.Vertex3(offset.x + Length, 0, offset.y + i);
+            GL.Vertex3(offset.x + MainLineLength, 0, offset.y + i);
 
-            GL.Color(Color * (1 - Mathf.Abs(i / Length)));
+            GL.Color(Color * (1 - Mathf.Abs(i / MainLineLength)));
             GL.Vertex3(offset.x + i, 0, offset.y);
             GL.Color(Color.clear);
-            GL.Vertex3(offset.x + i, 0, offset.y - Length);
+            GL.Vertex3(offset.x + i, 0, offset.y - MainLineLength);
 
-            GL.Color(Color * (1 - Mathf.Abs(i / Length)));
+            GL.Color(Color * (1 - Mathf.Abs(i / MainLineLength)));
             GL.Vertex3(offset.x + i, 0, offset.y);
             GL.Color(Color.clear);
-            GL.Vertex3(offset.x + i, 0, offset.y + Length);
+            GL.Vertex3(offset.x + i, 0, offset.y + MainLineLength);
         }
+
+        #endregion
     }
 }

@@ -2,22 +2,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
-using Elektronik.DataConsumers.CloudRenderers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 
 namespace Elektronik.DataSources.Containers
 {
-    public class CloudContainerBase<TCloudItem> : IContainer<TCloudItem>, ISourceTreeNode
+    /// <summary> Base implementation of cloud container. </summary>
+    /// <typeparam name="TCloudItem"></typeparam>
+    public class CloudContainerBase<TCloudItem> : ICloudContainer<TCloudItem>
             where TCloudItem : struct, ICloudItem
     {
-        #region ISourceTree
+        /// <summary> Constructor. </summary>
+        /// <param name="displayName"> Name that will be displayed in tree. </param>
+        public CloudContainerBase(string displayName = "")
+        {
+            DisplayName = string.IsNullOrEmpty(displayName) ? typeof(TCloudItem).Name : displayName;
+        }
+        
+        #region IDataSource
 
-        public string DisplayName { get; set; } = "";
+        /// <inheritdoc />
+        public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTreeNode> Children => Enumerable.Empty<ISourceTreeNode>();
+        /// <inheritdoc />
+        public IEnumerable<IDataSource> Children => Enumerable.Empty<IDataSource>();
 
+        /// <inheritdoc />
         public virtual void AddConsumer(IDataConsumer consumer)
         {
             if (!(consumer is ICloudRenderer<TCloudItem> typedRenderer)) return;
@@ -30,6 +41,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public virtual void RemoveConsumer(IDataConsumer consumer)
         {
             if (!(consumer is ICloudRenderer<TCloudItem> typedRenderer)) return;
@@ -37,8 +49,9 @@ namespace Elektronik.DataSources.Containers
             OnUpdated -= typedRenderer.OnItemsUpdated;
             OnRemoved -= typedRenderer.OnItemsRemoved;
         }
-        
-        public ISourceTreeNode TakeSnapshot()
+
+        /// <inheritdoc />
+        public IDataSource TakeSnapshot()
         {
             var res = new CloudContainer<TCloudItem>(DisplayName);
             List<TCloudItem> list;
@@ -53,8 +66,9 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
         
-        #region IContainer
+        #region ICloudContainer
 
+        /// <inheritdoc />
         public IEnumerator<TCloudItem> GetEnumerator()
         {
             lock (Items)
@@ -63,8 +77,10 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <inheritdoc />
         public virtual void Add(TCloudItem item)
         {
             lock (Items)
@@ -74,8 +90,10 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public virtual bool Contains(TCloudItem item) => Contains(item.Id);
 
+        /// <inheritdoc />
         public virtual bool Contains(int id)
         {
             lock (Items)
@@ -84,6 +102,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public virtual void CopyTo(TCloudItem[] array, int arrayIndex)
         {
             lock (Items)
@@ -92,6 +111,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public virtual bool Remove(TCloudItem item)
         {
             bool res;
@@ -104,6 +124,7 @@ namespace Elektronik.DataSources.Containers
             return res;
         }
 
+        /// <inheritdoc />
         public int Count
         {
             get
@@ -115,12 +136,17 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public bool IsReadOnly => false;
 
+        /// <inheritdoc />
+        /// <remarks> Actually does nothing, just returns item's id. </remarks>
         public virtual int IndexOf(TCloudItem item) => item.Id;
 
+        /// <inheritdoc />
         public virtual void Insert(int index, TCloudItem item) => Add(item);
 
+        /// <inheritdoc />
         public virtual void RemoveAt(int index)
         {
             TCloudItem item;
@@ -155,10 +181,16 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public event EventHandler<AddedEventArgs<TCloudItem>> OnAdded;
+
+        /// <inheritdoc />
         public event EventHandler<UpdatedEventArgs<TCloudItem>> OnUpdated;
+
+        /// <inheritdoc />
         public event EventHandler<RemovedEventArgs<TCloudItem>> OnRemoved;
 
+        /// <inheritdoc />
         public virtual void AddRange(IList<TCloudItem> items)
         {
             if (items is null) return;
@@ -173,6 +205,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public virtual void Remove(IList<TCloudItem> items)
         {
             if (items is null) return;
@@ -187,6 +220,7 @@ namespace Elektronik.DataSources.Containers
             OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(items));
         }
 
+        /// <inheritdoc />
         public IList<TCloudItem> Remove(IList<int> itemIds)
         {
             if (itemIds is null) return new List<TCloudItem>();
@@ -203,7 +237,8 @@ namespace Elektronik.DataSources.Containers
             OnRemoved?.Invoke(this, new RemovedEventArgs<TCloudItem>(removed));
             return removed;
         }
-        
+
+        /// <inheritdoc cref="IDataSource.Clear" />
         public virtual void Clear()
         {
             lock (Items)
@@ -214,6 +249,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public virtual void Update(TCloudItem item)
         {
             lock (Items)
@@ -224,6 +260,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public virtual void Update(IList<TCloudItem> items)
         {
             if (items is null) return;
@@ -242,6 +279,10 @@ namespace Elektronik.DataSources.Containers
 
         #region Protected
         
+        // I don't remember why it is using sorted dictionary.
+        // TODO: Change to dictionary, test and measure performance.
+        
+        /// <summary> Cloud items by their Ids. </summary>
         protected readonly SortedDictionary<int, TCloudItem> Items = new SortedDictionary<int, TCloudItem>();
 
         #endregion

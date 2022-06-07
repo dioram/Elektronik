@@ -1,29 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers.EventArgs;
 using Elektronik.DataSources.SpecialInterfaces;
 using UniRx;
 
 namespace Elektronik.DataSources.Containers
 {
-    public class Connector : ISourceTreeNode, IVisible, IWeightable
+    /// <summary>
+    /// Shows connections between observations if they have intersected <see cref="SlamObservation.ObservedPoints"/>.
+    /// </summary>
+    public class Connector : IVisibleDataSource, IFilterableDataSource
     {
-        public Connector(IContainer<SlamPoint> points, IContainer<SlamObservation> observations, string displayName)
+        /// <summary> Constructor. </summary>
+        /// <param name="points"> Container of points. </param>
+        /// <param name="observations"> Container of observations. </param>
+        /// <param name="displayName"> Name that will be displayed in tree. </param>
+        public Connector(ICloudContainer<SlamPoint> points, ICloudContainer<SlamObservation> observations,
+                         string displayName)
         {
             _observations = observations;
             points.OnRemoved += OnPointsRemoved;
             _observations.OnAdded += OnObservationsAdded;
             _observations.OnUpdated += OnObservationsUpdated;
             _observations.OnRemoved += OnObservationsRemoved;
+            // ReSharper disable once ExpressionIsAlwaysNull
             _connections.OnVisibleChanged += OnVisibleChanged;
             DisplayName = displayName;
         }
 
-        #region IWeightable
+        #region IFilterableDataSource
 
+        /// <inheritdoc />
         public int MaxWeight
         {
             get => _maxWeight;
@@ -35,10 +45,10 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
-        private int _maxWeight = 0;
-
+        /// <inheritdoc />
         public event Action<int> OnMaxWeightChanged;
 
+        /// <inheritdoc />
         public int MinWeight
         {
             get => _minWeight;
@@ -59,12 +69,15 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region ISourceTree
+        #region IDataSource
 
+        /// <inheritdoc />
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTreeNode> Children { get; } = Array.Empty<ISourceTreeNode>();
+        /// <inheritdoc />
+        public IEnumerable<IDataSource> Children { get; } = Array.Empty<IDataSource>();
 
+        /// <inheritdoc />
         public void Clear()
         {
             _connections.Clear();
@@ -74,49 +87,55 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void AddConsumer(IDataConsumer consumer)
         {
             _connections.AddConsumer(consumer);
         }
 
+        /// <inheritdoc />
         public void RemoveConsumer(IDataConsumer consumer)
         {
             _connections.RemoveConsumer(consumer);
         }
 
-        public ISourceTreeNode TakeSnapshot() => null;
+        /// <inheritdoc />
+        /// <remarks> Snapshot of this object cannot be taken. </remarks>
+        /// <returns> <c>null</c> </returns>
+        public IDataSource TakeSnapshot() => null;
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
 
+        /// <inheritdoc />
         public bool IsVisible
         {
             get => _connections.IsVisible;
             set => _connections.IsVisible = value;
         }
 
+        /// <inheritdoc />
         public event Action<bool> OnVisibleChanged;
-
-        public bool ShowButton => true;
 
         #endregion
 
         #region Private
 
+        private int _maxWeight = 0;
         private int _minWeight;
-        private readonly IContainer<SlamObservation> _observations;
-        private readonly SlamLinesContainer _connections = new SlamLinesContainer();
+        private readonly ICloudContainer<SlamObservation> _observations;
+        private readonly SlamLinesCloudContainer _connections = new SlamLinesCloudContainer();
 
-        private readonly Dictionary<(SlamPoint, SlamPoint), int> _weights =
-                new Dictionary<(SlamPoint, SlamPoint), int>();
+        private readonly Dictionary<(SlamObservation, SlamObservation), int> _weights =
+                new Dictionary<(SlamObservation, SlamObservation), int>();
 
-        private (SlamPoint, SlamPoint) GetKey(SlamPoint point1, SlamPoint point2) =>
+        private (SlamObservation, SlamObservation) GetKey(SlamObservation point1, SlamObservation point2) =>
                 point1.Id < point2.Id ? (point1, point2) : (point2, point1);
 
         private void OnObservationsAdded(object sender, AddedEventArgs<SlamObservation> e)
         {
-            var points = new List<(SlamPoint, SlamPoint)>();
+            var points = new List<(SlamObservation, SlamObservation)>();
             foreach (var observation in _observations)
             {
                 lock (_weights)
@@ -139,7 +158,7 @@ namespace Elektronik.DataSources.Containers
             }
 
             if (points.Count == 0) return;
-            _connections.AddRange(points.Select(p => new SlamLine(p.Item1, p.Item2)).ToArray());
+            _connections.AddRange(points.Select(p => new SlamLine(p.Item1.ToPoint(), p.Item2.ToPoint())).ToArray());
         }
 
         private void OnObservationsUpdated(object sender, UpdatedEventArgs<SlamObservation> e)
@@ -151,7 +170,7 @@ namespace Elektronik.DataSources.Containers
 
         private void OnObservationsRemoved(object sender, RemovedEventArgs<SlamObservation> e)
         {
-            var keys = new List<(SlamPoint, SlamPoint)>();
+            var keys = new List<(SlamObservation, SlamObservation)>();
             lock (_weights)
             {
                 foreach (var obs in e.RemovedItems)
@@ -168,7 +187,7 @@ namespace Elektronik.DataSources.Containers
                 }
             }
 
-            var toRemove = keys.Select(ids => new SlamLine(ids.Item1, ids.Item2)).ToArray();
+            var toRemove = keys.Select(ids => new SlamLine(ids.Item1.ToPoint(), ids.Item2.ToPoint())).ToArray();
             if (toRemove.Length > 0) _connections.Remove(toRemove);
         }
 
@@ -199,7 +218,7 @@ namespace Elektronik.DataSources.Containers
             {
                 toRemove = _weights.Where(pair => pair.Value >= _minWeight && pair.Value < value)
                         .Select(p => p.Key)
-                        .Select(k => new SlamLine(k.Item1, k.Item2))
+                        .Select(k => new SlamLine(k.Item1.ToPoint(), k.Item2.ToPoint()))
                         .ToArray();
             }
 
@@ -213,9 +232,10 @@ namespace Elektronik.DataSources.Containers
             {
                 toAdd = _weights.Where(pair => pair.Value >= value && pair.Value < _minWeight)
                         .Select(p => p.Key)
-                        .Select(k => new SlamLine(k.Item1, k.Item2))
+                        .Select(k => new SlamLine(k.Item1.ToPoint(), k.Item2.ToPoint()))
                         .ToArray();
             }
+
             _connections.AddRange(toAdd);
         }
 

@@ -9,7 +9,8 @@ using UnityEngine.UI.Extensions.ColorPicker;
 
 namespace Elektronik.UI
 {
-    public class SceneSettings : MonoBehaviour
+    /// <summary> Component for scene settings window. </summary>
+    internal class SceneSettings : MonoBehaviour
     {
         #region Editor fields
 
@@ -18,6 +19,7 @@ namespace Elektronik.UI
         [SerializeField] private Slider PointSizeSlider;
         [SerializeField] private Slider DurationSlider;
         [SerializeField] private ColorPickerControl ColorPicker;
+        [SerializeField] private Camera[] Cameras;
 
         #endregion
 
@@ -37,7 +39,7 @@ namespace Elektronik.UI
                 ColorPicker.CurrentColor = _bag.SceneColor;
             }
 
-            _inited = true;
+            _initialized = true;
 
             GridDropdown.onValueChanged.AddListener(i =>
             {
@@ -53,11 +55,13 @@ namespace Elektronik.UI
             PointSizeSlider.OnValueChangedAsObservable().Do(i => _bag.PointSize = i).Subscribe(_ => SaveSettings());
             ColorPicker.onValueChanged.AddListener(color =>
             {
-                if (_inited)
+                if (!_initialized) return;
+                _bag.SceneColor = color;
+                foreach (var cam in Cameras)
                 {
-                    _bag.SceneColor = color;
-                    SaveSettings();
+                    cam.backgroundColor = color;
                 }
+                SaveSettings();
             });
         }
 
@@ -67,7 +71,7 @@ namespace Elektronik.UI
 
         private SettingsHistory<SceneSettingsBag> _history;
         private SceneSettingsBag _bag;
-        private bool _inited = false;
+        private bool _initialized = false;
 
         private void SaveSettings()
         {

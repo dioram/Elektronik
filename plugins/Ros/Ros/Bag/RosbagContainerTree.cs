@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources;
 using Elektronik.DataSources.Containers;
 using Elektronik.RosPlugin.Common.Containers;
@@ -13,8 +13,8 @@ namespace Elektronik.RosPlugin.Ros.Bag
     {
         private static readonly Dictionary<string, Type> SupportedMessages = new()
         {
-            {"geometry_msgs/PoseStamped", typeof(TrackedObjectsContainer)},
-            {"nav_msgs/Odometry", typeof(TrackedObjectsContainer)},
+            {"geometry_msgs/PoseStamped", typeof(TrackedCloudObjectsContainer)},
+            {"nav_msgs/Odometry", typeof(TrackedCloudObjectsContainer)},
             {"sensor_msgs/PointCloud2", typeof(CloudContainer<SlamPoint>)},
             {"sensor_msgs/Image", typeof(ImagePresenter)},
             {"std_msgs/String", typeof(StringPresenter)},
@@ -42,16 +42,16 @@ namespace Elektronik.RosPlugin.Ros.Bag
 
         #region Protected
 
-        protected override ISourceTreeNode CreateContainer(string topicName, string topicType)
+        protected override IDataSource CreateContainer(string topicName, string topicType)
         {
             if (SupportedMessages.ContainsKey(topicType))
             {
-                return (ISourceTreeNode) Activator.CreateInstance(SupportedMessages[topicType],
-                                                                  topicName.Split('/').Last());
+                return (IDataSource) Activator.CreateInstance(SupportedMessages[topicType],
+                                                              topicName.Split('/').Last());
             }
             
-            return (ISourceTreeNode) Activator.CreateInstance(SupportedMessages["*"],
-                                                              topicName.Split('/').Last());
+            return (IDataSource) Activator.CreateInstance(SupportedMessages["*"],
+                                                          topicName.Split('/').Last());
         }
 
         #endregion

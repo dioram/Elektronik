@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Elektronik.Data.Converters;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
+using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.Commands;
 using Elektronik.Plugins.Common.Commands.Generic;
 using Elektronik.Plugins.Common.DataDiff;
@@ -30,7 +30,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
         protected readonly IOnlineFrameBuffer Buffer;
         protected readonly ICSConverter? Converter;
 
-        protected MapManager(IOnlineFrameBuffer buffer, IContainer<TCloudItem> container,
+        protected MapManager(IOnlineFrameBuffer buffer, ICloudContainer<TCloudItem> container,
                              ICSConverter? converter, ILogger logger)
         {
             Container = container;
@@ -66,7 +66,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
             return status;
         }
 
-        protected readonly IContainer<TCloudItem> Container;
+        protected readonly ICloudContainer<TCloudItem> Container;
         protected Stopwatch? Timer;
 
         protected Task<ErrorStatusPb> Handle(PacketPb.Types.ActionType action, TCloudItemDiff[] data,

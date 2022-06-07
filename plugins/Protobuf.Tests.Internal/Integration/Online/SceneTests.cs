@@ -2,17 +2,15 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.DataSources.Containers.EventArgs;
-using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Protobuf.Data;
 using FluentAssertions;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Moq;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace Protobuf.Tests.Internal.Integration.Online
 {
@@ -25,7 +23,6 @@ namespace Protobuf.Tests.Internal.Integration.Online
         private readonly ConnectionPb[] _connections;
         private readonly TrackedObjPb[] _objects;
         private readonly PlanePb[] _planes;
-
 
         public SceneTests() : base(40016)
         {
@@ -112,7 +109,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Points = new PacketPb.Types.Points(),
             };
             pointsPacket.Points.Data.Add(_pointsMap);
-            var e = new AddedEventArgs<SlamPoint>(_pointsMap.Select(p => ((SlamPointDiff)p).Apply()).ToArray());
+            var e = new AddedEventArgs<SlamPoint>(_pointsMap.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(pointsPacket);
 
@@ -129,14 +126,14 @@ namespace Protobuf.Tests.Internal.Integration.Online
             };
             connectionsPacket.Connections.Data.Add(_connections);
             var lines = _connections.Select(c => (_pointsMap[c.Id1], _pointsMap[c.Id2]))
-                    .Select(pair => (((SlamPointDiff)pair.Item1).Apply(), ((SlamPointDiff)pair.Item2).Apply()))
+                    .Select(pair => (pair.Item1.ToUnity(Converter).Apply(), pair.Item2.ToUnity(Converter).Apply()))
                     .Select((pair, i) => new SlamLine(pair.Item1, pair.Item2, i))
                     .ToArray();
             var e1 = new AddedEventArgs<SlamLine>(lines);
 
             SendPacket(connectionsPacket);
 
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SlamLine>>(), e1), Times.Once);
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SlamLine>>(), e1), Times.Once);
         }
 
         [Test, Order(3)]
@@ -148,7 +145,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Observations = new PacketPb.Types.Observations(),
             };
             packet.Observations.Data.Add(_observationsMap);
-            var e = new AddedEventArgs<SlamObservation>(_observationsMap.Select(p => ((SlamObservationDiff)p).Apply())
+            var e = new AddedEventArgs<SlamObservation>(_observationsMap.Select(p => p.ToUnity(Converter).Apply())
                                                                 .ToArray());
 
             SendPacket(packet);
@@ -167,15 +164,16 @@ namespace Protobuf.Tests.Internal.Integration.Online
             };
             connectionsPacket.Connections.Data.Add(_connections);
             var lines = _connections.Select(c => (_observationsMap[c.Id1], _observationsMap[c.Id2]))
-                    .Select(pair => (((SlamObservationDiff)pair.Item1).Apply(),
-                                     ((SlamObservationDiff)pair.Item2).Apply()))
-                    .Select((pair, i) => new SlamLine(pair.Item1, pair.Item2, i))
+                    .Select(pair => (pair.Item1.ToUnity(Converter).Apply(),
+                                     pair.Item2.ToUnity(Converter).Apply()))
+                    .Select((pair, i) => new SlamLine(pair.Item1.ToPoint(), pair.Item2.ToPoint(), i))
                     .ToArray();
             var el = new AddedEventArgs<SlamLine>(lines);
 
             SendPacket(connectionsPacket);
 
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<IContainer<SlamLine>>(), el), Times.Exactly(2));
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<ICloudContainer<SlamLine>>(), el),
+                                           Times.Exactly(2));
         }
 
         [Test, Order(4)]
@@ -187,11 +185,12 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 TrackedObjs = new PacketPb.Types.TrackedObjs(),
             };
             packet.TrackedObjs.Data.Add(_objects);
-            var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => ((SlamTrackedObjectDiff)p).Apply())
+            var e = new AddedEventArgs<SlamTrackedObject>(_objects.Select(p => p.ToUnity(Converter).Apply())
                                                                   .ToArray());
             var els = _objects
-                    .Select(o => new AddedEventArgs<SimpleLine>(new SimpleLine(0, (Vector3)o.Position!,
-                                                                               (Vector3)o.Position!, (Color)o.Color!)))
+                    .Select(o => new AddedEventArgs<SimpleLine>(new SimpleLine(0, o.Position!.ToUnity(Converter),
+                                                                               o.Position!.ToUnity(Converter),
+                                                                               o.Color!.ToUnity())))
                     .ToArray();
 
             SendPacket(packet);
@@ -200,7 +199,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                                              Times.Once);
             foreach (var el in els)
             {
-                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackContainer>(), el), Times.Once);
+                MockedSimpleLinesRenderer.Verify(r => r.OnItemsAdded(It.IsAny<TrackCloudContainer>(), el), Times.Once);
             }
         }
 
@@ -213,7 +212,7 @@ namespace Protobuf.Tests.Internal.Integration.Online
                 Planes = new PacketPb.Types.Planes(),
             };
             packet.Planes.Data.Add(_planes);
-            var e = new AddedEventArgs<SlamPlane>(_planes.Select(p => ((SlamPlaneDiff)p).Apply()).ToArray());
+            var e = new AddedEventArgs<SlamPlane>(_planes.Select(p => p.ToUnity(Converter).Apply()).ToArray());
 
             SendPacket(packet);
 
@@ -242,14 +241,15 @@ namespace Protobuf.Tests.Internal.Integration.Online
             MockedObservationsRenderer.Verify(
                 r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Observations, eo5),
                 Times.Once);
-            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<IContainer<SlamLine>>(), el5),
+            MockedSlamLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<ICloudContainer<SlamLine>>(), el5),
                                            Times.Exactly(2));
             MockedPlanesRenderer.Verify(
                 r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).Planes, eip5),
                 Times.Once);
             MockedTrackedObjsRenderer.Verify(r => r.OnItemsRemoved(((ProtobufContainerTree)Sut.Data).TrackedObjs, e3),
                                              Times.Once);
-            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackContainer>(), e1), Times.Exactly(3));
+            MockedSimpleLinesRenderer.Verify(r => r.OnItemsRemoved(It.IsAny<TrackCloudContainer>(), e1),
+                                             Times.Exactly(3));
         }
 
         [Test, Order(7)]

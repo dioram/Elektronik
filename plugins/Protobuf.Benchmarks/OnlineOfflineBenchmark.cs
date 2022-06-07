@@ -2,7 +2,7 @@
 using System.Linq;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.Plugins.Common.Commands;
 using Elektronik.Plugins.Common.FrameBuffers;
@@ -10,7 +10,6 @@ using Elektronik.Plugins.Common.Parsing;
 using Elektronik.Protobuf.Data;
 using Elektronik.Protobuf.Offline.Parsers;
 using Elektronik.Protobuf.Online.GrpcServices;
-using Protobuf.Tests.Internal;
 
 namespace Protobuf.Benchmarks
 {
@@ -56,15 +55,15 @@ namespace Protobuf.Benchmarks
         [Benchmark]
         public void OfflineAdd()
         {
-            var points = new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
-                                                                    new SlamLinesContainer());
+            var points = new ConnectableObjectsCloudContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
+                                                                         new SlamLinesCloudContainer());
             var observations =
-                    new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
-                                                                     new SlamLinesContainer());
+                    new ConnectableObjectsCloudContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
+                                                                          new SlamLinesCloudContainer());
             var infinitePlanes = new CloudContainer<SlamPlane>();
             var parser = new ObjectsParser(infinitePlanes, points, observations, "C:/");
             var commands = new List<ICommand?> { Capacity = _packets.Length };
-            parser.SetConverter(new FakeConverter());
+            parser.SetConverter(new ProtobufToUnityConverter());
             foreach (var packet in _packets)
             {
                 var command = parser.GetCommand(packet);
@@ -79,11 +78,11 @@ namespace Protobuf.Benchmarks
         [Benchmark]
         public void OnlineBufferedAdd()
         {
-            var points = new ConnectableObjectsContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
-                                                                    new SlamLinesContainer());
+            var points = new ConnectableObjectsCloudContainer<SlamPoint>(new CloudContainer<SlamPoint>(),
+                                                                         new SlamLinesCloudContainer());
             var observations =
-                    new ConnectableObjectsContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
-                                                                     new SlamLinesContainer());
+                    new ConnectableObjectsCloudContainer<SlamObservation>(new CloudContainer<SlamObservation>(),
+                                                                          new SlamLinesCloudContainer());
             var infinitePlanes = new CloudContainer<SlamPlane>();
             var buffer = new OnlineFrameBuffer();
             buffer.OnFramesAmountChanged += _ =>
@@ -92,9 +91,9 @@ namespace Protobuf.Benchmarks
             };
             var servicesChain = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
-                new PointsMapManager(buffer, points, new FakeConverter(), new FakeLogger()),
-                new ObservationsMapManager(buffer, observations, new FakeConverter(), new FakeLogger()),
-                new PlanesMapManager(buffer, infinitePlanes, new FakeConverter(), new FakeLogger())
+                new PointsMapManager(buffer, points, new ProtobufToUnityConverter(), new FakeLogger()),
+                new ObservationsMapManager(buffer, observations, new ProtobufToUnityConverter(), new FakeLogger()),
+                new PlanesMapManager(buffer, infinitePlanes, new ProtobufToUnityConverter(), new FakeLogger())
             }.BuildChain();
 
             int i = 0;

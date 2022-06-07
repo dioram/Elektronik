@@ -2,7 +2,7 @@
 %{
 #include "MeshBuilder.h"
 %}
-%typemap(cstype) const std::vector<NativePoint> & "Elektronik.Data.PackageObjects.SlamPoint[]"
+%typemap(cstype) const std::vector<NativePoint> & "Elektronik.DataObjects.SlamPoint[]"
 %typemap(csin,
          pre="    var list = new vectorp($csinput.Length);\n"
              "    foreach (var p in $csinput) {\n"

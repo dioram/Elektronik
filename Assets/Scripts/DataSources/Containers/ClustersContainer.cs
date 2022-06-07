@@ -1,35 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
 using Elektronik.DataConsumers;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.SpecialInterfaces;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Elektronik.DataSources.Containers
 {
-    public class ClustersContainer : ISourceTreeNode, IVisible, IRemovable
+    /// <summary> Container for clusters. </summary>
+    public class ClustersContainer : IVisibleDataSource, IRemovableDataSource
     {
-        public ClustersContainer(string displayName, IList<IList<SlamPoint>> data, IVisible sourceContainer)
+        /// <summary> Constructor. </summary>
+        /// <param name="displayName"> Name that will be displayed in tree. </param>
+        /// <param name="data"> List of points clusters. </param>
+        /// <param name="sourceContainer"> Source of points for clusterization. </param>
+        public ClustersContainer(string displayName, IList<IList<SlamPoint>> data, IDataSource sourceContainer)
         {
             DisplayName = displayName;
-            SourceContainer = sourceContainer;
             ColorizeData(data);
             CreateClusters(data);
+            
+            if (!(sourceContainer is IVisibleDataSource visibleSource)) return;
+            SourceContainer = visibleSource;
             SourceContainer.OnVisibleChanged += visible =>
             {
                 if (visible) IsVisible = false;
             };
         }
 
-        public IVisible SourceContainer { get; private set; }
+        /// <summary> Source of points for clusterization. </summary>
+        [CanBeNull] public IVisibleDataSource SourceContainer { get; }
 
-        #region ISourceTree
+        #region IDataSource
 
+        /// <inheritdoc />
         public string DisplayName { get; set; }
 
-        public IEnumerable<ISourceTreeNode> Children => _childrenList;
+        /// <inheritdoc />
+        public IEnumerable<IDataSource> Children => _childrenList;
 
+        /// <inheritdoc />
         public void Clear()
         {
             foreach (var child in Children)
@@ -38,6 +50,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void AddConsumer(IDataConsumer consumer)
         {
             _consumers.Add(consumer);
@@ -47,6 +60,7 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
+        /// <inheritdoc />
         public void RemoveConsumer(IDataConsumer consumer)
         {
             _consumers.Remove(consumer);
@@ -56,9 +70,10 @@ namespace Elektronik.DataSources.Containers
             }
         }
 
-        public ISourceTreeNode TakeSnapshot()
+        /// <inheritdoc />
+        public IDataSource TakeSnapshot()
         {
-            return new VirtualSource(DisplayName, Children
+            return new VirtualDataSource(DisplayName, Children
                                          .Select(ch => ch.TakeSnapshot())
                                          .Where(ch => ch is {})
                                          .ToList());
@@ -66,8 +81,9 @@ namespace Elektronik.DataSources.Containers
 
         #endregion
 
-        #region IVisible
+        #region IVisibleDataSource
 
+        /// <inheritdoc />
         public bool IsVisible
         {
             get => _isVisible;
@@ -75,34 +91,35 @@ namespace Elektronik.DataSources.Containers
             {
                 if (_isVisible == value) return;
                 _isVisible = value;
-                foreach (var child in Children.OfType<IVisible>())
+                foreach (var child in Children.OfType<IVisibleDataSource>())
                 {
                     child.IsVisible = value;
                 }
 
-                if (_isVisible) SourceContainer.IsVisible = false;
+                if (_isVisible && SourceContainer is {}) SourceContainer.IsVisible = false;
 
                 OnVisibleChanged?.Invoke(_isVisible);
             }
         }
 
+        /// <inheritdoc />
         public event Action<bool> OnVisibleChanged;
-
-        public bool ShowButton => true;
 
         #endregion
 
-        #region IRemovable
+        #region IRemovableDataSource
 
+        /// <inheritdoc />
         public void RemoveSelf()
         {
             Clear();
             _childrenList.Clear();
             OnRemoved?.Invoke();
 
-            if (_isVisible) SourceContainer.IsVisible = true;
+            if (_isVisible && SourceContainer is {}) SourceContainer.IsVisible = true;
         }
 
+        /// <inheritdoc />
         public event Action OnRemoved;
 
         #endregion
@@ -111,14 +128,14 @@ namespace Elektronik.DataSources.Containers
 
         private readonly List<IDataConsumer> _consumers = new List<IDataConsumer>();
         private bool _isVisible = true;
-        private readonly List<ISourceTreeNode> _childrenList = new List<ISourceTreeNode>();
+        private readonly List<IDataSource> _childrenList = new List<IDataSource>();
 
         private void CreateClusters(IList<IList<SlamPoint>> data)
         {
             for (var i = 0; i < data.Count; i++)
             {
                 var cluster = data[i];
-                var container = new CloudContainer<SlamPoint>($"Cluster {i}");
+                var container = new CloudCluster(cluster.FirstOrDefault().Color, $"Cluster {i}");
                 foreach (var renderer in _consumers)
                 {
                     container.AddConsumer(renderer);

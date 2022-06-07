@@ -17,13 +17,12 @@ namespace Elektronik.RosPlugin.Ros.Online
             _container = new RosOnlineContainerTree(settings, "TMP");
             Data = _container;
             var converter = new RosConverter();
-            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
             RosMessageConvertExtender.Converter = converter;
         }
 
         #region IDataSourcePlayer
 
-        public ISourceTreeNode Data { get; }
+        public IDataSource Data { get; }
 
         public void Dispose()
         {

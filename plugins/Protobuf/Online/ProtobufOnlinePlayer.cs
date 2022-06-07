@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Elektronik.Data.Converters;
 using Elektronik.DataSources;
+using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Plugins.Common.Parsing;
 using Elektronik.PluginsSystem;
@@ -21,7 +21,7 @@ namespace Elektronik.Protobuf.Online
     public class ProtobufOnlinePlayer : IRewindableDataSource, IChangingSpeed
     {
         public ProtobufOnlinePlayer(string displayName, Texture2D? logo, OnlineSettingsBag settings,
-                                    ICSConverter converter, ILogger? logger = null)
+                                    ILogger? logger = null)
         {
             var containerTree = new ProtobufContainerTree("Protobuf");
             Data = containerTree;
@@ -32,7 +32,7 @@ namespace Elektronik.Protobuf.Online
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             GrpcEnvironment.SetLogger(_logger);
-            converter.SetInitTRS(Vector3.zero, Quaternion.identity);
+            var converter = new ProtobufToUnityConverter();
 
             _services = new IChainable<MapsManagerPb.MapsManagerPbBase>[]
             {
@@ -129,7 +129,7 @@ namespace Elektronik.Protobuf.Online
             GoToNextFrame();
         }
 
-        public ISourceTreeNode Data { get; }
+        public IDataSource Data { get; }
         public int AmountOfFrames => _buffer.CurrentSize;
         public string Timestamp => $"{_buffer.CurrentTimeStamp:HH:mm:ss.ff}";
 
@@ -282,7 +282,7 @@ namespace Elektronik.Protobuf.Online
 
         private bool GoToPreviousFrame()
         {
-            _buffer.Current!.Command.UnExecute();
+            _buffer.Current?.Command.UnExecute();
             if (!_buffer.MovePrevious()) return false;
 
             OnPositionChanged?.Invoke(Position);

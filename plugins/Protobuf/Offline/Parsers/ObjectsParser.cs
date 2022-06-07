@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.Plugins.Common.Commands;
 using Elektronik.Plugins.Common.Commands.Generic;
@@ -12,14 +12,14 @@ namespace Elektronik.Protobuf.Offline.Parsers
 {
     public class ObjectsParser : DataParser<PacketPb>
     {
-        private readonly IContainer<SlamPlane> _planes;
-        private readonly IConnectableObjectsContainer<SlamPoint> _points;
-        private readonly IConnectableObjectsContainer<SlamObservation> _observations;
+        private readonly ICloudContainer<SlamPlane> _planes;
+        private readonly IConnectableObjectsCloudContainer<SlamPoint> _points;
+        private readonly IConnectableObjectsCloudContainer<SlamObservation> _observations;
         private readonly string _imagePath;
 
-        public ObjectsParser(IContainer<SlamPlane> planes,
-                             IConnectableObjectsContainer<SlamPoint> points,
-                             IConnectableObjectsContainer<SlamObservation> observations,
+        public ObjectsParser(ICloudContainer<SlamPlane> planes,
+                             IConnectableObjectsCloudContainer<SlamPoint> points,
+                             IConnectableObjectsCloudContainer<SlamObservation> observations,
                              string imagePath)
         {
             _planes = planes;
@@ -49,7 +49,7 @@ namespace Elektronik.Protobuf.Offline.Parsers
         }
 
         private ICommand? GetCommandForConnectableObjects<TCloudItem, TCloudItemDiff>(
-            IConnectableObjectsContainer<TCloudItem> map,
+            IConnectableObjectsCloudContainer<TCloudItem> map,
             TCloudItemDiff[] objects, PacketPb packet)
                 where TCloudItem : struct, ICloudItem
                 where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
@@ -70,7 +70,8 @@ namespace Elektronik.Protobuf.Offline.Parsers
             }
         }
 
-        private ICommand? GetCommand<TCloudItem, TCloudItemDiff>(IContainer<TCloudItem> map, TCloudItemDiff[] objects,
+        private ICommand? GetCommand<TCloudItem, TCloudItemDiff>(ICloudContainer<TCloudItem> map,
+                                                                 TCloudItemDiff[] objects,
                                                                  PacketPb packet)
                 where TCloudItem : struct, ICloudItem
                 where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
@@ -86,8 +87,8 @@ namespace Elektronik.Protobuf.Offline.Parsers
             };
         }
 
-        private ICommand GetUpdateCommand<TCloudItem, TCloudItemDiff>(IConnectableObjectsContainer<TCloudItem> map,
-                                                                       TCloudItemDiff[] objects, PacketPb packet)
+        private ICommand GetUpdateCommand<TCloudItem, TCloudItemDiff>(IConnectableObjectsCloudContainer<TCloudItem> map,
+                                                                      TCloudItemDiff[] objects, PacketPb packet)
                 where TCloudItem : struct, ICloudItem
                 where TCloudItemDiff : struct, ICloudItemDiff<TCloudItemDiff, TCloudItem>
         {

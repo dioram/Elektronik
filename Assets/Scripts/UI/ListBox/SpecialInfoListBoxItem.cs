@@ -1,5 +1,5 @@
 ﻿using Elektronik.Cameras;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -22,7 +22,7 @@ namespace Elektronik.UI.ListBox
                     .Do(_ => MessageLabel.text = $"Item message: {Point.Message}")
                     .Select(_ => Camera.main.GetComponent<LookableCamera>())
                     .Where(c => c != null)
-                    .Do(c => c.Look(Point.AsPoint().Look(c.transform)))
+                    .Do(c => c.Look(Point.ToPoint().Look(c.transform)))
                     .Subscribe();
         }
     }

@@ -4,10 +4,24 @@ using UnityEngine.UI;
 
 namespace Elektronik.DataConsumers.Windows
 {
-    public class ImageRenderer : MonoBehaviour, IDataRenderer<byte[]>, IDataRenderer<ImageData>
+    /// <summary> Renders images to window. </summary>
+    public class ImageRenderer : MonoBehaviour, IDataRenderer<byte[]>, IDataRenderer<ImageData?>
     {
-        public bool FlipVertically = false;
-        public Texture2D NotSupportedPlaceholder;
+        #region Editor fields
+
+        /// <summary> Render target for image. </summary>
+        [SerializeField] [Tooltip("Render target for image.")]
+        private RawImage Target;
+
+        /// <summary> Component that changes UI rect of target to fit image. </summary>
+        [SerializeField] [Tooltip("Component that changes UI rect to fit image.")]
+        private AspectRatioFitter Fitter;
+
+        /// <summary> Placeholder for not supported type of image. </summary>
+        [SerializeField] [Tooltip("Placeholder for not supported type of image.")]
+        private Texture2D NotSupportedPlaceholder;
+
+        #endregion
 
         #region Unity events
 
@@ -30,6 +44,7 @@ namespace Elektronik.DataConsumers.Windows
 
         #region IDataRenderer
 
+        /// <inheritdoc cref="IDataRenderer{T}.IsShowing" />
         public bool IsShowing
         {
             get => _isShowing;
@@ -41,8 +56,7 @@ namespace Elektronik.DataConsumers.Windows
             }
         }
 
-        public float Scale { get; set; }
-        
+        /// <inheritdoc />
         public void Render(byte[] array)
         {
             UniRxExtensions.StartOnMainThread(() =>
@@ -50,38 +64,40 @@ namespace Elektronik.DataConsumers.Windows
                 var texture2D = Texture2D.blackTexture;
                 texture2D.LoadImage(array);
                 texture2D.filterMode = FilterMode.Trilinear;
-                Fitter.aspectRatio = texture2D.width / (float) texture2D.height;
+                Fitter.aspectRatio = texture2D.width / (float)texture2D.height;
                 Target.texture = texture2D;
             }).Subscribe();
         }
 
-        public void Render(ImageData data)
+        /// <inheritdoc />
+        public void Render(ImageData? data)
         {
             UniRxExtensions.StartOnMainThread(() =>
             {
-                if (!data.IsSupported)
+                if (!data.HasValue)
                 {
-                    Fitter.aspectRatio = NotSupportedPlaceholder.width / (float) NotSupportedPlaceholder.height;
+                    Fitter.aspectRatio = NotSupportedPlaceholder.width / (float)NotSupportedPlaceholder.height;
                     Target.texture = NotSupportedPlaceholder;
                     return;
                 }
-                
+
                 if (_texture == null
-                    || _texture.width != data.Width
-                    || _texture.height != data.Height
-                    || _texture.format != data.Encoding)
+                    || _texture.width != data.Value.Width
+                    || _texture.height != data.Value.Height
+                    || _texture.format != data.Value.Encoding)
                 {
-                    _texture = new Texture2D(data.Width, data.Height, data.Encoding, false);
+                    _texture = new Texture2D(data.Value.Width, data.Value.Height, data.Value.Encoding, false);
                 }
 
-                _texture.LoadRawTextureData(data.Data);
-                if (FlipVertically) FlipTextureVertically(_texture);
+                _texture.LoadRawTextureData(data.Value.Data);
+                if (data.Value.IsFlippedVertically) FlipTextureVertically(_texture);
                 _texture.Apply();
-                Fitter.aspectRatio = data.Width / (float) data.Height;
+                Fitter.aspectRatio = data.Value.Width / (float)data.Value.Height;
                 Target.texture = _texture;
             }).Subscribe();
         }
 
+        /// <inheritdoc cref="IDataRenderer{T}.Clear" />
         public void Clear()
         {
             UniRxExtensions.StartOnMainThread(() =>
@@ -94,8 +110,6 @@ namespace Elektronik.DataConsumers.Windows
 
         #region Private
 
-        [SerializeField] private RawImage Target;
-        [SerializeField] private AspectRatioFitter Fitter;
         private Texture2D _texture;
         private bool _isShowing;
 

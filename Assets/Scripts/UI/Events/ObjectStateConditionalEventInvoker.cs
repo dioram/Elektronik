@@ -7,6 +7,7 @@ namespace Elektronik.UI.Events
 {
     public class ObjectStateConditionalEventInvoker : MonoBehaviour
     {
+        // TODO: remove
         [Serializable]
         public sealed class ObjectStateConditionalEvent : UnityEvent { }
 

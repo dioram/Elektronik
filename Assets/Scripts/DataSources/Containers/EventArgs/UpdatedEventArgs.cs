@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 
 namespace Elektronik.DataSources.Containers.EventArgs
 {
+    /// <summary> Event args for updating cloud items. </summary>
+    /// <typeparam name="T"> Type of cloud items. </typeparam>
     public class UpdatedEventArgs<T> : System.EventArgs
             where T : struct, ICloudItem
     {
@@ -16,7 +18,7 @@ namespace Elektronik.DataSources.Containers.EventArgs
 
         public UpdatedEventArgs(T updatedItem)
         {
-            UpdatedItems = new []{updatedItem};
+            UpdatedItems = new[] { updatedItem };
         }
 
         protected bool Equals(UpdatedEventArgs<T> other)
@@ -27,9 +29,11 @@ namespace Elektronik.DataSources.Containers.EventArgs
             {
                 if (!Equals(first, second)) return false;
             }
+
             return true;
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -38,6 +42,7 @@ namespace Elektronik.DataSources.Containers.EventArgs
             return Equals((UpdatedEventArgs<T>)obj);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return (UpdatedItems != null ? UpdatedItems.GetHashCode() : 0);

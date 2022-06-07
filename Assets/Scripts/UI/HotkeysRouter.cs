@@ -17,7 +17,7 @@ namespace Elektronik.UI
 
         [SerializeField] private DataSourcesController DataSourcesController;
         [SerializeField] private VrController VrController;
-        [SerializeField] private GpuMeshRenderer MeshRenderer;
+        [SerializeField] private GpuMeshRendererComponent MeshRenderer;
         [SerializeField] private RecorderPluginsController RecorderPluginsController;
         [Header("Windows")] [SerializeField] private Window HelpWindow;
         [SerializeField] private Window SourceTreeWindow;
@@ -86,7 +86,12 @@ namespace Elektronik.UI
                     .Subscribe(_ => MeshRenderer.ShaderId++)
                     .AddTo(this);
             hotkeys.StartRecording.PerformedAsObservable()
-                    .Subscribe(_ => RecorderPluginsController.Toggle())
+                    .Where(_ => !RecorderPluginsController.IsRecording)
+                    .Subscribe(_ => RecorderPluginsController.ShowWindow())
+                    .AddTo(this);
+            hotkeys.StartRecording.PerformedAsObservable()
+                    .Where(_ => RecorderPluginsController.IsRecording)
+                    .Subscribe(_ => RecorderPluginsController.StopRecording())
                     .AddTo(this);
 
             hotkeys.ToggleGrid.PerformedAsObservable()

@@ -10,7 +10,7 @@ Shader "Elektronik/LineCloudShader"
         Tags
         {
             "RenderType"="Transparent"
-            "Queue"="Transparent" 
+            "Queue"="Transparent"
         }
         Blend SrcAlpha OneMinusSrcAlpha
         Cull Off
@@ -26,27 +26,13 @@ Shader "Elektronik/LineCloudShader"
             #pragma vertex Vertex alpha
             #pragma fragment Fragment alpha
             #pragma multi_compile _ _COMPUTE_BUFFER
-            
+
             #include "UnityCG.cginc"
-            #define MAX_BRIGHTNESS 16
+            #include "ComputeShaders.cginc"
 
             half _Alpha;
             half _Scale;
             StructuredBuffer<float4> _ItemsBuffer;
-            
-            half3 DecodeColor(uint data)
-            {
-                half r = (data      ) & 0xff;
-                half g = (data >>  8) & 0xff;
-                half b = (data >> 16) & 0xff;
-                half a = (data >> 24) & 0xff;
-                return half3(r, g, b) * a * MAX_BRIGHTNESS / (255 * 255);
-            }
-
-            struct VertexInput
-            {
-                uint vertexID : SV_VertexID;
-            };
 
             struct VertexOutput
             {
@@ -57,9 +43,9 @@ Shader "Elektronik/LineCloudShader"
             VertexOutput Vertex(VertexInput input)
             {
                 VertexOutput o;
-                float4 pt = _ItemsBuffer[input.vertexID];
+                float4 pt = _ItemsBuffer[input.vertex_id];
                 o.position = UnityObjectToClipPos(float4(pt.xyz * _Scale, 1));
-                o.color = DecodeColor(asuint(pt.w));
+                o.color = decode_color(asuint(pt.w));
                 return o;
             }
 
@@ -67,7 +53,6 @@ Shader "Elektronik/LineCloudShader"
             {
                 return half4(input.color, _Alpha);
             }
-
             ENDCG
         }
     }

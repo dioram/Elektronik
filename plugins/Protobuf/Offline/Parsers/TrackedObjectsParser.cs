@@ -1,4 +1,4 @@
-﻿using Elektronik.Data.PackageObjects;
+﻿using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.Plugins.Common.Commands;
 using Elektronik.Plugins.Common.Commands.Generic;
@@ -11,9 +11,9 @@ namespace Elektronik.Protobuf.Offline.Parsers
 {
     public class TrackedObjectsParser : DataParser<PacketPb>
     {
-        private readonly ITrackedContainer<SlamTrackedObject> _container;
+        private readonly ITrackedCloudContainer<SlamTrackedObject> _container;
 
-        public TrackedObjectsParser(ITrackedContainer<SlamTrackedObject> container)
+        public TrackedObjectsParser(ITrackedCloudContainer<SlamTrackedObject> container)
         {
             _container = container;
         }

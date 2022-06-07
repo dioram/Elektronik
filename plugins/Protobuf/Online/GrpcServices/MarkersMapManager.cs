@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Elektronik.Data.Converters;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
+using Elektronik.Plugins.Common;
 using Elektronik.Plugins.Common.DataDiff;
 using Elektronik.Plugins.Common.FrameBuffers;
 using Elektronik.Protobuf.Data;
@@ -14,7 +14,7 @@ namespace Elektronik.Protobuf.Online.GrpcServices
 {
     public class MarkersMapManager : MapManager<SlamMarker, SlamMarkerDiff>
     {
-        public MarkersMapManager(OnlineFrameBuffer buffer, IContainer<SlamMarker> container, ICSConverter? converter,
+        public MarkersMapManager(OnlineFrameBuffer buffer, ICloudContainer<SlamMarker> container, ICSConverter? converter,
                                ILogger logger)
                 : base(buffer, container, converter, logger)
         {

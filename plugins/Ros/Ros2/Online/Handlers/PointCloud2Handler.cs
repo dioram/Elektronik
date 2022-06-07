@@ -1,14 +1,14 @@
 ﻿#if !NO_ROS2DDS
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 
 namespace Elektronik.RosPlugin.Ros2.Online.Handlers
 {
     public class PointCloud2Handler : MessageHandler
     {
-        private readonly IContainer<SlamPoint> _container;
+        private readonly ICloudContainer<SlamPoint> _container;
 
-        public PointCloud2Handler(IContainer<SlamPoint> container)
+        public PointCloud2Handler(ICloudContainer<SlamPoint> container)
         {
             _container = container;
         }

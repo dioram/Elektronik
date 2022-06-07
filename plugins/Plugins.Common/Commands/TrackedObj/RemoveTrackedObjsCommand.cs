@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Elektronik.Data.PackageObjects;
+using Elektronik.DataObjects;
 using Elektronik.DataSources.Containers;
 using Elektronik.Plugins.Common.Commands.Generic;
 using Elektronik.Plugins.Common.DataDiff;
@@ -11,9 +11,9 @@ namespace Elektronik.Plugins.Common.Commands.TrackedObj
     {
         private readonly SortedDictionary<int, IList<SimpleLine>> _tracks = new ();
 
-        private readonly ITrackedContainer<SlamTrackedObject> _container;
+        private readonly ITrackedCloudContainer<SlamTrackedObject> _container;
 
-        public RemoveTrackedObjCommands(ITrackedContainer<SlamTrackedObject> container,
+        public RemoveTrackedObjCommands(ITrackedCloudContainer<SlamTrackedObject> container,
                                         SlamTrackedObject[] objects)
                 : base(container, objects)
         {
@@ -40,9 +40,9 @@ namespace Elektronik.Plugins.Common.Commands.TrackedObj
     {
         private readonly SortedDictionary<int, IList<SimpleLine>> _tracks = new ();
 
-        private readonly ITrackedContainer<SlamTrackedObject> _container;
+        private readonly ITrackedCloudContainer<SlamTrackedObject> _container;
 
-        public RemoveTrackedObjDiffCommands(ITrackedContainer<SlamTrackedObject> container,
+        public RemoveTrackedObjDiffCommands(ITrackedCloudContainer<SlamTrackedObject> container,
                                             SlamTrackedObjectDiff[] objects)
                 : base(container, objects)
         {

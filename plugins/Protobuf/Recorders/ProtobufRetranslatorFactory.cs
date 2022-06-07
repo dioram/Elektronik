@@ -1,14 +1,13 @@
-﻿using Elektronik.Data.Converters;
-using Elektronik.PluginsSystem;
+﻿using Elektronik.PluginsSystem;
 using Elektronik.Settings;
 
 namespace Elektronik.Protobuf.Recorders
 {
-    public class ProtobufRetranslatorFactory : ElektronikPluginsFactoryBase<SettingsBag>, ICustomRecorderPluginsFactory
+    public class ProtobufRetranslatorFactory : ElektronikPluginsFactoryBase<SettingsBag>, IDataRecorderPluginsFactory
     {
-        protected override IElektronikPlugin StartPlugin(SettingsBag settings, ICSConverter converter)
+        protected override IElektronikPlugin StartPlugin(SettingsBag settings)
         {
-            return new ProtobufRetranslator(DisplayName, Logo, converter);
+            return new ProtobufRetranslator(DisplayName, Logo);
         }
 
         public override string DisplayName => "Protobuf retranslator";

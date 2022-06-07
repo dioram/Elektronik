@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 namespace Elektronik.UI.ListBox
 {
+    // TODO: remove
     public class ListBox : MonoBehaviour, IEnumerable<ListBoxItem>
     {
         public class SelectionChangedEventArgs : EventArgs
